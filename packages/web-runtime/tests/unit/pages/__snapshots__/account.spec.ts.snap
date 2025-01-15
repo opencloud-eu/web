@@ -71,7 +71,7 @@ exports[`account page > public link context > should render a limited view 1`] =
           <tr class="account-page-info-language">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Language</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
-              <div class="oc-flex"><span>Select your language.</span> <a href="https://explore.transifex.com/owncloud-org/owncloud-web/" target="_blank">
+              <div class="oc-flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud/" target="_blank">
                   <div class="oc-flex oc-ml-xs oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s oc-icon-passive oc-ml-xs"><!----></span></div>
                 </a></div>
             </td>

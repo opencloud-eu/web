@@ -86,7 +86,7 @@
           <oc-td>
             <div class="oc-flex">
               <span v-text="$gettext('Select your language.')" />
-              <a href="https://explore.transifex.com/owncloud-org/owncloud-web/" target="_blank">
+              <a href="https://explore.transifex.com/opencloud-eu/opencloud/" target="_blank">
                 <div class="oc-flex oc-ml-xs oc-flex-middle">
                   <span v-text="$gettext('Help to translate')" />
                   <oc-icon class="oc-ml-xs" size="small" fill-type="line" name="service" />
