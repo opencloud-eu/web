@@ -1,4 +1,8 @@
-import { ApplicationInformation, AppWrapperRoute, defineWebApplication } from '@opencloud-eu/web-pkg'
+import {
+  ApplicationInformation,
+  AppWrapperRoute,
+  defineWebApplication
+} from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
 import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'

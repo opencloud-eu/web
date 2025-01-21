@@ -7,7 +7,11 @@ import {
   useGetMatchingSpaceMock
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { AncestorMetaDataValue, useGetMatchingSpace, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  AncestorMetaDataValue,
+  useGetMatchingSpace,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { Resource } from '@opencloud-eu/web-client'
 

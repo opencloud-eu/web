@@ -144,7 +144,12 @@ import { useGettext } from 'vue3-gettext'
 import { eventBus, SortDir } from '@opencloud-eu/web-pkg'
 import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
-import { useFileListHeaderPosition, useRoute, useRouter, usePagination } from '@opencloud-eu/web-pkg'
+import {
+  useFileListHeaderPosition,
+  useRoute,
+  useRouter,
+  usePagination
+} from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
 import { findIndex } from 'lodash-es'

@@ -12,7 +12,11 @@ import {
   isPersonalSpaceResource,
   isProjectSpaceResource
 } from '@opencloud-eu/web-client'
-import type { CollaboratorShare, MountPointSpaceResource, ShareRole } from '@opencloud-eu/web-client'
+import type {
+  CollaboratorShare,
+  MountPointSpaceResource,
+  ShareRole
+} from '@opencloud-eu/web-client'
 import { useUserStore } from './user'
 import { ConfigStore, useConfigStore } from './config'
 import { useSharesStore } from './shares'

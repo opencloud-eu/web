@@ -3,7 +3,11 @@ import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 import { useOpenWithDefaultApp } from '../useOpenWithDefaultApp'
-import { getRelativeSpecialFolderSpacePath, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  getRelativeSpecialFolderSpacePath,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { useClientService } from '../../clientService'
 import { useSharesStore, useSpacesStore, useUserStore } from '../../piniaStores'
 import { useCreateSpace, useSpaceHelpers } from '../../spaces'

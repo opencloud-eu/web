@@ -1,5 +1,9 @@
 import FilesViewWrapper from '../../../src/components/FilesViewWrapper.vue'
-import { defaultComponentMocks, defaultPlugins, RouteLocation } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  RouteLocation
+} from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { shallowMount } from '@vue/test-utils'
 import { computed } from 'vue'
