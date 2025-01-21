@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[o:opencloud-eu:p:opencloud:r:web-webfinger]
+[o:opencloud-eu:p:opencloud-eu:r:web-webfinger]
 file_filter = locale/<lang>/app.po
 minimum_perc = 0
 resource_name = web-webfinger
