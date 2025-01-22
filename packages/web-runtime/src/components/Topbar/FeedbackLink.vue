@@ -40,7 +40,7 @@ export default defineComponent({
   },
   computed: {
     hrefOrFallback() {
-      return this.href || 'https://opencloud.eu/web-design-feedback'
+      return this.href || 'https://opencloud.eu'
     },
     ariaLabelOrFallback() {
       return this.ariaLabel || this.$gettext('OpenCloud feedback survey')
