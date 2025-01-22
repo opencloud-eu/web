@@ -1,5 +1,8 @@
 <div align=center>
 
+-[![Matrix](https://img.shields.io/matrix/opencloud%3Amatrix.org?logo=matrix)](https://app.element.io/#/room/#opencloud:matrix.org)
+-[![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 # OpenCloud Web
 With OpenCloud Web you can manage your OpenCloud in your browser.
 
