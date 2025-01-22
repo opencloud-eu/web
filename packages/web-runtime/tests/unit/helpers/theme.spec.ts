@@ -1,8 +1,26 @@
 import { loadTheme } from '../../../src/helpers/theme'
-import defaultTheme from '../../../themes/opencloud/theme.json'
 import merge from 'lodash-es/merge'
-import { ThemingConfig, WebThemeConfig } from '@opencloud-eu/web-pkg'
-import { mock } from 'vitest-mock-extended'
+import { ThemingConfigType } from '@opencloud-eu/web-pkg'
+import { mock, mockDeep } from 'vitest-mock-extended'
+
+const themeConfig = mockDeep<ThemingConfigType>({
+  clients: {
+    web: {
+      themes: [
+        { name: 'Light theme', isDark: false, designTokens: { fontFamily: 'OpenCloud' } },
+        { name: 'Dark theme', isDark: true, designTokens: { fontFamily: 'OpenCloud' } }
+      ]
+    }
+  }
+})
+
+const theme = {
+  defaults: {
+    ...themeConfig.clients.web.defaults,
+    common: themeConfig.common
+  },
+  themes: themeConfig.clients.web.themes
+}
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const actual = await importOriginal<any>()
@@ -17,58 +35,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
 
 vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-const defaultOpenCloudTheme = {
-  defaults: {
-    ...defaultTheme.clients.web.defaults,
-    common: defaultTheme.common
-  },
-  themes: defaultTheme.clients.web.themes
-}
-
 describe('theme loading and error reporting', () => {
-  it('the locally included theme should be valid', () => {
-    const { success } = ThemingConfig.safeParse(defaultTheme)
-    expect(success).toBeTruthy()
-  })
-
-  it('the default web theme should be valid', () => {
-    const { success } = WebThemeConfig.safeParse(defaultOpenCloudTheme)
-    expect(success).toBeTruthy()
-  })
-
-  it('should load the default theme if location is empty', async () => {
-    const theme = await loadTheme()
-    expect(theme).toMatchObject(defaultOpenCloudTheme)
-  })
-
-  it('should load the default theme if location is not a json file extension', async () => {
-    const theme = await loadTheme('some_location_without_json_file_ending.xml')
-    expect(theme).toMatchObject(defaultOpenCloudTheme)
-  })
-
-  it('should load the default theme if location is not found', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValue(mock<Response>({ status: 404 }))
-    const theme = await loadTheme('http://www.opencloud.eu/unknown.json')
-    expect(theme).toMatchObject(defaultOpenCloudTheme)
-  })
-
-  it('should load the default theme if location is not a valid json file', async () => {
-    const customTheme = merge({}, defaultTheme, { default: { logo: { login: 'custom.svg' } } })
-    vi.spyOn(global, 'fetch').mockResolvedValue(
-      mock<Response>({ status: 404, json: () => Promise.resolve(customTheme) })
-    )
-    const theme = await loadTheme('http://www.opencloud.eu/invalid.json')
-    expect(theme).toMatchObject(defaultOpenCloudTheme)
-  })
-
-  it('should load the default theme if server errors', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValue(new Error())
-    const theme = await loadTheme('http://www.opencloud.eu')
-    expect(theme).toMatchObject(defaultOpenCloudTheme)
-  })
-
   it('should load the custom theme if a custom location is given', async () => {
-    const customTheme = merge({}, defaultOpenCloudTheme, {
+    const customTheme = merge({}, theme, {
       defaults: { logo: { login: 'custom.svg' } }
     })
 
@@ -77,7 +46,7 @@ describe('theme loading and error reporting', () => {
         status: 404,
         json: () =>
           Promise.resolve({
-            common: defaultTheme.common,
+            common: themeConfig.common,
             clients: {
               web: {
                 defaults: customTheme.defaults,

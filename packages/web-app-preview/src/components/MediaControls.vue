@@ -72,7 +72,7 @@
           <oc-button
             v-oc-tooltip="imageZoomDescription"
             class="preview-controls-image-zoom"
-            appearance="raw-inverse"
+            appearance="raw"
             variation="brand"
             :aria-label="imageZoomDescription"
             @click="imageZoom"

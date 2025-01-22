@@ -1,15 +1,25 @@
-import { WebThemeType, useThemeStore } from '@opencloud-eu/web-pkg'
-import { mock } from 'vitest-mock-extended'
+import { WebThemeType, useThemeStore, ThemingConfigType } from '@opencloud-eu/web-pkg'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import ThemeSwitcher from '../../../../src/components/Account/ThemeSwitcher.vue'
-import defaultTheme from '../../../../themes/opencloud/theme.json'
 import { defaultPlugins, defaultStubs, mount } from '@opencloud-eu/web-test-helpers'
 
-const defaultOpenCloudTheme = {
+const themeConfig = mockDeep<ThemingConfigType>({
+  clients: {
+    web: {
+      themes: [
+        { name: 'Light theme', isDark: false, designTokens: { fontFamily: 'OpenCloud' } },
+        { name: 'Dark theme', isDark: true, designTokens: { fontFamily: 'OpenCloud' } }
+      ]
+    }
+  }
+})
+
+const theme = {
   defaults: {
-    ...defaultTheme.clients.web.defaults,
-    common: defaultTheme.common
+    ...themeConfig.clients.web.defaults,
+    common: themeConfig.common
   },
-  themes: defaultTheme.clients.web.themes
+  themes: themeConfig.clients.web.themes
 }
 
 describe('ThemeSwitcher component', () => {
@@ -18,7 +28,7 @@ describe('ThemeSwitcher component', () => {
       const { wrapper } = getWrapper({ hasOnlyOneTheme: false })
       const themeStore = useThemeStore()
       window.localStorage.setItem('oc_currentThemeName', 'Light Theme')
-      themeStore.initializeThemes(defaultOpenCloudTheme)
+      themeStore.initializeThemes(theme)
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -26,7 +36,7 @@ describe('ThemeSwitcher component', () => {
       const { wrapper } = getWrapper()
       const themeStore = useThemeStore()
       window.localStorage.setItem('oc_currentThemeName', 'Dark Theme')
-      themeStore.initializeThemes(defaultOpenCloudTheme)
+      themeStore.initializeThemes(theme)
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -35,8 +45,8 @@ describe('ThemeSwitcher component', () => {
 
 function getWrapper({ hasOnlyOneTheme = false } = {}) {
   const availableThemes = hasOnlyOneTheme
-    ? [defaultTheme.clients.web.themes[0]]
-    : defaultTheme.clients.web.themes
+    ? [themeConfig.clients.web.themes[0]]
+    : themeConfig.clients.web.themes
 
   return {
     wrapper: mount(ThemeSwitcher, {
@@ -48,8 +58,8 @@ function getWrapper({ hasOnlyOneTheme = false } = {}) {
               themeState: {
                 availableThemes,
                 currentTheme: mock<WebThemeType>({
-                  ...defaultOpenCloudTheme.defaults,
-                  ...defaultOpenCloudTheme.themes[0]
+                  ...theme.defaults,
+                  ...theme.themes[0]
                 })
               }
             }
