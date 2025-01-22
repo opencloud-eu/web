@@ -8,11 +8,11 @@ color:
       default:
         value: '#E2BAFF'
       hover:
-        value: '#EDD5FF'
+        value: '#F4E5FF'
       muted:
         value: '#CA8DF5'
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#19353F'
     primary:
       default:
         value: '#20434f'
@@ -23,34 +23,34 @@ color:
       gradient:
         value: '#20434f'
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#ffffff'
     success:
       default:
         value: rgb(3, 84, 63)
       hover:
-        value: rgb(147, 224, 84)
+        value: rgb(2, 59, 44)
       muted:
         value: rgb(83, 150, 10)
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#ffffff'
     warning:
       default:
         value: rgb(183, 76, 27)
       hover:
-        value: rgb(183, 76, 27)
+        value: rgb(160, 67, 24)
       muted:
         value: rgba(183, 76, 27, .5)
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#ffffff'
     danger:
       default:
-        value: rgb(197, 48, 48)
+        value: rgb(186, 26, 26)
       hover:
-        value: rgb(168, 40, 40)
+        value: rgb(177, 43, 43)
       muted:
         value: rgb(204, 117, 117)
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#ffffff'
     passive:
       default:
         value: '#19353f'
@@ -59,16 +59,16 @@ color:
       muted:
         value: '#19353f'
       contrast:
-        value: '{color.text.inverse.value}'
+        value: '#ffffff'
     inverse:
       default:
         value: rgb(255, 255, 255)
       hover:
         value: rgb(255, 255, 255)
       muted:
-        value: rgb(191, 191, 191)
+        value: rgb(218, 218, 218)
       contrast:
-        value: '{color.text.default.value}'
+        value: '#19353f'
   background:
     default:
       value: rgb(255, 255, 255)
@@ -77,11 +77,11 @@ color:
     muted:
       value: rgb(248, 248, 248)
     highlight:
-      value: rgb(237, 243, 250)
+      value: rgb(241, 243, 244)
     accentuate:
       value: rgba(255, 255, 5, 0.1)
     hover:
-      value: rgb(236, 236, 236)
+      value: rgb(244, 229, 255)
     chrome:
       value: '#20434F'
     sidebar:
@@ -90,19 +90,19 @@ color:
     value: rgb(236, 235, 238)
   text:
     default:
-      value: '{color.swatch.brand.default.value}'
+      value: '#19353f'
     muted:
-      value: '{color.swatch.passive.default.value}'
+      value: '#19353f'
     inverse:
-      value: '{color.background.default.value}'
+      value: '#ffffff'
   input:
     text:
       default:
-        value: '{color.swatch.brand.default.value}'
+        value: '#19353f'
       muted:
-        value: '{color.swatch.passive.default.value}'
+        value: '#20434f'
     border:
-      value: rgb(206, 221, 238)
+      value: '#396676'
     bg:
       value: rgb(255, 255, 255)
   components:

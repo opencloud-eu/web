@@ -289,7 +289,10 @@ export const bootstrapErrorApp = async (err: Error): Promise<void> => {
   announceVersions({ capabilityStore })
   const app = createApp(pages.failure)
   const designSystem = await loadDesignSystem()
-  await announceTheme({ app, designSystem, configStore })
+  try {
+    await announceTheme({ app, designSystem, configStore })
+  } catch (e) {}
+
   console.error(err)
   const translations = await loadTranslations()
   const gettext = announceGettext({ app, availableLanguages: supportedLanguages })

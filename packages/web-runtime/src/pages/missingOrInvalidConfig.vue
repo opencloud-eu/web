@@ -2,9 +2,9 @@
   <div class="oc-login-card oc-position-center">
     <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
     <div class="oc-login-card-body">
-      <h1 v-translate class="oc-login-card-title">Missing or invalid config</h1>
-      <p v-translate>Please check if the file config.json exists and is correct.</p>
-      <p v-translate>Also, make sure to check the browser console for more information.</p>
+      <h1 class="oc-login-card-title" v-text="$gettext('Missing or invalid config')" />
+      <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
+      <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
     </div>
     <div class="oc-login-card-footer">
       <p>
@@ -19,6 +19,7 @@ import { computed, defineComponent } from 'vue'
 import { useThemeStore } from '@opencloud-eu/web-pkg'
 import { useHead } from '../composables/head'
 import { storeToRefs } from 'pinia'
+import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export default defineComponent({
   name: 'MissingConfigPage',
@@ -26,8 +27,8 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const { currentTheme } = storeToRefs(themeStore)
 
-    const logoImg = computed(() => currentTheme.value.logo.login)
-    const footerSlogan = computed(() => currentTheme.value.common.slogan)
+    const logoImg = computed(() => currentTheme.value?.logo?.login)
+    const footerSlogan = computed(() => currentTheme.value?.common?.slogan)
 
     useHead()
 
@@ -35,6 +36,7 @@ export default defineComponent({
       logoImg,
       footerSlogan
     }
-  }
+  },
+  methods: { $gettext }
 })
 </script>
