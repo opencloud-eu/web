@@ -1,55 +1,36 @@
 <!--
-Thanks for submitting a change to OpenCloud!
+Thank you for your contribution to OpenCloud!
 
-This is the bug tracker for Web.
+For reporting potential security issues, contact us via https://opencloud.eu/
 
-For fixing potential security issues please see https://opencloud.eu/security/
+Please follow these guidelines while opening a pull request:
 
-To make it possible for us to get your change reviewed and merged please carefully fill out the requested information below.
-
-Please set the following labels:
-
-- Set label "Status:Needs-Review" for review or "Status:In-Progress" or save as draft PR in case the PR still has open tasks
-- Set label "Category:*" where it fits best
-- Assignment: assign to self
-- Reviewers: pick at least one
+- Set appropriate labels
+- Assign it to yourself.
+- Choose at least one reviewer.
 -->
 
 ## Description
-<!--- Describe your changes in detail -->
+<!--- Describe the subject of the pull request in detail, if appropriate add screenshots  -->
 
 ## Related Issue
-<!--- This project only accepts pull requests related to open issues -->
-<!--- If suggesting a new feature or change, please discuss it in an issue first -->
-<!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
-<!--- Please link to the issue here: -->
+<!--- If you are fixing a bug, please ensure there's an issue detailing the steps to reproduce it. -->
+<!--- Link the issue here: -->
 - Fixes <issue_link>
 
-## Motivation and Context
-<!--- Why is this change required? What problem does it solve? -->
-
 ## How Has This Been Tested?
-<!--- Please describe in detail how you tested your changes. -->
-<!--- Include details of your testing environment, and the tests you ran to -->
-<!--- see how your change affects other areas of the code, etc. -->
+<!--- Provide a brief description of how you tested your changes. -->
+<!--- Include your testing environment and the tests you ran. -->
 - test environment:
 - test case 1:
 - test case 2:
 - ...
 
-## Screenshots (if appropriate):
-
 ## Types of changes
-<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
-- [ ] Technical debt
-- [ ] Tests
-- [ ] Documentation
-- [ ] Maintenance (e.g. dependency updates or tooling)
-
-## Open tasks:
-<!-- In case of incomplete PR, please list the open tasks here -->
-<!-- Please make sure to keep your PR in draft mode until it's ready for review -->
-- [ ] ...
+<!--- What types of changes does your code introduce? Mark an x in all the applicable boxes: -->
+- [ ] New feature (an additional functionality that doesn't break existing code)
+- [ ] Breaking change (a modification that affects current functionality)
+- [ ] Technical debt (addressing code that needs refactoring or improvements)
+- [ ] Tests (adding or improving tests)
+- [ ] Documentation (updates or additions to documentation)
+- [ ] Maintenance (like dependency updates or tooling adjustments)

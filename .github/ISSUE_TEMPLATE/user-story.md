@@ -1,6 +1,6 @@
 ---
-name: User story
-about: Suggest an idea the agile way :-)
+name: User Story
+about: Share an idea with clear user value
 title: ''
 labels: Type:Story
 assignees: ''
@@ -8,30 +8,34 @@ assignees: ''
 ---
 
 # Description
+<-- Briefly outline the user story. -->
 
-## User Stories
+## User Story
 
-* > As a ..., I want to ... so that ... (please stick to who, what, why)
+* > As a ..., I want to ... so that ... (stick to whom, what, why)
 
 ## Value
+<!--- Explain the benefit or value this feature will bring. What is the positive impact on users or the system? -->
 
 ## Acceptance Criteria
+<--- List the specific conditions that must be met for the user story to be considered complete. -->
 
-## Definition of ready
-- [ ] Everybody needs to understand the value written in the user story
-- [ ] Acceptance criteria have to be defined
-- [ ] All dependencies of the user story need to be identified
-- [ ] Feature should be seen from an end user perspective
-- [ ] Story has to be estimated
-- [ ] Story points need to be less than 20
+## Definition of Ready
+- [ ] Everyone understands the value in the user story
+- [ ] Acceptance criteria are defined
+- [ ] All dependencies are identified
+- [ ] Feature is seen from an end user's perspective
+- [ ] Story is estimated
+- [ ] Story points are under 20
 
-## Definition of done
-- Functional requirements
-  - [ ] Functionality described in the user story works
-  - [ ] Acceptance criteria are fulfilled
+## Definition of Done
+- Functional Requirements
+    - [ ] Described functionality works
+    - [ ] Acceptance criteria are met
 - Quality
-  - [ ] Code review happened
-  - [ ] CI is green (that includes new and existing automated tests)
-  - [ ] Critical code received unit tests by the developer
-- Non-functional requirements
-  - [ ] No sonar cloud issues
+    - [ ] Code review is complete
+    - [ ] CI is green (including new and existing automated tests)
+    - [ ] Critical code has unit tests by the developer
+- Non-functional Requirements
+    - [ ] No sonar cloud issues
+

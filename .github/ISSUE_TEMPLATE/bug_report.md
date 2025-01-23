@@ -1,40 +1,38 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Help us squash bugs
 title: ''
 labels: Type:Bug
 assignees: ''
 
 ---
 
-## Describe the bug
-A clear and concise description of what the bug is.
+# Bug Description
+Briefly describe the bug.
 
-## Steps to reproduce
+# Reproduction Steps
 1.
 2.
 3.
 
-## Expected behavior
-A clear and concise description of what you expected to happen.
+# Expected Outcome
+What did you expect to happen?
 
-## Actual behavior
-A clear and concise description of what happened.
+# Actual Outcome
+What actually happened?
 
-## Setup
-Please describe how you started the server and provide a list of relevant environment variables or configuration files.
+# Setup Details
+Describe how you started the server and list any relevant environment variables or configuration files.
 
-<details>
+<details> 
 <p>
-
 ```console
 OPENCLOUD_XXX=somevalue
 OPENCLOUD_YYY=somevalue
 PROXY_XXX=somevalue
 ```
-
 </p>
 </details>
 
-## Additional context
-Add any other context about the problem here.
+# Additional Info
+Any other relevant details.

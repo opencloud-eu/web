@@ -1,20 +1,20 @@
 ---
 name: Feature request
-about: Suggest an idea for improving Web
+about: Share an idea for the Web UI
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-## Is your feature request related to a problem? Please describe.
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+# Problem Description
+Briefly describe the problem. E.g. It’s challenging when [...]
 
-## Describe the solution you'd like
-A clear and concise description of what you want to happen.
+# Desired Solution
+What do you want to happen?
 
-## Describe alternatives you've considered
-A clear and concise description of any alternative solutions or features you've considered.
+# Alternatives Considered
+Any alternative solutions or features you've thought about.
 
-## Additional context
-Add any other context or screenshots about the feature request here.
+# Additional Info
+Add any other relevant context or screenshots.
