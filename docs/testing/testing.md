@@ -77,6 +77,7 @@ To run a particular test, simply add the feature file and line number to the tes
 
 Various options are available via ENV variables, e.g.
 
+- `BASE_URL_OPEN_CLOUD` # use your OpenCloud URL. Default value: host.docker.internal:9200
 - `BASIC_AUTH=true` use basic authorization for api requests.
 - `RETRY=n` to retry failures `n` times
 - `SLOW_MO=n` to slow the execution time by `n` milliseconds

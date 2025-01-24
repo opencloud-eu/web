@@ -4,7 +4,7 @@ export const config = {
   // environment
   assets: './tests/e2e/filesForUpload',
   tempAssetsPath: './tests/e2e/filesForUpload/temp',
-  baseUrlOpenCloud: process.env.FEDERATED_BASE_URL_OPEN_CLOUD ?? 'host.docker.internal:9200',
+  baseUrlOpenCloud: process.env.BASE_URL_OPEN_CLOUD ?? 'host.docker.internal:9200',
   basicAuth: process.env.BASIC_AUTH === 'true',
   // keycloak config
   keycloak: process.env.KEYCLOAK === 'true',
