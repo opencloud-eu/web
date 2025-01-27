@@ -445,8 +445,11 @@ export default defineComponent({
     watch(
       canUpload,
       () => {
-        if (unref(canUpload)) {
-          uppyService.useDropTarget({ targetSelector: '#files-view' })
+        const targetSelector = '#files-view'
+        const target = document.querySelector(targetSelector)
+
+        if (target && unref(canUpload)) {
+          uppyService.useDropTarget({ targetSelector })
         } else {
           uppyService.removeDropTarget()
         }
