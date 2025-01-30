@@ -451,8 +451,8 @@ export default { components: { VueSelect } }
   .vs__open-indicator,
   .vs__search,
   .vs__selected {
-    background-color: var(--oc-color-background-muted) !important;
-    color: var(--oc-color-input-text-muted) !important;
+    background-color: var(--oc-role-secondary) !important;
+    color: var(--oc-role-on-secondary) !important;
     pointer-events: none;
   }
 
@@ -482,12 +482,12 @@ export default { components: { VueSelect } }
     &__dropdown-toggle,
     &__dropdown-menu {
       -webkit-appearance: none;
-      background-color: var(--oc-color-background-default);
+      color: var(--oc-role-on-surface);
+      background-color: var(--oc-role-surface);
       border-radius: 0;
       border-radius: 5px;
-      border: 1px solid var(--oc-color-input-border);
+      border: 1px solid var(--oc-role-outline);
       box-sizing: border-box;
-      color: var(--oc-color-input-text-default);
       line-height: inherit;
       margin: 0;
       max-width: 100%;
@@ -510,7 +510,7 @@ export default { components: { VueSelect } }
 
     &__dropdown-menu {
       padding: 0;
-      background-color: var(--oc-color-background-default);
+      background-color: var(--oc-role-surface);
       margin-top: -1px;
     }
 
@@ -532,9 +532,10 @@ export default { components: { VueSelect } }
       border-radius: 5px;
       line-height: var(--vs-line-height);
 
-      &--highlight {
-        background-color: var(--oc-color-background-hover);
-        color: var(--oc-color-swatch-brand-contrast);
+      &--highlight,
+      &--selected {
+        background-color: var(--oc-role-surface-container);
+        color: var(--oc-role-on-surface-container);
       }
 
       &--selected {
@@ -572,7 +573,7 @@ export default { components: { VueSelect } }
       > *:not(input) {
         padding-left: 3px;
         background-color: var(--oc-color-background-default);
-        fill: var(--oc-color-text-default);
+        fill: var(--oc-role-on-surface);
       }
     }
   }
@@ -615,8 +616,8 @@ export default { components: { VueSelect } }
 
     &.vs--multiple {
       .vs__selected-options > *:not(input) {
-        color: var(--oc-color-input-text-default);
-        background-color: var(--oc-color-background-default);
+        color: var(--oc-role-on-surface);
+        background-color: var(--oc-role-surface);
       }
     }
 

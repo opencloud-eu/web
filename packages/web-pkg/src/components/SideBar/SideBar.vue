@@ -84,7 +84,8 @@
               :id="`sidebar-panel-${panelSelect.name}-select`"
               :key="`panel-select-${panelSelect.name}`"
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
-              appearance="raw"
+              appearance="raw-inverse"
+              color-role="surface"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -271,7 +272,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  border-left: 1px solid var(--oc-color-border);
+  border-left: 1px solid var(--oc-role-outline-variant);
   position: relative;
   overflow: hidden;
   min-width: 440px;
@@ -303,7 +304,7 @@ onBeforeUnmount(() => {
   max-height: 100%;
   display: grid;
   grid-template-rows: auto auto 1fr;
-  background-color: var(--oc-color-background-default);
+  background-color: var(--oc-role-surface);
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -341,7 +342,7 @@ onBeforeUnmount(() => {
   }
 
   .multi-root-panel-separator {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 1px solid var(--oc-role-outline-variant);
   }
 
   &__header {
@@ -360,7 +361,7 @@ onBeforeUnmount(() => {
 
       &__title {
         text-align: center;
-        color: var(--oc-color-text-default);
+        color: var(--oc-role-on-surface);
         font-size: var(--oc-font-size-large);
         grid-column-start: 2;
       }
@@ -387,10 +388,10 @@ onBeforeUnmount(() => {
     margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
 
     > button {
-      border-bottom: 1px solid var(--oc-color-border);
+      border-bottom: 1px solid var(--oc-role-outline-variant);
       width: 100%;
       border-radius: 0;
-      color: var(--oc-color-text-default) !important;
+      color: var(--oc-role-on-surface) !important;
       display: grid;
       grid-template-columns: auto 1fr auto;
       text-align: left;
@@ -398,7 +399,7 @@ onBeforeUnmount(() => {
       padding: 0 var(--oc-space-small);
 
       &:first-of-type {
-        border-top: 1px solid var(--oc-color-border);
+        border-top: 1px solid var(--oc-role-outline-variant);
       }
 
       &:last-of-type {
@@ -407,11 +408,7 @@ onBeforeUnmount(() => {
 
       &:hover,
       &:focus {
-        border-color: var(--oc-color-border) !important;
-      }
-
-      &:hover {
-        background-color: var(--oc-color-background-muted) !important;
+        border-color: var(--oc-role-outline-variant) !important;
       }
     }
   }

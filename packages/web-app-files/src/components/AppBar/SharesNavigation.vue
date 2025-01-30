@@ -25,7 +25,7 @@
               type="router-link"
               class="shares-nav-mobile"
               :to="navItem.to"
-              :class="{ 'oc-background-highlight': navItem.active }"
+              :class="{ 'oc-secondary-container': navItem.active }"
               appearance="raw"
               variation="passive"
             >

@@ -20,7 +20,7 @@
             id="create-user-btn"
             v-oc-tooltip="limitedScreenSpace ? createUserAction.label() : undefined"
             class="oc-mr-s"
-            variation="primary"
+            color-role="secondary"
             appearance="filled"
             @click="createUserAction.handler()"
           >

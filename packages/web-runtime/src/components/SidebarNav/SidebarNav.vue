@@ -169,6 +169,7 @@ export default defineComponent({
 #nav-highlighter {
   position: absolute;
   border-radius: 5px;
+  background: var(--oc-role-secondary-container);
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
   background: var(--oc-color-swatch-inverse-default);
   color: var(--oc-color-swatch-inverse-contrast);
@@ -178,7 +179,8 @@ export default defineComponent({
 }
 
 #web-nav-sidebar {
-  background-color: var(--oc-color-background-sidebar);
+  background-color: var(--oc-role-surface);
+  border-right: 1px solid var(--oc-role-surface-container);
   border-radius: 15px 0 0 15px;
   display: flex;
   flex-direction: column;

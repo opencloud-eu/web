@@ -15,6 +15,7 @@
   <oc-button
     v-else
     appearance="raw"
+    color-role="secondary"
     class="oc-p-s action-menu-item"
     :class="option.class"
     :type="option.to ? 'router-link' : 'button'"

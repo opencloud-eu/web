@@ -8,6 +8,7 @@
         isLocked ? dropButtonTooltip : $gettext('Open context menu with share editing options')
       "
       appearance="raw"
+      color-role="secondary"
       :disabled="isLocked"
     >
       <oc-icon name="more-2" />

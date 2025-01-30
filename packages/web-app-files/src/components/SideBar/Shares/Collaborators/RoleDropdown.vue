@@ -9,6 +9,7 @@
         :id="roleButtonId"
         class="files-recipient-role-select-btn"
         appearance="raw"
+        color-role="secondary"
         gap-size="none"
         :disabled="isLocked"
         :aria-label="
@@ -47,11 +48,10 @@
             justify-content="space-between"
             class="files-recipient-role-drop-btn oc-p-s"
             :class="{
-              'oc-background-highlight': isSelectedRole(role),
               selected: isSelectedRole(role)
             }"
-            appearance="raw"
-            variation="passive"
+            :appearance="isSelectedRole(role) ? 'filled' : 'raw-inverse'"
+            :color-role="isSelectedRole(role) ? 'secondaryContainer' : 'surface'"
             @click="selectRole(role)"
           >
             <span class="oc-flex oc-flex-middle">
@@ -327,7 +327,6 @@ export default defineComponent({
 
       &:hover,
       &:focus {
-        background-color: var(--oc-color-background-hover);
         text-decoration: none;
       }
     }

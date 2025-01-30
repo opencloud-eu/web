@@ -39,9 +39,9 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn oc-mr-l"
+      class="mobile-search-btn oc-mr-l no-hover"
       appearance="raw-inverse"
-      variation="primary"
+      color-role="chrome"
       @click="showSearchBar"
     >
       <oc-icon name="search" fill-type="line"></oc-icon>
@@ -532,7 +532,7 @@ export default defineComponent({
   }
 
   .oc-search-input {
-    background-color: var(--oc-color-input-bg);
+    background-color: var(--oc-role-surface);
     transition: 0s;
     height: 2.3rem;
 

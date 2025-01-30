@@ -1,7 +1,7 @@
 <template>
   <div id="user-edit-panel" class="oc-mt-xl">
     <UserInfoBox :user="user" />
-    <form id="user-edit-form" class="oc-background-highlight oc-p-m" autocomplete="off">
+    <form id="user-edit-form" class="oc-surface-container oc-p-m" autocomplete="off">
       <div>
         <oc-text-input
           id="userName-input"
