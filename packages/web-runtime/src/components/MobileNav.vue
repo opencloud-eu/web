@@ -24,7 +24,7 @@
             variation="passive"
             :to="item.route"
             class="oc-display-block oc-p-s"
-            :class="{ 'oc-background-highlight router-link-active': item.active }"
+            :class="{ 'oc-secondary-container router-link-active': item.active }"
           >
             <span class="oc-flex">
               <oc-icon :name="item.icon" variation="inherit" />

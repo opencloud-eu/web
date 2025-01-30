@@ -44,8 +44,8 @@ $form-padding-vertical: var(--oc-space-xsmall) !default;
 $form-background: var(--oc-color-background-muted) !default;
 $form-color: var(--oc-color-text-default) !default;
 
-$form-focus-background: var(--oc-color-background-default) !default;
-$form-focus-color: var(--oc-color-text-default) !default;
+$form-focus-background: var(--oc-role-surface) !default;
+$form-focus-color: var(--oc-role-on-surface) !default;
 
 $form-disabled-background: var(--oc-color-background-muted) !default;
 $form-disabled-color: var(--oc-color-text-muted) !default;

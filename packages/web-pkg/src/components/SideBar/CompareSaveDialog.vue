@@ -88,7 +88,6 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .compare-save-dialog {
-  background: var(--oc-color-background-highlight);
   flex-flow: row wrap;
 }
 .state-indicator {

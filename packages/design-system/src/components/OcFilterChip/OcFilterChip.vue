@@ -7,14 +7,14 @@
       :id="id"
       class="oc-filter-chip-button oc-pill"
       :class="{ 'oc-filter-chip-button-selected': filterActive }"
-      appearance="raw"
+      appearance="raw-inverse"
+      color-role="surface"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
         :class="filterActive ? 'oc-filter-check-icon-active' : 'oc-filter-check-icon-inactive'"
         name="check"
         size="small"
-        color="var(--oc-color-text-inverse)"
       />
       <span
         class="oc-text-truncate oc-filter-chip-label"
@@ -44,7 +44,7 @@
       :aria-label="$gettext('Clear filter')"
       @click="emit('clearFilter')"
     >
-      <oc-icon name="close" size="small" color="var(--oc-color-text-inverse)" />
+      <oc-icon name="close" size="small" />
     </oc-button>
   </div>
 </template>
@@ -148,9 +148,7 @@ defineExpose({ hideDrop })
 .oc-filter-chip {
   &-button.oc-pill {
     align-items: center;
-    background-color: var(--oc-color-background-default) !important;
-    color: var(--oc-color-text-muted) !important;
-    border: 1px solid var(--oc-color-text-muted);
+    border: 1px solid var(--oc-role-outline);
     box-sizing: border-box;
     display: inline-flex;
     gap: var(--oc-space-xsmall);
@@ -163,8 +161,8 @@ defineExpose({ hideDrop })
   }
   &-button-selected.oc-pill,
   &-button-selected.oc-pill:hover {
-    background-color: var(--oc-color-swatch-passive-default) !important;
-    color: var(--oc-color-text-inverse) !important;
+    background-color: var(--oc-role-secondary-container) !important;
+    color: var(--oc-role-on-secondary-container) !important;
     border-top-left-radius: 99px !important;
     border-bottom-left-radius: 99px !important;
     border-top-right-radius: 0px !important;
@@ -173,8 +171,8 @@ defineExpose({ hideDrop })
   }
   &-clear,
   &-clear:hover {
-    background-color: var(--oc-color-swatch-passive-default) !important;
-    color: var(--oc-color-text-inverse) !important;
+    background-color: var(--oc-role-secondary-container) !important;
+    color: var(--oc-role-on-secondary-container) !important;
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     border-top-right-radius: 99px !important;
@@ -198,7 +196,7 @@ defineExpose({ hideDrop })
 .oc-filter-check-icon-inactive {
   transition: all 0.25 ease-in;
   transform: scale(0) !important;
-  width: 0px !important;
+  width: 0 !important;
 }
 
 // the focussed button needs to stay above the other to correctly display the focus outline

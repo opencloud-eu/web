@@ -65,7 +65,7 @@ const toggle = () => {
     width: 31px;
 
     &::before {
-      background-color: var(--oc-color-swatch-inverse-hover);
+      background-color: var(--oc-role-on-secondary-container);
       box-shadow: rgb(0 0 0 / 25%) 0px 0px 2px 1px;
       border-radius: 50%;
       content: '';
@@ -78,7 +78,7 @@ const toggle = () => {
     }
 
     &[aria-checked='false'] {
-      background-color: var(--oc-color-swatch-inverse-muted);
+      background-color: var(--oc-role-surface-container-highest);
 
       &::before {
         transform: translateX(0);
@@ -87,7 +87,7 @@ const toggle = () => {
     }
 
     &[aria-checked='true'] {
-      background-color: var(--oc-color-swatch-primary-default);
+      background-color: var(--oc-role-secondary-container);
 
       &::before {
         transform: translateX(calc(100% + 2px));

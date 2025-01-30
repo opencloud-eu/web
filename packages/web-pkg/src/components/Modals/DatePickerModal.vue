@@ -12,7 +12,7 @@
     <oc-button
       class="oc-modal-body-actions-cancel oc-ml-s"
       appearance="outline"
-      variation="passive"
+      colro-role="secondary"
       @click="$emit('cancel')"
       >{{ $gettext('Cancel') }}
     </oc-button>
@@ -20,7 +20,7 @@
       :disabled="confirmDisabled"
       class="oc-modal-body-actions-confirm oc-ml-s"
       appearance="filled"
-      variation="primary"
+      colro-role="secondary"
       @click="$emit('confirm', dateTime)"
       >{{ $gettext('Confirm') }}
     </oc-button>

@@ -57,7 +57,7 @@
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
-              variation="passive"
+              color-role="secondary"
               appearance="outline"
               :disabled="isLoading"
               @click="cancelModalAction"
@@ -66,7 +66,7 @@
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm oc-ml-s"
-              variation="primary"
+              color-role="secondary"
               :appearance="buttonConfirmAppearance"
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
@@ -349,8 +349,9 @@ export default {
 }
 
 .oc-modal {
-  background-color: var(--oc-color-background-default);
-  border-radius: 5px;
+  background-color: var(--oc-role-surface);
+  border: 1px solid var(--oc-role-outline);
+  border-radius: 15px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   max-width: 500px;
@@ -413,7 +414,7 @@ export default {
   }
 
   &-body {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
     line-height: 1.625;
     padding: var(--oc-space-medium) var(--oc-space-medium) 0;
 
@@ -442,7 +443,6 @@ export default {
 
     &-actions {
       text-align: right;
-      background: var(--oc-color-background-default);
       border-bottom-right-radius: 15px;
       border-bottom-left-radius: 15px;
       padding: var(--oc-space-medium);

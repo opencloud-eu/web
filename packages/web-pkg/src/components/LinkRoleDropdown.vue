@@ -31,7 +31,7 @@
           :id="`files-role-${getLinkRoleByType(type).id}`"
           :class="{
             selected: isSelectedType(type),
-            'oc-background-highlight': isSelectedType(type)
+            'oc-secondary-container': isSelectedType(type)
           }"
           appearance="raw"
           variation="passive"

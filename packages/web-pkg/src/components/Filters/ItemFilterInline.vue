@@ -7,7 +7,8 @@
         :key="index"
         class="item-inline-filter-option"
         :class="{ 'item-inline-filter-option-selected': activeOption === option.name }"
-        appearance="raw"
+        appearance="raw-inverse"
+        color-role="surface"
         @click="toggleFilter(option)"
       >
         <span class="oc-text-truncate item-inline-filter-option-label" v-text="option.label" />
@@ -80,7 +81,7 @@ export default defineComponent({
 <style lang="scss">
 .item-inline-filter {
   border-radius: 99px;
-  border: 1px solid var(--oc-color-text-muted);
+  border: 1px solid var(--oc-role-outline);
 
   button {
     text-decoration: none;
@@ -104,8 +105,8 @@ export default defineComponent({
   }
 
   &-option-selected {
-    background-color: var(--oc-color-swatch-passive-default) !important;
-    color: var(--oc-color-text-inverse) !important;
+    background-color: var(--oc-role-secondary-container) !important;
+    color: var(--oc-role-on-secondary-container) !important;
   }
 }
 </style>

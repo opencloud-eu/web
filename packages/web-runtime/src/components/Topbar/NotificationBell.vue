@@ -3,13 +3,15 @@
     id="oc-notifications-bell"
     v-oc-tooltip="notificationsLabel"
     appearance="raw-inverse"
-    variation="primary"
+    color-role="chrome"
+    class="no-hover"
     :aria-label="notificationsLabel"
   >
     <oc-icon
       class="oc-cursor-pointer oc-flex oc-flex-middle"
       name="notification-3"
       fill-type="line"
+      variation="inherit"
     />
     <span
       v-if="notificationCount"

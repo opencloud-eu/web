@@ -1,0 +1,92 @@
+---
+role:
+  primary:
+    value: '#715289'
+  onPrimary:
+    value: '#FFFFFF'
+  primaryContainer:
+    value: '#F2DAFF'
+  onPrimaryContainer:
+    value: '#2A0C41'
+  primaryFixed:
+    value: '#F2DAFF'
+  onPrimaryFixed:
+    value: '#2A0C41'
+  secondary:
+    value: '#665A6E'
+  onSecondary:
+    value: '#FFFFFF'
+  secondaryContainer:
+    value: '#EEDDF6'
+  onSecondaryContainer:
+    value: '#211829'
+  secondaryFixed:
+    value: '#B7EAFF'
+  onSecondaryFixed:
+    value: '#001F28'
+  tertiary:
+    value: '#815156'
+  onTertiary:
+    value: '#FFFFFF'
+  tertiaryContainer:
+    value: '#FFDADB'
+  onTertiaryContainer:
+    value: '#321015'
+  tertiaryFixed:
+    value: '#FFDADB'
+  onTertiaryFixed:
+    value: '#321015'
+  error:
+    value: '#BA1A1A'
+  onError:
+    value: '#FFFFFF'
+  errorContainer:
+    value: '#FFDAD6'
+  onErrorContainer:
+    value: '#410002'
+  background:
+    value: '#FFF7FD'
+  onBackground:
+    value: '#1E1A20'
+  surface:
+    value: '#FFF7FD'
+  onSurface:
+    value: '#1E1A20'
+  surfaceVariant:
+    value: '#E9DFEA'
+  onSurfaceVariant:
+    value: '#4B454D'
+  outline:
+    value: '#7C757E'
+  outlineVariant:
+    value: '#CDC3CE'
+  shadow:
+    value: '#000000'
+  scrim:
+    value: '#000000'
+  inverseSurface:
+    value: '#332F35'
+  inverseOnSurface:
+    value: '#F7EEF6'
+  inversePrimary:
+    value: '#DDB9F7'
+  surfaceDim:
+    value: '#E0D8DF'
+  surfaceBright:
+    value: '#FFF7FD'
+  surfaceTint:
+    value: '#715289'
+  surfaceContainerLowest:
+    value: '#FFFFFF'
+  surfaceContainerLow:
+    value: '#FAF1F9'
+  surfaceContainer:
+    value: '#F4EBF3'
+  surfaceContainerHigh:
+    value: '#EEE6ED'
+  surfaceContainerHighest:
+    value: '#E8E0E8'
+  chrome:
+    value: '#20434f'
+  onChrome:
+    value: '#ffffff'

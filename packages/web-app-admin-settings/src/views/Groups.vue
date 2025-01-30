@@ -19,7 +19,7 @@
             id="create-group-btn"
             v-oc-tooltip="limitedScreenSpace ? createGroupAction.label() : undefined"
             class="oc-mr-s"
-            variation="primary"
+            color-role="secondary"
             appearance="filled"
             @click="createGroupAction.handler()"
           >

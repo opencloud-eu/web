@@ -140,7 +140,7 @@ body {
 }
 
 #web {
-  background-color: var(--oc-color-background-chrome);
+  background-color: var(--oc-role-chrome);
   height: 100vh;
   max-height: 100vh;
   overflow-y: hidden;

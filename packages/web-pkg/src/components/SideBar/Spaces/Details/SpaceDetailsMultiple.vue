@@ -2,7 +2,7 @@
   <div id="oc-spaces-details-multiple-sidebar">
     <div class="spaces-preview oc-mb">
       <div class="spaces-preview-body">
-        <oc-icon class="preview-icon" size="xxlarge" variation="passive" name="layout-grid" />
+        <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
       </div>
     </div>

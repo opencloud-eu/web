@@ -501,22 +501,15 @@ const handleSort = (field: FieldType) => {
   }
 
   tr + tr {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 1px solid var(--oc-role-outline-variant);
   }
 
   &-hover tr:not(&-footer-row):hover {
-    background-color: var(--oc-color-background-hover);
-  }
-
-  &-hover
-    tr:hover
-    td:not(:last-child)
-    span:not(.avatarInitials):not(button span):not(.oc-table-highlighted span) {
-    color: var(--oc-color-swatch-brand-contrast) !important;
+    background-color: var(--oc-role-surface-container);
   }
 
   &-highlighted {
-    background-color: var(--oc-color-background-highlight) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &-accentuated {
@@ -534,7 +527,6 @@ const handleSort = (field: FieldType) => {
     position: relative;
 
     .oc-table-header-cell {
-      background-color: var(--oc-color-background-default);
       position: sticky;
       z-index: 1;
     }
@@ -554,7 +546,7 @@ const handleSort = (field: FieldType) => {
   }
 
   &-footer {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 1px solid var(--oc-role-outline-variant);
 
     &-cell {
       color: var(--oc-color-text-muted);
@@ -569,7 +561,7 @@ const handleSort = (field: FieldType) => {
   justify-content: start;
   .oc-icon {
     &:hover {
-      background-color: var(--oc-color-background-hover);
+      background-color: var(--oc-role-surface-container);
     }
   }
 }

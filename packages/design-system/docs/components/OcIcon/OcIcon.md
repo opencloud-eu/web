@@ -32,25 +32,6 @@ The basic usage of the component needs the icon `name` property.
 
 :::
 
-### Variations
-
-The available variations are: `passive`, `primary`, `danger`, `success`, `warning`, `brand`, `inherit` and `info`.
-
-::: livecode
-
-```html
-<oc-icon name="check" variation="passive" />
-<oc-icon name="check" variation="primary" />
-<oc-icon name="check" variation="danger" />
-<oc-icon name="check" variation="success" />
-<oc-icon name="check" variation="warning" />
-<oc-icon name="check" variation="brand" />
-<oc-icon name="check" variation="inherit" />
-<oc-icon name="check" variation="info" />
-```
-
-:::
-
 ### Fill types
 
 The available fill types are: `fill`, `line` and `none`.

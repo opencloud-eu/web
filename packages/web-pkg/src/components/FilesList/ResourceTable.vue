@@ -1253,7 +1253,7 @@ export default defineComponent({
 
     &:hover > .resource-table-edit-name {
       svg {
-        fill: var(--oc-color-text-default);
+        fill: var(--oc-role-on-surface);
       }
     }
   }

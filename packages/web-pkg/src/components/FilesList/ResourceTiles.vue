@@ -686,11 +686,11 @@ export default defineComponent({
     }
 
     &-item-active {
-      background-color: var(--oc-color-background-highlight) !important;
+      background-color: var(--oc-role-secondary-container) !important;
     }
 
     &-item:hover:not(&-item-active) {
-      background-color: var(--oc-color-background-hover) !important;
+      background-color: var(--oc-role-surface-container) !important;
     }
   }
 }

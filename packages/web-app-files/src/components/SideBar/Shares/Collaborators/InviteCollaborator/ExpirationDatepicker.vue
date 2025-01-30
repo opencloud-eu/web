@@ -4,6 +4,7 @@
       data-testid="recipient-datepicker-btn"
       class="files-collaborators-expiration-button oc-p-s action-menu-item"
       appearance="raw"
+      color-role="secondary"
       gap-size="none"
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
       @click="showDatePickerModal"
@@ -21,6 +22,7 @@
     v-if="dateCurrent"
     class="recipient-edit-expiration-btn-remove oc-p-s action-menu-item"
     appearance="raw"
+    color-role="secondary"
     :aria-label="$gettext('Remove expiration date')"
     @click="dateCurrent = null"
   >

@@ -10,6 +10,10 @@ const options = {
       'background-default': '#ef23ab',
       'swatch-brand-default': '#00FFFF'
     },
+    colorRoles: {
+      primary: '#715289',
+      onPrimary: '#FFFFFF'
+    },
     fontSizes: {
       default: '1.358rem'
     },

@@ -1,12 +1,7 @@
 <template>
   <component
     :is="type"
-    :class="[
-      { 'oc-button-reset': type === 'button' },
-      'oc-icon',
-      sizeClass(size),
-      variationClass(variation)
-    ]"
+    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size)]"
   >
     <inline-svg
       :src="nameWithFillType"
@@ -55,19 +50,6 @@ export interface Props {
    * @default span
    */
   type?: string
-  /**
-   * @docs Variation of the icon.
-   * @default passive
-   */
-  variation?:
-    | 'passive'
-    | 'primary'
-    | 'danger'
-    | 'success'
-    | 'warning'
-    | 'brand'
-    | 'inherit'
-    | 'info'
 }
 
 export interface Emits {
@@ -83,8 +65,7 @@ const {
   fillType = 'fill',
   name = 'info',
   size = 'medium',
-  type = 'span',
-  variation = 'passive'
+  type = 'span'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -102,10 +83,6 @@ const nameWithFillType = computed(() => {
 
 const sizeClass = (c: string) => {
   return prefix(getSizeClass(c))
-}
-
-const variationClass = (c: string) => {
-  return prefix(c)
 }
 
 const prefix = (string: string) => {
@@ -194,30 +171,6 @@ const transformSvgElement = (svg: SVGElement) => {
     > svg {
       @include oc-icon-size(8);
     }
-  }
-
-  &-primary > svg {
-    fill: var(--oc-color-swatch-primary-default);
-  }
-
-  &-passive > svg {
-    fill: var(--oc-color-swatch-passive-default);
-  }
-
-  &-warning > svg {
-    fill: var(--oc-color-swatch-warning-default);
-  }
-
-  &-success > svg {
-    fill: var(--oc-color-swatch-success-default);
-  }
-
-  &-danger > svg {
-    fill: var(--oc-color-swatch-danger-default);
-  }
-
-  &-brand > svg {
-    fill: var(--oc-color-swatch-brand-default);
   }
 }
 </style>
