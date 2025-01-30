@@ -394,8 +394,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .details-preview,
 .details-icon-wrapper {
-  background-color: var(--oc-color-background-muted);
-  border: 10px solid var(--oc-color-background-muted);
+  background-color: var(--oc-role-surface-container-high);
+  border: 10px solid var(--oc-role-surface-container-high);
+  padding: 10px;
   height: 230px;
 
   background-size: contain;

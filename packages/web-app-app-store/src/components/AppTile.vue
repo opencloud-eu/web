@@ -60,7 +60,7 @@ export default defineComponent({
 <style lang="scss">
 .app-tile {
   overflow: hidden;
-  background-color: var(--oc-color-background-highlight) !important;
+  background-color: var(--oc-role-secondary-container) !important;
   box-shadow: none;
   height: 100%;
   display: flex;

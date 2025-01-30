@@ -70,7 +70,7 @@
                 size="medium"
                 justify-content="space-between"
                 class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-                :class="{ 'oc-background-highlight': option.id === currentShareRoleType.id }"
+                :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
                 @click="selectShareRoleType(option)"
               >
                 <span>{{ option.longLabel }}</span>
@@ -131,7 +131,7 @@
           key="new-collaborator-save-button"
           data-testid="new-collaborators-form-create-button"
           :disabled="!$_isValid || saving"
-          :variation="saving ? 'passive' : 'primary'"
+          color-role="secondary"
           :appearance="saving ? 'outline' : 'filled'"
           submit="submit"
           :show-spinner="savingDelayed"
@@ -646,10 +646,6 @@ export default defineComponent({
 
       &:first-child {
         margin-top: 0;
-      }
-
-      &:hover:not(.oc-background-highlight) {
-        background-color: var(--oc-color-background-hover) !important;
       }
     }
 

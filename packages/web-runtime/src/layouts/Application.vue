@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
 
     .app-container {
       height: 100%;
-      background-color: var(--oc-color-background-default);
+      background-color: var(--oc-role-surface);
       border-radius: 15px;
       overflow: hidden;
       width: 100%;

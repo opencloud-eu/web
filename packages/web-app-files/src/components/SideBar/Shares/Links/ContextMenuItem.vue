@@ -1,6 +1,7 @@
 <template>
   <oc-button
     appearance="raw"
+    color-role="secondary"
     class="oc-p-s action-menu-item"
     :type="option.to ? 'router-link' : 'button'"
     :to="option.to"

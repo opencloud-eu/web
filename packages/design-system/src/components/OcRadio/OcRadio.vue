@@ -98,7 +98,7 @@ const labelClasses = computed(() => ({
   }
 
   &:checked {
-    background-color: var(--oc-color-background-highlight) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &.oc-radio-s {

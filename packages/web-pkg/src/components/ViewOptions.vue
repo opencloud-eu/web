@@ -8,8 +8,9 @@
         v-for="viewMode in viewModes"
         :key="viewMode.name"
         v-oc-tooltip="$gettext(viewMode.label)"
-        :class="viewMode.name"
+        :class="[{ 'no-hover': viewModeCurrent === viewMode.name }, [viewMode.name]]"
         :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'outline'"
+        :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
         :aria-label="$gettext(viewMode.label)"
         @click="setViewMode(viewMode)"
       >
@@ -27,6 +28,7 @@
       v-oc-tooltip="viewOptionsButtonLabel"
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
+      color-role="secondary"
       appearance="raw"
       class="oc-my-s oc-p-xs"
     >
@@ -279,7 +281,6 @@ export default defineComponent({
   vertical-align: middle;
   border: 3px solid transparent;
   &:hover {
-    background-color: var(--oc-color-background-hover);
     border-radius: 3px;
   }
 }
@@ -301,13 +302,10 @@ export default defineComponent({
 
 .oc-range {
   -webkit-appearance: none;
-  -webkit-transition: 0.2s;
   border-radius: 0.3rem;
-  background: var(--oc-color-border);
+  background: var(--oc-role-secondary-container);
   height: 0.5rem;
-  opacity: 0.7;
   outline: none;
-  transition: opacity 0.2s;
   width: 100%;
   max-width: 50%;
 
@@ -318,7 +316,7 @@ export default defineComponent({
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    background: var(--oc-color-swatch-primary-default);
+    background: var(--oc-role-on-secondary-container);
     border-radius: 50%;
     cursor: pointer;
     height: 1rem;
@@ -326,7 +324,7 @@ export default defineComponent({
   }
 
   &::-moz-range-thumb {
-    background: var(--oc-color-swatch-primary-default);
+    background: var(--oc-role-on-secondary-container);
     border-radius: 50%;
     cursor: pointer;
     height: 1rem;

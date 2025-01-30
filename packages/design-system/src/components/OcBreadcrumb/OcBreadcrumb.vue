@@ -61,7 +61,7 @@
         />
         <oc-icon
           v-if="index !== displayItems.length - 1"
-          color="var(--oc-color-text-default)"
+          color="var(--oc-role-on-surface)"
           name="arrow-right-s"
           class="oc-mx-xs"
           fill-type="line"
@@ -73,7 +73,7 @@
             :aria-label="contextMenuLabel"
             appearance="raw"
           >
-            <oc-icon name="more-2" color="var(--oc-color-text-default)" />
+            <oc-icon name="more-2" color="var(--oc-role-on-surface)" />
           </oc-button>
           <oc-drop
             drop-id="oc-breadcrumb-contextmenu"
@@ -356,12 +356,12 @@ const dropItemStyling = (
     }
 
     > :nth-child(n + 2)::before {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
       display: inline-block;
     }
 
     > :last-child > span {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
     }
   }
 
@@ -371,7 +371,7 @@ const dropItemStyling = (
     button:first-of-type,
     span:first-of-type {
       font-size: var(--oc-font-size-medium);
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
       display: inline-block;
       vertical-align: sub;
       line-height: normal;

@@ -5,7 +5,7 @@
     v-oc-tooltip="showLabel ? undefined : $gettext('New space')"
     :aria-label="showLabel ? undefined : $gettext('New space')"
     appearance="filled"
-    variation="primary"
+    color-role="secondary"
     @click="showCreateSpaceModal"
   >
     <oc-icon name="add" />

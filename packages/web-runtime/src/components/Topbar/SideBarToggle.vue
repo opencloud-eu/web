@@ -4,11 +4,11 @@
     v-oc-tooltip="buttonLabel"
     :aria-label="buttonLabel"
     appearance="raw-inverse"
-    variation="primary"
-    class="oc-my-s"
+    color-role="chrome"
+    class="oc-my-s no-hover"
     @click.stop="toggleSideBar"
   >
-    <oc-icon name="side-bar-right" :fill-type="buttonIconFillType" />
+    <oc-icon name="side-bar-right" variation="inherit" :fill-type="buttonIconFillType" />
   </oc-button>
 </template>
 
