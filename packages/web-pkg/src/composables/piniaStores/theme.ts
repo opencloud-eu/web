@@ -6,30 +6,25 @@ import { z } from 'zod'
 import { applyCustomProp } from '@opencloud-eu/design-system/helpers'
 import { ShareRole } from '@opencloud-eu/web-client'
 
-const AppBanner = z.object({
-  title: z.string().optional(),
-  publisher: z.string().optional(),
-  additionalInformation: z.string().optional(),
-  ctaText: z.string().optional(),
-  icon: z.string().optional(),
-  appScheme: z.string().optional()
-})
-
 const CommonSection = z.object({
-  name: z.string(),
-  slogan: z.string(),
-  logo: z.string(),
-  urls: z.object({
-    accessDeniedHelp: z.string(),
-    imprint: z.string(),
-    privacy: z.string()
-  }),
-  shareRoles: z.record(
-    z.string(),
-    z.object({
-      iconName: z.string()
+  name: z.string().optional(),
+  slogan: z.string().optional(),
+  logo: z.string().optional(),
+  urls: z
+    .object({
+      accessDeniedHelp: z.string(),
+      imprint: z.string(),
+      privacy: z.string()
     })
-  )
+    .optional(),
+  shareRoles: z
+    .record(
+      z.string(),
+      z.object({
+        iconName: z.string()
+      })
+    )
+    .optional()
 })
 
 const DesignTokens = z.object({
@@ -41,41 +36,23 @@ const DesignTokens = z.object({
   spacing: z.record(z.string()).optional()
 })
 
-const LoginPage = z.object({
-  backgroundImg: z.string()
-})
-
-const Logo = z.object({
-  topbar: z.string(),
-  favicon: z.string(),
-  login: z.string(),
-  notFound: z.string().optional()
-})
-
-const ThemeDefaults = z.object({
-  appBanner: AppBanner.optional(),
-  common: CommonSection.optional(),
-  designTokens: DesignTokens,
-  loginPage: LoginPage,
-  logo: Logo
-})
-
-const WebTheme = z.object({
-  appBanner: AppBanner.optional(),
-  common: CommonSection.optional(),
+const WebDefaults = CommonSection.extend({
   designTokens: DesignTokens.optional(),
+  favicon: z.string().optional(),
+  background: z.string().optional()
+})
+
+const WebTheme = WebDefaults.extend({
   isDark: z.boolean(),
-  name: z.string(),
-  loginPage: LoginPage.optional(),
-  logo: Logo.optional()
+  label: z.string()
 })
 
 export const WebThemeConfig = z.object({
-  defaults: ThemeDefaults,
+  defaults: WebDefaults,
   themes: z.array(WebTheme)
 })
 
-export const ThemingConfig = z.object({
+export const ThemeConfig = z.object({
   common: CommonSection.optional(),
   clients: z.object({
     web: WebThemeConfig
@@ -83,8 +60,7 @@ export const ThemingConfig = z.object({
 })
 
 export type WebThemeType = z.infer<typeof WebTheme>
-export type WebThemeConfigType = z.infer<typeof WebThemeConfig>
-export type ThemingConfigType = z.infer<typeof ThemingConfig>
+export type ThemeConfigType = z.infer<typeof ThemeConfig>
 
 const themeStorageKey = 'oc_currentThemeName'
 
@@ -97,8 +73,11 @@ export const useThemeStore = defineStore('theme', () => {
 
   const availableThemes = ref<WebThemeType[]>([])
 
-  const initializeThemes = (themeConfig: WebThemeConfigType) => {
-    availableThemes.value = themeConfig.themes.map((theme) => merge(themeConfig.defaults, theme))
+  const initializeThemes = (themeConfig: ThemeConfigType) => {
+    const baseTheme = merge(themeConfig.common, themeConfig.clients.web.defaults)
+    availableThemes.value = themeConfig.clients.web.themes.map((theme) => {
+      return merge(baseTheme, theme)
+    })
     setThemeFromStorageOrSystem()
   }
 
@@ -149,7 +128,7 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   const getRoleIcon = (role: ShareRole) => {
-    return unref(currentTheme).common?.shareRoles[role.id]?.iconName || 'user'
+    return unref(currentTheme).shareRoles[role.id]?.iconName || 'user'
   }
 
   return {

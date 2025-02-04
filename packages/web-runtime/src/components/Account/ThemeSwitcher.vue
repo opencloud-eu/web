@@ -6,7 +6,7 @@
       :label-hidden="true"
       :clearable="false"
       :options="availableThemesAndAuto"
-      option-label="name"
+      option-label="label"
       @update:model-value="updateTheme"
     />
   </div>
@@ -22,7 +22,7 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const { showMessage } = useMessages()
     const { $gettext } = useGettext()
-    const autoTheme = computed(() => ({ name: $gettext('Auto (same as system)') }))
+    const autoTheme = computed(() => ({ label: $gettext('Auto (same as system)') }))
     const { availableThemes, currentTheme } = storeToRefs(themeStore)
     const currentThemeSelection = ref(null)
 

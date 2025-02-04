@@ -26,7 +26,7 @@
       </div>
       <div>
         <div class="logo-wrapper">
-          <img alt="" :src="currentTheme.logo.topbar" class="oc-p-xs" />
+          <img alt="" :src="currentTheme.logo" class="oc-p-xs" />
         </div>
         <input
           id="logo-upload-input"

@@ -291,7 +291,7 @@ export default defineComponent({
       }
     })
 
-    const footerSlogan = computed(() => currentTheme.value.common.slogan)
+    const footerSlogan = computed(() => unref(currentTheme).slogan)
     const passwordFieldLabel = computed(() => {
       return $gettext('Enter password for public link')
     })

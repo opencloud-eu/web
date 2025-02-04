@@ -25,7 +25,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
+import { computed, defineComponent, onMounted, unref } from 'vue'
 import { useConfigStore, useModals, useThemeStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -64,8 +64,8 @@ export default defineComponent({
       }
     })
 
-    const footerSlogan = computed(() => currentTheme.value.common.slogan)
-    const logoImg = computed(() => currentTheme.value.logo.login)
+    const footerSlogan = computed(() => unref(currentTheme).slogan)
+    const logoImg = computed(() => unref(currentTheme).logo)
 
     onMounted(() => {
       removeAllModals()

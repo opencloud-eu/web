@@ -144,11 +144,9 @@ const getMountedWrapper = (
           piniaOptions: {
             themeState: {
               currentTheme: {
-                common: {
-                  urls: {
-                    privacy: areThemeUrlsSet ? 'https://privacy.url.theme' : '',
-                    imprint: areThemeUrlsSet ? 'https://imprint.url.theme' : ''
-                  }
+                urls: {
+                  privacy: areThemeUrlsSet ? 'https://privacy.url.theme' : '',
+                  imprint: areThemeUrlsSet ? 'https://imprint.url.theme' : ''
                 }
               }
             },

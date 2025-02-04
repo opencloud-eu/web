@@ -1,9 +1,9 @@
 import { loadTheme } from '../../../src/helpers/theme'
 import merge from 'lodash-es/merge'
-import { ThemingConfigType } from '@opencloud-eu/web-pkg'
+import { ThemeConfigType } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
 
-const themeConfig = mockDeep<ThemingConfigType>({
+const themeConfig = mockDeep<ThemeConfigType>({
   clients: {
     web: {
       themes: [

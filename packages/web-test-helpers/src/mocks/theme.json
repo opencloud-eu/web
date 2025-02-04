@@ -9,21 +9,17 @@
     "ios": {},
     "web": {
       "defaults": {
-        "appBanner": {},
-        "logo": {
-          "topbar": "themes/opencloud/assets/logo.svg",
-          "favicon": "themes/opencloud/assets/favicon.jpg",
-          "login": "themes/opencloud/assets/logo.svg"
-        }
+        "logo": "themes/opencloud/assets/logo.svg",
+        "favicon": "themes/opencloud/assets/favicon.jpg"
       },
       "themes": [
         {
           "isDark": false,
-          "name": "Light Theme"
+          "label": "Light Theme"
         },
         {
           "isDark": true,
-          "name": "Dark Theme"
+          "label": "Dark Theme"
         }
       ]
     }

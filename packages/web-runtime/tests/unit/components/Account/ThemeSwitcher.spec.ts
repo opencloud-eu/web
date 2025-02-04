@@ -1,26 +1,18 @@
-import { WebThemeType, useThemeStore, ThemingConfigType } from '@opencloud-eu/web-pkg'
+import { WebThemeType, useThemeStore, ThemeConfigType } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import ThemeSwitcher from '../../../../src/components/Account/ThemeSwitcher.vue'
 import { defaultPlugins, defaultStubs, mount } from '@opencloud-eu/web-test-helpers'
 
-const themeConfig = mockDeep<ThemingConfigType>({
+const themeConfig = mockDeep<ThemeConfigType>({
   clients: {
     web: {
       themes: [
-        { name: 'Light theme', isDark: false, designTokens: { fontFamily: 'OpenCloud' } },
-        { name: 'Dark theme', isDark: true, designTokens: { fontFamily: 'OpenCloud' } }
+        { label: 'Light theme', isDark: false, designTokens: { fontFamily: 'OpenCloud' } },
+        { label: 'Dark theme', isDark: true, designTokens: { fontFamily: 'OpenCloud' } }
       ]
     }
   }
 })
-
-const theme = {
-  defaults: {
-    ...themeConfig.clients.web.defaults,
-    common: themeConfig.common
-  },
-  themes: themeConfig.clients.web.themes
-}
 
 describe('ThemeSwitcher component', () => {
   describe('restores', () => {
@@ -28,7 +20,7 @@ describe('ThemeSwitcher component', () => {
       const { wrapper } = getWrapper({ hasOnlyOneTheme: false })
       const themeStore = useThemeStore()
       window.localStorage.setItem('oc_currentThemeName', 'Light Theme')
-      themeStore.initializeThemes(theme)
+      themeStore.initializeThemes(themeConfig)
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -36,7 +28,7 @@ describe('ThemeSwitcher component', () => {
       const { wrapper } = getWrapper()
       const themeStore = useThemeStore()
       window.localStorage.setItem('oc_currentThemeName', 'Dark Theme')
-      themeStore.initializeThemes(theme)
+      themeStore.initializeThemes(themeConfig)
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -58,8 +50,8 @@ function getWrapper({ hasOnlyOneTheme = false } = {}) {
               themeState: {
                 availableThemes,
                 currentTheme: mock<WebThemeType>({
-                  ...theme.defaults,
-                  ...theme.themes[0]
+                  ...themeConfig.clients.web.defaults,
+                  ...themeConfig.clients.web.themes[0]
                 })
               }
             }

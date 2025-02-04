@@ -149,8 +149,8 @@ export default defineComponent({
       authService.logoutUser()
     }
 
-    const imprintUrl = computed(() => themeStore.currentTheme.common.urls.imprint)
-    const privacyUrl = computed(() => themeStore.currentTheme.common.urls.privacy)
+    const imprintUrl = computed(() => themeStore.currentTheme.urls.imprint)
+    const privacyUrl = computed(() => themeStore.currentTheme.urls.privacy)
 
     const quota = computed(() => {
       return spacesStore.personalSpace?.spaceQuota

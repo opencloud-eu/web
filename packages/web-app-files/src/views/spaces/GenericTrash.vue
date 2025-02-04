@@ -1,6 +1,5 @@
 <template>
   <div class="oc-flex oc-width-1-1">
-    <app-banner :file-id="itemId?.toString() || ''" />
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -57,7 +56,7 @@
 <script lang="ts">
 import { storeToRefs } from 'pinia'
 
-import { AppBanner, AppBar, ContextActions, FileSideBar, useUserStore } from '@opencloud-eu/web-pkg'
+import { AppBar, ContextActions, FileSideBar, useUserStore } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { ResourceTable } from '@opencloud-eu/web-pkg'
@@ -78,7 +77,6 @@ export default defineComponent({
   name: 'GenericTrash',
 
   components: {
-    AppBanner,
     AppBar,
     AppLoadingSpinner,
     ContextActions,

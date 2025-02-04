@@ -9,7 +9,6 @@ export * from './Search'
 export * from './Spaces'
 export * from './TextEditor'
 
-export { default as AppBanner } from './AppBanner.vue'
 export { default as AppLoadingSpinner } from './AppLoadingSpinner.vue'
 export { default as AppTopBar } from './AppTopBar.vue'
 export { default as BatchActions } from './BatchActions.vue'

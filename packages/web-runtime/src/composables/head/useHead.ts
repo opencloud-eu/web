@@ -9,7 +9,7 @@ export const useHead = () => {
   const capabilityStore = useCapabilityStore()
   const { currentTheme } = storeToRefs(themeStore)
 
-  const favicon = computed(() => currentTheme.value.logo.favicon)
+  const favicon = computed(() => unref(currentTheme).favicon)
 
   _useHead(
     computed(() => {

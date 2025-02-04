@@ -56,7 +56,7 @@ export default defineComponent({
     const { getEditorRouteOpts } = useFileActions()
 
     const parentFolderRoute = router.resolve(props.parentFolderLink)
-    const iframeTitle = themeStore.currentTheme.common?.name
+    const iframeTitle = themeStore.currentTheme.name
     const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
     iframeUrl.searchParams.append('hide-logo', 'true')
     iframeUrl.searchParams.append('embed', 'true')

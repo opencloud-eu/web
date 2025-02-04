@@ -10,7 +10,7 @@
         :menu-items="appMenuExtensions"
       />
       <router-link v-if="!hideLogo" :to="homeLink" class="oc-width-1-1 oc-logo-href">
-        <oc-img :src="currentTheme.logo.topbar" :alt="sidebarLogoAlt" class="oc-logo-image" />
+        <oc-img :src="currentTheme.logo" :alt="sidebarLogoAlt" class="oc-logo-image" />
       </router-link>
     </div>
     <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
@@ -191,7 +191,7 @@ export default {
           width: image.width
         })
       }
-      image.src = this.currentTheme.logo.topbar
+      image.src = this.currentTheme.logo
     })) as { height: number; width: number }
     // max-height of logo is 38px, so we calculate the width based on the ratio of the image
     // and add 70px to account for the width of the left side of the topbar

@@ -82,18 +82,8 @@ The structure of a valid `web` client section is outlined below:
 {
   "web": {
     "defaults": {
-      "appBanner": {
-        // Please see below for details
-      },
-      "common": {
-        // Please see top level "common" section for details
-      },
-      "logo": {
-        // Please see below for details
-      },
-      "loginPage": {
-        // Please see below for details
-      },
+      "logo": "", // Please see below for details
+      "background": "", // Please see below for details
       "designTokens": {
         // Please see below for details
       }
@@ -109,42 +99,9 @@ The structure of a valid `web` client section is outlined below:
 
 Similar to the top level `common` section, this object contains information that shall be shared among the available themes and can/should be defined only once. The top level `common` section first gets merged into the `defaults`, which then get merged into the individual themes.
 
-##### The "appBanner" options
+##### The image options
 
-Configures a app banner that gets shown on mobile devices and suggests downloading the native client from the respective app store. Omitting the key disables the banner.
-
-Example structure:
-
-```json
-{
-  "appBanner": {
-    "title": "OpenCloud",
-    "publisher": "OpenCloud GmbH",
-    "additionalInformation": "",
-    "ctaText": "OPEN",
-    "icon": "themes/opencloud/assets/opencloud-app-icon.png",
-    "appScheme": "opencloud"
-  }
-}
-```
-
-- `title` is usually your app's name as shown in the App Store or Google Play. `publisher` is the app developer's name.
-- `additionalInformation` can be used to specify pricing information, such as "FREE" or a catchphrase like "Don't miss out on our awesome app!".
-- `ctaText` refers to the text in the call to action button on the right side. The `icon` directive may be used to specify your own app icon.
-- `icon` links the icon to be displayed as a preview for the final app icon within the app banner
-- `appScheme` is the first part of the URL that is used to tell the mobile OS which app to open, so using `opencloud` will generate links such as `opencloud://yourdomain.com/f/2b61b822...`.
-
-##### The "logo" options
-
-Here, you can specify the images to be used in the `"topbar"`, for the `"favicon"` and on the `"login"` page. Various formats are supported and it's up to you to decide which one fits your use case best.
-
-```json
-"logo": {
-  "topbar": "themes/opencloud/assets/logo.svg",
-  "favicon": "themes/opencloud/assets/favicon.ico",
-  "login": "themes/opencloud/assets/logo.svg"
-},
-```
+Specify a "logo" (e.g. for the top bar), "background" for plain layout pages like the access denied page, and a "favicon".
 
 ##### The "loginPage" options
 
@@ -431,14 +388,9 @@ A full template for your custom theme is provided below, and you can use the ins
     "ios": {},
     "web": {
       "defaults": {
-        "logo": {
-          "topbar": "themes/opencloud/assets/logo.svg",
-          "favicon": "themes/opencloud/assets/favicon.ico",
-          "login": "themes/opencloud/assets/logo.svg"
-        },
-        "loginPage": {
-          "backgroundImg": "themes/opencloud/assets/background.png"
-        },
+        "logo": "themes/opencloud/assets/logo.svg",
+        "favicon": "themes/opencloud/assets/favicon.ico",
+        "background": "themes/opencloud/assets/background.png",
         "designTokens": {
           "breakpoints": {
             "xsmall-max": "",
@@ -479,7 +431,7 @@ A full template for your custom theme is provided below, and you can use the ins
       "themes": [
         {
           "isDark": false,
-          "name": "Light Theme",
+          "label": "Light Theme",
           "designTokens": {
             "colorPalette": {
               "background-accentuate": "rgba(255, 255, 5, 0.1)",
@@ -540,7 +492,7 @@ A full template for your custom theme is provided below, and you can use the ins
         },
         {
           "isDark": true,
-          "name": "Dark Theme",
+          "label": "Dark Theme",
           "designTokens": {
             "colorPalette": {
               "background-accentuate": "#696969",

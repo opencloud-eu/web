@@ -26,7 +26,7 @@ export default defineComponent({
     const pageTitle = computed(() => {
       return $gettext(unref(title) || '')
     })
-    const backgroundImg = computed(() => currentTheme.value.loginPage.backgroundImg)
+    const backgroundImg = computed(() => unref(currentTheme).background)
 
     return {
       pageTitle,

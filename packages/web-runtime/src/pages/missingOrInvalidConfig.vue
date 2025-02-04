@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, unref } from 'vue'
 import { useThemeStore } from '@opencloud-eu/web-pkg'
 import { useHead } from '../composables/head'
 import { storeToRefs } from 'pinia'
@@ -27,8 +27,8 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const { currentTheme } = storeToRefs(themeStore)
 
-    const logoImg = computed(() => currentTheme.value?.logo?.login)
-    const footerSlogan = computed(() => currentTheme.value?.common?.slogan)
+    const logoImg = computed(() => unref(currentTheme)?.logo)
+    const footerSlogan = computed(() => unref(currentTheme)?.slogan)
 
     useHead()
 

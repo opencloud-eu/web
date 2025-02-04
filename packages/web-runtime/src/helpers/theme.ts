@@ -1,7 +1,7 @@
 import { v4 as uuidV4 } from 'uuid'
-import { ThemingConfig } from '@opencloud-eu/web-pkg'
+import { ThemeConfig, ThemeConfigType } from '@opencloud-eu/web-pkg'
 
-export const loadTheme = async (location = '') => {
+export const loadTheme = async (location = ''): Promise<ThemeConfigType> => {
   try {
     const response = await fetch(location, { headers: { 'X-Request-ID': uuidV4() } })
     if (!response.ok) {
@@ -9,15 +9,7 @@ export const loadTheme = async (location = '') => {
     }
 
     const theme = await response.json()
-    const parsedTheme = ThemingConfig.parse(theme)
-
-    return {
-      defaults: {
-        common: parsedTheme.common,
-        ...parsedTheme.clients.web.defaults
-      },
-      themes: parsedTheme.clients.web.themes
-    }
+    return ThemeConfig.parse(theme)
   } catch {
     console.error(`Failed to load theme '${location}'`)
   }

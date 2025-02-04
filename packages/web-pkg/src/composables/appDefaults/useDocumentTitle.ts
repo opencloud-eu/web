@@ -23,7 +23,7 @@ export function useDocumentTitle({ titleSegments, eventBus }: DocumentTitleOptio
       const glue = ' - '
       const payload = {
         shortDocumentTitle: titleSegments.join(glue),
-        fullDocumentTitle: [...titleSegments, currentTheme.value.common.name].join(glue)
+        fullDocumentTitle: [...titleSegments, unref(currentTheme).name].join(glue)
       }
 
       eventBus.publish('runtime.documentTitle.changed', payload)

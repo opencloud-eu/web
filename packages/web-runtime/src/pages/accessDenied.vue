@@ -54,9 +54,9 @@ export default defineComponent({
 
     const { $gettext } = useGettext()
 
-    const accessDeniedHelpUrl = computed(() => currentTheme.value.common.urls.accessDeniedHelp)
-    const footerSlogan = computed(() => currentTheme.value.common.slogan)
-    const logoImg = computed(() => currentTheme.value.logo.login)
+    const accessDeniedHelpUrl = computed(() => unref(currentTheme).urls.accessDeniedHelp)
+    const footerSlogan = computed(() => unref(currentTheme).slogan)
+    const logoImg = computed(() => unref(currentTheme).logo)
 
     const cardTitle = computed(() => {
       return $gettext('Not logged in')

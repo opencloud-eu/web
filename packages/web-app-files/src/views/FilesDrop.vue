@@ -107,7 +107,7 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
 
     const { currentTheme } = storeToRefs(themeStore)
-    const themeSlogan = computed(() => currentTheme.value.common.slogan)
+    const themeSlogan = computed(() => unref(currentTheme).slogan)
 
     const fileIdQueryItem = useRouteQuery('fileId')
     const fileId = computed(() => {

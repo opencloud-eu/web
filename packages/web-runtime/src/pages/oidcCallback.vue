@@ -32,8 +32,8 @@ export default defineComponent({
 
     const error = ref(false)
 
-    const footerSlogan = computed(() => unref(currentTheme)?.common.slogan)
-    const logoImg = computed(() => unref(currentTheme)?.logo.login)
+    const footerSlogan = computed(() => unref(currentTheme)?.slogan)
+    const logoImg = computed(() => unref(currentTheme)?.logo)
 
     const route = useRoute()
 
