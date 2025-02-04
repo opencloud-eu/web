@@ -305,7 +305,7 @@ Apart from the `defaults`, you need to provide one or more themes in the `themes
       "themes": [
         {
           "isDark": false,
-          "name": "Light Theme",
+          "label": "Light Theme",
         }
       ]
     }
@@ -317,12 +317,11 @@ Again, both the global `common` section as well as the `defaults` will get merge
 
 Required information
 
-- `name` for the visible name in the theme switcher and to save the current theme to localStorage
+- `label` for the visible label in the theme switcher and to save the current theme to localStorage
 - `isDark` to provide the user agent with additional information
 
 Optional information
 
-- `appBanner` see section above
 - `common` see section above
 - `designTokens` see section above
 - `logo` see section above
