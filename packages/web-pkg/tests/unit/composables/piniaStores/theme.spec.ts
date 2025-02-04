@@ -41,8 +41,8 @@ describe('useThemeStore', () => {
         const store = useThemeStore()
         store.initializeThemes(themeConfig)
 
-        expect(store.currentTheme.name).toEqual(
-          themeConfig.clients.web.themes.find((t) => t.isDark === isDark).name
+        expect(store.currentTheme.label).toEqual(
+          themeConfig.clients.web.themes.find((t) => t.isDark === isDark).label
         )
       })
       it('falls back to the first theme if no match for the OS setting is found', () => {
@@ -56,7 +56,7 @@ describe('useThemeStore', () => {
         const store = useThemeStore()
         store.initializeThemes(themeConfig)
 
-        expect(store.currentTheme.name).toEqual('light')
+        expect(store.currentTheme.label).toEqual('light')
       })
     })
   })

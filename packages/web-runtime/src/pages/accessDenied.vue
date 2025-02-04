@@ -54,7 +54,7 @@ export default defineComponent({
 
     const { $gettext } = useGettext()
 
-    const accessDeniedHelpUrl = computed(() => unref(currentTheme).urls.accessDeniedHelp)
+    const accessDeniedHelpUrl = computed(() => unref(currentTheme).urls?.accessDeniedHelp)
     const footerSlogan = computed(() => unref(currentTheme).slogan)
     const logoImg = computed(() => unref(currentTheme).logo)
 

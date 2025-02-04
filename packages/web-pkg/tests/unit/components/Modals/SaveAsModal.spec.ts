@@ -112,7 +112,10 @@ function getWrapper() {
       global: {
         plugins: [
           ...defaultPlugins({
-            piniaOptions: { spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] } }
+            piniaOptions: {
+              spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
+              themeState: { currentTheme: { name: 'OpenCloud' } }
+            }
           })
         ],
         mocks,

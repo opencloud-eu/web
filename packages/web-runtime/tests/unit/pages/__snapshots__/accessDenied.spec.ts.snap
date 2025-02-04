@@ -9,7 +9,7 @@ exports[`access denied page > renders component 1`] = `
       <!--v-if-->
     </div>
     <div class="oc-login-card-footer oc-pt-rm">
-      <p>Excellent file sharing</p>
+      <p></p>
     </div>
   </div> <a attrs="[object Object]" class="oc-button oc-rounded oc-button-l oc-button-justify-content-center oc-button-gap-m oc-button-primary oc-button-filled oc-button-primary-filled oc-mt-m oc-width-medium" id="exitAnchor"></a>
 </div>"
