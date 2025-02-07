@@ -74,7 +74,7 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-vue':
         specifier: 5.2.1
-        version: 5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
+        version: 5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
       '@vitest/coverage-v8':
         specifier: 2.1.5
         version: 2.1.5(vitest@2.1.9(@types/node@22.9.0)(happy-dom@15.11.6)(jsdom@25.0.1)(sass@1.81.0)(terser@5.36.0))
@@ -157,20 +157,20 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
       vite:
-        specifier: 6.0.9
-        version: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+        specifier: 6.1.0
+        version: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
       vite-plugin-environment:
         specifier: ^1.1.3
-        version: 1.1.3(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 1.1.3(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-node-polyfills:
         specifier: 0.22.0
-        version: 0.22.0(rollup@4.34.4)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 0.22.0(rollup@4.34.4)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-static-copy:
         specifier: ^2.0.0
-        version: 2.1.0(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 2.1.0(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-treat-umd-as-commonjs:
         specifier: 0.1.4
-        version: 0.1.4(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 0.1.4(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vitest:
         specifier: ^2.1.9
         version: 2.1.9(@types/node@22.9.0)(happy-dom@15.11.6)(jsdom@25.0.1)(sass@1.81.0)(terser@5.36.0)
@@ -279,7 +279,7 @@ importers:
         version: link:../web-test-helpers
       '@vitejs/plugin-vue':
         specifier: 5.2.1
-        version: 5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
+        version: 5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
       autoprefixer:
         specifier: 10.4.20
         version: 10.4.20(postcss@8.5.1)
@@ -399,13 +399,13 @@ importers:
         version: 4.1.1(file-loader@6.2.0(webpack@5.96.1))(webpack@5.96.1)
       vite:
         specifier: ^6.0.9
-        version: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+        version: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
       vite-plugin-dts:
         specifier: ^4.2.3
-        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-node-polyfills:
         specifier: ^0.22.0
-        version: 0.22.0(rollup@4.34.4)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 0.22.0(rollup@4.34.4)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vue-loader:
         specifier: ^17.4.2
         version: 17.4.2(@vue/compiler-sfc@3.5.13)(vue@3.5.13(typescript@5.6.3))(webpack@5.96.1)
@@ -481,7 +481,7 @@ importers:
     dependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.0
-        version: 5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
+        version: 5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
       rollup-plugin-serve:
         specifier: ^3.0.0
         version: 3.0.0
@@ -490,7 +490,7 @@ importers:
         version: 1.81.0
       vite:
         specifier: ^5 || ^6.0.0
-        version: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+        version: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
 
   packages/prettier-config:
     dependencies:
@@ -921,19 +921,19 @@ importers:
         version: 3.4.2
       '@vitejs/plugin-vue':
         specifier: 5.2.1
-        version: 5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
+        version: 5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
       clean-publish:
         specifier: 5.1.0
         version: 5.1.0
       vite:
-        specifier: 6.0.9
-        version: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+        specifier: 6.1.0
+        version: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
       vite-plugin-dts:
         specifier: 4.3.0
-        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-node-polyfills:
         specifier: 0.22.0
-        version: 0.22.0(rollup@4.34.4)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 0.22.0(rollup@4.34.4)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
     publishDirectory: package
 
   packages/web-pkg:
@@ -1067,10 +1067,10 @@ importers:
         version: 5.1.0
       vite-plugin-dts:
         specifier: 4.3.0
-        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
       vite-plugin-node-polyfills:
         specifier: 0.22.0
-        version: 0.22.0(rollup@4.34.4)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 0.22.0(rollup@4.34.4)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
     publishDirectory: package
 
   packages/web-runtime:
@@ -1241,16 +1241,16 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 5.2.1
-        version: 5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
+        version: 5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))
       clean-publish:
         specifier: ^5.0.0
         version: 5.1.0
       vite:
         specifier: ^6.0.9
-        version: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+        version: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
       vite-plugin-dts:
         specifier: ^4.2.3
-        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
+        version: 4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))
     publishDirectory: package
 
   tests/e2e:
@@ -8974,8 +8974,8 @@ packages:
       terser:
         optional: true
 
-  vite@6.0.9:
-    resolution: {integrity: sha512-MSgUxHcaXLtnBPktkbUSoQUANApKYuxZ6DrbVENlIorbhL2dZydTLaZ01tjUoE3szeFzlFk9ANOKk0xurh4MKA==}
+  vite@6.1.0:
+    resolution: {integrity: sha512-RjjMipCKVoR4hVfPY6GQTgveinjNuyLw+qruksLDvA5ktI1150VmcMBKmQaEWJhg/j6Uaf6dNCNA0AfdzUb/hQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -11437,9 +11437,9 @@ snapshots:
       '@uppy/core': 4.3.1
       '@uppy/utils': 6.0.6
 
-  '@vitejs/plugin-vue@5.2.1(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))':
+  '@vitejs/plugin-vue@5.2.1(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
       vue: 3.5.13(typescript@5.6.3)
 
   '@vitest/coverage-v8@2.1.5(vitest@2.1.9(@types/node@22.9.0)(happy-dom@15.11.6)(jsdom@25.0.1)(sass@1.81.0)(terser@5.36.0))':
@@ -17988,7 +17988,7 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-dts@4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
+  vite-plugin-dts@4.3.0(@types/node@22.9.0)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
     dependencies:
       '@microsoft/api-extractor': 7.47.11(@types/node@22.9.0)
       '@rollup/pluginutils': 5.1.3(rollup@4.34.4)
@@ -18001,36 +18001,36 @@ snapshots:
       magic-string: 0.30.17
       typescript: 5.6.3
     optionalDependencies:
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite-plugin-environment@1.1.3(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
+  vite-plugin-environment@1.1.3(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
     dependencies:
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
 
-  vite-plugin-node-polyfills@0.22.0(rollup@4.34.4)(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
+  vite-plugin-node-polyfills@0.22.0(rollup@4.34.4)(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.34.4)
       node-stdlib-browser: 1.2.0
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-static-copy@2.1.0(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
+  vite-plugin-static-copy@2.1.0(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
     dependencies:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       fs-extra: 11.2.0
       picocolors: 1.1.1
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
 
-  vite-plugin-treat-umd-as-commonjs@0.1.4(vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
+  vite-plugin-treat-umd-as-commonjs@0.1.4(vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)):
     dependencies:
       '@rollup/pluginutils': 4.2.1
-      vite: 6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
+      vite: 6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0)
 
   vite@5.4.14(@types/node@22.9.0)(sass@1.81.0)(terser@5.36.0):
     dependencies:
@@ -18043,7 +18043,7 @@ snapshots:
       sass: 1.81.0
       terser: 5.36.0
 
-  vite@6.0.9(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0):
+  vite@6.1.0(@types/node@22.9.0)(jiti@1.21.0)(sass@1.81.0)(terser@5.36.0)(yaml@2.6.0):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.5.1
