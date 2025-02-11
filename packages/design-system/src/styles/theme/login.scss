@@ -20,10 +20,9 @@
     bottom: -2vh;
     width: 20vw;
     height: 20vw;
-    z-index: 0;
 
     @media (max-width: 640px) {
-      display: none !important;
+      display: none;
     }
   }
 
