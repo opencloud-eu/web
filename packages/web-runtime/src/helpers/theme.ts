@@ -10,7 +10,7 @@ export const loadTheme = async (location = ''): Promise<ThemeConfigType> => {
 
     const theme = await response.json()
     return ThemeConfig.parse(theme)
-  } catch {
-    console.error(`Failed to load theme '${location}'`)
+  } catch (e) {
+    console.error(`Failed to load theme '${e}'`)
   }
 }
