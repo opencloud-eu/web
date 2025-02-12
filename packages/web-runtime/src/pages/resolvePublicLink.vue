@@ -3,6 +3,7 @@
     class="oc-link-resolve oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
   >
     <div class="oc-card oc-text-center oc-width-large">
+      <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
           <h2 key="public-link-error">
@@ -102,6 +103,7 @@ export default defineComponent({
     const spacesStore = useSpacesStore()
 
     const { currentTheme } = storeToRefs(themeStore)
+    const logoImg = computed(() => unref(currentTheme).logo)
     const password = ref('')
 
     const isOcmLink = computed(() => {
@@ -311,7 +313,8 @@ export default defineComponent({
       errorMessage,
       footerSlogan,
       resolvePublicLinkTask,
-      loadPublicSpaceTask
+      loadPublicSpaceTask,
+      logoImg
     }
   }
 })
