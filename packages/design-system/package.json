@@ -114,7 +114,7 @@
     "process": "^0.11.10",
     "sass-loader": "16.0.4",
     "sass-resources-loader": "^2.2.5",
-    "sass": "1.84.0",
+    "sass": "1.85.0",
     "style-dictionary": "^4.0.0",
     "style-value-types": "^5.0.0",
     "stylelint-config-sass-guidelines": "^12.0.0",
