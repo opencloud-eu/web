@@ -22,11 +22,11 @@ The default and most simple use case involves an `icon`. Please check out [Remix
 
 ### Colors
 
-A primary and a secondary color can be passed to the component. Both colors will be used to generate a gradient background. Note that the colors need to be in hexadecimal format.
+A primary color can be passed to the component. Note that colors need to be in hexadecimal format.
 
 ::: livecode
 ```vue
-<oc-application-icon icon="home" color-primary="#e2baff" color-secondary="#20434f" />
+<oc-application-icon icon="home" color-primary="#e2baff" />
 ```
 :::
 

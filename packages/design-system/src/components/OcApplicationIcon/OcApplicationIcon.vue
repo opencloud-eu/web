@@ -10,8 +10,7 @@ import {
   getHexFromCssVar,
   hexToRgb,
   rgbToHex,
-  setDesiredContrastRatio,
-  calculateShadeColor
+  setDesiredContrastRatio
 } from '../../helpers'
 import { computed, unref } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -25,35 +24,19 @@ export interface Props {
    * @docs Hex-code of the primary color to display. This color is being used for the left side of the gradient.
    */
   colorPrimary?: string
-  /**
-   * @docs Hex-code of the secondary color to display. This color is being used for the right side of the gradient.
-   */
-  colorSecondary?: string
 }
-const { icon, colorPrimary, colorSecondary } = defineProps<Props>()
+
+const { icon, colorPrimary } = defineProps<Props>()
 
 const iconColor = computed(() => {
   return 'rgba(255,255,255,0.7)'
 })
-
-const getGradient = (primary: string, secondary: string) => {
-  return `linear-gradient(90deg, ${primary} 0%, ${secondary} 100%)`
-}
-
 const primaryColor = computed(() => {
   return getHexFromCssVar(colorPrimary || '')
 })
 
-const secondaryColor = computed(() => {
-  return getHexFromCssVar(colorSecondary || '')
-})
-
 const hasPrimaryColor = computed(() => {
   return !!colorPrimary
-})
-
-const hasSecondaryColor = computed(() => {
-  return !!colorSecondary
 })
 
 const generatedHashedPrimaryColor = computed((): string => {
@@ -65,15 +48,9 @@ const iconStyle = computed(() => {
   const primaryHex = unref(hasPrimaryColor)
     ? unref(primaryColor)
     : unref(generatedHashedPrimaryColor)
-  const secondaryHex = unref(hasSecondaryColor)
-    ? unref(secondaryColor)
-    : calculateShadeColor(hexToRgb(primaryHex), 40)
 
-  const darkBorderHex = calculateShadeColor(hexToRgb(primaryHex), -25)
-  const lightBorderHex = calculateShadeColor(hexToRgb(primaryHex), 45)
   return {
-    background: getGradient(primaryHex, secondaryHex),
-    boxShadow: `inset ${lightBorderHex} 0px 0px 1px 0px,${darkBorderHex} 0px 0px 1px 0px`
+    background: unref(primaryHex)
   }
 })
 </script>
