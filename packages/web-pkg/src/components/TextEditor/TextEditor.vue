@@ -160,5 +160,11 @@ export default defineComponent({
   &-code-flag {
     display: none;
   }
+
+  .cm-line:has(.ͼ1h) {
+    max-height: 60px;
+    overflow: auto;
+    margin-right: var(--oc-space-medium);
+  }
 }
 </style>
