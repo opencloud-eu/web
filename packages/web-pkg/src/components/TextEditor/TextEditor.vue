@@ -21,8 +21,8 @@
       no-katex
       no-mermaid
       no-prettier
-      no-upload-img
       no-highlight
+      :on-upload-img="onUploadImg"
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
       :preview="isMarkdown"
@@ -76,7 +76,7 @@ export default defineComponent({
     resource: { type: Object as PropType<Resource>, required: false }
   },
   emits: ['update:currentContent'],
-  setup(props) {
+  setup(props, { emit }) {
     const language = useGettext()
     const { currentTheme } = useThemeStore()
 
@@ -120,11 +120,31 @@ export default defineComponent({
       }
     })
 
+    const onUploadImg = async (files: File[]) => {
+      const uploadedImages = await Promise.all(
+        [...files].map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(reader.result)
+              reader.onerror = reject
+              reader.readAsDataURL(file)
+            })
+        )
+      )
+
+      const markdownImages = uploadedImages.map((b64) => `![image](${b64})`)
+      const updatedContent = unref(props.currentContent) + '\n' + markdownImages.join('\n')
+
+      emit('update:currentContent', updatedContent)
+    }
+
     return {
       isMarkdown,
       theme,
       language,
-      languages
+      languages,
+      onUploadImg
     }
   }
 })
