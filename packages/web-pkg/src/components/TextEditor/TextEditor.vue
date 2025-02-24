@@ -134,7 +134,7 @@ export default defineComponent({
       )
 
       const markdownImages = uploadedImages.map((b64) => `![image](${b64})`)
-      const updatedContent = `${unref(props.currentContent)}\n${markdownImages.join('\n')}\n`
+      const updatedContent = `${unref(props.currentContent)}\n${markdownImages.join('\n\n')}\n`
 
       emit('update:currentContent', updatedContent)
     }
