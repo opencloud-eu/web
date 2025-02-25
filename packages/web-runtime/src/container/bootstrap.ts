@@ -957,4 +957,11 @@ export const setViewOptions = ({ resourcesStore }: { resourcesStore: ResourcesSt
   if (areWebDavDetailsShownBoolean !== resourcesStore.areWebDavDetailsShown) {
     resourcesStore.setAreWebDavDetailsShown(areWebDavDetailsShownBoolean)
   }
+
+  const areDisabledSpaceShown = window.localStorage.getItem('oc_disabledSpacesShown') || 'true'
+  const areDisabledSpaceShownBoolean = areDisabledSpaceShown === 'true'
+
+  if (areDisabledSpaceShownBoolean !== resourcesStore.areDisabledSpacesShown) {
+    resourcesStore.setAreDisabledSpacesShown(areDisabledSpaceShownBoolean)
+  }
 }

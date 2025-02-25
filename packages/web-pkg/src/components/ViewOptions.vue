@@ -82,6 +82,14 @@
             data-testid="files-tiles-size-slider"
           />
         </li>
+        <li v-if="isProjectsLocation" class="files-view-options-list-item">
+          <oc-switch
+            v-model:checked="disabledSpacesShownModel"
+            data-testid="files-switch-projects-include-disabled"
+            :label="$gettext('Include disabled Spaces')"
+            @update:checked="updateDisabledSpacesShownModel"
+          />
+        </li>
       </oc-list>
     </oc-drop>
   </div>
@@ -100,10 +108,12 @@ import {
   FolderViewModeConstants,
   useRouteName,
   useResourcesStore,
-  useViewSizeMax
+  useViewSizeMax,
+  useActiveLocation
 } from '../composables'
 import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
+import { isLocationSpacesActive } from '../router'
 
 export default defineComponent({
   props: {
@@ -142,8 +152,10 @@ export default defineComponent({
     const { $gettext } = useGettext()
 
     const resourcesStore = useResourcesStore()
-    const { setAreHiddenFilesShown, setAreFileExtensionsShown } = resourcesStore
-    const { areHiddenFilesShown, areFileExtensionsShown } = storeToRefs(resourcesStore)
+    const { setAreHiddenFilesShown, setAreFileExtensionsShown, setAreDisabledSpacesShown } =
+      resourcesStore
+    const { areHiddenFilesShown, areFileExtensionsShown, areDisabledSpacesShown } =
+      storeToRefs(resourcesStore)
 
     const queryParamsLoading = ref(false)
 
@@ -207,9 +219,12 @@ export default defineComponent({
       setViewMode,
       areHiddenFilesShown,
       areFileExtensionsShown,
+      areDisabledSpacesShown,
       setAreHiddenFilesShown,
       setAreFileExtensionsShown,
-      viewOptionsButtonLabel: $gettext('Display customization options of the files list')
+      setAreDisabledSpacesShown,
+      viewOptionsButtonLabel: $gettext('Display customization options of the files list'),
+      isProjectsLocation: useActiveLocation(isLocationSpacesActive, 'files-spaces-projects')
     }
   },
   computed: {
@@ -230,6 +245,15 @@ export default defineComponent({
       set(value: boolean) {
         this.setAreFileExtensionsShown(value)
       }
+    },
+    disabledSpacesShownModel: {
+      get() {
+        return this.areDisabledSpacesShown
+      },
+
+      set(value: boolean) {
+        this.setAreDisabledSpacesShown(value)
+      }
     }
   },
   methods: {
@@ -238,6 +262,9 @@ export default defineComponent({
     },
     updateFileExtensionsShownModel(event: boolean) {
       this.fileExtensionsShownModel = event
+    },
+    updateDisabledSpacesShownModel(event: boolean) {
+      this.disabledSpacesShownModel = event
     }
   }
 })

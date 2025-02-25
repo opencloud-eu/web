@@ -38,19 +38,8 @@
         </no-content-message>
         <div v-else class="spaces-list">
           <div
-            class="spaces-list-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
+            class="spaces-list-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
           >
-            <div class="oc-flex">
-              <div class="oc-mr-m oc-flex oc-flex-middle">
-                <oc-icon name="filter-2" class="oc-mr-xs" />
-                <span v-text="$gettext('Filter:')" />
-              </div>
-              <item-filter-toggle
-                :filter-label="$gettext('Include disabled')"
-                filter-name="includeDisabled"
-                class="spaces-list-filter-include-disabled oc-mr-s"
-              />
-            </div>
             <oc-text-input
               id="spaces-filter"
               v-model="filterTerm"
@@ -219,6 +208,7 @@ import {
 import { orderBy } from 'lodash-es'
 import { useResourcesViewDefaults } from '../../composables'
 import { folderViewsProjectSpacesExtensionPoint } from '../../extensionPoints'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -246,9 +236,11 @@ export default defineComponent({
     const filterTerm = ref('')
     const markInstance = ref(undefined)
     const includeDisabledParam = useRouteQuery('q_includeDisabled')
+    const resourcesStore = useResourcesStore()
 
     const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } =
       useResourcesStore()
+    const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
 
     const loadResourcesTask = useTask(function* (signal) {
       clearResourceList()
@@ -307,9 +299,7 @@ export default defineComponent({
       fields: sortFields
     })
     const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
-      const includeDisabled = queryItemAsString(unref(includeDisabledParam)) === 'true'
-
-      if (!includeDisabled) {
+      if (!unref(areDisabledSpacesShown)) {
         spaces = spaces.filter((space) => space.disabled !== true)
       }
 

@@ -163,6 +163,7 @@ export const useResourcesStore = defineStore('resources', () => {
   const areHiddenFilesShown = ref(true)
   const areFileExtensionsShown = ref(true)
   const areWebDavDetailsShown = ref(false)
+  const areDisabledSpacesShown = ref(true)
 
   const setAreHiddenFilesShown = (value: boolean) => {
     areHiddenFilesShown.value = value
@@ -175,6 +176,10 @@ export const useResourcesStore = defineStore('resources', () => {
   const setAreWebDavDetailsShown = (value: boolean) => {
     areWebDavDetailsShown.value = value
     window.localStorage.setItem('oc_webDavDetailsShown', value.toString())
+  }
+  const setAreDisabledSpacesShown = (value: boolean) => {
+    areDisabledSpacesShown.value = value
+    window.localStorage.setItem('oc_disabledSpacesShown', value.toString())
   }
 
   const loadIndicators = (space: SpaceResource, id: string) => {
@@ -356,9 +361,11 @@ export const useResourcesStore = defineStore('resources', () => {
     areHiddenFilesShown,
     areFileExtensionsShown,
     areWebDavDetailsShown,
+    areDisabledSpacesShown,
     setAreHiddenFilesShown,
     setAreFileExtensionsShown,
     setAreWebDavDetailsShown,
+    setAreDisabledSpacesShown,
 
     loadIndicators,
 

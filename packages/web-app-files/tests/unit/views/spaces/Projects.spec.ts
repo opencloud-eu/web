@@ -154,7 +154,14 @@ function getMountedWrapper({
   includeDisabled?: boolean
   store?: PiniaMockOptions
 } = {}) {
-  const plugins = defaultPlugins({ abilities, piniaOptions: { spacesState: { spaces }, ...store } })
+  const plugins = defaultPlugins({
+    abilities,
+    piniaOptions: {
+      spacesState: { spaces },
+      resourcesStore: { areDisabledSpacesShown: includeDisabled },
+      ...store
+    }
+  })
 
   vi.mocked(queryItemAsString).mockImplementation(() => includeDisabled.toString())
 

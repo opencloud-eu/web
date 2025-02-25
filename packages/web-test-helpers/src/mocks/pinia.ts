@@ -64,6 +64,7 @@ export type PiniaMockOptions = {
     selectedIds?: string[]
     areFileExtensionsShown?: boolean
     areHiddenFilesShown?: boolean
+    areDisabledSpacesShown?: boolean
     deleteQueue?: string[]
   }
   sharesState?: {
