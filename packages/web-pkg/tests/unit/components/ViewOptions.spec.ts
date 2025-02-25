@@ -156,7 +156,9 @@ function getWrapper({
   vi.mocked(useRouteQuery).mockImplementationOnce(() => ref(currentPage))
 
   const mocks = {
-    ...defaultComponentMocks({ currentRoute: mock<RouteLocation>({ path: '/files' }) }),
+    ...defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({ name: 'files', path: '/files' })
+    }),
     tileSizeQueryMock
   }
   return {
