@@ -85,8 +85,8 @@
         <li v-if="isProjectsLocation" class="files-view-options-list-item">
           <oc-switch
             v-model:checked="disabledSpacesShownModel"
-            data-testid="files-switch-projects-include-disabled"
-            :label="$gettext('Include disabled Spaces')"
+            data-testid="files-switch-projects-show-disabled"
+            :label="$gettext('Show disabled Spaces')"
             @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
