@@ -29,11 +29,6 @@ const defaultSpaceIcon: IconType = {
   color: 'var(--oc-color-swatch-passive-default)'
 }
 
-const defaultDisabledSpaceIcon: IconType = {
-  name: 'layout-grid',
-  color: 'var(--oc-color-swatch-passive-default)'
-}
-
 const defaultFallbackIcon: IconType = {
   name: 'resource-type-file',
   color: 'var(--oc-color-text-default)'
@@ -104,7 +99,7 @@ export default defineComponent({
 
     const iconTypeClass = computed(() => {
       if (unref(isSpace)) {
-        if (props.resource.disabled) {
+        if ((props.resource as SpaceResource).disabled) {
           return 'oc-resource-icon-space-disabled'
         }
 
