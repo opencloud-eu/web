@@ -12,17 +12,35 @@
         :model-value="areAllResourcesSelected"
         @click.stop="toggleSelectionAll"
       />
-      <div v-if="sortFields.length" class="oc-tile-sorting oc-ml-m">
-        <oc-select
-          class="oc-tiles-sort-select oc-flex oc-flex-middle"
-          :model-value="currentSortField"
-          :label="$gettext('Sort by')"
-          :options="sortFields"
-          :clearable="false"
-          :searchable="false"
-          :position-fixed="true"
-          @update:model-value="selectSorting"
-        />
+      <div v-if="sortFields.length" class="oc-tiles-sort">
+        <oc-filter-chip
+          class="oc-tiles-sort-filter-chip"
+          :filter-label="currentSortField.label"
+          :selected-item-names="[]"
+          close-on-click
+          raw
+        >
+          <template #default>
+            <oc-button
+              v-for="(option, index) in sortFields"
+              :key="index"
+              appearance="raw"
+              size="medium"
+              justify-content="space-between"
+              class="oc-tiles-sort-filter-chip-item oc-flex oc-flex-middle oc-width-1-1 oc-p-s"
+              :class="{
+                'oc-tiles-sort-filter-chip-item-active': currentSortField === option,
+                'oc-mt-xs': index > 0
+              }"
+              @click="selectSorting(option)"
+            >
+              <span>{{ option.label }}</span>
+              <div v-if="option === currentSortField" class="oc-flex">
+                <oc-icon name="check" />
+              </div>
+            </oc-button>
+          </template>
+        </oc-filter-chip>
       </div>
     </div>
     <oc-list class="oc-tiles">
@@ -662,15 +680,17 @@ export default defineComponent({
     padding: var(--oc-space-xsmall);
   }
 
-  &-sort-select {
-    min-width: var(--oc-size-width-xsmall);
-
-    .v-select {
-      flex: 1;
-      margin-left: var(--oc-space-small);
+  &-sort-filter-chip {
+    .oc-filter-chip-label {
+      font-size: var(--oc-font-size-default);
     }
-    .vs__dropdown-menu {
-      min-width: var(--oc-size-width-small);
+
+    &-item-active {
+      background-color: var(--oc-color-background-highlight) !important;
+    }
+
+    &-item:hover:not(&-item-active) {
+      background-color: var(--oc-color-background-hover) !important;
     }
   }
 }

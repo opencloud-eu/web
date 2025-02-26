@@ -7,7 +7,7 @@ import { ComponentPublicInstance, computed } from 'vue'
 import { extractDomSelector } from '@opencloud-eu/web-client'
 import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
-import { OcSelect } from '@opencloud-eu/design-system/components'
+import { OcFilterChip } from '@opencloud-eu/design-system/components'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => ({
@@ -164,7 +164,9 @@ describe('ResourceTiles component', () => {
   describe('sorting', () => {
     it('renders the label of the first sort field as default', () => {
       const { wrapper } = getWrapper({ props: { sortFields } })
-      expect(wrapper.find('.vs__selected').text()).toEqual(sortFields[0].label)
+      expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(
+        sortFields[0].label
+      )
     })
     it('renders the label of the current sort field as default', () => {
       const sortField = sortFields[2]
@@ -175,11 +177,14 @@ describe('ResourceTiles component', () => {
           sortDir: sortField.sortDir
         }
       })
-      expect(wrapper.find('.vs__selected').text()).toEqual(sortField.label)
+      expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(sortField.label)
     })
-    it('emits the "sort"-event', () => {
-      const { wrapper } = getWrapper({ props: { sortFields }, stubs: { OcSelect: true } })
-      wrapper.findComponent<typeof OcSelect>('oc-select-stub').vm.$emit('update:modelValue', 1)
+    it('emits the "sort"-event', async () => {
+      const { wrapper } = getWrapper({ props: { sortFields } })
+      const filterChip = wrapper.findComponent<typeof OcFilterChip>({ name: 'oc-filter-chip' })
+      await filterChip.trigger('click')
+      const sortItem = filterChip.find('.oc-tiles-sort-filter-chip-item:nth-child(2)')
+      await sortItem.trigger('click')
       expect(wrapper.emitted('sort')).toBeTruthy()
     })
   })

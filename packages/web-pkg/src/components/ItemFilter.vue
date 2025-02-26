@@ -20,7 +20,7 @@
           <oc-list class="item-filter-list">
             <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
               <oc-button
-                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1 oc-p-xs"
+                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1 oc-p-s"
                 :class="{
                   'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
                   'oc-flex-left': allowMultiple,
@@ -262,9 +262,11 @@ export default defineComponent({
       line-height: 1.5;
       gap: 8px;
 
-      &:hover,
-      &-active {
+      &:hover:not(&-active) {
         background-color: var(--oc-color-background-hover) !important;
+      }
+      &-active {
+        background-color: var(--oc-color-background-highlight) !important;
       }
     }
   }
