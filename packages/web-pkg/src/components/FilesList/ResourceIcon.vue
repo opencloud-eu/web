@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, PropType, unref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { AVAILABLE_SIZES } from '@opencloud-eu/design-system/helpers'
 import {
   IconType,
@@ -28,6 +28,12 @@ const defaultSpaceIcon: IconType = {
   name: 'layout-grid',
   color: 'var(--oc-color-swatch-passive-default)'
 }
+
+const defaultDisabledSpaceIcon: IconType = {
+  name: 'layout-grid',
+  color: 'var(--oc-color-swatch-passive-default)'
+}
+
 const defaultFallbackIcon: IconType = {
   name: 'resource-type-file',
   color: 'var(--oc-color-text-default)'
@@ -42,7 +48,7 @@ export default defineComponent({
      * The resource to be displayed
      */
     resource: {
-      type: Object as PropType<Resource>,
+      type: Object as PropType<Resource | SpaceResource>,
       required: true
     },
     /**
@@ -98,6 +104,10 @@ export default defineComponent({
 
     const iconTypeClass = computed(() => {
       if (unref(isSpace)) {
+        if (props.resource.disabled) {
+          return 'oc-resource-icon-space-disabled'
+        }
+
         return 'oc-resource-icon-space'
       }
       if (unref(isFolder)) {
@@ -122,6 +132,12 @@ span.oc-resource-icon {
 
   &-file svg {
     height: 70%;
+  }
+
+  &-space-disabled svg {
+    padding: var(--oc-space-xsmall);
+    filter: grayscale(100%);
+    opacity: 80%;
   }
 }
 </style>
