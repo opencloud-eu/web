@@ -537,21 +537,24 @@ export default defineComponent({
   border-radius: 3px;
 }
 
+.tile-default-image > svg {
+  opacity: 80%;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+.tile-default-image {
+  height: 70%;
+  max-height: 70%;
+  width: 70%;
+  max-width: 70%;
+}
+
 .state-trashed {
   .tile-preview,
   .tile-default-image > svg {
     filter: grayscale(100%);
-    opacity: 80%;
-    height: 100%;
-    max-height: 100%;
-    width: 100%;
-    max-width: 100%;
-  }
-  .tile-default-image {
-    height: 70%;
-    max-height: 70%;
-    width: 70%;
-    max-width: 70%;
   }
 }
 </style>

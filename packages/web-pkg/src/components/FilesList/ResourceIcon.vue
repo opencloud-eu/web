@@ -129,10 +129,14 @@ span.oc-resource-icon {
     height: 70%;
   }
 
+  &-space svg {
+    padding: var(--oc-space-xsmall);
+    opacity: 80%;
+  }
+
   &-space-disabled svg {
     padding: var(--oc-space-xsmall);
     filter: grayscale(100%);
-    opacity: 80%;
   }
 }
 </style>
