@@ -187,7 +187,7 @@ export function buildSpace(
     type: 'space',
     isFolder: true,
     mdate: data.lastModifiedDateTime,
-    size: data.quota?.used,
+    size: data.quota?.used || 0,
     indicators: [] as ResourceIndicator[],
     tags: [] as string[],
     permissions: '',

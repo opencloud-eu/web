@@ -165,7 +165,6 @@ import {
   useSpacesStore,
   useExtensionRegistry,
   ItemFilterToggle,
-  useRouteQuery,
   queryItemAsString,
   useLoadPreview
 } from '@opencloud-eu/web-pkg'
@@ -235,7 +234,6 @@ export default defineComponent({
     const { $gettext } = language
     const filterTerm = ref('')
     const markInstance = ref(undefined)
-    const includeDisabledParam = useRouteQuery('q_includeDisabled')
     const resourcesStore = useResourcesStore()
 
     const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } =
@@ -310,13 +308,13 @@ export default defineComponent({
       const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
       return searchEngine.search(filterTerm).map((r) => r.item)
     }
-    const items = computed(() =>
-      orderBy(
+    const items = computed(() => {
+      return orderBy(
         filter(unref(spaces), unref(filterTerm)),
-        [(item: SpaceResource) => item[unref(sortBy)].toLowerCase()],
+        [(item: SpaceResource) =>  typeof item[unref(sortBy)]  === 'string' ? item[unref(sortBy)].toLowerCase() : item[unref(sortBy)]],
         unref(sortDir)
       )
-    )
+    })
 
     const {
       items: paginatedItems,
