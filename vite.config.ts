@@ -229,7 +229,7 @@ export default defineConfig(({ mode, command }) => {
         viteStaticCopy({
           targets: (() => {
             const targets = [
-              ...['fonts', 'icons'].map((name) => ({
+              ...['fonts', 'icons', 'images'].map((name) => ({
                 src: `packages/design-system/src/assets/${name}/*`,
                 dest: `${name}`
               })),

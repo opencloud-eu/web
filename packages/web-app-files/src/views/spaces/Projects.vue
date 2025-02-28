@@ -76,6 +76,7 @@
                 <img
                   v-if="resource.thumbnail"
                   class="table-preview oc-mr-s"
+                  :class="{ 'table-preview-disabled': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
                   width="33"
@@ -311,7 +312,12 @@ export default defineComponent({
     const items = computed(() => {
       return orderBy(
         filter(unref(spaces), unref(filterTerm)),
-        [(item: SpaceResource) =>  typeof item[unref(sortBy)]  === 'string' ? item[unref(sortBy)].toLowerCase() : item[unref(sortBy)]],
+        [
+          (item: SpaceResource) =>
+            typeof item[unref(sortBy)] === 'string'
+              ? item[unref(sortBy)].toLowerCase()
+              : item[unref(sortBy)]
+        ],
         unref(sortDir)
       )
     })
@@ -532,7 +538,13 @@ export default defineComponent({
 }
 
 .table-preview {
+  object-fit: cover;
   border-radius: 3px;
+}
+
+.table-preview-disabled {
+  filter: grayscale(100%);
+  opacity: 80%;
 }
 
 .state-trashed {

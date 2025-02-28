@@ -10,8 +10,10 @@ import {
 import { FolderViewModeConstants } from '../viewMode'
 import { usePreviewService } from '../previewService'
 import { ProcessorType } from '../../services'
-import { useResourcesStore } from '../piniaStores'
+import { useConfigStore, useResourcesStore, useSpacesStore } from '../piniaStores'
 import { ImageDimension } from '../../constants'
+import { useClientService } from '../clientService'
+import { storeToRefs } from 'pinia'
 
 type LoadPreviewOptions = {
   space: SpaceResource
@@ -37,6 +39,11 @@ type LoadPreviewOptions = {
 export const useLoadPreview = (viewMode?: Ref<string>) => {
   const previewService = usePreviewService()
   const { updateResourceField } = useResourcesStore()
+  const { httpAuthenticated } = useClientService()
+  const spacesStore = useSpacesStore()
+  const { defaultSpaceImageBlobURL } = storeToRefs(spacesStore)
+  const configStore = useConfigStore()
+  const { serverUrl } = storeToRefs(configStore)
   const previewQueue = new PQueue({ concurrency: 4 })
 
   const isTilesView = computed(() => unref(viewMode) === FolderViewModeConstants.name.tiles)
@@ -80,7 +87,27 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     }
 
     if (isProjectSpaceResource(resource) && (!resource.spaceImageData || resource.disabled)) {
-      return null
+      if (unref(defaultSpaceImageBlobURL)) {
+        resource.thumbnail = unref(defaultSpaceImageBlobURL)
+        return unref(defaultSpaceImageBlobURL)
+      }
+
+      try {
+        const defaultSpaceImageBlobURLResponse: any = await httpAuthenticated.get(
+          `${unref(serverUrl)}images/default-space-icon.png`,
+          {
+            responseType: 'blob'
+          }
+        )
+
+        spacesStore.setDefaultSpaceImageBlobURL(
+          URL.createObjectURL(defaultSpaceImageBlobURLResponse.data)
+        )
+        resource.thumbnail = unref(defaultSpaceImageBlobURL)
+        return unref(defaultSpaceImageBlobURL)
+      } catch {
+        return null
+      }
     }
 
     try {
