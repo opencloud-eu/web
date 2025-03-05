@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useLoadPreview } from '../../../../src/composables/resources'
@@ -172,14 +172,21 @@ function getWrapper({
   loadedPreview?: string
   viewMode?: string
 }) {
+  const mocks = defaultComponentMocks()
   const previewService = mock<PreviewService>()
   previewService.loadPreview.mockResolvedValue(loadedPreview)
   vi.mocked(usePreviewService).mockReturnValue(previewService)
 
   return {
-    wrapper: getComposableWrapper(() => {
-      const instance = useLoadPreview(viewMode ? ref(viewMode) : undefined)
-      setup(instance, { previewService })
-    })
+    wrapper: getComposableWrapper(
+      () => {
+        const instance = useLoadPreview(viewMode ? ref(viewMode) : undefined)
+        setup(instance, { previewService })
+      },
+      {
+        mocks,
+        provide: mocks
+      }
+    )
   }
 }
