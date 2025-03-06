@@ -59,9 +59,5 @@ const copyContentToClipboard = () => {
       color: var(--oc-color-text-muted);
     }
   }
-
-  &-content-copied {
-    color: var(--oc-color-swatch-success-default);
-  }
 }
 </style>

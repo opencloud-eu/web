@@ -37,8 +37,8 @@ export default defineComponent({
   z-index: 6;
   -webkit-appearance: none;
   border: none;
-  background-color: var(--oc-color-swatch-brand-default);
-  color: var(--oc-color-swatch-primary-contrast);
+  background-color: var(--oc-role-secondary);
+  color: var(--oc-role-on-secondary);
   font: inherit;
   padding: 0.25em 0.5em;
 }

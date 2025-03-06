@@ -195,7 +195,7 @@ export default defineComponent({
 <style lang="scss">
 .oc-link-resolve {
   .oc-card {
-    background: var(--oc-color-background-highlight);
+    background: var(--oc-role-surface-container);
     border-radius: 15px;
   }
 

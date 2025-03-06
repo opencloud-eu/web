@@ -274,7 +274,6 @@ onMounted(() => {
     button:not([role='switch']) {
       box-sizing: border-box;
       padding: var(--oc-space-small);
-      color: var(--oc-color-swatch-passive-default);
 
       &:focus:not([disabled]),
       &:hover:not([disabled]) {

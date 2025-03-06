@@ -803,7 +803,7 @@ export default defineComponent({
   overflow-y: auto;
 
   #account-page-title {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   .preferences-panel,
@@ -812,7 +812,7 @@ export default defineComponent({
   }
 
   .preferences-panel {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   .account-page {

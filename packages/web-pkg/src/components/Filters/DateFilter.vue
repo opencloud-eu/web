@@ -339,11 +339,6 @@ export default defineComponent({
     &-item {
       line-height: 1.5;
       gap: 8px;
-
-      &:hover,
-      &-active {
-        background-color: var(--oc-color-background-hover) !important;
-      }
     }
 
     &-hidden {
