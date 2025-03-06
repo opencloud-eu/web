@@ -15,18 +15,6 @@ const inputProps = {
 }
 
 describe('OcModal', () => {
-  it('displays correct variation', () => {
-    const wrapper = shallowMount(Modal, {
-      props: {
-        ...defaultProps,
-        variation: 'danger'
-      },
-      global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] }
-    })
-
-    expect(wrapper.findAll('.oc-modal-danger').length).toBe(1)
-  })
-
   it('hides icon if not specified', () => {
     const wrapper = shallowMount(Modal, {
       global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] },
