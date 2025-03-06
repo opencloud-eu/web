@@ -2,8 +2,8 @@
   <div class="oc-flex oc-flex-middle copy-private-link">
     <oc-button v-oc-tooltip="tooltip" gap-size="none" appearance="raw" @click="copyLinkToClipboard">
       <oc-icon size="small" :name="copied ? 'checkbox-circle' : 'file-copy'" fill-type="line" />
-      <span class="oc-ml-xs" v-text="$gettext('Permanent link')"
-    /></oc-button>
+      <span class="oc-ml-xs" v-text="$gettext('Permanent link')" />
+    </oc-button>
   </div>
 </template>
 
