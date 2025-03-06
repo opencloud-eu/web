@@ -142,7 +142,6 @@
             class="oc-width-1-1"
             :class="action.class"
             appearance="raw"
-            color-role="secondary"
             justify-content="left"
             :disabled="isActionDisabled(action)"
             @click="action.handler"

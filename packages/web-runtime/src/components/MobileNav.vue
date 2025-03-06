@@ -1,6 +1,6 @@
 <template>
   <nav id="mobile-nav">
-    <oc-button id="mobile-nav-button" appearance="raw" aria-current="page">
+    <oc-button id="mobile-nav-button" class="oc-p-xs" appearance="raw" aria-current="page">
       {{ activeNavItem.name }}
       <oc-icon name="arrow-drop-down" />
     </oc-button>

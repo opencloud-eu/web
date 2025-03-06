@@ -8,7 +8,6 @@
       :class="btnClass"
       justify-content="left"
       appearance="raw"
-      color-role="secondary"
       :disabled="isRemoteUploadInProgress"
       @click="triggerUpload"
     >
