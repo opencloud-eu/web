@@ -12,6 +12,7 @@
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
             class="oc-button-sort oc-width-1-1"
+            no-hover
             @click="handleSort(field)"
           >
             <span v-if="field.headerType === 'slot'" class="oc-table-thead-content">

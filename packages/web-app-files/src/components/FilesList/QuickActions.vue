@@ -52,11 +52,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.quick-action-button {
-  &:hover {
-    background-color: var(--oc-color-background-secondary) !important;
-  }
-}
-</style>

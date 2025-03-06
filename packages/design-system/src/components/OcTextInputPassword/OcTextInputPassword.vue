@@ -20,6 +20,7 @@
       class="oc-text-input-show-password-toggle oc-px-s"
       appearance="raw"
       size="small"
+      no-hover
       @click="showPassword = !showPassword"
     >
       <oc-icon size="small" :name="showPassword ? 'eye-off' : 'eye'" />
@@ -31,6 +32,7 @@
       class="oc-text-input-copy-password-button oc-px-s"
       appearance="raw"
       size="small"
+      no-hover
       @click="copyPasswordToClipboard"
     >
       <oc-icon size="small" :name="copyPasswordIcon" />
@@ -42,6 +44,7 @@
       class="oc-text-input-generate-password-button oc-px-s"
       appearance="raw"
       size="small"
+      no-hover
       @click="generatePassword"
     >
       <oc-icon size="small" name="refresh" fill-type="line" />

@@ -54,7 +54,7 @@
             </span>
           </span>
           <span class="oc-flex">
-            <oc-icon v-if="isSelectedType(type)" name="check" variation="inherit" />
+            <oc-icon v-if="isSelectedType(type)" name="check" />
           </span>
         </oc-button>
       </li>

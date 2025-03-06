@@ -1,6 +1,11 @@
 <template>
   <div class="oc-contextual-helper">
-    <oc-button :id="buttonId" :aria-label="$gettext('Show more information')" appearance="raw">
+    <oc-button
+      :id="buttonId"
+      :aria-label="$gettext('Show more information')"
+      appearance="raw"
+      no-hover
+    >
       <oc-icon name="question" fill-type="line" size="small" />
     </oc-button>
     <oc-info-drop :drop-id="dropId" :toggle="toggleId" v-bind="props" />

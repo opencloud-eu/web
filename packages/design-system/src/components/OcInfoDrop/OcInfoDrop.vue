@@ -13,12 +13,8 @@
       <div class="info-drop-content">
         <div class="oc-flex oc-flex-between info-header oc-border-b oc-pb-s">
           <h4 class="oc-m-rm info-title" v-text="$gettext(title)" />
-          <oc-button
-            v-oc-tooltip="$gettext('Close')"
-            appearance="raw"
-            :aria-label="$gettext('Close')"
-          >
-            <oc-icon name="close" fill-type="line" size="medium" variation="inherit" />
+          <oc-button appearance="raw" :aria-label="$gettext('Close')">
+            <oc-icon name="close" fill-type="line" size="medium" />
           </oc-button>
         </div>
         <p v-if="text" class="info-text" v-text="$gettext(text)" />

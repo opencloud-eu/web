@@ -11,7 +11,7 @@
         :aria-label="previousDescription"
         @click="$emit('togglePrevious')"
       >
-        <oc-icon size="large" name="arrow-drop-left" variation="inherit" />
+        <oc-icon size="large" name="arrow-drop-left" />
       </oc-button>
       <p v-if="!isFolderLoading" class="oc-m-rm preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
@@ -25,7 +25,7 @@
         :aria-label="nextDescription"
         @click="$emit('toggleNext')"
       >
-        <oc-icon size="large" name="arrow-drop-right" variation="inherit" />
+        <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
       <div class="oc-flex">
         <oc-button
@@ -43,7 +43,6 @@
           <oc-icon
             fill-type="line"
             :name="isFullScreenModeActivated ? 'fullscreen-exit' : 'fullscreen'"
-            variation="inherit"
           />
         </oc-button>
       </div>
@@ -57,7 +56,7 @@
             :aria-label="imageShrinkDescription"
             @click="imageShrink"
           >
-            <oc-icon fill-type="line" name="zoom-out" variation="inherit" />
+            <oc-icon fill-type="line" name="zoom-out" />
           </oc-button>
           <oc-button
             v-oc-tooltip="imageOriginalSizeDescription"
@@ -77,7 +76,7 @@
             :aria-label="imageZoomDescription"
             @click="imageZoom"
           >
-            <oc-icon fill-type="line" name="zoom-in" variation="inherit" />
+            <oc-icon fill-type="line" name="zoom-in" />
           </oc-button>
         </div>
         <div class="oc-ml-m">
@@ -89,7 +88,7 @@
             :aria-label="imageRotateLeftDescription"
             @click="imageRotateLeft"
           >
-            <oc-icon fill-type="line" name="anticlockwise" variation="inherit" />
+            <oc-icon fill-type="line" name="anticlockwise" />
           </oc-button>
           <oc-button
             v-oc-tooltip="imageRotateRightDescription"
@@ -99,7 +98,7 @@
             :aria-label="imageRotateRightDescription"
             @click="imageRotateRight"
           >
-            <oc-icon fill-type="line" name="clockwise" variation="inherit" />
+            <oc-icon fill-type="line" name="clockwise" />
           </oc-button>
         </div>
         <div class="oc-ml-m">
@@ -111,7 +110,7 @@
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"
           >
-            <oc-icon fill-type="line" name="refresh" variation="inherit" />
+            <oc-icon fill-type="line" name="refresh" />
           </oc-button>
         </div>
       </div>

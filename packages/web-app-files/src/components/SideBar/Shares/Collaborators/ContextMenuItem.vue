@@ -3,7 +3,7 @@
     v-if="option.hasSwitch"
     class="action-menu-item item-has-switch oc-p-s oc-flex oc-flex-center"
   >
-    <oc-icon :name="option.icon" fill-type="line" size="medium" variation="passive" />
+    <oc-icon :name="option.icon" fill-type="line" size="medium" />
     <oc-switch
       class="oc-ml-s oc-flex oc-width-1-1"
       :checked="option.isChecked.value"

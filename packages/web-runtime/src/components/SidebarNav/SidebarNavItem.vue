@@ -13,7 +13,7 @@
       v-bind="attrs"
     >
       <span class="oc-flex">
-        <oc-icon :name="icon" :fill-type="fillType" variation="inherit" />
+        <oc-icon :name="icon" :fill-type="fillType" />
         <span class="oc-ml-m text" :class="{ 'text-invisible': collapsed }" v-text="name" />
       </span>
     </oc-button>

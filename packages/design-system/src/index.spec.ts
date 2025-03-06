@@ -10,9 +10,11 @@ const options = {
       'background-default': '#ef23ab',
       'swatch-brand-default': '#00FFFF'
     },
-    colorRoles: {
+    roles: {
       primary: '#715289',
-      onPrimary: '#FFFFFF'
+      onPrimary: '#FFFFFF',
+      surfaceContainer: '#dadada',
+      onSurface: '#000000'
     },
     fontSizes: {
       default: '1.358rem'

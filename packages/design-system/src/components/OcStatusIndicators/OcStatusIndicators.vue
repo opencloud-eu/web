@@ -12,6 +12,7 @@
         appearance="raw"
         :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
+        no-hover
         @click="indicator.handler(resource)"
       >
         <oc-icon

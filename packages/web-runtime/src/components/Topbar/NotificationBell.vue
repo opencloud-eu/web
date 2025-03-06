@@ -4,8 +4,8 @@
     v-oc-tooltip="notificationsLabel"
     appearance="raw-inverse"
     color-role="chrome"
-    class="no-hover"
     :aria-label="notificationsLabel"
+    no-hover
   >
     <oc-icon
       class="oc-cursor-pointer oc-flex oc-flex-middle"

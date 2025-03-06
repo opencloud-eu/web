@@ -12,7 +12,7 @@
         @keydown.esc="cancelModalAction"
       >
         <div class="oc-modal-title">
-          <oc-icon v-if="iconName !== ''" :name="iconName" :variation="variation" />
+          <oc-icon v-if="iconName !== ''" :name="iconName" />
           <h2 id="oc-modal-title" class="oc-text-truncate" v-text="title" />
         </div>
         <div class="oc-modal-body">
@@ -57,8 +57,6 @@
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
-              color-role="secondary"
-              appearance="outline"
               :disabled="isLoading"
               @click="cancelModalAction"
               >{{ $gettext(buttonCancelText) }}
@@ -66,7 +64,6 @@
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm oc-ml-s"
-              color-role="secondary"
               :appearance="buttonConfirmAppearance"
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
@@ -351,7 +348,7 @@ export default {
 .oc-modal {
   background-color: var(--oc-role-surface);
   border: 1px solid var(--oc-role-outline);
-  border-radius: 15px;
+  border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   max-width: 500px;

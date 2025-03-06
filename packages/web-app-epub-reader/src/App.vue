@@ -7,7 +7,7 @@
         class="epub-reader-chapters-list-item oc-py-s"
         :class="{ active: currentChapter.id === chapter.id }"
       >
-        <oc-button class="oc-text-truncate" appearance="raw" @click="showChapter(chapter)">
+        <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
           <span
             v-oc-tooltip="chapter.label"
             class="oc-text-truncate oc-mr-s"
@@ -33,7 +33,6 @@
           <oc-button
             v-oc-tooltip="$gettext('Reset font size')"
             class="epub-reader-controls-font-size-reset"
-            gap-size="none"
             @click="resetFontSize"
           >
             {{ `${currentFontSizePercentage}%` }}

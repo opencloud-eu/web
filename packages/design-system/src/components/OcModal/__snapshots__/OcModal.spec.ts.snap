@@ -15,8 +15,8 @@ exports[`OcModal > displays input 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="passive" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="primary" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -38,10 +38,10 @@ exports[`OcModal > displays loading state 1`] = `
         <!--v-if-->
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
-        <div class="oc-modal-body-actions-grid"><button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-passive oc-button-outline oc-button-passive-outline oc-modal-body-actions-cancel">
+        <div class="oc-modal-body-actions-grid"><button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> Cancel
-          </button> <button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-primary oc-button-outline oc-button-primary-outline oc-modal-body-actions-confirm oc-ml-s"><span class="oc-spinner oc-spinner-s spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
+          </button> <button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-confirm oc-ml-s"><span class="oc-spinner oc-spinner-s spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
       </div>
     </div>
   </focus-trap-stub>
@@ -63,8 +63,8 @@ exports[`OcModal > hides icon if not specified 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="passive" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="primary" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@ exports[`OcModal > matches snapshot 1`] = `
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
     <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="info" size="medium" type="span" variation="passive"></oc-icon-stub>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="info" size="medium" type="span"></oc-icon-stub>
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
@@ -87,8 +87,8 @@ exports[`OcModal > matches snapshot 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="passive" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="primary" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -111,8 +111,8 @@ exports[`OcModal > overrides props message with slot 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="passive" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" variation="primary" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>

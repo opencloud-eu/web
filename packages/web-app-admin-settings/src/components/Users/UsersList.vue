@@ -18,6 +18,7 @@
         :sticky="isSticky"
         :header-position="fileListHeaderY"
         :hover="true"
+        padding-x="medium"
         @sort="handleSort"
         @contextmenu-clicked="showContextMenuOnRightClick"
         @highlight="rowClicked"
@@ -25,7 +26,6 @@
         <template #selectHeader>
           <oc-checkbox
             size="large"
-            class="oc-ml-s"
             :label="$gettext('Select all users')"
             :model-value="allUsersSelected"
             :label-hidden="true"
@@ -36,7 +36,6 @@
         </template>
         <template #select="{ item }">
           <oc-checkbox
-            class="oc-ml-s"
             size="large"
             :model-value="isUserSelected(item)"
             :option="item"

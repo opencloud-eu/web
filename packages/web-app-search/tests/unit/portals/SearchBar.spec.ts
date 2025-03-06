@@ -60,7 +60,7 @@ const selectors = {
   searchFilters: '#files-global-search-filter'
 }
 
-vi.mock('lodash-es', () => ({ debounce: (fn: unknown) => fn }))
+vi.mock('lodash-es', () => ({ debounce: (fn: unknown) => fn, kebabCase: (fn: unknown) => fn }))
 vi.mock('../../../src/composables/useAvailableProviders')
 
 // @vitest-environment jsdom

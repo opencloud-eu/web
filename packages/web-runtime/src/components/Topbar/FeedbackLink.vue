@@ -7,11 +7,11 @@
       target="_blank"
       appearance="raw-inverse"
       color-role="surface"
-      class="no-hover"
       :aria-label="ariaLabelOrFallback"
       aria-describedby="oc-feedback-link-description"
+      no-hover
     >
-      <oc-icon name="feedback" fill-type="line" variation="inherit" />
+      <oc-icon name="feedback" fill-type="line" />
     </oc-button>
     <p id="oc-feedback-link-description" class="oc-invisible-sr" v-text="descriptionOrFallback" />
   </div>

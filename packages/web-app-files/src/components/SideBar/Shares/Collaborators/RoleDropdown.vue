@@ -55,11 +55,11 @@
             @click="selectRole(role)"
           >
             <span class="oc-flex oc-flex-middle">
-              <oc-icon :name="role.icon" class="oc-pl-s oc-pr-m" variation="inherit" />
+              <oc-icon :name="role.icon" class="oc-pl-s oc-pr-m" />
               <role-item :role="role" />
             </span>
             <span class="oc-flex">
-              <oc-icon v-if="isSelectedRole(role)" name="check" variation="inherit" />
+              <oc-icon v-if="isSelectedRole(role)" name="check" />
             </span>
           </oc-button>
         </li>

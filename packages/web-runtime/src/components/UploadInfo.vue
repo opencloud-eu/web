@@ -7,7 +7,6 @@
       <oc-button
         v-if="!filesInProgressCount"
         id="close-upload-info-btn"
-        v-oc-tooltip="$gettext('Close')"
         :aria-label="$gettext('Close')"
         appearance="raw-inverse"
         variation="brand"
@@ -102,7 +101,12 @@
       <ul class="oc-list">
         <li v-for="(item, idx) in uploads" :key="idx">
           <span class="oc-flex oc-flex-middle">
-            <oc-icon v-if="item.status === 'error'" name="close" variation="danger" size="small" />
+            <oc-icon
+              v-if="item.status === 'error'"
+              name="close"
+              size="small"
+              color="var(--oc-role-error)"
+            />
             <oc-icon
               v-else-if="item.status === 'success'"
               name="check"

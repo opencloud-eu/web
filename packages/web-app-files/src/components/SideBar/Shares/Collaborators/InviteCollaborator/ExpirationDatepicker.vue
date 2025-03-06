@@ -9,7 +9,7 @@
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
       @click="showDatePickerModal"
     >
-      <oc-icon name="calendar-event" fill-type="line" size="medium" variation="passive" />
+      <oc-icon name="calendar-event" fill-type="line" size="medium" />
       <span
         v-if="!dateCurrent"
         key="no-expiration-date-label"
