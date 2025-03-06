@@ -15,7 +15,7 @@ exports[`Details SideBar Panel > displays the details side panel 1`] = `
     <dt data-v-c7ea2f9c="">Last activity</dt>
     <dd data-v-c7ea2f9c="">Invalid DateTime</dd>
     <!--v-if-->
-    <dt data-v-c7ea2f9c="">Manger</dt>
+    <dt data-v-c7ea2f9c="">Manager</dt>
     <dd data-v-c7ea2f9c="">alice (me)</dd>
     <dt data-v-c7ea2f9c="">Quota</dt>
     <dd data-v-c7ea2f9c="">

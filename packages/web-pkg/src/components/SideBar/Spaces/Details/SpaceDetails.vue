@@ -53,7 +53,7 @@
         <dt>{{ $gettext('Subtitle') }}</dt>
         <dd>{{ resource.description }}</dd>
       </template>
-      <dt>{{ $gettext('Manger') }}</dt>
+      <dt>{{ $gettext('Manager') }}</dt>
       <dd>{{ ownerUsernames }}</dd>
       <template v-if="!resource.disabled">
         <dt>{{ $gettext('Quota') }}</dt>
