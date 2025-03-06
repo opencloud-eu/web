@@ -3,9 +3,8 @@
 exports[`OcModal > displays input 1`] = `
 "<div class="oc-modal-background">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
+    <div class="oc-modal" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <!--v-if-->
         <h2 id="oc-modal-title" class="oc-text-truncate">Create new folder</h2>
       </div>
       <div class="oc-modal-body">
@@ -15,8 +14,8 @@ exports[`OcModal > displays input 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -27,9 +26,8 @@ exports[`OcModal > displays input 1`] = `
 exports[`OcModal > displays loading state 1`] = `
 "<div class="oc-modal-background">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
+    <div class="oc-modal" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <!--v-if-->
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
@@ -51,9 +49,8 @@ exports[`OcModal > displays loading state 1`] = `
 exports[`OcModal > hides icon if not specified 1`] = `
 "<div class="oc-modal-background">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
+    <div class="oc-modal" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <!--v-if-->
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
@@ -63,8 +60,8 @@ exports[`OcModal > hides icon if not specified 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -73,11 +70,10 @@ exports[`OcModal > hides icon if not specified 1`] = `
 `;
 
 exports[`OcModal > matches snapshot 1`] = `
-"<div class="oc-modal-background">
+"<div class="oc-modal-background" icon="info">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
+    <div class="oc-modal" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="info" size="medium" type="span"></oc-icon-stub>
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
@@ -87,8 +83,8 @@ exports[`OcModal > matches snapshot 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>
@@ -99,9 +95,8 @@ exports[`OcModal > matches snapshot 1`] = `
 exports[`OcModal > overrides props message with slot 1`] = `
 "<div class="oc-modal-background">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal oc-modal-passive" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
+    <div class="oc-modal" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title">
-        <!--v-if-->
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
@@ -111,8 +106,8 @@ exports[`OcModal > overrides props message with slot 1`] = `
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
-          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
-          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
+          <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
+          <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm oc-ml-s">Confirm</oc-button-stub>
         </div>
       </div>
     </div>

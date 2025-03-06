@@ -12,7 +12,6 @@
         @keydown.esc="cancelModalAction"
       >
         <div class="oc-modal-title">
-          <oc-icon v-if="iconName !== ''" :name="iconName" />
           <h2 id="oc-modal-title" class="oc-text-truncate" v-text="title" />
         </div>
         <div class="oc-modal-body">
@@ -80,7 +79,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, unref, useTemplateRef } from 'vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
-import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
 import { ContextualHelperData, VariationType } from '../../helpers'
@@ -142,10 +140,6 @@ export interface Props {
    */
   hideConfirmButton?: boolean
   /**
-   * @docs Icon that gets displayed before the title.
-   */
-  icon?: string
-  /**
    * @docs Description to be displayed below the input field.
    */
   inputDescription?: string
@@ -179,11 +173,6 @@ export interface Props {
    * @docs Message of the modal.
    */
   message?: string
-  /**
-   * @docs Variation of the modal.
-   * @default passive
-   */
-  variation?: VariationType
 }
 
 export interface Emits {
@@ -221,7 +210,6 @@ const {
   hasInput = false,
   hideActions = false,
   hideConfirmButton = false,
-  icon,
   inputDescription,
   inputError,
   inputLabel,
@@ -229,8 +217,7 @@ const {
   inputType = 'text',
   inputValue,
   isLoading = false,
-  message,
-  variation = 'passive'
+  message
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -284,25 +271,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
 })
 
 const classes = computed(() => {
-  return ['oc-modal', `oc-modal-${variation}`, elementClass]
-})
-
-const iconName = computed(() => {
-  if (icon) {
-    return icon
-  }
-  switch (variation) {
-    case 'danger':
-      return 'alert'
-    case 'warning':
-      return 'error-warning'
-    case 'success':
-      return 'checkbox-circle'
-    case 'info':
-      return 'information'
-    default:
-      return ''
-  }
+  return ['oc-modal', elementClass]
 })
 
 watch(
@@ -339,12 +308,6 @@ export default {
 </script>
 
 <style lang="scss">
-@mixin oc-modal-variation($color) {
-  span {
-    color: $color;
-  }
-}
-
 .oc-modal {
   background-color: var(--oc-role-surface);
   border: 1px solid var(--oc-role-outline);
@@ -373,22 +336,6 @@ export default {
     z-index: var(--oc-z-index-modal);
   }
 
-  &-primary {
-    @include oc-modal-variation(var(--oc-color-swatch-primary-default));
-  }
-
-  &-success {
-    @include oc-modal-variation(var(--oc-color-swatch-success-default));
-  }
-
-  &-warning {
-    @include oc-modal-variation(var(--oc-color-swatch-warning-default));
-  }
-
-  &-danger {
-    @include oc-modal-variation(var(--oc-color-swatch-danger-default));
-  }
-
   &-title {
     align-items: center;
     border-top-left-radius: 5px;
@@ -398,10 +345,6 @@ export default {
     line-height: 1.625;
     padding: calc(var(--oc-space-small) + var(--oc-space-xsmall)) var(--oc-space-medium);
     background-color: var(--oc-color-swatch-inverse-muted);
-
-    > .oc-icon {
-      margin-right: var(--oc-space-small);
-    }
 
     > h2 {
       font-size: 1rem;

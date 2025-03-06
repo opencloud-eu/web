@@ -45,7 +45,6 @@ export const useFileActionsEmptyTrashBin = () => {
 
   const handler = ({ space }: FileActionOptions) => {
     dispatchModal({
-      variation: 'danger',
       title: $gettext('Empty trash bin'),
       confirmText: $gettext('Delete'),
       message: $gettext(
