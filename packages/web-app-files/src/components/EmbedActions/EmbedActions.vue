@@ -10,35 +10,36 @@
 
     <div class="files-embed-actions-buttons oc-flex oc-flex-middle">
       <oc-button
-        class="oc-mr-s"
+        class="oc-mr-m"
         data-testid="button-cancel"
         appearance="raw-inverse"
-        variation="brand"
+        no-hover
         @click="emitCancel"
-        >{{ $gettext('Cancel') }}
+      >
+        {{ $gettext('Cancel') }}
       </oc-button>
       <oc-button
         v-if="!isLocationPicker && !isFilePicker"
         key="btn-share"
-        class="oc-mr-s"
+        class="oc-mr-m"
         data-testid="button-share"
-        variation="inverse"
         appearance="filled"
         :disabled="
           areSelectActionsDisabled ||
           !createLinkAction.isVisible({ resources: selectedFiles, space })
         "
         @click="createLinkAction.handler({ resources: selectedFiles, space })"
-        >{{ $gettext('Share link(s)') }}
+      >
+        {{ $gettext('Share link(s)') }}
       </oc-button>
       <oc-button
         v-if="!isFilePicker"
         data-testid="button-select"
-        variation="inverse"
         appearance="filled"
         :disabled="areSelectActionsDisabled"
         @click="emitSelect"
-        >{{ selectLabel }}
+      >
+        {{ selectLabel }}
       </oc-button>
     </div>
   </section>
