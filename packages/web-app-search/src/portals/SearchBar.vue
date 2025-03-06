@@ -614,11 +614,10 @@ export default defineComponent({
 
           &:hover,
           &.active {
-            background-color: var(--oc-color-background-highlight);
+            background-color: var(--oc-role-secondary-container);
           }
 
           &.disabled {
-            background-color: var(--oc-color-background-muted);
             pointer-events: none;
             opacity: 0.7;
             filter: grayscale(0.6);

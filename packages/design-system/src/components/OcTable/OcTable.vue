@@ -502,7 +502,7 @@ const handleSort = (field: FieldType) => {
   }
 
   tr + tr {
-    border-top: 1px solid var(--oc-role-outline-variant);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &-hover tr:not(&-footer-row):hover {
@@ -540,14 +540,13 @@ const handleSort = (field: FieldType) => {
   &-thead-content {
     vertical-align: middle;
     display: inline-table;
-    color: var(--oc-color-swatch-passive-default);
     &:hover {
       text-decoration: underline;
     }
   }
 
   &-footer {
-    border-top: 1px solid var(--oc-role-outline-variant);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
 
     &-cell {
       color: var(--oc-color-text-muted);

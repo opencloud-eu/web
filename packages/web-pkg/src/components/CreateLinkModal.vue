@@ -388,9 +388,5 @@ export default defineComponent({
     width: 100%;
     gap: var(--oc-space-medium);
   }
-
-  .selected span {
-    color: var(--oc-color-swatch-primary-contrast);
-  }
 }
 </style>

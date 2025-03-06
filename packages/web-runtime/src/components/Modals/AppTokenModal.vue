@@ -107,7 +107,7 @@ const createAppToken = async () => {
 .created-token {
   font-weight: bold;
   &-container {
-    border-right: 1px solid var(--oc-color-border);
+    border-right: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

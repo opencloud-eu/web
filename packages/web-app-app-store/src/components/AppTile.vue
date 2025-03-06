@@ -65,7 +65,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  outline: 1px solid var(--oc-color-border);
+  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-tile-body {
     display: flex;

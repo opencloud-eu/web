@@ -177,21 +177,12 @@ export default defineComponent({
 <style lang="scss">
 .sciencemesh-app {
   #shares-links {
-    button:hover {
-      background-color: var(--oc-color-background-hover);
-      border-color: var(--oc-color-background-hover);
-    }
-
     @media (max-width: $oc-breakpoint-medium-default) {
       visibility: none;
     }
   }
   #accepted-invitations-empty {
     height: 100%;
-  }
-
-  .delete-connection-btn:hover {
-    background-color: var(--oc-color-background-hover);
   }
 }
 </style>

@@ -344,7 +344,7 @@ export default {
     flex-flow: row wrap;
     line-height: 1.625;
     padding: calc(var(--oc-space-small) + var(--oc-space-xsmall)) var(--oc-space-medium);
-    background-color: var(--oc-color-swatch-inverse-muted);
+    background-color: var(--oc-role-surface-container);
 
     > h2 {
       font-size: 1rem;

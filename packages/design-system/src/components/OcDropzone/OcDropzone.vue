@@ -12,8 +12,7 @@ defineOptions({ name: 'OcDropzone' })
 <style lang="scss">
 .oc-dropzone {
   align-items: center;
-  background-color: var(--oc-color-background-default);
-  border: 1px dashed var(--oc-color-swatch-primary-muted);
+  border: 1px dashed var(--oc-role-outline);
   color: var(--oc-color-text-default);
   display: flex;
   font-size: 1.5rem;

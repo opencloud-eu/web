@@ -542,7 +542,7 @@ export default defineComponent({
   min-width: 230px;
 
   ul:not(:first-child) {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
     padding-top: var(--oc-space-small);
   }
 

@@ -309,8 +309,8 @@ const dropItemStyling = (
       border 0s 0.08s,
       border-color 0s,
       border-width 0.06s;
-    background-color: var(--oc-color-background-highlight);
-    box-shadow: 0 0 0 5px var(--oc-color-background-highlight);
+    background-color: var(--oc-role-secondary-container);
+    box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
     border-radius: 5px;
   }
   &-item-text {

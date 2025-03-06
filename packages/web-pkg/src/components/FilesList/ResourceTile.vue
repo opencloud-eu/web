@@ -234,7 +234,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  outline: 1px solid var(--oc-color-border);
+  outline: 0.5px solid var(--oc-role-outline-variant);
 
   &-disabled {
     pointer-events: none;
@@ -290,7 +290,7 @@ export default defineComponent({
   }
 
   &-selected {
-    outline: 2px solid var(--oc-color-swatch-primary-hover);
+    outline: 2px solid var(--oc-role-outline);
 
     .oc-tile-card-preview {
       width: calc(100% - var(--oc-space-medium));
@@ -315,10 +315,6 @@ export default defineComponent({
 
     input {
       background-color: var(--oc-color-background-muted);
-    }
-
-    input.oc-checkbox-checked {
-      background-color: var(--oc-color-swatch-inverse-default);
     }
   }
 

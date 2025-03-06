@@ -120,7 +120,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .sciencemesh {
-  background-color: var(--oc-color-background-hover);
   overflow: auto;
 }
 .sciencemesh-wrapper {

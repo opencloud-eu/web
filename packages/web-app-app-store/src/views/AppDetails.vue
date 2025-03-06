@@ -97,11 +97,11 @@ export default defineComponent({
 
 <style lang="scss">
 .app-details {
-  background-color: var(--oc-color-background-highlight);
+  background-color: var(--oc-role-surface-container);
   box-shadow: none;
   max-width: 600px;
   margin: 0 auto;
-  outline: 1px solid var(--oc-color-border);
+  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {
     display: flex;

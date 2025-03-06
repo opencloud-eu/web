@@ -280,17 +280,17 @@ export default defineComponent({
 .epub-reader {
   &-chapters-list {
     background: var(--oc-color-background-muted);
-    border-right: 1px solid var(--oc-color-border);
+    border-right: 0.5px solid var(--oc-role-outline-variant);
     width: 240px;
     overflow-y: auto;
 
     &-item:not(:last-child) {
-      border-bottom: 1px solid var(--oc-color-border);
+      border-bottom: 0.5px solid var(--oc-role-outline-variant);
     }
 
     &-item.active {
       .oc-button {
-        color: var(--oc-color-swatch-primary-default);
+        font-weight: var(--oc-font-weight-semibold);
       }
     }
   }

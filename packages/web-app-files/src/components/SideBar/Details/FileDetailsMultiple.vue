@@ -81,11 +81,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .files-preview {
   position: relative;
-  background-color: var(--oc-color-background-muted);
-  border: 10px solid var(--oc-color-background-muted);
+  background-color: var(--oc-role-surface-container-high);
+  border: 10px solid var(--oc-role-surface-container-high);
   height: 230px;
   text-align: center;
-  color: var(--oc-color-swatch-passive-muted);
 
   &-body {
     margin: 0;

@@ -259,7 +259,7 @@ export default defineComponent({
   &-container {
     position: relative;
     background: transparent;
-    border: 1px dashed var(--oc-color-input-border);
+    border: 1px dashed var(--oc-role-outline-variant);
     margin: var(--oc-space-xlarge);
   }
 
@@ -280,6 +280,6 @@ export default defineComponent({
   position: absolute;
   z-index: 9;
   border-radius: 14px;
-  border: 2px dashed var(--oc-color-swatch-primary-muted);
+  border: 0;
 }
 </style>

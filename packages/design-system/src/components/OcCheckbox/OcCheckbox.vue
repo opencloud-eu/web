@@ -132,7 +132,7 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &:focus-visible {
-    outline: var(--oc-color-swatch-primary-default) auto 1px;
+    outline: var(--oc-role-secondary) auto 1px;
   }
 
   &-checked,
