@@ -58,9 +58,9 @@
       <oc-button
         class="oc-modal-body-actions-confirm oc-ml-s"
         appearance="filled"
-        variation="secondary"
         @click="$emit('confirm')"
-        >{{ $gettext('Close') }}
+      >
+        {{ $gettext('Close') }}
       </oc-button>
     </div>
   </div>

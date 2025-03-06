@@ -1286,7 +1286,6 @@ export default defineComponent({
     align-items: center;
     display: flex;
     flex-flow: row nowrap;
-    gap: var(--oc-space-xsmall);
     justify-content: flex-end;
   }
 

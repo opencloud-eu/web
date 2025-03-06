@@ -38,9 +38,10 @@
         :aria-label="clearButtonAccessibleLabelValue"
         class="oc-pr-s oc-position-center-right oc-text-input-btn-clear"
         appearance="raw"
+        no-hover
         @click="onClear"
       >
-        <oc-icon name="close" size="small" variation="passive" />
+        <oc-icon name="close" size="small" />
       </oc-button>
     </div>
     <div

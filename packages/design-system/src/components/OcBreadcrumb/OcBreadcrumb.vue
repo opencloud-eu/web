@@ -39,6 +39,7 @@
           :aria-current="getAriaCurrent(index)"
           appearance="raw"
           class="oc-flex"
+          no-hover
           @click="item.onClick"
         >
           <span
@@ -72,6 +73,7 @@
             v-oc-tooltip="contextMenuLabel"
             :aria-label="contextMenuLabel"
             appearance="raw"
+            no-hover
           >
             <oc-icon name="more-2" color="var(--oc-role-on-surface)" />
           </oc-button>

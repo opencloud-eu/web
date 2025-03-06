@@ -9,10 +9,11 @@
       v-oc-tooltip="applicationSwitcherLabel"
       appearance="raw-inverse"
       color-role="chrome"
-      class="oc-topbar-menu-burger no-hover"
+      class="oc-topbar-menu-burger"
       :aria-label="applicationSwitcherLabel"
+      no-hover
     >
-      <oc-icon name="grid" size="large" class="oc-flex" variation="inherit" />
+      <oc-icon name="grid" size="large" class="oc-flex" />
     </oc-button>
     <oc-drop
       ref="menu"

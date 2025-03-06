@@ -18,13 +18,13 @@
       <slot name="locationFilter" />
       <oc-button
         v-if="icon"
-        v-oc-tooltip="$gettext('Search')"
         :aria-label="$gettext('Search')"
         class="oc-position-small oc-position-center-right oc-mt-rm"
         appearance="raw"
+        no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
       >
-        <oc-icon v-show="!loading" :name="icon" size="small" fill-type="line" variation="passive" />
+        <oc-icon v-show="!loading" :name="icon" size="small" fill-type="line" />
         <oc-spinner
           v-show="loading"
           :size="small ? 'xsmall' : 'medium'"
@@ -35,7 +35,6 @@
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
         class="oc-search-button oc-ml-m"
-        variation="primary"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -46,9 +45,9 @@
     </div>
     <oc-button
       v-if="showCancelButton"
-      :variation="cancelButtonVariation"
       :appearance="cancelButtonAppearance"
       class="oc-ml-m"
+      no-hover
       @click="onCancel"
     >
       <span v-text="$gettext('Cancel')" />
@@ -122,11 +121,6 @@ export interface Props {
    * @default false
    */
   showCancelButton?: boolean
-  /**
-   * @docs The variation of the cancel button.
-   * @default primary
-   */
-  cancelButtonVariation?: VariationType
   /**
    * @docs The appearance of the cancel button.
    * @default raw

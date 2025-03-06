@@ -44,14 +44,6 @@ describe('OcNotificationMessage', () => {
       }
     )
 
-    it('should set status as icon variation', () => {
-      const wrapper = getWrapper({ status: 'primary' })
-      const iconElement = wrapper.find('oc-icon-stub')
-
-      expect(iconElement.exists()).toBeTruthy()
-      expect(iconElement.attributes('variation')).toBe('primary')
-    })
-
     describe('role and aria live of message content wrapper', () => {
       it("should set role as 'status' and aria-live as 'polite' if status is not danger", () => {
         const wrapper = getWrapper({})

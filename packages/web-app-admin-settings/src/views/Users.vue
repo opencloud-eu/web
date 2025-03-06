@@ -19,8 +19,8 @@
             v-if="createUserAction.isVisible()"
             id="create-user-btn"
             v-oc-tooltip="limitedScreenSpace ? createUserAction.label() : undefined"
+            :aria-label="limitedScreenSpace ? createUserAction.label() : undefined"
             class="oc-mr-s"
-            color-role="secondary"
             appearance="filled"
             @click="createUserAction.handler()"
           >

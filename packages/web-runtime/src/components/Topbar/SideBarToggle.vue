@@ -5,10 +5,11 @@
     :aria-label="buttonLabel"
     appearance="raw-inverse"
     color-role="chrome"
-    class="oc-my-s no-hover"
+    no-hover
+    class="oc-my-s"
     @click.stop="toggleSideBar"
   >
-    <oc-icon name="side-bar-right" variation="inherit" :fill-type="buttonIconFillType" />
+    <oc-icon name="side-bar-right" :fill-type="buttonIconFillType" />
   </oc-button>
 </template>
 

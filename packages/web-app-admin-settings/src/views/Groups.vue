@@ -18,8 +18,8 @@
           <oc-button
             id="create-group-btn"
             v-oc-tooltip="limitedScreenSpace ? createGroupAction.label() : undefined"
+            :aria-label="limitedScreenSpace ? createGroupAction.label() : undefined"
             class="oc-mr-s"
-            color-role="secondary"
             appearance="filled"
             @click="createGroupAction.handler()"
           >

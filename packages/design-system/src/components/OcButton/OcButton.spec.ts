@@ -72,40 +72,41 @@ describe('OcButton', () => {
   })
   describe('default prop values', () => {
     it.each`
-      name                 | expected
-      ${'size'}            | ${'oc-button-m'}
-      ${'variation'}       | ${'oc-button-passive'}
-      ${'justify content'} | ${'oc-button-justify-content-center'}
-      ${'gap size'}        | ${'oc-button-gap-m'}
-      ${'appearance'}      | ${'oc-button-passive-outline'}
+      name                           | expected
+      ${'size'}                      | ${'oc-button-m'}
+      ${'color role'}                | ${'oc-button-secondary'}
+      ${'justify content'}           | ${'oc-button-justify-content-center'}
+      ${'gap size'}                  | ${'oc-button-gap-m'}
+      ${'appearance'}                | ${'oc-button-outline'}
+      ${'color role and appearance'} | ${'oc-button-secondary-outline'}
     `('should have attribute "$name" as "$expected"', ({ expected }) => {
       const wrapper = getWrapperWithProps({})
       expect(wrapper.attributes('class')).toContain(expected)
     })
   })
   describe('oc button appearance', () => {
-    // appearance prop is combined with variation prop
     describe('when appearance is "filled"', () => {
-      it('should not have extra appearance class', () => {
+      it('should not have wrong appearance classes', () => {
         const wrapper = getWrapperWithProps({
           appearance: 'filled'
         })
-        expect(wrapper.attributes('class')).toContain('oc-button-passive')
-        expect(wrapper.attributes('class')).not.toContain('oc-button-passive-raw')
-        expect(wrapper.attributes('class')).not.toContain('oc-button-passive-outline')
+        expect(wrapper.attributes('class')).toContain('oc-button-filled')
+        expect(wrapper.attributes('class')).not.toContain('oc-button-raw')
+        expect(wrapper.attributes('class')).not.toContain('oc-button-raw-inverse')
+        expect(wrapper.attributes('class')).not.toContain('oc-button-outline')
       })
     })
-    describe('when oc button is initialized with variation and appearance', () => {
+    describe('when oc button is initialized with color role and appearance', () => {
       it.each`
-        variation    | appearance   | expectedClass
-        ${'success'} | ${'raw'}     | ${'oc-button-success oc-button-raw oc-button-success-raw'}
-        ${'success'} | ${'outline'} | ${'oc-button-success oc-button-outline oc-button-success-outline'}
-        ${'primary'} | ${'raw'}     | ${'oc-button-primary oc-button-raw oc-button-primary-raw'}
-        ${'primary'} | ${'outline'} | ${'oc-button-primary-outline'}
-      `('should have extra appearance class', ({ variation, appearance, expectedClass }) => {
+        colorRole      | appearance   | expectedClass
+        ${'secondary'} | ${'raw'}     | ${'oc-button-secondary oc-button-raw oc-button-secondary-raw'}
+        ${'secondary'} | ${'outline'} | ${'oc-button-secondary oc-button-outline oc-button-secondary-outline'}
+        ${'primary'}   | ${'raw'}     | ${'oc-button-primary oc-button-raw oc-button-primary-raw'}
+        ${'primary'}   | ${'outline'} | ${'oc-button-primary-outline'}
+      `('should have extra appearance class', ({ colorRole, appearance, expectedClass }) => {
         const wrapper = getWrapperWithProps({
           appearance: appearance,
-          variation: variation
+          colorRole: colorRole
         })
         expect(wrapper.attributes('class')).toContain(expectedClass)
       })
