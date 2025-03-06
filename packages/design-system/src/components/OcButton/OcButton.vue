@@ -92,6 +92,11 @@ export interface Props {
    * @default button
    */
   type?: 'button' | 'a' | 'router-link'
+  /**
+   * @docs Determines if the button should have no hover effect.
+   * @default false
+   */
+  noHover?: boolean
 }
 
 export interface Emits {
@@ -121,22 +126,28 @@ const {
   submit = 'button',
   target,
   to,
-  type = 'button'
+  type = 'button',
+  noHover = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const buttonClass = computed(() => {
-  return [
+  const classes = [
     'oc-button',
     'oc-rounded',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
     `oc-button-gap-${getSizeClass(gapSize)}`,
-    `oc-button-role-${kebabCase(colorRole)}`,
-    `oc-button-role-${kebabCase(colorRole)}-${appearance}`
+    `oc-button-${kebabCase(colorRole)}`,
+    `oc-button-${appearance}`,
+    `oc-button-${kebabCase(colorRole)}-${appearance}`
   ]
+  if (noHover) {
+    classes.push('no-hover')
+  }
+  return classes
 })
 
 const additionalAttributes = computed(() => {
@@ -310,52 +321,52 @@ const onClick = (event: MouseEvent) => {
     min-height: 2rem;
   }
 
-  &-role-primary {
+  &-primary {
     @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
   }
-  &-role-primary-container {
+  &-primary-container {
     @include oc-button-color-role(
       var(--oc-role-primary-container),
       var(--oc-role-on-primary-container)
     );
   }
-  &-role-primary-fixed {
+  &-primary-fixed {
     @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
   }
-  &-role-secondary {
+  &-secondary {
     @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
   }
-  &-role-secondary-container {
+  &-secondary-container {
     @include oc-button-color-role(
       var(--oc-role-secondary-container),
       var(--oc-role-on-secondary-container)
     );
   }
-  &-role-secondary-fixed {
+  &-secondary-fixed {
     @include oc-button-color-role(
       var(--oc-role-secondary-fixed),
       var(--oc-role-on-secondary-fixed)
     );
   }
-  &-role-tertiary {
+  &-tertiary {
     @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
   }
-  &-role-tertiary-container {
+  &-tertiary-container {
     @include oc-button-color-role(
       var(--oc-role-tertiary-container),
       var(--oc-role-on-tertiary-container)
     );
   }
-  &-role-tertiary-fixed {
+  &-tertiary-fixed {
     @include oc-button-color-role(var(--oc-role-tertiary-fixed), var(--oc-role-on-tertiary-fixed));
   }
-  &-role-surface {
+  &-surface {
     @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
   }
-  &-role-surface-container {
+  &-surface-container {
     @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
   }
-  &-role-chrome {
+  &-chrome {
     @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
   }
 

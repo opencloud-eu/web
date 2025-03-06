@@ -72,10 +72,9 @@
           </template>
           <oc-button
             id="app-top-bar-close"
-            v-oc-tooltip="closeButtonLabel"
             appearance="raw-inverse"
             variation="primary"
-            :aria-label="closeButtonLabel"
+            :aria-label="$gettext('Close')"
             @click="$emit('close')"
           >
             <oc-icon name="close" size="small" />
@@ -146,7 +145,6 @@ export default defineComponent({
 
     const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
     const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const closeButtonLabel = computed(() => $gettext('Close'))
     const hasAutosave = computed(
       () => props.isEditor && props.hasAutoSave && configStore.options.editor.autosaveEnabled
     )
@@ -166,7 +164,6 @@ export default defineComponent({
 
     return {
       contextMenuLabel,
-      closeButtonLabel,
       areFileExtensionsShown,
       hasAutosave,
       autoSaveTooltipText,

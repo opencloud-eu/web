@@ -18,6 +18,7 @@
       :sticky="isSticky"
       :header-position="fileListHeaderY"
       :hover="true"
+      padding-x="medium"
       @sort="handleSort"
       @contextmenu-clicked="showContextMenuOnRightClick"
       @highlight="fileClicked"
@@ -25,7 +26,6 @@
       <template #selectHeader>
         <oc-checkbox
           size="large"
-          class="oc-ml-s"
           :label="$gettext('Select all spaces')"
           :model-value="allSpacesSelected"
           :label-hidden="true"
@@ -36,7 +36,6 @@
       </template>
       <template #select="{ item }">
         <oc-checkbox
-          class="oc-ml-s"
           size="large"
           :model-value="isSpaceSelected(item)"
           :option="item"
@@ -88,7 +87,7 @@
             v-oc-tooltip="spaceDetailsLabel"
             :aria-label="spaceDetailsLabel"
             appearance="raw"
-            class="oc-mr-xs quick-action-button spaces-table-btn-details oc-p-xs"
+            class="oc-mr-xs quick-action-button oc-p-xs spaces-table-btn-details"
             @click.stop.prevent="showDetailsForSpace(item)"
           >
             <oc-icon name="information" fill-type="line" />

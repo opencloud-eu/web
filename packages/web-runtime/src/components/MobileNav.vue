@@ -27,7 +27,7 @@
             :class="{ 'oc-secondary-container router-link-active': item.active }"
           >
             <span class="oc-flex">
-              <oc-icon :name="item.icon" variation="inherit" />
+              <oc-icon :name="item.icon" />
               <span class="oc-ml-m text" v-text="item.name" />
             </span>
           </oc-button>

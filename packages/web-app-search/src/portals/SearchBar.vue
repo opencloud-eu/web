@@ -15,7 +15,6 @@
       :button-hidden="true"
       :show-cancel-button="showCancelButton"
       :show-advanced-search-button="listProviderAvailable"
-      cancel-button-variation="primary"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
       @advanced-search="onKeyUpEnter"
@@ -39,9 +38,10 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn oc-mr-l no-hover"
+      class="mobile-search-btn oc-mr-l"
       appearance="raw-inverse"
       color-role="chrome"
+      no-hover
       @click="showSearchBar"
     >
       <oc-icon name="search" fill-type="line"></oc-icon>

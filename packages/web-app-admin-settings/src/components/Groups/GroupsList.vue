@@ -17,6 +17,7 @@
       :sticky="isSticky"
       :header-position="fileListHeaderY"
       :hover="true"
+      padding-x="medium"
       @sort="handleSort"
       @contextmenu-clicked="showContextMenuOnRightClick"
       @highlight="rowClicked"
@@ -24,7 +25,6 @@
       <template #selectHeader>
         <oc-checkbox
           size="large"
-          class="oc-ml-s"
           :label="$gettext('Select all groups')"
           :model-value="allGroupsSelected"
           :label-hidden="true"
@@ -35,7 +35,6 @@
       </template>
       <template #select="rowData">
         <oc-checkbox
-          class="oc-ml-s"
           size="large"
           :model-value="isGroupSelected(rowData.item)"
           :option="rowData.item"
@@ -70,7 +69,7 @@
           v-oc-tooltip="$gettext('Show details')"
           :aria-label="$gettext('Show details')"
           appearance="raw"
-          class="oc-mr-xs quick-action-button groups-table-btn-details oc-p-xs"
+          class="oc-mr-xs quick-action-button oc-p-xs groups-table-btn-details"
           @click="showDetails(item)"
         >
           <oc-icon name="information" fill-type="line" />

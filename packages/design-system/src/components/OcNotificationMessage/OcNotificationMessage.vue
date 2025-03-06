@@ -6,14 +6,14 @@
     <div class="oc-flex oc-flex-wrap oc-flex-middle oc-flex-1" :role="role" :aria-live="ariaLive">
       <div class="oc-flex oc-flex-middle oc-flex-between oc-width-1-1">
         <div class="oc-flex oc-flex-middle">
-          <oc-icon :variation="status" name="information" fill-type="line" class="oc-mr-s" />
+          <oc-icon name="information" fill-type="line" class="oc-mr-s" />
           <div class="oc-notification-message-title">
             {{ title }}
           </div>
         </div>
-        <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close"
-          ><oc-icon name="close"
-        /></oc-button>
+        <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
+          <oc-icon name="close" />
+        </oc-button>
       </div>
       <div v-if="message || errorLogContent" class="oc-flex oc-flex-between oc-width-1-1 oc-mt-s">
         <span
