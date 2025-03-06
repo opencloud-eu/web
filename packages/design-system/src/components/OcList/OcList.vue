@@ -32,7 +32,7 @@ ul.oc-list {
   padding: 0;
 
   &-divider > :nth-child(n + 2) {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
     margin-top: var(--oc-space-small);
     padding-top: var(--oc-space-small);
   }

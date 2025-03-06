@@ -704,7 +704,7 @@ export default defineComponent({
 
 <style lang="scss">
 #upload-info {
-  background-color: var(--oc-color-background-secondary);
+  background-color: var(--oc-role-surface);
   width: 400px;
 
   @media (max-width: 640px) {
@@ -718,11 +718,7 @@ export default defineComponent({
   }
 
   .upload-info-title {
-    background-color: var(--oc-color-swatch-inverse-muted);
-  }
-
-  .upload-info-title p {
-    color: var(--oc-color-swatch-brand-contrast);
+    background-color: var(--oc-role-surface-container);
   }
 
   .oc-resource-indicators .parent-folder .text {

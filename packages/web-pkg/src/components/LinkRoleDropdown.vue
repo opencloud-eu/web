@@ -139,12 +139,6 @@ export default defineComponent({
     text-align: left;
     width: 100%;
     gap: var(--oc-space-medium);
-
-    &:hover,
-    &:focus {
-      background-color: var(--oc-color-background-hover);
-      text-decoration: none;
-    }
   }
 }
 </style>

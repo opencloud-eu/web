@@ -117,10 +117,5 @@ export default defineComponent({
     gap: 10px;
     vertical-align: top;
   }
-
-  > li:hover {
-    text-decoration: none !important;
-    background-color: var(--oc-color-background-hover);
-  }
 }
 </style>

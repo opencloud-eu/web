@@ -308,7 +308,6 @@ export default defineComponent({
     max-height: 158px;
 
     &-default {
-      background-color: var(--oc-color-background-highlight);
       height: 100%;
       border-radius: 10px;
     }

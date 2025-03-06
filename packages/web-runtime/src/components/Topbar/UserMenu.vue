@@ -6,6 +6,7 @@
       v-oc-tooltip="$gettext('My Account')"
       class="oc-topbar-personal"
       appearance="raw"
+      no-hover
       :aria-label="$gettext('My Account')"
     >
       <avatar-image
@@ -208,8 +209,6 @@ export default defineComponent({
 
     &:focus,
     &:hover {
-      background-color: var(--oc-color-background-hover);
-      color: var(--oc-color-swatch-passive-default);
       text-decoration: none;
     }
   }
@@ -221,7 +220,7 @@ export default defineComponent({
 }
 
 .imprint-footer {
-  background-color: var(--oc-color-background-hover);
+  background-color: var(--oc-role-surface-container);
   margin-left: calc(var(--oc-space-small) * -1);
   width: calc(100% + var(--oc-space-small) * 2);
   margin-bottom: calc(var(--oc-space-small) * -1) !important;

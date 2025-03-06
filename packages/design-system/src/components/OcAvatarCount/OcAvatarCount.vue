@@ -31,9 +31,9 @@ const fontSize = computed(() => {
 <style lang="scss">
 .oc-avatar-count {
   align-items: center;
-  background-color: var(--oc-color-swatch-passive-default);
+  background-color: var(--oc-role-secondary);
   border-radius: 50%;
-  color: var(--oc-color-text-inverse);
+  color: var(--oc-role-on-secondary);
   display: flex;
   justify-content: center;
 }

@@ -73,11 +73,10 @@ function $_ocTag_click(event: MouseEvent) {
 <style lang="scss">
 .oc-tag {
   align-items: center;
-  background-color: var(--oc-color-background-default);
-  border: 1px solid var(--oc-color-text-muted);
+  background-color: var(--oc-role-surface);
+  border: 1px solid var(--oc-role-outline);
   border-radius: 7px;
   box-sizing: border-box;
-  color: var(--oc-color-text-muted);
   display: inline-flex;
   gap: var(--oc-space-xsmall);
   text-decoration: none;
@@ -115,17 +114,6 @@ function $_ocTag_click(event: MouseEvent) {
 
     .oc-icon > svg {
       transition: fill $transition-duration-short ease-in-out;
-    }
-
-    &:hover,
-    &:focus {
-      color: var(--oc-color-swatch-primary-hover);
-      cursor: pointer;
-      text-decoration: none;
-
-      .oc-icon > svg {
-        fill: var(--oc-color-swatch-primary-hover);
-      }
     }
   }
 }

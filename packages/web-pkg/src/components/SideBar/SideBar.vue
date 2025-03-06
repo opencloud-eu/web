@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  border-left: 1px solid var(--oc-role-outline-variant);
+  border-left: 0.5px solid var(--oc-role-outline-variant);
   position: relative;
   overflow: hidden;
   min-width: 440px;
@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
   }
 
   .multi-root-panel-separator {
-    border-top: 1px solid var(--oc-role-outline-variant);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &__header {
@@ -388,7 +388,7 @@ onBeforeUnmount(() => {
     margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
 
     > button {
-      border-bottom: 1px solid var(--oc-role-outline-variant);
+      border-bottom: 0.5px solid var(--oc-role-outline-variant);
       width: 100%;
       border-radius: 0;
       color: var(--oc-role-on-surface) !important;
@@ -399,7 +399,7 @@ onBeforeUnmount(() => {
       padding: 0 var(--oc-space-small);
 
       &:first-of-type {
-        border-top: 1px solid var(--oc-role-outline-variant);
+        border-top: 0.5px solid var(--oc-role-outline-variant);
       }
 
       &:last-of-type {

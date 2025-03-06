@@ -171,16 +171,15 @@ export default defineComponent({
   border-radius: 5px;
   background: var(--oc-role-secondary-container);
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
-  background: var(--oc-color-swatch-inverse-default);
-  color: var(--oc-color-swatch-inverse-contrast);
+  color: var(--oc-role-on-surface);
   svg {
-    fill: var(--oc-color-swatch-inverse-contrast);
+    fill: var(--oc-role-on-surface);
   }
 }
 
 #web-nav-sidebar {
   background-color: var(--oc-role-surface);
-  border-right: 1px solid var(--oc-role-surface-container);
+  border-right: 0.5px solid var(--oc-role-outline-variant);
   border-radius: 15px 0 0 15px;
   display: flex;
   flex-direction: column;

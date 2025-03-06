@@ -54,10 +54,5 @@ export default defineComponent({
     vertical-align: top;
     text-decoration: none;
   }
-
-  > li:hover {
-    text-decoration: none !important;
-    background-color: var(--oc-color-background-hover);
-  }
 }
 </style>

@@ -75,7 +75,6 @@ export default defineComponent({
     a {
       &:focus,
       &:hover {
-        background-color: var(--oc-color-background-hover);
         text-decoration: none;
       }
     }

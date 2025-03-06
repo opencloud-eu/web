@@ -35,6 +35,7 @@ export interface Props {
   accessibleLabel?: string
   /**
    * @docs The background color of the avatar item.
+   * @default var(--oc-role-secondary)
    */
   background?: string
   /**
@@ -43,6 +44,7 @@ export interface Props {
   icon?: string
   /**
    * @docs The color of the icon.
+   * @default var(--oc-role-on-secondary)
    */
   iconColor?: string
   /**
@@ -65,9 +67,9 @@ export interface Props {
 const {
   name,
   accessibleLabel = '',
-  background = 'var(--oc-color-swatch-passive-default)',
+  background = 'var(--oc-role-secondary)',
   icon,
-  iconColor = 'var(--oc-color-text-inverse)',
+  iconColor = 'var(--oc-role-on-secondary)',
   iconFillType = 'fill',
   iconSize = 'small',
   width = 30

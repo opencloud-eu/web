@@ -10,6 +10,6 @@ defineOptions({ name: 'OcTableHead' })
 
 <style lang="scss">
 .oc-thead {
-  border-bottom: 1px solid var(--oc-role-outline-variant);
+  border-bottom: 0.5px solid var(--oc-role-outline-variant);
 }
 </style>

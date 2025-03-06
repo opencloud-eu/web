@@ -54,12 +54,12 @@
 }
 
 .oc-border {
-  border: $global-border-width solid var(--oc-color-border) !important;
+  border: $global-border-width solid var(--oc-role-outline-variant) !important;
 
   @each $directionKey, $directionValues in $directions {
     &-#{$directionKey} {
       @each $direction in $directionValues {
-        border-#{$direction}: $global-border-width solid var(--oc-color-border) !important;
+        border-#{$direction}: $global-border-width solid var(--oc-role-outline-variant) !important;
       }
     }
   }
@@ -76,7 +76,7 @@
 
 hr {
   border: 0;
-  border-top: 1px solid var(--oc-color-border);
+  border-top: 0.5px solid var(--oc-role-outline-variant);
   margin: 0 0 20px;
   overflow: visible;
   text-align: inherit;

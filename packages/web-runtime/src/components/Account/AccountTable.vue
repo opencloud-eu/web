@@ -85,7 +85,7 @@ export default defineComponent({
 
   tr {
     border-top: 0;
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
   }
 

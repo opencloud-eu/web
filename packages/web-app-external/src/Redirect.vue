@@ -78,7 +78,7 @@ export default defineComponent({
 <style lang="scss">
 .external-redirect {
   .oc-card {
-    background: var(--oc-color-background-highlight);
+    background: var(--oc-role-surface-container);
     border-radius: 15px;
 
     &-body {

@@ -93,7 +93,7 @@ export default defineComponent({
   }
 
   &-border {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

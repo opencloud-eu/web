@@ -179,7 +179,6 @@ onUnmounted(() => {
 .delete-app-token-btn,
 .copy-app-token-btn {
   &:hover {
-    background-color: var(--oc-color-background-hover) !important;
     border-radius: 3px;
   }
 }

@@ -26,11 +26,11 @@ const defaultFolderIcon: IconType = {
 
 const defaultSpaceIcon: IconType = {
   name: 'layout-grid',
-  color: 'var(--oc-color-swatch-passive-default)'
+  color: 'var(--oc-role-secondary)'
 }
 const defaultFallbackIcon: IconType = {
   name: 'resource-type-file',
-  color: 'var(--oc-color-text-default)'
+  color: 'var(--oc-role-on-secondary)'
 }
 
 const defaultFileIconMapping = createDefaultFileIconMapping()

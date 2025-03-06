@@ -120,15 +120,6 @@ export default defineComponent({
         margin-bottom: 0;
       }
     }
-
-    a {
-      &:focus,
-      &:hover {
-        @media (max-width: $oc-breakpoint-xsmall-max) {
-          background-color: var(--oc-color-background-hover);
-        }
-      }
-    }
   }
 
   a {
@@ -154,7 +145,7 @@ export default defineComponent({
   }
 
   .shares-nav-desktop.router-link-active {
-    border-bottom: 2px solid var(--oc-color-swatch-primary-default) !important;
+    border-bottom: 2px solid var(--oc-role-secondary-container) !important;
     border-radius: 0;
   }
 }

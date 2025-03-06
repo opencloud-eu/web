@@ -68,7 +68,7 @@ const iconStyle = computed(() => {
     width: 18px !important;
 
     svg {
-      fill: var(--oc-color-swatch-primary-contrast) !important;
+      fill: var(--oc-role-on-secondary) !important;
       height: 18px !important;
       max-height: 18px !important;
       max-width: 18px !important;

@@ -45,7 +45,7 @@ const tableClasses = computed(() => {
   }
 
   tr + tr {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &-hover tr:hover {

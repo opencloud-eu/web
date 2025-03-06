@@ -666,11 +666,11 @@ export default defineComponent({
   row-gap: 1rem;
 
   &-controls {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &-item-drop-highlight {
-    background-color: var(--oc-color-input-border) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &-footer {
@@ -704,7 +704,7 @@ export default defineComponent({
     height: 100%;
     display: flex;
     flex-flow: column;
-    outline: 1px solid var(--oc-color-border);
+    outline: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

@@ -536,12 +536,11 @@ export default { components: { VueSelect } }
       &--highlight,
       &--selected {
         background-color: var(--oc-role-surface-container);
-        color: var(--oc-role-on-surface-container);
+        color: var(--oc-role-on-surface);
       }
 
       &--selected {
-        background-color: var(--oc-color-background-highlight);
-        color: var(--oc-color-swatch-brand-contrast);
+        background-color: var(--oc-role-secondary-container);
       }
     }
 
@@ -591,43 +590,13 @@ export default { components: { VueSelect } }
   &:focus-within {
     .vs__dropdown-menu,
     .vs__dropdown-toggle {
-      border-color: var(--oc-color-swatch-passive-default);
+      border-color: var(--oc-role-outline-variant);
     }
   }
 
   .keyboard-outline {
-    outline: 2px var(--oc-color-swatch-passive-default) solid !important;
+    outline: 2px var(--oc-role-outline-variant) solid !important;
     outline-offset: -2px;
-  }
-}
-
-.oc-background-highlight {
-  .oc-select {
-    .vs {
-      &__search {
-        color: var(--oc-color-input-text-default);
-      }
-
-      &__search::placeholder,
-      &__dropdown-toggle,
-      &__dropdown-menu {
-        background-color: var(--oc-color-input-bg);
-      }
-    }
-
-    &.vs--multiple {
-      .vs__selected-options > *:not(input) {
-        color: var(--oc-role-on-surface);
-        background-color: var(--oc-role-surface);
-      }
-    }
-
-    &:focus-within {
-      .vs__dropdown-menu,
-      .vs__dropdown-toggle {
-        background-color: var(--oc-color-background-default);
-      }
-    }
   }
 }
 

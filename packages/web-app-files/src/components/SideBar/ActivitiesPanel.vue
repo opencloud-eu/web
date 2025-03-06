@@ -154,7 +154,7 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     width: 1.5px;
-    background-color: var(--oc-color-border);
+    background-color: var(--oc-role-outline-variant);
   }
 
   li {
@@ -169,7 +169,7 @@ export default defineComponent({
       content: '';
       width: 10px;
       height: 10px;
-      background-color: var(--oc-color-border);
+      background-color: var(--oc-role-outline-variant);
       border-radius: 50%;
       position: absolute;
       left: -4px;
