@@ -317,6 +317,11 @@ const onFocus = async (target: HTMLInputElement) => {
 }
 
 .oc-text-input {
+  &:focus {
+    border: 1px solid var(--oc-role-surface);
+    outline: 2px solid var(--oc-role-outline);
+  }
+
   &-description {
     color: var(--oc-role-on-surface-variant);
   }
