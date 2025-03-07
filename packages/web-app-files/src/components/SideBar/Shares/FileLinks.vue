@@ -25,15 +25,18 @@
       </li>
     </ul>
     <div v-if="directLinks.length > 3" class="oc-flex oc-flex-center">
-      <oc-button class="indirect-link-list-toggle" appearance="raw" @click="toggleLinkListCollapsed"
-        ><span v-text="collapseButtonTitle"
-      /></oc-button>
+      <oc-button
+        class="indirect-link-list-toggle"
+        appearance="raw"
+        @click="toggleLinkListCollapsed"
+      >
+        <span v-text="collapseButtonTitle" />
+      </oc-button>
     </div>
     <div class="oc-mt-m">
       <oc-button
         v-if="canCreateLinks"
         id="files-file-link-add"
-        variation="primary"
         appearance="raw"
         data-testid="files-link-add-btn"
         @click="addNewLink"

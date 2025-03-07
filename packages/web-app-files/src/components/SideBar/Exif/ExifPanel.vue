@@ -29,6 +29,7 @@
           appearance="raw"
           class="oc-ml-s"
           :aria-label="copyLocationToClipboardLabel"
+          no-hover
           @click="copyLocationToClipboard"
         >
           <oc-icon size="small" :name="isCopiedToClipboard ? 'checkbox-circle' : 'file-copy'" />
@@ -156,7 +157,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .exif-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
