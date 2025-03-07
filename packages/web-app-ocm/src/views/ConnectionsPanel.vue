@@ -49,8 +49,9 @@
               @click="deleteConnection(item)"
             >
               <oc-icon name="delete-bin-5" fill-type="line" size="medium" />
-              <span v-text="$gettext('Delete')" /></oc-button
-          ></template>
+              <span v-text="$gettext('Delete')" />
+            </oc-button>
+          </template>
         </oc-table>
       </template>
     </div>

@@ -1,13 +1,12 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-surface-container-highest oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
+      class="oc-surface-container oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
-        class="preview-controls-previous"
-        appearance="raw-inverse"
-        variation="brand"
+        class="preview-controls-previous raw-hover-surface"
+        appearance="raw"
         :aria-label="previousDescription"
         @click="$emit('togglePrevious')"
       >
@@ -19,9 +18,8 @@
       </p>
       <oc-button
         v-oc-tooltip="nextDescription"
-        class="preview-controls-next"
-        appearance="raw-inverse"
-        variation="brand"
+        class="preview-controls-next raw-hover-surface"
+        appearance="raw"
         :aria-label="nextDescription"
         @click="$emit('toggleNext')"
       >
@@ -32,9 +30,8 @@
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen"
-          appearance="raw-inverse"
-          variation="brand"
+          class="preview-controls-fullscreen raw-hover-surface"
+          appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
@@ -50,9 +47,8 @@
         <div class="oc-flex">
           <oc-button
             v-oc-tooltip="imageShrinkDescription"
-            class="preview-controls-image-shrink"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-shrink raw-hover-surface"
+            appearance="raw"
             :aria-label="imageShrinkDescription"
             @click="imageShrink"
           >
@@ -60,9 +56,8 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageOriginalSizeDescription"
-            class="preview-controls-image-original-size oc-ml-s oc-mr-s"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-original-size raw-hover-surface oc-ml-s oc-mr-s"
+            appearance="raw"
             :aria-label="imageOriginalSizeDescription"
             @click="$emit('setZoom', 1)"
           >
@@ -70,9 +65,8 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageZoomDescription"
-            class="preview-controls-image-zoom"
+            class="preview-controls-image-zoom raw-hover-surface"
             appearance="raw"
-            variation="brand"
             :aria-label="imageZoomDescription"
             @click="imageZoom"
           >
@@ -82,9 +76,8 @@
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageRotateLeftDescription"
-            class="preview-controls-rotate-left"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-rotate-left raw-hover-surface"
+            appearance="raw"
             :aria-label="imageRotateLeftDescription"
             @click="imageRotateLeft"
           >
@@ -92,9 +85,8 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageRotateRightDescription"
-            class="preview-controls-rotate-right"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-rotate-right raw-hover-surface"
+            appearance="raw"
             :aria-label="imageRotateRightDescription"
             @click="imageRotateRight"
           >
@@ -104,9 +96,8 @@
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageResetDescription"
-            class="preview-controls-image-reset"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-reset raw-hover-surface"
+            appearance="raw"
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"
           >

@@ -4,7 +4,7 @@
       :id="`edit-public-link-dropdown-toggl-${linkShare.id}`"
       :aria-label="$gettext('More options')"
       appearance="raw"
-      class="edit-drop-trigger"
+      class="edit-drop-trigger raw-hover-surface oc-p-xs"
     >
       <oc-icon name="more-2" />
     </oc-button>

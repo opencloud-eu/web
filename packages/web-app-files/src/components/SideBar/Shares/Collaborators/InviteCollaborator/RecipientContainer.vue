@@ -6,7 +6,7 @@
   >
     <template #append>
       <oc-button
-        class="files-share-invite-recipient-btn-remove"
+        class="files-share-invite-recipient-btn-remove raw-hover-surface"
         appearance="raw"
         :aria-label="btnDeselectRecipientLabel"
         @click.stop="deselect(recipient)"

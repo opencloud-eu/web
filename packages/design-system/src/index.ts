@@ -23,8 +23,8 @@ export default {
     initializeCustomProps(themeOptions?.spacing, 'space-')
     applyCustomProp('font-family', themeOptions?.fontFamily)
     if (!themeOptions?.roles?.chrome) {
-      applyCustomProp('role-chrome', themeOptions?.roles.surfaceContainer)
-      applyCustomProp('role-on-chrome', themeOptions?.roles.onSurface)
+      applyCustomProp('role-chrome', themeOptions?.roles?.surfaceContainer)
+      applyCustomProp('role-on-chrome', themeOptions?.roles?.onSurface)
     }
 
     Object.values(components).forEach((c) => app.component(c.__name, c))
