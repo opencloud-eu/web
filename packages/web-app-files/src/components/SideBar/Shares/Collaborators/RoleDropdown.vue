@@ -9,7 +9,6 @@
         :id="roleButtonId"
         class="files-recipient-role-select-btn"
         appearance="raw"
-        color-role="secondary"
         gap-size="none"
         :disabled="isLocked"
         :aria-label="

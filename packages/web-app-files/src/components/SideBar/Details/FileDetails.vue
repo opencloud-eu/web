@@ -91,6 +91,7 @@
               v-oc-tooltip="seeVersionsLabel"
               appearance="raw"
               :aria-label="seeVersionsLabel"
+              no-hover
               @click="expandVersionsPanel"
             >
               {{ versions.length }}

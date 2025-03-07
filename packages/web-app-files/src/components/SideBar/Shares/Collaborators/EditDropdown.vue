@@ -3,12 +3,11 @@
     <oc-button
       :id="editShareBtnId"
       v-oc-tooltip="dropButtonTooltip"
-      class="collaborator-edit-dropdown-options-btn"
+      class="collaborator-edit-dropdown-options-btn raw-hover-surface oc-p-xs"
       :aria-label="
         isLocked ? dropButtonTooltip : $gettext('Open context menu with share editing options')
       "
       appearance="raw"
-      color-role="secondary"
       :disabled="isLocked"
     >
       <oc-icon name="more-2" />

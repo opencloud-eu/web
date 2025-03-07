@@ -46,7 +46,7 @@
         />
         <oc-button
           v-oc-tooltip="$gettext('Close filter')"
-          class="close-filter-btn oc-mt-m"
+          class="close-filter-btn oc-mt-m raw-hover-surface"
           :aria-label="$gettext('Close filter')"
           appearance="raw"
           @click="toggleFilter"
