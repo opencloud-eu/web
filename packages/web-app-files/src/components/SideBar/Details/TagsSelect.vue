@@ -34,7 +34,7 @@
             appearance="raw"
             :title="$gettext('Deselect %{label}', { label: option.label })"
             :aria-label="$gettext('Deselect %{label}', { label: option.label })"
-            class="vs__deselect oc-mx-rm"
+            class="vs__deselect oc-mx-rm raw-hover-surface"
             @mousedown.stop.prevent
             @click="deselect(option)"
           >

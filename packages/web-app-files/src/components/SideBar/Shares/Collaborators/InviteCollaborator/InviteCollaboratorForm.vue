@@ -95,12 +95,12 @@
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="files-collaborators-collaborator-expiration"
+          class="files-collaborators-collaborator-expiration oc-ml-xs oc-p-xs"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="oc-mx-s"
+          class="oc-ml-xs raw-hover-surface oc-p-xs"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >
@@ -129,9 +129,9 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
+          class="oc-ml-s"
           data-testid="new-collaborators-form-create-button"
           :disabled="!$_isValid || saving"
-          color-role="secondary"
           :appearance="saving ? 'outline' : 'filled'"
           submit="submit"
           :show-spinner="savingDelayed"

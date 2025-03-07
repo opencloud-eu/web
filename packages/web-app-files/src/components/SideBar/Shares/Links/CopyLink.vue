@@ -4,7 +4,7 @@
     v-oc-tooltip="$gettext('Copy link to clipboard')"
     :aria-label="$gettext('Copy link to clipboard')"
     appearance="raw"
-    class="oc-files-public-link-copy-url"
+    class="oc-files-public-link-copy-url raw-hover-surface oc-p-xs"
     @click="copyLinkToClipboard"
   >
     <oc-icon :name="copied ? 'checkbox-circle' : 'file-copy'" fill-type="line" />

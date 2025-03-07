@@ -27,7 +27,7 @@
             v-oc-tooltip="$gettext('Show context menu')"
             :aria-label="$gettext('Show context menu')"
             appearance="raw"
-            class="oc-ml-s"
+            class="oc-ml-s oc-p-xs"
           >
             <oc-icon name="more-2" />
           </oc-button>
@@ -47,6 +47,7 @@
           v-if="memberCount"
           :aria-label="$gettext('Open context menu and show members')"
           appearance="raw"
+          no-hover
           @click="openSideBarSharePanel"
         >
           <oc-icon name="group" fill-type="line" size="small" />
@@ -64,23 +65,24 @@
           is-read-only
           :current-content="markdownContent"
         />
-        <div class="markdown-container-edit oc-flex oc-flex-middle oc-ml-s">
-          <router-link
-            v-oc-tooltip="$gettext('Edit description')"
+        <div class="markdown-container-edit oc-ml-s">
+          <oc-button
+            type="router-link"
             size="small"
+            :aria-label="$gettext('Edit description')"
             appearance="raw"
+            class="oc-mt-s oc-p-xs"
             :to="editReadMeContentLink"
           >
             <oc-icon name="pencil" size="small" fill-type="line" />
-          </router-link>
+          </oc-button>
         </div>
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
         class="markdown-collapse oc-text-center oc-mt-s"
       >
-        <oc-button appearance="raw" @click="toggleMarkdownCollapsed">
-          <oc-icon :name="toggleMarkdownCollapsedIcon" />
+        <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
           <span>{{ toggleMarkdownCollapsedText }}</span>
         </oc-button>
       </div>
@@ -147,9 +149,6 @@ export default defineComponent({
     const markdownResource = ref(null)
     const markdownCollapsed = ref(true)
     const showMarkdownCollapse = ref(false)
-    const toggleMarkdownCollapsedIcon = computed(() => {
-      return unref(markdownCollapsed) ? 'add' : 'subtract'
-    })
     const toggleMarkdownCollapsedText = computed(() => {
       return unref(markdownCollapsed) ? $gettext('Show more') : $gettext('Show less')
     })
@@ -275,7 +274,6 @@ export default defineComponent({
       markdownResource,
       markdownCollapsed,
       showMarkdownCollapse,
-      toggleMarkdownCollapsedIcon,
       toggleMarkdownCollapsedText,
       toggleMarkdownCollapsed,
       imageContent,

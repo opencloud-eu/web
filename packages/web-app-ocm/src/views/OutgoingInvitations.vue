@@ -76,7 +76,7 @@
           <template #link="rowData">
             <a :href="rowData.item.link" v-text="$gettext('Link')" />
             <oc-button
-              id="oc-sciencemesh-copy-token"
+              id="oc-sciencemesh-copy-link"
               v-oc-tooltip="$gettext('Copy invitation link')"
               :aria-label="$gettext('Copy invitation link')"
               appearance="raw"

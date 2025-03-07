@@ -68,7 +68,7 @@
             v-oc-tooltip="$gettext('Show details')"
             :aria-label="$gettext('Show details')"
             appearance="raw"
-            class="oc-mr-xs quick-action-button oc-p-xs users-table-btn-details"
+            class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-details"
             @click="showDetails(item)"
           >
             <oc-icon name="information" fill-type="line" />
@@ -77,7 +77,7 @@
             v-oc-tooltip="$gettext('Edit')"
             :aria-label="$gettext('Edit')"
             appearance="raw"
-            class="oc-mr-xs quick-action-button oc-p-xs users-table-btn-edit"
+            class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-edit"
             @click="showEditPanel(item)"
           >
             <oc-icon name="pencil" fill-type="line" />

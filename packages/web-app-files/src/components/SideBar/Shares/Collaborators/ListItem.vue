@@ -87,7 +87,7 @@
       <div class="oc-flex oc-flex-middle oc-width-1-3 files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
-          class="files-collaborators-collaborator-expiration oc-mr-xs"
+          class="files-collaborators-collaborator-expiration oc-ml-xs oc-p-xs"
           data-testid="recipient-info-expiration-date"
           :expiration-date="DateTime.fromISO(share.expirationDateTime)"
         />
@@ -96,7 +96,7 @@
           v-oc-tooltip="sharedViaTooltip"
           name="folder-shared"
           fill-type="line"
-          class="files-collaborators-collaborator-shared-via oc-mx-xs"
+          class="files-collaborators-collaborator-shared-via oc-ml-xs oc-p-xs"
         />
         <edit-dropdown
           class="files-collaborators-collaborator-edit oc-ml-xs"

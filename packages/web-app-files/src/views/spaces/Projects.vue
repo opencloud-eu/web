@@ -89,7 +89,7 @@
               <oc-button
                 v-if="!resource.disabled"
                 v-oc-tooltip="showSpaceMemberLabel"
-                class="spaces-list-show-members-button"
+                class="spaces-list-show-members-button raw-hover-surface oc-p-xs oc-ml-xs"
                 :aria-label="showSpaceMemberLabel"
                 appearance="raw"
                 @click="openSidebarSharePanel(resource as SpaceResource)"
