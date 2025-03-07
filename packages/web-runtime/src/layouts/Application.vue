@@ -227,12 +227,15 @@ onBeforeUnmount(() => {
 
     .app-container {
       height: 100%;
-      background-color: var(--oc-role-surface);
+      background: var(--oc-role-surface-container);
       border-radius: 15px;
       overflow: hidden;
       width: 100%;
 
       .app-content {
+        background: var(--oc-role-surface);
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
       }
     }
