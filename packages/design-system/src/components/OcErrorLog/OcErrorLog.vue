@@ -54,10 +54,6 @@ const copyContentToClipboard = () => {
 .oc-error-log {
   &-textarea {
     resize: none;
-
-    label {
-      color: var(--oc-color-text-muted);
-    }
   }
 }
 </style>

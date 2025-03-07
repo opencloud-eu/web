@@ -77,7 +77,7 @@ export default defineComponent({
   .app-tile-title {
     .mark-highlight {
       font-weight: unset !important;
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
     }
   }
 }

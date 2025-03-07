@@ -147,7 +147,7 @@ export default defineComponent({
 .files-embed-actions {
   // Prevent .snackbar from overlapping the actions
   z-index: calc(var(--oc-z-index-modal) + 2);
-  color: var(--oc-color-text-inverse);
+  color: var(--oc-role-on-chrome);
   flex-wrap: wrap;
   gap: var(--oc-space-small);
 

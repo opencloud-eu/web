@@ -55,10 +55,6 @@ export default defineComponent({
     background-color: transparent;
     height: 2px;
 
-    &-primary div {
-      background-color: var(--oc-color-swatch-brand-default);
-    }
-
     &-indeterminate-first {
       animation-duration: 4s;
     }

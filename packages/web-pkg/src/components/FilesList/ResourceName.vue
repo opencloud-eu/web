@@ -159,13 +159,13 @@ export default defineComponent({
 
     &:hover {
       text-decoration: underline;
-      text-decoration-color: var(--oc-color-text-default);
+      text-decoration-color: var(--oc-role-on-surface);
     }
   }
 
   &-basename,
   &-extension {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
     white-space: pre;
   }
 

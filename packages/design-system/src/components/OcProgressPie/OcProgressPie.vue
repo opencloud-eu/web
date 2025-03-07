@@ -92,7 +92,6 @@ $default-size: 64px;
   }
 
   &-label {
-    color: var(--oc-color-text-muted) !important;
     left: 50%;
     position: absolute;
     top: 50%;

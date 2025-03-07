@@ -41,16 +41,16 @@ $form-line-height: $form-height !default;
 $form-padding-horizontal: var(--oc-space-small) !default;
 $form-padding-vertical: var(--oc-space-xsmall) !default;
 
-$form-background: var(--oc-color-background-muted) !default;
-$form-color: var(--oc-color-text-default) !default;
+$form-background: var(--oc-role-surface) !default;
+$form-color: var(--oc-role-on-surface) !default;
 
 $form-focus-background: var(--oc-role-surface) !default;
 $form-focus-color: var(--oc-role-on-surface) !default;
 
-$form-disabled-background: var(--oc-color-background-muted) !default;
-$form-disabled-color: var(--oc-color-text-muted) !default;
+$form-disabled-background: var(--oc-role-surface-container-low) !default;
+$form-disabled-color: var(--oc-role-on-surface) !default;
 
-$form-placeholder-color: var(--oc-color-text-muted) !default;
+$form-placeholder-color: var(--oc-role-on-surface) !default;
 
 $form-small-height: var(--oc-font-size-small) !default;
 $form-small-padding-horizontal: var(--oc-space-small) !default;
@@ -71,22 +71,22 @@ $form-width-medium: 200px !default;
 $form-width-large: 500px !default;
 
 $form-select-padding-right: 20px !default;
-$form-select-icon-color: var(--oc-color-text-default) !default;
+$form-select-icon-color: var(--oc-role-on-surface) !default;
 $form-select-option-color: #444 !default;
-$form-select-disabled-icon-color: var(--oc-color-text-muted) !default;
+$form-select-disabled-icon-color: var(--oc-role-on-surface-variant) !default;
 
 $form-datalist-padding-right: 20px !default;
-$form-datalist-icon-color: var(--oc-color-text-default) !default;
+$form-datalist-icon-color: var(--oc-role-on-surface) !default;
 
-$form-radio-background: var(--oc-color-background-muted) !default;
+$form-radio-background: var(--oc-role-surface-container) !default;
 
-$form-radio-checked-background: $oc-color-swatch-primary-default !default;
-$form-radio-checked-icon-color: var(--oc-color-input-text-default) !default;
+$form-radio-checked-background: $oc-role-secondary !default;
+$form-radio-checked-icon-color: var(--oc-role-on-surface) !default;
 
-$form-radio-checked-focus-background: $oc-color-swatch-primary-default !default;
+$form-radio-checked-focus-background: $oc-role-secondary !default;
 
-$form-radio-disabled-background: $oc-color-background-muted !default;
-$form-radio-disabled-icon-color: var(--oc-color-text-muted) !default;
+$form-radio-disabled-background: $oc-role-surface-container-low !default;
+$form-radio-disabled-icon-color: var(--oc-role-on-surface-variant) !default;
 
 $form-legend-font-size: var(--oc-font-size-large) !default;
 $form-legend-line-height: 1.4 !default;
@@ -99,8 +99,8 @@ $form-horizontal-controls-margin-left: 215px !default;
 $form-horizontal-controls-text-padding-top: 7px !default;
 
 $form-icon-width: var(--oc-size-icon-default) !default;
-$form-icon-color: var(--oc-color-text-muted) !default;
-$form-icon-hover-color: var(--oc-color-text-default) !default;
+$form-icon-color: var(--oc-role-on-surface) !default;
+$form-icon-hover-color: var(--oc-role-on-surface) !default;
 
 $internal-form-select-image: "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2224%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%201%209%206%2015%206%22%20%2F%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%2013%209%208%2015%208%22%20%2F%3E%0A%3C%2Fsvg%3E%0A" !default;
 $internal-form-datalist-image: "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2224%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%2012%208%206%2016%206%22%20%2F%3E%0A%3C%2Fsvg%3E%0A" !default;
@@ -253,9 +253,9 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   background-origin: border-box;
   border-radius: 0;
   border-radius: 5px;
-  border: 1px solid var(--oc-color-input-border);
+  border: 1px solid var(--oc-role-outline);
   box-sizing: border-box;
-  color: var(--oc-color-input-text-default);
+  color: var(--oc-role-on-surface);
   display: inline-block;
   line-height: inherit;
   margin: 0;
@@ -294,7 +294,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-select:focus,
 .oc-textarea:focus {
   outline: none;
-  border-color: var(--oc-color-input-text-default);
   color: $form-focus-color;
 }
 

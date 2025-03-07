@@ -232,7 +232,6 @@ const onCancel = () => {
   &-icon {
     align-items: center;
     bottom: 0;
-    color: var(--oc-color-text-muted);
     display: inline-flex;
     justify-content: center;
     left: 0;
@@ -248,9 +247,6 @@ const onCancel = () => {
     height: 2.3rem;
 
     &:focus {
-      background-color: var(--oc-color-input-bg);
-      border-color: var(--oc-color-input-text-default);
-      color: var(--oc-color-input-text-default);
       background-image: none;
     }
 

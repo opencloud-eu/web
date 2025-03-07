@@ -399,6 +399,7 @@ export default defineComponent({
   border: 10px solid var(--oc-role-surface-container-high);
   padding: 10px;
   height: 230px;
+  border-radius: 5px;
 
   background-size: contain;
   background-repeat: no-repeat;

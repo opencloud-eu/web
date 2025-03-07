@@ -85,6 +85,7 @@ export default defineComponent({
   border: 10px solid var(--oc-role-surface-container-high);
   height: 230px;
   text-align: center;
+  border-radius: 5px;
 
   &-body {
     margin: 0;

@@ -34,7 +34,7 @@ const spinnerClass = computed(() => {
 .oc-spinner {
   @include oc-spinner-size(1);
 
-  color: var(--oc-color-text-default);
+  color: var(--oc-role-on-surface);
   display: inline-block;
 
   &::after {

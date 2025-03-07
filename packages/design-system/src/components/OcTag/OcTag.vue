@@ -104,10 +104,6 @@ function $_ocTag_click(event: MouseEvent) {
     padding-right: var(--oc-space-small);
   }
 
-  .oc-icon > svg {
-    fill: var(--oc-color-text-muted);
-  }
-
   &-link,
   &-button {
     transition: color $transition-duration-short ease-in-out;

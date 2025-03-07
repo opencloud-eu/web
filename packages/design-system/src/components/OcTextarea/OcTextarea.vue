@@ -110,22 +110,15 @@ defineExpose({ focus })
   padding-bottom: var(--oc-space-xsmall);
   padding-top: var(--oc-space-xsmall);
   box-sizing: border-box;
-  background: var(--oc-color-background-muted);
-  border: 0 none;
+  background: var(--oc-role-surface-container);
+  border: 1px solid var(--oc-role-outline);
   margin: 0;
-  color: var(--oc-color-text-default);
   max-width: 100%;
   width: 100%;
   overflow: auto;
 
   &:disabled {
-    color: var(--oc-color-input-text-muted);
-  }
-
-  &:focus {
-    border-color: var(--oc-color-input-text-default);
-    background-color: var(--oc-color-background-muted);
-    color: var(--oc-color-text-default);
+    opacity: 0.7;
   }
 
   &-warning,
