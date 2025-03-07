@@ -259,9 +259,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.oc-files-actions-hide-share-trigger:hover {
-  background-color: var(--oc-color-background-secondary) !important;
-}
-</style>

@@ -17,7 +17,7 @@ const resourceIconMapping: ResourceIconMapping = {
   mimeType: {
     'not-a-real-mimetype': {
       name: 'resource-type-file',
-      color: 'var(--oc-color-text-default)'
+      color: 'var(--oc-role-on-surface)'
     }
   }
 }

@@ -6,6 +6,7 @@
         appearance="raw"
         :class="{ active: previewActive }"
         class="oc-px-m oc-pb-s"
+        no-hover
         >Preview</oc-button
       >
       <oc-button
@@ -13,6 +14,7 @@
         appearance="raw"
         :class="{ active: !previewActive }"
         class="oc-px-m oc-pb-s"
+        no-hover
         >Code</oc-button
       >
     </div>

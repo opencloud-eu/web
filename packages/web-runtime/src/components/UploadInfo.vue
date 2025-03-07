@@ -722,7 +722,7 @@ export default defineComponent({
   }
 
   .oc-resource-indicators .parent-folder .text {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
   }
 
   .upload-info-items {

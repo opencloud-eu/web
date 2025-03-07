@@ -1,7 +1,7 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-background-brand oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around preview-controls-action-bar"
+      class="oc-surface-container-highest oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
@@ -226,10 +226,6 @@ export default defineComponent({
 .preview-details.lightbox {
   z-index: 1000;
   opacity: 0.9;
-}
-
-.preview-controls-action-count {
-  color: var(--oc-color-swatch-brand-contrast);
 }
 
 .preview-controls-image-original-size {

@@ -148,7 +148,7 @@ const getAvatarComponentForItem = (item: Item) => {
     .oc-avatar-count,
     .oc-avatar + .oc-avatar-item,
     .oc-avatar-item + .oc-avatar-item {
-      border: 1px solid var(--oc-color-text-inverse);
+      border: 1px solid var(--oc-role-outline);
       margin-left: -25px;
     }
   }

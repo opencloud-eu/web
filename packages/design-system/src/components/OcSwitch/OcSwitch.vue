@@ -53,7 +53,7 @@ const toggle = () => {
   gap: var(--oc-space-small);
 
   &-btn {
-    border: 1px solid var(--oc-color-input-bg);
+    border: 1px solid var(--oc-role-outline-variant);
     border-radius: 20px;
     cursor: pointer;
     display: block;
@@ -78,7 +78,7 @@ const toggle = () => {
     }
 
     &[aria-checked='false'] {
-      background-color: var(--oc-role-surface-container-highest);
+      background-color: var(--oc-role-surface-container);
 
       &::before {
         transform: translateX(0);

@@ -489,7 +489,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-  color: var(--oc-color-text-default);
   width: 100%;
 
   &-hover tr {
@@ -514,11 +513,10 @@ const handleSort = (field: FieldType) => {
   }
 
   &-accentuated {
-    background-color: var(--oc-color-background-accentuate);
+    background-color: var(--oc-role-secondary-container);
   }
 
   &-disabled {
-    background-color: var(--oc-color-background-muted);
     opacity: 0.7;
     filter: grayscale(0.6);
     pointer-events: none;
@@ -534,7 +532,7 @@ const handleSort = (field: FieldType) => {
   }
 
   .highlightedDropTarget {
-    background-color: var(--oc-color-input-border);
+    background-color: var(--oc-role-surface-container-highest);
   }
 
   &-thead-content {
@@ -549,7 +547,7 @@ const handleSort = (field: FieldType) => {
     border-top: 0.5px solid var(--oc-role-outline-variant);
 
     &-cell {
-      color: var(--oc-color-text-muted);
+      color: var(--oc-role-on-surface-variant);
       font-size: 0.875rem;
       line-height: 1.4;
       padding: var(--oc-space-xsmall);

@@ -22,7 +22,7 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: #f8f8f8;
+  background-color: var(--oc-role-surface-container);
   border: 0;
   border-radius: 500px;
   display: block;
@@ -40,7 +40,7 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   }
 
   &::after {
-    background: var(--oc-color-text-muted);
+    background: var(--oc-role-secondary);
     content: '';
     height: 100%;
     width: 0;

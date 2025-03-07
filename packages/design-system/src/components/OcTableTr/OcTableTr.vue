@@ -75,11 +75,11 @@ if (!lazy) {
 
 <style lang="scss">
 .shimmer {
-  background-color: var(--oc-color-input-text-muted);
+  background-color: var(--oc-role-shadow);
   bottom: 12px;
   display: inline-block;
   left: var(--oc-space-small);
-  opacity: 0.2;
+  opacity: 0.1;
   overflow: hidden;
   position: absolute;
   right: var(--oc-space-small);

@@ -362,7 +362,6 @@ export default defineComponent({
     width: calc(100% - var(--oc-space-medium));
     background: #fff;
     top: 0;
-    color: var(--oc-color-swatch-passive-default);
 
     &-active {
       visibility: unset;

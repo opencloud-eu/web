@@ -171,7 +171,7 @@ watch(password, (value) => {
     flex-direction: row;
     padding: 0;
     border-radius: 5px;
-    border: 1px solid var(--oc-color-input-border);
+    border: 1px solid var(--oc-role-outline);
 
     input {
       flex-grow: 2;

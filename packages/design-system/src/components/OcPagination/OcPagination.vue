@@ -167,20 +167,20 @@ const bindPageLink = (page: Page) => {
     &-item {
       &-page {
         border-radius: 4px;
-        color: var(--oc-color-text-default);
+        color: var(--oc-role-on-surface);
         padding: var(--oc-space-xsmall) var(--oc-space-small);
         transition: background-color $transition-duration-short ease-in-out;
 
         &:not(span):hover {
           background-color: var(--oc-role-secondary);
-          color: var(--oc-color-text-inverse);
+          color: var(--oc-role-on-secondary);
           text-decoration: none;
         }
       }
 
       &-current {
         background-color: var(--oc-role-secondary);
-        color: var(--oc-color-text-inverse);
+        color: var(--oc-role-on-secondary);
         font-weight: bold;
       }
 
@@ -189,7 +189,7 @@ const bindPageLink = (page: Page) => {
         display: flex;
 
         > .oc-icon > svg {
-          fill: var(--oc-color-text-default);
+          fill: var(--oc-role-on-surface);
         }
       }
 

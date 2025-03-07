@@ -465,7 +465,7 @@ export default { components: { VueSelect } }
 .oc-select {
   line-height: normal;
   padding: 1px 0;
-  color: var(--oc-color-input-text-default);
+  color: var(--oc-role-on-surface);
 
   &-position-fixed {
     .vs__dropdown-menu {
@@ -476,7 +476,7 @@ export default { components: { VueSelect } }
 
   .vs {
     &__search {
-      color: var(--oc-color-input-text-default);
+      color: var(--oc-role-on-surface);
     }
 
     &__search::placeholder,
@@ -501,7 +501,7 @@ export default { components: { VueSelect } }
     }
 
     &__selected-readonly {
-      background-color: var(--oc-color-background-muted) !important;
+      background-color: var(--oc-role-surface-container-low) !important;
     }
 
     &__search,
@@ -518,7 +518,7 @@ export default { components: { VueSelect } }
     &__clear,
     &__open-indicator,
     &__deselect {
-      fill: var(--oc-color-input-text-default);
+      fill: var(--oc-role-on-surface);
     }
 
     &__deselect {
@@ -527,7 +527,7 @@ export default { components: { VueSelect } }
 
     &__dropdown-option,
     &__no-options {
-      color: var(--oc-color-input-text-default);
+      color: var(--oc-role-on-surface);
       white-space: normal;
       padding: 6px 0.6rem;
       border-radius: 5px;
@@ -567,12 +567,12 @@ export default { components: { VueSelect } }
       > * {
         padding: 0px 2px;
         margin: 2px 2px 2px 1px;
-        color: var(--oc-color-input-text-default);
+        color: var(--oc-role-on-surface);
       }
 
       > *:not(input) {
         padding-left: 3px;
-        background-color: var(--oc-color-background-default);
+        background-color: var(--oc-role-surface-container);
         fill: var(--oc-role-on-surface);
       }
     }
@@ -581,8 +581,8 @@ export default { components: { VueSelect } }
   &.vs--multiple {
     .vs {
       &__selected-options > *:not(input) {
-        color: var(--oc-color-input-text-default);
-        background-color: var(--oc-color-background-default);
+        color: var(--oc-role-on-surface);
+        background-color: var(--oc-role-surface-container);
       }
     }
   }

@@ -318,7 +318,7 @@ const onFocus = async (target: HTMLInputElement) => {
 
 .oc-text-input {
   &-description {
-    color: var(--oc-color-text-muted);
+    color: var(--oc-role-on-surface-variant);
   }
 
   &-success,

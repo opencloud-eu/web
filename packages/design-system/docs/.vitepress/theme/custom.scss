@@ -1,6 +1,6 @@
 :root {
   --vp-font-family-base: 'OpenCloud', sans-serif;
-  --vp-c-brand-1: var(--oc-color-swatch-inverse-contrast);
+  --vp-c-brand-1: var(--oc-role-secondary);
 }
 
 .title span {
@@ -9,7 +9,7 @@
 
 // some vitepress styles need to be overwritten to properly display our components
 button.oc-button-passive-outline:focus:not(:focus-visible) {
-  outline: 1px solid var(--oc-color-swatch-passive-default) !important;
+  outline: 1px solid var(--oc-role-outline) !important;
 }
 .oc-modal-title > h2 {
   padding: 0 !important;

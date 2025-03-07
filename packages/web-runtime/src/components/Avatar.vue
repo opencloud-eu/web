@@ -1,17 +1,7 @@
 <template>
   <component :is="type" :aria-hidden="true">
-    <oc-spinner
-      v-if="loading"
-      key="avatar-loading"
-      :style="`width: ${width}px; height: ${width}px;`"
-    />
-    <oc-avatar
-      v-else
-      key="avatar-loaded"
-      :width="width"
-      :src="avatarSource"
-      :user-name="userName"
-    />
+    <oc-spinner v-if="loading" :style="`width: ${width}px; height: ${width}px;`" />
+    <oc-avatar v-else :width="width" :src="avatarSource" :user-name="userName" />
   </component>
 </template>
 <script lang="ts">

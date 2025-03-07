@@ -56,10 +56,6 @@ export default defineComponent({
 
 <style lang="scss">
 .file_info {
-  &.sidebar-panel__file_info {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
   button {
     white-space: nowrap;
   }

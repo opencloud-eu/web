@@ -13,7 +13,6 @@ defineOptions({ name: 'OcDropzone' })
 .oc-dropzone {
   align-items: center;
   border: 1px dashed var(--oc-role-outline);
-  color: var(--oc-color-text-default);
   display: flex;
   font-size: 1.5rem;
   justify-content: center;

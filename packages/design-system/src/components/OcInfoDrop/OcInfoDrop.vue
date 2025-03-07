@@ -123,7 +123,6 @@ export default {
   }
   .info-drop-content {
     font-size: var(--oc-font-size-medium);
-    color: var(--oc-color-text-default);
   }
   .info-more-link {
     font-size: var(--oc-font-size-medium) !important;

@@ -204,7 +204,7 @@ export default defineComponent({
 
   .oc-resource-indicators {
     .text {
-      color: var(--oc-color-swatch-inverse-default);
+      color: var(--oc-role-on-chrome);
     }
   }
 }
@@ -223,8 +223,8 @@ export default defineComponent({
 
     svg,
     .oc-resource-name span {
-      fill: var(--oc-color-swatch-inverse-default) !important;
-      color: var(--oc-color-swatch-inverse-default) !important;
+      fill: var(--oc-role-on-chrome) !important;
+      color: var(--oc-role-on-chrome) !important;
     }
   }
 

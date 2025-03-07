@@ -28,7 +28,6 @@ defineEmits(['click'])
 
 <style lang="scss">
 .oc-th {
-  color: var(--oc-color-text-muted);
   font-weight: inherit;
 
   &[aria-sort] {

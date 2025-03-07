@@ -266,7 +266,7 @@ export default defineComponent({
     width: 100%;
 
     .oc-tag {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
 
       &.resource-disabled-indicator {
         z-index: 1;
@@ -314,7 +314,7 @@ export default defineComponent({
     left: 0;
 
     input {
-      background-color: var(--oc-color-background-muted);
+      background-color: var(--oc-role-surface-container);
     }
   }
 
