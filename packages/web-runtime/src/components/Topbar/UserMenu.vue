@@ -15,6 +15,8 @@
         :width="32"
         :userid="onPremisesSamAccountName"
         :user-name="user.displayName"
+        background-color="var(--oc-role-on-chrome)"
+        color="var(--oc-role-chrome)"
       />
       <oc-avatar-item
         v-else
