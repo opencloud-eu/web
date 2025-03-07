@@ -1,7 +1,14 @@
 <template>
   <component :is="type" :aria-hidden="true">
     <oc-spinner v-if="loading" :style="`width: ${width}px; height: ${width}px;`" />
-    <oc-avatar v-else :width="width" :src="avatarSource" :user-name="userName" />
+    <oc-avatar
+      v-else
+      :width="width"
+      :src="avatarSource"
+      :user-name="userName"
+      :background-color="backgroundColor"
+      :color="color"
+    />
   </component>
 </template>
 <script lang="ts">
@@ -39,7 +46,9 @@ export default defineComponent({
       type: Number,
       required: false,
       default: 42
-    }
+    },
+    color: { type: String, default: 'white' },
+    backgroundColor: { type: String, default: '' }
   },
   setup() {
     const capabilityStore = useCapabilityStore()
