@@ -10,12 +10,12 @@
     :data-test-user-name="userName"
   >
     <oc-image v-if="isImage" loading-type="lazy" class="avatarImg" :src="src" @error="onImgError" />
-    <span v-else class="avatarInitials">{{ userInitial }}</span>
+    <span v-else :style="{ color }">{{ userInitial }}</span>
   </span>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, unref } from 'vue'
 import OcImage from '../OcImage/OcImage.vue'
 import { extractInitials } from './extractInitials'
 
@@ -24,6 +24,8 @@ export interface Props {
    * @docs The accessible label for the avatar. Only needed in case the avatar is used alone. If not specified, the avatar will get `aria-hidden="true"`.
    */
   accessibleLabel?: string
+  color?: string
+  backgroundColor?: string
   /**
    * @docs The source of the image to be displayed.
    */
@@ -39,7 +41,14 @@ export interface Props {
   width?: number
 }
 
-const { accessibleLabel = '', src = '', userName = '', width = 50 } = defineProps<Props>()
+const {
+  accessibleLabel = '',
+  backgroundColor,
+  color = 'white',
+  src = '',
+  userName = '',
+  width = 50
+} = defineProps<Props>()
 
 const backgroundColors = [
   '#b82015',
@@ -63,6 +72,9 @@ const imgError = ref(false)
 const isImage = computed(() => !imgError.value && Boolean(src))
 
 const background = computed(() => {
+  if (unref(backgroundColor)) {
+    return backgroundColor
+  }
   if (!isImage.value) {
     return randomBackgroundColor(userName.length, backgroundColors)
   }
@@ -118,10 +130,6 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
     width: 100%;
     height: auto;
     border-radius: 50%;
-  }
-
-  .avatarInitials {
-    color: white !important;
   }
 }
 </style>
