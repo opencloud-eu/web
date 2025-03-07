@@ -80,7 +80,6 @@ const labelClasses = computed(() => ({
   border: 1px solid var(--oc-role-outline-variant);
   border-radius: 50%;
   box-sizing: border-box;
-  background-color: var(--oc-color-input-bg);
   background-position: 50% 50%;
   background-repeat: no-repeat;
 

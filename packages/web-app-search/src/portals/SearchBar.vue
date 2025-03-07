@@ -567,7 +567,7 @@ export default defineComponent({
       input,
       input:not(:placeholder-shown) {
         background-color: var(--oc-color-input-bg);
-        border: 1px solid var(--oc-color-input-border);
+        border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
         margin: 0 auto;
       }

@@ -279,7 +279,7 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    background: var(--oc-color-background-muted);
+    background: var(--oc-role-surface-container);
     border-right: 0.5px solid var(--oc-role-outline-variant);
     width: 240px;
     overflow-y: auto;

@@ -49,7 +49,7 @@ const tableClasses = computed(() => {
   }
 
   &-hover tr:hover {
-    background-color: var(--oc-color-input-border);
+    background-color: var(--oc-role-secondary-container);
   }
 }
 </style>

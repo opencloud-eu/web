@@ -388,7 +388,6 @@ onBeforeUnmount(() => {
     margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
 
     > button {
-      border-bottom: 0.5px solid var(--oc-role-outline-variant);
       width: 100%;
       border-radius: 0;
       color: var(--oc-role-on-surface) !important;
@@ -397,19 +396,7 @@ onBeforeUnmount(() => {
       text-align: left;
       height: 50px;
       padding: 0 var(--oc-space-small);
-
-      &:first-of-type {
-        border-top: 0.5px solid var(--oc-role-outline-variant);
-      }
-
-      &:last-of-type {
-        border-bottom: 0;
-      }
-
-      &:hover,
-      &:focus {
-        border-color: var(--oc-role-outline-variant) !important;
-      }
+      border-radius: 5px;
     }
   }
 }

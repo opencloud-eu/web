@@ -280,7 +280,7 @@ export default defineComponent({
 
 .trash-bin {
   &-route {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
   }
 }
 </style>

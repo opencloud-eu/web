@@ -18,11 +18,11 @@ html, button {
 }
 
 a {
-  color: var(--oc-color-swatch-primary-default);
+  color: var(--oc-role-secondary);
   text-decoration: none;
 
   &:hover {
-    color: var(--oc-color-swatch-primary-hover);
+    color: var(--oc-role-on-surface);
   }
 }
 

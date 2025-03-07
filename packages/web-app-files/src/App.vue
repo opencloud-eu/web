@@ -53,7 +53,7 @@ main {
   position: absolute;
   z-index: 9;
   border-radius: 14px;
-  border: 2px dashed var(--oc-color-swatch-primary-muted);
+  border: 2px dashed var(--oc-role-outline);
 }
 
 #files {
