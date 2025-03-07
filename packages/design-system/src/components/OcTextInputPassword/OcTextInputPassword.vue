@@ -1,9 +1,11 @@
 <template>
   <div
+    ref="inputWrapperRef"
     class="oc-text-input-password-wrapper"
     :class="{
       'oc-text-input-password-wrapper-warning': hasWarning,
-      'oc-text-input-password-wrapper-danger': hasError
+      'oc-text-input-password-wrapper-danger': hasError,
+      'oc-text-input-password-wrapper-focused': hasFocus
     }"
   >
     <input
@@ -12,6 +14,8 @@
       v-model="password"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
+      @focus="hasFocus = true"
+      @blur="hasFocus = false"
     />
     <oc-button
       v-if="password && !disabled"
@@ -114,6 +118,7 @@ const password = ref(value)
 const showPassword = ref(false)
 const copyPasswordIconInitial = 'file-copy'
 const copyPasswordIcon = ref(copyPasswordIconInitial)
+const hasFocus = ref(false)
 
 const showPasswordPolicyInformation = computed(() => {
   return !!Object.keys(passwordPolicy?.rules || {}).length
@@ -173,9 +178,14 @@ watch(password, (value) => {
     border-radius: 5px;
     border: 1px solid var(--oc-role-outline);
 
+    &-focused {
+      border: 1px solid var(--oc-role-surface);
+      outline: 2px solid var(--oc-role-outline);
+    }
+
     input {
       flex-grow: 2;
-      border: none;
+      border: none !important;
 
       &:focus {
         outline: none;
@@ -192,10 +202,6 @@ watch(password, (value) => {
     &-danger:focus {
       border-color: var(--oc-color-swatch-danger-default) !important;
       color: var(--oc-color-swatch-danger-default) !important;
-    }
-
-    &:focus-within {
-      border-color: var(--oc-color-swatch-passive-default);
     }
   }
 

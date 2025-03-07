@@ -121,6 +121,11 @@ export default defineComponent({
     text-decoration: none !important;
   }
 
+  &:focus:not(.active),
+  &:hover:not(.active) {
+    background: var(--oc-role-surface) !important;
+  }
+
   .oc-icon svg {
     transition: all 0.3s;
   }
