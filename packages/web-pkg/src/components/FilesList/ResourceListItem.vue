@@ -258,7 +258,7 @@ export default defineComponent({
 
     a {
       &:hover {
-        background-color: var(--oc-color-input-bg);
+        background-color: var(--oc-role-surface-container);
         border-radius: 2px;
       }
 
@@ -283,7 +283,6 @@ export default defineComponent({
 
       .text {
         font-size: 0.8125rem;
-        color: var(--oc-color-text-muted);
       }
     }
   }

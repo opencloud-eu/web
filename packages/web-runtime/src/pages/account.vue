@@ -1,6 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="oc-mt-m oc-mb-l oc-flex oc-flex-center">
+  <main v-else id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
     <div class="account-page">
       <h1 id="account-page-title" class="oc-mb-rm" v-text="$gettext('My Account')" />
       <account-table

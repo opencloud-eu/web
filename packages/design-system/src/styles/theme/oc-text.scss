@@ -181,7 +181,7 @@ td.oc-text-break {
  * Give text a muted color and small size.
  */
 .oc-text-meta {
-  color: var(--oc-color-text-muted);
+  color: var(--oc-role-on-surface-variant);
   font-size: var(--oc-font-size-small);
 }
 
@@ -189,7 +189,7 @@ td.oc-text-break {
  * Give text a muted color.
  */
 .oc-text-muted {
-  color: var(--oc-color-text-muted);
+  color: var(--oc-role-on-surface-variant);
 }
 
 /*
