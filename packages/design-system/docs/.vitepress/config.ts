@@ -81,8 +81,8 @@ export default defineConfig({
           text: 'Design Tokens',
           items: [
             {
-              text: 'Color palette',
-              link: '/designTokens/colorPalette'
+              text: 'Color roles',
+              link: '/designTokens/colorRoles'
             },
             {
               text: 'Font sizes',

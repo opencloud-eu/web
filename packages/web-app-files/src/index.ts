@@ -35,7 +35,7 @@ const appInfo: ApplicationInformation = {
   name: $gettext('Files'),
   id: 'files',
   icon: 'resource-type-folder',
-  color: 'var(--oc-color-swatch-primary-muted)',
+  color: 'var(--oc-role-secondary)',
   extensions: []
 }
 

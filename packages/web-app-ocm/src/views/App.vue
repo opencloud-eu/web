@@ -142,7 +142,7 @@ export default defineComponent({
 #sciencemesh-accept-invites,
 #sciencemesh-connections {
   margin: var(--oc-space-small);
-  background-color: var(--oc-color-background-default);
+  background-color: var(--oc-role-surface-container);
   border-radius: 15px;
   padding: var(--oc-space-small);
   @media (max-width: $oc-breakpoint-large-default) {

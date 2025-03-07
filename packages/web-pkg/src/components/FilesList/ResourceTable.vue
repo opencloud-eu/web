@@ -1272,10 +1272,6 @@ export default defineComponent({
   &-activity-indicator {
     display: inline-flex;
     margin-left: var(--oc-space-xsmall);
-
-    svg {
-      fill: var(--oc-color-text-muted);
-    }
   }
 
   &-people {

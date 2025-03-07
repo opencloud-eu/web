@@ -47,7 +47,7 @@ $form-color: var(--oc-role-on-surface) !default;
 $form-focus-background: var(--oc-role-surface) !default;
 $form-focus-color: var(--oc-role-on-surface) !default;
 
-$form-disabled-background: var(--oc-role-surface-container-low) !default;
+$form-disabled-background: var(--oc-role-surface-container) !default;
 $form-disabled-color: var(--oc-role-on-surface) !default;
 
 $form-placeholder-color: var(--oc-role-on-surface) !default;
@@ -61,9 +61,6 @@ $form-large-height: var(--oc-font-size-large) !default;
 $form-large-padding-horizontal: var(--oc-space-medium) !default;
 $form-large-line-height: $form-large-height !default;
 $form-large-font-size: var(--oc-font-size-large) !default;
-
-$form-danger-color: var(--oc-color-swatch-danger-default) !default;
-$form-success-color: var(--oc-color-swatch-success-default) !default;
 
 $form-width-xsmall: 50px !default;
 $form-width-small: 130px !default;
@@ -270,10 +267,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   width: 100%;
 }
 
-.oc-background-highlight .oc-input {
-  background-color: var(--oc-color-input-bg);
-}
-
 /* 2 */
 .oc-input:not(input),
 .oc-select:not(select) {
@@ -295,14 +288,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-textarea:focus {
   outline: none;
   color: $form-focus-color;
-}
-
-.oc-background-highlight {
-  .oc-input:focus,
-  .oc-select:focus,
-  .oc-textarea:focus {
-    background-color: var(--oc-color-background-default);
-  }
 }
 
 /* Disabled */
@@ -354,36 +339,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 }
 
 .oc-form-large:not(select):not(input):not(textarea) { line-height: $form-large-line-height; }
-
-
-/* Style modifier (`oc-input`, `oc-select` and `oc-textarea`)
- ========================================================================== */
-
-/*
- * Error
- */
-
-.oc-form-danger,
-.oc-form-danger:focus {
-  color: $form-danger-color;
-}
-
-/*
- * Success
- */
-
-.oc-form-success,
-.oc-form-success:focus {
-  color: $form-success-color;
-}
-
-/*
- * Blank
- */
-
-.oc-form-blank {
-  background: none;
-}
 
 /* Width modifiers (`oc-input`, `oc-select` and `oc-textarea`)
  ========================================================================== */

@@ -18,7 +18,6 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-warning': !!warningMessage,
           'oc-text-input-danger': !!errorMessage,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
@@ -49,7 +48,6 @@
       class="oc-text-input-message"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-warning': !!warningMessage,
         'oc-text-input-danger': !!errorMessage
       }"
     >
@@ -66,7 +64,6 @@
         :id="messageId"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-warning': !!warningMessage,
           'oc-text-input-danger': !!errorMessage
         }"
         v-text="messageText"
@@ -128,10 +125,6 @@ export interface Props {
    * @docs The label of the input element.
    */
   label: string
-  /**
-   * @docs The warning message to be displayed below the input.
-   */
-  warningMessage?: string
   /**
    * @docs The error message to be displayed below the input.
    */
@@ -200,7 +193,6 @@ const {
   defaultValue,
   disabled = false,
   label,
-  warningMessage,
   errorMessage,
   fixMessageLine = false,
   descriptionMessage,
@@ -213,7 +205,7 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!warningMessage || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
 const messageId = computed(() => `${id}-message`)
@@ -228,7 +220,7 @@ const additionalListeners = computed(() => {
 const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
-  if (!!warningMessage || !!errorMessage || !!descriptionMessage) {
+  if (!!errorMessage || !!descriptionMessage) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
   if (defaultValue) {
@@ -237,7 +229,6 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-warning'] = !!warningMessage
     additionalAttrs['has-error'] = !!errorMessage
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
@@ -252,9 +243,6 @@ const ariaInvalid = computed(() => {
 const messageText = computed(() => {
   if (errorMessage) {
     return errorMessage
-  }
-  if (warningMessage) {
-    return warningMessage
   }
   return descriptionMessage
 })
@@ -318,30 +306,18 @@ const onFocus = async (target: HTMLInputElement) => {
 
 .oc-text-input {
   &:focus {
-    border: 1px solid var(--oc-role-surface);
-    outline: 2px solid var(--oc-role-outline);
+    border: 1px solid var(--oc-role-surface) !important;
+    outline: 2px solid var(--oc-role-outline) !important;
   }
 
   &-description {
     color: var(--oc-role-on-surface-variant);
   }
 
-  &-success,
-  &-success:focus {
-    border-color: var(--oc-color-swatch-success-default) !important;
-    color: var(--oc-color-swatch-success-default) !important;
-  }
-
-  &-warning,
-  &-warning:focus {
-    border-color: var(--oc-color-swatch-warning-default) !important;
-    color: var(--oc-color-swatch-warning-default) !important;
-  }
-
   &-danger,
   &-danger:focus {
-    border-color: var(--oc-color-swatch-danger-default) !important;
-    color: var(--oc-color-swatch-danger-default) !important;
+    border-color: var(--oc-role-error) !important;
+    color: var(--oc-role-error) !important;
   }
 
   &-message {

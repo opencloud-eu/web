@@ -8,7 +8,6 @@
       v-model="model"
       class="oc-textarea oc-rounded"
       :class="{
-        'oc-textarea-warning': !!warningMessage,
         'oc-textarea-danger': !!errorMessage
       }"
       :aria-invalid="ariaInvalid"
@@ -18,7 +17,6 @@
         :id="messageId"
         :class="{
           'oc-textarea-description': !!descriptionMessage,
-          'oc-textarea-warning': !!warningMessage,
           'oc-textarea-danger': !!errorMessage
         }"
         v-text="messageText"
@@ -41,10 +39,6 @@ export interface Props {
    */
   label: string
   /**
-   * @docs The warning message to be displayed below the textarea.
-   */
-  warningMessage?: string
-  /**
    * @docs The error message to be displayed below the textarea.
    */
   errorMessage?: string
@@ -62,7 +56,6 @@ export interface Props {
 const {
   id = uniqueId('oc-textarea-'),
   label,
-  warningMessage,
   errorMessage,
   descriptionMessage,
   fixMessageLine = false
@@ -70,7 +63,7 @@ const {
 const model = defineModel<string>({ default: '' })
 
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!warningMessage || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
 const messageId = computed(() => `${id}-message`)
@@ -78,7 +71,7 @@ const messageId = computed(() => `${id}-message`)
 const attrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
-  if (!!warningMessage || !!errorMessage || !!descriptionMessage) {
+  if (!!errorMessage || !!descriptionMessage) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
   return { ...attrs, ...additionalAttrs }
@@ -91,9 +84,6 @@ const ariaInvalid = computed(() => {
 const messageText = computed(() => {
   if (errorMessage) {
     return errorMessage
-  }
-  if (warningMessage) {
-    return warningMessage
   }
   return descriptionMessage
 })
@@ -121,20 +111,10 @@ defineExpose({ focus })
     opacity: 0.7;
   }
 
-  &-warning,
-  &-warning:focus {
-    border-color: var(--oc-color-swatch-warning-default);
-    color: var(--oc-color-swatch-warning-default);
-  }
-
   &-danger,
   &-danger:focus {
-    border-color: var(--oc-color-swatch-danger-default);
-    color: var(--oc-color-swatch-danger-default);
-  }
-
-  &-description {
-    color: var(--oc-color-text-muted);
+    border-color: var(--oc-role-error);
+    color: var(--oc-role-error);
   }
 
   &-message {

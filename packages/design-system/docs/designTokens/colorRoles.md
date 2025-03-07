@@ -1,15 +1,15 @@
-# Color Palette
+# Color Roles
 
-The design system uses a predefined color palette to ensure a consistent look and feel across the interface. The color palette is designed to be accessible and to provide a wide range of colors for different use cases.
+The design system uses material design color roles to ensure a consistent look and feel across the interface. Please visit the [official material design documentation](https://m3.material.io/) for more details on how to use these roles.
 
-## Available colors
+## Available roles
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import designTokens from '../../src/assets/tokens/ods.json'
 
 const tokens = computed(() => {
-	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-color-'))
+	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-role-'))
 })
 
 const fields = [
@@ -45,7 +45,7 @@ const fields = [
 
 <style lang="scss">
 .oc-tbody-tr {
-  background-color: var(--oc-color-background) !important;
+  background-color: var(--oc-role-surface) !important;
 }
 </style>
 
@@ -55,7 +55,7 @@ You can use these variables in your SCSS files or style blocks:
 
 ```scss
 .element {
-  color: var(--oc-color-swatch-primary-default);
-  background-color: var(--oc-color-background-highlight);
+  color: var(--oc-role-on-primary);
+  background-color: var(--oc-role-primary);
 }
 ```

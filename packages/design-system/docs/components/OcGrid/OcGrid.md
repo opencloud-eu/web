@@ -21,30 +21,30 @@ The component provides a default slot for any content that should be displayed i
 ```html
 <oc-grid>
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-passive-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-primary)"
     class="oc-height-small"
   ></div>
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-success-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-secondary)"
     class="oc-height-small"
   ></div>
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-warning-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-tertiary)"
     class="oc-height-small"
   ></div>
 </oc-grid>
 
 <oc-grid direction="column" class="oc-mt-m">
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-passive-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-primary)"
     class="oc-height-small"
   ></div>
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-success-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-secondary)"
     class="oc-height-small"
   ></div>
   <div
-    style="width: 80px; height: 80px; background-color: var(--oc-color-swatch-warning-default)"
+    style="width: 80px; height: 80px; background-color: var(--oc-role-tertiary)"
     class="oc-height-small"
   ></div>
 </oc-grid>
