@@ -735,11 +735,11 @@ export default defineComponent({
   }
 
   .upload-info-danger {
-    color: var(--oc-color-swatch-danger-default);
+    color: var(--oc-role-error);
   }
 
   .upload-info-success {
-    color: var(--oc-color-swatch-success-default);
+    color: var(--oc-role-on-surface);
   }
 }
 </style>

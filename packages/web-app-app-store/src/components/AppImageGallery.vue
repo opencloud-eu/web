@@ -103,20 +103,14 @@ export default defineComponent({
 
     &-primary {
       span {
-        color: var(--oc-color-swatch-primary-contrast);
-        background-color: var(--oc-color-swatch-primary-default);
-      }
-    }
-    &-success {
-      span {
-        color: var(--oc-color-swatch-success-contrast);
-        background-color: var(--oc-color-swatch-success-default);
+        color: var(--oc-role-on-primary);
+        background-color: var(--oc-role-primary);
       }
     }
     &-danger {
       span {
-        color: var(--oc-color-swatch-danger-contrast);
-        background-color: var(--oc-color-swatch-danger-default);
+        color: var(--oc-role-on-error);
+        background-color: var(--oc-role-error);
       }
     }
 

@@ -550,7 +550,7 @@ export default defineComponent({
 
     @media (max-width: 639px) {
       visibility: hidden;
-      background-color: var(--oc-color-background-chrome);
+      background-color: var(--oc-role-chrome);
       position: absolute;
       height: 48px;
       left: 0;
@@ -566,7 +566,7 @@ export default defineComponent({
 
       input,
       input:not(:placeholder-shown) {
-        background-color: var(--oc-color-input-bg);
+        background-color: var(--oc-role-surface);
         border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
         margin: 0 auto;

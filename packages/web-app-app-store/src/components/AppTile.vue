@@ -4,7 +4,7 @@
       <app-image-gallery :app="app" />
     </router-link>
     <div class="app-tile-body oc-card-body oc-p">
-      <div class="app-content">
+      <div class="app-tile-content">
         <div class="oc-flex oc-flex-middle">
           <h3 class="oc-my-s oc-text-truncate mark-element app-tile-title">
             <router-link

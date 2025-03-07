@@ -168,10 +168,5 @@ export default defineComponent({
     color: var(--oc-role-on-surface);
     white-space: pre;
   }
-
-  &-path {
-    color: var(--oc-color-text-muted);
-    white-space: pre;
-  }
 }
 </style>

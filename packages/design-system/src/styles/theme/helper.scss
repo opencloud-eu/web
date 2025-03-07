@@ -109,7 +109,7 @@ hr {
 }
 
 // outline for visible focus (via tab)
-*:focus-visible:not(input[type=text]):not(input[type=textarea]):not(input[type=search]):not(input[type=password]):not(input[type=email]):not(input[type=date]):not(textarea):not(.oc-search-input) {
+*:focus-visible:not(input[type=text]):not(input[type=textarea]):not(input[type=search]):not(input[type=password]):not(input[type=email]):not(input[type=date]):not([type=number]):not(textarea):not(.oc-search-input) {
   outline: 2px var(--oc-role-on-secondary) solid;
   outline-offset: 0;
   box-shadow: 0 0 0 4px var(--oc-role-secondary);

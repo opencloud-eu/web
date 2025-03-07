@@ -3,7 +3,6 @@
     ref="inputWrapperRef"
     class="oc-text-input-password-wrapper"
     :class="{
-      'oc-text-input-password-wrapper-warning': hasWarning,
       'oc-text-input-password-wrapper-danger': hasError,
       'oc-text-input-password-wrapper-focused': hasFocus
     }"
@@ -92,7 +91,6 @@ export interface Props {
   disabled?: boolean
   generatePasswordMethod?: (...args: unknown[]) => string
   hasError?: boolean
-  hasWarning?: boolean
   passwordPolicy?: PasswordPolicy
   value?: string
 }
@@ -101,7 +99,6 @@ const {
   disabled = false,
   generatePasswordMethod,
   hasError = false,
-  hasWarning = false,
   passwordPolicy,
   value = ''
 } = defineProps<Props>()
@@ -188,20 +185,14 @@ watch(password, (value) => {
       border: none !important;
 
       &:focus {
-        outline: none;
+        outline: none !important;
       }
-    }
-
-    &-warning,
-    &-warning:focus {
-      border-color: var(--oc-color-swatch-warning-default) !important;
-      color: var(--oc-color-swatch-warning-default) !important;
     }
 
     &-danger,
     &-danger:focus {
-      border-color: var(--oc-color-swatch-danger-default) !important;
-      color: var(--oc-color-swatch-danger-default) !important;
+      border-color: var(--oc-role-error) !important;
+      color: var(--oc-role-error) !important;
     }
   }
 

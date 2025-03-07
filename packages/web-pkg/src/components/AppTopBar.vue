@@ -188,9 +188,9 @@ export default defineComponent({
 
 .oc-app-top-bar-inner {
   align-self: center;
-  background-color: var(--oc-color-components-apptopbar-background);
+  background-color: var(--oc-role-chrome);
   border-radius: 10px;
-  border: 1px solid var(--oc-color-components-apptopbar-border);
+  border: 1px solid var(--oc-role-on-chrome);
   display: inline-flex;
   gap: 25px;
   height: 40px;
