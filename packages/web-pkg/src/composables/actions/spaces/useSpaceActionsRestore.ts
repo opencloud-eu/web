@@ -112,7 +112,6 @@ export const useSpaceActionsRestore = () => {
         }
       ),
       confirmText,
-      icon: 'alert',
       message,
       hasInput: false,
       onConfirm: () => restoreSpaces(allowedResources)
