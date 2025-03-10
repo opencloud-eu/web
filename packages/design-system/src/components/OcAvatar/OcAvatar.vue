@@ -24,7 +24,14 @@ export interface Props {
    * @docs The accessible label for the avatar. Only needed in case the avatar is used alone. If not specified, the avatar will get `aria-hidden="true"`.
    */
   accessibleLabel?: string
+  /**
+   * @docs The color of the text displayed in the avatar.
+   * @default white
+   */
   color?: string
+  /**
+   * @docs The background color of the avatar. If not specified, a random color will be generated based on the username.
+   */
   backgroundColor?: string
   /**
    * @docs The source of the image to be displayed.

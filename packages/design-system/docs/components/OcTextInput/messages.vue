@@ -7,14 +7,14 @@
   />
   <oc-text-input
     v-model="valueForMessages"
-    label="Input with error and warning messages with reserved space below"
+    label="Input with error with reserved space below"
     class="oc-mb-s"
     :error-message="errorMessage"
     :fix-message-line="true"
   />
   <oc-text-input
     v-model="valueForMessages"
-    label="Input with error and warning messages without reserved space below"
+    label="Input with error without reserved space below"
     class="oc-mb-s"
     :error-message="errorMessage"
   />
