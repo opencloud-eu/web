@@ -62,7 +62,7 @@ import OcButton from '../OcButton/OcButton.vue'
 import OcGrid from '../OcGrid/OcGrid.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
-import { AppearanceType, VariationType } from '../../helpers'
+import { AppearanceType } from '../../helpers'
 
 export interface Props {
   /**
@@ -167,7 +167,6 @@ const {
   isFilter = false,
   loadingAccessibleLabel = '',
   showCancelButton = false,
-  cancelButtonVariation = 'primary',
   cancelButtonAppearance = 'raw',
   cancelHandler = () => {}
 } = defineProps<Props>()

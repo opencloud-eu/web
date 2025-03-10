@@ -223,8 +223,6 @@ export default defineComponent({
 
     const showNotifyShareModal = () => {
       dispatchModal({
-        variation: 'warning',
-        icon: 'mail-send',
         title: $gettext('Send a reminder'),
         confirmText: $gettext('Send'),
         message: $gettext('Are you sure you want to send a reminder about this share?'),

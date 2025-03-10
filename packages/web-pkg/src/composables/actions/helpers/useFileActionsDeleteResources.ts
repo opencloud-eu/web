@@ -260,7 +260,6 @@ export const useFileActionsDeleteResources = () => {
     resourcesToDelete.value = [...resources]
 
     dispatchModal({
-      variation: 'danger',
       title: unref(dialogTitle),
       message: unref(dialogMessage),
       confirmText: $gettext('Delete'),

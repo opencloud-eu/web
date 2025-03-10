@@ -24,7 +24,7 @@
     :aria-label="$gettext('Remove expiration date')"
     @click="dateCurrent = null"
   >
-    <oc-icon name="calendar-close" fill-type="line" size="medium" variation="passive" />
+    <oc-icon name="calendar-close" fill-type="line" size="medium" />
     <span key="no-expiration-date-label" v-text="$gettext('Remove expiration date')" />
   </oc-button>
 </template>

@@ -15,12 +15,7 @@
         no-hover
         @click="indicator.handler(resource)"
       >
-        <oc-icon
-          :name="indicator.icon"
-          size="small"
-          :fill-type="indicator.fillType"
-          variation="inherit"
-        />
+        <oc-icon :name="indicator.icon" size="small" :fill-type="indicator.fillType" />
       </oc-button>
       <oc-icon
         v-else

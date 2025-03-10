@@ -79,7 +79,6 @@ export const useGroupActionsDelete = () => {
     }
 
     dispatchModal({
-      variation: 'danger',
       title: $ngettext(
         'Delete group "%{group}"?',
         'Delete %{groupCount} groups?',

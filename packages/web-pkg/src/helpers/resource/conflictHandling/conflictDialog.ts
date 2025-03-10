@@ -70,7 +70,6 @@ export class ConflictDialog {
 
     return new Promise<ResolveConflict>((resolve) => {
       dispatchModal({
-        variation: 'danger',
         title: resource.isFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
@@ -94,7 +93,6 @@ export class ConflictDialog {
 
     return new Promise<boolean>((resolve) => {
       dispatchModal({
-        variation: 'danger',
         title: this.$gettext('Copy here?'),
         customComponent: SpaceMoveInfoModal,
         confirmText: this.$gettext('Copy here'),

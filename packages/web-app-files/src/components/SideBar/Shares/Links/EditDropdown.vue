@@ -66,7 +66,6 @@ export type EditOption = {
   icon: string
   method?: () => void
   to?: RouteLocationNamedRaw
-  variation?: string
 }
 
 export default defineComponent({
@@ -155,8 +154,7 @@ export default defineComponent({
           emit('removePublicLink', { link: props.linkShare })
           unref(editPublicLinkDropdown).hide()
         },
-        icon: 'delete-bin-5',
-        variation: 'danger'
+        icon: 'delete-bin-5'
       }
     })
 

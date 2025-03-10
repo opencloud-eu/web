@@ -37,7 +37,6 @@ export class UploadResourceConflict extends ConflictDialog {
 
     return new Promise<ResolveConflict>((resolve) => {
       dispatchModal({
-        variation: 'danger',
         title: resource.isFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),

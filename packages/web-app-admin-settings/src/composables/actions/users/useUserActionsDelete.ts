@@ -86,7 +86,6 @@ export const useUserActionsDelete = () => {
     }
 
     dispatchModal({
-      variation: 'danger',
       title: $ngettext('Delete user "%{user}"?', 'Delete %{userCount} users?', resources.length, {
         user: resources[0].displayName,
         userCount: resources.length.toString()
