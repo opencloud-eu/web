@@ -142,7 +142,6 @@ const copyPasswordToClipboard = () => {
 const generatePassword = () => {
   const generatedPassword = generatePasswordMethod()
   password.value = generatedPassword
-  showPassword.value = true
   emit('passwordGenerated', password.value)
 }
 
