@@ -28,7 +28,6 @@
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
               size="small"
-              variation="passive"
             />
           </oc-button>
           <div v-else>

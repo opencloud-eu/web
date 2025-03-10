@@ -25,8 +25,6 @@ export type Modal = {
   elementId?: string
   elementClass?: string
   title: string
-  variation?: string
-  icon?: string
   message?: string
   cancelText?: string
   confirmDisabled?: boolean

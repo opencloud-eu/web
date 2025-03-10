@@ -7,7 +7,6 @@ describe('OcProgress', () => {
       props: {
         value: 3,
         max: 10,
-        variation: 'warning',
         size: 'small'
       }
     })

@@ -8,14 +8,12 @@
           <oc-button
             class="oc-modal-body-actions-cancel oc-ml-s"
             appearance="outline"
-            variation="passive"
             @click="hideModal"
             >Cancel
           </oc-button>
           <oc-button
             class="oc-modal-body-actions-secondary oc-ml-s"
             appearance="outline"
-            variation="passive"
             @click="hideModal"
           >
             Don't Save
@@ -23,7 +21,6 @@
           <oc-button
             class="oc-modal-body-actions-confirm oc-ml-s"
             appearance="filled"
-            variation="primary"
             @click="confirm"
             >Save
           </oc-button>

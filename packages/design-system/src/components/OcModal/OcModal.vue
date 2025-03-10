@@ -81,7 +81,7 @@ import { ref, watch, computed, unref, useTemplateRef } from 'vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
-import { ContextualHelperData, VariationType } from '../../helpers'
+import { ContextualHelperData } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {

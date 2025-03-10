@@ -61,13 +61,10 @@
           size="small"
           class="oc-mr-xs"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
-          :variation="testedRule.verified ? 'success' : 'danger'"
+          :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"
         />
         <span
-          :class="[
-            { 'oc-text-input-success': testedRule.verified },
-            { 'oc-text-input-danger': !testedRule.verified }
-          ]"
+          :class="[{ 'oc-text-input-danger': !testedRule.verified }]"
           v-text="getPasswordPolicyRuleMessage(testedRule)"
         ></span>
         <oc-contextual-helper
