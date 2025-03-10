@@ -238,21 +238,6 @@ describe('OcTextInput', () => {
     })
   })
 
-  describe('when a warning message is provided', () => {
-    const wrapper = getShallowWrapper({ warningMessage: 'You may pass.' })
-    it('should add the warning class to the input', () => {
-      expect(wrapper.find('input').attributes().class).toContain('oc-text-input-warning')
-    })
-    it('should add the warning class to the input message', () => {
-      expect(wrapper.find(selectors.textInputMessage).attributes().class).toContain(
-        'oc-text-input-warning'
-      )
-    })
-    it('should show the warning message as the input message text', () => {
-      expect(wrapper.find(selectors.textInputMessage).text()).toBe('You may pass.')
-    })
-  })
-
   describe('when an error message is provided', () => {
     const wrapper = getShallowWrapper({ errorMessage: 'You shall not pass.' })
     it('should add the error class to the input', () => {
@@ -268,30 +253,6 @@ describe('OcTextInput', () => {
     })
     it('should set the input aria-invalid attribute to true', () => {
       expect(wrapper.find('input').attributes('aria-invalid')).toBe('true')
-    })
-  })
-
-  describe('message priority', () => {
-    it('should give error message top priority', () => {
-      const wrapper = getShallowWrapper({
-        errorMessage: 'You shall not pass.',
-        warningMessage: 'You may pass.',
-        descriptionMessage: 'Your should pass.'
-      })
-      const messageEl = wrapper.find('.oc-text-input-message span')
-      expect(messageEl.attributes().class).toBe(
-        'oc-text-input-description oc-text-input-warning oc-text-input-danger'
-      )
-      expect(messageEl.text()).toBe('You shall not pass.')
-    })
-    it('should give waring message priority over description message', () => {
-      const wrapper = getShallowWrapper({
-        warningMessage: 'You may pass.',
-        descriptionMessage: 'Your should pass.'
-      })
-      const messageEl = wrapper.find(selectors.textInputMessage)
-      expect(messageEl.attributes().class).toBe('oc-text-input-description oc-text-input-warning')
-      expect(messageEl.text()).toBe('You may pass.')
     })
   })
 

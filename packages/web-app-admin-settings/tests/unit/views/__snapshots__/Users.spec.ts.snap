@@ -15,7 +15,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
           </div>
           <div class="admin-settings-app-bar-actions oc-flex oc-flex-middle oc-mt-xs">
             <div data-v-32efd9c6="">
-              <oc-button-stub data-v-32efd9c6="" appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" id="create-user-btn" class="oc-mr-s"></oc-button-stub>
+              <oc-button-stub data-v-32efd9c6="" appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="oc-mr-s"></oc-button-stub>
             </div>
             <!--v-if-->
           </div>
@@ -36,7 +36,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
                 <!--v-if-->
                 <!--v-if-->
               </div>
-              <oc-button-stub data-v-32efd9c6="" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" id="users-filter-confirm" class="oc-ml-xs"></oc-button-stub>
+              <oc-button-stub data-v-32efd9c6="" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="oc-ml-xs"></oc-button-stub>
             </div>
           </div>
           <div>
@@ -65,7 +65,7 @@ exports[`Users view > list view > renders list initially 1`] = `
           </div>
           <div class="admin-settings-app-bar-actions oc-flex oc-flex-middle oc-mt-xs">
             <div data-v-32efd9c6="">
-              <oc-button-stub data-v-32efd9c6="" appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" id="create-user-btn" class="oc-mr-s"></oc-button-stub>
+              <oc-button-stub data-v-32efd9c6="" appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="oc-mr-s"></oc-button-stub>
             </div>
             <!--v-if-->
           </div>
@@ -86,42 +86,42 @@ exports[`Users view > list view > renders list initially 1`] = `
                 <!--v-if-->
                 <!--v-if-->
               </div>
-              <oc-button-stub data-v-32efd9c6="" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" id="users-filter-confirm" class="oc-ml-xs"></oc-button-stub>
+              <oc-button-stub data-v-32efd9c6="" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="oc-ml-xs"></oc-button-stub>
             </div>
           </div>
           <div>
             <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu users-table">
               <thead class="oc-thead">
                 <tr class="oc-table-header-row">
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select oc-pl-s" style="top: 0px;">
-                    <div><span class="oc-table-thead-content"><span class="oc-ml-s"><input id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" aria-label="Select all users"> <!--v-if--></span></span></div>
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select oc-pl-m" style="top: 0px;">
+                    <div><span class="oc-table-thead-content"><span><input id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" aria-label="Select all users"> <!--v-if--></span></span></div>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-avatar" style="top: 0px;">
                     <div><span class="oc-table-thead-content header-text"></span></div>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-onPremisesSamAccountName" style="top: 0px;" aria-sort="ascending">
-                    <oc-button-stub arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-displayName" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by displayName" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by displayName" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-mail" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by mail" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by mail" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-role" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by role" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by role" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-accountEnabled" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by accountEnabled" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by accountEnabled" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-actions oc-pr-s" style="top: 0px;">
+                  <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-actions oc-pr-m" style="top: 0px;">
                     <div><span class="oc-table-thead-content header-text">Actions</span></div>
                   </th>
                 </tr>
               </thead>
               <tbody class="has-item-context-menu">
                 <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select oc-pl-s"><span class="oc-ml-s"><input id="oc-checkbox-2" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" aria-label="Select Admin" value="[object Object]"> <!--v-if--></span></td>
+                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select oc-pl-m"><span><input id="oc-checkbox-2" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" aria-label="Select Admin" value="[object Object]"> <!--v-if--></span></td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-avatar">
                     <avatar-image width="32" userid="1" user-name="Admin"></avatar-image>
                   </td>
@@ -130,10 +130,10 @@ exports[`Users view > list view > renders list initially 1`] = `
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mail">admin@example.org</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-role">Admin</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="oc-flex oc-flex-middle"><span class="oc-icon oc-icon-m oc-mr-s"><!----></span><span>Allowed</span></span></td>
-                  <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions oc-pr-s">
-                    <oc-button-stub arialabel="Show details" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-mr-xs quick-action-button oc-p-xs users-table-btn-details"></oc-button-stub>
-                    <oc-button-stub arialabel="Edit" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" class="oc-mr-xs quick-action-button oc-p-xs users-table-btn-edit"></oc-button-stub>
-                    <oc-button-stub arialabel="Show context menu" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" id="context-menu-trigger-1" class="users-table-btn-action-dropdown"></oc-button-stub>
+                  <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions oc-pr-m">
+                    <oc-button-stub arialabel="Show details" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-details"></oc-button-stub>
+                    <oc-button-stub arialabel="Edit" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-edit"></oc-button-stub>
+                    <oc-button-stub arialabel="Show context menu" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="context-menu-trigger-1" class="quick-action-button oc-ml-xs oc-p-xs users-table-btn-action-dropdown"></oc-button-stub>
                   </td>
                 </tr>
               </tbody>

@@ -53,7 +53,7 @@ exports[`account page > header section > edit url button > should be displayed i
 `;
 
 exports[`account page > public link context > should render a limited view 1`] = `
-"<main id="account" class="oc-mt-m oc-mb-l oc-flex oc-flex-center">
+"<main id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
   <div class="account-page">
     <h1 id="account-page-title" class="oc-mb-rm">My Account</h1>
     <!--v-if-->

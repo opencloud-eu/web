@@ -49,7 +49,7 @@ describe('extractInitials', () => {
 
 describe('OcAvatar', () => {
   const selectors = {
-    initials: '.avatarInitials'
+    initials: '.avatar-initials'
   }
   describe('prop value', () => {
     describe('when src is set', () => {

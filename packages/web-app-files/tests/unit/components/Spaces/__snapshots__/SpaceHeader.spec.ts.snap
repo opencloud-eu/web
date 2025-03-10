@@ -8,7 +8,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
   <div class="space-header-infos">
     <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
-        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s" id="space-context-btn">
+        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s oc-p-xs" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
         </button>
@@ -17,7 +17,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
             <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
           </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
       </button>
@@ -37,7 +37,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
   <div class="space-header-infos">
     <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
-        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s" id="space-context-btn">
+        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s oc-p-xs" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
         </button>
@@ -46,7 +46,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
             <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
           </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
       </button>
@@ -54,7 +54,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     <!--v-if-->
     <div class="markdown-container oc-flex">
       <!---->
-      <div class="markdown-container-edit oc-flex oc-flex-middle oc-ml-s"><a attrs="[object Object]" size="small" appearance="raw"></a></div>
+      <div class="markdown-container-edit oc-ml-s"><a attrs="[object Object]" aria-label="Edit description" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-mt-s oc-p-xs"></a></div>
     </div>
     <!--v-if-->
   </div>
@@ -69,7 +69,7 @@ exports[`SpaceHeader > space image > should show the default image if no other i
   <div class="space-header-infos">
     <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
-        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s" id="space-context-btn">
+        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s oc-p-xs" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
         </button>
@@ -78,7 +78,7 @@ exports[`SpaceHeader > space image > should show the default image if no other i
             <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
           </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
       </button>
@@ -96,7 +96,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
   <div class="space-header-infos">
     <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
-        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s" id="space-context-btn">
+        <h2 class="space-header-name"></h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-ml-s oc-p-xs" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
         </button>
@@ -105,7 +105,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
             <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
           </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
       </button>
