@@ -10,7 +10,7 @@
     :data-test-user-name="userName"
   >
     <oc-image v-if="isImage" loading-type="lazy" class="avatarImg" :src="src" @error="onImgError" />
-    <span v-else :style="{ color }">{{ userInitial }}</span>
+    <span v-else class="avatar-initials" :style="{ color }">{{ userInitial }}</span>
   </span>
 </template>
 

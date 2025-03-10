@@ -3,11 +3,11 @@
 exports[`Epub reader app > renders correctly 1`] = `
 "<div class="epub-reader oc-flex">
   <ul class="oc-list oc-my-rm oc-mx-rm epub-reader-chapters-list oc-pl-s oc-visible@l">
-    <li class="epub-reader-chapters-list-item oc-py-s active"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-text-truncate">
+    <li class="epub-reader-chapters-list-item oc-py-s active"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-text-truncate">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-text-truncate oc-mr-s">Chapter 1</span>
       </button></li>
-    <li class="epub-reader-chapters-list-item oc-py-s"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-text-truncate">
+    <li class="epub-reader-chapters-list-item oc-py-s"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-text-truncate">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-text-truncate oc-mr-s">Chapter 2</span>
       </button></li>
@@ -17,7 +17,7 @@ exports[`Epub reader app > renders correctly 1`] = `
       <div class="epub-reader-controls-font-size oc-flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-decrease">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="oc-icon oc-icon-xs"><!----></span>
-        </button> <button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-reset">
+        </button> <button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-reset">
           <!--v-if-->
           <!-- @slot Content of the button --> 100%
         </button> <button type="button" aria-label="Increase font size" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-increase">

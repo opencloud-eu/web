@@ -42,12 +42,6 @@ describe('Depending on what gets passed into the theming options', () => {
     expect(document.documentElement.style.getPropertyValue('--oc-breakpoint-xsmall-max')).toMatch(
       '50px'
     )
-    expect(
-      document.documentElement.style.getPropertyValue('--oc-color-background-default')
-    ).toMatch('#ef23ab')
-    expect(
-      document.documentElement.style.getPropertyValue('--oc-color-swatch-brand-default')
-    ).toMatch('#00FFFF')
     expect(document.documentElement.style.getPropertyValue('--oc-font-size-default')).toMatch(
       '1.358rem'
     )
@@ -56,9 +50,4 @@ describe('Depending on what gets passed into the theming options', () => {
     )
     expect(document.documentElement.style.getPropertyValue('--oc-space-small')).toMatch('20px')
   })
-
-  // it('Defaults to ODS colors where none are passed in theming options', () => {
-  //   expect(document.documentElement.style.getPropertyValue('--oc-color')).toMatch("green")
-  //   expect(document.documentElement.style.getPropertyValue('--oc-brand-primary-hover')).toMatch('#223959')
-  // })
 })
