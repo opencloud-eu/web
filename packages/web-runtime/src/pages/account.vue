@@ -1,6 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="oc-mt-m oc-mb-l oc-flex oc-flex-center">
+  <main v-else id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
     <div class="account-page">
       <h1 id="account-page-title" class="oc-mb-rm" v-text="$gettext('My Account')" />
       <account-table
@@ -803,7 +803,7 @@ export default defineComponent({
   overflow-y: auto;
 
   #account-page-title {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   .preferences-panel,
@@ -812,7 +812,7 @@ export default defineComponent({
   }
 
   .preferences-panel {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   .account-page {

@@ -82,12 +82,3 @@ export interface BreadcrumbItem {
 export type AppearanceType = 'filled' | 'outline' | 'raw' | 'raw-inverse'
 export type FillType = 'fill' | 'line' | 'none'
 export type SizeType = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'
-export type VariationType =
-  | 'passive'
-  | 'primary'
-  | 'danger'
-  | 'success'
-  | 'warning'
-  | 'brand'
-  | 'inherit'
-  | 'info'

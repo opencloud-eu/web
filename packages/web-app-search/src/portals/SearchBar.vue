@@ -15,7 +15,6 @@
       :button-hidden="true"
       :show-cancel-button="showCancelButton"
       :show-advanced-search-button="listProviderAvailable"
-      cancel-button-variation="primary"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
       @advanced-search="onKeyUpEnter"
@@ -41,7 +40,8 @@
       :aria-label="$gettext('Click to display and focus the search bar')"
       class="mobile-search-btn oc-mr-l"
       appearance="raw-inverse"
-      variation="primary"
+      color-role="chrome"
+      no-hover
       @click="showSearchBar"
     >
       <oc-icon name="search" fill-type="line"></oc-icon>
@@ -532,7 +532,7 @@ export default defineComponent({
   }
 
   .oc-search-input {
-    background-color: var(--oc-color-input-bg);
+    background-color: var(--oc-role-surface);
     transition: 0s;
     height: 2.3rem;
 
@@ -550,7 +550,7 @@ export default defineComponent({
 
     @media (max-width: 639px) {
       visibility: hidden;
-      background-color: var(--oc-color-background-chrome);
+      background-color: var(--oc-role-chrome);
       position: absolute;
       height: 48px;
       left: 0;
@@ -566,8 +566,8 @@ export default defineComponent({
 
       input,
       input:not(:placeholder-shown) {
-        background-color: var(--oc-color-input-bg);
-        border: 1px solid var(--oc-color-input-border);
+        background-color: var(--oc-role-surface);
+        border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
         margin: 0 auto;
       }
@@ -614,11 +614,10 @@ export default defineComponent({
 
           &:hover,
           &.active {
-            background-color: var(--oc-color-background-highlight);
+            background-color: var(--oc-role-secondary-container);
           }
 
           &.disabled {
-            background-color: var(--oc-color-background-muted);
             pointer-events: none;
             opacity: 0.7;
             filter: grayscale(0.6);

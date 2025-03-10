@@ -59,8 +59,8 @@ defineSlots<Slots>()
 <style lang="scss">
 .oc-recipient {
   align-items: center;
-  background-color: var(--oc-color-background-default);
-  border: 1px solid var(--oc-color-input-border);
+  background-color: var(--oc-role-surface-container);
+  border: 1px solid var(--oc-role-outline);
   border-radius: 6px;
   display: flex;
   gap: var(--oc-space-xsmall);
@@ -69,11 +69,11 @@ defineSlots<Slots>()
   width: auto;
 
   &-icon > svg {
-    fill: var(--oc-color-text-default);
+    fill: var(--oc-role-on-surface);
   }
 
   &-name {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
     margin: 0;
     padding: 0;
   }

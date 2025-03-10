@@ -7,7 +7,7 @@
         class="epub-reader-chapters-list-item oc-py-s"
         :class="{ active: currentChapter.id === chapter.id }"
       >
-        <oc-button class="oc-text-truncate" appearance="raw" @click="showChapter(chapter)">
+        <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
           <span
             v-oc-tooltip="chapter.label"
             class="oc-text-truncate oc-mr-s"
@@ -33,7 +33,6 @@
           <oc-button
             v-oc-tooltip="$gettext('Reset font size')"
             class="epub-reader-controls-font-size-reset"
-            gap-size="none"
             @click="resetFontSize"
           >
             {{ `${currentFontSizePercentage}%` }}
@@ -280,18 +279,18 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    background: var(--oc-color-background-muted);
-    border-right: 1px solid var(--oc-color-border);
+    background: var(--oc-role-surface-container);
+    border-right: 0.5px solid var(--oc-role-outline-variant);
     width: 240px;
     overflow-y: auto;
 
     &-item:not(:last-child) {
-      border-bottom: 1px solid var(--oc-color-border);
+      border-bottom: 0.5px solid var(--oc-role-outline-variant);
     }
 
     &-item.active {
       .oc-button {
-        color: var(--oc-color-swatch-primary-default);
+        font-weight: var(--oc-font-weight-semibold);
       }
     }
   }

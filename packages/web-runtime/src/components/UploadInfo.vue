@@ -7,7 +7,6 @@
       <oc-button
         v-if="!filesInProgressCount"
         id="close-upload-info-btn"
-        v-oc-tooltip="$gettext('Close')"
         :aria-label="$gettext('Close')"
         appearance="raw-inverse"
         variation="brand"
@@ -102,7 +101,12 @@
       <ul class="oc-list">
         <li v-for="(item, idx) in uploads" :key="idx">
           <span class="oc-flex oc-flex-middle">
-            <oc-icon v-if="item.status === 'error'" name="close" variation="danger" size="small" />
+            <oc-icon
+              v-if="item.status === 'error'"
+              name="close"
+              size="small"
+              color="var(--oc-role-error)"
+            />
             <oc-icon
               v-else-if="item.status === 'success'"
               name="check"
@@ -700,7 +704,7 @@ export default defineComponent({
 
 <style lang="scss">
 #upload-info {
-  background-color: var(--oc-color-background-secondary);
+  background-color: var(--oc-role-surface);
   width: 400px;
 
   @media (max-width: 640px) {
@@ -714,15 +718,11 @@ export default defineComponent({
   }
 
   .upload-info-title {
-    background-color: var(--oc-color-swatch-inverse-muted);
-  }
-
-  .upload-info-title p {
-    color: var(--oc-color-swatch-brand-contrast);
+    background-color: var(--oc-role-surface-container);
   }
 
   .oc-resource-indicators .parent-folder .text {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
   }
 
   .upload-info-items {
@@ -735,11 +735,11 @@ export default defineComponent({
   }
 
   .upload-info-danger {
-    color: var(--oc-color-swatch-danger-default);
+    color: var(--oc-role-error);
   }
 
   .upload-info-success {
-    color: var(--oc-color-swatch-success-default);
+    color: var(--oc-role-on-surface);
   }
 }
 </style>

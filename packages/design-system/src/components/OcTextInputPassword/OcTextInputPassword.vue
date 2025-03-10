@@ -2,8 +2,8 @@
   <div
     class="oc-text-input-password-wrapper"
     :class="{
-      'oc-text-input-password-wrapper-warning': hasWarning,
-      'oc-text-input-password-wrapper-danger': hasError
+      'oc-text-input-password-wrapper-danger': hasError,
+      'oc-text-input-password-wrapper-focused': hasFocus
     }"
   >
     <input
@@ -12,6 +12,8 @@
       v-model="password"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
+      @focus="hasFocus = true"
+      @blur="hasFocus = false"
     />
     <oc-button
       v-if="password && !disabled"
@@ -58,13 +60,10 @@
           size="small"
           class="oc-mr-xs"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
-          :variation="testedRule.verified ? 'success' : 'danger'"
+          :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"
         />
         <span
-          :class="[
-            { 'oc-text-input-success': testedRule.verified },
-            { 'oc-text-input-danger': !testedRule.verified }
-          ]"
+          :class="[{ 'oc-text-input-danger': !testedRule.verified }]"
           v-text="getPasswordPolicyRuleMessage(testedRule)"
         ></span>
         <oc-contextual-helper
@@ -88,7 +87,6 @@ export interface Props {
   disabled?: boolean
   generatePasswordMethod?: (...args: unknown[]) => string
   hasError?: boolean
-  hasWarning?: boolean
   passwordPolicy?: PasswordPolicy
   value?: string
 }
@@ -97,7 +95,6 @@ const {
   disabled = false,
   generatePasswordMethod,
   hasError = false,
-  hasWarning = false,
   passwordPolicy,
   value = ''
 } = defineProps<Props>()
@@ -114,6 +111,7 @@ const password = ref(value)
 const showPassword = ref(false)
 const copyPasswordIconInitial = 'file-copy'
 const copyPasswordIcon = ref(copyPasswordIconInitial)
+const hasFocus = ref(false)
 
 const showPasswordPolicyInformation = computed(() => {
   return !!Object.keys(passwordPolicy?.rules || {}).length
@@ -172,31 +170,26 @@ watch(password, (value) => {
     flex-direction: row;
     padding: 0;
     border-radius: 5px;
-    border: 1px solid var(--oc-color-input-border);
+    border: 1px solid var(--oc-role-outline);
+
+    &-focused {
+      border: 1px solid var(--oc-role-surface);
+      outline: 2px solid var(--oc-role-outline);
+    }
 
     input {
       flex-grow: 2;
-      border: none;
+      border: none !important;
 
       &:focus {
-        outline: none;
+        outline: none !important;
       }
-    }
-
-    &-warning,
-    &-warning:focus {
-      border-color: var(--oc-color-swatch-warning-default) !important;
-      color: var(--oc-color-swatch-warning-default) !important;
     }
 
     &-danger,
     &-danger:focus {
-      border-color: var(--oc-color-swatch-danger-default) !important;
-      color: var(--oc-color-swatch-danger-default) !important;
-    }
-
-    &:focus-within {
-      border-color: var(--oc-color-swatch-passive-default);
+      border-color: var(--oc-role-error) !important;
+      color: var(--oc-role-error) !important;
     }
   }
 

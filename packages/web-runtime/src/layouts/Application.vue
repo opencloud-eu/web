@@ -4,7 +4,7 @@
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header">
-      <div v-if="isIE11" class="oc-background-muted oc-text-center oc-py-m">
+      <div v-if="isIE11" class="oc-surface-container oc-text-center oc-py-m">
         <p class="oc-m-rm" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
@@ -227,12 +227,15 @@ onBeforeUnmount(() => {
 
     .app-container {
       height: 100%;
-      background-color: var(--oc-color-background-default);
+      background: var(--oc-role-surface-container);
       border-radius: 15px;
       overflow: hidden;
       width: 100%;
 
       .app-content {
+        background: var(--oc-role-surface);
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
       }
     }

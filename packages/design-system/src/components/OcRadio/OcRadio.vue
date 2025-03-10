@@ -77,10 +77,9 @@ const labelClasses = computed(() => ({
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  border: 1px solid var(--oc-color-swatch-brand-default);
+  border: 1px solid var(--oc-role-outline-variant);
   border-radius: 50%;
   box-sizing: border-box;
-  background-color: var(--oc-color-input-bg);
   background-position: 50% 50%;
   background-repeat: no-repeat;
 
@@ -98,7 +97,7 @@ const labelClasses = computed(() => ({
   }
 
   &:checked {
-    background-color: var(--oc-color-background-highlight) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &.oc-radio-s {

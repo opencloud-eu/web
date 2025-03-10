@@ -37,23 +37,12 @@ export interface Props {
    * @default 0
    */
   value?: number
-  /**
-   * @docs The variation of the progress bar.
-   * @default primary
-   */
-  variation?: 'primary' | 'passive' | 'danger' | 'success' | 'warning'
 }
 
-const {
-  indeterminate = false,
-  max,
-  size = 'default',
-  value = 0,
-  variation = 'primary'
-} = defineProps<Props>()
+const { indeterminate = false, max, size = 'default', value = 0 } = defineProps<Props>()
 
 const classes = computed(() => {
-  return `oc-progress oc-progress-${size} oc-progress-${variation}`
+  return `oc-progress oc-progress-${size}`
 })
 
 const progressValue = computed(() => {
@@ -70,7 +59,7 @@ $progress-height: 15px !default;
 $progress-height-small: 5px !default;
 
 .oc-progress {
-  background-color: var(--oc-color-background-highlight);
+  background-color: var(--oc-role-surface-container);
   display: block;
   height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
@@ -124,25 +113,9 @@ $progress-height-small: 5px !default;
     }
   }
 
-  &-primary &-current,
-  &-primary &-indeterminate div {
-    background-color: var(--oc-color-swatch-primary-default);
-  }
-  &-passive &-current,
-  &-passive &-indeterminate div {
-    background-color: var(--oc-color-swatch-passive-default);
-  }
-  &-success &-current,
-  &-success &-indeterminate div {
-    background-color: var(--oc-color-swatch-success-default);
-  }
-  &-warning &-current,
-  &-warning &-indeterminate div {
-    background-color: var(--oc-color-swatch-warning-default);
-  }
-  &-danger &-current,
-  &-danger &-indeterminate div {
-    background-color: var(--oc-color-swatch-danger-default);
+  &-current,
+  &-indeterminate div {
+    background-color: var(--oc-role-secondary);
   }
 }
 </style>

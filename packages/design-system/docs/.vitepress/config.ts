@@ -81,6 +81,10 @@ export default defineConfig({
           text: 'Design Tokens',
           items: [
             {
+              text: 'Color roles',
+              link: '/designTokens/colorRoles'
+            },
+            {
               text: 'Color palette',
               link: '/designTokens/colorPalette'
             },

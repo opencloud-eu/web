@@ -2,7 +2,7 @@
   <div id="oc-spaces-details-multiple-sidebar">
     <div class="spaces-preview oc-mb">
       <div class="spaces-preview-body">
-        <oc-icon class="preview-icon" size="xxlarge" variation="passive" name="layout-grid" />
+        <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
       </div>
     </div>
@@ -92,11 +92,11 @@ export default defineComponent({
 <style lang="scss">
 .spaces-preview {
   position: relative;
-  background-color: var(--oc-color-background-muted);
-  border: 10px solid var(--oc-color-background-muted);
+  background-color: var(--oc-role-surface-container-high);
+  border: 10px solid var(--oc-role-surface-container-high);
   height: 230px;
   text-align: center;
-  color: var(--oc-color-swatch-passive-muted);
+  border-radius: 5px;
 
   &-body {
     margin: 0;

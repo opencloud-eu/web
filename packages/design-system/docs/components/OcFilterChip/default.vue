@@ -13,7 +13,7 @@
         size="medium"
         justify-content="space-between"
         class="oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-        :class="{ 'oc-background-highlight': option.id === selectedOption?.id }"
+        :class="{ 'oc-secondary-container': option.id === selectedOption?.id }"
         @click="selectOption(option)"
       >
         <span>{{ option.label }}</span>

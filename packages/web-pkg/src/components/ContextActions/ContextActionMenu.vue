@@ -12,7 +12,6 @@
         :key="`section-${section.name}-action-${actionIndex}`"
         :action="action"
         :appearance="appearance"
-        :variation="variation"
         :action-options="actionOptions"
         class="context-menu oc-files-context-action oc-px-s oc-rounded oc-menu-item-hover"
       />
@@ -41,10 +40,6 @@ export default defineComponent({
     appearance: {
       type: String,
       default: 'raw'
-    },
-    variation: {
-      type: String,
-      default: 'passive'
     },
     actionOptions: {
       type: Object as PropType<ActionOptions>,
@@ -93,7 +88,7 @@ export default defineComponent({
   }
 
   &-border {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

@@ -483,10 +483,5 @@ export default defineComponent({
   .oc-resource-name {
     text-decoration: none !important;
   }
-
-  li:hover,
-  li.active {
-    background-color: var(--oc-color-background-highlight);
-  }
 }
 </style>

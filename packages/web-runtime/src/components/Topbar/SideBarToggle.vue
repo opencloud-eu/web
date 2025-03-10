@@ -4,7 +4,8 @@
     v-oc-tooltip="buttonLabel"
     :aria-label="buttonLabel"
     appearance="raw-inverse"
-    variation="primary"
+    color-role="chrome"
+    no-hover
     class="oc-my-s"
     @click.stop="toggleSideBar"
   >

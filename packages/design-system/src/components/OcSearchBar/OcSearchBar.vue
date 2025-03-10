@@ -18,13 +18,13 @@
       <slot name="locationFilter" />
       <oc-button
         v-if="icon"
-        v-oc-tooltip="$gettext('Search')"
         :aria-label="$gettext('Search')"
         class="oc-position-small oc-position-center-right oc-mt-rm"
         appearance="raw"
+        no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
       >
-        <oc-icon v-show="!loading" :name="icon" size="small" fill-type="line" variation="passive" />
+        <oc-icon v-show="!loading" :name="icon" size="small" fill-type="line" />
         <oc-spinner
           v-show="loading"
           :size="small ? 'xsmall' : 'medium'"
@@ -35,7 +35,6 @@
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
         class="oc-search-button oc-ml-m"
-        variation="primary"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -46,9 +45,9 @@
     </div>
     <oc-button
       v-if="showCancelButton"
-      :variation="cancelButtonVariation"
       :appearance="cancelButtonAppearance"
       class="oc-ml-m"
+      no-hover
       @click="onCancel"
     >
       <span v-text="$gettext('Cancel')" />
@@ -63,7 +62,7 @@ import OcButton from '../OcButton/OcButton.vue'
 import OcGrid from '../OcGrid/OcGrid.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
-import { AppearanceType, VariationType } from '../../helpers'
+import { AppearanceType } from '../../helpers'
 
 export interface Props {
   /**
@@ -123,11 +122,6 @@ export interface Props {
    */
   showCancelButton?: boolean
   /**
-   * @docs The variation of the cancel button.
-   * @default primary
-   */
-  cancelButtonVariation?: VariationType
-  /**
    * @docs The appearance of the cancel button.
    * @default raw
    */
@@ -173,7 +167,6 @@ const {
   isFilter = false,
   loadingAccessibleLabel = '',
   showCancelButton = false,
-  cancelButtonVariation = 'primary',
   cancelButtonAppearance = 'raw',
   cancelHandler = () => {}
 } = defineProps<Props>()
@@ -239,7 +232,6 @@ const onCancel = () => {
   &-icon {
     align-items: center;
     bottom: 0;
-    color: var(--oc-color-text-muted);
     display: inline-flex;
     justify-content: center;
     left: 0;
@@ -255,9 +247,6 @@ const onCancel = () => {
     height: 2.3rem;
 
     &:focus {
-      background-color: var(--oc-color-input-bg);
-      border-color: var(--oc-color-input-text-default);
-      color: var(--oc-color-input-text-default);
       background-image: none;
     }
 

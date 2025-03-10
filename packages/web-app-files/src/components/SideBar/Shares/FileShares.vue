@@ -390,7 +390,6 @@ export default defineComponent({
 
     deleteShareConfirmation(collaboratorShare: CollaboratorShare) {
       this.dispatchModal({
-        variation: 'danger',
         title: this.$gettext('Remove share'),
         confirmText: this.$gettext('Remove'),
         message: this.$gettext('Are you sure you want to remove this share?'),

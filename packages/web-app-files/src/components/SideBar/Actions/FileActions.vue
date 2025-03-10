@@ -48,16 +48,10 @@ export default defineComponent({
 #oc-files-actions-sidebar {
   > li a,
   > li a:hover {
-    color: var(--oc-color-swatch-passive-default);
     display: inline-flex;
     gap: 10px;
     vertical-align: top;
     text-decoration: none;
-  }
-
-  > li:hover {
-    text-decoration: none !important;
-    background-color: var(--oc-color-background-hover);
   }
 }
 </style>

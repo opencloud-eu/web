@@ -108,7 +108,7 @@ const keydownEnter = (event: KeyboardEvent) => {
 
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-  border: 2px solid var(--oc-color-input-border);
+  border: 2px solid var(--oc-role-outline);
   display: inline-block;
   overflow: hidden;
   vertical-align: middle;
@@ -132,7 +132,7 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &:focus-visible {
-    outline: var(--oc-color-swatch-primary-default) auto 1px;
+    outline: var(--oc-role-secondary) auto 1px;
   }
 
   &-checked,

@@ -67,7 +67,6 @@ export default defineComponent({
     }
 
     h2 {
-      color: var(--oc-color-text-muted);
       font-size: var(--oc-font-size-large);
       font-weight: var(--oc-font-weight-default);
     }
@@ -85,20 +84,12 @@ export default defineComponent({
 
   tr {
     border-top: 0;
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
   }
 
   td:first-of-type {
     width: 20%;
-  }
-
-  td:not(:first-of-type) {
-    color: var(--oc-color-text-muted);
-
-    p {
-      color: var(--oc-color-text-muted);
-    }
   }
 
   @media (min-width: $oc-breakpoint-medium-default) {

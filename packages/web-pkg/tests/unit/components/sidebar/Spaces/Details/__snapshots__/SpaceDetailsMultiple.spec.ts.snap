@@ -4,7 +4,7 @@ exports[`Multiple Details SideBar Panel > displays the details side panel 1`] = 
 "<div id="oc-spaces-details-multiple-sidebar">
   <div class="spaces-preview oc-mb">
     <div class="spaces-preview-body">
-      <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" variation="passive" class="preview-icon"></oc-icon-stub>
+      <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="preview-icon"></oc-icon-stub>
       <p class="preview-text">1 space selected</p>
     </div>
   </div>

@@ -6,6 +6,7 @@
       v-oc-tooltip="$gettext('My Account')"
       class="oc-topbar-personal"
       appearance="raw"
+      no-hover
       :aria-label="$gettext('My Account')"
     >
       <avatar-image
@@ -14,6 +15,8 @@
         :width="32"
         :userid="onPremisesSamAccountName"
         :user-name="user.displayName"
+        background-color="var(--oc-role-on-chrome)"
+        color="var(--oc-role-chrome)"
       />
       <oc-avatar-item
         v-else
@@ -22,8 +25,8 @@
         :width="32"
         icon="user"
         icon-fill-type="line"
-        icon-color="var(--oc-color-swatch-brand-default)"
-        background="var(--oc-color-swatch-brand-contrast)"
+        icon-color="var(--oc-role-on-surface)"
+        background="var(--oc-role-surface)"
       />
     </oc-button>
     <oc-drop
@@ -208,8 +211,6 @@ export default defineComponent({
 
     &:focus,
     &:hover {
-      background-color: var(--oc-color-background-hover);
-      color: var(--oc-color-swatch-passive-default);
       text-decoration: none;
     }
   }
@@ -221,14 +222,14 @@ export default defineComponent({
 }
 
 .imprint-footer {
-  background-color: var(--oc-color-background-hover);
+  background-color: var(--oc-role-surface-container);
   margin-left: calc(var(--oc-space-small) * -1);
   width: calc(100% + var(--oc-space-small) * 2);
   margin-bottom: calc(var(--oc-space-small) * -1) !important;
 
   a {
     font-size: var(--oc-font-size-medium) !important;
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
   }
 }
 </style>

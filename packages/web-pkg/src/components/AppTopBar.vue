@@ -67,15 +67,13 @@
                 resources: [resource]
               }"
               appearance="raw-inverse"
-              variation="primary"
             />
           </template>
           <oc-button
             id="app-top-bar-close"
-            v-oc-tooltip="closeButtonLabel"
             appearance="raw-inverse"
             variation="primary"
-            :aria-label="closeButtonLabel"
+            :aria-label="$gettext('Close')"
             @click="$emit('close')"
           >
             <oc-icon name="close" size="small" />
@@ -146,7 +144,6 @@ export default defineComponent({
 
     const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
     const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const closeButtonLabel = computed(() => $gettext('Close'))
     const hasAutosave = computed(
       () => props.isEditor && props.hasAutoSave && configStore.options.editor.autosaveEnabled
     )
@@ -166,7 +163,6 @@ export default defineComponent({
 
     return {
       contextMenuLabel,
-      closeButtonLabel,
       areFileExtensionsShown,
       hasAutosave,
       autoSaveTooltipText,
@@ -191,9 +187,9 @@ export default defineComponent({
 
 .oc-app-top-bar-inner {
   align-self: center;
-  background-color: var(--oc-color-components-apptopbar-background);
+  background-color: var(--oc-role-chrome);
   border-radius: 10px;
-  border: 1px solid var(--oc-color-components-apptopbar-border);
+  border: 1px solid var(--oc-role-on-chrome);
   display: inline-flex;
   gap: 25px;
   height: 40px;
@@ -207,7 +203,7 @@ export default defineComponent({
 
   .oc-resource-indicators {
     .text {
-      color: var(--oc-color-swatch-inverse-default);
+      color: var(--oc-role-on-chrome);
     }
   }
 }
@@ -226,8 +222,8 @@ export default defineComponent({
 
     svg,
     .oc-resource-name span {
-      fill: var(--oc-color-swatch-inverse-default) !important;
-      color: var(--oc-color-swatch-inverse-default) !important;
+      fill: var(--oc-role-on-chrome) !important;
+      color: var(--oc-role-on-chrome) !important;
     }
   }
 

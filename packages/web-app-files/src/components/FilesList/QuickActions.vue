@@ -6,7 +6,7 @@
       v-oc-tooltip="action.label()"
       :aria-label="action.label()"
       appearance="raw"
-      class="oc-mr-xs quick-action-button oc-p-xs"
+      class="oc-ml-xs quick-action-button oc-p-xs"
       :class="`files-quick-action-${action.name}`"
       @click="action.handler({ space, resources: [item] })"
     >
@@ -52,11 +52,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.quick-action-button {
-  &:hover {
-    background-color: var(--oc-color-background-secondary) !important;
-  }
-}
-</style>

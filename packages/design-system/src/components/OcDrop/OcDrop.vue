@@ -1,9 +1,6 @@
 <template>
   <div :id="dropId" ref="drop" class="oc-drop oc-box-shadow-medium oc-rounded" @click="onClick">
-    <div
-      v-if="$slots.default"
-      :class="['oc-card oc-card-body oc-background-secondary', paddingClass]"
-    >
+    <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
       <slot />
     </div>
     <slot v-else name="special" />
@@ -260,7 +257,7 @@ onMounted(() => {
 
   .tippy-content {
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
-    padding: 8px;
+    padding: var(--oc-space-small);
   }
 
   li.oc-menu-item-hover {
@@ -269,22 +266,11 @@ onMounted(() => {
     button:not([role='switch']) {
       box-sizing: border-box;
       padding: var(--oc-space-small);
-      color: var(--oc-color-swatch-passive-default);
 
       &:focus:not([disabled]),
       &:hover:not([disabled]) {
-        background-color: var(--oc-color-background-hover);
-
         text-decoration: none !important;
         border-radius: 5px;
-      }
-
-      &:hover span {
-        color: var(--oc-color-swatch-brand-contrast) !important;
-
-        svg {
-          fill: var(--oc-color-swatch-brand-contrast) !important;
-        }
       }
 
       span {

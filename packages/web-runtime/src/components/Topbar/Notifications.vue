@@ -277,7 +277,7 @@ export default {
 .oc-notifications {
   &-item {
     > a {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
     }
   }
 
@@ -287,7 +287,7 @@ export default {
     }
 
     &-background {
-      background-color: var(--oc-color-background-secondary);
+      background-color: var(--oc-role-surface);
       opacity: 0.6;
     }
 

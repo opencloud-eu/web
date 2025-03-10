@@ -526,7 +526,6 @@ export default defineComponent({
 <style lang="scss">
 .files-search-resource-highlights {
   font-size: 0.8125rem;
-  color: var(--oc-color-text-muted);
 
   mark {
     background: #fff74c;

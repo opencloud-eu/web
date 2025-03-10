@@ -1,15 +1,15 @@
-# Color palette
+# Color Roles
 
-The design system provides some colors that can be used globally. Currently they are primarily suited for icons.
+The design system uses material design color roles to ensure a consistent look and feel across the interface. Please visit the [official material design documentation](https://m3.material.io/) for more details on how to use these roles.
 
-## Available colors
+## Available roles
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import designTokens from '../../src/assets/tokens/ods.json'
 
 const tokens = computed(() => {
-	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-color-'))
+	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-role-'))
 })
 
 const fields = [
@@ -55,6 +55,7 @@ You can use these variables in your SCSS files or style blocks:
 
 ```scss
 .element {
-  color: var(--oc-role-icon-folder);
+  color: var(--oc-role-on-primary);
+  background-color: var(--oc-role-primary);
 }
 ```

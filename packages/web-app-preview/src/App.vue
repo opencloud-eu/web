@@ -23,7 +23,7 @@
           v-else-if="activeMediaFileCached.isError"
           class="oc-width-1-1 oc-flex oc-flex-column oc-flex-middle oc-flex-center"
         >
-          <oc-icon name="file-damage" variation="danger" size="xlarge" />
+          <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
           <p>
             {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFileCached.name }) }}
           </p>

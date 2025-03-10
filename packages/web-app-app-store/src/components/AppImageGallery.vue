@@ -11,22 +11,15 @@
     </div>
     <ul v-if="hasPagination" class="app-image-navigation">
       <li>
-        <oc-button
-          data-testid="prev-image"
-          class="oc-p-xs"
-          appearance="raw"
-          variation="primary"
-          @click="previousImage"
-        >
+        <oc-button data-testid="prev-image" class="oc-p-xs" appearance="raw" @click="previousImage">
           <oc-icon name="arrow-left-s" />
         </oc-button>
       </li>
       <li v-for="(image, index) in images" :key="`gallery-page-${index}`">
         <oc-button
           data-testid="set-image"
-          class="oc-py-xs"
+          class="oc-p-s"
           appearance="raw"
-          variation="primary"
           @click="setImageIndex(index)"
         >
           <oc-icon
@@ -37,13 +30,7 @@
         </oc-button>
       </li>
       <li>
-        <oc-button
-          data-testid="next-image"
-          class="oc-p-xs"
-          appearance="raw"
-          variation="primary"
-          @click="nextImage"
-        >
+        <oc-button data-testid="next-image" class="oc-p-xs" appearance="raw" @click="nextImage">
           <oc-icon name="arrow-right-s" />
         </oc-button>
       </li>
@@ -116,20 +103,14 @@ export default defineComponent({
 
     &-primary {
       span {
-        color: var(--oc-color-swatch-primary-contrast);
-        background-color: var(--oc-color-swatch-primary-default);
-      }
-    }
-    &-success {
-      span {
-        color: var(--oc-color-swatch-success-contrast);
-        background-color: var(--oc-color-swatch-success-default);
+        color: var(--oc-role-on-primary);
+        background-color: var(--oc-role-primary);
       }
     }
     &-danger {
       span {
-        color: var(--oc-color-swatch-danger-contrast);
-        background-color: var(--oc-color-swatch-danger-default);
+        color: var(--oc-role-on-error);
+        background-color: var(--oc-role-error);
       }
     }
 
@@ -175,7 +156,6 @@ export default defineComponent({
     bottom: 0;
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
     align-items: center;
     justify-content: center;
     padding: var(--oc-space-small) 0;

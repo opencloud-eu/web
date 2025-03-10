@@ -339,11 +339,6 @@ export default defineComponent({
     &-item {
       line-height: 1.5;
       gap: 8px;
-
-      &:hover,
-      &-active {
-        background-color: var(--oc-color-background-hover) !important;
-      }
     }
 
     &-hidden {
@@ -367,7 +362,6 @@ export default defineComponent({
     width: calc(100% - var(--oc-space-medium));
     background: #fff;
     top: 0;
-    color: var(--oc-color-swatch-passive-default);
 
     &-active {
       visibility: unset;

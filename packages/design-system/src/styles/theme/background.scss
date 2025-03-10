@@ -1,27 +1,3 @@
-.oc-background-selected {
-  background-color: var(--oc-color-background-highlight) !important;
-}
-
-.oc-background-brand {
-  background-color: var(--oc-color-swatch-brand-default) !important;
-}
-
-.oc-background-default {
-  background-color: var(--oc-color-background-default) !important;
-}
-
-.oc-background-secondary {
-  background-color: var(--oc-color-background-secondary) !important;
-}
-
-.oc-background-muted {
-  background-color: var(--oc-color-background-muted) !important;
-}
-
-.oc-background-highlight {
-  background-color: var(--oc-color-background-highlight) !important;
-}
-
 .oc-background-contain {
   background-size: contain;
 }
@@ -34,4 +10,32 @@
 .oc-background-cover {
   background-position: 50% 50%;
   background-repeat: no-repeat;
+}
+
+.oc-surface {
+  background-color: var(--oc-role-surface) !important;
+}
+
+.oc-surface-container {
+  background-color: var(--oc-role-surface-container) !important;
+}
+
+.oc-surface-container-high {
+  background-color: var(--oc-role-surface-container-high) !important;
+}
+
+.oc-surface-container-highest {
+  background-color: var(--oc-role-surface-container-highest) !important;
+}
+
+.oc-surface-container-low {
+  background-color: var(--oc-role-surface-container-low) !important;
+}
+
+.oc-surface-container-lowest {
+  background-color: var(--oc-role-surface-container-lowest) !important;
+}
+
+.oc-secondary-container {
+  background-color: var(--oc-role-secondary-container) !important;
 }

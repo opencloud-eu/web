@@ -636,7 +636,6 @@ export default defineComponent({
     onBeforeRouteLeave((_to, _from, next) => {
       if (unref(isDirty)) {
         dispatchModal({
-          icon: 'error-warning',
           title: $gettext('Unsaved changes'),
           customComponent: UnsavedChangesModal,
           focusTrapInitial: '.oc-modal-body-actions-confirm',

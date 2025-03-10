@@ -8,7 +8,6 @@
           v-oc-tooltip="hideButtonLabels ? $gettext('New') : ''"
           :aria-label="newButtonAriaLabel"
           appearance="filled"
-          variation="primary"
           :disabled="uploadOrFileCreationBlocked"
         >
           <oc-icon name="add" />
@@ -91,7 +90,6 @@
           id="new-folder-btn"
           v-oc-tooltip="hideButtonLabels ? $gettext('New Folder') : ''"
           appearance="filled"
-          variation="primary"
           :aria-label="newButtonAriaLabel"
           :disabled="uploadOrFileCreationBlocked"
           @click="createNewFolderAction"
@@ -109,7 +107,6 @@
         :aria-label="uploadButtonAriaLabel"
         :disabled="uploadOrFileCreationBlocked"
         appearance="outline"
-        variation="passive"
       >
         <oc-icon name="upload" fill-type="line" />
         <span v-if="!hideButtonLabels" v-text="$gettext('Upload')" />
@@ -545,7 +542,7 @@ export default defineComponent({
   min-width: 230px;
 
   ul:not(:first-child) {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
     padding-top: var(--oc-space-small);
   }
 

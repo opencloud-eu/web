@@ -34,7 +34,7 @@
             appearance="raw"
             :title="$gettext('Deselect %{label}', { label: option.label })"
             :aria-label="$gettext('Deselect %{label}', { label: option.label })"
-            class="vs__deselect oc-mx-rm"
+            class="vs__deselect oc-mx-rm raw-hover-surface"
             @mousedown.stop.prevent
             @click="deselect(option)"
           >
@@ -310,7 +310,6 @@ export default defineComponent({
     height: 1.5rem;
 
     &-link {
-      color: var(--oc-color-swatch-passive-default);
       pointer-events: visible;
     }
   }

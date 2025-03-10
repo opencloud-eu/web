@@ -46,7 +46,7 @@
         />
         <oc-button
           v-oc-tooltip="$gettext('Close filter')"
-          class="close-filter-btn oc-mt-m"
+          class="close-filter-btn oc-mt-m raw-hover-surface"
           :aria-label="$gettext('Close filter')"
           appearance="raw"
           @click="toggleFilter"
@@ -226,7 +226,6 @@ export default defineComponent({
 
     deleteMemberConfirm(share: CollaboratorShare) {
       this.dispatchModal({
-        variation: 'danger',
         title: this.$gettext('Remove member'),
         confirmText: this.$gettext('Remove'),
         message: this.$gettext('Are you sure you want to remove this member?'),

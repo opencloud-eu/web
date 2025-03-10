@@ -45,7 +45,6 @@ export const useFileActionsEmptyTrashBin = () => {
 
   const handler = ({ space }: FileActionOptions) => {
     dispatchModal({
-      variation: 'danger',
       title: $gettext('Empty trash bin'),
       confirmText: $gettext('Delete'),
       message: $gettext(
@@ -83,7 +82,6 @@ export const useFileActionsEmptyTrashBin = () => {
         return resourcesStore.activeResources.length === 0
       },
       class: 'oc-files-actions-empty-trash-bin-trigger',
-      variation: 'danger',
       appearance: 'filled'
     }
   ])

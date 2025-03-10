@@ -3,7 +3,7 @@
     <oc-button
       :id="editShareBtnId"
       v-oc-tooltip="dropButtonTooltip"
-      class="collaborator-edit-dropdown-options-btn"
+      class="collaborator-edit-dropdown-options-btn raw-hover-surface oc-p-xs"
       :aria-label="
         isLocked ? dropButtonTooltip : $gettext('Open context menu with share editing options')
       "
@@ -290,13 +290,12 @@ export default defineComponent({
 .collaborator-edit-dropdown-options-list {
   &-remove {
     margin-top: var(--oc-space-small) !important;
-    border-top: 1px solid var(--oc-color-border) !important;
+    border-top: 0.5px solid var(--oc-role-outline-variant) !important;
   }
 
   .action-menu-item {
     width: 100%;
     justify-content: flex-start;
-    color: var(--oc-color-swatch-passive-default);
     gap: var(--oc-space-small);
   }
 }

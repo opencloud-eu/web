@@ -1253,7 +1253,7 @@ export default defineComponent({
 
     &:hover > .resource-table-edit-name {
       svg {
-        fill: var(--oc-color-text-default);
+        fill: var(--oc-role-on-surface);
       }
     }
   }
@@ -1272,10 +1272,6 @@ export default defineComponent({
   &-activity-indicator {
     display: inline-flex;
     margin-left: var(--oc-space-xsmall);
-
-    svg {
-      fill: var(--oc-color-text-muted);
-    }
   }
 
   &-people {
@@ -1286,7 +1282,6 @@ export default defineComponent({
     align-items: center;
     display: flex;
     flex-flow: row nowrap;
-    gap: var(--oc-space-xsmall);
     justify-content: flex-end;
   }
 

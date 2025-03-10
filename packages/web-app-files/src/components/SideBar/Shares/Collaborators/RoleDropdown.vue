@@ -47,19 +47,18 @@
             justify-content="space-between"
             class="files-recipient-role-drop-btn oc-p-s"
             :class="{
-              'oc-background-highlight': isSelectedRole(role),
               selected: isSelectedRole(role)
             }"
-            appearance="raw"
-            variation="passive"
+            :appearance="isSelectedRole(role) ? 'filled' : 'raw-inverse'"
+            :color-role="isSelectedRole(role) ? 'secondaryContainer' : 'surface'"
             @click="selectRole(role)"
           >
             <span class="oc-flex oc-flex-middle">
-              <oc-icon :name="role.icon" class="oc-pl-s oc-pr-m" variation="inherit" />
+              <oc-icon :name="role.icon" class="oc-pl-s oc-pr-m" />
               <role-item :role="role" />
             </span>
             <span class="oc-flex">
-              <oc-icon v-if="isSelectedRole(role)" name="check" variation="inherit" />
+              <oc-icon v-if="isSelectedRole(role)" name="check" />
             </span>
           </oc-button>
         </li>
@@ -327,7 +326,6 @@ export default defineComponent({
 
       &:hover,
       &:focus {
-        background-color: var(--oc-color-background-hover);
         text-decoration: none;
       }
     }

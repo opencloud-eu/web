@@ -2,8 +2,8 @@
   <li class="oc-sidebar-nav-item oc-pb-xs oc-px-s" :aria-current="active ? 'page' : null">
     <oc-button
       :type="handler ? 'button' : 'router-link'"
-      appearance="raw"
-      :variation="active ? 'primary' : 'passive'"
+      :appearance="active ? 'filled' : 'raw-inverse'"
+      :color-role="active ? 'secondaryContainer' : 'surface'"
       :class="['oc-sidebar-nav-item-link', 'oc-oc-width-1-1', { active: active }]"
       :data-nav-id="index"
       :data-nav-name="navName"
@@ -13,7 +13,7 @@
       v-bind="attrs"
     >
       <span class="oc-flex">
-        <oc-icon :name="icon" :fill-type="fillType" variation="inherit" />
+        <oc-icon :name="icon" :fill-type="fillType" />
         <span class="oc-ml-m text" :class="{ 'text-invisible': collapsed }" v-text="name" />
       </span>
     </oc-button>
@@ -98,8 +98,11 @@ export default defineComponent({
   user-select: none;
 
   .oc-tag {
-    color: var(--oc-color-text-default);
-    background-color: var(--oc-color-background-highlight);
+    background-color: var(--oc-role-tertiary-container);
+    color: var(--oc-role-on-tertiary-container);
+    svg {
+      fill: var(--oc-role-on-tertiary-container);
+    }
   }
   .text {
     opacity: 1;
@@ -110,20 +113,17 @@ export default defineComponent({
     transition: 0s;
   }
 
-  &:hover:not(.active) {
-    background-color: var(--oc-color-swatch-brand-hover) !important;
-    color: var(--oc-color-swatch-brand-contrast) !important;
-    svg {
-      fill: var(--oc-color-swatch-brand-contrast) !important;
-    }
-  }
-
-  &:hover,
-  &:focus {
-    text-decoration: none !important;
-  }
   &.active {
     overflow: hidden;
+  }
+  &:focus,
+  &:hover {
+    text-decoration: none !important;
+  }
+
+  &:focus:not(.active),
+  &:hover:not(.active) {
+    background: var(--oc-role-surface) !important;
   }
 
   .oc-icon svg {

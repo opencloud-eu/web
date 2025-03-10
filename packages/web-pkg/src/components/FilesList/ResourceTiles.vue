@@ -666,15 +666,14 @@ export default defineComponent({
   row-gap: 1rem;
 
   &-controls {
-    border-bottom: 1px solid var(--oc-color-border);
+    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &-item-drop-highlight {
-    background-color: var(--oc-color-input-border) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &-footer {
-    color: var(--oc-color-text-muted);
     font-size: var(--oc-font-size-default);
     line-height: 1.4;
     padding: var(--oc-space-xsmall);
@@ -686,11 +685,11 @@ export default defineComponent({
     }
 
     &-item-active {
-      background-color: var(--oc-color-background-highlight) !important;
+      background-color: var(--oc-role-secondary-container) !important;
     }
 
     &-item:hover:not(&-item-active) {
-      background-color: var(--oc-color-background-hover) !important;
+      background-color: var(--oc-role-surface-container) !important;
     }
   }
 }
@@ -704,7 +703,7 @@ export default defineComponent({
     height: 100%;
     display: flex;
     flex-flow: column;
-    outline: 1px solid var(--oc-color-border);
+    outline: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

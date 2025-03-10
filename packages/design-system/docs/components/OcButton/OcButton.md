@@ -36,21 +36,6 @@ Every icon-only button has to have an `aria-label` that describes the purpose of
 
 ## Examples
 
-### Variations
-
-::: livecode
-
-```html
-<oc-button variation="passive">Default</oc-button>
-<oc-button variation="primary">Primary</oc-button>
-<oc-button variation="danger">Danger</oc-button>
-<oc-button variation="success">Success</oc-button>
-<oc-button variation="warning">Warning</oc-button>
-<oc-button variation="brand">Brand</oc-button>
-```
-
-:::
-
 ### Appearance
 
 ::: livecode

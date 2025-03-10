@@ -79,7 +79,7 @@ const fileIcon = {
     ]
   },
   code: {
-    icon: { name: 'resource-type-code', color: 'var(--oc-color-text-default)' },
+    icon: { name: 'resource-type-code', color: 'var(--oc-role-on-surface)' },
     extensions: [
       'bash',
       'c++',
@@ -111,7 +111,7 @@ const fileIcon = {
     ]
   },
   default: {
-    icon: { name: 'resource-type-file', color: 'var(--oc-color-text-default)' },
+    icon: { name: 'resource-type-file', color: 'var(--oc-role-on-surface)' },
     extensions: ['accdb', 'rss', 'swf']
   },
   drawio: {
@@ -193,11 +193,11 @@ const fileIcon = {
     extensions: ['csv', 'ods', 'xla', 'xlam', 'xls', 'xlsb', 'xlsm', 'xlsx', 'xlt', 'xltm', 'xltx']
   },
   text: {
-    icon: { name: 'resource-type-text', color: 'var(--oc-color-text-default)' },
+    icon: { name: 'resource-type-text', color: 'var(--oc-role-on-surface)' },
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
-    icon: { name: 'resource-type-url', color: 'var(--oc-color-text-default)' },
+    icon: { name: 'resource-type-url', color: 'var(--oc-role-on-surface)' },
     extensions: ['url']
   },
   video: {

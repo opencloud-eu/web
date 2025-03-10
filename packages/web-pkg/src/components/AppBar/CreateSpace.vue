@@ -1,11 +1,9 @@
 <template>
   <oc-button
     id="new-space-menu-btn"
-    key="new-space-menu-btn-enabled"
     v-oc-tooltip="showLabel ? undefined : $gettext('New space')"
     :aria-label="showLabel ? undefined : $gettext('New space')"
     appearance="filled"
-    variation="primary"
     @click="showCreateSpaceModal"
   >
     <oc-icon name="add" />

@@ -4,7 +4,7 @@
       :id="`edit-public-link-dropdown-toggl-${linkShare.id}`"
       :aria-label="$gettext('More options')"
       appearance="raw"
-      class="edit-drop-trigger"
+      class="edit-drop-trigger raw-hover-surface oc-p-xs"
     >
       <oc-icon name="more-2" />
     </oc-button>
@@ -66,7 +66,6 @@ export type EditOption = {
   icon: string
   method?: () => void
   to?: RouteLocationNamedRaw
-  variation?: string
 }
 
 export default defineComponent({
@@ -155,8 +154,7 @@ export default defineComponent({
           emit('removePublicLink', { link: props.linkShare })
           unref(editPublicLinkDropdown).hide()
         },
-        icon: 'delete-bin-5',
-        variation: 'danger'
+        icon: 'delete-bin-5'
       }
     })
 
@@ -284,7 +282,7 @@ export default defineComponent({
 
   &-delete {
     margin-top: var(--oc-space-small) !important;
-    border-top: 1px solid var(--oc-color-border) !important;
+    border-top: 0.5px solid var(--oc-role-outline-variant) !important;
   }
 }
 </style>

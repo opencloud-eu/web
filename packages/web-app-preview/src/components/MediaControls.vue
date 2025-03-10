@@ -1,17 +1,16 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-background-brand oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around preview-controls-action-bar"
+      class="oc-surface-container oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
-        class="preview-controls-previous"
-        appearance="raw-inverse"
-        variation="brand"
+        class="preview-controls-previous raw-hover-surface"
+        appearance="raw"
         :aria-label="previousDescription"
         @click="$emit('togglePrevious')"
       >
-        <oc-icon size="large" name="arrow-drop-left" variation="inherit" />
+        <oc-icon size="large" name="arrow-drop-left" />
       </oc-button>
       <p v-if="!isFolderLoading" class="oc-m-rm preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
@@ -19,22 +18,20 @@
       </p>
       <oc-button
         v-oc-tooltip="nextDescription"
-        class="preview-controls-next"
-        appearance="raw-inverse"
-        variation="brand"
+        class="preview-controls-next raw-hover-surface"
+        appearance="raw"
         :aria-label="nextDescription"
         @click="$emit('toggleNext')"
       >
-        <oc-icon size="large" name="arrow-drop-right" variation="inherit" />
+        <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
       <div class="oc-flex">
         <oc-button
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen"
-          appearance="raw-inverse"
-          variation="brand"
+          class="preview-controls-fullscreen raw-hover-surface"
+          appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
@@ -43,7 +40,6 @@
           <oc-icon
             fill-type="line"
             :name="isFullScreenModeActivated ? 'fullscreen-exit' : 'fullscreen'"
-            variation="inherit"
           />
         </oc-button>
       </div>
@@ -51,19 +47,17 @@
         <div class="oc-flex">
           <oc-button
             v-oc-tooltip="imageShrinkDescription"
-            class="preview-controls-image-shrink"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-shrink raw-hover-surface"
+            appearance="raw"
             :aria-label="imageShrinkDescription"
             @click="imageShrink"
           >
-            <oc-icon fill-type="line" name="zoom-out" variation="inherit" />
+            <oc-icon fill-type="line" name="zoom-out" />
           </oc-button>
           <oc-button
             v-oc-tooltip="imageOriginalSizeDescription"
-            class="preview-controls-image-original-size oc-ml-s oc-mr-s"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-original-size raw-hover-surface oc-ml-s oc-mr-s"
+            appearance="raw"
             :aria-label="imageOriginalSizeDescription"
             @click="$emit('setZoom', 1)"
           >
@@ -71,47 +65,43 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageZoomDescription"
-            class="preview-controls-image-zoom"
+            class="preview-controls-image-zoom raw-hover-surface"
             appearance="raw"
-            variation="brand"
             :aria-label="imageZoomDescription"
             @click="imageZoom"
           >
-            <oc-icon fill-type="line" name="zoom-in" variation="inherit" />
+            <oc-icon fill-type="line" name="zoom-in" />
           </oc-button>
         </div>
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageRotateLeftDescription"
-            class="preview-controls-rotate-left"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-rotate-left raw-hover-surface"
+            appearance="raw"
             :aria-label="imageRotateLeftDescription"
             @click="imageRotateLeft"
           >
-            <oc-icon fill-type="line" name="anticlockwise" variation="inherit" />
+            <oc-icon fill-type="line" name="anticlockwise" />
           </oc-button>
           <oc-button
             v-oc-tooltip="imageRotateRightDescription"
-            class="preview-controls-rotate-right"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-rotate-right raw-hover-surface"
+            appearance="raw"
             :aria-label="imageRotateRightDescription"
             @click="imageRotateRight"
           >
-            <oc-icon fill-type="line" name="clockwise" variation="inherit" />
+            <oc-icon fill-type="line" name="clockwise" />
           </oc-button>
         </div>
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageResetDescription"
-            class="preview-controls-image-reset"
-            appearance="raw-inverse"
-            variation="brand"
+            class="preview-controls-image-reset raw-hover-surface"
+            appearance="raw"
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"
           >
-            <oc-icon fill-type="line" name="refresh" variation="inherit" />
+            <oc-icon fill-type="line" name="refresh" />
           </oc-button>
         </div>
       </div>
@@ -227,10 +217,6 @@ export default defineComponent({
 .preview-details.lightbox {
   z-index: 1000;
   opacity: 0.9;
-}
-
-.preview-controls-action-count {
-  color: var(--oc-color-swatch-brand-contrast);
 }
 
 .preview-controls-image-original-size {

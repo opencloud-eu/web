@@ -39,6 +39,7 @@
           :aria-current="getAriaCurrent(index)"
           appearance="raw"
           class="oc-flex"
+          no-hover
           @click="item.onClick"
         >
           <span
@@ -61,7 +62,7 @@
         />
         <oc-icon
           v-if="index !== displayItems.length - 1"
-          color="var(--oc-color-text-default)"
+          color="var(--oc-role-on-surface)"
           name="arrow-right-s"
           class="oc-mx-xs"
           fill-type="line"
@@ -72,8 +73,9 @@
             v-oc-tooltip="contextMenuLabel"
             :aria-label="contextMenuLabel"
             appearance="raw"
+            no-hover
           >
-            <oc-icon name="more-2" color="var(--oc-color-text-default)" />
+            <oc-icon name="more-2" color="var(--oc-role-on-surface)" />
           </oc-button>
           <oc-drop
             drop-id="oc-breadcrumb-contextmenu"
@@ -307,8 +309,8 @@ const dropItemStyling = (
       border 0s 0.08s,
       border-color 0s,
       border-width 0.06s;
-    background-color: var(--oc-color-background-highlight);
-    box-shadow: 0 0 0 5px var(--oc-color-background-highlight);
+    background-color: var(--oc-role-secondary-container);
+    box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
     border-radius: 5px;
   }
   &-item-text {
@@ -356,12 +358,12 @@ const dropItemStyling = (
     }
 
     > :nth-child(n + 2)::before {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
       display: inline-block;
     }
 
     > :last-child > span {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
     }
   }
 
@@ -371,7 +373,7 @@ const dropItemStyling = (
     button:first-of-type,
     span:first-of-type {
       font-size: var(--oc-font-size-medium);
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
       display: inline-block;
       vertical-align: sub;
       line-height: normal;

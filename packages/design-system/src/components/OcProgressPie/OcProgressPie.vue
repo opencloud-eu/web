@@ -58,7 +58,7 @@ $default-size: 64px;
 
   // Shadow
   &::after {
-    border: calc($default-size / 10) solid var(--oc-color-background-highlight);
+    border: calc($default-size / 10) solid var(--oc-role-surface-container);
     border-radius: 50%;
     box-sizing: border-box;
     content: '';
@@ -77,8 +77,8 @@ $default-size: 64px;
 
     &::before,
     &::after {
-      border: calc($default-size / 10) solid var(--oc-color-swatch-passive-default);
-      border-color: var(--oc-color-swatch-passive-default);
+      border: calc($default-size / 10) solid var(--oc-role-secondary);
+      border-color: var(--oc-role-secondary);
       border-radius: 50%;
       clip: rect(0, calc($default-size / 2), $default-size, 0);
       content: '';
@@ -92,7 +92,6 @@ $default-size: 64px;
   }
 
   &-label {
-    color: var(--oc-color-text-muted) !important;
     left: 50%;
     position: absolute;
     top: 50%;

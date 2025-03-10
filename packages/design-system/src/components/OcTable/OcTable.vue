@@ -12,6 +12,7 @@
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
             class="oc-button-sort oc-width-1-1"
+            no-hover
             @click="handleSort(field)"
           >
             <span v-if="field.headerType === 'slot'" class="oc-table-thead-content">
@@ -27,7 +28,6 @@
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
               size="small"
-              variation="passive"
             />
           </oc-button>
           <div v-else>
@@ -488,7 +488,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-  color: var(--oc-color-text-default);
   width: 100%;
 
   &-hover tr {
@@ -501,30 +500,22 @@ const handleSort = (field: FieldType) => {
   }
 
   tr + tr {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &-hover tr:not(&-footer-row):hover {
-    background-color: var(--oc-color-background-hover);
-  }
-
-  &-hover
-    tr:hover
-    td:not(:last-child)
-    span:not(.avatarInitials):not(button span):not(.oc-table-highlighted span) {
-    color: var(--oc-color-swatch-brand-contrast) !important;
+    background-color: var(--oc-role-surface-container);
   }
 
   &-highlighted {
-    background-color: var(--oc-color-background-highlight) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &-accentuated {
-    background-color: var(--oc-color-background-accentuate);
+    background-color: var(--oc-role-secondary-container);
   }
 
   &-disabled {
-    background-color: var(--oc-color-background-muted);
     opacity: 0.7;
     filter: grayscale(0.6);
     pointer-events: none;
@@ -534,30 +525,28 @@ const handleSort = (field: FieldType) => {
     position: relative;
 
     .oc-table-header-cell {
-      background-color: var(--oc-color-background-default);
       position: sticky;
       z-index: 1;
     }
   }
 
   .highlightedDropTarget {
-    background-color: var(--oc-color-input-border);
+    background-color: var(--oc-role-surface-container-highest);
   }
 
   &-thead-content {
     vertical-align: middle;
     display: inline-table;
-    color: var(--oc-color-swatch-passive-default);
     &:hover {
       text-decoration: underline;
     }
   }
 
   &-footer {
-    border-top: 1px solid var(--oc-color-border);
+    border-top: 0.5px solid var(--oc-role-outline-variant);
 
     &-cell {
-      color: var(--oc-color-text-muted);
+      color: var(--oc-role-on-surface-variant);
       font-size: 0.875rem;
       line-height: 1.4;
       padding: var(--oc-space-xsmall);
@@ -569,7 +558,7 @@ const handleSort = (field: FieldType) => {
   justify-content: start;
   .oc-icon {
     &:hover {
-      background-color: var(--oc-color-background-hover);
+      background-color: var(--oc-role-surface-container);
     }
   }
 }

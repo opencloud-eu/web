@@ -31,7 +31,7 @@
           :id="`files-role-${getLinkRoleByType(type).id}`"
           :class="{
             selected: isSelectedType(type),
-            'oc-background-highlight': isSelectedType(type)
+            'oc-secondary-container': isSelectedType(type)
           }"
           appearance="raw"
           variation="passive"
@@ -40,11 +40,7 @@
           @click="updateSelectedType(type)"
         >
           <span class="oc-flex oc-flex-middle">
-            <oc-icon
-              :name="getLinkRoleByType(type).icon"
-              class="oc-pl-s oc-pr-m"
-              variation="inherit"
-            />
+            <oc-icon :name="getLinkRoleByType(type).icon" class="oc-pl-s oc-pr-m" />
             <span>
               <span
                 class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"
@@ -54,7 +50,7 @@
             </span>
           </span>
           <span class="oc-flex">
-            <oc-icon v-if="isSelectedType(type)" name="check" variation="inherit" />
+            <oc-icon v-if="isSelectedType(type)" name="check" />
           </span>
         </oc-button>
       </li>
@@ -139,12 +135,6 @@ export default defineComponent({
     text-align: left;
     width: 100%;
     gap: var(--oc-space-medium);
-
-    &:hover,
-    &:focus {
-      background-color: var(--oc-color-background-hover);
-      text-decoration: none;
-    }
   }
 }
 </style>

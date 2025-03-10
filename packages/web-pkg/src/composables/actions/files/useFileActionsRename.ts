@@ -194,7 +194,6 @@ export const useFileActionsRename = () => {
         : ([0, nameWithoutExtension.length] as [number, number])
 
     dispatchModal({
-      variation: 'passive',
       title,
       confirmText: $gettext('Rename'),
       hasInput: true,

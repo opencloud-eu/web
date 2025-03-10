@@ -3,8 +3,9 @@
     id="oc-notifications-bell"
     v-oc-tooltip="notificationsLabel"
     appearance="raw-inverse"
-    variation="primary"
+    color-role="chrome"
     :aria-label="notificationsLabel"
+    no-hover
   >
     <oc-icon
       class="oc-cursor-pointer oc-flex oc-flex-middle"

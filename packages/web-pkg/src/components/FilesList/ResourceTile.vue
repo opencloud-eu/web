@@ -229,16 +229,15 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-tile-card {
-  background-color: var(--oc-color-background-highlight) !important;
+  background-color: var(--oc-role-surface-container-high) !important;
   box-shadow: none;
   height: 100%;
   display: flex;
   flex-flow: column;
-  outline: 1px solid var(--oc-color-border);
+  outline: 0.5px solid var(--oc-role-outline-variant);
 
   &-disabled {
     pointer-events: none;
-    background-color: var(--oc-color-background-muted) !important;
     opacity: 0.7;
     filter: grayscale(0.6);
 
@@ -267,7 +266,7 @@ export default defineComponent({
     width: 100%;
 
     .oc-tag {
-      color: var(--oc-color-text-default);
+      color: var(--oc-role-on-surface);
 
       &.resource-disabled-indicator {
         z-index: 1;
@@ -291,7 +290,7 @@ export default defineComponent({
   }
 
   &-selected {
-    outline: 2px solid var(--oc-color-swatch-primary-hover);
+    outline: 2px solid var(--oc-role-outline);
 
     .oc-tile-card-preview {
       width: calc(100% - var(--oc-space-medium));
@@ -315,11 +314,7 @@ export default defineComponent({
     left: 0;
 
     input {
-      background-color: var(--oc-color-background-muted);
-    }
-
-    input.oc-checkbox-checked {
-      background-color: var(--oc-color-swatch-inverse-default);
+      background-color: var(--oc-role-surface-container);
     }
   }
 
@@ -341,7 +336,7 @@ export default defineComponent({
   }
 
   .resource-name-wrapper {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
     max-width: 70%;
     overflow: hidden;
   }

@@ -12,7 +12,6 @@
         @keydown.esc="cancelModalAction"
       >
         <div class="oc-modal-title">
-          <oc-icon v-if="iconName !== ''" :name="iconName" :variation="variation" />
           <h2 id="oc-modal-title" class="oc-text-truncate" v-text="title" />
         </div>
         <div class="oc-modal-body">
@@ -57,8 +56,6 @@
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
-              variation="passive"
-              appearance="outline"
               :disabled="isLoading"
               @click="cancelModalAction"
               >{{ $gettext(buttonCancelText) }}
@@ -66,7 +63,6 @@
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm oc-ml-s"
-              variation="primary"
               :appearance="buttonConfirmAppearance"
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
@@ -83,10 +79,9 @@
 <script setup lang="ts">
 import { ref, watch, computed, unref, useTemplateRef } from 'vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
-import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
-import { ContextualHelperData, VariationType } from '../../helpers'
+import { ContextualHelperData } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
@@ -145,10 +140,6 @@ export interface Props {
    */
   hideConfirmButton?: boolean
   /**
-   * @docs Icon that gets displayed before the title.
-   */
-  icon?: string
-  /**
    * @docs Description to be displayed below the input field.
    */
   inputDescription?: string
@@ -182,11 +173,6 @@ export interface Props {
    * @docs Message of the modal.
    */
   message?: string
-  /**
-   * @docs Variation of the modal.
-   * @default passive
-   */
-  variation?: VariationType
 }
 
 export interface Emits {
@@ -224,7 +210,6 @@ const {
   hasInput = false,
   hideActions = false,
   hideConfirmButton = false,
-  icon,
   inputDescription,
   inputError,
   inputLabel,
@@ -232,8 +217,7 @@ const {
   inputType = 'text',
   inputValue,
   isLoading = false,
-  message,
-  variation = 'passive'
+  message
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -287,25 +271,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
 })
 
 const classes = computed(() => {
-  return ['oc-modal', `oc-modal-${variation}`, elementClass]
-})
-
-const iconName = computed(() => {
-  if (icon) {
-    return icon
-  }
-  switch (variation) {
-    case 'danger':
-      return 'alert'
-    case 'warning':
-      return 'error-warning'
-    case 'success':
-      return 'checkbox-circle'
-    case 'info':
-      return 'information'
-    default:
-      return ''
-  }
+  return ['oc-modal', elementClass]
 })
 
 watch(
@@ -342,14 +308,9 @@ export default {
 </script>
 
 <style lang="scss">
-@mixin oc-modal-variation($color) {
-  span {
-    color: $color;
-  }
-}
-
 .oc-modal {
-  background-color: var(--oc-color-background-default);
+  background-color: var(--oc-role-surface);
+  border: 1px solid var(--oc-role-outline);
   border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
@@ -375,22 +336,6 @@ export default {
     z-index: var(--oc-z-index-modal);
   }
 
-  &-primary {
-    @include oc-modal-variation(var(--oc-color-swatch-primary-default));
-  }
-
-  &-success {
-    @include oc-modal-variation(var(--oc-color-swatch-success-default));
-  }
-
-  &-warning {
-    @include oc-modal-variation(var(--oc-color-swatch-warning-default));
-  }
-
-  &-danger {
-    @include oc-modal-variation(var(--oc-color-swatch-danger-default));
-  }
-
   &-title {
     align-items: center;
     border-top-left-radius: 5px;
@@ -399,11 +344,7 @@ export default {
     flex-flow: row wrap;
     line-height: 1.625;
     padding: calc(var(--oc-space-small) + var(--oc-space-xsmall)) var(--oc-space-medium);
-    background-color: var(--oc-color-swatch-inverse-muted);
-
-    > .oc-icon {
-      margin-right: var(--oc-space-small);
-    }
+    background-color: var(--oc-role-surface-container);
 
     > h2 {
       font-size: 1rem;
@@ -413,7 +354,7 @@ export default {
   }
 
   &-body {
-    color: var(--oc-color-text-default);
+    color: var(--oc-role-on-surface);
     line-height: 1.625;
     padding: var(--oc-space-medium) var(--oc-space-medium) 0;
 
@@ -442,7 +383,6 @@ export default {
 
     &-actions {
       text-align: right;
-      background: var(--oc-color-background-default);
       border-bottom-right-radius: 15px;
       border-bottom-left-radius: 15px;
       padding: var(--oc-space-medium);

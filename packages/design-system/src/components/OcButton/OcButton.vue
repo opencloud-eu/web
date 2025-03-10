@@ -15,7 +15,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
-import { AppearanceType, getSizeClass, SizeType, VariationType } from '../../helpers'
+import { AppearanceType, getSizeClass, SizeType } from '../../helpers'
+import { kebabCase } from 'lodash-es'
 
 export interface Props {
   /**
@@ -27,6 +28,23 @@ export interface Props {
    * @docs The aria label of the button. Needs to be present if the button doesn't have a visible label.
    */
   ariaLabel?: string
+  /**
+   * @docs Material design color role.
+   * @default secondary
+   */
+  colorRole?:
+    | 'primary'
+    | 'primaryContainer'
+    | 'primaryFixed'
+    | 'secondary'
+    | 'secondaryContainer'
+    | 'secondaryFixed'
+    | 'tertiary'
+    | 'tertiaryContainer'
+    | 'tertiaryFixed'
+    | 'surface'
+    | 'surfaceContainer'
+    | 'chrome'
   /**
    * @docs Determines if the button is disabled.
    * @default false
@@ -75,10 +93,10 @@ export interface Props {
    */
   type?: 'button' | 'a' | 'router-link'
   /**
-   * @docs The variation of the button.
-   * @default passive
+   * @docs Determines if the button should have no hover effect.
+   * @default false
    */
-  variation?: VariationType
+  noHover?: boolean
 }
 
 export interface Emits {
@@ -98,6 +116,7 @@ export interface Slots {
 const {
   appearance = 'outline',
   ariaLabel,
+  colorRole = 'secondary',
   disabled = false,
   gapSize = 'medium',
   href,
@@ -108,23 +127,27 @@ const {
   target,
   to,
   type = 'button',
-  variation = 'passive'
+  noHover = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const buttonClass = computed(() => {
-  return [
+  const classes = [
     'oc-button',
     'oc-rounded',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
     `oc-button-gap-${getSizeClass(gapSize)}`,
-    `oc-button-${variation}`,
+    `oc-button-${kebabCase(colorRole)}`,
     `oc-button-${appearance}`,
-    `oc-button-${variation}-${appearance}`
+    `oc-button-${kebabCase(colorRole)}-${appearance}`
   ]
+  if (noHover) {
+    classes.push('no-hover')
+  }
+  return classes
 })
 
 const additionalAttributes = computed(() => {
@@ -157,72 +180,48 @@ const onClick = (event: MouseEvent) => {
   line-height: $oc-size-icon-default * $factor;
 }
 
-@mixin oc-button-variation($color, $hover-color, $muted-color, $contrast-color) {
-  &:disabled {
-    background-color: $muted-color;
-  }
-
-  &:focus:not([disabled]),
-  &:hover:not([disabled]) {
-    background-color: $hover-color;
-  }
-
+@mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
-    background-color: transparent;
     border-style: none;
     font-size: var(--oc-font-size-medium);
     font-weight: normal;
     min-height: 0;
     padding: 0;
 
-    &:focus:not([disabled]),
-    &:hover:not([disabled]) {
-      background-color: transparent;
+    background-color: transparent;
+    color: $color;
+    .oc-icon > svg {
+      fill: $color;
     }
 
     &:focus:not([disabled]):not(button),
     &:hover:not([disabled]):not(button) {
+      background-color: transparent;
       text-decoration: underline;
     }
 
-    &:disabled {
-      background-color: transparent;
-      color: $muted-color;
-    }
-  }
-  &-raw {
-    color: $color;
-
-    .oc-icon > svg {
-      fill: $color;
+    &:focus:not([disabled]):not(.active):not(.no-hover),
+    &:hover:not([disabled]):not(.active):not(.no-hover) {
+      background-color: var(--oc-role-surface-container);
+      color: var(--oc-role-on-surface);
+      .oc-icon > svg {
+        fill: var(--oc-role-on-surface);
+      }
     }
   }
   &-raw-inverse {
-    color: $contrast-color;
-
+    color: $on-color;
     .oc-icon > svg {
-      fill: $contrast-color;
+      fill: $on-color;
     }
   }
 
   &-filled {
     background-color: $color;
-    color: $contrast-color;
-
+    color: $on-color;
     .oc-icon > svg {
-      fill: $contrast-color;
-    }
-
-    &:hover:not([disabled]),
-    &:focus:not([disabled]) {
-      color: $contrast-color;
-      background-color: $hover-color;
-      border-color: $hover-color;
-
-      .oc-icon > svg {
-        fill: $contrast-color;
-      }
+      fill: $on-color;
     }
   }
 
@@ -231,25 +230,8 @@ const onClick = (event: MouseEvent) => {
     outline-offset: -1px;
     background-color: transparent;
     color: $color;
-
     .oc-icon > svg {
       fill: $color;
-    }
-
-    &:disabled {
-      background-color: transparent;
-      color: $muted-color;
-    }
-  }
-
-  &-outline:hover:not([disabled]),
-  &-outline:focus:not([disabled]) {
-    color: $contrast-color;
-    background-color: $hover-color;
-    border-color: $hover-color;
-
-    .oc-icon > svg {
-      fill: $contrast-color;
     }
   }
 }
@@ -339,79 +321,53 @@ const onClick = (event: MouseEvent) => {
     min-height: 2rem;
   }
 
-  &-passive {
-    @include oc-button-variation(
-      var(--oc-color-swatch-passive-default),
-      var(--oc-color-swatch-passive-hover),
-      var(--oc-color-swatch-passive-muted),
-      var(--oc-color-swatch-passive-contrast)
-    );
-
-    &-outline {
-      &:focus:not([disabled]),
-      &:hover:not([disabled]) {
-        color: var(--oc-color-swatch-passive-default);
-        background-color: var(--oc-color-swatch-passive-hover-outline);
-        border-color: var(--oc-color-swatch-passive-hover-outline);
-
-        .oc-icon > svg {
-          fill: var(--oc-color-swatch-passive-default);
-        }
-      }
-    }
-  }
-
-  &-brand {
-    @include oc-button-variation(
-      var(--oc-color-swatch-brand-default),
-      var(--oc-color-swatch-brand-hover),
-      var(--oc-color-swatch-brand-muted),
-      var(--oc-color-swatch-brand-contrast)
-    );
-  }
-
   &-primary {
-    @include oc-button-variation(
-      var(--oc-color-swatch-primary-default),
-      var(--oc-color-swatch-primary-hover),
-      var(--oc-color-swatch-primary-muted),
-      var(--oc-color-swatch-primary-contrast)
-    );
-
-    &-filled {
-      color: var(--oc-color-swatch-primary-contrast) !important;
-
-      span > svg {
-        fill: var(--oc-color-swatch-primary-contrast) !important;
-      }
-    }
+    @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
   }
-
-  &-success {
-    @include oc-button-variation(
-      var(--oc-color-swatch-success-default),
-      var(--oc-color-swatch-success-hover),
-      var(--oc-color-swatch-success-muted),
-      var(--oc-color-swatch-success-contrast)
+  &-primary-container {
+    @include oc-button-color-role(
+      var(--oc-role-primary-container),
+      var(--oc-role-on-primary-container)
     );
   }
-
-  &-warning {
-    @include oc-button-variation(
-      var(--oc-color-swatch-warning-default),
-      var(--oc-color-swatch-warning-hover),
-      var(--oc-color-swatch-warning-muted),
-      var(--oc-color-swatch-warning-contrast)
+  &-primary-fixed {
+    @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
+  }
+  &-secondary {
+    @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
+  }
+  &-secondary-container {
+    @include oc-button-color-role(
+      var(--oc-role-secondary-container),
+      var(--oc-role-on-secondary-container)
     );
   }
-
-  &-danger {
-    @include oc-button-variation(
-      var(--oc-color-swatch-danger-default),
-      var(--oc-color-swatch-danger-hover),
-      var(--oc-color-swatch-danger-muted),
-      var(--oc-color-swatch-danger-contrast)
+  &-secondary-fixed {
+    @include oc-button-color-role(
+      var(--oc-role-secondary-fixed),
+      var(--oc-role-on-secondary-fixed)
     );
+  }
+  &-tertiary {
+    @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
+  }
+  &-tertiary-container {
+    @include oc-button-color-role(
+      var(--oc-role-tertiary-container),
+      var(--oc-role-on-tertiary-container)
+    );
+  }
+  &-tertiary-fixed {
+    @include oc-button-color-role(var(--oc-role-tertiary-fixed), var(--oc-role-on-tertiary-fixed));
+  }
+  &-surface {
+    @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
+  }
+  &-surface-container {
+    @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
+  }
+  &-chrome {
+    @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
   }
 
   &:disabled {
@@ -422,7 +378,7 @@ const onClick = (event: MouseEvent) => {
   &-group {
     display: inline-flex;
     flex-flow: row wrap;
-    outline: 1px solid var(--oc-color-swatch-passive-default);
+    outline: 1px solid var(--oc-role-secondary);
     outline-offset: -1px;
     border-radius: 5px;
 
@@ -436,21 +392,6 @@ const onClick = (event: MouseEvent) => {
 
       &:last-of-type {
         border-radius: 0 5px 5px 0;
-      }
-
-      &-default {
-        border-left: 0;
-        border-right: 0;
-
-        &:first-of-type {
-          // TODO: Implement color variations if button group should be used again
-          border-left: 1px solid var(--oc-color-swatch-primary-default);
-        }
-
-        &:last-of-type {
-          // TODO: Implement color variations if button group should be used again
-          border-right: 1px solid var(--oc-color-swatch-primary-default);
-        }
       }
     }
   }

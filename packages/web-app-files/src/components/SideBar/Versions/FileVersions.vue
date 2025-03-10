@@ -148,12 +148,12 @@ export default defineComponent({
     list-style: none;
 
     .spacer {
-      border-left: 1px solid var(--oc-color-border);
+      border-left: 0.5px solid var(--oc-role-outline-variant);
       margin-left: calc(-1 * var(--oc-space-large)) !important;
     }
 
     > li.version-item {
-      border-left: 1px solid var(--oc-color-border);
+      border-left: 0.5px solid var(--oc-role-outline-variant);
       margin-left: calc(-1 * var(--oc-space-large)) !important;
       padding-left: var(--oc-space-medium);
       padding-bottom: var(--oc-space-medium);
@@ -167,16 +167,11 @@ export default defineComponent({
         position: absolute;
         left: -6px;
         top: 4px;
-        background-color: var(--oc-color-border);
+        background-color: var(--oc-role-outline-variant);
         border-radius: 50%;
       }
 
       button.version-action-item {
-        &:hover {
-          color: var(--oc-color-primary-contrast);
-          background-color: var(--oc-color-background-hover);
-        }
-
         .oc-icon {
           vertical-align: middle;
         }

@@ -53,6 +53,7 @@
               :title="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
               :aria-label="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
               class="vs__deselect oc-mx-rm"
+              no-hover
               @mousedown.stop.prevent
               @click="deselect(option)"
             >
@@ -71,7 +72,6 @@
       class="oc-text-input-message"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-warning': !!warningMessage,
         'oc-text-input-danger': !!errorMessage
       }"
     >
@@ -86,7 +86,6 @@
         :id="messageId"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-warning': !!warningMessage,
           'oc-text-input-danger': !!errorMessage
         }"
         v-text="messageText"
@@ -160,10 +159,6 @@ export interface Props {
    * @default false
    */
   loading?: boolean
-  /**
-   * @docs The warning message to be displayed below the select.
-   */
-  warningMessage?: string
   /**
    * @docs The error message to be displayed below the select.
    */
@@ -245,7 +240,6 @@ const {
   searchable = true,
   clearable = false,
   loading = false,
-  warningMessage,
   errorMessage,
   fixMessageLine = false,
   descriptionMessage,
@@ -414,16 +408,12 @@ const additionalAttributes = computed(() => {
 })
 
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!warningMessage || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
 const messageText = computed(() => {
   if (errorMessage) {
     return errorMessage
-  }
-
-  if (warningMessage) {
-    return warningMessage
   }
 
   return descriptionMessage
@@ -451,8 +441,8 @@ export default { components: { VueSelect } }
   .vs__open-indicator,
   .vs__search,
   .vs__selected {
-    background-color: var(--oc-color-background-muted) !important;
-    color: var(--oc-color-input-text-muted) !important;
+    background-color: var(--oc-role-secondary) !important;
+    color: var(--oc-role-on-secondary) !important;
     pointer-events: none;
   }
 
@@ -464,7 +454,7 @@ export default { components: { VueSelect } }
 .oc-select {
   line-height: normal;
   padding: 1px 0;
-  color: var(--oc-color-input-text-default);
+  color: var(--oc-role-on-surface);
 
   &-position-fixed {
     .vs__dropdown-menu {
@@ -475,19 +465,19 @@ export default { components: { VueSelect } }
 
   .vs {
     &__search {
-      color: var(--oc-color-input-text-default);
+      color: var(--oc-role-on-surface);
     }
 
     &__search::placeholder,
     &__dropdown-toggle,
     &__dropdown-menu {
       -webkit-appearance: none;
-      background-color: var(--oc-color-background-default);
+      color: var(--oc-role-on-surface);
+      background-color: var(--oc-role-surface);
       border-radius: 0;
       border-radius: 5px;
-      border: 1px solid var(--oc-color-input-border);
+      border: 1px solid var(--oc-role-outline);
       box-sizing: border-box;
-      color: var(--oc-color-input-text-default);
       line-height: inherit;
       margin: 0;
       max-width: 100%;
@@ -500,7 +490,7 @@ export default { components: { VueSelect } }
     }
 
     &__selected-readonly {
-      background-color: var(--oc-color-background-muted) !important;
+      background-color: var(--oc-role-surface-container-low) !important;
     }
 
     &__search,
@@ -510,14 +500,14 @@ export default { components: { VueSelect } }
 
     &__dropdown-menu {
       padding: 0;
-      background-color: var(--oc-color-background-default);
+      background-color: var(--oc-role-surface);
       margin-top: -1px;
     }
 
     &__clear,
     &__open-indicator,
     &__deselect {
-      fill: var(--oc-color-input-text-default);
+      fill: var(--oc-role-on-surface);
     }
 
     &__deselect {
@@ -526,20 +516,20 @@ export default { components: { VueSelect } }
 
     &__dropdown-option,
     &__no-options {
-      color: var(--oc-color-input-text-default);
+      color: var(--oc-role-on-surface);
       white-space: normal;
       padding: 6px 0.6rem;
       border-radius: 5px;
       line-height: var(--vs-line-height);
 
-      &--highlight {
-        background-color: var(--oc-color-background-hover);
-        color: var(--oc-color-swatch-brand-contrast);
+      &--highlight,
+      &--selected {
+        background-color: var(--oc-role-surface-container);
+        color: var(--oc-role-on-surface);
       }
 
       &--selected {
-        background-color: var(--oc-color-background-highlight);
-        color: var(--oc-color-swatch-brand-contrast);
+        background-color: var(--oc-role-secondary-container);
       }
     }
 
@@ -566,13 +556,13 @@ export default { components: { VueSelect } }
       > * {
         padding: 0px 2px;
         margin: 2px 2px 2px 1px;
-        color: var(--oc-color-input-text-default);
+        color: var(--oc-role-on-surface);
       }
 
       > *:not(input) {
         padding-left: 3px;
-        background-color: var(--oc-color-background-default);
-        fill: var(--oc-color-text-default);
+        background-color: var(--oc-role-surface-container);
+        fill: var(--oc-role-on-surface);
       }
     }
   }
@@ -580,8 +570,8 @@ export default { components: { VueSelect } }
   &.vs--multiple {
     .vs {
       &__selected-options > *:not(input) {
-        color: var(--oc-color-input-text-default);
-        background-color: var(--oc-color-background-default);
+        color: var(--oc-role-on-surface);
+        background-color: var(--oc-role-surface-container);
       }
     }
   }
@@ -589,43 +579,14 @@ export default { components: { VueSelect } }
   &:focus-within {
     .vs__dropdown-menu,
     .vs__dropdown-toggle {
-      border-color: var(--oc-color-swatch-passive-default);
+      border: 1px solid var(--oc-role-surface);
+      outline: 2px solid var(--oc-role-outline);
     }
   }
 
   .keyboard-outline {
-    outline: 2px var(--oc-color-swatch-passive-default) solid !important;
+    outline: 2px var(--oc-role-outline-variant) solid !important;
     outline-offset: -2px;
-  }
-}
-
-.oc-background-highlight {
-  .oc-select {
-    .vs {
-      &__search {
-        color: var(--oc-color-input-text-default);
-      }
-
-      &__search::placeholder,
-      &__dropdown-toggle,
-      &__dropdown-menu {
-        background-color: var(--oc-color-input-bg);
-      }
-    }
-
-    &.vs--multiple {
-      .vs__selected-options > *:not(input) {
-        color: var(--oc-color-input-text-default);
-        background-color: var(--oc-color-background-default);
-      }
-    }
-
-    &:focus-within {
-      .vs__dropdown-menu,
-      .vs__dropdown-toggle {
-        background-color: var(--oc-color-background-default);
-      }
-    }
   }
 }
 

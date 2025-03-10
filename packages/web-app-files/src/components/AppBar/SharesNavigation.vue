@@ -14,9 +14,9 @@
       </li>
     </oc-list>
     <div id="shares-navigation-mobile" class="oc-hidden@s">
-      <oc-button id="shares_navigation_mobile" appearance="raw">
+      <oc-button id="shares_navigation_mobile" class="oc-p-xs" appearance="raw">
         <span v-text="currentNavItem.text" />
-        <oc-icon name="arrow-down-s" fill-type="line" size="small" />
+        <oc-icon name="arrow-drop-down" />
       </oc-button>
       <oc-drop toggle="#shares_navigation_mobile" mode="click" close-on-click padding-size="small">
         <oc-list>
@@ -25,9 +25,8 @@
               type="router-link"
               class="shares-nav-mobile"
               :to="navItem.to"
-              :class="{ 'oc-background-highlight': navItem.active }"
+              :class="{ 'oc-secondary-container': navItem.active }"
               appearance="raw"
-              variation="passive"
             >
               <span class="icon-box" :class="{ 'icon-box-active': navItem.active }">
                 <oc-icon :name="navItem.icon" />
@@ -121,15 +120,6 @@ export default defineComponent({
         margin-bottom: 0;
       }
     }
-
-    a {
-      &:focus,
-      &:hover {
-        @media (max-width: $oc-breakpoint-xsmall-max) {
-          background-color: var(--oc-color-background-hover);
-        }
-      }
-    }
   }
 
   a {
@@ -155,7 +145,7 @@ export default defineComponent({
   }
 
   .shares-nav-desktop.router-link-active {
-    border-bottom: 2px solid var(--oc-color-swatch-primary-default) !important;
+    border-bottom: 2px solid var(--oc-role-secondary-container) !important;
     border-radius: 0;
   }
 }
