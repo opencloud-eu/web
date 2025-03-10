@@ -287,7 +287,7 @@ export default {
     }
 
     &-background {
-      background-color: var(--oc-roles-surface);
+      background-color: var(--oc-role-surface);
       opacity: 0.6;
     }
 

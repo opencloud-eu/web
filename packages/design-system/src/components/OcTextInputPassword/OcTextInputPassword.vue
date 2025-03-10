@@ -1,6 +1,5 @@
 <template>
   <div
-    ref="inputWrapperRef"
     class="oc-text-input-password-wrapper"
     :class="{
       'oc-text-input-password-wrapper-danger': hasError,

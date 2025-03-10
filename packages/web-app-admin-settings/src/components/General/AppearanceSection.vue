@@ -113,7 +113,7 @@ export default defineComponent({
     width: 100%;
     max-height: 100%;
     object-fit: cover;
-    padding: 8px;
+    padding: var(--oc-space-small);
     background: var(--oc-role-surface-container);
   }
 }

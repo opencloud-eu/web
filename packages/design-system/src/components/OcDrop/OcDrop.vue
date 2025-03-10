@@ -257,7 +257,7 @@ onMounted(() => {
 
   .tippy-content {
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
-    padding: 8px;
+    padding: var(--oc-space-small);
   }
 
   li.oc-menu-item-hover {
