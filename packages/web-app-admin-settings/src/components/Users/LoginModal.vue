@@ -5,7 +5,7 @@
       :label="$gettext('Login')"
       :options="options"
       :placeholder="$gettext('Select...')"
-      :warning-message="
+      :description-message="
         currentUserSelected ? $gettext('Your own login status will remain unchanged.') : ''
       "
       :position-fixed="true"
