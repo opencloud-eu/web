@@ -40,11 +40,7 @@
           @click="updateSelectedType(type)"
         >
           <span class="oc-flex oc-flex-middle">
-            <oc-icon
-              :name="getLinkRoleByType(type).icon"
-              class="oc-pl-s oc-pr-m"
-              variation="inherit"
-            />
+            <oc-icon :name="getLinkRoleByType(type).icon" class="oc-pl-s oc-pr-m" />
             <span>
               <span
                 class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"
