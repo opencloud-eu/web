@@ -55,7 +55,7 @@ The component can be in a `disabled` or a `loading` state.
 
 ### Messages
 
-There are three different types of messages that can be displayed: `description-message`, `warning-message`, and `error-message`.
+There are two different types of messages that can be displayed: `description-message` and `error-message`.
 
 ::: livecode
 
@@ -63,11 +63,6 @@ There are three different types of messages that can be displayed: `description-
 <oc-select
 	label="Please select an option"
 	description-message="This is a description message"
-	class="oc-mb-m"
-/>
-<oc-select
-	label="Please select an option"
-	warning-message="This is a warning message"
 	class="oc-mb-m"
 />
 <oc-select

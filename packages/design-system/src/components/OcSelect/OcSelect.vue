@@ -72,7 +72,6 @@
       class="oc-text-input-message"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-warning': !!warningMessage,
         'oc-text-input-danger': !!errorMessage
       }"
     >
@@ -87,7 +86,6 @@
         :id="messageId"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-warning': !!warningMessage,
           'oc-text-input-danger': !!errorMessage
         }"
         v-text="messageText"
@@ -161,10 +159,6 @@ export interface Props {
    * @default false
    */
   loading?: boolean
-  /**
-   * @docs The warning message to be displayed below the select.
-   */
-  warningMessage?: string
   /**
    * @docs The error message to be displayed below the select.
    */
@@ -246,7 +240,6 @@ const {
   searchable = true,
   clearable = false,
   loading = false,
-  warningMessage,
   errorMessage,
   fixMessageLine = false,
   descriptionMessage,
@@ -415,16 +408,12 @@ const additionalAttributes = computed(() => {
 })
 
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!warningMessage || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
 const messageText = computed(() => {
   if (errorMessage) {
     return errorMessage
-  }
-
-  if (warningMessage) {
-    return warningMessage
   }
 
   return descriptionMessage

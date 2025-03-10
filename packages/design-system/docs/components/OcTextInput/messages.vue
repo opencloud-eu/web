@@ -10,7 +10,6 @@
     label="Input with error and warning messages with reserved space below"
     class="oc-mb-s"
     :error-message="errorMessage"
-    :warning-message="warningMessage"
     :fix-message-line="true"
   />
   <oc-text-input
@@ -18,7 +17,6 @@
     label="Input with error and warning messages without reserved space below"
     class="oc-mb-s"
     :error-message="errorMessage"
-    :warning-message="warningMessage"
   />
 </template>
 
@@ -29,8 +27,5 @@ const valueForMessages = ref<string>('')
 
 const errorMessage = computed(() => {
   return unref(valueForMessages).length === 0 ? 'Value is required.' : ''
-})
-const warningMessage = computed(() => {
-  return unref(valueForMessages).endsWith(' ') ? 'Trailing whitespace should be avoided.' : ''
 })
 </script>

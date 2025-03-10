@@ -6,10 +6,6 @@ const options = {
     breakpoints: {
       'xsmall-max': '50px'
     },
-    colorPalette: {
-      'background-default': '#ef23ab',
-      'swatch-brand-default': '#00FFFF'
-    },
     roles: {
       primary: '#715289',
       onPrimary: '#FFFFFF',

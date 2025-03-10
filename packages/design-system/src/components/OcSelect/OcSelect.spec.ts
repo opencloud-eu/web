@@ -72,10 +72,6 @@ describe('OcSelect', () => {
     })
   })
   describe('message', () => {
-    it('displays a warning message', () => {
-      const wrapper = getWrapper({ warningMessage: 'foo' })
-      expect(wrapper.find(selectors.warningMessage).exists()).toBeTruthy()
-    })
     it('displays an error message', () => {
       const wrapper = getWrapper({ errorMessage: 'foo' })
       expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
