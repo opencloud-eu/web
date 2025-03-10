@@ -11,7 +11,6 @@ export interface Action<T = ActionOptions> {
   category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
   icon: string
   iconFillType?: IconFillType
-  variation?: string
   appearance?: string
   id?: string
   img?: string

@@ -11,7 +11,6 @@
       class="oc-cursor-pointer oc-flex oc-flex-middle"
       name="notification-3"
       fill-type="line"
-      variation="inherit"
     />
     <span
       v-if="notificationCount"

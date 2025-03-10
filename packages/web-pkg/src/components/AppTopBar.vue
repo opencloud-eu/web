@@ -67,7 +67,6 @@
                 resources: [resource]
               }"
               appearance="raw-inverse"
-              variation="primary"
             />
           </template>
           <oc-button

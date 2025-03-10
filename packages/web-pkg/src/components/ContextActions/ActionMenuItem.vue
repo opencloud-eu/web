@@ -80,10 +80,6 @@ export default defineComponent({
       type: String,
       default: 'raw'
     },
-    variation: {
-      type: String,
-      default: 'passive'
-    },
     shortcutHint: {
       type: Boolean,
       default: true,
@@ -120,7 +116,6 @@ export default defineComponent({
     const componentProps = computed(() => {
       const properties = {
         appearance: props.action.appearance || props.appearance,
-        variation: props.action.variation || props.variation,
         ...(props.action.isDisabled && {
           disabled: props.action.isDisabled(props.actionOptions)
         }),
