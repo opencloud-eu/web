@@ -14,7 +14,7 @@ describe('LoginModal', () => {
   it('shows a warning when the current user is being selected', () => {
     const { wrapper } = getWrapper([mock<User>({ id: '1' })])
     expect(
-      wrapper.findComponent<typeof OcSelect>('oc-select-stub').props('warningMessage')
+      wrapper.findComponent<typeof OcSelect>('oc-select-stub').props('descriptionMessage')
     ).toBeDefined()
   })
   describe('method "onConfirm"', () => {
