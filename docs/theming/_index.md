@@ -16,16 +16,9 @@ By providing your own theme, you can customize the user experience for your own 
 
 This page documents the setup and configuration options, and provides a template for you to get started.
 
-## Ways of providing a theme
+## Providing a theme
 
-Generally, your theming configuration lives inside a `.json` file, e.g. `theme.json`. To load this file, it needs to be correctly referenced inside your `config/config.json` (example configurations can be [found on GitHub](https://github.com/opencloud-eu/web/tree/main/config)).
-
-To reference your theme, you have two options:
-
-- Using a URL, e.g. `"theme": "https://externalurl.example.com/theme-name/theme.json",`. To avoid CORS issues, please make sure that you host the URL on the same URL as your OpenCloud web hosting.
-- For development and testing purposes, you can store your `theme.json` inside `packages/web-runtime/themes/{theme-name}/` and reference it in the `config.json`. However, this isn't recommended for production use since your changes may get lost when updating OpenCloud.
-
-**Hint:** If no theme is provided, the loading of your custom theme fails or the theme can't be parsed correctly, the standard OpenCloud theme will be loaded as a fallback and an error with further information will be logged on the browser console.
+Please refer to the [web server docs](https://github.com/opencloud-eu/opencloud/tree/main/services/web#loading-themes) for details on how to provide a theme to your OpenCloud instance.
 
 ## Configuring a theme
 
@@ -115,11 +108,11 @@ You can set the background image for the login page by providing an image file i
 
 ##### The "designTokens" options
 
-To further customize your OpenCloud instance, you can provide your own styles. To give you an idea of how a working design system looks like, feel free to head over to the [OpenCloud design tokens](https://opencloud.design/#/Design%20Tokens) for inspiration.
+To further customize your OpenCloud instance, you can provide your own styles. To give you an idea of how a working design system looks like, feel free to head over to the [OpenCloud design tokens](https://design.opencloud.eu/) for inspiration.
 
-**Hint:** All the variables are initialized using the [OpenCloud design tokens](https://opencloud.design/#/Design%20Tokens) and then overwritten by your theme variables. Therefore, you don't have to provide all the variables and can use the default OpenCloud colors as a fallback.
+**Hint:** All the variables are initialized using the [OpenCloud design tokens](https://design.opencloud.eu/) and then overwritten by your theme variables. Therefore, you don't have to provide all the variables and can use the default OpenCloud colors as a fallback.
 
-In general, the theme loader looks for a `designTokens` key inside your theme configuration. Inside the `designTokens`, it expects to find a `colorPalette`, `fontSizes` and `spacing` collection. The structure is outlined below:
+In general, the theme loader looks for a `designTokens` key inside your theme configuration. Inside the `designTokens`, it expects to find a `colorPalette`, `fontSizes`, `roles`, and `spacing` collection. The structure is outlined below:
 
 ```json
 "designTokens": {
@@ -131,6 +124,9 @@ In general, the theme loader looks for a `designTokens` key inside your theme co
   },
   "fontFamily": "", // Please see below for details
   "fontSizes": {
+    // Please see below for details
+  },
+  "roles": {
     // Please see below for details
   },
   "sizes": {
@@ -165,56 +161,22 @@ Breakpoint variables get prepended with `--oc-breakpoint-`, so e.g. _"large-defa
 
 ###### Colors
 
-For the color values, you can use any valid CSS color format, e.g. **hex** (#fff), **rgb** (rgb(255,255,255)) or **color names** (white).
+Some icon colors can be defined via the `colorPalette` key. You can use any valid CSS color format, e.g. **hex** (#fff), **rgb** (rgb(255,255,255)) or **color names** (white).
 
-Color variables get prepended with `--oc-color-`, so e.g. _"background-default"_ creates the custom CSS property `--oc-color-background-default`.
-
-Again, you can use the [OpenCloud design tokens](https://opencloud.design/#/Design%20Tokens) as a reference implementation.
+Color variables get prepended with `--oc-color-`, so e.g. _"icon-folder"_ creates the custom CSS property `--oc-color-icon-folder`.
 
 ```json
 {
   "colorPalette": {
-    "background-accentuate": "",
-    "background-default": "",
-    "background-highlight": "",
-    "background-muted": "",
-    "border": "",
-    "input-bg": "",
-    "input-border": "",
-    "input-text-default": "",
-    "input-text-muted": "",
-    "swatch-brand-default": "",
-    "swatch-brand-hover": "",
-    "swatch-brand-muted": "",
-    "swatch-brand-contrast": "",
-    "swatch-danger-default": "",
-    "swatch-danger-hover": "",
-    "swatch-danger-muted": "",
-    "swatch-danger-contrast": "",
-    "swatch-inverse-default": "",
-    "swatch-inverse-hover": "",
-    "swatch-inverse-muted": "",
-    "swatch-passive-default": "",
-    "swatch-passive-hover": "",
-    "swatch-passive-hover-outline": "",
-    "swatch-passive-muted": "",
-    "swatch-passive-contrast": "",
-    "swatch-primary-default": "",
-    "swatch-primary-hover": "",
-    "swatch-primary-muted": "",
-    "swatch-primary-muted-hover": "",
-    "swatch-primary-contrast": "",
-    "swatch-success-default": "",
-    "swatch-success-hover": "",
-    "swatch-success-muted": "",
-    "swatch-success-contrast": "",
-    "swatch-warning-default": "",
-    "swatch-warning-hover": "",
-    "swatch-warning-muted": "",
-    "swatch-warning-contrast": "",
-    "text-default": "",
-    "text-inverse": "",
-    "text-muted": ""
+    "icon-folder": "",
+    "icon-archive": "",
+    "icon-image": "",
+    "icon-spreadsheet": "",
+    "icon-document": "",
+    "icon-video": "",
+    "icon-audio": "",
+    "icon-presentation": "",
+    "icon-pdf": ""
   }
 }
 ```
@@ -246,6 +208,72 @@ You can change the font family according to your needs. The font family gets wri
 ```
 
 Please note that you also need to make the font available as a `font-face` via CSS.
+
+###### Roles
+
+For the color role values, you can use any valid CSS color format, e.g. **hex** (#fff), **rgb** (rgb(255,255,255)) or **color names** (white).
+
+Color variables get prepended with `--oc-role-`, so e.g. _"primary"_ creates the custom CSS property `--oc-role-primary`.
+
+We use the material design framework for our color roles. Please refer to the [OpenCloud design tokens](https://design.opencloud.eu/designTokens/colorRoles.html) for a full list of available color roles.
+
+```json
+{
+  "roles": {
+    "primary": "",
+    "surfaceTint": "",
+    "onPrimary": "",
+    "primaryContainer": "",
+    "onPrimaryContainer": "",
+    "secondary": "",
+    "onSecondary": "",
+    "secondaryContainer": "",
+    "onSecondaryContainer": "",
+    "tertiary": "",
+    "onTertiary": "",
+    "tertiaryContainer": "",
+    "onTertiaryContainer": "",
+    "error": "",
+    "onError": "",
+    "errorContainer": "",
+    "onErrorContainer": "",
+    "background": "",
+    "onBackground": "",
+    "surface": "",
+    "onSurface": "",
+    "surfaceVariant": "",
+    "onSurfaceVariant": "",
+    "outline": "",
+    "outlineVariant": "",
+    "shadow": "",
+    "scrim": "",
+    "inverseSurface": "",
+    "inverseOnSurface": "",
+    "inversePrimary": "",
+    "primaryFixed": "",
+    "onPrimaryFixed": "",
+    "primaryFixedDim": "",
+    "onPrimaryFixedVariant": "",
+    "secondaryFixed": "",
+    "onSecondaryFixed": "",
+    "secondaryFixedDim": "",
+    "onSecondaryFixedVariant": "",
+    "tertiaryFixed": "",
+    "onTertiaryFixed": "",
+    "tertiaryFixedDim": "",
+    "onTertiaryFixedVariant": "",
+    "surfaceDim": "",
+    "surfaceBright": "",
+    "surfaceContainerLowest": "",
+    "surfaceContainerLow": "",
+    "surfaceContainer": "",
+    "surfaceContainerHigh": "",
+    "surfaceContainerHighest": "",
+    "chrome": "",
+    "onChrome": ""
+  }
+}
+```
 
 ###### Sizes
 
@@ -329,7 +357,7 @@ Optional information
 
 ## Extendability
 
-If you define different key-value pairs inside any of the objects (`breakpoints`, `colorPalette`, `fontSizes`, `sizes`, `spacing`) in `"designTokens"`, they will get loaded and initialized as CSS custom properties but don't necessarily take any effect in the user interface. This gives you an opportunity to, for example, customize extensions from within the theme in the web runtime (and not the extension itself).
+If you define different key-value pairs inside any of the objects (`breakpoints`, `colorPalette`, `fontSizes`, `roles`, `sizes`, `spacing`) in `"designTokens"`, they will get loaded and initialized as CSS custom properties but don't necessarily take any effect in the user interface. This gives you an opportunity to, for example, customize extensions from within the theme in the web runtime (and not the extension itself).
 
 ## Example theme
 
@@ -432,51 +460,8 @@ A full template for your custom theme is provided below, and you can use the ins
           "isDark": false,
           "label": "Light Theme",
           "designTokens": {
+            "roles": {},
             "colorPalette": {
-              "background-accentuate": "rgba(255, 255, 5, 0.1)",
-              "background-default": "#ffffff",
-              "background-highlight": "#edf3fa",
-              "background-muted": "#f8f8f8",
-              "background-secondary": "#ffffff",
-              "background-hover": "rgb(236, 236, 236)",
-              "color-components-apptopbar-background": "transparent",
-              "color-components-apptopbar-border": "#ceddee",
-              "border": "#ecebee",
-              "input-bg": "#ffffff",
-              "input-border": "#ceddee",
-              "input-text-default": "#041e42",
-              "input-text-muted": "#4c5f79",
-              "swatch-brand-default": "#041e42",
-              "swatch-brand-hover": "#223959",
-              "swatch-brand-contrast": "#ffffff",
-              "swatch-danger-contrast": "#ffffff",
-              "swatch-danger-default": "rgb(197, 48, 48)",
-              "swatch-danger-hover": "#b12b2b",
-              "swatch-danger-muted": "rgb(204, 117, 117)",
-              "swatch-inverse-default": "#ffffff",
-              "swatch-inverse-hover": "#ffffff",
-              "swatch-inverse-muted": "#bfbfbf",
-              "swatch-passive-default": "#4c5f79",
-              "swatch-passive-hover": "#43536b",
-              "swatch-passive-hover-outline": "#f7fafd",
-              "swatch-passive-muted": "#283e5d",
-              "swatch-passive-contrast": "#ffffff",
-              "swatch-primary-default": "#4a76ac",
-              "swatch-primary-hover": "#80a7d7",
-              "swatch-primary-muted": "#2c588e",
-              "swatch-primary-muted-hover": "rgb(36, 75, 119)",
-              "swatch-primary-contrast": "#ffffff",
-              "swatch-success-default": "rgb(3, 84, 63)",
-              "swatch-success-hover": "#023b2c",
-              "swatch-success-muted": "rgb(83, 150, 10)",
-              "swatch-success-contrast": "#ffffff",
-              "swatch-warning-default": "rgb(183, 76, 27)",
-              "swatch-warning-hover": "#a04318",
-              "swatch-warning-muted": "rgba(183, 76, 27, .5)",
-              "swatch-warning-contrast": "#ffffff",
-              "text-default": "#041e42",
-              "text-inverse": "#ffffff",
-              "text-muted": "#4c5f79",
               "icon-folder": "#4d7eaf",
               "icon-archive": "#fbbe54",
               "icon-image": "#ee6b3b",
@@ -493,53 +478,8 @@ A full template for your custom theme is provided below, and you can use the ins
           "isDark": true,
           "label": "Dark Theme",
           "designTokens": {
+            "roles": {},
             "colorPalette": {
-              "background-accentuate": "#696969",
-              "background-default": "#292929",
-              "background-highlight": "#383838",
-              "background-muted": "#383838",
-              "background-secondary": "#4f4f4f",
-              "background-hover": "#383838",
-              "color-components-apptopbar-background": "transparent",
-              "color-components-apptopbar-border": "#ceddee",
-              "border": "#383838",
-              "input-bg": "#4f4f4f",
-              "input-border": "#696969",
-              "input-text-default": "#dadcdf",
-              "input-text-muted": "#bdbfc3",
-              "swatch-brand-default": "#212121",
-              "swatch-brand-hover": "#ffffff",
-              "swatch-brand-contrast": "#dadcdf",
-              "swatch-inverse-default": "",
-              "swatch-inverse-hover": "",
-              "swatch-inverse-muted": "#696969",
-              "swatch-passive-default": "#c2c2c2",
-              "swatch-passive-hover": "",
-              "swatch-passive-hover-outline": "#3B3B3B",
-              "swatch-passive-muted": "#bdbfc3",
-              "swatch-passive-contrast": "#000000",
-              "swatch-primary-default": "#73b0f2",
-              "swatch-primary-hover": "#7bafef",
-              "swatch-primary-muted": "",
-              "swatch-primary-muted-hover": "#2282f7",
-              "swatch-primary-contrast": "#dadcdf",
-              "swatch-success-background": "rgba(0, 188, 140, 0)",
-              "swatch-success-default": "rgb(0, 188, 140)",
-              "swatch-success-hover": "#00f0b4",
-              "swatch-success-muted": "rgba(0, 188, 140, .5)",
-              "swatch-success-contrast": "#000000",
-              "swatch-warning-background": "rgba(0,0,0,0)",
-              "swatch-warning-default": "rgb(232, 191, 73)",
-              "swatch-warning-hover": "#eed077",
-              "swatch-warning-muted": "rgba(232, 178, 19, .5)",
-              "swatch-danger-default": "rgb(255, 72, 53)",
-              "swatch-danger-hover": "#ff7566",
-              "swatch-danger-muted": "rgba(255, 72, 53, .5)",
-              "swatch-danger-contrast": "#dadcdf",
-              "swatch-warning-contrast": "#000000",
-              "text-default": "#dadcdf",
-              "text-inverse": "#000000",
-              "text-muted": "#c2c2c2",
               "icon-folder": "rgb(44, 101, 255)",
               "icon-archive": "rgb(255, 207, 1)",
               "icon-image": "rgb(255, 111, 0)",
