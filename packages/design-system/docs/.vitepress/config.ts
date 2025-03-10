@@ -85,6 +85,10 @@ export default defineConfig({
               link: '/designTokens/colorRoles'
             },
             {
+              text: 'Color palette',
+              link: '/designTokens/colorPalette'
+            },
+            {
               text: 'Font sizes',
               link: '/designTokens/fontSizes'
             },
