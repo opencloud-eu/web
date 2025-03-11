@@ -11,6 +11,7 @@
       no-highlight
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
+      auto-focus
       read-only
       :toolbars="[]"
     />
@@ -39,6 +40,7 @@
         'pageFullscreen'
       ]"
       :read-only="isReadOnly"
+      auto-focus
       @on-change="(value) => $emit('update:currentContent', value)"
     />
   </div>
