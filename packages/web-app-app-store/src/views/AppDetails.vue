@@ -108,5 +108,10 @@ export default defineComponent({
     flex-flow: column;
     gap: 1rem;
   }
+
+  #text-editor-preview-component-preview,
+  .app-content {
+    background-color: var(--oc-role-surface-container) !important;
+  }
 }
 </style>

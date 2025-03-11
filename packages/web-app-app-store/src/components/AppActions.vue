@@ -6,6 +6,7 @@
       size="small"
       :action="action"
       :action-options="{ app, version }"
+      :button-classes="['raw-hover-surface']"
     />
   </oc-list>
 </template>

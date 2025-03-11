@@ -4,7 +4,14 @@
       v-oc-tooltip="showTooltip || action.hideLabel ? action.label(actionOptions) : ''"
       :type="componentType"
       v-bind="componentProps"
-      :class="[action.class, 'action-menu-item', 'oc-py-s', 'oc-px-m', 'oc-width-1-1']"
+      :class="[
+        action.class,
+        'action-menu-item',
+        'oc-py-s',
+        'oc-px-m',
+        'oc-width-1-1',
+        ...buttonClasses
+      ]"
       :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
       data-testid="action-handler"
       :size="size"
@@ -88,6 +95,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
       required: false
+    },
+    buttonClasses: {
+      type: Array as PropType<string[]>,
+      default: () => []
     }
   },
   setup(props) {
