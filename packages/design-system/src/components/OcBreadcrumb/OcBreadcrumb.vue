@@ -98,7 +98,7 @@
       :to="parentFolderTo"
       class="oc-breadcrumb-mobile-navigation"
     >
-      <oc-icon name="arrow-left-s" fill-type="line" size="large" class="oc-mr-m" />
+      <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
   <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current">
