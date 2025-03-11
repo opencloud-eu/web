@@ -98,7 +98,7 @@
               />
               <oc-button
                 id="users-filter-confirm"
-                class="oc-ml-xs"
+                class="oc-ml-xs oc-p-xs"
                 appearance="raw"
                 @click="filterDisplayName"
               >
