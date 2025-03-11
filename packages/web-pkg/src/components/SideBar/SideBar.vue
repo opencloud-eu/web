@@ -33,7 +33,7 @@
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
             v-oc-tooltip="accessibleLabelBack"
-            class="header__back"
+            class="header__back oc-p-xs"
             appearance="raw"
             :aria-label="accessibleLabelBack"
             @click="closePanel"
@@ -47,7 +47,7 @@
 
           <oc-button
             appearance="raw"
-            class="header__close"
+            class="header__close oc-p-xs"
             :aria-label="$gettext('Close file sidebar')"
             @click="closeSidebar"
           >

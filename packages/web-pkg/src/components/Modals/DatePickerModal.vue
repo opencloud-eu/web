@@ -9,20 +9,16 @@
   />
 
   <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
-    <oc-button
-      class="oc-modal-body-actions-cancel oc-ml-s"
-      appearance="outline"
-      colro-role="secondary"
-      @click="$emit('cancel')"
-      >{{ $gettext('Cancel') }}
+    <oc-button class="oc-modal-body-actions-cancel oc-ml-s" @click="$emit('cancel')">
+      {{ $gettext('Cancel') }}
     </oc-button>
     <oc-button
       :disabled="confirmDisabled"
       class="oc-modal-body-actions-confirm oc-ml-s"
       appearance="filled"
-      colro-role="secondary"
       @click="$emit('confirm', dateTime)"
-      >{{ $gettext('Confirm') }}
+    >
+      {{ $gettext('Confirm') }}
     </oc-button>
   </div>
 </template>

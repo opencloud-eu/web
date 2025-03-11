@@ -28,7 +28,6 @@
                 }"
                 justify-content="space-between"
                 appearance="raw"
-                color-role="secondary"
                 :data-test-value="item[displayNameAttribute as keyof Item]"
                 @click="toggleItemSelection(item)"
               >

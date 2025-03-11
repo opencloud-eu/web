@@ -94,13 +94,7 @@
             />
           </div>
           <div class="date-filter-apply-btn">
-            <oc-button
-              appearance="outline"
-              variation="passive"
-              size="small"
-              :disabled="!dateRangeValid"
-              @click="applyDateRangeFilter"
-            >
+            <oc-button size="small" :disabled="!dateRangeValid" @click="applyDateRangeFilter">
               {{ $gettext('Apply') }}
             </oc-button>
           </div>

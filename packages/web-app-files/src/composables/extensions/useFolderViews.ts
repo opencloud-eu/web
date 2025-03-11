@@ -11,6 +11,20 @@ export const useFolderViews = (): FolderViewExtension[] => {
 
   return [
     {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
+      type: 'folderView',
+      extensionPointIds: [folderViewsFolderExtensionPoint.id],
+      folderView: {
+        name: 'resource-table-condensed',
+        label: $gettext('Switch to condensed table view'),
+        icon: {
+          name: 'menu-line-condensed',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
       type: 'folderView',
       extensionPointIds: [
@@ -23,20 +37,6 @@ export const useFolderViews = (): FolderViewExtension[] => {
         label: $gettext('Switch to default table view'),
         icon: {
           name: 'menu-line',
-          fillType: 'none'
-        },
-        component: ResourceTable
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
-      type: 'folderView',
-      extensionPointIds: [folderViewsFolderExtensionPoint.id],
-      folderView: {
-        name: 'resource-table-condensed',
-        label: $gettext('Switch to condensed table view'),
-        icon: {
-          name: 'menu-line-condensed',
           fillType: 'none'
         },
         component: ResourceTable

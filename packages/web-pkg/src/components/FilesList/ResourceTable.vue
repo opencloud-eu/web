@@ -94,7 +94,7 @@
         />
         <oc-button
           v-if="hasRenameAction(item)"
-          class="resource-table-edit-name"
+          class="resource-table-edit-name raw-hover-surface oc-p-xs"
           appearance="raw"
           @click="openRenameDialog(item)"
         >
@@ -193,7 +193,6 @@
     <template #sharedBy="{ item }">
       <oc-button
         appearance="raw-inverse"
-        variation="passive"
         class="resource-table-shared-by"
         @click="openSharingSidebar(item)"
       >
@@ -208,7 +207,6 @@
     <template #sharedWith="{ item }">
       <oc-button
         appearance="raw-inverse"
-        variation="passive"
         class="resource-table-shared-with"
         @click="openSharingSidebar(item)"
       >

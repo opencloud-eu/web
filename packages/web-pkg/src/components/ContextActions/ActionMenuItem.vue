@@ -8,7 +8,6 @@
       :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
       data-testid="action-handler"
       :size="size"
-      color-role="secondary"
       justify-content="left"
       v-on="componentListeners"
     >

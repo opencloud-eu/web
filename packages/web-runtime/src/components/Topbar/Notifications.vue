@@ -16,8 +16,9 @@
           class="oc-notifications-mark-all"
           appearance="raw"
           @click="deleteNotificationsTask.perform(notifications.map((n) => n.notification_id))"
-          ><span v-text="$gettext('Mark all as read')"
-        /></oc-button>
+        >
+          <span v-text="$gettext('Mark all as read')" />
+        </oc-button>
       </div>
       <hr />
       <div class="oc-position-relative">

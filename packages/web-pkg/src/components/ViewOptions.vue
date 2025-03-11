@@ -24,7 +24,6 @@
       v-oc-tooltip="viewOptionsButtonLabel"
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
-      color-role="secondary"
       appearance="raw"
       class="oc-my-s oc-p-xs"
     >

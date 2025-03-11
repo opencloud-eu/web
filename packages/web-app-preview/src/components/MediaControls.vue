@@ -30,7 +30,7 @@
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen raw-hover-surface"
+          class="preview-controls-fullscreen raw-hover-surface oc-p-xs"
           appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
@@ -47,7 +47,7 @@
         <div class="oc-flex">
           <oc-button
             v-oc-tooltip="imageShrinkDescription"
-            class="preview-controls-image-shrink raw-hover-surface"
+            class="preview-controls-image-shrink raw-hover-surface oc-p-xs"
             appearance="raw"
             :aria-label="imageShrinkDescription"
             @click="imageShrink"
@@ -56,7 +56,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageOriginalSizeDescription"
-            class="preview-controls-image-original-size raw-hover-surface oc-ml-s oc-mr-s"
+            class="preview-controls-image-original-size raw-hover-surface oc-p-xs oc-ml-s oc-mr-s"
             appearance="raw"
             :aria-label="imageOriginalSizeDescription"
             @click="$emit('setZoom', 1)"
@@ -65,7 +65,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageZoomDescription"
-            class="preview-controls-image-zoom raw-hover-surface"
+            class="preview-controls-image-zoom raw-hover-surface oc-p-xs"
             appearance="raw"
             :aria-label="imageZoomDescription"
             @click="imageZoom"
@@ -76,7 +76,7 @@
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageRotateLeftDescription"
-            class="preview-controls-rotate-left raw-hover-surface"
+            class="preview-controls-rotate-left raw-hover-surface oc-p-xs"
             appearance="raw"
             :aria-label="imageRotateLeftDescription"
             @click="imageRotateLeft"
@@ -85,7 +85,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageRotateRightDescription"
-            class="preview-controls-rotate-right raw-hover-surface"
+            class="preview-controls-rotate-right raw-hover-surface oc-p-xs"
             appearance="raw"
             :aria-label="imageRotateRightDescription"
             @click="imageRotateRight"
@@ -96,7 +96,7 @@
         <div class="oc-ml-m">
           <oc-button
             v-oc-tooltip="imageResetDescription"
-            class="preview-controls-image-reset raw-hover-surface"
+            class="preview-controls-image-reset raw-hover-surface oc-p-xs"
             appearance="raw"
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"

@@ -15,7 +15,6 @@
       </oc-button>
       <oc-button
         appearance="filled"
-        variation="primary"
         class="compare-save-dialog-confirm-btn"
         :disabled="!unsavedChanges || confirmButtonDisabled"
         @click="$emit('confirm')"

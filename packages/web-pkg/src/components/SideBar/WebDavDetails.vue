@@ -8,6 +8,7 @@
       appearance="raw"
       size="small"
       :aria-label="$gettext('Copy WebDAV path to clipboard')"
+      no-hover
       @click="copyWebDAVPathToClipboard"
     >
       <oc-icon :name="copyWebDAVPathIcon" />
@@ -22,6 +23,7 @@
       appearance="raw"
       size="small"
       :aria-label="$gettext('Copy WebDAV URL to clipboard')"
+      no-hover
       @click="copyWebDAVUrlToClipboard"
     >
       <oc-icon :name="copyWebDAVUrlIcon" />

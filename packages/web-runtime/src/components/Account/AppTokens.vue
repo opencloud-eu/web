@@ -56,7 +56,7 @@
         v-if="appTokens.length > TOKENS_TO_DISPLAY"
         class="oc-width-1-1 oc-flex oc-flex-center oc-mt-m"
       >
-        <oc-button appearance="raw" @click="listExpanded = !listExpanded">
+        <oc-button appearance="raw" no-hover @click="listExpanded = !listExpanded">
           <span v-text="listExpanded ? $gettext('Show less') : $gettext('Show more')" />
           <oc-icon :name="'arrow-' + (listExpanded ? 'up' : 'down') + '-s'" fill-type="line" />
         </oc-button>

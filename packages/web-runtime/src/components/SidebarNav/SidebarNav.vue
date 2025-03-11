@@ -12,9 +12,15 @@
       class="toggle-sidebar-button oc-pb-s oc-pt-m"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
+      no-hover
       @click="$emit('update:nav-bar-closed', !closed)"
     >
-      <oc-icon size="large" fill-type="line" :name="toggleSidebarButtonIcon" />
+      <oc-icon
+        size="large"
+        fill-type="line"
+        class="raw-hover-surface oc-rounded"
+        :name="toggleSidebarButtonIcon"
+      />
     </oc-button>
     <nav
       class="oc-sidebar-nav oc-mb-m oc-mt-s oc-px-xs"

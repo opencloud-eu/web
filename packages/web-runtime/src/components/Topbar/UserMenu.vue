@@ -100,13 +100,27 @@
         </template>
       </oc-list>
       <div v-if="imprintUrl || privacyUrl" class="imprint-footer oc-py-s oc-mt-m oc-text-center">
-        <oc-button v-if="imprintUrl" type="a" appearance="raw" :href="imprintUrl" target="_blank"
-          ><span v-text="$gettext('Imprint')"
-        /></oc-button>
+        <oc-button
+          v-if="imprintUrl"
+          type="a"
+          appearance="raw"
+          :href="imprintUrl"
+          target="_blank"
+          no-hover
+        >
+          <span v-text="$gettext('Imprint')" />
+        </oc-button>
         <span v-if="privacyUrl">·</span>
-        <oc-button v-if="privacyUrl" type="a" appearance="raw" :href="privacyUrl" target="_blank"
-          ><span v-text="$gettext('Privacy')"
-        /></oc-button>
+        <oc-button
+          v-if="privacyUrl"
+          type="a"
+          appearance="raw"
+          :href="privacyUrl"
+          target="_blank"
+          no-hover
+        >
+          <span v-text="$gettext('Privacy')" />
+        </oc-button>
       </div>
     </oc-drop>
   </nav>

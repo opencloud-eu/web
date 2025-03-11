@@ -14,7 +14,6 @@
             <h2 v-text="title" />
             <oc-button
               v-if="accountEditLink"
-              variation="primary"
               type="a"
               :href="accountEditLink.href"
               target="_blank"
@@ -66,6 +65,7 @@
               :href="logoutUrl"
               target="_blank"
               data-testid="account-page-logout-url-btn"
+              no-hover
             >
               <span v-text="$gettext('Show devices')" />
             </oc-button>
@@ -113,8 +113,8 @@
           <oc-table-td data-testid="password">
             <oc-button
               appearance="raw"
-              variation="primary"
               data-testid="account-page-edit-password-btn"
+              no-hover
               @click="showEditPasswordModal"
             >
               <span v-text="$gettext('Change password')" />

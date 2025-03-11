@@ -6,27 +6,18 @@
   <div class="oc-my-m"></div>
   <div class="oc-flex oc-flex-right oc-flex-middle oc-mt-m">
     <div class="oc-modal-body-actions-grid">
-      <oc-button
-        class="oc-modal-body-actions-cancel oc-ml-s"
-        appearance="outline"
-        variation="passive"
-        @click="$emit('cancel')"
-        >{{ $gettext('Cancel') }}
+      <oc-button class="oc-modal-body-actions-cancel oc-ml-s" @click="$emit('cancel')">
+        {{ $gettext('Cancel') }}
       </oc-button>
-      <oc-button
-        class="oc-modal-body-actions-secondary oc-ml-s"
-        appearance="outline"
-        variation="passive"
-        @click="onClose"
-      >
+      <oc-button class="oc-modal-body-actions-secondary oc-ml-s" @click="onClose">
         {{ $gettext("Don't Save") }}
       </oc-button>
       <oc-button
         class="oc-modal-body-actions-confirm oc-ml-s"
         appearance="filled"
-        variation="primary"
         @click="$emit('confirm')"
-        >{{ $gettext('Save') }}
+      >
+        {{ $gettext('Save') }}
       </oc-button>
     </div>
   </div>

@@ -27,7 +27,6 @@
     <oc-button
       v-if="isUnacceptedShareError"
       type="router-link"
-      variation="primary"
       appearance="filled"
       target="_blank"
       class="oc-mt-m oc-text-center oc-width-medium"

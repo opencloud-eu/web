@@ -31,7 +31,6 @@
               class="oc-mb-s"
             />
             <oc-button
-              variation="primary"
               appearance="filled"
               class="oc-login-authorize-button"
               :disabled="!password"

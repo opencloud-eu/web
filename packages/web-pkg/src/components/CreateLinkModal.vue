@@ -20,7 +20,7 @@
       class="link-modal-advanced-mode-button"
       gap-size="xsmall"
       appearance="raw"
-      variation="primary"
+      no-hover
       @click="setAdvancedMode()"
     >
       <oc-icon name="settings-3" size="small" fill-type="fill" />
@@ -55,10 +55,9 @@
   <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
     <oc-button
       class="link-modal-cancel oc-modal-body-actions-cancel oc-ml-s"
-      appearance="outline"
-      color-role="secondary"
       @click="$emit('cancel')"
-      >{{ $gettext('Cancel') }}
+    >
+      {{ $gettext('Cancel') }}
     </oc-button>
     <div
       class="link-modal-confirm-button-group oc-ml-s"
@@ -67,16 +66,15 @@
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"
         appearance="filled"
-        color-role="secondary"
         :disabled="confirmButtonDisabled"
         @click="$emit('confirm')"
-        >{{ confirmButtonText }}
+      >
+        {{ confirmButtonText }}
       </oc-button>
       <oc-button
         v-if="password.value"
         class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger"
         appearance="filled"
-        color-role="secondary"
         :disabled="confirmButtonDisabled"
       >
         <oc-icon size="small" name="arrow-down-s" />
@@ -94,9 +92,9 @@
             <oc-button
               class="oc-modal-body-actions-confirm-password action-menu-item"
               appearance="raw"
-              color-role="secondary"
               @click="$emit('confirm', { copyPassword: true })"
-              >{{ $gettext('Copy link and password') }}
+            >
+              {{ $gettext('Copy link and password') }}
             </oc-button>
           </li>
         </oc-list>

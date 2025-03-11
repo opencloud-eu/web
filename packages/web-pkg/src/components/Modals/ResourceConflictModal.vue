@@ -11,26 +11,18 @@
   </div>
   <div class="oc-flex oc-flex-right oc-flex-middle oc-mt-m">
     <div class="oc-modal-body-actions-grid">
-      <oc-button
-        class="oc-modal-body-actions-cancel oc-ml-s"
-        appearance="outline"
-        variation="passive"
-        @click="onCancel"
-        >{{ $gettext('Skip') }}
+      <oc-button class="oc-modal-body-actions-cancel oc-ml-s" @click="onCancel">
+        {{ $gettext('Skip') }}
       </oc-button>
-      <oc-button
-        class="oc-modal-body-actions-secondary oc-ml-s"
-        appearance="outline"
-        variation="passive"
-        @click="onConfirmSecondary"
-        >{{ confirmSecondaryText }}
+      <oc-button class="oc-modal-body-actions-secondary oc-ml-s" @click="onConfirmSecondary">
+        {{ confirmSecondaryText }}
       </oc-button>
       <oc-button
         class="oc-modal-body-actions-confirm oc-ml-s"
         appearance="filled"
-        variation="primary"
         @click="onConfirm"
-        >{{ $gettext('Keep both') }}
+      >
+        {{ $gettext('Keep both') }}
       </oc-button>
     </div>
   </div>

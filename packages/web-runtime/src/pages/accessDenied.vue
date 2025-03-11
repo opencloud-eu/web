@@ -11,8 +11,10 @@
           appearance="raw"
           :href="accessDeniedHelpUrl"
           target="_blank"
-          ><span v-text="$gettext('Read more')"
-        /></oc-button>
+          no-hover
+        >
+          <span v-text="$gettext('Read more')" />
+        </oc-button>
       </div>
       <div class="oc-login-card-footer oc-pt-rm">
         <p>
@@ -25,7 +27,6 @@
       class="oc-mt-m oc-width-medium"
       size="large"
       appearance="filled"
-      variation="primary"
       v-bind="logoutButtonsAttrs"
     >
       {{ navigateToLoginText }}

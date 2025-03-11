@@ -34,7 +34,6 @@
             'oc-secondary-container': isSelectedType(type)
           }"
           appearance="raw"
-          variation="passive"
           justify-content="space-between"
           class="oc-p-s"
           @click="updateSelectedType(type)"

@@ -21,7 +21,6 @@
           <oc-button
             type="router-link"
             appearance="raw"
-            variation="passive"
             :to="item.route"
             class="oc-display-block oc-p-s"
             :class="{ 'oc-secondary-container router-link-active': item.active }"

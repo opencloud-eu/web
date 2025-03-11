@@ -19,9 +19,9 @@
     <div v-else class="oc-flex">
       <oc-button
         appearance="raw"
-        variation="primary"
         data-testid="request-export-btn"
         class="oc-mr-s"
+        no-hover
         @click="requestExport"
       >
         <div class="oc-flex oc-flex-middle">
@@ -33,8 +33,8 @@
         v-if="exportFile"
         v-oc-tooltip="$gettext('Latest export from: %{date}', { date: exportDate })"
         appearance="raw"
-        variation="primary"
         data-testid="download-export-btn"
+        no-hover
         @click="downloadExport"
       >
         <div class="oc-flex oc-flex-middle">

@@ -8,8 +8,8 @@
         v-if="!filesInProgressCount"
         id="close-upload-info-btn"
         :aria-label="$gettext('Close')"
-        appearance="raw-inverse"
-        variation="brand"
+        appearance="raw"
+        class="oc-p-xs raw-hover-surface"
         @click="closeInfo"
       >
         <oc-icon name="close" />
@@ -22,8 +22,8 @@
       }"
     >
       <div v-if="runningUploads" class="oc-flex oc-flex-middle">
-        <oc-icon v-if="uploadsPaused" name="pause" size="small" class="oc-mr-s" />
-        <oc-spinner v-else size="small" class="oc-mr-s" />
+        <oc-icon v-if="uploadsPaused" name="pause" size="small" class="oc-mr-xs" />
+        <oc-spinner v-else size="small" class="oc-mr-xs" />
         <span class="oc-text-small oc-text-muted" v-text="remainingTime" />
       </div>
       <div
@@ -40,6 +40,7 @@
         <oc-button
           appearance="raw"
           class="oc-text-muted oc-text-small upload-info-toggle-details-btn"
+          no-hover
           @click="toggleInfo"
         >
           {{ infoExpanded ? $gettext('Hide details') : $gettext('Show details') }}
@@ -47,7 +48,7 @@
         <oc-button
           v-if="!runningUploads && Object.keys(errors).length && !disableActions"
           v-oc-tooltip="$gettext('Retry all failed uploads')"
-          class="oc-ml-s"
+          class="oc-ml-xs oc-p-xs"
           appearance="raw"
           :aria-label="$gettext('Retry all failed uploads')"
           @click="retryUploads"
@@ -65,7 +66,7 @@
           "
           id="pause-upload-info-btn"
           v-oc-tooltip="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
-          class="oc-ml-s"
+          class="oc-ml-xs oc-p-xs"
           appearance="raw"
           :aria-label="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
           @click="togglePauseUploads"
@@ -76,7 +77,7 @@
           v-if="runningUploads && !inPreparation && !inFinalization && !disableActions"
           id="cancel-upload-info-btn"
           v-oc-tooltip="$gettext('Cancel upload')"
-          class="oc-ml-s"
+          class="oc-ml-xs oc-p-xs"
           appearance="raw"
           :aria-label="$gettext('Cancel upload')"
           @click="cancelAllUploads"
