@@ -229,7 +229,7 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-tile-card {
-  background-color: var(--oc-role-surface-container-high) !important;
+  background-color: var(--oc-role-surface-container) !important;
   box-shadow: none;
   height: 100%;
   display: flex;
