@@ -128,6 +128,12 @@ export const useThemeStore = defineStore('theme', () => {
         )
       }
     })
+
+    if (!unref(currentTheme).designTokens?.roles?.chrome) {
+      // fallback to surfaceContainer if chrome is not defined since it may not be set
+      applyCustomProp('role-chrome', unref(currentTheme).designTokens?.roles?.surfaceContainer)
+      applyCustomProp('role-on-chrome', unref(currentTheme).designTokens?.roles?.onSurface)
+    }
   }
 
   const getRoleIcon = (role: ShareRole) => {

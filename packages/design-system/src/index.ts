@@ -23,6 +23,7 @@ export default {
     initializeCustomProps(themeOptions?.spacing, 'space-')
     applyCustomProp('font-family', themeOptions?.fontFamily)
     if (!themeOptions?.roles?.chrome) {
+      // fallback to surfaceContainer if chrome is not defined since it may not be set
       applyCustomProp('role-chrome', themeOptions?.roles?.surfaceContainer)
       applyCustomProp('role-on-chrome', themeOptions?.roles?.onSurface)
     }
