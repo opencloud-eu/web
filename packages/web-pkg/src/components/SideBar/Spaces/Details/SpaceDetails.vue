@@ -3,7 +3,7 @@
     <div class="oc-space-details-sidebar-image oc-text-center">
       <oc-spinner v-if="previewsLoading" />
       <div v-else-if="spaceImage" class="oc-position-relative">
-        <img :src="spaceImage" alt="" class="oc-mb-s" />
+        <img :src="spaceImage" alt="" />
       </div>
       <oc-icon
         v-else
@@ -274,6 +274,12 @@ export default defineComponent({
     max-height: 150px;
     object-fit: cover;
     width: 100%;
+  }
+
+  &-image {
+    background-color: var(--oc-role-surface-container-high);
+    border: 10px solid var(--oc-role-surface-container-high);
+    border-radius: 5px;
   }
 }
 </style>

@@ -38,10 +38,6 @@ export default defineComponent({
   grid-gap: 5px;
   padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
 
-  &.sidebar-panel__space_info {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
   &__body {
     text-align: left;
     font-size: var(--oc-font-size-small);
