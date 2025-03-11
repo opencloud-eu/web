@@ -49,7 +49,7 @@
               :accessible-label="autoSaveTooltipText"
               name="refresh"
               color="white"
-              class="ox-p-xs"
+              class="ox-p-xs oc-mx-xs"
             />
           </span>
           <template v-if="mainActions.length && resource">
