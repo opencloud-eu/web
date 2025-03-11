@@ -60,7 +60,11 @@
                   items: mainActions
                     .filter((action) => action.isVisible())
                     .map((action) => {
-                      return { ...action, class: 'oc-p-xs', hideLabel: true }
+                      return {
+                        ...action,
+                        class: 'oc-p-xs app-topbar-action',
+                        hideLabel: true
+                      }
                     })
                 }
               ]"
@@ -208,6 +212,13 @@ export default defineComponent({
     .text {
       color: var(--oc-role-on-chrome);
     }
+  }
+}
+
+.app-topbar-action {
+  color: var(--oc-role-on-chrome) !important;
+  svg {
+    fill: var(--oc-role-on-chrome) !important;
   }
 }
 
