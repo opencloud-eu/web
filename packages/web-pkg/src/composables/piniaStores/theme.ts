@@ -87,7 +87,7 @@ export const useThemeStore = defineStore('theme', () => {
     const firstLightTheme = unref(availableThemes).find((theme) => !theme.isDark)
     const firstDarkTheme = unref(availableThemes).find((theme) => theme.isDark)
     setAndApplyTheme(
-      unref(availableThemes).find((t) => t.name === unref(currentLocalStorageThemeName)) ||
+      unref(availableThemes).find((t) => t.label === unref(currentLocalStorageThemeName)) ||
         (unref(isDark) ? firstDarkTheme : firstLightTheme) ||
         unref(availableThemes)[0],
       false
@@ -106,7 +106,7 @@ export const useThemeStore = defineStore('theme', () => {
   const setAndApplyTheme = (theme: WebThemeType, updateStorage = true) => {
     currentTheme.value = theme
     if (updateStorage) {
-      currentLocalStorageThemeName.value = unref(currentTheme).name
+      currentLocalStorageThemeName.value = unref(currentTheme).label
     }
 
     const customizableDesignTokens = [
