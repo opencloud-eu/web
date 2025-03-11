@@ -394,17 +394,23 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+#oc-file-details-sidebar {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
 .details-preview,
 .details-icon-wrapper {
-  background-color: var(--oc-role-surface-container-high);
-  border: 10px solid var(--oc-role-surface-container-high);
   padding: 10px;
-  height: 230px;
-  border-radius: 5px;
 
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.details-preview {
+  height: 230px;
 }
 
 .details-icon > svg {
@@ -412,5 +418,12 @@ export default defineComponent({
   max-height: 192px !important;
   max-width: 192px !important;
   width: 192px !important;
+}
+
+.details-list {
+  dd:last-of-type,
+  dt:last-of-type {
+    margin-bottom: 0 !important;
+  }
 }
 </style>

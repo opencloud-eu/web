@@ -266,6 +266,12 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+#oc-space-details-sidebar {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
 .oc-space-details-sidebar {
   &-members {
     gap: var(--oc-space-small);
@@ -274,12 +280,6 @@ export default defineComponent({
     max-height: 150px;
     object-fit: cover;
     width: 100%;
-  }
-
-  &-image {
-    background-color: var(--oc-role-surface-container-high);
-    border: 10px solid var(--oc-role-surface-container-high);
-    border-radius: 5px;
   }
 }
 </style>

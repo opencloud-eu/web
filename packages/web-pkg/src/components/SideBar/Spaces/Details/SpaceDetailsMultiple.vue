@@ -1,6 +1,6 @@
 <template>
   <div id="oc-spaces-details-multiple-sidebar">
-    <div class="spaces-preview oc-mb">
+    <div class="spaces-preview oc-mb-l">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
@@ -89,29 +89,19 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+#oc-spaces-details-multiple-sidebar {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
+.details-list {
+  margin: 0;
+}
+
 .spaces-preview {
-  position: relative;
-  background-color: var(--oc-role-surface-container-high);
-  border: 10px solid var(--oc-role-surface-container-high);
-  height: 230px;
   text-align: center;
   border-radius: 5px;
-
-  &-body {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-
-    .preview-icon {
-      display: inline-block;
-    }
-    .preview-text {
-      display: block;
-    }
-  }
 }
 </style>

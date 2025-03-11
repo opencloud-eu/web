@@ -382,6 +382,12 @@ onBeforeUnmount(() => {
     &-content-stretch {
       flex: 1;
     }
+
+    // &-content {
+    //   background-color: var(--oc-role-surface-container);
+    //   border-radius: 5px;
+    //   padding: var(--oc-space-medium);
+    // }
   }
 
   &__navigation {

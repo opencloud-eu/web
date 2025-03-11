@@ -1,13 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Multiple Details SideBar Panel > displays the details side panel 1`] = `
-"<div id="oc-spaces-details-multiple-sidebar">
-  <div class="spaces-preview oc-mb">
-    <div class="spaces-preview-body">
-      <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="preview-icon"></oc-icon-stub>
-      <p class="preview-text">1 space selected</p>
+"<div data-v-cd05ba5e="" id="oc-spaces-details-multiple-sidebar">
+  <div data-v-cd05ba5e="" class="spaces-preview oc-mb-l">
+    <div data-v-cd05ba5e="" class="spaces-preview-body">
+      <oc-icon-stub data-v-cd05ba5e="" accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="preview-icon"></oc-icon-stub>
+      <p data-v-cd05ba5e="" class="preview-text">1 space selected</p>
     </div>
   </div>
-  <oc-definition-list-stub items="[object Object],[object Object],[object Object],[object Object],[object Object]" aria-label="Overview of the information about the selected spaces"></oc-definition-list-stub>
+  <oc-definition-list-stub data-v-cd05ba5e="" items="[object Object],[object Object],[object Object],[object Object],[object Object]" aria-label="Overview of the information about the selected spaces"></oc-definition-list-stub>
 </div>"
 `;

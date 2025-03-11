@@ -1,12 +1,13 @@
 <template>
   <div class="oc-status-indicators">
-    <template v-for="indicator in indicators">
+    <template v-for="(indicator, index) in indicators">
       <oc-button
         v-if="hasHandler(indicator) && !disableHandler"
         :id="indicator.id"
         :key="`${indicator.id}-handler`"
         v-oc-tooltip="$gettext(indicator.label)"
-        class="oc-status-indicators-indicator oc-ml-xs"
+        class="oc-status-indicators-indicator"
+        :class="{ 'oc-ml-xs': index > 0 }"
         :aria-label="$gettext(indicator.label)"
         :aria-describedby="getIndicatorDescriptionId(indicator)"
         appearance="raw"
@@ -24,7 +25,8 @@
         v-oc-tooltip="$gettext(indicator.label)"
         tabindex="-1"
         size="small"
-        class="oc-status-indicators-indicator oc-ml-xs"
+        class="oc-status-indicators-indicator"
+        :class="{ 'oc-ml-xs': index > 0 }"
         :name="indicator.icon"
         :fill-type="indicator.fillType"
         :accessible-label="$gettext(indicator.label)"
