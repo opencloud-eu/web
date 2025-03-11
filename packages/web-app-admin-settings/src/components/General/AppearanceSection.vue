@@ -10,7 +10,7 @@
           v-oc-tooltip="$gettext('Show context menu')"
           :aria-label="$gettext('Show context menu')"
           appearance="raw"
-          class="oc-ml-s"
+          class="oc-ml-s oc-p-xs"
         >
           <oc-icon name="more-2" />
         </oc-button>
