@@ -26,7 +26,7 @@
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
       :preview="isMarkdown"
-      :toolbars="isMarkdown ? undefined : []"
+      :toolbars="isMarkdown ? undefined : ['revoke', 'next']"
       :toolbars-exclude="[
         'save',
         'katex',
