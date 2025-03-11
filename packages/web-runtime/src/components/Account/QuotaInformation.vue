@@ -11,7 +11,7 @@
         :value="quotaUsagePercent"
         :max="100"
         size="small"
-        :variation="quotaProgressVariant"
+        :color="quotaProgressColor"
       />
     </div>
   </div>
@@ -58,21 +58,18 @@ export default defineComponent({
           })
     })
 
-    const quotaProgressVariant = computed(() => {
-      if ((unref(quotaUsagePercent) || 0) < 80) {
-        return 'primary'
-      }
+    const quotaProgressColor = computed(() => {
       if ((unref(quotaUsagePercent) || 0) < 90) {
-        return 'warning'
+        return 'var(--oc-role-secondary)'
       }
-      return 'danger'
+      return 'var(--oc-role-error)'
     })
 
     return {
       quotaUsagePercent,
       personalStorageDetailsLabel,
       limitedPersonalStorage,
-      quotaProgressVariant
+      quotaProgressColor
     }
   }
 })

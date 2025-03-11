@@ -7,10 +7,14 @@
     aria-valuemin="0"
     role="progressbar"
   >
-    <div v-if="!indeterminate" class="oc-progress-current" :style="{ width: progressValue }"></div>
+    <div
+      v-if="!indeterminate"
+      class="oc-progress-current"
+      :style="{ width: progressValue, backgroundColor: color }"
+    ></div>
     <div v-else class="oc-progress-indeterminate">
-      <div class="oc-progress-indeterminate-first"></div>
-      <div class="oc-progress-indeterminate-second"></div>
+      <div class="oc-progress-indeterminate-first" :style="{ backgroundColor: color }" />
+      <div class="oc-progress-indeterminate-second" :style="{ backgroundColor: color }" />
     </div>
   </div>
 </template>
@@ -18,6 +22,11 @@
 import { computed } from 'vue'
 
 export interface Props {
+  /**
+   * @docs The color of the progress bar. It can be any valid CSS color or registered color role.
+   * @default var(--oc-role-secondary)
+   */
+  color?: string
   /**
    * @docs Determines if the progress bar is indeterminate.
    * @default false
@@ -39,7 +48,13 @@ export interface Props {
   value?: number
 }
 
-const { indeterminate = false, max, size = 'default', value = 0 } = defineProps<Props>()
+const {
+  color = 'var(--oc-role-secondary)',
+  indeterminate = false,
+  max,
+  size = 'default',
+  value = 0
+} = defineProps<Props>()
 
 const classes = computed(() => {
   return `oc-progress oc-progress-${size}`
@@ -111,11 +126,6 @@ $progress-height-small: 5px !default;
       left: 110%;
       width: 10%;
     }
-  }
-
-  &-current,
-  &-indeterminate div {
-    background-color: var(--oc-role-secondary);
   }
 }
 </style>

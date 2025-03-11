@@ -1,12 +1,7 @@
 <template>
   <div class="space-quota">
     <p class="oc-mb-s oc-mt-rm" v-text="spaceStorageDetailsLabel" />
-    <oc-progress
-      :value="quotaUsagePercent"
-      :max="100"
-      size="small"
-      :variation="quotaProgressVariant"
-    />
+    <oc-progress :value="quotaUsagePercent" :max="100" size="small" :color="quotaProgressColor" />
   </div>
 </template>
 
@@ -55,16 +50,12 @@ export default defineComponent({
     quotaUsagePercent() {
       return parseFloat(((this.spaceQuota.used / this.spaceQuota.total) * 100).toFixed(2))
     },
-    quotaProgressVariant() {
+    quotaProgressColor() {
       switch (this.spaceQuota.state) {
         case 'normal':
-          return 'primary'
-        case 'nearing':
-          return 'warning'
-        case 'critical':
-          return 'warning'
+          return 'var(--oc-role-secondary)'
         default:
-          return 'danger'
+          return 'var(--oc-role-error)'
       }
     }
   }
