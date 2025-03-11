@@ -108,12 +108,7 @@
               size="small"
               color="var(--oc-role-error)"
             />
-            <oc-icon
-              v-else-if="item.status === 'success'"
-              name="check"
-              variation="success"
-              size="small"
-            />
+            <oc-icon v-else-if="item.status === 'success'" name="check" size="small" />
             <oc-icon v-else-if="item.status === 'cancelled'" name="close" size="small" />
             <oc-icon v-else-if="uploadsPaused" name="pause" size="small" />
             <div v-else class="oc-flex"><oc-spinner size="small" /></div>
