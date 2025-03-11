@@ -31,7 +31,7 @@
               :key="n.url ? 'apps-menu-external-link' : 'apps-menu-internal-link'"
               :appearance="isMenuItemActive(n) ? 'filled' : 'raw-inverse'"
               :color-role="isMenuItemActive(n) ? 'secondaryContainer' : 'surface'"
-              :class="{ 'router-link-active': isMenuItemActive(n) }"
+              :class="{ 'router-link-active': isMenuItemActive(n), active: isMenuItemActive(n) }"
               :data-test-id="n.id"
               v-bind="getAdditionalAttributes(n)"
               v-on="getAdditionalEventBindings(n)"
@@ -152,7 +152,8 @@ export default defineComponent({
     justify-content: flex-start;
     width: 100%;
 
-    &:focus {
+    &:focus,
+    &:hover {
       text-decoration: none;
     }
 

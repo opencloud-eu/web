@@ -370,6 +370,15 @@ const onClick = (event: MouseEvent) => {
     @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
   }
 
+  &:hover:not(.no-hover, .oc-button-raw-inverse, .oc-button-raw, .active, .selected, [disabled]) {
+    filter: brightness(85%);
+  }
+
+  &-outline:hover:not(.no-hover) {
+    background-color: var(--oc-role-surface-container);
+    filter: none !important;
+  }
+
   &:disabled {
     cursor: default;
     opacity: 0.6;
