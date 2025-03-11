@@ -15,6 +15,7 @@
               getParentFolderLinkIconAdditionalAttributes(resource)
             "
             :is-path-displayed="isPathDisplayed"
+            :is-resource-clickable="false"
           />
         </div>
         <div class="oc-flex main-actions">
