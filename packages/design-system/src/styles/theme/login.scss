@@ -16,12 +16,11 @@
 
   &-emblem {
     position: fixed;
-    right: -4vw;
-    bottom: -2vh;
-    width: 20vw;
-    height: 20vw;
+    bottom: -3vh;
+    height: 50vh;
+    right: -3vw;
 
-    @media (max-width: 640px) {
+    @media (max-width: $oc-breakpoint-medium-default) {
       display: none;
     }
   }
