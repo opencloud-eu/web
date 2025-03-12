@@ -49,7 +49,7 @@ describe('UploadInfo component', () => {
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
-      expect(uploadTitle).toBe('Upload complete')
+      expect(uploadTitle).toBe('Upload completed')
     })
     it('should show that an upload failed', async () => {
       const { wrapper } = getShallowWrapper()
