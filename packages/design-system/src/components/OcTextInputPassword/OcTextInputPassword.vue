@@ -136,7 +136,7 @@ const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
 const copyPasswordToClipboard = () => {
   navigator.clipboard.writeText(unref(password))
   copyPasswordIcon.value = 'check'
-  setTimeout(() => (copyPasswordIcon.value = copyPasswordIconInitial), 500)
+  setTimeout(() => (copyPasswordIcon.value = copyPasswordIconInitial), 1500)
 }
 
 const generatePassword = () => {

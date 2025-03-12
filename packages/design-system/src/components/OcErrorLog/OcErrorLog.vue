@@ -51,7 +51,7 @@ const contentLabel = computed(() => {
 const copyContentToClipboard = () => {
   navigator.clipboard.writeText(content)
   showCopied.value = true
-  setTimeout(() => (showCopied.value = false), 500)
+  setTimeout(() => (showCopied.value = false), 1500)
 }
 </script>
 

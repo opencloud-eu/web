@@ -59,13 +59,13 @@ export default defineComponent({
     const copyWebDAVPathToClipboard = () => {
       navigator.clipboard.writeText(unref(webDavPath))
       copyWebDAVPathIcon.value = copiedIcon
-      setTimeout(() => (copyWebDAVPathIcon.value = copyIcon), 500)
+      setTimeout(() => (copyWebDAVPathIcon.value = copyIcon), 1500)
     }
 
     const copyWebDAVUrlToClipboard = () => {
       navigator.clipboard.writeText(unref(webDavUrl))
       copyWebDAVUrlIcon.value = copiedIcon
-      setTimeout(() => (copyWebDAVUrlIcon.value = copyIcon), 500)
+      setTimeout(() => (copyWebDAVUrlIcon.value = copyIcon), 1500)
     }
 
     return {
