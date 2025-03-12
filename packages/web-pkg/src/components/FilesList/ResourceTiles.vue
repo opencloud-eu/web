@@ -1,6 +1,6 @@
 <template>
   <div id="tiles-view" class="oc-px-m oc-pt-l">
-    <div class="oc-flex oc-flex-middle oc-mb-m oc-pb-s oc-tiles-controls">
+    <div class="oc-flex oc-flex-middle oc-mb-s oc-pb-s oc-tiles-controls">
       <oc-checkbox
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
@@ -664,10 +664,6 @@ export default defineComponent({
   grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
   justify-content: flex-start;
   row-gap: 1rem;
-
-  &-controls {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
 
   &-item-drop-highlight {
     background-color: var(--oc-role-secondary-container) !important;
