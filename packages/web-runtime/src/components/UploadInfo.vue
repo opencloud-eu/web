@@ -274,7 +274,7 @@ export default defineComponent({
         return this.$gettext('Upload failed')
       }
       if (!this.runningUploads) {
-        return this.$gettext('Upload complete')
+        return this.$gettext('Upload completed')
       }
       return this.$gettext('Preparing upload...')
     },
