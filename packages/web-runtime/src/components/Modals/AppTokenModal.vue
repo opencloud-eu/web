@@ -79,7 +79,7 @@ defineEmits(['confirm', 'cancel'])
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
-const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 2000 })
+const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
 
 const expiryDate = ref<DateTime>()
 const confirmDisabled = ref(true)
