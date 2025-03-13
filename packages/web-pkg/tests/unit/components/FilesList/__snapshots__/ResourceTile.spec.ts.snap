@@ -6,7 +6,6 @@ exports[`OcTile component > renders default space correctly 1`] = `
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
     <div class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center">
-      <div class="oc-tile-card-hover"></div>
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image oc-pt-xs"></resource-icon-stub>
     </div>
   </resource-link-stub>
@@ -32,7 +31,6 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
     <div class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center">
-      <div class="oc-tile-card-hover"></div>
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image oc-pt-xs"></resource-icon-stub>
     </div>
   </resource-link-stub>
