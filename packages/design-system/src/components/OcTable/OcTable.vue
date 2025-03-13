@@ -504,15 +504,15 @@ const handleSort = (field: FieldType) => {
   }
 
   &-hover tr:not(&-footer-row):hover {
-    background-color: var(--oc-role-surface-container);
+    background-color: var(--oc-role-secondary-container);
   }
 
   &-highlighted {
-    background-color: var(--oc-role-secondary-container) !important;
+    background-color: var(--oc-role-surface-container) !important;
   }
 
   &-accentuated {
-    background-color: var(--oc-role-secondary-container);
+    background-color: var(--oc-role-surface-container);
   }
 
   &-disabled {
@@ -531,7 +531,7 @@ const handleSort = (field: FieldType) => {
   }
 
   .highlightedDropTarget {
-    background-color: var(--oc-role-surface-container-highest);
+    background-color: var(--oc-role-secondary-container-highest);
   }
 
   &-thead-content {
