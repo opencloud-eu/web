@@ -5065,8 +5065,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.9:
-    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+  nanoid@5.1.3:
+    resolution: {integrity: sha512-zAbEOEr7u2CbxwoMRlz/pNSpRP0FdAU4pRaYunCdEezWohXFs+a0Xw7RfkKaezMsmSM1vttcLthJtwRnVtOfHQ==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -5437,8 +5437,8 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
-  preact@10.25.4:
-    resolution: {integrity: sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA==}
+  preact@10.26.4:
+    resolution: {integrity: sha512-KJhO7LBFTjP71d83trW+Ilnjbo+ySsaAgCfXOXUlmGzJ4ygYPWmysm77yg4emwfmoz3b22yvH5IsVFHbhUaH5w==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -7954,7 +7954,7 @@ snapshots:
   '@docsearch/js@3.8.2(@algolia/client-search@5.20.2)(search-insights@2.17.3)':
     dependencies:
       '@docsearch/react': 3.8.2(@algolia/client-search@5.20.2)(search-insights@2.17.3)
-      preact: 10.25.4
+      preact: 10.26.4
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/react'
@@ -8920,8 +8920,8 @@ snapshots:
       lodash: 4.17.21
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
-      nanoid: 5.0.9
-      preact: 10.25.4
+      nanoid: 5.1.3
+      preact: 10.26.4
 
   '@uppy/drop-target@3.1.1(@uppy/core@4.4.2)':
     dependencies:
@@ -8940,7 +8940,7 @@ snapshots:
   '@uppy/utils@6.1.2':
     dependencies:
       lodash: 4.17.21
-      preact: 10.25.4
+      preact: 10.26.4
 
   '@uppy/xhr-upload@4.3.3(@uppy/core@4.4.2)':
     dependencies:
@@ -11194,7 +11194,7 @@ snapshots:
 
   nanoid@3.3.8: {}
 
-  nanoid@5.0.9: {}
+  nanoid@5.1.3: {}
 
   natural-compare@1.4.0: {}
 
@@ -11603,7 +11603,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact@10.25.4: {}
+  preact@10.26.4: {}
 
   prelude-ls@1.2.1: {}
 
