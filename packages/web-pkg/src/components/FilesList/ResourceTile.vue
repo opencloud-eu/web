@@ -35,7 +35,6 @@
           class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center"
           :aria-label="tooltipLabelIcon"
         >
-          <div class="oc-tile-card-hover"></div>
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="shouldDisplayThumbnails(resource)"
@@ -229,7 +228,7 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-tile-card {
-  background-color: var(--oc-role-surface-container) !important;
+  background-color: var(--oc-role-surface-container);
   box-shadow: none;
   height: 100%;
   display: flex;
@@ -281,30 +280,25 @@ export default defineComponent({
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
     }
-
-    &:hover {
-      .oc-tile-card-hover {
-        opacity: 15%;
-      }
-    }
   }
 
-  &-selected {
-    outline: 2px solid var(--oc-role-outline);
-
+  &-selected,
+  &:hover {
     .oc-tile-card-preview {
       width: calc(100% - var(--oc-space-medium));
       height: calc(100% - var(--oc-space-medium));
 
-      .tile-preview,
-      .oc-tile-card-hover {
+      .tile-preview {
         border-radius: 5px !important;
       }
-
-      .oc-tile-card-hover {
-        opacity: 10%;
-      }
     }
+  }
+  &:hover {
+    background-color: var(--oc-role-secondary-container);
+  }
+  &-selected {
+    background-color: var(--oc-role-surface-container-high) !important;
+    outline: 2px solid var(--oc-role-outline);
   }
 
   &-selection {
@@ -323,16 +317,6 @@ export default defineComponent({
     height: 100%;
     width: 100%;
     text-align: center;
-  }
-
-  &-hover {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    opacity: 0;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
   }
 
   .resource-name-wrapper {
