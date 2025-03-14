@@ -48,7 +48,7 @@ jobs:
           # Let's use a different approach by copying all static assets directly
           # Create Hugo config using theme components instead of modules
           cat > hugo/config.yaml << 'EOF'
-          baseURL: https://michaelstingl.github.io/opencloud-eu-web/
+          baseURL: ${{ format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
           # Important for navigation
           sectionPagesMenu: main
           title: OpenCloud Web Documentation
@@ -79,14 +79,14 @@ jobs:
           
           # Geekdoc theme parameters
           params:
-            geekdocRepo: https://github.com/opencloud-eu/web
+            geekdocRepo: ${{ format('https://github.com/{0}', github.repository) }}
             geekdocEditPath: edit/main/docs
             
             geekdocSearch: true
             geekdocSearchShowParent: true
             
-            geekdocLegalNotice: https://github.com/opencloud-eu/web/blob/main/LICENSE
-            geekdocPrivacyPolicy: https://github.com/opencloud-eu/web/blob/main/LICENSE
+            geekdocLegalNotice: ${{ format('https://github.com/{0}/blob/main/LICENSE', github.repository) }}
+            geekdocPrivacyPolicy: ${{ format('https://github.com/{0}/blob/main/LICENSE', github.repository) }}
             
             geekdocImageLazyLoading: true
             geekdocDarkModeDim: true

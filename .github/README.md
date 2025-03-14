@@ -1,12 +1,14 @@
 # OpenCloud Web Documentation
 
-This repository contains the GitHub Actions workflows for OpenCloud Web.
+This directory contains the GitHub Actions workflows for OpenCloud Web.
 
 ## Documentation
 
-The documentation for this project is automatically deployed to GitHub Pages with every push to the main branch:
+The documentation for this project is automatically deployed to GitHub Pages with every push to the main branch.
 
-- https://michaelstingl.github.io/opencloud-eu-web/
+When enabled, the documentation is available at:
+
+- `https://[organization-name].github.io/[repository-name]/`
 
 ## Workflow
 
