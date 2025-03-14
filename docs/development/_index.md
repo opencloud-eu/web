@@ -5,7 +5,7 @@ weight: 50
 geekdocRepo: https://github.com/opencloud-eu/web
 geekdocEditPath: edit/master/docs/development
 geekdocFilePath: _index.md
-geekdocCollapseSection: true
+geekdocCollapseSection: false
 ---
 
 {{< toc >}}
