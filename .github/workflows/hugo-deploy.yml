@@ -1,0 +1,268 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - '.github/workflows/hugo-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build with Hugo
+        run: |
+          # Create directories
+          mkdir -p hugo/content/web
+          mkdir -p hugo/static/css
+          mkdir -p hugo/static/js
+          mkdir -p hugo/static/fonts
+          mkdir -p hugo/static/favicon
+          
+          # Let's use a different approach by copying all static assets directly
+          # Create Hugo config using theme components instead of modules
+          cat > hugo/config.yaml << 'EOF'
+          baseURL: ${{ format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
+          # Important for navigation
+          sectionPagesMenu: main
+          title: OpenCloud Web Documentation
+          
+          # Use theme as a component not a module
+          theme: ["hugo-geekdoc"]
+          
+          # Required for Geekdoc
+          pygmentsUseClasses: true
+          pygmentsCodeFences: true
+          disablePathToLower: true
+          enableGitInfo: true
+          
+          # Asset handling configuration
+          build:
+            writeStats: true
+            noJSConfigInAssets: false
+            useResourceCacheWhen: fallback
+            
+          # Geekdoc required settings
+          markup:
+            goldmark:
+              renderer:
+                unsafe: true
+            tableOfContents:
+              startLevel: 1
+              endLevel: 9
+          
+          # Geekdoc theme parameters
+          params:
+            geekdocRepo: ${{ format('https://github.com/{0}', github.repository) }}
+            geekdocEditPath: edit/main/docs
+            
+            geekdocSearch: true
+            geekdocSearchShowParent: true
+            
+            geekdocLegalNotice: ${{ format('https://github.com/{0}/blob/main/LICENSE', github.repository) }}
+            geekdocPrivacyPolicy: ${{ format('https://github.com/{0}/blob/main/LICENSE', github.repository) }}
+            
+            geekdocImageLazyLoading: true
+            geekdocDarkModeDim: true
+            
+            # Enable sidebar menu
+            geekdocMenuBundle: true
+            geekdocToC: 3
+            
+            # Make sure sidebar appears
+            geekdocHiddenToc: false
+            geekdocSidebarBundle: true
+            
+            # Honor section collapse settings in _index.md files
+            geekdocCollapseMenu: true
+            geekdocCollapseAllExceptCurrent: false
+
+            # Force all static assets to be copied
+            geekdocOverwriteStaticAssets: true
+          EOF
+          
+          # Download and extract the theme directly to themes directory
+          mkdir -p hugo/themes/hugo-geekdoc
+          
+          # Download the release version instead of main branch
+          curl -L https://github.com/thegeeklab/hugo-geekdoc/releases/download/v1.5.0/hugo-geekdoc.tar.gz -o geekdoc.tar.gz
+          tar -xzf geekdoc.tar.gz -C hugo/themes/hugo-geekdoc --strip-components=1
+          
+          # Verify theme structure was extracted correctly
+          ls -la hugo/themes/hugo-geekdoc
+                    
+          # Create _index.md file in content root
+          cat > hugo/content/_index.md << 'EOF'
+          ---
+          title: OpenCloud Web Documentation
+          geekdocNav: true
+          geekdocAlign: center
+          geekdocAnchor: false
+          ---
+
+          Welcome to the OpenCloud Web documentation. Browse the documentation in the sidebar.
+          EOF
+          
+          # Copy docs to the content root to enable proper menu structure
+          rsync --delete -ax docs/ hugo/content/
+          
+          # Create brand.svg for the theme
+          echo '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>' > hugo/static/brand.svg
+          
+          # Check if static directory exists
+          if [ -d "hugo/themes/hugo-geekdoc/static" ]; then
+            # Copy static assets from the theme
+            rsync -a hugo/themes/hugo-geekdoc/static/ hugo/static/
+          else
+            echo "Theme static directory not found, downloading favicon manually"
+            # Manually create minimal required assets
+            curl -sL -o hugo/static/favicon/favicon-32x32.png https://raw.githubusercontent.com/thegeeklab/hugo-geekdoc/main/static/favicon/favicon-32x32.png
+            curl -sL -o hugo/static/favicon/favicon-16x16.png https://raw.githubusercontent.com/thegeeklab/hugo-geekdoc/main/static/favicon/favicon-16x16.png
+          fi
+          
+          # Create a basic menu file
+          mkdir -p hugo/data/menu
+          cat > hugo/data/menu/main.yaml << 'EOF'
+          ---
+          main:
+            - name: Getting Started
+              ref: "/getting-started"
+              icon: "gdoc_info"
+            - name: Build Process
+              ref: "/building"
+              icon: "gdoc_build"
+            - name: Backend Integration
+              ref: "/backend-opencloud"
+              icon: "gdoc_server"
+            - name: Releasing
+              ref: "/releasing"
+              icon: "gdoc_tag"
+            - name: Development
+              ref: "/development"
+              icon: "gdoc_code"
+              sub:
+                - name: Conventions
+                  ref: "/development/conventions"
+                - name: Repo Structure
+                  ref: "/development/repo-structure"
+                - name: Tooling
+                  ref: "/development/tooling"
+            - name: Extension System
+              ref: "/extension-system"
+              icon: "gdoc_code"
+              sub:
+                - name: Viewer & Editor Apps
+                  ref: "/extension-system/viewer-editor-apps"
+                - name: Extension Types
+                  ref: "/extension-system/extension-types"
+                  sub:
+                    - name: Actions
+                      ref: "/extension-system/extension-types/actions"
+                    - name: App Menu Items
+                      ref: "/extension-system/extension-types/app-menu-items"
+                    - name: Custom Components
+                      ref: "/extension-system/extension-types/custom-components"
+                    - name: Folder View
+                      ref: "/extension-system/extension-types/folder-view"
+                    - name: Left Sidebar Menu Items
+                      ref: "/extension-system/extension-types/left-sidebar-menu-item"
+                    - name: Right Sidebar Panels
+                      ref: "/extension-system/extension-types/right-sidebar-panels"
+                    - name: Search
+                      ref: "/extension-system/extension-types/search"
+            - name: Testing
+              ref: "/testing"
+              icon: "gdoc_check"
+              sub:
+                - name: General Testing
+                  ref: "/testing/testing"
+                - name: E2E Testing Standards
+                  ref: "/testing/e2e-testing-standards"
+            - name: Theming
+              ref: "/theming"
+              icon: "gdoc_color_palette"
+            - name: Embed Mode
+              ref: "/embed-mode"
+              icon: "gdoc_embed"
+            - name: Deployments
+              ref: "/deployments"
+              icon: "gdoc_cloud"
+          EOF
+          
+          # Create necessary asset directories
+          mkdir -p hugo/assets/js hugo/assets/css
+          
+          # Check if assets directory exists
+          if [ -d "hugo/themes/hugo-geekdoc/assets" ]; then
+            # Copy the theme's assets
+            rsync -a hugo/themes/hugo-geekdoc/assets/ hugo/assets/
+          fi
+          
+          # Create a simple CSS file in case the theme assets don't work
+          cat > hugo/static/css/geekdoc-minimal.css << 'EOF'
+          body { font-family: system-ui, sans-serif; max-width: 1200px; margin: 0 auto; padding: 1rem; line-height: 1.6; }
+          a { color: #08a; }
+          .gdoc-hint { border-left: 4px solid #0288d1; background: rgba(2,136,209,0.1); padding: 1rem; margin: 1rem 0; }
+          .gdoc-hint.warning { border-color: #ffc107; background: rgba(255,193,7,0.1); }
+          .gdoc-hint.danger { border-color: #d32f2f; background: rgba(211,47,47,0.1); }
+          EOF
+          
+          # Debug info: Show content directory structure
+          echo "Content directory structure:"
+          find hugo/content -type f -name "*.md" | sort
+          
+          # Debug info: Check for index files
+          echo "Index files:"
+          find hugo/content -name "_index.md" -o -name "index.md" | sort
+          
+          # Build site with verbose output
+          cd hugo
+          ls -la static
+          ls -la themes/hugo-geekdoc
+          echo "Building site..."
+          # Add --debug flag for build troubleshooting
+          HUGO_ENV=production HUGO_MINIFY_TDEWOLFF_HTML_KEEPCOMMENTS=false hugo --cleanDestinationDir --minify --forceSyncStatic --gc --ignoreCache --logLevel info
+        env:
+          HUGO_ENVIRONMENT: production
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./hugo/public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
