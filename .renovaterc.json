@@ -3,5 +3,6 @@
   "extends": ["config:recommended"],
   "prConcurrentLimit": 15,
   "ignoreDeps": ["@adobe/leonardo-contrast-colors"],
-  "postUpdateOptions": ["pnpmDedupe"]
+  "postUpdateOptions": ["pnpmDedupe"],
+  "labels": ["dependencies"]
 }
