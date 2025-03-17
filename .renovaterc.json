@@ -4,5 +4,5 @@
   "prConcurrentLimit": 15,
   "ignoreDeps": ["@adobe/leonardo-contrast-colors"],
   "postUpdateOptions": ["pnpmDedupe"],
-  "labels": ["dependencies"]
+  "labels": ["Type:Dependencies"]
 }
