@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.1](https://github.com/opencloud-eu/web/releases/tag/v1.0.1) - 2025-03-17
+## [1.1.0](https://github.com/opencloud-eu/web/releases/tag/v1.1.0) - 2025-03-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -9,6 +9,52 @@
 ### 📚 Documentation
 
 - feat: add ready release go [[#333](https://github.com/opencloud-eu/web/pull/333)]
+- [design-system]: Add docs for component api [[#205](https://github.com/opencloud-eu/web/pull/205)]
+
+### ✅ Tests
+
+- [e2e] Fix flaky collaboration sharing e2e test [[#329](https://github.com/opencloud-eu/web/pull/329)]
+- [e2e] Fix e2e tests for CI [[#322](https://github.com/opencloud-eu/web/pull/322)]
+- [e2e] Fix e2e tests for CI [[#321](https://github.com/opencloud-eu/web/pull/321)]
+- [e2e] Allow space activities to be checked by regex [[#319](https://github.com/opencloud-eu/web/pull/319)]
+- [e2e] Fix username in e2e test [[#318](https://github.com/opencloud-eu/web/pull/318)]
+- [e2e] Fix typo in env variable [[#317](https://github.com/opencloud-eu/web/pull/317)]
+- Fix unit tests for upload info [[#314](https://github.com/opencloud-eu/web/pull/314)]
+- Fix test when admin creates spaces in parallel [[#281](https://github.com/opencloud-eu/web/pull/281)]
+- Fix useLoadPreview unit tests [[#279](https://github.com/opencloud-eu/web/pull/279)]
+- Add unit test: allow email address as user name in user creation form [[#272](https://github.com/opencloud-eu/web/pull/272)]
+
+### 🐛 Bug Fixes
+
+- Minor style fixes [[#326](https://github.com/opencloud-eu/web/pull/326)]
+- Fix jumpyness between login and plain view [[#313](https://github.com/opencloud-eu/web/pull/313)]
+- Fix mark highlight does not work while searching users [[#309](https://github.com/opencloud-eu/web/pull/309)]
+- Fix: auto focus on text editor not present [[#305](https://github.com/opencloud-eu/web/pull/305)]
+- Fix: edit space icon not centered [[#304](https://github.com/opencloud-eu/web/pull/304)]
+- Fix typo [[#283](https://github.com/opencloud-eu/web/pull/283)]
+- Add publicLinkType to public space resource [[#277](https://github.com/opencloud-eu/web/pull/277)]
+- Fix empty public link or OCM share page title [[#270](https://github.com/opencloud-eu/web/pull/270)]
+- Fix: regex does not allow email addresses as username [[#268](https://github.com/opencloud-eu/web/pull/268)]
+- Fix space icon sizing with fallback image [[#252](https://github.com/opencloud-eu/web/pull/252)]
+- Fix sorting in spaces view may crash the application [[#255](https://github.com/opencloud-eu/web/pull/255)]
+- Fix empty file list [[#254](https://github.com/opencloud-eu/web/pull/254)]
+- Fix pwa icon [[#241](https://github.com/opencloud-eu/web/pull/241)]
+
+### 📈 Enhancement
+
+- Material design [[#291](https://github.com/opencloud-eu/web/pull/291)]
+- Increase copied to clipboard timeout [[#312](https://github.com/opencloud-eu/web/pull/312)]
+- Fix right sidebar snapping in app wrapper [[#311](https://github.com/opencloud-eu/web/pull/311)]
+- Enhance string when upload completed [[#310](https://github.com/opencloud-eu/web/pull/310)]
+- Add toolbar with undo and next to text editor [[#306](https://github.com/opencloud-eu/web/pull/306)]
+- Don't show password while using generate password method [[#300](https://github.com/opencloud-eu/web/pull/300)]
+- Redesign tooltips [[#296](https://github.com/opencloud-eu/web/pull/296)]
+- Optimize sidebar behaviour on mobile devices [[#251](https://github.com/opencloud-eu/web/pull/251)]
+- Tiles view, replace sort select with less visual obstrutive filter-chip [[#245](https://github.com/opencloud-eu/web/pull/245)]
+- Replace oc-select chevron icon and align vertical [[#236](https://github.com/opencloud-eu/web/pull/236)]
+- Move include disabled spaces to table settings [[#235](https://github.com/opencloud-eu/web/pull/235)]
+- Cut off long urls (including b64 images) [[#229](https://github.com/opencloud-eu/web/pull/229)]
+- Enable b64 image upload support [[#225](https://github.com/opencloud-eu/web/pull/225)]
 
 ### 📦️ Dependencies
 
@@ -42,6 +88,8 @@
 - fix(deps): update typescript-eslint monorepo to v8.26.0 [[#271](https://github.com/opencloud-eu/web/pull/271)]
 - chore(deps): update dependency vite-plugin-dts to v4.5.1 [[#253](https://github.com/opencloud-eu/web/pull/253)]
 - chore(deps): update pnpm to v10 [[#130](https://github.com/opencloud-eu/web/pull/130)]
+- fix(deps): update dependency vue-router to v4.5.0 [[#119](https://github.com/opencloud-eu/web/pull/119)]
+- chore(deps): update dependency vite-plugin-dts to v4.5.0 [[#96](https://github.com/opencloud-eu/web/pull/96)]
 - fix(deps): update dependency axios to v1.8.1 [[#246](https://github.com/opencloud-eu/web/pull/246)]
 - fix(deps): update dependency eslint-config-prettier to v10.0.2 [[#247](https://github.com/opencloud-eu/web/pull/247)]
 - chore(deps): update dependency sass to v1.85.1 [[#233](https://github.com/opencloud-eu/web/pull/233)]
