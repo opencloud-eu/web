@@ -71,8 +71,8 @@ importers:
         specifier: 10.0.0
         version: 10.0.0
       '@vitejs/plugin-vue':
-        specifier: 5.2.1
-        version: 5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
+        specifier: 5.2.3
+        version: 5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
       '@vitest/coverage-v8':
         specifier: ^3.0.5
         version: 3.0.8(vitest@3.0.8(@types/node@22.13.2)(happy-dom@17.4.4)(jsdom@26.0.0)(sass@1.85.1)(yaml@2.7.0))
@@ -246,8 +246,8 @@ importers:
         specifier: workspace:*
         version: link:../web-test-helpers
       '@vitejs/plugin-vue':
-        specifier: 5.2.1
-        version: 5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
+        specifier: 5.2.3
+        version: 5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
       clean-publish:
         specifier: ^5.0.0
         version: 5.1.0
@@ -350,7 +350,7 @@ importers:
     dependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.0
-        version: 5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
+        version: 5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
       rollup-plugin-serve:
         specifier: ^3.0.0
         version: 3.0.0
@@ -792,8 +792,8 @@ importers:
         specifier: 3.4.2
         version: 3.4.2
       '@vitejs/plugin-vue':
-        specifier: 5.2.1
-        version: 5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
+        specifier: 5.2.3
+        version: 5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
       clean-publish:
         specifier: 5.1.0
         version: 5.1.0
@@ -1118,8 +1118,8 @@ importers:
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.13)(vue@3.5.13(typescript@5.8.2))
     devDependencies:
       '@vitejs/plugin-vue':
-        specifier: 5.2.1
-        version: 5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
+        specifier: 5.2.3
+        version: 5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))
       clean-publish:
         specifier: ^5.0.0
         version: 5.1.0
@@ -3022,8 +3022,8 @@ packages:
   '@vavt/util@2.1.0':
     resolution: {integrity: sha512-YIfAvArSFVXmWvoF+DEGD0FhkhVNcCtVWWkfYtj76eSrwHh/wuEEFhiEubg1XLNM3tChO8FH8xJCT/hnizjgFQ==}
 
-  '@vitejs/plugin-vue@5.2.1':
-    resolution: {integrity: sha512-cxh314tzaWwOLqVes2gnnCtvBDcM1UMdn+iFR+UjAn411dPT3tOmqrJjbMd7koZpMAmBM/GqeV4n9ge7JSiJJQ==}
+  '@vitejs/plugin-vue@5.2.3':
+    resolution: {integrity: sha512-IYSLEQj4LgZZuoVpdSUCw3dIynTWQgPlaRP6iAvMle4My0HdYwr5g5wQAfwOeHQBmYwEkqF70nRpSilr6PoUDg==}
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0
@@ -8951,12 +8951,12 @@ snapshots:
 
   '@vavt/util@2.1.0': {}
 
-  '@vitejs/plugin-vue@5.2.1(vite@5.4.14(@types/node@22.13.2)(sass@1.85.1))(vue@3.5.13(typescript@5.8.2))':
+  '@vitejs/plugin-vue@5.2.3(vite@5.4.14(@types/node@22.13.2)(sass@1.85.1))(vue@3.5.13(typescript@5.8.2))':
     dependencies:
       vite: 5.4.14(@types/node@22.13.2)(sass@1.85.1)
       vue: 3.5.13(typescript@5.8.2)
 
-  '@vitejs/plugin-vue@5.2.1(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))':
+  '@vitejs/plugin-vue@5.2.3(vite@6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.8.2))':
     dependencies:
       vite: 6.2.1(@types/node@22.13.2)(sass@1.85.1)(yaml@2.7.0)
       vue: 3.5.13(typescript@5.8.2)
@@ -12589,7 +12589,7 @@ snapshots:
       '@shikijs/transformers': 2.3.2
       '@shikijs/types': 2.3.2
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 5.2.1(vite@5.4.14(@types/node@22.13.2)(sass@1.85.1))(vue@3.5.13(typescript@5.8.2))
+      '@vitejs/plugin-vue': 5.2.3(vite@5.4.14(@types/node@22.13.2)(sass@1.85.1))(vue@3.5.13(typescript@5.8.2))
       '@vue/devtools-api': 7.7.2
       '@vue/shared': 3.5.13
       '@vueuse/core': 12.8.2(typescript@5.8.2)

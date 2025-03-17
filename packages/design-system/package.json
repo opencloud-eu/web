@@ -105,7 +105,7 @@
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*",
-    "@vitejs/plugin-vue": "5.2.1",
+    "@vitejs/plugin-vue": "5.2.3",
     "clean-publish": "^5.0.0",
     "glob": "^11.0.0",
     "markdown-it-container": "^4.0.0",
