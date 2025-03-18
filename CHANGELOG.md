@@ -8,7 +8,8 @@
 
 ### 📦️ Dependencies
 
-- fix(deps): update dependency @sentry/vue to v9.6.0 [[#338](https://github.com/opencloud-eu/web/pull/338)]
+- chore(deps): update devdependencies (non-major) [[#342](https://github.com/opencloud-eu/web/pull/342)]
+- fix(deps): update dependency @sentry/vue to v9.6.0 - autoclosed [[#338](https://github.com/opencloud-eu/web/pull/338)]
 - chore(deps): update pnpm to v10.6.4 [[#323](https://github.com/opencloud-eu/web/pull/323)]
 
 ## [2.0.0](https://github.com/opencloud-eu/web/releases/tag/v2.0.0) - 2025-03-18
