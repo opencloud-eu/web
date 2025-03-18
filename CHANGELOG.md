@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.1](https://github.com/opencloud-eu/web/releases/tag/v2.0.1) - 2025-03-18
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 📦️ Dependencies
+
+- chore(deps): update pnpm to v10.6.4 [[#323](https://github.com/opencloud-eu/web/pull/323)]
+
 ## [2.0.0](https://github.com/opencloud-eu/web/releases/tag/v2.0.0) - 2025-03-18
 
 ### ❤️ Thanks to all contributors! ❤️
