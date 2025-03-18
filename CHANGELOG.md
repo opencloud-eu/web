@@ -1,10 +1,14 @@
 # Changelog
 
-## [1.1.0](https://github.com/opencloud-eu/web/releases/tag/v1.1.0) - 2025-03-17
+## [2.0.0](https://github.com/opencloud-eu/web/releases/tag/v2.0.0) - 2025-03-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann, @micbar
+
+### 💥 Breaking changes
+
+- Material design [[#291](https://github.com/opencloud-eu/web/pull/291)]
 
 ### 📚 Documentation
 
@@ -42,7 +46,6 @@
 
 ### 📈 Enhancement
 
-- Material design [[#291](https://github.com/opencloud-eu/web/pull/291)]
 - Increase copied to clipboard timeout [[#312](https://github.com/opencloud-eu/web/pull/312)]
 - Fix right sidebar snapping in app wrapper [[#311](https://github.com/opencloud-eu/web/pull/311)]
 - Enhance string when upload completed [[#310](https://github.com/opencloud-eu/web/pull/310)]
