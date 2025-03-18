@@ -112,7 +112,7 @@
     "onchange": "^7.1.0",
     "postcss": "^8.5.2",
     "process": "^0.11.10",
-    "sass": "1.85.1",
+    "sass": "1.86.0",
     "sass-loader": "16.0.5",
     "sass-resources-loader": "^2.2.5",
     "style-dictionary": "^4.0.0",
