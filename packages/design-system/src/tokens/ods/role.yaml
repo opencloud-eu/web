@@ -1,41 +1,41 @@
 ---
 role:
   primary:
-    value: '#715289'
+    value: '#07677F'
   onPrimary:
     value: '#FFFFFF'
   primaryContainer:
-    value: '#F2DAFF'
+    value: '#B7EAFF'
   onPrimaryContainer:
-    value: '#2A0C41'
+    value: '#001F28'
   primaryFixed:
-    value: '#F2DAFF'
+    value: '#B7EAFF'
   onPrimaryFixed:
-    value: '#2A0C41'
+    value: '#001F28'
   secondary:
-    value: '#665A6E'
+    value: '#20434f'
   onSecondary:
     value: '#FFFFFF'
   secondaryContainer:
-    value: '#EEDDF6'
+    value: '#F4E5FF'
   onSecondaryContainer:
-    value: '#211829'
+    value: '#071E26'
   secondaryFixed:
-    value: '#B7EAFF'
+    value: '#CFE6F1'
   onSecondaryFixed:
-    value: '#001F28'
+    value: '#071E26'
   tertiary:
-    value: '#815156'
+    value: '#5A5C7E'
   onTertiary:
     value: '#FFFFFF'
   tertiaryContainer:
-    value: '#FFDADB'
+    value: '#E0E0FF'
   onTertiaryContainer:
-    value: '#321015'
+    value: '#171937'
   tertiaryFixed:
-    value: '#FFDADB'
+    value: '#E0E0FF'
   onTertiaryFixed:
-    value: '#321015'
+    value: '#171937'
   error:
     value: '#BA1A1A'
   onError:
@@ -45,48 +45,48 @@ role:
   onErrorContainer:
     value: '#410002'
   background:
-    value: '#FFF7FD'
+    value: '#F5FAFD'
   onBackground:
-    value: '#1E1A20'
+    value: '#171C1F'
   surface:
-    value: '#FFF7FD'
+    value: '#FFFFFF'
   onSurface:
-    value: '#1E1A20'
+    value: '#171C1F'
   surfaceVariant:
-    value: '#E9DFEA'
+    value: '#DBE4E8'
   onSurfaceVariant:
-    value: '#4B454D'
+    value: '#40484C'
   outline:
-    value: '#7C757E'
+    value: '#70787C'
   outlineVariant:
-    value: '#CDC3CE'
+    value: '#BFC8CC'
   shadow:
     value: '#000000'
   scrim:
     value: '#000000'
   inverseSurface:
-    value: '#332F35'
+    value: '#2C3134'
   inverseOnSurface:
-    value: '#F7EEF6'
+    value: '#EDF1F4'
   inversePrimary:
-    value: '#DDB9F7'
+    value: '#88D1EC'
   surfaceDim:
-    value: '#E0D8DF'
+    value: '#D6DBDE'
   surfaceBright:
-    value: '#FFF7FD'
+    value: '#F5FAFD'
   surfaceTint:
     value: '#715289'
   surfaceContainerLowest:
     value: '#FFFFFF'
   surfaceContainerLow:
-    value: '#FAF1F9'
+    value: '#EFF4F7'
   surfaceContainer:
-    value: '#F4EBF3'
+    value: '#F1F3F4'
   surfaceContainerHigh:
-    value: '#EEE6ED'
+    value: '#E4E9EC'
   surfaceContainerHighest:
-    value: '#E8E0E8'
+    value: '#DEE3E6'
   chrome:
-    value: '#20434f'
+    value: '#20434F'
   onChrome:
-    value: '#ffffff'
+    value: '#FFFFFF'
