@@ -557,8 +557,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       '@uppy/core':
-        specifier: 4.4.2
-        version: 4.4.2
+        specifier: 4.4.3
+        version: 4.4.3
       '@vueuse/core':
         specifier: ^13.0.0
         version: 13.0.0(vue@3.5.13(typescript@5.8.2))
@@ -830,19 +830,19 @@ importers:
         version: 9.6.0(pinia@3.0.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2)))(vue@3.5.13(typescript@5.8.2))
       '@uppy/core':
         specifier: ^4.3.1
-        version: 4.4.2
+        version: 4.4.3
       '@uppy/drop-target':
         specifier: ^3.0.2
-        version: 3.1.1(@uppy/core@4.4.2)
+        version: 3.1.1(@uppy/core@4.4.3)
       '@uppy/tus':
         specifier: ^4.1.5
-        version: 4.2.2(@uppy/core@4.4.2)
+        version: 4.2.2(@uppy/core@4.4.3)
       '@uppy/utils':
         specifier: ^6.0.6
         version: 6.1.2
       '@uppy/xhr-upload':
         specifier: ^4.2.3
-        version: 4.3.3(@uppy/core@4.4.2)
+        version: 4.3.3(@uppy/core@4.4.3)
       '@vavt/cm-extension':
         specifier: ^1.6.0
         version: 1.8.0
@@ -975,20 +975,20 @@ importers:
         specifier: 9.6.0
         version: 9.6.0(pinia@3.0.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2)))(vue@3.5.13(typescript@5.8.2))
       '@uppy/core':
-        specifier: 4.4.2
-        version: 4.4.2
+        specifier: 4.4.3
+        version: 4.4.3
       '@uppy/drop-target':
         specifier: 3.1.1
-        version: 3.1.1(@uppy/core@4.4.2)
+        version: 3.1.1(@uppy/core@4.4.3)
       '@uppy/tus':
         specifier: 4.2.2
-        version: 4.2.2(@uppy/core@4.4.2)
+        version: 4.2.2(@uppy/core@4.4.3)
       '@uppy/utils':
         specifier: 6.1.2
         version: 6.1.2
       '@uppy/xhr-upload':
         specifier: 4.3.3
-        version: 4.3.3(@uppy/core@4.4.2)
+        version: 4.3.3(@uppy/core@4.4.3)
       '@vueuse/core':
         specifier: 13.0.0
         version: 13.0.0(vue@3.5.13(typescript@5.8.2))
@@ -2983,8 +2983,8 @@ packages:
     peerDependencies:
       '@uppy/core': ^4.4.1
 
-  '@uppy/core@4.4.2':
-    resolution: {integrity: sha512-df0fQtPEd5W/e5M/CWIXQb/O0rBb+LCz4HTN5Bkqm0UDzW2JFR9mrxnL0dfh3ikVlUq+9vNjAeBr9P0aluIiFg==}
+  '@uppy/core@4.4.3':
+    resolution: {integrity: sha512-Ma/v9+u0xYoxFcTajBpe0TUHI0Vjw2IKgB0AUNevhgFsBRgA03nL5n8Fac8TrC0QjPkYu7h0n2xf2EgzvyxAQA==}
 
   '@uppy/drop-target@3.1.1':
     resolution: {integrity: sha512-/2jnQ3DqfcWGjgoasLBLvwJ3fozavwSXFVULenDmPUI8YPjuxmEtOu61XnZ/OLhRnZo6Qm+kltSd+YUS0P/LNA==}
@@ -5059,8 +5059,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.9:
-    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+  nanoid@5.1.4:
+    resolution: {integrity: sha512-GTFcMIDgR7tqji/LpSY8rtg464VnJl/j6ypoehYnuGb+Y8qZUdtKB8WVCXon0UEZgFDbuUxpIl//6FHLHgXSNA==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -5431,8 +5431,8 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
-  preact@10.25.4:
-    resolution: {integrity: sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA==}
+  preact@10.26.4:
+    resolution: {integrity: sha512-KJhO7LBFTjP71d83trW+Ilnjbo+ySsaAgCfXOXUlmGzJ4ygYPWmysm77yg4emwfmoz3b22yvH5IsVFHbhUaH5w==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -7933,7 +7933,7 @@ snapshots:
   '@docsearch/js@3.8.2(@algolia/client-search@5.20.2)(search-insights@2.17.3)':
     dependencies:
       '@docsearch/react': 3.8.2(@algolia/client-search@5.20.2)(search-insights@2.17.3)
-      preact: 10.25.4
+      preact: 10.26.4
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/react'
@@ -8856,14 +8856,14 @@ snapshots:
       unhead: 1.11.18
       vue: 3.5.13(typescript@5.8.2)
 
-  '@uppy/companion-client@4.4.1(@uppy/core@4.4.2)':
+  '@uppy/companion-client@4.4.1(@uppy/core@4.4.3)':
     dependencies:
-      '@uppy/core': 4.4.2
+      '@uppy/core': 4.4.3
       '@uppy/utils': 6.1.2
       namespace-emitter: 2.0.1
       p-retry: 6.2.1
 
-  '@uppy/core@4.4.2':
+  '@uppy/core@4.4.3':
     dependencies:
       '@transloadit/prettier-bytes': 0.3.5
       '@uppy/store-default': 4.2.0
@@ -8871,32 +8871,32 @@ snapshots:
       lodash: 4.17.21
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
-      nanoid: 5.0.9
-      preact: 10.25.4
+      nanoid: 5.1.4
+      preact: 10.26.4
 
-  '@uppy/drop-target@3.1.1(@uppy/core@4.4.2)':
+  '@uppy/drop-target@3.1.1(@uppy/core@4.4.3)':
     dependencies:
-      '@uppy/core': 4.4.2
+      '@uppy/core': 4.4.3
       '@uppy/utils': 6.1.2
 
   '@uppy/store-default@4.2.0': {}
 
-  '@uppy/tus@4.2.2(@uppy/core@4.4.2)':
+  '@uppy/tus@4.2.2(@uppy/core@4.4.3)':
     dependencies:
-      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.2)
-      '@uppy/core': 4.4.2
+      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.3)
+      '@uppy/core': 4.4.3
       '@uppy/utils': 6.1.2
       tus-js-client: 4.3.1
 
   '@uppy/utils@6.1.2':
     dependencies:
       lodash: 4.17.21
-      preact: 10.25.4
+      preact: 10.26.4
 
-  '@uppy/xhr-upload@4.3.3(@uppy/core@4.4.2)':
+  '@uppy/xhr-upload@4.3.3(@uppy/core@4.4.3)':
     dependencies:
-      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.2)
-      '@uppy/core': 4.4.2
+      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.3)
+      '@uppy/core': 4.4.3
       '@uppy/utils': 6.1.2
 
   '@vavt/cm-extension@1.8.0': {}
@@ -11143,7 +11143,7 @@ snapshots:
 
   nanoid@3.3.8: {}
 
-  nanoid@5.0.9: {}
+  nanoid@5.1.4: {}
 
   natural-compare@1.4.0: {}
 
@@ -11552,7 +11552,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact@10.25.4: {}
+  preact@10.26.4: {}
 
   prelude-ls@1.2.1: {}
 
