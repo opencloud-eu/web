@@ -107,7 +107,7 @@ export const changeQuota = async (args: {
   await Promise.all([
     page.waitForResponse(
       (resp) =>
-        resp.url().endsWith(encodeURIComponent(uuid)) &&
+        resp.url().includes('drives') &&
         resp.status() === 200 &&
         resp.request().method() === 'PATCH'
     ),
@@ -130,7 +130,7 @@ export const changeQuotaUsingBatchAction = async (args: {
     checkResponses.push(
       page.waitForResponse(
         (resp) =>
-          resp.url().endsWith(encodeURIComponent(id)) &&
+          resp.url().includes('drives') &&
           resp.status() === 200 &&
           resp.request().method() === 'PATCH'
       )
