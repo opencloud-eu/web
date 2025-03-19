@@ -1,5 +1,5 @@
 <template>
-  <div id="preferences-panel-app-tokens">
+  <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
     <div class="oc-flex oc-flex-middle oc-flex-space-between oc-mb-m">
       <h2 class="oc-m-rm" v-text="$gettext('App tokens')" />
       <oc-button
@@ -67,7 +67,13 @@
 
 <script setup lang="ts">
 import { call } from '@opencloud-eu/web-client'
-import { formatDateFromISO, useClientService, useMessages, useModals } from '@opencloud-eu/web-pkg'
+import {
+  formatDateFromISO,
+  useAuthStore,
+  useClientService,
+  useMessages,
+  useModals
+} from '@opencloud-eu/web-pkg'
 import { computed, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
@@ -78,6 +84,7 @@ const { $gettext, current: currentLanguage } = useGettext()
 const { dispatchModal } = useModals()
 const { showMessage, showErrorMessage } = useMessages()
 const { httpAuthenticated: client } = useClientService()
+const authStore = useAuthStore()
 
 const appTokens: Ref<AppToken[]> = ref([])
 const authAppServiceDisabled = ref<boolean | undefined>()
