@@ -1,10 +1,18 @@
 # Changelog
 
-## [2.0.1](https://github.com/opencloud-eu/web/releases/tag/v2.0.1) - 2025-03-19
+## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-19
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @kulmann
+
+### 🐛 Bug Fixes
+
+- fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
+
+### 📈 Enhancement
+
+- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### 📦️ Dependencies
 
