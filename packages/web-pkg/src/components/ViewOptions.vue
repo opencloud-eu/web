@@ -64,6 +64,14 @@
             @change="setItemsPerPage"
           />
         </li>
+        <li v-if="isProjectsLocation" class="files-view-options-list-item">
+          <oc-switch
+            v-model:checked="disabledSpacesShownModel"
+            data-testid="files-switch-projects-show-disabled"
+            :label="$gettext('Show disabled Spaces')"
+            @update:checked="updateDisabledSpacesShownModel"
+          />
+        </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
           class="files-view-options-list-item oc-flex oc-flex-between oc-flex-middle"
@@ -77,14 +85,6 @@
             :max="viewSizeMax"
             class="oc-range"
             data-testid="files-tiles-size-slider"
-          />
-        </li>
-        <li v-if="isProjectsLocation" class="files-view-options-list-item">
-          <oc-switch
-            v-model:checked="disabledSpacesShownModel"
-            data-testid="files-switch-projects-show-disabled"
-            :label="$gettext('Show disabled Spaces')"
-            @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
       </oc-list>
