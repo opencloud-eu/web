@@ -30,7 +30,6 @@ import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/
 import { useResourcesStore } from '../../../composables'
 import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 import ResourceName from '../../FilesList/ResourceName.vue'
-import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'FileInfo',
@@ -43,7 +42,6 @@ export default defineComponent({
   },
   setup() {
     const resourcesStore = useResourcesStore()
-    const { $gettext } = useGettext()
 
     const resource = inject<Resource>('resource')
     const space = inject<SpaceResource>('space')
@@ -51,7 +49,7 @@ export default defineComponent({
 
     const resourceName = computed(() => {
       return isPersonalSpaceResource(unref(space)) && unref(resource).path === '/'
-        ? $gettext('Personal')
+        ? unref(space).name
         : unref(resource).name
     })
 
