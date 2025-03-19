@@ -3,18 +3,16 @@
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <p v-if="!activities.length" v-text="$gettext('No activities')" />
-      <div v-else class="oc-ml-s">
-        <oc-list class="timeline">
-          <li v-for="activity in activities" :key="activity.id">
-            <span v-html="getHtmlFromActivity(activity)" />
-            <span
-              class="oc-text-muted oc-text-small oc-mt-s"
-              v-text="getTimeFromActivity(activity)"
-            />
-          </li>
-        </oc-list>
-        <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
-      </div>
+      <oc-list v-else class="oc-timeline">
+        <li v-for="activity in activities" :key="activity.id">
+          <span v-html="getHtmlFromActivity(activity)" />
+          <span
+            class="oc-text-muted oc-text-small oc-mt-s"
+            v-text="getTimeFromActivity(activity)"
+          />
+        </li>
+      </oc-list>
+      <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
     </template>
   </div>
 </template>
@@ -139,44 +137,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.timeline {
-  position: relative;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 1.5px;
-    background-color: var(--oc-role-outline-variant);
-  }
-
-  li {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    padding: 10px 20px 10px 30px;
-    width: 100%;
-    box-sizing: border-box;
-
-    &::before {
-      content: '';
-      width: 10px;
-      height: 10px;
-      background-color: var(--oc-role-outline-variant);
-      border-radius: 50%;
-      position: absolute;
-      left: -4px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1;
-    }
-  }
-}
-</style>
