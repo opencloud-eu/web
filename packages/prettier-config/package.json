@@ -14,7 +14,7 @@
   "exports": {
     ".": "./index.js"
   },
-  "dependencies": {
+  "peerDependencies": {
     "prettier": "^3.0.0"
   }
 }
