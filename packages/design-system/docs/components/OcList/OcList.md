@@ -39,8 +39,7 @@ The components provides a default slot to display the list items.
 
 ### Timeline 
 
-The components provides an `oc-timeline` class to display a timeline-like list.
-
+The component provides an `oc-timeline` class to display a timeline-like list.
 ::: livecode
 
 ```html
