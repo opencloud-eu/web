@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @kulmann
+@AlexAndBear, @JammingBen, @kulmann
 
 ### 📦️ Dependencies
 
