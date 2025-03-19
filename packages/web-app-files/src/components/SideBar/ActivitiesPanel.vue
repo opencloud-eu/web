@@ -3,16 +3,18 @@
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <p v-if="!activities.length" v-text="$gettext('No activities')" />
-      <oc-list v-else class="oc-timeline">
-        <li v-for="activity in activities" :key="activity.id">
-          <span v-html="getHtmlFromActivity(activity)" />
-          <span
-            class="oc-text-muted oc-text-small oc-mt-s"
-            v-text="getTimeFromActivity(activity)"
-          />
-        </li>
-      </oc-list>
-      <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
+      <div v-else class="oc-ml-s">
+        <oc-list class="oc-timeline">
+          <li v-for="activity in activities" :key="activity.id">
+            <span v-html="getHtmlFromActivity(activity)" />
+            <span
+              class="oc-text-muted oc-text-small oc-mt-s"
+              v-text="getTimeFromActivity(activity)"
+            />
+          </li>
+        </oc-list>
+        <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
+      </div>
     </template>
   </div>
 </template>

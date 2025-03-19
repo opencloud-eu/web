@@ -1,44 +1,46 @@
 <template>
   <div id="oc-file-versions-sidebar">
-    <oc-list v-if="versions.length" class="oc-timeline">
-      <li v-for="(item, index) in versions" :key="index" class="version-item">
-        <div class="version-details">
-          <span
-            v-oc-tooltip="formatVersionDate(item)"
-            class="version-date oc-font-semibold"
-            data-testid="file-versions-file-last-modified-date"
-            >{{ formatVersionDateRelative(item) }}</span
+    <div v-if="versions.length" class="oc-ml-s">
+      <oc-list class="oc-timeline">
+        <li v-for="(item, index) in versions" :key="index" class="version-item">
+          <div class="version-details">
+            <span
+              v-oc-tooltip="formatVersionDate(item)"
+              class="version-date oc-font-semibold"
+              data-testid="file-versions-file-last-modified-date"
+              >{{ formatVersionDateRelative(item) }}</span
+            >
+            -
+            <span class="version-filesize" data-testid="file-versions-file-size">{{
+              formatVersionFileSize(item)
+            }}</span>
+          </div>
+          <oc-button
+            v-if="isRevertible"
+            data-testid="file-versions-revert-button"
+            appearance="raw"
+            justify-content="left"
+            :aria-label="$gettext('Restore')"
+            class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m"
+            @click="revertToVersion(item)"
           >
-          -
-          <span class="version-filesize" data-testid="file-versions-file-size">{{
-            formatVersionFileSize(item)
-          }}</span>
-        </div>
-        <oc-button
-          v-if="isRevertible"
-          data-testid="file-versions-revert-button"
-          appearance="raw"
-          justify-content="left"
-          :aria-label="$gettext('Restore')"
-          class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m"
-          @click="revertToVersion(item)"
-        >
-          <oc-icon name="history" class="oc-icon-m oc-mr-s -oc-mt-xs" fill-type="line" />
-          {{ $gettext('Restore') }}
-        </oc-button>
-        <oc-button
-          data-testid="file-versions-download-button"
-          justify-content="left"
-          appearance="raw"
-          :aria-label="$gettext('Download')"
-          class="version-action-item oc-width-1-1 oc-rounded c-button-gap-m oc-py-s oc-px-m"
-          @click="downloadVersion(item)"
-        >
-          <oc-icon name="file-download" class="oc-icon-m oc-mr-s" fill-type="line" />
-          {{ $gettext('Download') }}
-        </oc-button>
-      </li>
-    </oc-list>
+            <oc-icon name="history" class="oc-icon-m oc-mr-s -oc-mt-xs" fill-type="line" />
+            {{ $gettext('Restore') }}
+          </oc-button>
+          <oc-button
+            data-testid="file-versions-download-button"
+            justify-content="left"
+            appearance="raw"
+            :aria-label="$gettext('Download')"
+            class="version-action-item oc-width-1-1 oc-rounded c-button-gap-m oc-py-s oc-px-m"
+            @click="downloadVersion(item)"
+          >
+            <oc-icon name="file-download" class="oc-icon-m oc-mr-s" fill-type="line" />
+            {{ $gettext('Download') }}
+          </oc-button>
+        </li>
+      </oc-list>
+    </div>
     <div v-else>
       <p v-translate data-testid="file-versions-no-versions">No versions available for this file</p>
     </div>
