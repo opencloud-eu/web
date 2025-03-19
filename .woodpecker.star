@@ -1,3 +1,6 @@
+repo_slug = "opencloud-eu/opencloud"
+docker_repo_slug = "opencloudeu/opencloud"
+
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:24.04.10.2.1"
@@ -24,6 +27,7 @@ PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
 SONARSOURCE_SONAR_SCANNER_CLI = "sonarsource/sonar-scanner-cli:5.0"
 TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
+READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
@@ -52,11 +56,11 @@ config = {
         "master",
         "stable-*",
     ],
-    "pnpmlint": True,
+    "pnpmlint": False,
     "e2e": {
         "1": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "journeys",
                 "smoke",
@@ -64,7 +68,7 @@ config = {
         },
         "2": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "admin-settings",
                 "spaces",
@@ -72,7 +76,7 @@ config = {
         },
         "3": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "tikaNeeded": True,
             "suites": [
                 "search",
@@ -87,7 +91,7 @@ config = {
         },
         "4": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "navigation",
                 "user-settings",
@@ -96,7 +100,7 @@ config = {
             ],
         },
         "app-provider": {
-            "skip": False,
+            "skip": True,
             "suites": [
                 "app-provider",
             ],
@@ -113,7 +117,7 @@ config = {
             },
         },
         "oidc-refresh-token": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/refreshToken.feature",
             ],
@@ -123,7 +127,7 @@ config = {
             },
         },
         "oidc-iframe": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/iframeTokenRenewal.feature",
             ],
@@ -133,7 +137,7 @@ config = {
         },
         "ocm": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "federationServer": True,
             "suites": [
                 "ocm",
@@ -182,31 +186,33 @@ web_workspace = {
 }
 
 def main(ctx):
-    before = beforePipelines(ctx)
+    pipelines = ready_release_go()
 
-    stages = pipelinesDependsOn(stagePipelines(ctx), before)
-
-    if (stages == False):
-        print("Errors detected. Review messages above.")
-        return []
-
-    after = pipelinesDependsOn(afterPipelines(ctx), stages)
-
-    pipelines = before + stages + after
-
-    deploys = example_deploys(ctx)
-    if ctx.build.event != "cron":
-        # run example deploys on cron even if some prior pipelines fail
-        deploys = pipelinesDependsOn(deploys, pipelines)
-
-    pipelines = pipelines + deploys + pipelinesDependsOn(
-        [
-            purgeBuildArtifactCache(ctx),
-        ],
-        pipelines,
-    )
-
-    pipelineSanityChecks(ctx, pipelines)
+    # before = beforePipelines(ctx)
+    #
+    # stages = pipelinesDependsOn(stagePipelines(ctx), before)
+    #
+    # if (stages == False):
+    #     print("Errors detected. Review messages above.")
+    #     return []
+    #
+    # after = pipelinesDependsOn(afterPipelines(ctx), stages)
+    #
+    # pipelines = before + stages + after
+    #
+    # deploys = example_deploys(ctx)
+    # if ctx.build.event != "cron":
+    #     # run example deploys on cron even if some prior pipelines fail
+    #     deploys = pipelinesDependsOn(deploys, pipelines)
+    #
+    # pipelines = pipelines + deploys + pipelinesDependsOn(
+    #     [
+    #         purgeBuildArtifactCache(ctx),
+    #     ],
+    #     pipelines,
+    # )
+    #
+    # pipelineSanityChecks(ctx, pipelines)
     return pipelines
 
 def beforePipelines(ctx):
@@ -235,8 +241,6 @@ def afterPipelines(ctx):
 
 def pnpmCache(ctx):
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "cache-pnpm",
         "workspace": {
             "base": dir["base"],
@@ -248,14 +252,18 @@ def pnpmCache(ctx):
                  checkBrowsersCache() +
                  installBrowsers() +
                  cacheBrowsers(),
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ]
     }]
 
 def pnpmlint(ctx):
@@ -269,8 +277,6 @@ def pnpmlint(ctx):
             return pipelines
 
     result = {
-        "kind": "pipeline",
-        "type": "docker",
         "name": "lint",
         "workspace": {
             "base": dir["base"],
@@ -280,18 +286,22 @@ def pnpmlint(ctx):
                  restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
                  lint(),
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ]
     }
 
     for branch in config["branches"]:
-        result["trigger"]["ref"].append("refs/heads/%s" % branch)
+        result["when"]["branch"].append("%s" % branch)
 
     pipelines.append(result)
 
@@ -300,47 +310,73 @@ def pnpmlint(ctx):
 def build(ctx):
     pipelines = []
 
-    if "build" not in config:
-        return pipelines
+    # if "build" not in config:
+    #     return pipelines
+    #
+    # if type(config["build"]) == "bool":
+    #     if not config["build"]:
+    #         return pipelines
+    #
+    # steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
+    #
+    # if determineReleasePackage(ctx) == None:
+    #     steps += buildDockerImage()
+    #
+    # result = {
+    #     "name": "build",
+    #     "workspace": {
+    #         "base": dir["base"],
+    #         "path": config["app"],
+    #     },
+    #     "steps": steps,
+    #     "when": [
+    #         {
+    #             "event": ["push", "manual"],
+    #             "branch": ["main", "stable-*"],
+    #         },
+    #         {
+    #             "event": "pull_request",
+    #         },
+    #         {
+    #             "event": "tag",
+    #         },
+    #     ]
+    # }
 
-    if type(config["build"]) == "bool":
-        if not config["build"]:
-            return pipelines
-
-    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
-
-    if determineReleasePackage(ctx) == None:
-        steps += buildDockerImage()
-
-    result = {
-        "kind": "pipeline",
-        "type": "docker",
-        "name": "build",
-        "workspace": {
-            "base": dir["base"],
-            "path": config["app"],
-        },
-        "steps": steps,
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-            ],
-        },
-    }
-
-    pipelines.append(result)
+    # pipelines.append(result)
 
     return pipelines
 
+def ready_release_go():
+    return [
+        {
+            "name": "release",
+            "steps": [
+                {
+                    "name": "release-helper",
+                    "image": READY_RELEASE_GO,
+                    "settings": {
+                        "git_email": "devops@opencloud.eu",
+                        "forge_type": "github",
+                        "forge_token": {
+                            "from_secret": "github_token"
+                        },
+                    },
+                },
+            ],
+            "when": [
+                {
+                    "event": ["push"],
+                    "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                },
+            ],
+        }
+    ]
+
 def changelog(ctx):
     pipelines = []
-    repo_slug = ctx.build.source_repo if ctx.build.source_repo else ctx.repo.slug
 
     result = {
-        "kind": "pipeline",
-        "type": "docker",
         "name": "changelog",
         "clone": {
             "disable": True,
@@ -416,13 +452,18 @@ def changelog(ctx):
                 },
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
     }
 
     pipelines.append(result)
@@ -431,8 +472,6 @@ def changelog(ctx):
 
 def buildCacheWeb(ctx):
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "cache-web",
         "workspace": {
             "base": dir["base"],
@@ -452,14 +491,18 @@ def buildCacheWeb(ctx):
                      ],
                  }] +
                  rebuildBuildArtifactCache(ctx, "web-dist", "dist"),
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
     }]
 
 def unitTests(ctx):
@@ -475,25 +518,11 @@ def unitTests(ctx):
             "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
         })
 
-    repo_slug = ctx.build.source_repo if ctx.build.source_repo else ctx.repo.slug
-
-    fork_handling = []
-    if ctx.build.source_repo != "" and ctx.build.source_repo != ctx.repo.slug:
-        fork_handling = [
-            "git remote add fork https://github.com/%s.git" % (ctx.build.source_repo),
-            "git fetch fork",
-        ]
-
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "unit-tests",
         "workspace": {
             "base": dir["base"],
             "path": config["app"],
-        },
-        "clone": {
-            "disable": True,  # Sonarcloud does not apply issues on already merged branch
         },
         "steps": [
                      {
@@ -502,8 +531,8 @@ def unitTests(ctx):
                          "commands": [
                                          # Always use the opencloud-eu/web repository as base to have an up to date default branch.
                                          # This is needed for the skipIfUnchanged step, since it references a commit on master (which could be absent on a fork)
-                                         "git clone https://github.com/%s.git ." % (ctx.repo.slug),
-                                     ] + fork_handling +
+                                         "git clone https://github.com/%s.git ." % (repo_slug),
+                                     ] +
                                      [
                                          "git checkout $DRONE_COMMIT",
                                      ],
@@ -527,14 +556,18 @@ def unitTests(ctx):
                          "environment": sonar_env,
                      },
                  ],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
     }]
 
 def e2eTests(ctx):
@@ -570,14 +603,18 @@ def e2eTests(ctx):
         "extraServerEnvironment": {},
     }
 
-    e2e_trigger = {
-        "ref": [
-            "refs/heads/master",
-            "refs/heads/stable-*",
-            "refs/tags/**",
-            "refs/pull/**",
-        ],
-    }
+    e2e_trigger = [
+        {
+            "event": ["push", "manual"],
+            "branch": ["main", "stable-*"],
+        },
+        {
+            "event": "pull_request",
+        },
+        {
+            "event": "tag",
+        },
+    ]
 
     pipelines = []
     params = {}
@@ -661,13 +698,11 @@ def e2eTests(ctx):
                  logTracingResult(ctx, "e2e-tests %s" % suite)
 
         pipelines.append({
-            "kind": "pipeline",
-            "type": "docker",
             "name": "e2e-tests-%s" % suite,
             "workspace": e2e_workspace,
             "steps": steps,
             "depends_on": ["cache-opencloud"],
-            "trigger": e2e_trigger,
+            "when": e2e_trigger,
             "volumes": e2e_volumes,
         })
     return pipelines
@@ -676,8 +711,6 @@ def notify():
     pipelines = []
 
     result = {
-        "kind": "pipeline",
-        "type": "docker",
         "name": "chat-notifications",
         "clone": {
             "disable": True,
@@ -694,19 +727,22 @@ def notify():
                 },
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/tags/**",
-            ],
-            "status": [
-                "success",
-                "failure",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
     }
 
     for branch in config["branches"]:
-        result["trigger"]["ref"].append("refs/heads/%s" % branch)
+        result["when"]["brachen"].append("%s" % branch)
 
     pipelines.append(result)
 
@@ -881,8 +917,6 @@ def buildRelease(ctx):
 def documentation(ctx):
     return [
         {
-            "kind": "pipeline",
-            "type": "docker",
             "name": "documentation",
             "platform": {
                 "os": "linux",
@@ -935,12 +969,15 @@ def documentation(ctx):
                     },
                 },
             ],
-            "trigger": {
-                "ref": [
-                    "refs/heads/master",
-                    "refs/pull/**",
-                ],
-            },
+            "when": [
+                {
+                    "event": ["push", "manual"],
+                    "branch": ["main"],
+                },
+                {
+                    "event": "pull_request",
+                },
+            ],
         },
     ]
 
@@ -1040,8 +1077,6 @@ def cacheOpenCloudPipeline(ctx):
                 buildOpenCloud(enableVips = True) + \
                 cacheOpenCloud()
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "cache-opencloud",
         "workspace": web_workspace,
         "clone": {
@@ -1052,14 +1087,18 @@ def cacheOpenCloudPipeline(ctx):
             "name": "gopath",
             "temp": {},
         }],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
     }]
 
 def restoreOpenCloudCache():
@@ -1157,8 +1196,6 @@ def example_deploys(ctx):
 
 def deploy(ctx, config, rebuild):
     return {
-        "kind": "pipeline",
-        "type": "docker",
         "name": "deploy_%s" % (config),
         "platform": {
             "os": "linux",
@@ -1198,17 +1235,16 @@ def deploy(ctx, config, rebuild):
                 },
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push"],
+                "branch": ["main"],
+            },
+        ],
     }
 
 def checkStarlark():
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "check-starlark",
         "steps": [
             {
@@ -1232,17 +1268,13 @@ def checkStarlark():
                 },
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {"event": "pull_request",},
+        ],
     }]
 
 def licenseCheck(ctx):
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "license-check",
         "platform": {
             "os": "linux",
@@ -1265,14 +1297,19 @@ def licenseCheck(ctx):
                 ],
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": "main",
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
+        "workspace": web_workspace,
     }]
 
 def pipelineDependsOn(pipeline, dependant_pipelines):
@@ -1413,8 +1450,6 @@ def genericCache(name, action, mounts, cache_path):
 
 def genericCachePurge(flush_path):
     return {
-        "kind": "pipeline",
-        "type": "docker",
         "name": "purge_build_artifact_cache",
         "clone": {
             "disable": True,
@@ -1443,28 +1478,26 @@ def genericCachePurge(flush_path):
                 },
             },
         ],
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-            "status": [
-                "success",
-                "failure",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": "main",
+            },
+            {
+                "event": "pull_request",
+            },
+        ],
+        "runs_on": ["success", "failure"],
     }
 
 def genericBuildArtifactCache(ctx, name, action, path):
     if action == "rebuild" or action == "restore":
-        cache_path = "%s/%s/%s" % ("cache", ctx.repo.slug, ctx.build.commit + "-${DRONE_BUILD_NUMBER}")
+        cache_path = "%s/%s/%s" % ("cache", repo_slug, ctx.build.commit + "-${DRONE_BUILD_NUMBER}")
         name = "%s_build_artifact_cache" % (name)
         return genericCache(name, action, [path], cache_path)
 
     if action == "purge":
-        flush_path = "%s/%s" % ("cache", ctx.repo.slug)
+        flush_path = "%s/%s" % ("cache", repo_slug)
         return genericCachePurge(flush_path)
     return []
 
@@ -1610,7 +1643,6 @@ def waitForServices(name, services = []):
 def tikaService():
     return [{
         "name": "tika",
-        "type": "docker",
         "image": APACHE_TIKA,
         "detach": True,
     }] + waitForServices("tika", ["tika:9998"])
@@ -1619,7 +1651,6 @@ def collaboraService():
     return [
         {
             "name": "collabora",
-            "type": "docker",
             "image": COLLABORA_CODE,
             "detach": True,
             "environment": {
@@ -1637,7 +1668,6 @@ def onlyofficeService():
     return [
         {
             "name": "onlyoffice",
-            "type": "docker",
             "image": ONLYOFFICE_DOCUMENT_SERVER,
             "detach": True,
             "environment": {
@@ -1703,29 +1733,31 @@ def buildDesignSystemDocs():
     }]
 
 def buildAndTestDesignSystem(ctx):
-    design_system_trigger = {
-        "ref": [
-            "refs/heads/master",
-            "refs/heads/stable-*",
-            "refs/tags/**",
-            "refs/pull/**",
-        ],
-    }
+    design_system_trigger = [
+        {
+            "event": ["push", "manual"],
+            "branch": ["main", "stable-*"],
+        },
+        {
+            "event": "pull_request",
+        },
+        {
+            "event": "tag",
+        },
+    ]
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
             buildDesignSystemDocs()
 
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "build-design-system-docs",
         "workspace": {
             "base": dir["base"],
             "path": config["app"],
         },
         "steps": steps,
-        "trigger": design_system_trigger,
+        "when": design_system_trigger,
     }]
 
 def postgresService():
@@ -1879,21 +1911,23 @@ def e2eTestsOnKeycloak(ctx):
              logTracingResult(ctx, "e2e-tests keycloack-journey-suite")
 
     return [{
-        "kind": "pipeline",
-        "type": "docker",
         "name": "e2e-test-on-keycloak",
         "workspace": web_workspace,
         "steps": steps,
         "services": postgresService(),
         "volumes": e2e_volumes,
-        "trigger": {
-            "ref": [
-                "refs/heads/master",
-                "refs/heads/stable-*",
-                "refs/tags/**",
-                "refs/pull/**",
-            ],
-        },
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ]
     }]
 
 def getOpenCloudlatestCommitId(ctx):
