@@ -10,7 +10,7 @@
       <div class="file_info__body oc-text-overflow">
         <h3 data-testid="files-info-name" class="oc-font-semibold">
           <resource-name
-            :name="resource.name"
+            :name="resourceName"
             :extension="resource.extension"
             :type="resource.type"
             :full-path="resource.webDavPath"
@@ -25,8 +25,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { computed, defineComponent, inject, unref } from 'vue'
+import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useResourcesStore } from '../../../composables'
 import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 import ResourceName from '../../FilesList/ResourceName.vue'
@@ -44,10 +44,18 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
 
     const resource = inject<Resource>('resource')
+    const space = inject<SpaceResource>('space')
     const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
+
+    const resourceName = computed(() => {
+      return isPersonalSpaceResource(unref(space)) && unref(resource).path === '/'
+        ? unref(space).name
+        : unref(resource).name
+    })
 
     return {
       resource,
+      resourceName,
       areFileExtensionsShown
     }
   }
