@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: table header overflows content [[#384](https://github.com/opencloud-eu/web/pull/384)]
 - fix(admin-settings): outline on space member filter input [[#383](https://github.com/opencloud-eu/web/pull/383)]
 - fix(pkg): pixelated previews after searching [[#379](https://github.com/opencloud-eu/web/pull/379)]
 - fix(design-system): jumpyness when focusing password input [[#377](https://github.com/opencloud-eu/web/pull/377)]
