@@ -301,7 +301,7 @@ importers:
         version: 0.23.0(rollup@4.36.0)(vite@6.2.2(@types/node@22.13.2)(sass@1.86.0)(yaml@2.7.0))
       vitepress:
         specifier: ^1.6.3
-        version: 1.6.3(@algolia/client-search@5.20.2)(@types/node@22.13.2)(axios@1.8.3)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(postcss@8.5.3)(sass@1.86.0)(search-insights@2.17.3)(typescript@5.8.2)
+        version: 1.6.3(@algolia/client-search@5.20.2)(@types/node@22.13.2)(axios@1.8.4)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(postcss@8.5.3)(sass@1.86.0)(search-insights@2.17.3)(typescript@5.8.2)
       yaml:
         specifier: ^2.3.4
         version: 2.7.0
@@ -412,8 +412,8 @@ importers:
         specifier: workspace:^
         version: link:../web-pkg
       axios:
-        specifier: 1.8.3
-        version: 1.8.3
+        specifier: 1.8.4
+        version: 1.8.4
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -458,8 +458,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.8.3
-        version: 1.8.3
+        specifier: 1.8.4
+        version: 1.8.4
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -563,8 +563,8 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0(vue@3.5.13(typescript@5.8.2))
       axios:
-        specifier: 1.8.3
-        version: 1.8.3
+        specifier: 1.8.4
+        version: 1.8.4
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -621,8 +621,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.8.3
-        version: 1.8.3
+        specifier: 1.8.4
+        version: 1.8.4
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -765,7 +765,7 @@ importers:
         version: 2.0.1
       axios:
         specifier: ^1.7.7
-        version: 1.8.3
+        version: 1.8.4
       fast-xml-parser:
         specifier: ^4.5.0
         version: 4.5.3
@@ -854,7 +854,7 @@ importers:
         version: 13.0.0(vue@3.5.13(typescript@5.8.2))
       axios:
         specifier: ^1.7.7
-        version: 1.8.3
+        version: 1.8.4
       cropperjs:
         specifier: ^1.6.2
         version: 1.6.2
@@ -996,8 +996,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0(vue@3.5.13(typescript@5.8.2))
       axios:
-        specifier: 1.8.3
-        version: 1.8.3
+        specifier: 1.8.4
+        version: 1.8.4
       deepmerge:
         specifier: 4.3.1
         version: 4.3.1
@@ -1100,7 +1100,7 @@ importers:
         version: 2.4.6
       axios:
         specifier: ^1.7.9
-        version: 1.8.3
+        version: 1.8.4
       pinia:
         specifier: ^3.0.0
         version: 3.0.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2))
@@ -3381,8 +3381,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axios@1.8.3:
-    resolution: {integrity: sha512-iP4DebzoNlP/YN2dpwCgb8zoCmhtkajzS48JvwmkSkXvPI3DHc7m+XYL5tGnSlJtR6nImXZmdCuN5aP8dh1d8A==}
+  axios@1.8.4:
+    resolution: {integrity: sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==}
 
   babel-plugin-polyfill-corejs2@0.4.12:
     resolution: {integrity: sha512-CPWT6BwvhrTO2d8QVorhTCQw9Y43zOu7G9HigcfxvepOU6b8o3tcWad6oVgZIsZCTt42FFv97aA7ZJsbM4+8og==}
@@ -9135,13 +9135,13 @@ snapshots:
       '@unhead/vue': 1.11.18(vue@3.5.13(typescript@5.8.2))
       vue: 3.5.13(typescript@5.8.2)
 
-  '@vueuse/integrations@12.5.0(axios@1.8.3)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.2)':
+  '@vueuse/integrations@12.5.0(axios@1.8.4)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.2)':
     dependencies:
       '@vueuse/core': 12.5.0(typescript@5.8.2)
       '@vueuse/shared': 12.5.0(typescript@5.8.2)
       vue: 3.5.13(typescript@5.8.2)
     optionalDependencies:
-      axios: 1.8.3
+      axios: 1.8.4
       change-case: 5.4.4
       focus-trap: 7.6.4
       fuse.js: 7.1.0
@@ -9317,7 +9317,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.8.3:
+  axios@1.8.4:
     dependencies:
       follow-redirects: 1.15.9
       form-data: 4.0.2
@@ -12495,7 +12495,7 @@ snapshots:
       sass: 1.86.0
       yaml: 2.7.0
 
-  vitepress@1.6.3(@algolia/client-search@5.20.2)(@types/node@22.13.2)(axios@1.8.3)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(postcss@8.5.3)(sass@1.86.0)(search-insights@2.17.3)(typescript@5.8.2):
+  vitepress@1.6.3(@algolia/client-search@5.20.2)(@types/node@22.13.2)(axios@1.8.4)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(postcss@8.5.3)(sass@1.86.0)(search-insights@2.17.3)(typescript@5.8.2):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.20.2)(search-insights@2.17.3)
@@ -12508,7 +12508,7 @@ snapshots:
       '@vue/devtools-api': 7.7.2
       '@vue/shared': 3.5.13
       '@vueuse/core': 12.8.2(typescript@5.8.2)
-      '@vueuse/integrations': 12.5.0(axios@1.8.3)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.2)
+      '@vueuse/integrations': 12.5.0(axios@1.8.4)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.2)
       focus-trap: 7.6.4
       mark.js: 8.11.1
       minisearch: 7.1.1
