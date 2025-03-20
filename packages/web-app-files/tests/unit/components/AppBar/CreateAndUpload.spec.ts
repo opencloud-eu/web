@@ -10,12 +10,13 @@ import {
   useClipboardStore,
   useFileActionsPaste,
   useExtensionRegistry,
-  OcUppyFile
+  OcUppyFile,
+  ClipboardActions
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { OcButton } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -108,7 +109,7 @@ describe('CreateAndUpload component', () => {
       const clipboardStore = useClipboardStore()
       expect(clipboardStore.clearClipboard).toHaveBeenCalled()
     })
-    it('should disable the "paste files"-action when clipboardResources are from same folder', () => {
+    it('should disable the "paste files"-action when clipboardResources are from same folder for cut action', () => {
       const { wrapper } = getWrapper({
         clipboardResources: [mock<Resource>({ parentFolderId: 'current-folder' })],
         currentFolder: mock<Resource>({
@@ -116,9 +117,20 @@ describe('CreateAndUpload component', () => {
           canUpload: vi.fn().mockReturnValue(true)
         })
       })
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.pasteFilesBtn).vm.disabled
-      ).toStrictEqual(true)
+      const pasteBtn = wrapper.findComponent<typeof OcButton>(elSelector.pasteFilesBtn)
+      expect(pasteBtn.props('disabled')).toStrictEqual(true)
+    })
+    it('should not disable the "paste files"-action when clipboardResources are from same folder for copy action', () => {
+      const { wrapper } = getWrapper({
+        clipboardResources: [mock<Resource>({ parentFolderId: 'current-folder' })],
+        clipboardAction: ClipboardActions.Copy,
+        currentFolder: mock<Resource>({
+          id: 'current-folder',
+          canUpload: vi.fn().mockReturnValue(true)
+        })
+      })
+      const pasteBtn = wrapper.findComponent<typeof OcButton>(elSelector.pasteFilesBtn)
+      expect(pasteBtn.props('disabled')).toStrictEqual(false)
     })
 
     it('should not disable the "paste files"-action when at least one clipboardResources is not from same folder', () => {
@@ -148,10 +160,10 @@ describe('CreateAndUpload component', () => {
       const spaces = [
         mock<SpaceResource>({ id: file.meta.spaceId, isOwner: () => driveType === 'personal' })
       ]
-      const { wrapper, mocks } = getWrapper({ spaces })
+      const { mocks } = getWrapper({ spaces })
       const graphMock = mocks.$clientService.graphAuthenticated
       graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
-      await wrapper.vm.onUploadComplete({ successful: [file], failed: [] })
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file], failed: [] })
       const spacesStore = useSpacesStore()
       expect(spacesStore.updateSpaceField).toHaveBeenCalledTimes(updated)
     })
@@ -159,13 +171,13 @@ describe('CreateAndUpload component', () => {
       const eventSpy = vi.spyOn(eventBus, 'publish')
       const itemId = 'itemId'
       const space = mock<SpaceResource>({ id: '1' })
-      const { wrapper, mocks } = getWrapper({ itemId, space })
+      const { mocks } = getWrapper({ itemId, space })
       const file = mock<OcUppyFile>({
         meta: { driveType: 'project', spaceId: space.id, currentFolderId: itemId }
       })
       const graphMock = mocks.$clientService.graphAuthenticated
       graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
-      await wrapper.vm.onUploadComplete({ successful: [file], failed: [] })
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file], failed: [] })
       expect(eventSpy).toHaveBeenCalled()
     })
   })
@@ -190,13 +202,13 @@ function getWrapper({
   space = mock<SpaceResource>(),
   spaces = [],
   itemId = undefined,
-  newFileAction = false,
   areFileExtensionsShown = false,
   createActions = [
     mock<FileAction>({ label: () => 'Plain text file', ext: 'txt' }),
     mock<FileAction>({ label: () => 'Mark-down file', ext: 'md' }),
     mock<FileAction>({ label: () => 'Draw.io document', ext: 'drawio' })
-  ]
+  ],
+  clipboardAction = ClipboardActions.Cut
 }: {
   clipboardResources?: Resource[]
   files?: Resource[]
@@ -205,9 +217,9 @@ function getWrapper({
   space?: SpaceResource
   spaces?: SpaceResource[]
   itemId?: string
-  newFileAction?: boolean
   areFileExtensionsShown?: boolean
   createActions?: FileAction[]
+  clipboardAction?: ClipboardActions
 } = {}) {
   const capabilities = {
     spaces: { enabled: true },
@@ -218,7 +230,7 @@ function getWrapper({
     piniaOptions: {
       spacesState: { spaces },
       capabilityState: { capabilities },
-      clipboardState: { resources: clipboardResources },
+      clipboardState: { resources: clipboardResources, action: clipboardAction },
       resourcesStore: { areFileExtensionsShown, currentFolder, resources: files }
     }
   })
@@ -240,15 +252,25 @@ function getWrapper({
     })
   )
 
+  const defaultMocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ name: currentRouteName })
+  })
+
+  const onUploadCompleteCallback = ref()
+  defaultMocks.$uppyService.subscribe.mockImplementation((event, callback) => {
+    onUploadCompleteCallback.value = callback
+    return null
+  })
+
   const mocks = {
-    ...defaultComponentMocks({ currentRoute: mock<RouteLocation>({ name: currentRouteName }) }),
-    pasteActionHandler
+    ...defaultMocks,
+    pasteActionHandler,
+    onUploadCompleteCallback
   }
 
   return {
     mocks,
     wrapper: shallowMount(CreateAndUpload, {
-      data: () => ({ newFileAction }),
       props: { space: space, itemId },
       global: {
         stubs: { OcButton: false },

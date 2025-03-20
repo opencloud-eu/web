@@ -69,6 +69,8 @@
               :width="32"
               :userid="onPremisesSamAccountName"
               :user-name="user.displayName"
+              color="var(--oc-role-on-chrome)"
+              background-color="var(--oc-role-chrome)"
             />
             <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />

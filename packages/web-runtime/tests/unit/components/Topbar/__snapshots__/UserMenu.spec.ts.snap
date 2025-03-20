@@ -8,7 +8,7 @@ exports[`User Menu component > when no quota and email is set > the user menu do
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <!--v-if--></span>
       </li>
       <li data-v-08f1b1e7="">
@@ -35,7 +35,7 @@ exports[`User Menu component > when no quota and no email is set > the user menu
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper oc-py-xs"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper oc-py-xs"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span>
         <!--v-if-->
         <!--v-if--></span>
       </li>
@@ -63,7 +63,7 @@ exports[`User Menu component > when quota and no email is set > renders a naviga
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper oc-py-xs"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper oc-py-xs"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span>
         <!--v-if-->
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
@@ -97,7 +97,7 @@ exports[`User Menu component > when quota is above 80% and below 90% > renders a
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
           <div>
@@ -130,7 +130,7 @@ exports[`User Menu component > when quota is above 90% > renders a danger quota 
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
           <div>
@@ -163,7 +163,7 @@ exports[`User Menu component > when quota is below 80% > renders a primary quota
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
           <div>
@@ -196,7 +196,7 @@ exports[`User Menu component > when quota is not defined > renders no percentag 
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
           <div>
@@ -229,7 +229,7 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
   <oc-drop-stub data-v-08f1b1e7="" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="oc-overflow-hidden">
     <oc-list-stub data-v-08f1b1e7="" class="user-menu-list">
       <li data-v-08f1b1e7="" class="profile-info-wrapper oc-pl-s">
-        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
+        <avatar-image-stub data-v-08f1b1e7="" width="32" userid="einstein" user-name="Albert Einstein" color="var(--oc-role-on-chrome)" background-color="var(--oc-role-chrome)"></avatar-image-stub> <span data-v-08f1b1e7="" class="profile-info-wrapper"><span data-v-08f1b1e7="" class="oc-display-block">Albert Einstein</span> <span data-v-08f1b1e7="" class="oc-text-small">test@test.de</span>
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small oc-mt-xs">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="oc-mr-xs"></oc-icon-stub>
           <div>

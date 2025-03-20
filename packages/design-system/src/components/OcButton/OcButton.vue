@@ -374,7 +374,7 @@ const onClick = (event: MouseEvent) => {
     filter: brightness(85%);
   }
 
-  &-outline:hover:not(.no-hover) {
+  &-outline:hover:not(.no-hover, [disabled]) {
     background-color: var(--oc-role-surface-container);
     filter: none !important;
   }
