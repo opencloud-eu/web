@@ -182,6 +182,7 @@ watch(password, (value) => {
 
       &:focus {
         outline: none !important;
+        border: none !important;
       }
     }
 
