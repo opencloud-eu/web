@@ -4,7 +4,12 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @aduffeck, @individual-it, @kulmann
+@AlexAndBear, @JammingBen, @ScharfViktor, @aduffeck, @individual-it, @kulmann
+
+### ✅ Tests
+
+- delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
+- Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
 
 ### 🐛 Bug Fixes
 
