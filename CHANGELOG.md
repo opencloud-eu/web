@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): outline on space member filter input [[#383](https://github.com/opencloud-eu/web/pull/383)]
 - fix(pkg): pixelated previews after searching [[#379](https://github.com/opencloud-eu/web/pull/379)]
 - fix(design-system): jumpyness when focusing password input [[#377](https://github.com/opencloud-eu/web/pull/377)]
 - fix(files): outline on space member filter input [[#368](https://github.com/opencloud-eu/web/pull/368)]
