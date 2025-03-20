@@ -1,52 +1,46 @@
 <template>
-  <div id="oc-file-versions-sidebar" class="-oc-mt-s">
-    <ul v-if="versions.length" class="oc-m-rm oc-position-relative">
-      <li class="spacer oc-pb-l" aria-hidden="true"></li>
-      <li
-        v-for="(item, index) in versions"
-        :key="index"
-        class="version-item oc-pb-m oc-position-relative"
-      >
-        <div class="version-details">
-          <span
-            v-oc-tooltip="formatVersionDate(item)"
-            class="version-date oc-font-semibold"
-            data-testid="file-versions-file-last-modified-date"
-            >{{ formatVersionDateRelative(item) }}</span
+  <div id="oc-file-versions-sidebar">
+    <div v-if="versions.length" class="oc-ml-s">
+      <oc-list class="oc-timeline">
+        <li v-for="(item, index) in versions" :key="index" class="version-item">
+          <div class="version-details">
+            <span
+              v-oc-tooltip="formatVersionDate(item)"
+              class="version-date oc-font-semibold"
+              data-testid="file-versions-file-last-modified-date"
+              >{{ formatVersionDateRelative(item) }}</span
+            >
+            -
+            <span class="version-filesize" data-testid="file-versions-file-size">{{
+              formatVersionFileSize(item)
+            }}</span>
+          </div>
+          <oc-button
+            v-if="isRevertible"
+            data-testid="file-versions-revert-button"
+            appearance="raw"
+            justify-content="left"
+            :aria-label="$gettext('Restore')"
+            class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m"
+            @click="revertToVersion(item)"
           >
-          -
-          <span class="version-filesize" data-testid="file-versions-file-size">{{
-            formatVersionFileSize(item)
-          }}</span>
-        </div>
-        <oc-list id="oc-file-versions-sidebar-actions" class="oc-pt-xs">
-          <li v-if="isRevertible">
-            <oc-button
-              data-testid="file-versions-revert-button"
-              appearance="raw"
-              :aria-label="$gettext('Restore')"
-              class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m oc-display-block"
-              @click="revertToVersion(item)"
-            >
-              <oc-icon name="history" class="oc-icon-m oc-mr-s -oc-mt-xs" fill-type="line" />
-              {{ $gettext('Restore') }}
-            </oc-button>
-          </li>
-          <li>
-            <oc-button
-              data-testid="file-versions-download-button"
-              appearance="raw"
-              :aria-label="$gettext('Download')"
-              class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m oc-display-block"
-              @click="downloadVersion(item)"
-            >
-              <oc-icon name="file-download" class="oc-icon-m oc-mr-s" fill-type="line" />
-              {{ $gettext('Download') }}
-            </oc-button>
-          </li>
-        </oc-list>
-      </li>
-    </ul>
+            <oc-icon name="history" class="oc-icon-m oc-mr-s -oc-mt-xs" fill-type="line" />
+            {{ $gettext('Restore') }}
+          </oc-button>
+          <oc-button
+            data-testid="file-versions-download-button"
+            justify-content="left"
+            appearance="raw"
+            :aria-label="$gettext('Download')"
+            class="version-action-item oc-width-1-1 oc-rounded c-button-gap-m oc-py-s oc-px-m"
+            @click="downloadVersion(item)"
+          >
+            <oc-icon name="file-download" class="oc-icon-m oc-mr-s" fill-type="line" />
+            {{ $gettext('Download') }}
+          </oc-button>
+        </li>
+      </oc-list>
+    </div>
     <div v-else>
       <p v-translate data-testid="file-versions-no-versions">No versions available for this file</p>
     </div>
@@ -141,46 +135,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-#oc-file-versions-sidebar {
-  > ul {
-    list-style: none;
-
-    .spacer {
-      border-left: 0.5px solid var(--oc-role-outline-variant);
-      margin-left: calc(-1 * var(--oc-space-large)) !important;
-    }
-
-    > li.version-item {
-      border-left: 0.5px solid var(--oc-role-outline-variant);
-      margin-left: calc(-1 * var(--oc-space-large)) !important;
-      padding-left: var(--oc-space-medium);
-      padding-bottom: var(--oc-space-medium);
-      margin-top: calc(-1 * var(--oc-space-small));
-
-      &::before {
-        content: '';
-        display: block;
-        width: 11px;
-        height: 11px;
-        position: absolute;
-        left: -6px;
-        top: 4px;
-        background-color: var(--oc-role-outline-variant);
-        border-radius: 50%;
-      }
-
-      button.version-action-item {
-        .oc-icon {
-          vertical-align: middle;
-        }
-      }
-
-      &:last-child {
-        border-left: 1px solid transparent;
-      }
-    }
-  }
-}
-</style>

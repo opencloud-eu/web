@@ -46,4 +46,43 @@ ul.oc-list {
     }
   }
 }
+
+ul.oc-list.oc-timeline {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background-color: var(--oc-role-outline-variant);
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 10px 20px 10px 30px;
+    width: 100%;
+    box-sizing: border-box;
+
+    &::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background-color: var(--oc-role-outline-variant);
+      border-radius: 50%;
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+  }
+}
 </style>

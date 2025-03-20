@@ -93,7 +93,7 @@ function getWrapper({
       global: {
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins({ piniaOptions: { authState: { userContextReady: true } } })]
       }
     })
   }
