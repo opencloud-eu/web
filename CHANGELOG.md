@@ -6,14 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @aduffeck, @individual-it, @kulmann
 
-### 📈 Enhancement
-
-- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
-- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
-- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
-
 ### 🐛 Bug Fixes
 
+- fix: select all checkbox in spaces tiles view [[#363](https://github.com/opencloud-eu/web/pull/363)]
 - fix: table header overflows content [[#384](https://github.com/opencloud-eu/web/pull/384)]
 - fix(admin-settings): outline on space member filter input [[#383](https://github.com/opencloud-eu/web/pull/383)]
 - fix(pkg): pixelated previews after searching [[#379](https://github.com/opencloud-eu/web/pull/379)]
@@ -23,6 +18,12 @@
 - fix: prevent app tokens from showing in public link settings [[#365](https://github.com/opencloud-eu/web/pull/365)]
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
+
+### 📈 Enhancement
+
+- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
+- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### ✅ Tests
 
