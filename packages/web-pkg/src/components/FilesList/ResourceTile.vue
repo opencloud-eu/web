@@ -21,7 +21,10 @@
         @click="$emit('click')"
       >
         <div class="oc-tile-card-selection">
-          <slot name="selection" :item="resource" />
+          <div v-if="isLoading" class="oc-tile-card-loading-spinner oc-m-s">
+            <oc-spinner :aria-label="$gettext('File is being processed')" />
+          </div>
+          <slot v-else name="selection" :item="resource" />
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
@@ -36,11 +39,7 @@
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
-            <oc-image
-              v-if="shouldDisplayThumbnails(resource)"
-              class="tile-preview"
-              :src="resource.thumbnail"
-            />
+            <oc-image v-if="resource.thumbnail" class="tile-preview" :src="resource.thumbnail" />
             <resource-icon
               v-else
               :resource="resource"
@@ -83,8 +82,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed, customRef, ref, unref } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
@@ -93,137 +92,107 @@ import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
-import { customRef, ref, unref } from 'vue'
+import { SizeType } from '@opencloud-eu/design-system/helpers'
 
-export default defineComponent({
-  name: 'ResourceTile',
-  components: { ResourceListItem, ResourceIcon, ResourceLink },
-  props: {
-    /**
-     * Resource to be displayed within the tile
-     */
-    resource: {
-      type: Object as PropType<Resource>,
-      default: () => ({})
+const {
+  resource,
+  resourceRoute,
+  isResourceSelected = false,
+  isResourceClickable = true,
+  isResourceDisabled = false,
+  isExtensionDisplayed = true,
+  resourceIconSize = 'xlarge',
+  lazy = false,
+  isLoading = false
+} = defineProps<{
+  resource?: Resource
+  resourceRoute?: RouteLocationRaw
+  isResourceSelected?: boolean
+  isResourceClickable?: boolean
+  isResourceDisabled?: boolean
+  isExtensionDisplayed?: boolean
+  resourceIconSize?: SizeType
+  lazy?: boolean
+  isLoading?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'click'): void
+  (e: 'contextmenu', event: Event): void
+  (e: 'itemVisible'): void
+}>()
+
+defineSlots<{
+  actions?: (props: { item: Resource }) => unknown
+  contextMenu?: (props: { item: Resource }) => unknown
+  imageField?: (props: { item: Resource }) => unknown
+  indicators?: (props: { item: Resource }) => unknown
+  selection?: (props: { item: Resource }) => unknown
+}>()
+
+const { $gettext } = useGettext()
+
+const observerTarget = customRef((track, trigger) => {
+  let $el: HTMLElement
+  return {
+    get() {
+      track()
+      return $el
     },
-    resourceRoute: {
-      type: Object as PropType<RouteLocationRaw>,
-      required: false,
-      default: null
-    },
-    isResourceSelected: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    isResourceClickable: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    isResourceDisabled: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    isExtensionDisplayed: {
-      type: Boolean,
-      default: true
-    },
-    resourceIconSize: {
-      type: String,
-      default: 'xlarge',
-      validator: (value: string) => {
-        return ['large', 'xlarge', 'xxlarge', 'xxxlarge'].includes(value)
-      }
-    },
-    lazy: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['click', 'contextmenu', 'itemVisible'],
-  setup(props, { emit }) {
-    const { $gettext } = useGettext()
-
-    const observerTarget = customRef((track, trigger) => {
-      let $el: HTMLElement
-      return {
-        get() {
-          track()
-          return $el
-        },
-        set(value) {
-          $el = value
-          trigger()
-        }
-      }
-    })
-
-    const showStatusIcon = computed(() => {
-      return props.resource.locked || props.resource.processing
-    })
-
-    const statusIconAttrs = computed(() => {
-      if (props.resource.locked) {
-        return {
-          name: 'lock',
-          fillType: 'fill'
-        }
-      }
-
-      if (props.resource.processing) {
-        return {
-          name: 'loop-right',
-          fillType: 'line'
-        }
-      }
-
-      return {}
-    })
-
-    const tooltipLabelIcon = computed(() => {
-      if (props.resource.locked) {
-        return $gettext('This item is locked')
-      }
-      return null
-    })
-    const resourceDescription = computed(() => {
-      if (isSpaceResource(props.resource)) {
-        return props.resource.description
-      }
-      return ''
-    })
-
-    const shouldDisplayThumbnails = (resource: Resource) => {
-      return resource.thumbnail
-    }
-
-    const { isVisible } = props.lazy
-      ? useIsVisible({
-          target: observerTarget,
-          onVisibleCallback: () => emit('itemVisible')
-        })
-      : { isVisible: ref(true) }
-
-    const isHidden = computed(() => !unref(isVisible))
-
-    if (!props.lazy) {
-      emit('itemVisible')
-    }
-
-    return {
-      statusIconAttrs,
-      showStatusIcon,
-      tooltipLabelIcon,
-      resourceDescription,
-      shouldDisplayThumbnails,
-      isProjectSpaceResource,
-      isHidden,
-      observerTarget
+    set(value) {
+      $el = value
+      trigger()
     }
   }
 })
+
+const showStatusIcon = computed(() => {
+  return resource.locked || resource.processing
+})
+
+const statusIconAttrs = computed(() => {
+  if (resource.locked) {
+    return {
+      name: 'lock',
+      fillType: 'fill'
+    }
+  }
+
+  if (resource.processing) {
+    return {
+      name: 'loop-right',
+      fillType: 'line'
+    }
+  }
+
+  return {}
+})
+
+const tooltipLabelIcon = computed(() => {
+  if (resource.locked) {
+    return $gettext('This item is locked')
+  }
+  return null
+})
+const resourceDescription = computed(() => {
+  if (isSpaceResource(resource)) {
+    return resource.description
+  }
+  return ''
+})
+
+const { isVisible } = lazy
+  ? useIsVisible({
+      target: observerTarget,
+      onVisibleCallback: () => emit('itemVisible')
+    })
+  : { isVisible: ref(true) }
+
+const isHidden = computed(() => !unref(isVisible))
+
+if (!lazy) {
+  emit('itemVisible')
+}
 </script>
 
 <style lang="scss">
@@ -244,6 +213,10 @@ export default defineComponent({
     span.oc-status-indicators-indicator {
       pointer-events: all;
     }
+  }
+
+  &-loading-spinner {
+    z-index: 99;
   }
 
   &.state-trashed {

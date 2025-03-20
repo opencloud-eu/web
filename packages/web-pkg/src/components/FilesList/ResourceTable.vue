@@ -55,6 +55,7 @@
         v-if="isResourceInDeleteQueue(item.id)"
         class="resource-table-activity-indicator"
         size="medium"
+        :aria-label="$gettext('File is being processed')"
       />
 
       <oc-checkbox

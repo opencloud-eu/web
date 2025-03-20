@@ -30,6 +30,10 @@ describe('OcTile component', () => {
       expect(wrapper.find('resource-icon-stub').attributes().size).toEqual(resourceIconSize)
     }
   )
+  it('shows a loading spinner if isLoading is set to true', () => {
+    const wrapper = getWrapper({ resource: getSpaceMock(), isLoading: true })
+    expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()
+  })
 
   function getWrapper(props = {}) {
     return shallowMount(ResourceTile, {

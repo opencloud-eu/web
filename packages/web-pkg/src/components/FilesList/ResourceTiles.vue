@@ -60,6 +60,7 @@
           :resource-icon-size="resourceIconSize"
           :draggable="dragDrop"
           :lazy="lazy"
+          :is-loading="isResourceInDeleteQueue(resource.id)"
           @vue:mounted="
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
@@ -175,6 +176,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
+import { SizeType } from '@opencloud-eu/design-system/helpers'
 
 type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
 type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
@@ -347,6 +349,10 @@ const isResourceDisabled = (resource: Resource) => {
     )
   }
 
+  if (isResourceInDeleteQueue(resource.id)) {
+    return true
+  }
+
   return resource.processing === true
 }
 
@@ -445,7 +451,7 @@ const selectSorting = (field: SortField) => {
   emit('sort', { sortBy: field.name, sortDir: field.sortDir })
 }
 
-const resourceIconSize = computed(() => {
+const resourceIconSize = computed<SizeType>(() => {
   const sizeMap: Record<number, string> = {
     1: 'xlarge',
     2: 'xlarge',
@@ -455,7 +461,7 @@ const resourceIconSize = computed(() => {
     6: 'xxxlarge'
   }
   const size = unref(viewSizeCurrent)
-  return sizeMap[size] ?? 'xxlarge'
+  return (sizeMap[size] ?? 'xxlarge') as SizeType
 })
 onBeforeUpdate(() => {
   tileRefs.value = {
@@ -563,6 +569,10 @@ const areAllResourcesSelected = computed(() => {
 
   return !allResourcesDisabled && allSelected
 })
+
+const isResourceInDeleteQueue = (id: string): boolean => {
+  return resourcesStore.deleteQueue.includes(id)
+}
 
 watch(
   tileSizePixels,

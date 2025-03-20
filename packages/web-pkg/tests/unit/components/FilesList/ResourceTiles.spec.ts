@@ -245,6 +245,12 @@ describe('ResourceTiles component', () => {
       expect(Object.keys(checkbox.attributes())).toContain('disabled')
     })
   })
+  describe('delete queue', () => {
+    it('sets resources that are in the delete queue in a loading state', () => {
+      const { wrapper } = getWrapper({ props: { resources }, deleteQueue: [resources[0].id] })
+      expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()
+    })
+  })
 
   it.each([
     { viewSize: 1, expected: 'xlarge' },
@@ -267,7 +273,8 @@ describe('ResourceTiles component', () => {
     props = {},
     slots = {},
     stubs = {},
-    canBeOpenedWithSecureView = true
+    canBeOpenedWithSecureView = true,
+    deleteQueue = []
   } = {}) {
     const mocks = defaultComponentMocks()
 
@@ -286,7 +293,7 @@ describe('ResourceTiles component', () => {
           ...slots
         },
         global: {
-          plugins: [...defaultPlugins()],
+          plugins: [...defaultPlugins({ piniaOptions: { resourcesStore: { deleteQueue } } })],
           mocks: mocks,
           provide: mocks,
           stubs
