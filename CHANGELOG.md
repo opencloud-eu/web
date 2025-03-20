@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.6.1 [[#362](https://github.com/opencloud-eu/web/pull/362)]
 - fix(deps): update dependency axios to v1.8.4 [[#373](https://github.com/opencloud-eu/web/pull/373)]
 - fix(deps): update typescript-eslint monorepo to v8.27.0 [[#375](https://github.com/opencloud-eu/web/pull/375)]
 - chore(deps): update pnpm to v10.6.5 [[#369](https://github.com/opencloud-eu/web/pull/369)]
