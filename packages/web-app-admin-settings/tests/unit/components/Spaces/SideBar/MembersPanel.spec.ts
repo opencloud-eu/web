@@ -31,7 +31,8 @@ describe('MembersPanel', () => {
   it('should filter members accordingly to the entered search term', async () => {
     const userToFilterFor = spaceMock.members['3']
     const { wrapper } = getWrapper()
-    wrapper.vm.filterTerm = 'ein'
+    const input = wrapper.find('input')
+    await input.setValue('ein')
     await wrapper.vm.$nextTick()
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(1)
     expect(
@@ -41,7 +42,8 @@ describe('MembersPanel', () => {
   })
   it('should display an empty result if no matching members found', async () => {
     const { wrapper } = getWrapper()
-    wrapper.vm.filterTerm = 'no-match'
+    const input = wrapper.find('input')
+    await input.setValue('no-match')
     await wrapper.vm.$nextTick()
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(0)
     expect(wrapper.html()).toMatchSnapshot()
@@ -61,6 +63,7 @@ function getWrapper({ spaceResource = spaceMock } = {}) {
   return {
     wrapper: shallowMount(MembersPanel, {
       global: {
+        stubs: { OcTextInput: false },
         plugins: [...defaultPlugins({ piniaOptions: { sharesState: { graphRoles } } })],
         provide: { resource: spaceResource }
       }
