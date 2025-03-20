@@ -2,8 +2,7 @@ import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-
 import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vue'
 import { sortFields } from '../../../../src/helpers/ui/resourceTiles'
 import { Resource, ResourceIndicator, SpaceResource } from '@opencloud-eu/web-client'
-import { mock } from 'vitest-mock-extended'
-import { ComponentPublicInstance, computed } from 'vue'
+import { computed } from 'vue'
 import { extractDomSelector } from '@opencloud-eu/web-client'
 import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
@@ -147,14 +146,14 @@ describe('ResourceTiles component', () => {
     })
   })
 
-  it('emits update:selectedIds event on resource selection and sets the selection', () => {
+  it('emits update:selectedIds event on resource selection and sets the selection', async () => {
     const { wrapper } = getWrapper({
       props: {
         resources: spacesResources,
         selectedIds: [spacesResources[0].id]
       }
     })
-    wrapper.vm.toggleSelection(spacesResources[0])
+    await wrapper.find('#tiles-view-select-all').trigger('click')
     expect(
       wrapper.findComponent({ name: 'resource-tile' }).props('isResourceSelected')
     ).toBeTruthy()
@@ -189,19 +188,30 @@ describe('ResourceTiles component', () => {
     })
   })
   describe('drag and drop', () => {
-    it('emits the "update:selectedIds"-event on drag start', async () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.dragItem = mock<Resource>()
-      await wrapper.vm.$nextTick()
-      ;(wrapper.vm.$refs.ghostElementRef as ComponentPublicInstance<unknown>).$el = { style: {} }
-      wrapper.vm.dragStart(mock<Resource>(), {
+    it('emits the "update:selectedIds"-event on drag start', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources },
+        stubs: { ResourceTile: true }
+      })
+
+      const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      resourceTile.vm.$emit('dragstart', {
         dataTransfer: { setDragImage: vi.fn() }
-      } as unknown as DragEvent)
+      })
+
       expect(wrapper.emitted('update:selectedIds')).toBeDefined()
     })
     it('emits the "fileDropped"-event on resource drop', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.fileDropped(mock<Resource>(), { dataTransfer: {} } as DragEvent)
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources },
+        stubs: { ResourceTile: true }
+      })
+
+      const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      resourceTile.vm.$emit('drop', {
+        dataTransfer: {}
+      } as DragEvent)
+
       expect(wrapper.emitted('fileDropped')).toBeDefined()
     })
   })
