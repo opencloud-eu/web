@@ -30,6 +30,11 @@
     />
     <div v-else>
       <oc-table :data="visibleAppTokens" :fields="tableFields">
+        <template #label="{ item }">
+          <div class="oc-width-1-1 oc-text-truncate">
+            <span v-text="item.label || '-'" />
+          </div>
+        </template>
         <template #creationDate="{ item }">
           <div class="oc-width-1-1 oc-text-truncate">
             <span v-text="formatDateFromISO(item.created_date, currentLanguage)" />
@@ -151,6 +156,13 @@ const visibleAppTokens = computed(() => {
 const tableFields = computed(() => {
   return [
     {
+      name: 'label',
+      type: 'slot',
+      wrap: 'truncate',
+      width: 'expand',
+      title: $gettext('Note')
+    },
+    {
       name: 'creationDate',
       type: 'slot',
       wrap: 'truncate',
@@ -166,6 +178,7 @@ const tableFields = computed(() => {
       name: 'actions',
       type: 'slot',
       alignH: 'right',
+      width: 'shrink',
       title: $gettext('Actions')
     }
   ]
