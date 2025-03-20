@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(pkg): add missing delete queue to tiles view [[#389](https://github.com/opencloud-eu/web/pull/389)]
 - fix(files): copy pasting items into current folder [[#381](https://github.com/opencloud-eu/web/pull/381)]
 - fix: select all checkbox in spaces tiles view [[#363](https://github.com/opencloud-eu/web/pull/363)]
 - fix: table header overflows content [[#384](https://github.com/opencloud-eu/web/pull/384)]
