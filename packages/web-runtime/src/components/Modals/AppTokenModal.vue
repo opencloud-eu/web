@@ -1,7 +1,13 @@
 <template>
   <div v-if="!createdToken">
+    <oc-text-input
+      v-model="tokenLabel"
+      :label="$gettext('Note')"
+      :error-message="tokenLabelErrorMessage"
+    />
     <oc-datepicker
       :label="$gettext('Expiration date')"
+      class="oc-mt-s"
       type="date"
       :min-date="minDate"
       @date-changed="onDateChanged"
@@ -15,7 +21,7 @@
         {{ $gettext('Cancel') }}
       </oc-button>
       <oc-button
-        :disabled="confirmDisabled"
+        :disabled="isConfirmDisabled"
         class="oc-modal-body-actions-confirm oc-ml-s"
         appearance="filled"
         @click="createAppToken"
@@ -65,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { DateTime } from 'luxon'
 import { formatDateFromDateTime, Modal, useClientService } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -79,21 +85,32 @@ const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
 
+const tokenLabel = ref<string>('')
+const tokenLabelErrorMessage = ref<string>('')
+watch(tokenLabel, (newValue) => {
+  tokenLabelErrorMessage.value = newValue.length ? '' : $gettext('The note is required')
+})
+
 const expiryDate = ref<DateTime>()
-const confirmDisabled = ref(true)
-const createdToken = ref('')
-
 const minDate = computed(() => DateTime.now())
-
 const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
-  confirmDisabled.value = error || !date
-  expiryDate.value = date
+  expiryDate.value = error ? undefined : date
 }
 
+const isConfirmDisabled = computed<boolean>(() => {
+  return !unref(tokenLabel) || !unref(expiryDate)
+})
+const createdToken = ref('')
 const createAppToken = async () => {
+  if (unref(isConfirmDisabled)) {
+    return
+  }
   try {
+    const label = unref(tokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
-    const { data } = await client.post<AppToken>('/auth-app/tokens', null, { params: { expiry } })
+    const { data } = await client.post<AppToken>('/auth-app/tokens', null, {
+      params: { label, expiry }
+    })
     createdToken.value = data.token
   } catch (error) {
     console.error(error)
