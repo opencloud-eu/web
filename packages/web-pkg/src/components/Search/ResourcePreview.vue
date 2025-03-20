@@ -1,5 +1,6 @@
 <template>
   <resource-list-item
+    ref="resourceListItem"
     :resource="resource"
     :path-prefix="pathPrefix"
     :is-path-displayed="true"
@@ -12,175 +13,155 @@
   />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ImageDimension } from '../../constants'
 import { VisibilityObserver } from '../../observer'
 import { debounce } from 'lodash-es'
-import { computed, defineComponent, PropType, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import {
   useGetMatchingSpace,
   useFileActions,
   useFolderLink,
-  useConfigStore,
   useResourcesStore,
   useLoadPreview
 } from '../../composables'
 import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 import ResourceListItem from '../FilesList/ResourceListItem.vue'
 import { SearchResultValue } from './types'
-import { storeToRefs } from 'pinia'
 import { RouteLocationPathRaw } from 'vue-router'
 
 const visibilityObserver = new VisibilityObserver()
 
-export default defineComponent({
-  components: { ResourceListItem },
-  props: {
-    searchResult: {
-      type: Object as PropType<SearchResultValue>,
-      default: function () {
-        return {}
-      }
-    },
-    isClickable: {
-      type: Boolean,
-      default: true
-    },
-    term: {
-      type: String,
-      default: ''
-    }
-  },
-  setup(props) {
-    const { triggerDefaultAction } = useFileActions()
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const { getDefaultAction } = useFileActions()
-    const { loadPreview } = useLoadPreview()
+const {
+  searchResult = { data: {} },
+  isClickable = true,
+  term = ''
+} = defineProps<{
+  searchResult?: SearchResultValue
+  isClickable?: boolean
+  term?: string
+}>()
 
-    const {
-      getPathPrefix,
-      getParentFolderName,
-      getParentFolderLink,
-      getParentFolderLinkIconAdditionalAttributes,
-      getFolderLink
-    } = useFolderLink()
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
-    const resourcesStore = useResourcesStore()
+const { triggerDefaultAction } = useFileActions()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { getDefaultAction } = useFileActions()
+const { loadPreview } = useLoadPreview()
 
-    const previewData = ref<string>()
+const resourceListItem = useTemplateRef<typeof ResourceListItem>('resourceListItem')
 
-    const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
+const {
+  getPathPrefix,
+  getParentFolderName,
+  getParentFolderLink,
+  getParentFolderLinkIconAdditionalAttributes,
+  getFolderLink
+} = useFolderLink()
+const resourcesStore = useResourcesStore()
 
-    const resource = computed((): Resource => {
-      return {
-        ...(props.searchResult.data as Resource),
-        ...(unref(previewData) &&
-          ({
-            thumbnail: unref(previewData)
-          } as Resource))
-      }
-    })
+const previewData = ref<string>()
 
-    const space = computed(() => getMatchingSpace(unref(resource)))
+const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
-    const resourceDisabled = computed(() => {
-      const res = unref(resource)
-      return isSpaceResource(res) && res.disabled === true
-    })
-
-    const resourceClicked = () => {
-      triggerDefaultAction({
-        space: unref(space),
-        resources: [unref(resource)]
-      })
-    }
-
-    const additionalAttrs = computed(() => {
-      if (!props.isClickable) {
-        return {
-          isResourceClickable: false
-        }
-      }
-
-      return {
-        parentFolderLink: getParentFolderLink(unref(resource)),
-        onClick: resourceClicked
-      }
-    })
-
-    const resourceLink = computed(() => {
-      if (unref(resource).isFolder) {
-        return getFolderLink(unref(resource))
-      }
-
-      const action = getDefaultAction({ resources: [unref(resource)], space: unref(space) })
-
-      if (!action?.route) {
-        return null
-      }
-
-      const route = action.route({
-        space: unref(space),
-        resources: [unref(resource)]
-      }) as RouteLocationPathRaw
-
-      // add search term to query param
-      route.query = {
-        ...route.query,
-        contextRouteQuery: {
-          ...((route.query?.contextRouteQuery as any) || {}),
-          term: props.term
-        }
-      }
-
-      return route
-    })
-
-    return {
-      configOptions,
-      space,
-      previewData,
-      loadPreview,
-      resource,
-      resourceDisabled,
-      resourceClicked,
-      resourceLink,
-      parentFolderLink: getParentFolderLink(unref(resource)),
-      pathPrefix: getPathPrefix(unref(resource)),
-      parentFolderName: getParentFolderName(unref(resource)),
-      parentFolderLinkIconAdditionalAttributes: getParentFolderLinkIconAdditionalAttributes(
-        unref(resource)
-      ),
-      additionalAttrs,
-      areFileExtensionsShown
-    }
-  },
-  mounted() {
-    if (this.resourceDisabled) {
-      this.$el.parentElement.classList.add('disabled')
-    }
-
-    const loadPreview = async () => {
-      const preview = await this.loadPreview({
-        space: this.space,
-        resource: this.resource,
-        dimensions: ImageDimension.Thumbnail,
-        cancelRunning: true
-      })
-
-      preview && (this.previewData = preview)
-    }
-
-    const debounced = debounce(({ unobserve }) => {
-      unobserve()
-      loadPreview()
-    }, 250)
-
-    visibilityObserver.observe(this.$el, { onEnter: debounced, onExit: debounced.cancel })
-  },
-  beforeUnmount() {
-    visibilityObserver.disconnect()
+const resource = computed((): Resource => {
+  return {
+    ...(searchResult.data as Resource),
+    ...(unref(previewData) &&
+      ({
+        thumbnail: unref(previewData)
+      } as Resource))
   }
+})
+
+const space = computed(() => getMatchingSpace(unref(resource)))
+
+const resourceDisabled = computed(() => {
+  const res = unref(resource)
+  return isSpaceResource(res) && res.disabled === true
+})
+
+const resourceClicked = () => {
+  triggerDefaultAction({
+    space: unref(space),
+    resources: [unref(resource)]
+  })
+}
+
+const additionalAttrs = computed(() => {
+  if (!isClickable) {
+    return {
+      isResourceClickable: false
+    }
+  }
+
+  return {
+    parentFolderLink: getParentFolderLink(unref(resource)),
+    onClick: resourceClicked
+  }
+})
+
+const resourceLink = computed(() => {
+  if (unref(resource).isFolder) {
+    return getFolderLink(unref(resource))
+  }
+
+  const action = getDefaultAction({ resources: [unref(resource)], space: unref(space) })
+
+  if (!action?.route) {
+    return null
+  }
+
+  const route = action.route({
+    space: unref(space),
+    resources: [unref(resource)]
+  }) as RouteLocationPathRaw
+
+  // add search term to query param
+  route.query = {
+    ...route.query,
+    contextRouteQuery: {
+      ...((route.query?.contextRouteQuery as any) || {}),
+      term: term
+    }
+  }
+
+  return route
+})
+
+const pathPrefix = getPathPrefix(unref(resource))
+const parentFolderName = getParentFolderName(unref(resource))
+const parentFolderLinkIconAdditionalAttributes = getParentFolderLinkIconAdditionalAttributes(
+  unref(resource)
+)
+
+onMounted(() => {
+  if (unref(resourceDisabled)) {
+    unref(resourceListItem).parentElement.classList.add('disabled')
+  }
+
+  const loadPreviewCallback = async () => {
+    const preview = await loadPreview({
+      space: unref(space),
+      resource: unref(resource),
+      dimensions: ImageDimension.Thumbnail,
+      cancelRunning: true,
+      updateStore: false
+    })
+
+    preview && (previewData.value = preview)
+  }
+
+  const debounced = debounce(({ unobserve }) => {
+    unobserve()
+    loadPreviewCallback()
+  }, 250)
+
+  visibilityObserver.observe(unref(resourceListItem).$el, {
+    onEnter: debounced,
+    onExit: debounced.cancel
+  })
+})
+
+onBeforeUnmount(() => {
+  visibilityObserver.disconnect()
 })
 </script>

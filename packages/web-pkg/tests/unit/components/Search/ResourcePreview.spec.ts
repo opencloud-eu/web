@@ -10,6 +10,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { useFileActions } from '../../../../src/composables/actions'
 import { CapabilityStore } from '../../../../src/composables/piniaStores'
+import ResourceListItem from '../../../../src/components/FilesList/ResourceListItem.vue'
 
 vi.mock('../../../../src/composables/spaces/useGetMatchingSpace', () => ({
   useGetMatchingSpace: vi.fn()
@@ -35,7 +36,7 @@ describe('Preview component', () => {
         getDriveAliasAndItem: () => driveAliasAndItem
       })
     })
-    wrapper.vm.previewData = 'blob:image'
+    ;(wrapper.vm as any).previewData = 'blob:image'
     await wrapper.vm.$nextTick()
     expect(wrapper.html()).toMatchSnapshot()
   })
@@ -50,7 +51,8 @@ describe('Preview component', () => {
       })
     })
     expect(
-      wrapper.findComponent<any>(selectors.resourceListItemStub).attributes().isextensiondisplayed
+      wrapper.findComponent<typeof ResourceListItem>(selectors.resourceListItemStub).attributes()
+        .isextensiondisplayed
     ).toBe('false')
   })
 })
