@@ -8,13 +8,16 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): jumpyness when focusing password input [[#377](https://github.com/opencloud-eu/web/pull/377)]
 - fix(files): outline on space member filter input [[#368](https://github.com/opencloud-eu/web/pull/368)]
+- Fix: Show disabled spaces switch in wrong order [[#367](https://github.com/opencloud-eu/web/pull/367)]
 - fix: prevent app tokens from showing in public link settings [[#365](https://github.com/opencloud-eu/web/pull/365)]
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
 
 ### 📈 Enhancement
 
+- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
 - enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### 📦️ Dependencies
