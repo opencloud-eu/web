@@ -6,6 +6,7 @@
     aria-busy="true"
     aria-valuemin="0"
     role="progressbar"
+    :style="{ backgroundColor }"
   >
     <div
       v-if="!indeterminate"
@@ -27,6 +28,11 @@ export interface Props {
    * @default var(--oc-role-secondary)
    */
   color?: string
+  /**
+   * @docs The background color of the progress bar. It can be any valid CSS color or registered color role.
+   * @default var(--oc-role-surface-container)
+   */
+  backgroundColor?: string
   /**
    * @docs Determines if the progress bar is indeterminate.
    * @default false
@@ -50,6 +56,7 @@ export interface Props {
 
 const {
   color = 'var(--oc-role-secondary)',
+  backgroundColor = 'var(--oc-role-surface-container)',
   indeterminate = false,
   max,
   size = 'default',
@@ -74,7 +81,6 @@ $progress-height: 15px !default;
 $progress-height-small: 5px !default;
 
 .oc-progress {
-  background-color: var(--oc-role-surface-container);
   display: block;
   height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
