@@ -6,19 +6,20 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @aduffeck, @individual-it, @kulmann
 
-### ✅ Tests
-
-- delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
-- Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
-
 ### 🐛 Bug Fixes
 
+- fix(pkg): pixelated previews after searching [[#379](https://github.com/opencloud-eu/web/pull/379)]
 - fix(design-system): jumpyness when focusing password input [[#377](https://github.com/opencloud-eu/web/pull/377)]
 - fix(files): outline on space member filter input [[#368](https://github.com/opencloud-eu/web/pull/368)]
 - Fix: Show disabled spaces switch in wrong order [[#367](https://github.com/opencloud-eu/web/pull/367)]
 - fix: prevent app tokens from showing in public link settings [[#365](https://github.com/opencloud-eu/web/pull/365)]
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
+
+### ✅ Tests
+
+- delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
+- Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
 
 ### 📈 Enhancement
 
