@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @aduffeck, @individual-it, @kulmann
 
+### 📈 Enhancement
+
+- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
+- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
+
 ### 🐛 Bug Fixes
 
 - fix: table header overflows content [[#384](https://github.com/opencloud-eu/web/pull/384)]
@@ -22,11 +28,6 @@
 
 - delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
 - Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
-
-### 📈 Enhancement
-
-- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
-- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### 📦️ Dependencies
 
