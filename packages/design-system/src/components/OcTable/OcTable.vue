@@ -527,6 +527,7 @@ const handleSort = (field: FieldType) => {
     .oc-table-header-cell {
       position: sticky;
       z-index: 1;
+      background-color: var(--oc-role-surface);
     }
   }
 
