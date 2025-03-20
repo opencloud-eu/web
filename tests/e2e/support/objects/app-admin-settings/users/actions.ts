@@ -97,10 +97,9 @@ export const changeAccountEnabled = async (args: {
 
 export const changeQuota = async (args: {
   page: Page
-  uuid: string
   value: string
 }): Promise<void> => {
-  const { page, value, uuid } = args
+  const { page, value } = args
   await page.locator(quotaInput).pressSequentially(value)
   await page.locator(quotaValueDropDown).first().click()
 
@@ -118,24 +117,21 @@ export const changeQuota = async (args: {
 export const changeQuotaUsingBatchAction = async (args: {
   page: Page
   value: string
-  userIds: string[]
 }): Promise<void> => {
-  const { page, value, userIds } = args
+  const { page, value } = args
   await page.locator(editQuotaBtn).click()
   await page.locator(quotaInputBatchAction).pressSequentially(value, { delay: 100 })
   await page.locator(quotaInputBatchAction).press('Enter')
 
   const checkResponses = []
-  for (const id of userIds) {
-    checkResponses.push(
-      page.waitForResponse(
-        (resp) =>
-          resp.url().includes('drives') &&
-          resp.status() === 200 &&
-          resp.request().method() === 'PATCH'
-      )
+  checkResponses.push(
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes('drives') &&
+        resp.status() === 200 &&
+        resp.request().method() === 'PATCH'
     )
-  }
+  )
 
   await Promise.all([...checkResponses, page.locator(actionConfirmButton).click()])
 }

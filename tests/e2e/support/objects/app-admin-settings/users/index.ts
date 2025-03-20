@@ -35,7 +35,7 @@ export class Users {
   }): Promise<void> {
     const uuid = this.getUUID({ key })
     await po.openEditPanel({ page: this.#page, uuid, action })
-    await po.changeQuota({ uuid, value, page: this.#page })
+    await po.changeQuota({ value, page: this.#page })
   }
 
   async selectUser({ key }: { key: string }): Promise<void> {
@@ -53,7 +53,7 @@ export class Users {
     for (const user of users) {
       userIds.push(this.getUUID({ key: user }))
     }
-    await po.changeQuotaUsingBatchAction({ page: this.#page, value, userIds })
+    await po.changeQuotaUsingBatchAction({ page: this.#page, value })
   }
   getDisplayedUsers(): Promise<string[]> {
     return po.getDisplayedUsers({ page: this.#page })
