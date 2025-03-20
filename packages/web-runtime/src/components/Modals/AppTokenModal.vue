@@ -33,24 +33,26 @@
       "
     />
     <div class="oc-mt-m oc-mb-s oc-flex oc-flex-middle oc-rounded">
-      <div class="created-token-container oc-pr-m">
-        <span class="created-token" v-text="createdToken" />
-        <div class="oc-text-small">
+      <div class="created-token-container">
+        <div class="created-token oc-rounded oc-p-s">
+          {{ createdToken }}
+          <oc-button
+            v-oc-tooltip="$gettext('Copy app token to clipboard')"
+            appearance="raw"
+            class="copy-app-token-btn oc-ml-s oc-p-xs"
+            :aria-label="$gettext('Copy app token to clipboard')"
+            @click="copy(createdToken)"
+          >
+            <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
+          </oc-button>
+        </div>
+        <div class="oc-text-small oc-text-right oc-mt-s">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
         </div>
       </div>
-      <oc-button
-        v-oc-tooltip="$gettext('Copy app token to clipboard')"
-        appearance="raw"
-        class="copy-app-token-btn oc-ml-s oc-p-xs"
-        :aria-label="$gettext('Copy app token to clipboard')"
-        @click="copy(createdToken)"
-      >
-        <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
-      </oc-button>
     </div>
-    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
+    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-l">
       <oc-button
         class="oc-modal-body-actions-confirm oc-ml-s"
         appearance="filled"
@@ -102,8 +104,13 @@ const createAppToken = async () => {
 <style lang="scss" scoped>
 .created-token {
   font-weight: bold;
+  background-color: var(--oc-role-surface-container-high);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   &-container {
-    border-right: 0.5px solid var(--oc-role-outline-variant);
+    width: 100%;
   }
 }
 </style>
