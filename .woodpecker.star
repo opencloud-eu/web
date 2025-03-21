@@ -8,14 +8,14 @@ CS3ORG_WOPI_SERVER = "cs3org/wopiserver:v10.3.0"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_ALPINE = "opencloud-eu/alpine:latest"
-OC_CI_BAZEL_BUILDIFIER = "opencloud-eu/bazel-buildifier"
-OC_CI_DRONE_ANSIBLE = "opencloud-eu/drone-ansible:latest"
-OC_CI_DRONE_SKIP_PIPELINE = "opencloud-eu/drone-skip-pipeline"
-OC_CI_GOLANG = "opencloud-eu/golang:1.22"
-OC_CI_HUGO = "opencloud-eu/hugo:0.115.2"
-OC_CI_NODEJS = "opencloud-eu/nodejs:20"
-OC_CI_WAIT_FOR = "opencloud-eu/wait-for:latest"
-OC_UBUNTU = "opencloud-eu/ubuntu:20.04"
+OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
+OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
+OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
+OC_CI_GOLANG = "docker.io/golang:1.24"
+OC_CI_HUGO = "owncloudci/hugo:0.115.2"
+OC_CI_NODEJS = "owncloudci/nodejs:20"
+OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
+OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_DOCKER = "plugins/docker:20.14"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
@@ -33,16 +33,16 @@ WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "e
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 
 dir = {
-    "base": "/var/www/opencloud",
-    "web": "/var/www/opencloud/web",
+    "base": "/woodpecker/src/github.com/opencloud-eu/web",
+    "web": "/woodpecker/src/github.com/opencloud-eu/web/web",
     "opencloud": "/var/www/opencloud/opencloud",
     "commentsFile": "/var/www/opencloud/web/comments.file",
     "app": "/srv/app",
-    "openCloudConfig": "/var/www/opencloud/web/tests/drone/config-opencloud.json",
-    "openCloudIdentifierRegistrationConfig": "/var/www/opencloud/web/tests/drone/identifier-registration.yml",
+    "openCloudConfig": "/var/www/opencloud/web/tests/woodpecker/config-opencloud.json",
+    "openCloudIdentifierRegistrationConfig": "/var/www/opencloud/web/tests/woodpecker/identifier-registration.yml",
     "openCloudRevaDataRoot": "/srv/app/tmp/opencloud/opencloud/data/",
-    "federatedOpenCloudConfig": "/var/www/opencloud/web/tests/drone/config-opencloud-federated.json",
-    "ocmProviders": "/var/www/opencloud/web/tests/drone/providers.json",
+    "federatedOpenCloudConfig": "/var/www/opencloud/web/tests/woodpecker/config-opencloud-federated.json",
+    "ocmProviders": "/var/www/opencloud/web/tests/woodpecker/providers.json",
     "playwrightBrowsersArchive": "/var/www/opencloud/web/playwright-browsers.tar.gz",
 }
 
@@ -53,10 +53,10 @@ config = {
         "from_secret": "rocketchat_talk_webhook",
     },
     "branches": [
-        "master",
+        "main",
         "stable-*",
     ],
-    "pnpmlint": False,
+    "pnpmlint": True,
     "e2e": {
         "1": {
             "earlyFail": True,
@@ -188,7 +188,10 @@ web_workspace = {
 def main(ctx):
     pipelines = ready_release_go()
 
-    # before = beforePipelines(ctx)
+    before = beforePipelines(ctx)
+
+    pipelines = pipelines + before
+
     #
     # stages = pipelinesDependsOn(stagePipelines(ctx), before)
     #
@@ -218,12 +221,12 @@ def main(ctx):
 def beforePipelines(ctx):
     return checkStarlark() + \
            licenseCheck(ctx) + \
-           documentation(ctx) + \
-           changelog(ctx) + \
            pnpmCache(ctx) + \
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx), pnpmCache(ctx))
+    # documentation(ctx) + \ # ToDo used to be before pnpmCache
+    # changelog(ctx) + \ # ToDo used to be before pnpmCache
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -246,8 +249,7 @@ def pnpmCache(ctx):
             "base": dir["base"],
             "path": config["app"],
         },
-        "steps": skipIfUnchanged(ctx, "cache") +
-                 installPnpm() +
+        "steps": installPnpm() +
                  rebuildBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  checkBrowsersCache() +
                  installBrowsers() +
@@ -259,11 +261,14 @@ def pnpmCache(ctx):
             },
             {
                 "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "cache"),
+                },
             },
             {
                 "event": "tag",
             },
-        ]
+        ],
     }]
 
 def pnpmlint(ctx):
@@ -282,26 +287,25 @@ def pnpmlint(ctx):
             "base": dir["base"],
             "path": config["app"],
         },
-        "steps": skipIfUnchanged(ctx, "lint") +
-                 restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
+        "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
                  lint(),
         "when": [
             {
                 "event": ["push", "manual"],
-                "branch": ["main", "stable-*"],
+                "branch": config["branches"],
             },
             {
                 "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "lint"),
+                },
             },
             {
                 "event": "tag",
             },
-        ]
+        ],
     }
-
-    for branch in config["branches"]:
-        result["when"]["branch"].append("%s" % branch)
 
     pipelines.append(result)
 
@@ -359,7 +363,7 @@ def ready_release_go():
                         "git_email": "devops@opencloud.eu",
                         "forge_type": "github",
                         "forge_token": {
-                            "from_secret": "github_token"
+                            "from_secret": "github_token",
                         },
                     },
                 },
@@ -370,7 +374,7 @@ def ready_release_go():
                     "branch": "${CI_REPO_DEFAULT_BRANCH}",
                 },
             ],
-        }
+        },
     ]
 
 def changelog(ctx):
@@ -477,14 +481,13 @@ def buildCacheWeb(ctx):
             "base": dir["base"],
             "path": config["app"],
         },
-        "steps": skipIfUnchanged(ctx, "cache") +
-                 restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
+        "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
                  [{
                      "name": "build-web",
                      "image": OC_CI_NODEJS,
                      "environment": {
-                         "NO_INSTALL": "true",
+                         "NO_INSTALL": True,
                      },
                      "commands": [
                          "make dist",
@@ -498,6 +501,9 @@ def buildCacheWeb(ctx):
             },
             {
                 "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "cache"),
+                },
             },
             {
                 "event": "tag",
@@ -538,7 +544,6 @@ def unitTests(ctx):
                                      ],
                      },
                  ] +
-                 skipIfUnchanged(ctx, "unit-tests") +
                  restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
                  [
@@ -563,6 +568,9 @@ def unitTests(ctx):
             },
             {
                 "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "unit-tests"),
+                },
             },
             {
                 "event": "tag",
@@ -593,13 +601,13 @@ def e2eTests(ctx):
     default = {
         "skip": False,
         "logLevel": "2",
-        "reportTracing": "false",
+        "reportTracing": False,
         "db": "mysql:5.5",
         "suites": [],
         "features": [],
         "tikaNeeded": False,
         "federationServer": False,
-        "failOnUncaughtConsoleError": "false",
+        "failOnUncaughtConsoleError": False,
         "extraServerEnvironment": {},
     }
 
@@ -610,6 +618,9 @@ def e2eTests(ctx):
         },
         {
             "event": "pull_request",
+            "path": {
+                "exclude": skipIfUnchanged(ctx, "e2e-tests"),
+            },
         },
         {
             "event": "tag",
@@ -634,20 +645,19 @@ def e2eTests(ctx):
             continue
 
         if ("with-tracing" in ctx.build.title.lower()):
-            params["reportTracing"] = "true"
+            params["reportTracing"] = True
 
         environment = {
-            "HEADLESS": "true",
+            "HEADLESS": True,
             "RETRY": "1",
             "REPORT_TRACING": params["reportTracing"],
             "BASE_URL_OC": "opencloud:9200",
-            "FAIL_ON_UNCAUGHT_CONSOLE_ERR": "true",
+            "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
             "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
             "BROWSER": "chromium",
         }
 
-        steps = skipIfUnchanged(ctx, "e2e-tests") + \
-                restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+        steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                 installPnpm() + \
                 restoreBrowsersCache() + \
                 restoreBuildArtifactCache(ctx, "web-dist", "dist")
@@ -686,16 +696,16 @@ def e2eTests(ctx):
             return []
 
         steps += [{
-                     "name": "e2e-tests",
-                     "image": OC_CI_NODEJS,
-                     "environment": environment,
-                     "commands": [
-                         "cd tests/e2e",
-                         command,
-                     ],
-                 }] + \
-                 uploadTracingResult(ctx) + \
-                 logTracingResult(ctx, "e2e-tests %s" % suite)
+            "name": "e2e-tests",
+            "image": OC_CI_NODEJS,
+            "environment": environment,
+            "commands": [
+                "cd tests/e2e",
+                command,
+            ],
+        }]  # + \
+        #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
+        #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
 
         pipelines.append({
             "name": "e2e-tests-%s" % suite,
@@ -767,6 +777,8 @@ def installBrowsers():
             "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
         },
         "commands": [
+            ". ./.woodpecker.env",
+            "if $BROWSER_CACHE_FOUND; then exit 0; fi",
             "pnpm exec playwright install chromium --with-deps",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
@@ -833,7 +845,7 @@ def buildRelease(ctx):
                 "name": "make",
                 "image": OC_CI_NODEJS,
                 "environment": {
-                    "NO_INSTALL": "true",
+                    "NO_INSTALL": True,
                 },
                 "commands": [
                     "cd %s" % dir["web"],
@@ -918,10 +930,6 @@ def documentation(ctx):
     return [
         {
             "name": "documentation",
-            "platform": {
-                "os": "linux",
-                "arch": "amd64",
-            },
             "steps": [
                 {
                     "name": "prepare",
@@ -956,9 +964,9 @@ def documentation(ctx):
                             "from_secret": "github_token",
                         },
                         "pages_directory": "docs/",
-                        "copy_contents": "true",
+                        "copy_contents": True,
                         "target_branch": "docs",
-                        "delete": "true",
+                        "delete": True,
                     },
                     "when": {
                         "ref": {
@@ -984,7 +992,7 @@ def documentation(ctx):
 def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
     environment = {
         "IDM_ADMIN_PASSWORD": "admin",  # override the random admin password from `opencloud init`
-        "OC_INSECURE": "true",
+        "OC_INSECURE": True,
         "OC_LOG_LEVEL": "error",
         "OC_JWT_SECRET": "some-opencloud-jwt-secret",
         "LDAP_GROUP_SUBSTRING_FILTER_TYPE": "any",
@@ -992,8 +1000,8 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
         "PROXY_ENABLE_BASIC_AUTH": True,
         "WEB_ASSET_CORE_PATH": "%s/dist" % dir["web"],
         "FRONTEND_SEARCH_MIN_LENGTH": "2",
-        "OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST": "%s/tests/drone/banned-passwords.txt" % dir["web"],
-        "PROXY_CSP_CONFIG_FILE_LOCATION": "%s/tests/drone/csp.yaml" % dir["web"],
+        "OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST": "%s/tests/woodpecker/banned-passwords.txt" % dir["web"],
+        "PROXY_CSP_CONFIG_FILE_LOCATION": "%s/tests/woodpecker/csp.yaml" % dir["web"],
         # Needed for enabling all roles
         "GRAPH_AVAILABLE_ROLES": "b1e2218d-eef8-4d4c-b82d-0f1a1b48f3b5,a8d5fe5e-96e3-418d-825b-534dbdf22b99,fb6c3e19-e378-47e5-b277-9732f9de6e21,58c63c02-1d89-4572-916a-870abc5a1b7d,2d00ce52-1fc2-4dbc-8b95-a73b73395f5a,1c996275-f1c9-4e71-abdf-a42f6495e960,312c0871-5ef7-4b3a-85b6-0e4074c64049,aa97fe03-7980-45ac-9e50-b325749fd7e6,63e64e19-8d43-42ec-a738-2b6af2610efa",
     }
@@ -1003,9 +1011,13 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
         environment["PROXY_HTTP_ADDR"] = "federation-opencloud:10200"
         environment["WEB_UI_CONFIG_FILE"] = dir["federatedOpenCloudConfig"]
         container_name = "federation-opencloud"
+
+        # ToDo - this seems to be unused, check whether its needed and remove if not?
         opencloud_domain = "federation-opencloud:10200"
     else:
         container_name = "opencloud"
+
+        # ToDo - this seems to be unused, check whether its needed and remove if not?
         opencloud_domain = "opencloud:9200"
         environment["OC_URL"] = "https://opencloud:9200"
         environment["WEB_UI_CONFIG_FILE"] = dir["openCloudConfig"]
@@ -1037,7 +1049,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
                 "mkdir -p %s" % dir["openCloudRevaDataRoot"],
                 "mkdir -p /srv/app/tmp/opencloud/storage/users/",
                 "./opencloud init",
-                "cp %s/tests/drone/app-registry.yaml /root/.opencloud/config/app-registry.yaml" % dir["web"],
+                "cp %s/tests/woodpecker/app-registry.yaml /root/.opencloud/config/app-registry.yaml" % dir["web"],
                 "./opencloud server",
             ],
             "volumes": [{
@@ -1055,9 +1067,9 @@ def checkForExistingOpenCloudCache(ctx):
             "image": MINIO_MC,
             "environment": minio_mc_environment,
             "commands": [
-                "curl -o .drone.env %s/.drone.env" % web_repo_path,
-                "curl -o script.sh %s/tests/drone/script.sh" % web_repo_path,
-                ". ./.drone.env",
+                "curl -o .woodpecker.env %s/.woodpecker.env" % web_repo_path,
+                "curl -o script.sh %s/tests/woodpecker/script.sh" % web_repo_path,
+                ". ./.woodpecker.env",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
                 "mc ls --recursive s3/$CACHE_BUCKET/opencloud-build",
                 "bash script.sh check_opencloud_cache",
@@ -1073,20 +1085,14 @@ def cacheOpenCloudPipeline(ctx):
                 buildOpenCloud() + \
                 rebuildBuildArtifactCache(ctx, "opencloud", "opencloud")
     else:
+        # Todo what is ENABLE_VIPS in buildOpenCloud for? Is it needed?
         steps = checkForExistingOpenCloudCache(ctx) + \
-                buildOpenCloud(enableVips = True) + \
+                buildOpenCloud(False) + \
                 cacheOpenCloud()
     return [{
         "name": "cache-opencloud",
-        "workspace": web_workspace,
-        "clone": {
-            "disable": True,
-        },
+        "skip_clone": True,
         "steps": steps,
-        "volumes": [{
-            "name": "gopath",
-            "temp": {},
-        }],
         "when": [
             {
                 "event": ["push", "manual"],
@@ -1107,7 +1113,7 @@ def restoreOpenCloudCache():
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
-            ". ./.drone.env",
+            ". ./.woodpecker.env",
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "mc cp -r -a s3/$CACHE_BUCKET/opencloud-build/$OPENCLOUD_COMMITID/opencloud %s" % dir["web"],
         ],
@@ -1116,15 +1122,18 @@ def restoreOpenCloudCache():
 def buildOpenCloud(enableVips = False):
     opencloud_repo_url = "https://github.com/opencloud-eu/opencloud.git"
     if enableVips:
-        build_command = "retry -t 3 'make build ENABLE_VIPS=1'"
+        # Todo what is ENABLE_VIPS for? Is it needed?
+        build_command = "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done"
     else:
-        build_command = "retry -t 3 'make build'"
+        build_command = "for i in $(seq 3); do make -C opencloud build && break || sleep 1; done"
     return [
         {
             "name": "clone-opencloud",
             "image": OC_CI_GOLANG,
             "commands": [
-                "source .drone.env",
+                ". ./.woodpecker.env",
+                "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
+                # ToDo is the note below still correct?
                 # NOTE: it is important to not start repo name with opencloud*
                 # because we copy opencloud binary to root workspace
                 # and upload binary <workspace>/opencloud to cache bucket.
@@ -1133,27 +1142,27 @@ def buildOpenCloud(enableVips = False):
                 "cd repo_opencloud",
                 "git checkout $OPENCLOUD_COMMITID",
             ],
-            "volumes": go_step_volumes,
         },
         {
             "name": "generate-opencloud",
             "image": OC_CI_NODEJS,
             "commands": [
+                ". ./.woodpecker.env",
+                "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
                 "cd repo_opencloud",
-                "retry -t 3 'make ci-node-generate'",
+                "retry -t 3 'make node-generate-prod'",  # ToDo Get rid of 'retry' dependency as in https://github.com/opencloud-eu/opencloud/commit/c897ec321fcd6af40c3dcfc56b2b6cd195a6054f
             ],
-            "volumes": go_step_volumes,
         },
         {
             "name": "build-opencloud",
             "image": OC_CI_GOLANG,
             "commands": [
-                "source .drone.env",
-                "cd repo_opencloud/opencloud",
+                ". ./.woodpecker.env",
+                "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
+                "cd repo_opencloud",
                 build_command,
-                "cp bin/opencloud %s" % dir["web"],
+                "cp opencloud/bin/opencloud %s/" % dir["base"],
             ],
-            "volumes": go_step_volumes,
         },
     ]
 
@@ -1163,9 +1172,10 @@ def cacheOpenCloud():
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
-            ". ./.drone.env",
+            ". ./.woodpecker.env",
+            "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-            "mc cp -a %s/opencloud s3/$CACHE_BUCKET/opencloud-build/$OPENCLOUD_COMMITID/" % dir["web"],
+            "mc cp -a %s/opencloud s3/$CACHE_BUCKET/opencloud-build/$OPENCLOUD_COMMITID/" % dir["base"],
             "mc ls --recursive s3/$CACHE_BUCKET/opencloud-build",
         ],
     }]
@@ -1178,15 +1188,15 @@ def example_deploys(ctx):
 
     # if on master branch:
     configs = on_merge_deploy
-    rebuild = "false"
+    rebuild = False
 
     if ctx.build.event == "tag":
         configs = nightly_deploy
-        rebuild = "false"
+        rebuild = False
 
     if ctx.build.event == "cron":
         configs = on_merge_deploy + nightly_deploy
-        rebuild = "true"
+        rebuild = True
 
     deploys = []
     for config in configs:
@@ -1197,10 +1207,6 @@ def example_deploys(ctx):
 def deploy(ctx, config, rebuild):
     return {
         "name": "deploy_%s" % (config),
-        "platform": {
-            "os": "linux",
-            "arch": "amd64",
-        },
         "steps": [
             {
                 "name": "clone continuous deployment playbook",
@@ -1251,14 +1257,14 @@ def checkStarlark():
                 "name": "format-check-starlark",
                 "image": OC_CI_BAZEL_BUILDIFIER,
                 "commands": [
-                    "buildifier --mode=check .drone.star",
+                    "buildifier --mode=check .woodpecker.star",
                 ],
             },
             {
                 "name": "show-diff",
                 "image": OC_CI_BAZEL_BUILDIFIER,
                 "commands": [
-                    "buildifier --mode=fix .drone.star",
+                    "buildifier --mode=fix .woodpecker.star",
                     "git diff",
                 ],
                 "when": {
@@ -1269,17 +1275,14 @@ def checkStarlark():
             },
         ],
         "when": [
-            {"event": "pull_request",},
+            {"event": "pull_request"},
         ],
     }]
 
+# ToDo use pnpm cache
 def licenseCheck(ctx):
     return [{
         "name": "license-check",
-        "platform": {
-            "os": "linux",
-            "arch": "amd64",
-        },
         "steps": installPnpm() + [
             {
                 "name": "node-check-licenses",
@@ -1341,20 +1344,10 @@ def getPipelineNames(pipelines = []):
     return names
 
 def skipIfUnchanged(ctx, type):
-    if ("full-ci" in ctx.build.title.lower()):
+    if "full-ci" in ctx.build.title.lower() or ctx.build.event == "tag" or ctx.build.event == "cron":
         return []
 
-    skip_step = {
-        "name": "skip-if-unchanged",
-        "image": OC_CI_DRONE_SKIP_PIPELINE,
-        "when": {
-            "event": [
-                "pull_request",
-            ],
-        },
-    }
-
-    base_skip_steps = [
+    base = [
         "^.github/.*",
         "^changelog/.*",
         "^config/.*",
@@ -1365,64 +1358,36 @@ def skipIfUnchanged(ctx, type):
         "README.md",
     ]
 
-    if type == "cache" or type == "lint":
-        skip_step["settings"] = {
-            "ALLOW_SKIP_CHANGED": base_skip_steps,
-        }
-        return [skip_step]
+    unit = [
+        "^tests/e2e/.*",
+    ]
+    e2e = [
+        "^__fixtures__/.*",
+        "^__mocks__/.*",
+        "^packages/.*/tests/.*",
+        "^tests/unit/.*",
+    ]
 
-    if type == "e2e-tests":
-        e2e_skip_steps = [
-            "^__fixtures__/.*",
-            "^__mocks__/.*",
-            "^packages/.*/tests/.*",
-            "^tests/unit/.*",
-        ]
-        skip_step["settings"] = {
-            "ALLOW_SKIP_CHANGED": base_skip_steps + e2e_skip_steps,
-        }
-        return [skip_step]
+    skip = []
+    if type == "e2e-tests" or type == "lint":
+        skip = base + unit
+    elif type == "unit-tests":
+        skip = base + e2e
+    elif type == "cache":
+        skip = base
+    else:
+        return []
 
-    if type == "unit-tests":
-        unit_skip_steps = [
-            "^tests/e2e/.*",
-        ]
-        skip_step["settings"] = {
-            "ALLOW_SKIP_CHANGED": base_skip_steps + unit_skip_steps,
-        }
-        return [skip_step]
-
-    if type == "e2e-tests":
-        e2e_skip_steps = [
-            "^__fixtures__/.*",
-            "^__mocks__/.*",
-            "^packages/.*/tests/.*",
-            "^tests/unit/.*",
-        ]
-        skip_step["settings"] = {
-            "ALLOW_SKIP_CHANGED": base_skip_steps + e2e_skip_steps,
-        }
-        return [skip_step]
-
-    if type == "unit-tests":
-        unit_skip_steps = [
-            "^tests/e2e/.*",
-        ]
-        skip_step["settings"] = {
-            "ALLOW_SKIP_CHANGED": base_skip_steps + unit_skip_steps,
-        }
-        return [skip_step]
-
-    return []
+    return skip
 
 def genericCache(name, action, mounts, cache_path):
-    rebuild = "false"
-    restore = "false"
+    rebuild = False
+    restore = False
     if action == "rebuild":
-        rebuild = "true"
+        rebuild = True
         action = "rebuild"
     else:
-        restore = "true"
+        restore = True
         action = "restore"
 
     step = {
@@ -1451,13 +1416,7 @@ def genericCache(name, action, mounts, cache_path):
 def genericCachePurge(flush_path):
     return {
         "name": "purge_build_artifact_cache",
-        "clone": {
-            "disable": True,
-        },
-        "platform": {
-            "os": "linux",
-            "arch": "amd64",
-        },
+        "skip_clone": True,
         "steps": [
             {
                 "name": "purge-cache",
@@ -1466,11 +1425,11 @@ def genericCachePurge(flush_path):
                     "access_key": {
                         "from_secret": "cache_s3_access_key",
                     },
-                    "endpoint": {
-                        "from_secret": "cache_s3_server",
-                    },
                     "secret_key": {
                         "from_secret": "cache_s3_secret_key",
+                    },
+                    "endpoint": {
+                        "from_secret": "cache_s3_server",
                     },
                     "flush": True,
                     "flush_age": 1,
@@ -1492,7 +1451,7 @@ def genericCachePurge(flush_path):
 
 def genericBuildArtifactCache(ctx, name, action, path):
     if action == "rebuild" or action == "restore":
-        cache_path = "%s/%s/%s" % ("cache", repo_slug, ctx.build.commit + "-${DRONE_BUILD_NUMBER}")
+        cache_path = "%s/%s/%s" % ("cache", repo_slug, ctx.build.commit + "-${CI_PIPELINE_NUMBER}")
         name = "%s_build_artifact_cache" % (name)
         return genericCache(name, action, [path], cache_path)
 
@@ -1548,17 +1507,17 @@ def pipelineSanityChecks(ctx, pipelines):
                     print("Error: depends_on %s for pipeline %s is not defined" % (depends, pipeline["name"]))
 
     # check for non declared volumes
-    for pipeline in pipelines:
-        pipeline_volumes = []
-        if "volumes" in pipeline.keys():
-            for volume in pipeline["volumes"]:
-                pipeline_volumes.append(volume["name"])
-
-        for step in pipeline["steps"]:
-            if "volumes" in step.keys():
-                for volume in step["volumes"]:
-                    if not volume["name"] in pipeline_volumes:
-                        print("Warning: volume %s for step %s is not defined in pipeline %s" % (volume["name"], step["name"], pipeline["name"]))
+    # for pipeline in pipelines:
+    #   pipeline_volumes = []
+    #   if "workspace" in pipeline.keys():
+    #     for volume in pipeline["workspace"]:
+    #       pipeline_volumes.append(volume["base"])
+    #
+    #   for step in pipeline["steps"]:
+    #     if "workspace" in step.keys():
+    #       for volume in step["workspace"]:
+    #         if not volume["base"] in pipeline_volumes:
+    #           print("Warning: volume %s for step %s is not defined in pipeline %s" % (volume["base"], step["name"], pipeline["name"]))
 
     # list used docker images
     print("")
@@ -1671,11 +1630,11 @@ def onlyofficeService():
             "image": ONLYOFFICE_DOCUMENT_SERVER,
             "detach": True,
             "environment": {
-                "WOPI_ENABLED": "true",
-                "USE_UNAUTHORIZED_STORAGE": "true",  # self signed certificates
+                "WOPI_ENABLED": True,
+                "USE_UNAUTHORIZED_STORAGE": True,  # self signed certificates
             },
             "commands": [
-                "cp %s/tests/drone/onlyoffice/local.json /etc/onlyoffice/documentserver/local.json" % dir["web"],
+                "cp %s/tests/woodpecker/onlyoffice/local.json /etc/onlyoffice/documentserver/local.json" % dir["web"],
                 "openssl req -x509 -newkey rsa:4096 -keyout onlyoffice.key -out onlyoffice.crt -sha256 -days 365 -batch -nodes",
                 "mkdir -p /var/www/onlyoffice/Data/certs",
                 "cp onlyoffice.key /var/www/onlyoffice/Data/certs/",
@@ -1782,12 +1741,12 @@ def keycloakService():
                    "openssl req -x509 -newkey rsa:2048 -keyout keycloak-certs/keycloakkey.pem -out keycloak-certs/keycloakcrt.pem -nodes -days 365 -subj '/CN=keycloak'",
                    "chmod -R 777 keycloak-certs",
                ],
-               "volumes": [
-                   {
-                       "name": "certs",
-                       "path": "/keycloak-certs",
-                   },
-               ],
+               # "volumes": [
+               #     {
+               #         "name": "certs",
+               #         "path": "/keycloak-certs",
+               #     },
+               # ],
            }] + waitForServices("postgres", ["postgres:5432"]) + \
            [{
                "name": "keycloak",
@@ -1809,15 +1768,15 @@ def keycloakService():
                },
                "commands": [
                    "mkdir -p /opt/keycloak/data/import",
-                   "cp tests/drone/opencloud_keycloak/opencloud-ci-realm.dist.json /opt/keycloak/data/import/opencloud-realm.json",
+                   "cp tests/woodpecker/opencloud_keycloak/opencloud-ci-realm.dist.json /opt/keycloak/data/import/opencloud-realm.json",
                    "/opt/keycloak/bin/kc.sh start-dev --proxy-headers xforwarded --spi-connections-http-client-default-disable-trust-manager=true --import-realm --health-enabled=true",
                ],
-               "volumes": [
-                   {
-                       "name": "certs",
-                       "path": "/keycloak-certs",
-                   },
-               ],
+               # "volumes": [
+               #     {
+               #         "name": "certs",
+               #         "path": "/keycloak-certs",
+               #     },
+               # ],
            }] + waitForServices("keycloack", ["keycloak:8443"])
 
 def e2eTestsOnKeycloak(ctx):
@@ -1872,16 +1831,16 @@ def e2eTestsOnKeycloak(ctx):
 
     # configs to setup opencloud with keycloak
     environment = {
-        "PROXY_AUTOPROVISION_ACCOUNTS": "true",
+        "PROXY_AUTOPROVISION_ACCOUNTS": True,
         "PROXY_ROLE_ASSIGNMENT_DRIVER": "oidc",
         "OC_OIDC_ISSUER": "https://keycloak:8443/realms/OpenCloud",
-        "PROXY_OIDC_REWRITE_WELLKNOWN": "true",
+        "PROXY_OIDC_REWRITE_WELLKNOWN": True,
         "WEB_OIDC_CLIENT_ID": "web",
         "PROXY_USER_OIDC_CLAIM": "preferred_username",
         "PROXY_USER_CS3_CLAIM": "username",
         "OC_ADMIN_USER_ID": "",
         "OC_EXCLUDE_RUN_SERVICES": "idp",
-        "GRAPH_ASSIGN_DEFAULT_USER_ROLE": "false",
+        "GRAPH_ASSIGN_DEFAULT_USER_ROLE": False,
         "GRAPH_USERNAME_MATCH": "none",
         "KEYCLOAK_DOMAIN": "keycloak:8443",
     }
@@ -1893,10 +1852,10 @@ def e2eTestsOnKeycloak(ctx):
                      "image": OC_CI_NODEJS,
                      "environment": {
                          "BASE_URL_OC": "opencloud:9200",
-                         "HEADLESS": "true",
+                         "HEADLESS": True,
                          "RETRY": "1",
                          "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
-                         "KEYCLOAK": "true",
+                         "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
                          "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                          "BROWSER": "chromium",
@@ -1906,9 +1865,9 @@ def e2eTestsOnKeycloak(ctx):
                          "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
                      ],
                  },
-             ] + \
-             uploadTracingResult(ctx) + \
-             logTracingResult(ctx, "e2e-tests keycloack-journey-suite")
+             ]  #  + \
+    #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
+    #  logTracingResult(ctx, "e2e-tests keycloack-journey-suite") # ToDo to be added when a public S3 bucket is available
 
     return [{
         "name": "e2e-test-on-keycloak",
@@ -1927,7 +1886,7 @@ def e2eTestsOnKeycloak(ctx):
             {
                 "event": "tag",
             },
-        ]
+        ],
     }]
 
 def getOpenCloudlatestCommitId(ctx):
@@ -1937,9 +1896,9 @@ def getOpenCloudlatestCommitId(ctx):
             "name": "get-opencloud-latest-commit-id",
             "image": OC_CI_ALPINE,
             "commands": [
-                "curl -o .drone.env %s/.drone.env" % web_repo_path,
-                "curl -o script.sh %s/tests/drone/script.sh" % web_repo_path,
-                ". ./.drone.env",
+                "curl -o .woodpecker.env %s/.woodpecker.env" % web_repo_path,
+                "curl -o script.sh %s/tests/woodpecker/script.sh" % web_repo_path,
+                ". ./.woodpecker.env",
                 "bash script.sh get_latest_opencloud_commit_id",
             ],
         },
@@ -1952,7 +1911,9 @@ def cacheBrowsers():
             "image": MINIO_MC,
             "environment": minio_mc_environment,
             "commands": [
-                "playwright_version=$(bash tests/drone/script.sh get_playwright_version)",
+                ". ./.woodpecker.env",
+                "if $BROWSER_CACHE_FOUND; then exit 0; fi",
+                "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
                 "mc cp -r -a %s s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/" % dir["playwrightBrowsersArchive"],
                 "mc ls --recursive s3/$CACHE_BUCKET/web",
@@ -1968,7 +1929,7 @@ def checkBrowsersCache():
         "commands": [
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "mc ls --recursive s3/$CACHE_BUCKET/web",
-            "bash tests/drone/script.sh check_browsers_cache",
+            "bash tests/woodpecker/script.sh check_browsers_cache",
         ],
     }]
 
@@ -1979,7 +1940,7 @@ def restoreBrowsersCache():
             "image": MINIO_MC,
             "environment": minio_mc_environment,
             "commands": [
-                "playwright_version=$(bash tests/drone/script.sh get_playwright_version)",
+                "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
                 "mc cp -r -a s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz %s" % dir["web"],
             ],
