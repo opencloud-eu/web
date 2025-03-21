@@ -284,6 +284,10 @@ export default defineComponent({
       .text {
         font-size: 0.8125rem;
       }
+
+      &:hover {
+        background: transparent;
+      }
     }
   }
 }

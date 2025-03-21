@@ -6,6 +6,7 @@
     :target="linkTarget"
     :draggable="false"
     class="oc-resource-link"
+    no-hover
     @dragstart.prevent.stop
     @click="emitClick"
   >

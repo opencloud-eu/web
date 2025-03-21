@@ -15,6 +15,7 @@
           v-if="notifications.length"
           class="oc-notifications-mark-all"
           appearance="raw"
+          no-hover
           @click="deleteNotificationsTask.perform(notifications.map((n) => n.notification_id))"
         >
           <span v-text="$gettext('Mark all as read')" />

@@ -71,7 +71,7 @@
         <oc-button
           v-oc-tooltip="hideShareAction.label({ space: null, resources: [resource] })"
           appearance="raw"
-          :class="['oc-p-xs', hideShareAction.class]"
+          :class="['oc-p-xs', hideShareAction.class, 'raw-hover-surface']"
           @click.stop="hideShareAction.handler({ space: null, resources: [resource] })"
         >
           <oc-icon :name="resource.hidden ? 'eye' : 'eye-off'" fill-type="line" />

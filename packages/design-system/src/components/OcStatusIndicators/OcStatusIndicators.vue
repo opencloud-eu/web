@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-status-indicators">
+  <div class="oc-status-indicators oc-flex">
     <template v-for="(indicator, index) in indicators">
       <oc-button
         v-if="hasHandler(indicator) && !disableHandler"

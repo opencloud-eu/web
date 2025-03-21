@@ -195,6 +195,7 @@
       <oc-button
         appearance="raw-inverse"
         class="resource-table-shared-by"
+        no-hover
         @click="openSharingSidebar(item)"
       >
         <oc-avatars
@@ -209,6 +210,7 @@
       <oc-button
         appearance="raw-inverse"
         class="resource-table-shared-with"
+        no-hover
         @click="openSharingSidebar(item)"
       >
         <oc-avatars

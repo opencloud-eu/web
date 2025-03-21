@@ -12,6 +12,7 @@
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
             class="oc-button-sort oc-width-1-1"
+            gap-size="small"
             no-hover
             @click="handleSort(field)"
           >
@@ -27,6 +28,7 @@
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
+              class="oc-p-xs oc-rounded"
               size="small"
             />
           </oc-button>
@@ -503,7 +505,7 @@ const handleSort = (field: FieldType) => {
     border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
-  &-hover tr:not(&-footer-row):hover {
+  &-hover tr:not(&-footer-row, &-header-row):hover {
     background-color: var(--oc-role-secondary-container);
   }
 
@@ -532,7 +534,7 @@ const handleSort = (field: FieldType) => {
   }
 
   .highlightedDropTarget {
-    background-color: var(--oc-role-secondary-container-highest);
+    background-color: var(--oc-role-secondary-container);
   }
 
   &-thead-content {

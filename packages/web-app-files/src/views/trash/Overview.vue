@@ -46,6 +46,7 @@
               <oc-button
                 class="oc-display-block trash-bin-route"
                 appearance="raw"
+                no-hover
                 v-bind="getSpaceAttributes(item)"
               >
                 {{ getSpaceName(item) }}

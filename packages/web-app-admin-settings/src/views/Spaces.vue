@@ -17,6 +17,7 @@
         <create-space
           v-if="hasCreatePermission"
           :show-label="!limitedScreenSpace"
+          class="oc-mr-s"
           @space-created="(space) => spaceSettingsStore.upsertSpace(space)"
         />
       </template>

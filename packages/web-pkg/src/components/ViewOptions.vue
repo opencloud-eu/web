@@ -298,7 +298,7 @@ export default defineComponent({
 .oc-range {
   -webkit-appearance: none;
   border-radius: 0.3rem;
-  background: var(--oc-role-secondary-container);
+  background: var(--oc-role-surface-container-high);
   height: 0.5rem;
   outline: none;
   width: 100%;
@@ -311,7 +311,7 @@ export default defineComponent({
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    background: var(--oc-role-on-secondary-container);
+    background: var(--oc-role-on-surface);
     border-radius: 50%;
     cursor: pointer;
     height: 1rem;
@@ -319,7 +319,7 @@ export default defineComponent({
   }
 
   &::-moz-range-thumb {
-    background: var(--oc-role-on-secondary-container);
+    background: var(--oc-role-on-surface);
     border-radius: 50%;
     cursor: pointer;
     height: 1rem;
