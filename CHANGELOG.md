@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: various hovers and small visual glitches [[#395](https://github.com/opencloud-eu/web/pull/395)]
 - fix(pkg): space quota background color [[#390](https://github.com/opencloud-eu/web/pull/390)]
 - fix(pkg): add missing delete queue to tiles view [[#389](https://github.com/opencloud-eu/web/pull/389)]
 - fix(files): copy pasting items into current folder [[#381](https://github.com/opencloud-eu/web/pull/381)]
