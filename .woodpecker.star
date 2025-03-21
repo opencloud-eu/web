@@ -17,7 +17,7 @@ OC_CI_NODEJS = "owncloudci/nodejs:20"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
-PLUGINS_DOCKER = "plugins/docker:20.14"
+PLUGINS_DOCKER_BUILDX = "woodpeckerci/plugin-docker-buildx:latest"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
@@ -334,7 +334,7 @@ def build(ctx):
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
 
     if determineReleasePackage(ctx) == None:
-        steps += buildDockerImage()
+        steps += buildDockerImage(ctx)
 
     result = {
         "name": "build",
@@ -725,27 +725,110 @@ def formatCheck():
         },
     ]
 
-def buildDockerImage():
-    return [{
-        "name": "docker",
-        "image": PLUGINS_DOCKER,
-        "settings": {
-            "username": {
-                "from_secret": "docker_username",
-            },
-            "password": {
-                "from_secret": "docker_password",
-            },
-            "auto_tag": True,
-            "dockerfile": "docker/Dockerfile",
-            "repo": "opencloud-eu/web",
-        },
+def buildDockerImage(ctx):
+    build_args = [
+        "REVISION=%s" % (ctx.build.commit),
+        "VERSION=%s" % (ctx.build.ref.replace("refs/tags/", "") if ctx.build.event == "tag" else "daily"),
+        ]
+
+    # ToDo what kind of types do we need? Do we want to run a dry run on every push?
+    build_type = "release"
+    if ctx.build.event != "tag":
+        build_type = "daily"
+
+    return {
+        "name": "container-build-%s" % build_type,
+        "steps": [
+                     {
+                         "name": "dryrun",
+                         "image": PLUGINS_DOCKER_BUILDX,
+                         "settings": {
+                             "dry_run": True,
+                             "platforms": "linux/amd64",  # do dry run only on the native platform
+                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                             "auto_tag": False if build_type == "daily" else True,
+                             "tag": "daily" if build_type == "daily" else "",
+                             "default_tag": "daily",
+                             "dockerfile": "docker/Dockerfile",
+                             "build_args": build_args,
+                             "pull_image": False,
+                             "http_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "https_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                         },
+                         "when": [
+                             {
+                                 "event": ["pull_request"],
+                             },
+                         ],
+                     },
+                     {
+                         "name": "build-and-push",
+                         "image": PLUGINS_DOCKER_BUILDX,
+                         "settings": {
+                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                             "platforms": "linux/amd64",  # we can add remote builders
+                             "auto_tag": False if build_type == "daily" else True,
+                             "tag": "daily" if build_type == "daily" else "",
+                             "default_tag": "daily",
+                             "dockerfile": "docker/Dockerfile",
+                             "build_args": build_args,
+                             "pull_image": False,
+                             "http_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "https_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "logins": [
+                                 {
+                                     "registry": "https://index.docker.io/v1/",
+                                     "username": {
+                                         "from_secret": "docker_username",
+                                     },
+                                     "password": {
+                                         "from_secret": "docker_password",
+                                     },
+                                 },
+                                 {
+                                     "registry": "https://quay.io",
+                                     "username": {
+                                         "from_secret": "quay_username",
+                                     },
+                                     "password": {
+                                         "from_secret": "quay_password",
+                                     },
+                                 },
+                             ],
+                         },
+                         "when": [
+                             {
+                                 "event": ["push", "manual"],
+                                 "branch": "main",
+                             },
+                             {
+                                 "event": "tag",
+                             },
+                         ],
+                     },
+                 ],
         "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": "main",
+            },
+            {
+                "event": "pull_request",
+            },
             {
                 "event": "tag",
             },
         ],
-    }]
+    }
+
 
 def determineReleasePackage(ctx):
     if ctx.build.event != "tag":
