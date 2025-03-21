@@ -65,16 +65,25 @@
           >
             <template #image="{ resource }">
               <template v-if="viewMode === FolderViewModeConstants.name.tiles">
+                <oc-spinner
+                  v-if="imagesLoading.includes(resource.id)"
+                  :aria-label="$gettext('Space image is loading')"
+                />
                 <img
-                  v-if="resource.thumbnail"
+                  v-else-if="resource.thumbnail"
                   class="tile-preview"
                   :src="resource.thumbnail"
                   alt=""
                 />
               </template>
               <template v-else>
+                <oc-spinner
+                  v-if="imagesLoading.includes(resource.id)"
+                  :aria-label="$gettext('Space image is loading')"
+                  class="oc-mr-s"
+                />
                 <img
-                  v-if="resource.thumbnail"
+                  v-else-if="resource.thumbnail"
                   class="table-preview oc-mr-s"
                   :class="{ 'table-preview-disabled': resource.disabled }"
                   :src="resource.thumbnail"
@@ -145,17 +154,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  onMounted,
-  computed,
-  defineComponent,
-  unref,
-  ref,
-  watch,
-  nextTick,
-  onBeforeUnmount
-} from 'vue'
+<script setup lang="ts">
+import { onMounted, computed, unref, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useTask } from 'vue-concurrency'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
@@ -165,7 +165,6 @@ import {
   useResourcesStore,
   useSpacesStore,
   useExtensionRegistry,
-  ItemFilterToggle,
   queryItemAsString,
   useLoadPreview
 } from '@opencloud-eu/web-pkg'
@@ -193,7 +192,6 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
-import { ResourceTable, ResourceTiles } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { SideBarEventTopics, useSideBar } from '@opencloud-eu/web-pkg'
 import { sortFields as availableSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
@@ -210,326 +208,270 @@ import { useResourcesViewDefaults } from '../../composables'
 import { folderViewsProjectSpacesExtensionPoint } from '../../extensionPoints'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  components: {
-    ItemFilterToggle,
-    AppBar,
-    AppLoadingSpinner,
-    CreateSpace,
-    FileSideBar,
-    FilesViewWrapper,
-    NoContentMessage,
-    Pagination,
-    ResourceIcon,
-    ResourceTiles,
-    ResourceTable,
-    SpaceContextActions
-  },
-  setup() {
-    const spacesStore = useSpacesStore()
-    const router = useRouter()
-    const route = useRoute()
-    const clientService = useClientService()
-    const { can } = useAbility()
-    const language = useGettext()
-    const { $gettext } = language
-    const filterTerm = ref('')
-    const markInstance = ref(undefined)
-    const resourcesStore = useResourcesStore()
+const spacesStore = useSpacesStore()
+const router = useRouter()
+const route = useRoute()
+const clientService = useClientService()
+const { can } = useAbility()
+const language = useGettext()
+const { $gettext } = language
+const filterTerm = ref('')
+const markInstance = ref(undefined)
+const resourcesStore = useResourcesStore()
+const { imagesLoading } = storeToRefs(spacesStore)
+const { isSideBarOpen, sideBarActivePanel } = useSideBar()
 
-    const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } =
-      useResourcesStore()
-    const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
+const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
+const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
 
-    const loadResourcesTask = useTask(function* (signal) {
-      clearResourceList()
-      setAncestorMetaData({})
-      yield spacesStore.reloadProjectSpaces({
-        graphClient: clientService.graphAuthenticated,
-        signal
-      })
-      initResourceList({ currentFolder: null, resources: unref(spaces) })
-    })
-
-    const {
-      viewSize,
-      fileListHeaderY,
-      scrollToResourceFromRoute,
-      areResourcesLoading,
-      selectedResourcesIds,
-      selectedResources
-    } = useResourcesViewDefaults({ loadResourcesTask })
-
-    let loadPreviewToken: string = null
-
-    const runtimeSpaces = computed(() => {
-      return spacesStore.spaces.filter(isProjectSpaceResource) || []
-    })
-    const selectedSpace = computed(() => {
-      if (
-        unref(selectedResources).length === 1 &&
-        isProjectSpaceResource(unref(selectedResources)[0])
-      ) {
-        return unref(selectedResources)[0] as ProjectSpaceResource
-      }
-      return null
-    })
-
-    const tableDisplayFields = [
-      'image',
-      'name',
-      'manager',
-      'members',
-      'totalQuota',
-      'usedQuota',
-      'remainingQuota',
-      'status',
-      'mdate'
-    ]
-
-    const sortFields = translateSortFields(availableSortFields, language)
-    const {
-      sortBy,
-      sortDir,
-      items: spaces,
-      handleSort
-    } = useSort<SpaceResource>({
-      items: runtimeSpaces,
-      fields: sortFields
-    })
-    const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
-      if (!unref(areDisabledSpacesShown)) {
-        spaces = spaces.filter((space) => space.disabled !== true)
-      }
-
-      if (!(filterTerm || '').trim()) {
-        return spaces
-      }
-
-      const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-      return searchEngine.search(filterTerm).map((r) => r.item)
-    }
-    const items = computed(() => {
-      return orderBy(
-        filter(unref(spaces), unref(filterTerm)),
-        [
-          (item: SpaceResource) =>
-            typeof item[unref(sortBy)] === 'string'
-              ? item[unref(sortBy)].toLowerCase()
-              : item[unref(sortBy)]
-        ],
-        unref(sortDir)
-      )
-    })
-
-    const {
-      items: paginatedItems,
-      page: currentPage,
-      total: totalPages
-    } = usePagination({
-      items,
-      perPageDefault: '50',
-      perPageStoragePrefix: 'spaces-list'
-    })
-
-    watch(filterTerm, async () => {
-      const instance = unref(markInstance)
-      if (!instance) {
-        return
-      }
-      await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-      instance.unmark()
-      instance.mark(unref(filterTerm), {
-        element: 'span',
-        className: 'mark-highlight',
-        exclude: ['th *', 'tfoot *']
-      })
-    })
-
-    const hasCreatePermission = computed(() => can('create-all', 'Drive'))
-
-    const extensionRegistry = useExtensionRegistry()
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsProjectSpacesExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-
-    const routeName = useRouteName()
-
-    const viewMode = useRouteQueryPersisted({
-      name: `${unref(routeName)}-${FolderViewModeConstants.queryName}`,
-      defaultValue: FolderViewModeConstants.name.tiles
-    })
-    const viewModeStr = computed(() => queryItemAsString(unref(viewMode)))
-
-    const { loadPreview } = useLoadPreview(viewModeStr)
-
-    const keyActions = useKeyboardActions()
-    useKeyboardTableNavigation(keyActions, runtimeSpaces, viewMode)
-    useKeyboardTableMouseActions(keyActions, viewMode)
-    useKeyboardTableActions(keyActions)
-
-    const getManagerNames = (space: SpaceResource) => {
-      const allManagers = getSpaceManagers(space)
-      const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
-      let managerStr = managers
-        .map(({ grantedTo }) => (grantedTo.user || grantedTo.group).displayName)
-        .join(', ')
-      if (allManagers.length > 2) {
-        managerStr += `... +${allManagers.length - 2}`
-      }
-      return managerStr
-    }
-
-    const getTotalQuota = (space: SpaceResource) => {
-      if (space.spaceQuota.total === 0) {
-        return $gettext('Unrestricted')
-      }
-
-      return formatFileSize(space.spaceQuota.total, language.current)
-    }
-    const getUsedQuota = (space: SpaceResource) => {
-      if (space.spaceQuota.used === undefined) {
-        return '-'
-      }
-      return formatFileSize(space.spaceQuota.used, language.current)
-    }
-    const getRemainingQuota = (space: SpaceResource) => {
-      if (space.spaceQuota.remaining === undefined) {
-        return '-'
-      }
-      return formatFileSize(space.spaceQuota.remaining, language.current)
-    }
-    const getMemberCount = (space: SpaceResource) => {
-      return Object.keys(space.members).length
-    }
-
-    onMounted(async () => {
-      await loadResourcesTask.perform()
-
-      loadPreviewToken = eventBus.subscribe(
-        'app.files.spaces.uploaded-image',
-        (space: SpaceResource) => {
-          loadPreview({ space, resource: space })
-        }
-      )
-      scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
-      nextTick(() => {
-        markInstance.value = new Mark('.spaces-table')
-      })
-    })
-
-    onBeforeUnmount(() => {
-      eventBus.unsubscribe('app.files.spaces.uploaded-image', loadPreviewToken)
-    })
-
-    const footerTextTotal = computed(() => {
-      const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
-
-      if (!disabledSpaces.length) {
-        return $gettext('%{spaceCount} spaces in total', {
-          spaceCount: unref(spaces).length.toString()
-        })
-      }
-
-      return $gettext('%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)', {
-        spaceCount: unref(spaces).length.toString(),
-        disabledSpaceCount: disabledSpaces.length.toString()
-      })
-    })
-    const footerTextFilter = computed(() => {
-      return $gettext('%{spaceCount} matching spaces', {
-        spaceCount: unref(items).length.toString()
-      })
-    })
-
-    const folderView = computed(() => {
-      const viewModeName = unref(viewMode) || FolderViewModeConstants.name.tiles
-      return unref(viewModes).find((v) => v.name === viewModeName)
-    })
-
-    const spacesHelpList = computed(() => {
-      return [
-        {
-          text: $gettext('Spaces are special folders for making files accessible to a team.')
-        },
-        {
-          text: $gettext(
-            'Spaces belong to a team and not to a single person. Even if members are removed, the files remain in the Space so that the team can continue to work on the files.'
-          )
-        },
-        {
-          text: $gettext(
-            'Members with the Manager role can add or remove other members from the Space.'
-          )
-        },
-        {
-          text: $gettext('A Space can have multiple Managers. Each Space has at least one Manager.')
-        }
-      ]
-    })
-
-    return {
-      ...useSideBar(),
-      spaces,
-      clientService,
-      loadResourcesTask,
-      areResourcesLoading,
-      selectedResourcesIds,
-      selectedSpace,
-      handleSort,
-      sortBy,
-      sortDir,
-      sortFields,
-      hasCreatePermission,
-      viewModes,
-      viewMode,
-      folderView,
-      tableDisplayFields,
-      FolderViewModeConstants,
-      getManagerNames,
-      getTotalQuota,
-      getUsedQuota,
-      getRemainingQuota,
-      getMemberCount,
-      paginatedItems,
-      filterTerm,
-      totalPages,
-      currentPage,
-      footerTextTotal,
-      footerTextFilter,
-      items,
-      loadPreview,
-      setSelection,
-      viewSize,
-      fileListHeaderY,
-      spacesHelpList
-    }
-  },
-  computed: {
-    breadcrumbs() {
-      return [
-        {
-          text: this.$gettext('Spaces'),
-          onClick: () => this.loadResourcesTask.perform(),
-          isStativNav: true
-        }
-      ]
-    },
-    showSpaceMemberLabel() {
-      return this.$gettext('Show members')
-    }
-  },
-  methods: {
-    openSidebarSharePanel(space: SpaceResource) {
-      this.setSelection([space.id])
-      eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
-    }
-  }
+const loadResourcesTask = useTask(function* (signal) {
+  clearResourceList()
+  setAncestorMetaData({})
+  yield spacesStore.reloadProjectSpaces({
+    graphClient: clientService.graphAuthenticated,
+    signal
+  })
+  initResourceList({ currentFolder: null, resources: unref(spaces) })
 })
+
+const {
+  viewSize,
+  fileListHeaderY,
+  scrollToResourceFromRoute,
+  areResourcesLoading,
+  selectedResourcesIds,
+  selectedResources
+} = useResourcesViewDefaults({ loadResourcesTask })
+
+let loadPreviewToken: string = null
+
+const runtimeSpaces = computed(() => {
+  return spacesStore.spaces.filter(isProjectSpaceResource) || []
+})
+const selectedSpace = computed(() => {
+  if (
+    unref(selectedResources).length === 1 &&
+    isProjectSpaceResource(unref(selectedResources)[0])
+  ) {
+    return unref(selectedResources)[0] as ProjectSpaceResource
+  }
+  return null
+})
+
+const tableDisplayFields = [
+  'image',
+  'name',
+  'manager',
+  'members',
+  'totalQuota',
+  'usedQuota',
+  'remainingQuota',
+  'status',
+  'mdate'
+]
+
+const sortFields = translateSortFields(availableSortFields, language)
+const {
+  sortBy,
+  sortDir,
+  items: spaces,
+  handleSort
+} = useSort<SpaceResource>({
+  items: runtimeSpaces,
+  fields: sortFields
+})
+const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
+  if (!unref(areDisabledSpacesShown)) {
+    spaces = spaces.filter((space) => space.disabled !== true)
+  }
+
+  if (!(filterTerm || '').trim()) {
+    return spaces
+  }
+
+  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(filterTerm).map((r) => r.item)
+}
+const items = computed(() => {
+  return orderBy(
+    filter(unref(spaces), unref(filterTerm)),
+    [
+      (item: SpaceResource) =>
+        typeof item[unref(sortBy)] === 'string'
+          ? item[unref(sortBy)].toLowerCase()
+          : item[unref(sortBy)]
+    ],
+    unref(sortDir)
+  )
+})
+
+const {
+  items: paginatedItems,
+  page: currentPage,
+  total: totalPages
+} = usePagination({
+  items,
+  perPageDefault: '50',
+  perPageStoragePrefix: 'spaces-list'
+})
+
+watch(filterTerm, async () => {
+  const instance = unref(markInstance)
+  if (!instance) {
+    return
+  }
+  await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+  instance.unmark()
+  instance.mark(unref(filterTerm), {
+    element: 'span',
+    className: 'mark-highlight',
+    exclude: ['th *', 'tfoot *']
+  })
+})
+
+const hasCreatePermission = computed(() => can('create-all', 'Drive'))
+
+const extensionRegistry = useExtensionRegistry()
+const viewModes = computed(() => {
+  return [
+    ...extensionRegistry
+      .requestExtensions(folderViewsProjectSpacesExtensionPoint)
+      .map((e) => e.folderView)
+  ]
+})
+
+const routeName = useRouteName()
+
+const viewMode = useRouteQueryPersisted({
+  name: `${unref(routeName)}-${FolderViewModeConstants.queryName}`,
+  defaultValue: FolderViewModeConstants.name.tiles
+})
+const viewModeStr = computed(() => queryItemAsString(unref(viewMode)))
+
+const { loadPreview } = useLoadPreview(viewModeStr)
+
+const keyActions = useKeyboardActions()
+useKeyboardTableNavigation(keyActions, runtimeSpaces, viewMode)
+useKeyboardTableMouseActions(keyActions, viewMode)
+useKeyboardTableActions(keyActions)
+
+const getManagerNames = (space: SpaceResource) => {
+  const allManagers = getSpaceManagers(space)
+  const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
+  let managerStr = managers
+    .map(({ grantedTo }) => (grantedTo.user || grantedTo.group).displayName)
+    .join(', ')
+  if (allManagers.length > 2) {
+    managerStr += `... +${allManagers.length - 2}`
+  }
+  return managerStr
+}
+
+const getTotalQuota = (space: SpaceResource) => {
+  if (space.spaceQuota.total === 0) {
+    return $gettext('Unrestricted')
+  }
+
+  return formatFileSize(space.spaceQuota.total, language.current)
+}
+const getUsedQuota = (space: SpaceResource) => {
+  if (space.spaceQuota.used === undefined) {
+    return '-'
+  }
+  return formatFileSize(space.spaceQuota.used, language.current)
+}
+const getRemainingQuota = (space: SpaceResource) => {
+  if (space.spaceQuota.remaining === undefined) {
+    return '-'
+  }
+  return formatFileSize(space.spaceQuota.remaining, language.current)
+}
+const getMemberCount = (space: SpaceResource) => {
+  return Object.keys(space.members).length
+}
+
+onMounted(async () => {
+  await loadResourcesTask.perform()
+
+  loadPreviewToken = eventBus.subscribe(
+    'app.files.spaces.uploaded-image',
+    (space: SpaceResource) => {
+      loadPreview({ space, resource: space })
+    }
+  )
+  scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
+  nextTick(() => {
+    markInstance.value = new Mark('.spaces-table')
+  })
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.spaces.uploaded-image', loadPreviewToken)
+})
+
+const footerTextTotal = computed(() => {
+  const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
+
+  if (!disabledSpaces.length) {
+    return $gettext('%{spaceCount} spaces in total', {
+      spaceCount: unref(spaces).length.toString()
+    })
+  }
+
+  return $gettext('%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)', {
+    spaceCount: unref(spaces).length.toString(),
+    disabledSpaceCount: disabledSpaces.length.toString()
+  })
+})
+const footerTextFilter = computed(() => {
+  return $gettext('%{spaceCount} matching spaces', {
+    spaceCount: unref(items).length.toString()
+  })
+})
+
+const folderView = computed(() => {
+  const viewModeName = unref(viewMode) || FolderViewModeConstants.name.tiles
+  return unref(viewModes).find((v) => v.name === viewModeName)
+})
+
+const spacesHelpList = computed(() => {
+  return [
+    {
+      text: $gettext('Spaces are special folders for making files accessible to a team.')
+    },
+    {
+      text: $gettext(
+        'Spaces belong to a team and not to a single person. Even if members are removed, the files remain in the Space so that the team can continue to work on the files.'
+      )
+    },
+    {
+      text: $gettext(
+        'Members with the Manager role can add or remove other members from the Space.'
+      )
+    },
+    {
+      text: $gettext('A Space can have multiple Managers. Each Space has at least one Manager.')
+    }
+  ]
+})
+
+const breadcrumbs = computed(() => {
+  return [
+    {
+      text: $gettext('Spaces'),
+      onClick: () => loadResourcesTask.perform(),
+      isStativNav: true
+    }
+  ]
+})
+const showSpaceMemberLabel = computed(() => {
+  return $gettext('Show members')
+})
+
+const openSidebarSharePanel = (space: SpaceResource) => {
+  setSelection([space.id])
+  eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
+}
 </script>
 
 <style lang="scss">

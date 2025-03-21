@@ -112,6 +112,7 @@ import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
 
 export default defineComponent({
+  name: 'AppBar',
   components: {
     BatchActions,
     ContextActions,

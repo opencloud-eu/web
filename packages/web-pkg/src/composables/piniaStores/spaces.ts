@@ -90,6 +90,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   const mountPointsInitialized = ref(false)
   const spacesLoading = ref(false)
   const defaultSpaceImageBlobURL = ref<string>(null)
+  const imagesLoading = ref<string[]>([])
 
   const personalSpace = computed(() => {
     return unref(spaces).find((s) => isPersonalSpaceResource(s) && s.isOwner(userStore.user))
@@ -273,6 +274,20 @@ export const useSpacesStore = defineStore('spaces', () => {
     addSpaces(projectSpaces)
   }
 
+  const addToImagesLoading = (id: string) => {
+    if (!unref(imagesLoading).includes(id)) {
+      unref(imagesLoading).push(id)
+    }
+  }
+
+  const removeFromImagesLoading = (id: string) => {
+    imagesLoading.value = unref(imagesLoading).filter((i) => i !== id)
+  }
+
+  const purgeImagesLoading = () => {
+    imagesLoading.value = []
+  }
+
   return {
     spaces,
     spacesInitialized,
@@ -281,6 +296,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     currentSpace,
     personalSpace,
     defaultSpaceImageBlobURL,
+    imagesLoading,
 
     getSpace,
     createShareSpace,
@@ -298,7 +314,11 @@ export const useSpacesStore = defineStore('spaces', () => {
     updateSpaceField,
     loadSpaces,
     loadMountPoints,
-    reloadProjectSpaces
+    reloadProjectSpaces,
+
+    addToImagesLoading,
+    removeFromImagesLoading,
+    purgeImagesLoading
   }
 })
 

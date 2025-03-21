@@ -49,58 +49,63 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       return showErrorMessage({ title: $gettext('The file type is unsupported') })
     }
 
+    spacesStore.addToImagesLoading(selectedSpace.id)
+
     let metaFolder = await getDefaultMetaFolder(selectedSpace)
     if (!metaFolder) {
       metaFolder = await createDefaultMetaFolder(selectedSpace)
     }
 
-    return loadingService.addTask(async () => {
-      // overwriting the content-type header only works if the provided content is not of type object,
-      // therefore it has to be converted to a ArrayBuffer which allows the overwrite.
-      //
-      // https://github.com/perry-mitchell/webdav-client/blob/dd8d0dcc319297edc70077abd74b935361bc2412/source/tools/body.ts#L18
-      const content = await file.arrayBuffer()
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/offset+octet-stream'
+    // overwriting the content-type header only works if the provided content is not of type object,
+    // therefore it has to be converted to a ArrayBuffer which allows the overwrite.
+    //
+    // https://github.com/perry-mitchell/webdav-client/blob/dd8d0dcc319297edc70077abd74b935361bc2412/source/tools/body.ts#L18
+    const content = await file.arrayBuffer()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/offset+octet-stream'
+    }
+
+    if (file.lastModified) {
+      headers['X-OC-Mtime'] = '' + file.lastModified / 1000
+    }
+
+    try {
+      const { fileId, processing } = await clientService.webdav.putFileContents(selectedSpace, {
+        parentFolderId: metaFolder.id,
+        fileName: file.name,
+        content,
+        headers,
+        overwrite: true
+      })
+
+      const updatedSpace = await graphClient.drives.updateDrive(
+        selectedSpace.id,
+        {
+          name: selectedSpace.name,
+          special: [{ specialFolder: { name: 'image' }, id: fileId }]
+        },
+        sharesStore.graphRoles
+      )
+
+      if (!processing) {
+        spacesStore.removeFromImagesLoading(selectedSpace.id)
       }
 
-      if (file.lastModified) {
-        headers['X-OC-Mtime'] = '' + file.lastModified / 1000
-      }
-
-      try {
-        const { fileId } = await clientService.webdav.putFileContents(selectedSpace, {
-          parentFolderId: metaFolder.id,
-          fileName: file.name,
-          content,
-          headers,
-          overwrite: true
-        })
-
-        const updatedSpace = await graphClient.drives.updateDrive(
-          selectedSpace.id,
-          {
-            name: selectedSpace.name,
-            special: [{ specialFolder: { name: 'image' }, id: fileId }]
-          },
-          sharesStore.graphRoles
-        )
-
-        spacesStore.updateSpaceField({
-          id: selectedSpace.id,
-          field: 'spaceImageData',
-          value: updatedSpace.spaceImageData
-        })
-        showMessage({ title: $gettext('Space image was uploaded successfully') })
-        eventBus.publish('app.files.spaces.uploaded-image', updatedSpace)
-      } catch (error) {
-        console.error(error)
-        showErrorMessage({
-          title: $gettext('Failed to upload space image'),
-          errors: [error]
-        })
-      }
-    })
+      spacesStore.updateSpaceField({
+        id: selectedSpace.id,
+        field: 'spaceImageData',
+        value: updatedSpace.spaceImageData
+      })
+      showMessage({ title: $gettext('Space image was uploaded successfully') })
+      eventBus.publish('app.files.spaces.uploaded-image', updatedSpace)
+    } catch (error) {
+      spacesStore.removeFromImagesLoading(selectedSpace.id)
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to upload space image'),
+        errors: [error]
+      })
+    }
   }
 
   const actions = computed((): SpaceAction[] => [

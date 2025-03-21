@@ -59,6 +59,12 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     { space, resource, dimensions, processor, updateStore = true }
   ) {
     const item = isProjectSpaceResource(resource) ? buildSpaceImageResource(resource) : resource
+    const isSpaceImage = item.id === space.spaceImageData?.id
+
+    if (isSpaceImage) {
+      spacesStore.addToImagesLoading(space.id)
+    }
+
     const preview = yield previewQueue.add(() =>
       previewService.loadPreview(
         {
@@ -77,6 +83,9 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       updateResourceField({ id: resource.id, field: 'thumbnail', value: preview })
     }
 
+    if (isSpaceImage) {
+      spacesStore.removeFromImagesLoading(space.id)
+    }
     return preview
   })
 
@@ -125,6 +134,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
   const cancelTasks = () => {
     loadPreviewTask.cancelAll()
     previewQueue.clear()
+    spacesStore.purgeImagesLoading()
   }
 
   onUnmounted(cancelTasks)

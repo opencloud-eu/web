@@ -1,7 +1,10 @@
 <template>
   <div id="oc-space-details-sidebar">
     <div class="oc-space-details-sidebar-image oc-text-center">
-      <oc-spinner v-if="previewsLoading" />
+      <oc-spinner
+        v-if="imagesLoading.includes(resource.id)"
+        :aria-label="$gettext('Space image is loading')"
+      />
       <div v-else-if="spaceImage" class="oc-position-relative">
         <img :src="spaceImage" alt="" />
       </div>
@@ -74,9 +77,9 @@
     </dl>
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { defineComponent, inject, ref, Ref, computed, unref, watch } from 'vue'
+import { inject, ref, Ref, computed, unref, watch } from 'vue'
 import { buildSpaceImageResource, getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import {
   useUserStore,
@@ -84,7 +87,8 @@ import {
   useResourcesStore,
   useResourceContents,
   useRouter,
-  useLoadPreview
+  useLoadPreview,
+  useSpacesStore
 } from '../../../../composables'
 import SpaceQuota from '../../../SpaceQuota.vue'
 import WebDavDetails from '../../WebDavDetails.vue'
@@ -96,174 +100,142 @@ import { ProcessorType } from '../../../../services'
 import { isLocationSpacesActive } from '../../../../router'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'SpaceDetails',
-  components: { SpaceQuota, WebDavDetails },
-  props: {
-    showSpaceImage: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    showShareIndicators: {
-      type: Boolean,
-      required: false,
-      default: true
+const { showShareIndicators = true } = defineProps<{
+  showShareIndicators?: boolean
+}>()
+
+const userStore = useUserStore()
+const resourcesStore = useResourcesStore()
+const { resourceContentsText } = useResourceContents({ showSizeInformation: false })
+const router = useRouter()
+const { $gettext, $ngettext, current: currentLanguage } = useGettext()
+const { loadPreview } = useLoadPreview()
+const spacesStore = useSpacesStore()
+const { imagesLoading } = storeToRefs(spacesStore)
+
+const sharesStore = useSharesStore()
+
+const resource = inject<Ref<SpaceResource>>('resource')
+const spaceImage = ref('')
+
+const { user } = storeToRefs(userStore)
+
+const linkShareCount = computed(() => sharesStore.linkShares.length)
+const showWebDavDetails = computed(() => resourcesStore.areWebDavDetailsShown)
+const showSize = computed(() => {
+  return !isLocationSpacesActive(router, 'files-spaces-projects')
+})
+const size = computed(() => {
+  return `${formatFileSize(unref(resource).size, currentLanguage)}, ${unref(resourceContentsText)}`
+})
+
+watch(
+  () => unref(resource).spaceImageData,
+  async () => {
+    if (!unref(resource).spaceImageData) {
+      spaceImage.value = ''
+      return
     }
+
+    const imageResource = buildSpaceImageResource(unref(resource))
+    spaceImage.value = await loadPreview({
+      space: unref(resource),
+      resource: imageResource,
+      dimensions: ImageDimension.Tile,
+      processor: ProcessorType.enum.fit,
+      cancelRunning: true,
+      updateStore: false
+    })
   },
-  setup() {
-    const userStore = useUserStore()
-    const resourcesStore = useResourcesStore()
-    const { resourceContentsText } = useResourceContents({ showSizeInformation: false })
-    const router = useRouter()
-    const { $gettext, current: currentLanguage } = useGettext()
-    const { loadPreview, previewsLoading } = useLoadPreview()
+  { immediate: true }
+)
 
-    const sharesStore = useSharesStore()
-
-    const resource = inject<Ref<SpaceResource>>('resource')
-    const spaceImage = ref('')
-
-    const { user } = storeToRefs(userStore)
-
-    const linkShareCount = computed(() => sharesStore.linkShares.length)
-    const showWebDavDetails = computed(() => resourcesStore.areWebDavDetailsShown)
-    const showSize = computed(() => {
-      return !isLocationSpacesActive(router, 'files-spaces-projects')
-    })
-    const size = computed(() => {
-      return `${formatFileSize(unref(resource).size, currentLanguage)}, ${unref(
-        resourceContentsText
-      )}`
-    })
-
-    watch(
-      () => unref(resource).spaceImageData,
-      async () => {
-        if (!unref(resource).spaceImageData) {
-          return
-        }
-
-        const imageResource = buildSpaceImageResource(unref(resource))
-        spaceImage.value = await loadPreview({
-          space: unref(resource),
-          resource: imageResource,
-          dimensions: ImageDimension.Tile,
-          processor: ProcessorType.enum.fit,
-          cancelRunning: true,
-          updateStore: false
-        })
-      },
-      { immediate: true }
-    )
-
-    const ownerUsernames = computed(() => {
-      const managers = getSpaceManagers(unref(resource))
-      return managers
-        .map((share) => {
-          const member = share.grantedTo.user || share.grantedTo.group
-          if (member.id === unref(user)?.id) {
-            return $gettext('%{displayName} (me)', { displayName: member.displayName })
-          }
-          return member.displayName
-        })
-        .join(', ')
-    })
-
-    const lastModifiedDate = computed(() => {
-      return formatDateFromISO(unref(resource).mdate, currentLanguage)
-    })
-
-    return {
-      spaceImage,
-      resource,
-      linkShareCount,
-      showWebDavDetails,
-      user,
-      resourceContentsText,
-      showSize,
-      size,
-      previewsLoading,
-      lastModifiedDate,
-      ownerUsernames
-    }
-  },
-  computed: {
-    hasShares() {
-      return this.hasMemberShares || this.hasLinkShares
-    },
-    shareLabel() {
-      if (this.hasMemberShares && !this.hasLinkShares) {
-        return this.memberShareLabel
+const ownerUsernames = computed(() => {
+  const managers = getSpaceManagers(unref(resource))
+  return managers
+    .map((share) => {
+      const member = share.grantedTo.user || share.grantedTo.group
+      if (member.id === unref(user)?.id) {
+        return $gettext('%{displayName} (me)', { displayName: member.displayName })
       }
-      if (!this.hasMemberShares && this.hasLinkShares) {
-        return this.linkShareLabel
-      }
+      return member.displayName
+    })
+    .join(', ')
+})
 
-      switch (this.memberShareCount) {
-        case 1:
-          return this.$ngettext(
-            'This space has one member and %{linkShareCount} link.',
-            'This space has one member and %{linkShareCount} links.',
-            this.linkShareCount,
-            { linkShareCount: this.linkShareCount.toString() }
-          )
-        default:
-          if (this.linkShareCount === 1) {
-            return this.$gettext('This space has %{memberShareCount} members and one link.', {
-              memberShareCount: this.memberShareCount.toString()
-            })
-          }
-          return this.$gettext(
-            'This space has %{memberShareCount} members and %{linkShareCount} links.',
-            {
-              memberShareCount: this.memberShareCount.toString(),
-              linkShareCount: this.linkShareCount.toString()
-            }
-          )
-      }
-    },
-    openSharesPanelHint() {
-      return this.$gettext('Open share panel')
-    },
-    openSharesPanelLinkHint() {
-      return this.$gettext('Open link list in share panel')
-    },
-    openSharesPanelMembersHint() {
-      return this.$gettext('Open member list in share panel')
-    },
-    hasMemberShares() {
-      return this.memberShareCount > 0
-    },
-    hasLinkShares() {
-      return this.linkShareCount > 0
-    },
-    memberShareCount() {
-      return Object.keys(this.resource.members).length
-    },
-    memberShareLabel() {
-      return this.$ngettext(
-        'This space has %{memberShareCount} member.',
-        'This space has %{memberShareCount} members.',
-        this.memberShareCount,
-        { memberShareCount: this.memberShareCount.toString() }
+const lastModifiedDate = computed(() => {
+  return formatDateFromISO(unref(resource).mdate, currentLanguage)
+})
+
+const hasShares = computed(() => {
+  return unref(hasMemberShares) || unref(hasLinkShares)
+})
+const shareLabel = computed(() => {
+  if (unref(hasMemberShares) && !unref(hasLinkShares)) {
+    return unref(memberShareLabel)
+  }
+  if (!unref(hasMemberShares) && unref(hasLinkShares)) {
+    return unref(linkShareLabel)
+  }
+
+  switch (unref(memberShareCount)) {
+    case 1:
+      return $ngettext(
+        'This space has one member and %{linkShareCount} link.',
+        'This space has one member and %{linkShareCount} links.',
+        unref(linkShareCount),
+        { linkShareCount: unref(linkShareCount).toString() }
       )
-    },
-    linkShareLabel() {
-      return this.$ngettext(
-        '%{linkShareCount} link giving access.',
-        '%{linkShareCount} links giving access.',
-        this.linkShareCount,
-        { linkShareCount: this.linkShareCount.toString() }
-      )
-    }
-  },
-  methods: {
-    expandSharesPanel() {
-      eventBus.publish(SideBarEventTopics.setActivePanel, 'space-share')
-    }
+    default:
+      if (unref(linkShareCount) === 1) {
+        return $gettext('This space has %{memberShareCount} members and one link.', {
+          memberShareCount: unref(memberShareCount).toString()
+        })
+      }
+      return $gettext('This space has %{memberShareCount} members and %{linkShareCount} links.', {
+        memberShareCount: unref(memberShareCount).toString(),
+        linkShareCount: unref(linkShareCount).toString()
+      })
   }
 })
+const openSharesPanelHint = computed(() => {
+  return $gettext('Open share panel')
+})
+const openSharesPanelLinkHint = computed(() => {
+  return $gettext('Open link list in share panel')
+})
+const openSharesPanelMembersHint = computed(() => {
+  return $gettext('Open member list in share panel')
+})
+const hasMemberShares = computed(() => {
+  return unref(memberShareCount) > 0
+})
+const hasLinkShares = computed(() => {
+  return unref(linkShareCount) > 0
+})
+const memberShareCount = computed(() => {
+  return Object.keys(unref(resource).members).length
+})
+const memberShareLabel = computed(() => {
+  return $ngettext(
+    'This space has %{memberShareCount} member.',
+    'This space has %{memberShareCount} members.',
+    unref(memberShareCount),
+    { memberShareCount: unref(memberShareCount).toString() }
+  )
+})
+const linkShareLabel = computed(() => {
+  return $ngettext(
+    '%{linkShareCount} link giving access.',
+    '%{linkShareCount} links giving access.',
+    unref(linkShareCount),
+    { linkShareCount: unref(linkShareCount).toString() }
+  )
+})
+
+const expandSharesPanel = () => {
+  eventBus.publish(SideBarEventTopics.setActivePanel, 'space-share')
+}
 </script>
 <style lang="scss" scoped>
 #oc-space-details-sidebar {
