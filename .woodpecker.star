@@ -191,7 +191,7 @@ def main(ctx):
 
     before = beforePipelines(ctx)
 
-    pipelines = pipelines + before
+    # pipelines = pipelines + before
 
     #
     # stages = pipelinesDependsOn(stagePipelines(ctx), before)
@@ -202,6 +202,9 @@ def main(ctx):
     #
     # after = pipelinesDependsOn(afterPipelines(ctx), stages)
     #
+    after = afterPipelines(ctx)
+    pipelines = pipelines + before + after
+
     # pipelines = before + stages + after
     #
     # deploys = example_deploys(ctx)
@@ -242,7 +245,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + buildAndTestDesignSystem(ctx) + pipelinesDependsOn(e2e_pipelines + keycloak_pipelines, unit_test_pipelines)
 
 def afterPipelines(ctx):
-    return build(ctx) + pipelinesDependsOn(notify(), build(ctx))
+    return pipelinesDependsOn(notify(), build(ctx))
 
 def pnpmCache(ctx):
     return [{
@@ -320,40 +323,40 @@ def pnpmlint(ctx, lintType):
 def build(ctx):
     pipelines = []
 
-    # if "build" not in config:
-    #     return pipelines
-    #
-    # if type(config["build"]) == "bool":
-    #     if not config["build"]:
-    #         return pipelines
-    #
-    # steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
-    #
-    # if determineReleasePackage(ctx) == None:
-    #     steps += buildDockerImage()
-    #
-    # result = {
-    #     "name": "build",
-    #     "workspace": {
-    #         "base": dir["base"],
-    #         "path": config["app"],
-    #     },
-    #     "steps": steps,
-    #     "when": [
-    #         {
-    #             "event": ["push", "manual"],
-    #             "branch": ["main", "stable-*"],
-    #         },
-    #         {
-    #             "event": "pull_request",
-    #         },
-    #         {
-    #             "event": "tag",
-    #         },
-    #     ]
-    # }
+    if "build" not in config:
+        return pipelines
 
-    # pipelines.append(result)
+    if type(config["build"]) == "bool":
+        if not config["build"]:
+            return pipelines
+
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
+
+    if determineReleasePackage(ctx) == None:
+        steps += buildDockerImage()
+
+    result = {
+        "name": "build",
+        "workspace": {
+            "base": dir["base"],
+            "path": config["app"],
+        },
+        "steps": steps,
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
+    }
+
+    pipelines.append(result)
 
     return pipelines
 
@@ -382,103 +385,6 @@ def ready_release_go():
             ],
         },
     ]
-
-def changelog(ctx):
-    pipelines = []
-
-    result = {
-        "name": "changelog",
-        "clone": {
-            "disable": True,
-        },
-        "steps": [
-            {
-                "name": "clone",
-                "image": PLUGINS_GIT_ACTION,
-                "settings": {
-                    "actions": [
-                        "clone",
-                    ],
-                    "remote": "https://github.com/%s" % (repo_slug),
-                    "branch": ctx.build.source if ctx.build.event == "pull_request" else "master",
-                    "path": "/drone/src",
-                    "netrc_machine": "github.com",
-                    "netrc_username": {
-                        "from_secret": "github_username",
-                    },
-                    "netrc_password": {
-                        "from_secret": "github_token",
-                    },
-                },
-            },
-            {
-                "name": "generate",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "calens >| CHANGELOG.md",
-                ],
-            },
-            {
-                "name": "diff",
-                "image": OC_CI_ALPINE,
-                "commands": [
-                    "git diff",
-                ],
-            },
-            {
-                "name": "output",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "cat CHANGELOG.md",
-                ],
-            },
-            {
-                "name": "publish",
-                "image": PLUGINS_GIT_ACTION,
-                "settings": {
-                    "actions": [
-                        "commit",
-                        "push",
-                    ],
-                    "message": "Automated changelog update [skip ci]",
-                    "branch": "master",
-                    "author_email": "info@opencloud.eu",
-                    "author_name": "opencloud-eu",
-                    "netrc_machine": "github.com",
-                    "netrc_username": {
-                        "from_secret": "github_username",
-                    },
-                    "netrc_password": {
-                        "from_secret": "github_token",
-                    },
-                },
-                "when": {
-                    "ref": {
-                        "exclude": [
-                            "refs/pull/**",
-                            "refs/tags/**",
-                        ],
-                    },
-                },
-            },
-        ],
-        "when": [
-            {
-                "event": ["push", "manual"],
-                "branch": ["main", "stable-*"],
-            },
-            {
-                "event": "pull_request",
-            },
-            {
-                "event": "tag",
-            },
-        ],
-    }
-
-    pipelines.append(result)
-
-    return pipelines
 
 def buildCacheWeb(ctx):
     return [{
@@ -746,7 +652,7 @@ def notify():
         "when": [
             {
                 "event": ["push", "manual"],
-                "branch": ["main", "stable-*"],
+                "branch": config["branches"],
             },
             {
                 "event": "pull_request",
@@ -756,9 +662,6 @@ def notify():
             },
         ],
     }
-
-    for branch in config["branches"]:
-        result["when"]["brachen"].append("%s" % branch)
 
     pipelines.append(result)
 
@@ -838,13 +741,11 @@ def buildDockerImage():
             "dockerfile": "docker/Dockerfile",
             "repo": "opencloud-eu/web",
         },
-        "when": {
-            "ref": {
-                "exclude": [
-                    "refs/pull/**",
-                ],
+        "when": [
+            {
+                "event": "tag",
             },
-        },
+        ],
     }]
 
 def determineReleasePackage(ctx):
@@ -883,19 +784,7 @@ def buildRelease(ctx):
                 ],
             },
             {
-                "name": "changelog",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "calens --version %s -o dist/CHANGELOG.md -t changelog/CHANGELOG-Release.tmpl" % version.split("-")[0],
-                ],
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
-            },
-            {
-                "name": "publish",
+                "name": "release",
                 "image": PLUGINS_GITHUB_RELEASE,
                 "settings": {
                     "api_key": {
@@ -909,14 +798,14 @@ def buildRelease(ctx):
                         "sha256",
                     ],
                     "title": ctx.build.ref.replace("refs/tags/v", ""),
-                    "note": "dist/CHANGELOG.md",
                     "overwrite": True,
+                    "prerelease": len(ctx.build.ref.split("-")) > 1,
                 },
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
+                "when": [
+                    {
+                        "event": "tag",
+                    },
+                ],
             },
         ]
     else:
@@ -946,11 +835,11 @@ def buildRelease(ctx):
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm whoami",
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm publish --no-git-checks --filter %s --access public --tag latest" % full_package_name,
                 ],
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
+                "when": [
+                    {
+                        "event": "tag",
+                    },
+                ],
             },
         )
 
