@@ -17,7 +17,7 @@ OC_CI_NODEJS = "owncloudci/nodejs:20"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
-PLUGINS_DOCKER = "plugins/docker:20.14"
+PLUGINS_DOCKER_BUILDX = "woodpeckerci/plugin-docker-buildx:latest"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
@@ -191,7 +191,7 @@ def main(ctx):
 
     before = beforePipelines(ctx)
 
-    pipelines = pipelines + before
+    # pipelines = pipelines + before
 
     #
     # stages = pipelinesDependsOn(stagePipelines(ctx), before)
@@ -202,6 +202,9 @@ def main(ctx):
     #
     # after = pipelinesDependsOn(afterPipelines(ctx), stages)
     #
+    after = afterPipelines(ctx)
+    pipelines = pipelines + before + after
+
     # pipelines = before + stages + after
     #
     # deploys = example_deploys(ctx)
@@ -242,7 +245,8 @@ def stagePipelines(ctx):
     return unit_test_pipelines + buildAndTestDesignSystem(ctx) + pipelinesDependsOn(e2e_pipelines + keycloak_pipelines, unit_test_pipelines)
 
 def afterPipelines(ctx):
-    return build(ctx) + pipelinesDependsOn(notify(), build(ctx))
+    return build(ctx)
+    # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
 
 def pnpmCache(ctx):
     return [{
@@ -320,40 +324,40 @@ def pnpmlint(ctx, lintType):
 def build(ctx):
     pipelines = []
 
-    # if "build" not in config:
-    #     return pipelines
-    #
-    # if type(config["build"]) == "bool":
-    #     if not config["build"]:
-    #         return pipelines
-    #
-    # steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
-    #
-    # if determineReleasePackage(ctx) == None:
-    #     steps += buildDockerImage()
-    #
-    # result = {
-    #     "name": "build",
-    #     "workspace": {
-    #         "base": dir["base"],
-    #         "path": config["app"],
-    #     },
-    #     "steps": steps,
-    #     "when": [
-    #         {
-    #             "event": ["push", "manual"],
-    #             "branch": ["main", "stable-*"],
-    #         },
-    #         {
-    #             "event": "pull_request",
-    #         },
-    #         {
-    #             "event": "tag",
-    #         },
-    #     ]
-    # }
+    if "build" not in config:
+        return pipelines
 
-    # pipelines.append(result)
+    if type(config["build"]) == "bool":
+        if not config["build"]:
+            return pipelines
+
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
+
+    if determineReleasePackage(ctx) == None:
+        steps += buildDockerImage(ctx)
+
+    result = {
+        "name": "build",
+        "workspace": {
+            "base": dir["base"],
+            "path": config["app"],
+        },
+        "steps": steps,
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": ["main", "stable-*"],
+            },
+            {
+                "event": "pull_request",
+            },
+            {
+                "event": "tag",
+            },
+        ],
+    }
+
+    pipelines.append(result)
 
     return pipelines
 
@@ -382,103 +386,6 @@ def ready_release_go():
             ],
         },
     ]
-
-def changelog(ctx):
-    pipelines = []
-
-    result = {
-        "name": "changelog",
-        "clone": {
-            "disable": True,
-        },
-        "steps": [
-            {
-                "name": "clone",
-                "image": PLUGINS_GIT_ACTION,
-                "settings": {
-                    "actions": [
-                        "clone",
-                    ],
-                    "remote": "https://github.com/%s" % (repo_slug),
-                    "branch": ctx.build.source if ctx.build.event == "pull_request" else "master",
-                    "path": "/drone/src",
-                    "netrc_machine": "github.com",
-                    "netrc_username": {
-                        "from_secret": "github_username",
-                    },
-                    "netrc_password": {
-                        "from_secret": "github_token",
-                    },
-                },
-            },
-            {
-                "name": "generate",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "calens >| CHANGELOG.md",
-                ],
-            },
-            {
-                "name": "diff",
-                "image": OC_CI_ALPINE,
-                "commands": [
-                    "git diff",
-                ],
-            },
-            {
-                "name": "output",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "cat CHANGELOG.md",
-                ],
-            },
-            {
-                "name": "publish",
-                "image": PLUGINS_GIT_ACTION,
-                "settings": {
-                    "actions": [
-                        "commit",
-                        "push",
-                    ],
-                    "message": "Automated changelog update [skip ci]",
-                    "branch": "master",
-                    "author_email": "info@opencloud.eu",
-                    "author_name": "opencloud-eu",
-                    "netrc_machine": "github.com",
-                    "netrc_username": {
-                        "from_secret": "github_username",
-                    },
-                    "netrc_password": {
-                        "from_secret": "github_token",
-                    },
-                },
-                "when": {
-                    "ref": {
-                        "exclude": [
-                            "refs/pull/**",
-                            "refs/tags/**",
-                        ],
-                    },
-                },
-            },
-        ],
-        "when": [
-            {
-                "event": ["push", "manual"],
-                "branch": ["main", "stable-*"],
-            },
-            {
-                "event": "pull_request",
-            },
-            {
-                "event": "tag",
-            },
-        ],
-    }
-
-    pipelines.append(result)
-
-    return pipelines
 
 def buildCacheWeb(ctx):
     return [{
@@ -728,9 +635,7 @@ def notify():
 
     result = {
         "name": "chat-notifications",
-        "clone": {
-            "disable": True,
-        },
+        "skip_clone": True,
         "steps": [
             {
                 "name": "notify-rocketchat",
@@ -746,7 +651,7 @@ def notify():
         "when": [
             {
                 "event": ["push", "manual"],
-                "branch": ["main", "stable-*"],
+                "branch": config["branches"],
             },
             {
                 "event": "pull_request",
@@ -756,9 +661,6 @@ def notify():
             },
         ],
     }
-
-    for branch in config["branches"]:
-        result["when"]["brachen"].append("%s" % branch)
 
     pipelines.append(result)
 
@@ -823,29 +725,110 @@ def formatCheck():
         },
     ]
 
-def buildDockerImage():
-    return [{
-        "name": "docker",
-        "image": PLUGINS_DOCKER,
-        "settings": {
-            "username": {
-                "from_secret": "docker_username",
+def buildDockerImage(ctx):
+    build_args = [
+        "REVISION=%s" % (ctx.build.commit),
+        "VERSION=%s" % (ctx.build.ref.replace("refs/tags/", "") if ctx.build.event == "tag" else "daily"),
+        ]
+
+    # ToDo what kind of types do we need? Do we want to run a dry run on every push?
+    build_type = "release"
+    if ctx.build.event != "tag":
+        build_type = "daily"
+
+    return {
+        "name": "container-build-%s" % build_type,
+        "steps": [
+                     {
+                         "name": "dryrun",
+                         "image": PLUGINS_DOCKER_BUILDX,
+                         "settings": {
+                             "dry_run": True,
+                             "platforms": "linux/amd64",  # do dry run only on the native platform
+                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                             "auto_tag": False if build_type == "daily" else True,
+                             "tag": "daily" if build_type == "daily" else "",
+                             "default_tag": "daily",
+                             "dockerfile": "docker/Dockerfile",
+                             "build_args": build_args,
+                             "pull_image": False,
+                             "http_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "https_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                         },
+                         "when": [
+                             {
+                                 "event": ["pull_request"],
+                             },
+                         ],
+                     },
+                     {
+                         "name": "build-and-push",
+                         "image": PLUGINS_DOCKER_BUILDX,
+                         "settings": {
+                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                             "platforms": "linux/amd64",  # we can add remote builders
+                             "auto_tag": False if build_type == "daily" else True,
+                             "tag": "daily" if build_type == "daily" else "",
+                             "default_tag": "daily",
+                             "dockerfile": "docker/Dockerfile",
+                             "build_args": build_args,
+                             "pull_image": False,
+                             "http_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "https_proxy": {
+                                 "from_secret": "ci_http_proxy",
+                             },
+                             "logins": [
+                                 {
+                                     "registry": "https://index.docker.io/v1/",
+                                     "username": {
+                                         "from_secret": "docker_username",
+                                     },
+                                     "password": {
+                                         "from_secret": "docker_password",
+                                     },
+                                 },
+                                 {
+                                     "registry": "https://quay.io",
+                                     "username": {
+                                         "from_secret": "quay_username",
+                                     },
+                                     "password": {
+                                         "from_secret": "quay_password",
+                                     },
+                                 },
+                             ],
+                         },
+                         "when": [
+                             {
+                                 "event": ["push", "manual"],
+                                 "branch": "main",
+                             },
+                             {
+                                 "event": "tag",
+                             },
+                         ],
+                     },
+                 ],
+        "when": [
+            {
+                "event": ["push", "manual"],
+                "branch": "main",
             },
-            "password": {
-                "from_secret": "docker_password",
+            {
+                "event": "pull_request",
             },
-            "auto_tag": True,
-            "dockerfile": "docker/Dockerfile",
-            "repo": "opencloud-eu/web",
-        },
-        "when": {
-            "ref": {
-                "exclude": [
-                    "refs/pull/**",
-                ],
+            {
+                "event": "tag",
             },
-        },
-    }]
+        ],
+    }
+
 
 def determineReleasePackage(ctx):
     if ctx.build.event != "tag":
@@ -883,19 +866,7 @@ def buildRelease(ctx):
                 ],
             },
             {
-                "name": "changelog",
-                "image": TOOLHIPPIE_CALENS,
-                "commands": [
-                    "calens --version %s -o dist/CHANGELOG.md -t changelog/CHANGELOG-Release.tmpl" % version.split("-")[0],
-                ],
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
-            },
-            {
-                "name": "publish",
+                "name": "release",
                 "image": PLUGINS_GITHUB_RELEASE,
                 "settings": {
                     "api_key": {
@@ -909,14 +880,14 @@ def buildRelease(ctx):
                         "sha256",
                     ],
                     "title": ctx.build.ref.replace("refs/tags/v", ""),
-                    "note": "dist/CHANGELOG.md",
                     "overwrite": True,
+                    "prerelease": len(ctx.build.ref.split("-")) > 1,
                 },
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
+                "when": [
+                    {
+                        "event": "tag",
+                    },
+                ],
             },
         ]
     else:
@@ -946,11 +917,11 @@ def buildRelease(ctx):
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm whoami",
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm publish --no-git-checks --filter %s --access public --tag latest" % full_package_name,
                 ],
-                "when": {
-                    "ref": [
-                        "refs/tags/**",
-                    ],
-                },
+                "when": [
+                    {
+                        "event": "tag",
+                    },
+                ],
             },
         )
 
