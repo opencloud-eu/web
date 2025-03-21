@@ -82,12 +82,12 @@ describe('AppTokenModal component', () => {
   })
 })
 
-const emitNoteInput = (wrapper: VueWrapper<any>, note: string) => {
+const emitNoteInput = (wrapper: VueWrapper<typeof AppTokenModal.vm>, note: string) => {
   wrapper
     .findComponent<typeof OcTextInput>('oc-text-input-stub')
     .vm.$emit('update:modelValue', note)
 }
-const emitDateInput = (wrapper: VueWrapper<any>, date: DateTime) => {
+const emitDateInput = (wrapper: VueWrapper<typeof AppTokenModal.vm>, date: DateTime) => {
   wrapper
     .findComponent<typeof OcDatepicker>('oc-datepicker-stub')
     .vm.$emit('dateChanged', { date, error: null })
