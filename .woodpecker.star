@@ -61,7 +61,7 @@ config = {
     "e2e": {
         "1": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "suites": [
                 "journeys",
                 "smoke",
@@ -191,7 +191,9 @@ def main(ctx):
 
     before = beforePipelines(ctx)
 
-    pipelines = pipelines + before
+    e2e_pipelines = e2eTests(ctx)
+
+    pipelines = pipelines + e2e_pipelines + before
 
     #
     # stages = pipelinesDependsOn(stagePipelines(ctx), before)
@@ -590,19 +592,19 @@ def e2eTests(ctx):
         "path": config["app"],
     }
 
-    e2e_volumes = [{
-        "name": "uploads",
-        "temp": {},
-    }, {
-        "name": "configs",
-        "temp": {},
-    }, {
-        "name": "gopath",
-        "temp": {},
-    }, {
-        "name": "opencloud-config",
-        "temp": {},
-    }]
+#    e2e_volumes = [{
+#        "name": "uploads",
+#        "temp": {},
+#    }, {
+#        "name": "configs",
+#        "temp": {},
+#    }, {
+#        "name": "gopath",
+#        "temp": {},
+#    }, {
+#        "name": "opencloud-config",
+#        "temp": {},
+#    }]
 
     default = {
         "skip": False,
@@ -620,7 +622,7 @@ def e2eTests(ctx):
     e2e_trigger = [
         {
             "event": ["push", "manual"],
-            "branch": ["main", "stable-*"],
+            "branch": config["branches"],
         },
         {
             "event": "pull_request",
@@ -719,7 +721,7 @@ def e2eTests(ctx):
             "steps": steps,
             "depends_on": ["cache-opencloud"],
             "when": e2e_trigger,
-            "volumes": e2e_volumes,
+#            "volumes": e2e_volumes,
         })
     return pipelines
 
