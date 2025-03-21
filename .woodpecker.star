@@ -634,9 +634,7 @@ def notify():
 
     result = {
         "name": "chat-notifications",
-        "clone": {
-            "disable": True,
-        },
+        "skip_clone": True,
         "steps": [
             {
                 "name": "notify-rocketchat",
