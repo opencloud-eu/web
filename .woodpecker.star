@@ -245,7 +245,8 @@ def stagePipelines(ctx):
     return unit_test_pipelines + buildAndTestDesignSystem(ctx) + pipelinesDependsOn(e2e_pipelines + keycloak_pipelines, unit_test_pipelines)
 
 def afterPipelines(ctx):
-    return pipelinesDependsOn(notify(), build(ctx))
+    return build(ctx)
+    # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
 
 def pnpmCache(ctx):
     return [{
