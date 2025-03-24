@@ -6,11 +6,12 @@ import { useLoadPreview } from '../../../../src/composables/resources'
 import { usePreviewService } from '../../../../src/composables/previewService'
 import { PreviewService, ProcessorType } from '../../../../src/services'
 import { FolderViewModeConstants, ImageDimension } from '../../../../src'
+import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
 vi.mock('../../../../src/composables/previewService/usePreviewService')
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  buildSpaceImageResource: vi.fn()
+  buildSpaceImageResource: vi.fn(() => mock<SpaceResource>({ id: '1' }))
 }))
 
 describe('useLoadPreview', () => {
@@ -57,6 +58,22 @@ describe('useLoadPreview', () => {
             const preview = await loadPreview({ space, resource })
             expect(preview).toBeDefined()
             expect(buildSpaceImageResourceMock).toHaveBeenCalledTimes(1)
+          }
+        })
+      })
+      it('adds and removes the space from the image loading queue', () => {
+        getWrapper({
+          setup: async ({ loadPreview }) => {
+            const space = mock<SpaceResource>({
+              driveType: 'project',
+              disabled: false,
+              spaceImageData: { id: '1' }
+            })
+            const resource = space
+            const spacesStore = useSpacesStore()
+            await loadPreview({ space, resource })
+            expect(spacesStore.addToImagesLoading).toHaveBeenCalledTimes(1)
+            expect(spacesStore.removeFromImagesLoading).toHaveBeenCalledTimes(1)
           }
         })
       })

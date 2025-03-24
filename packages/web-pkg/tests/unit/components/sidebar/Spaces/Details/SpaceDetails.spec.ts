@@ -48,8 +48,8 @@ describe('Details SideBar Panel', () => {
     const { wrapper } = createWrapper()
     expect(wrapper.html()).toMatchSnapshot()
   })
-  it('does render the space default image if "showSpaceImage" is false', () => {
-    const { wrapper } = createWrapper({ props: { showSpaceImage: false } })
+  it('does render the space default image', () => {
+    const { wrapper } = createWrapper()
     expect(wrapper.find(selectors.spaceDefaultImage).exists()).toBeTruthy()
   })
   it('does not render share indicators if "showShareIndicators" is false', () => {

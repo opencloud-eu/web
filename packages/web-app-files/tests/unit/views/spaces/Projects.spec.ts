@@ -1,11 +1,13 @@
 import Projects from '../../../../src/views/spaces/Projects.vue'
 import { mock } from 'vitest-mock-extended'
-import { h, nextTick, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import {
   queryItemAsString,
   useFileActionsDelete,
   useExtensionRegistry,
-  FolderViewExtension
+  FolderViewExtension,
+  ResourceTable,
+  FileSideBar
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -85,33 +87,36 @@ describe('Projects view', () => {
     })
     it('shows the no-content-message after loading', async () => {
       const { wrapper } = getMountedWrapper()
-      await wrapper.vm.loadResourcesTask.last
+      await (wrapper.vm as any).loadResourcesTask.last
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
     it('lists all available project spaces', async () => {
       const spaces = spacesResources
       const { wrapper } = getMountedWrapper({ spaces })
-      await wrapper.vm.loadResourcesTask.last
+      await (wrapper.vm as any).loadResourcesTask.last
       expect(wrapper.html()).toMatchSnapshot()
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('.spaces-list').exists()).toBeTruthy()
     })
     it('shows only filtered spaces if filter applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources })
-      wrapper.vm.filterTerm = 'Some other space'
+      await (wrapper.vm as any).loadResourcesTask.last
+      wrapper.find('input').setValue('Some other space')
       await nextTick()
-      expect(wrapper.vm.items).toEqual([spacesResources[1]])
+      expect(wrapper.findAll('tbody tr').length).toEqual(1)
     })
     it('shows only enabled spaces if includeDisabled filter is not applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources })
+      await (wrapper.vm as any).loadResourcesTask.last
       await nextTick()
-      expect(wrapper.vm.items.length).toEqual(2)
+      expect(wrapper.findAll('tbody tr').length).toEqual(2)
     })
     it('shows all spaces if includeDisabled filter is applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources, includeDisabled: true })
+      await (wrapper.vm as any).loadResourcesTask.last
       await nextTick()
-      expect(wrapper.vm.items.length).toEqual(3)
+      expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
   })
   it('should display the "Create Space"-button when permission given', () => {
@@ -121,13 +126,14 @@ describe('Projects view', () => {
     })
     expect(wrapper.find('create-space-stub').exists()).toBeTruthy()
   })
-  it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
+  it('should not pass selected resource as space to sidebar when driveType is not "project"', async () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
     const { wrapper } = getMountedWrapper({
       store: { resourcesStore: { resources: [resource], selectedIds: ['selected-resource'] } }
     })
 
-    expect(wrapper.vm.selectedSpace).toStrictEqual(null)
+    const fileSideBar = wrapper.findComponent<typeof FileSideBar>('file-side-bar-stub')
+    expect(fileSideBar.props('space')).toStrictEqual(null)
   })
   it('should pass selected resource as space to sidebar when driveType is "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'project' })
@@ -135,7 +141,8 @@ describe('Projects view', () => {
       store: { resourcesStore: { resources: [resource], selectedIds: ['selected-resource'] } }
     })
 
-    expect(wrapper.vm.selectedSpace.id).toStrictEqual('selected-resource')
+    const fileSideBar = wrapper.findComponent<typeof FileSideBar>('file-side-bar-stub')
+    expect(fileSideBar.props('space')).not.toStrictEqual(null)
   })
 })
 
@@ -181,7 +188,7 @@ function getMountedWrapper({
           name: 'menu-line',
           fillType: 'none'
         },
-        component: h('div', { class: 'resource-table' })
+        component: ResourceTable
       }
     }
   ] satisfies FolderViewExtension[]

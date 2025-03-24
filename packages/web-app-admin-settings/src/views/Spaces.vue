@@ -199,7 +199,6 @@ export default defineComponent({
         title: () => $gettext('Details'),
         component: SpaceDetails,
         componentAttrs: () => ({
-          showSpaceImage: false,
           showShareIndicators: false
         }),
         isRoot: () => true,

@@ -1,9 +1,15 @@
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import SpaceHeader from '../../../../src/components/Spaces/SpaceHeader.vue'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { SpaceResource, Resource, buildSpaceImageResource } from '@opencloud-eu/web-client'
-import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultPlugins,
+  mount,
+  defaultComponentMocks,
+  nextTicks
+} from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
+import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -61,10 +67,10 @@ describe('SpaceHeader', () => {
   })
   describe('space description', () => {
     it('should show the description', async () => {
-      const wrapper = getWrapper({ space: getSpaceMock() })
-      wrapper.vm.markdownResource = mock<Resource>()
-      wrapper.vm.markdownContent = 'content'
-      await nextTick()
+      const space = getSpaceMock()
+      space.spaceReadmeData = {}
+      const wrapper = getWrapper({ space })
+      await nextTicks(2)
       expect(wrapper.find('.markdown-container').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -75,6 +81,11 @@ function getWrapper({ space = {} as SpaceResource, isSideBarOpen = false, isMobi
   const mocks = defaultComponentMocks()
   mocks.$previewService.loadPreview.mockResolvedValue('blob:image')
   vi.mocked(buildSpaceImageResource).mockReturnValue(mock<Resource>())
+
+  mocks.$clientService.webdav.getFileContents.mockResolvedValue(
+    mock<GetFileContentsResponse>({ body: 'body' })
+  )
+  mocks.$clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
 
   return mount(SpaceHeader, {
     props: {

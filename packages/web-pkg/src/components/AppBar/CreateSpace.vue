@@ -24,6 +24,7 @@ import {
 } from '../../composables'
 
 export default defineComponent({
+  name: 'CreateSpace',
   props: {
     showLabel: {
       type: Boolean,
