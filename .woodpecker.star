@@ -333,10 +333,7 @@ def build(ctx):
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
 
-    # if determineReleasePackage(ctx) == None:
-    #     steps += buildDockerImage(ctx)
-
-    result = {
+    build_pipeline = {
         "name": "build",
         "workspace": {
             "base": dir["base"],
@@ -357,7 +354,10 @@ def build(ctx):
         ],
     }
 
-    pipelines.append(result)
+    pipelines.append(build_pipeline)
+
+    if determineReleasePackage(ctx) == None:
+        pipelines.append(buildDockerImage(ctx))
 
     return pipelines
 
