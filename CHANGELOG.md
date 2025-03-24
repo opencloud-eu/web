@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-21
+## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint to v9.23.0 [[#401](https://github.com/opencloud-eu/web/pull/401)]
 - fix(deps): update dependency oidc-client-ts to v3.2.0 [[#316](https://github.com/opencloud-eu/web/pull/316)]
 - fix(deps): update dependency @sentry/vue to v9.6.1 [[#362](https://github.com/opencloud-eu/web/pull/362)]
 - fix(deps): update dependency axios to v1.8.4 [[#373](https://github.com/opencloud-eu/web/pull/373)]
