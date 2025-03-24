@@ -6,6 +6,13 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @aduffeck, @individual-it, @kulmann
 
+### 📈 Enhancement
+
+- feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
+- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
+- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
+
 ### 🐛 Bug Fixes
 
 - fix: various hovers and small visual glitches [[#395](https://github.com/opencloud-eu/web/pull/395)]
@@ -22,12 +29,6 @@
 - fix: prevent app tokens from showing in public link settings [[#365](https://github.com/opencloud-eu/web/pull/365)]
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
-
-### 📈 Enhancement
-
-- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
-- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
-- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### ✅ Tests
 
