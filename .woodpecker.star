@@ -333,8 +333,8 @@ def build(ctx):
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + buildRelease(ctx)
 
-    if determineReleasePackage(ctx) == None:
-        steps += buildDockerImage(ctx)
+    # if determineReleasePackage(ctx) == None:
+    #     steps += buildDockerImage(ctx)
 
     result = {
         "name": "build",
