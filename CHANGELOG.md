@@ -9,6 +9,7 @@
 ### 📈 Enhancement
 
 - feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
+- Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
 - feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
 - Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
 - enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
@@ -37,6 +38,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.4.4 [[#394](https://github.com/opencloud-eu/web/pull/394)]
+- chore(deps): update dependency vite to v6.2.3 [[#405](https://github.com/opencloud-eu/web/pull/405)]
 - fix(deps): update dependency @sentry/vue to v9.8.0 [[#391](https://github.com/opencloud-eu/web/pull/391)]
 - chore(deps): update dependency eslint to v9.23.0 [[#401](https://github.com/opencloud-eu/web/pull/401)]
 - fix(deps): update dependency oidc-client-ts to v3.2.0 [[#316](https://github.com/opencloud-eu/web/pull/316)]
