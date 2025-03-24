@@ -729,7 +729,7 @@ def buildDockerImage(ctx):
     build_args = [
         "REVISION=%s" % (ctx.build.commit),
         "VERSION=%s" % (ctx.build.ref.replace("refs/tags/", "") if ctx.build.event == "tag" else "daily"),
-        ]
+    ]
 
     # ToDo what kind of types do we need? Do we want to run a dry run on every push?
     build_type = "release"
@@ -739,82 +739,82 @@ def buildDockerImage(ctx):
     return {
         "name": "container-build-%s" % build_type,
         "steps": [
-                     {
-                         "name": "dryrun",
-                         "image": PLUGINS_DOCKER_BUILDX,
-                         "settings": {
-                             "dry_run": True,
-                             "platforms": "linux/amd64",  # do dry run only on the native platform
-                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
-                             "auto_tag": False if build_type == "daily" else True,
-                             "tag": "daily" if build_type == "daily" else "",
-                             "default_tag": "daily",
-                             "dockerfile": "docker/Dockerfile",
-                             "build_args": build_args,
-                             "pull_image": False,
-                             "http_proxy": {
-                                 "from_secret": "ci_http_proxy",
-                             },
-                             "https_proxy": {
-                                 "from_secret": "ci_http_proxy",
-                             },
-                         },
-                         "when": [
-                             {
-                                 "event": ["pull_request"],
-                             },
-                         ],
-                     },
-                     {
-                         "name": "build-and-push",
-                         "image": PLUGINS_DOCKER_BUILDX,
-                         "settings": {
-                             "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
-                             "platforms": "linux/amd64",  # we can add remote builders
-                             "auto_tag": False if build_type == "daily" else True,
-                             "tag": "daily" if build_type == "daily" else "",
-                             "default_tag": "daily",
-                             "dockerfile": "docker/Dockerfile",
-                             "build_args": build_args,
-                             "pull_image": False,
-                             "http_proxy": {
-                                 "from_secret": "ci_http_proxy",
-                             },
-                             "https_proxy": {
-                                 "from_secret": "ci_http_proxy",
-                             },
-                             "logins": [
-                                 {
-                                     "registry": "https://index.docker.io/v1/",
-                                     "username": {
-                                         "from_secret": "docker_username",
-                                     },
-                                     "password": {
-                                         "from_secret": "docker_password",
-                                     },
-                                 },
-                                 {
-                                     "registry": "https://quay.io",
-                                     "username": {
-                                         "from_secret": "quay_username",
-                                     },
-                                     "password": {
-                                         "from_secret": "quay_password",
-                                     },
-                                 },
-                             ],
-                         },
-                         "when": [
-                             {
-                                 "event": ["push", "manual"],
-                                 "branch": "main",
-                             },
-                             {
-                                 "event": "tag",
-                             },
-                         ],
-                     },
-                 ],
+            {
+                "name": "dryrun",
+                "image": PLUGINS_DOCKER_BUILDX,
+                "settings": {
+                    "dry_run": True,
+                    "platforms": "linux/amd64",  # do dry run only on the native platform
+                    "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                    "auto_tag": False if build_type == "daily" else True,
+                    "tag": "daily" if build_type == "daily" else "",
+                    "default_tag": "daily",
+                    "dockerfile": "docker/Dockerfile",
+                    "build_args": build_args,
+                    "pull_image": False,
+                    "http_proxy": {
+                        "from_secret": "ci_http_proxy",
+                    },
+                    "https_proxy": {
+                        "from_secret": "ci_http_proxy",
+                    },
+                },
+                "when": [
+                    {
+                        "event": ["pull_request"],
+                    },
+                ],
+            },
+            {
+                "name": "build-and-push",
+                "image": PLUGINS_DOCKER_BUILDX,
+                "settings": {
+                    "repo": "%s,quay.io/%s" % (docker_repo_slug, docker_repo_slug),
+                    "platforms": "linux/amd64",  # we can add remote builders
+                    "auto_tag": False if build_type == "daily" else True,
+                    "tag": "daily" if build_type == "daily" else "",
+                    "default_tag": "daily",
+                    "dockerfile": "docker/Dockerfile",
+                    "build_args": build_args,
+                    "pull_image": False,
+                    "http_proxy": {
+                        "from_secret": "ci_http_proxy",
+                    },
+                    "https_proxy": {
+                        "from_secret": "ci_http_proxy",
+                    },
+                    "logins": [
+                        {
+                            "registry": "https://index.docker.io/v1/",
+                            "username": {
+                                "from_secret": "docker_username",
+                            },
+                            "password": {
+                                "from_secret": "docker_password",
+                            },
+                        },
+                        {
+                            "registry": "https://quay.io",
+                            "username": {
+                                "from_secret": "quay_username",
+                            },
+                            "password": {
+                                "from_secret": "quay_password",
+                            },
+                        },
+                    ],
+                },
+                "when": [
+                    {
+                        "event": ["push", "manual"],
+                        "branch": "main",
+                    },
+                    {
+                        "event": "tag",
+                    },
+                ],
+            },
+        ],
         "when": [
             {
                 "event": ["push", "manual"],
@@ -828,7 +828,6 @@ def buildDockerImage(ctx):
             },
         ],
     }
-
 
 def determineReleasePackage(ctx):
     if ctx.build.event != "tag":
