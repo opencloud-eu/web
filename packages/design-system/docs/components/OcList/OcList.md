@@ -37,28 +37,27 @@ The components provides a default slot to display the list items.
 
 :::
 
-### Timeline 
+### Timeline
 
 The component provides an `oc-timeline` class to display a timeline-like list.
 ::: livecode
 
 ```html
-
 <div>
-    <oc-list class="oc-timeline">
-        <li>
-            <span>19 February 2025</span>
-            <small>Release 1.0.0</small>
-        </li>
-        <li>
-            <span>15 March 2025</span>
-            <small>Release 1.1.0</small>
-        </li>
-        <li>
-            <span>19 March 2025</span>
-            <small>Release 1.1.1</small>
-        </li>
-    </oc-list>
+  <oc-list class="oc-timeline">
+    <li>
+      <span>19 February 2025</span>
+      <small>Release 1.0.0</small>
+    </li>
+    <li>
+      <span>15 March 2025</span>
+      <small>Release 1.1.0</small>
+    </li>
+    <li>
+      <span>19 March 2025</span>
+      <small>Release 1.1.1</small>
+    </li>
+  </oc-list>
 </div>
 ```
 

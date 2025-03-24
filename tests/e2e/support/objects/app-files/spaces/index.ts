@@ -104,7 +104,7 @@ export class Spaces {
     return po.downloadSpace(this.#page)
   }
 
-  async checkSpaceActivity({ activity }: { activity: string|RegExp }): Promise<void> {
+  async checkSpaceActivity({ activity }: { activity: string | RegExp }): Promise<void> {
     await po.checkSpaceActivity({ page: this.#page, activity })
   }
 }

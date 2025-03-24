@@ -57,6 +57,7 @@ config = {
         "stable-*",
     ],
     "pnpmlint": True,
+    "pnpmformat": True,
     "e2e": {
         "1": {
             "earlyFail": True,
@@ -224,7 +225,8 @@ def beforePipelines(ctx):
            pnpmCache(ctx) + \
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx), pnpmCache(ctx))
+           pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
+           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
     # documentation(ctx) + \ # ToDo used to be before pnpmCache
     # changelog(ctx) + \ # ToDo used to be before pnpmCache
 
@@ -271,25 +273,29 @@ def pnpmCache(ctx):
         ],
     }]
 
-def pnpmlint(ctx):
+# lintType can be "lint" or "format"
+def pnpmlint(ctx, lintType):
     pipelines = []
-
-    if "pnpmlint" not in config:
+    name = "pnpm" + lintType
+    if name not in config:
         return pipelines
 
-    if type(config["pnpmlint"]) == "bool":
-        if not config["pnpmlint"]:
+    if type(config[name]) == "bool":
+        if not config[name]:
             return pipelines
 
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm()
+    if name == "pnpmformat":
+        steps += formatCheck()
+    else:
+        steps += lint()
     result = {
-        "name": "lint",
+        "name": name,
         "workspace": {
             "base": dir["base"],
             "path": config["app"],
         },
-        "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
-                 installPnpm() +
-                 lint(),
+        "steps": steps,
         "when": [
             {
                 "event": ["push", "manual"],
@@ -792,6 +798,30 @@ def lint():
             "pnpm lint",
         ],
     }]
+
+def formatCheck():
+    return [
+        {
+            "name": "format-check",
+            "image": OC_CI_NODEJS,
+            "commands": [
+                "pnpm format:check",
+            ],
+        },
+        {
+            "name": "show-diff",
+            "image": OC_CI_NODEJS,
+            "commands": [
+                "pnpm format:write",
+                "git diff",
+            ],
+            "when": {
+                "status": [
+                    "failure",
+                ],
+            },
+        },
+    ]
 
 def buildDockerImage():
     return [{

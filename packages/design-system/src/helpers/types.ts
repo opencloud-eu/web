@@ -46,10 +46,10 @@ export type FieldType = {
   headerType?: string
   type?: string
   callback?: any
-  alignH?: string
-  alignV?: string
-  width?: string
-  wrap?: string
+  alignH?: 'left' | 'center' | 'right'
+  alignV?: 'top' | 'middle' | 'bottom'
+  width?: 'auto' | 'shrink' | 'expand'
+  wrap?: 'break' | 'nowrap' | 'truncate'
   thClass?: string
   tdClass?: string
   sortable?: boolean

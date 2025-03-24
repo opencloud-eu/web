@@ -2,7 +2,7 @@ deployments/examples/oc_web/config/oc/csp.yaml
 dev/docker/opencloud/csp.yaml
 packages/design-system/src/styles/
 packages/web-client/src/graph/generated/
-tests/drone/csp.yaml
+tests/woodpecker/csp.yaml
 pnpm-lock.yaml
 
 **/translations.json

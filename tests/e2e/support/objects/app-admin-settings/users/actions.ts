@@ -95,10 +95,7 @@ export const changeAccountEnabled = async (args: {
   ])
 }
 
-export const changeQuota = async (args: {
-  page: Page
-  value: string
-}): Promise<void> => {
+export const changeQuota = async (args: { page: Page; value: string }): Promise<void> => {
   const { page, value } = args
   await page.locator(quotaInput).pressSequentially(value)
   await page.locator(quotaValueDropDown).first().click()

@@ -306,7 +306,7 @@ export const checkSpaceActivity = async ({
   activity
 }: {
   page: Page
-  activity: string|RegExp
+  activity: string | RegExp
 }): Promise<void> => {
   await openActivitiesPanel(page)
   await expect(page.getByTestId(activitySidebarPanel)).toBeVisible()
