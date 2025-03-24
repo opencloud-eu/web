@@ -26,7 +26,7 @@
 ### 📈 Enhancement
 
 - feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
-- Use oc-timeline for activities and versions panel  [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
 - enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### ✅ Tests
@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.8.0 [[#391](https://github.com/opencloud-eu/web/pull/391)]
 - chore(deps): update dependency eslint to v9.23.0 [[#401](https://github.com/opencloud-eu/web/pull/401)]
 - fix(deps): update dependency oidc-client-ts to v3.2.0 [[#316](https://github.com/opencloud-eu/web/pull/316)]
 - fix(deps): update dependency @sentry/vue to v9.6.1 [[#362](https://github.com/opencloud-eu/web/pull/362)]
