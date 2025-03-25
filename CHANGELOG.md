@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: space readme loading indicator [[#408](https://github.com/opencloud-eu/web/pull/408)]
 - feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
 - Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
 - feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
