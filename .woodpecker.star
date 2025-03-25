@@ -186,7 +186,7 @@ web_workspace = {
 }
 
 def main(ctx):
-    pipelines = ready_release_go()
+    pipelines = ready_release_go() + unitTests(ctx)
 
     before = beforePipelines(ctx)
 
@@ -421,17 +421,17 @@ def buildCacheWeb(ctx):
     }]
 
 def unitTests(ctx):
-    sonar_env = {
-        "SONAR_TOKEN": {
-            "from_secret": "sonar_token",
-        },
-    }
-    if ctx.build.event == "pull_request":
-        sonar_env.update({
-            "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.target),
-            "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.build.source),
-            "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
-        })
+    # sonar_env = {
+    #     "SONAR_TOKEN": {
+    #         "from_secret": "sonar_token",
+    #     },
+    # }
+    # if ctx.build.event == "pull_request":
+    #     sonar_env.update({
+    #         "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.target),
+    #         "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.build.source),
+    #         "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
+    #     })
 
     return [{
         "name": "unit-tests",
@@ -439,21 +439,7 @@ def unitTests(ctx):
             "base": dir["base"],
             "path": config["app"],
         },
-        "steps": [
-                     {
-                         "name": "clone",
-                         "image": ALPINE_GIT,
-                         "commands": [
-                                         # Always use the opencloud-eu/web repository as base to have an up to date default branch.
-                                         # This is needed for the skipIfUnchanged step, since it references a commit on master (which could be absent on a fork)
-                                         "git clone https://github.com/%s.git ." % (repo_slug),
-                                     ] +
-                                     [
-                                         "git checkout $DRONE_COMMIT",
-                                     ],
-                     },
-                 ] +
-                 restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
+        "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
                  [
                      {
@@ -464,11 +450,11 @@ def unitTests(ctx):
                              "pnpm test:unit --coverage",
                          ],
                      },
-                     {
-                         "name": "sonarcloud",
-                         "image": SONARSOURCE_SONAR_SCANNER_CLI,
-                         "environment": sonar_env,
-                     },
+                     # {
+                     #     "name": "sonarcloud",
+                     #     "image": SONARSOURCE_SONAR_SCANNER_CLI,
+                     #     "environment": sonar_env,
+                     # },
                  ],
         "when": [
             {
