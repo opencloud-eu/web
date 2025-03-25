@@ -73,7 +73,7 @@ export type PiniaMockOptions = {
     graphRoles?: Record<string, ShareRole>
     loading?: boolean
   }
-  spacesState?: { spaces?: SpaceResource[] }
+  spacesState?: { spaces?: SpaceResource[]; imagesLoading?: string[]; readmesLoading?: string[] }
   userState?: { user?: User }
   capabilityState?: {
     capabilities?: Partial<Capabilities['capabilities']>

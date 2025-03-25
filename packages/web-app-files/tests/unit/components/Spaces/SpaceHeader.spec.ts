@@ -64,6 +64,11 @@ describe('SpaceHeader', () => {
         'space-header-image-expanded'
       )
     })
+    it('shows a loading spinner when the image is loading', () => {
+      const space = getSpaceMock()
+      const wrapper = getWrapper({ space, imagesLoading: [space.id] })
+      expect(wrapper.find('.space-header-image .oc-spinner').exists()).toBeTruthy()
+    })
   })
   describe('space description', () => {
     it('should show the description', async () => {
@@ -74,10 +79,22 @@ describe('SpaceHeader', () => {
       expect(wrapper.find('.markdown-container').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
+    it('shows a loading spinner when the description is loading', () => {
+      const space = getSpaceMock()
+      space.spaceReadmeData = {}
+      const wrapper = getWrapper({ space, readmesLoading: [space.id] })
+      expect(wrapper.find('.space-header-readme-loading').exists()).toBeTruthy()
+    })
   })
 })
 
-function getWrapper({ space = {} as SpaceResource, isSideBarOpen = false, isMobileWidth = false }) {
+function getWrapper({
+  space = {} as SpaceResource,
+  isSideBarOpen = false,
+  isMobileWidth = false,
+  imagesLoading = [],
+  readmesLoading = []
+}) {
   const mocks = defaultComponentMocks()
   mocks.$previewService.loadPreview.mockResolvedValue('blob:image')
   vi.mocked(buildSpaceImageResource).mockReturnValue(mock<Resource>())
@@ -94,10 +111,11 @@ function getWrapper({ space = {} as SpaceResource, isSideBarOpen = false, isMobi
     },
     global: {
       mocks,
-      plugins: [...defaultPlugins()],
+      plugins: [
+        ...defaultPlugins({ piniaOptions: { spacesState: { imagesLoading, readmesLoading } } })
+      ],
       provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
       stubs: {
-        'quota-modal': true,
         'space-context-actions': true
       }
     }

@@ -91,6 +91,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   const spacesLoading = ref(false)
   const defaultSpaceImageBlobURL = ref<string>(null)
   const imagesLoading = ref<string[]>([])
+  const readmesLoading = ref<string[]>([])
 
   const personalSpace = computed(() => {
     return unref(spaces).find((s) => isPersonalSpaceResource(s) && s.isOwner(userStore.user))
@@ -288,6 +289,20 @@ export const useSpacesStore = defineStore('spaces', () => {
     imagesLoading.value = []
   }
 
+  const addToReadmesLoading = (id: string) => {
+    if (!unref(readmesLoading).includes(id)) {
+      unref(readmesLoading).push(id)
+    }
+  }
+
+  const removeFromReadmesLoading = (id: string) => {
+    readmesLoading.value = unref(readmesLoading).filter((i) => i !== id)
+  }
+
+  const purgeReadmesLoading = () => {
+    readmesLoading.value = []
+  }
+
   return {
     spaces,
     spacesInitialized,
@@ -297,6 +312,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     personalSpace,
     defaultSpaceImageBlobURL,
     imagesLoading,
+    readmesLoading,
 
     getSpace,
     createShareSpace,
@@ -318,7 +334,10 @@ export const useSpacesStore = defineStore('spaces', () => {
 
     addToImagesLoading,
     removeFromImagesLoading,
-    purgeImagesLoading
+    purgeImagesLoading,
+    addToReadmesLoading,
+    removeFromReadmesLoading,
+    purgeReadmesLoading
   }
 })
 

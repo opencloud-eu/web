@@ -62,7 +62,13 @@
       </div>
       <p v-if="space.description" class="oc-mt-rm oc-text-bold">{{ space.description }}</p>
       <div
-        v-if="markdownResource && markdownContent"
+        v-if="readmesLoading.includes(space.id)"
+        class="space-header-readme-loading oc-flex oc-flex-middle oc-flex-center"
+      >
+        <oc-spinner :aria-label="$gettext('Space description is loading')" />
+      </div>
+      <div
+        v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
         class="markdown-container oc-flex"
       >
@@ -131,7 +137,7 @@ const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
-const { imagesLoading } = storeToRefs(spacesStore)
+const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
@@ -181,14 +187,13 @@ const unobserveMarkdownContainerResize = () => {
 onMounted(observeMarkdownContainerResize)
 onBeforeUnmount(() => {
   unobserveMarkdownContainerResize()
+  spacesStore.purgeReadmesLoading()
 })
-watch(
-  computed(() => space.spaceReadmeData),
-  async (data: DriveItem) => {
-    if (!data) {
-      return
-    }
 
+const loadReadmeContent = async () => {
+  spacesStore.addToReadmesLoading(space.id)
+
+  try {
     const fileContentsResponse = await getFileContents(space, {
       path: `.space/${space.spaceReadmeData.name}`
     })
@@ -200,11 +205,32 @@ watch(
     unobserveMarkdownContainerResize()
     markdownContent.value = fileContentsResponse.body
     markdownResource.value = fileInfoResponse
+    spacesStore.removeFromReadmesLoading(space.id)
 
     await nextTick()
     if (unref(markdownContent)) {
       observeMarkdownContainerResize()
     }
+  } catch (e) {
+    if ([425, 429].includes(e.statusCode)) {
+      const retryAfter = e.response?.headers?.['retry-after'] || 5
+      await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000))
+      return loadReadmeContent()
+    }
+
+    spacesStore.removeFromReadmesLoading(space.id)
+    console.error(e)
+  }
+}
+
+watch(
+  computed(() => space.spaceReadmeData),
+  async (data: DriveItem) => {
+    if (!data) {
+      return
+    }
+
+    await loadReadmeContent()
   },
   { deep: true, immediate: true }
 )
