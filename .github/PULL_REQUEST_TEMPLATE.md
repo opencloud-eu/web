@@ -36,7 +36,7 @@ Please follow these guidelines while opening a pull request:
 <!--- What types of changes does your code introduce? Mark an x in all the applicable boxes: -->
 
 - [ ] Bugfix
-- [ ] New feature (an additional functionality that doesn't break existing code)
+- [ ] Enhancement (a change that doesn't break existing code or deployments)
 - [ ] Breaking change (a modification that affects current functionality)
 - [ ] Technical debt (addressing code that needs refactoring or improvements)
 - [ ] Tests (adding or improving tests)

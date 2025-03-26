@@ -11,7 +11,6 @@
       <template #mainContent>
         <div class="oc-px-m">
           <InfoSection />
-          <AppearanceSection />
         </div>
       </template>
     </app-template>
@@ -22,14 +21,12 @@
 import { defineComponent, ref } from 'vue'
 import AppTemplate from '../components/AppTemplate.vue'
 import InfoSection from '../components/General/InfoSection.vue'
-import AppearanceSection from '../components/General/AppearanceSection.vue'
 import DetailsPanel from '../components/General/SideBar/DetailsPanel.vue'
 import { useGettext } from 'vue3-gettext'
 import { useSideBar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   components: {
-    AppearanceSection,
     AppTemplate,
     InfoSection
   },
