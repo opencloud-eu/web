@@ -47,6 +47,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.7.0 [[#436](https://github.com/opencloud-eu/web/pull/436)]
 - fix(deps): update dependency luxon to v3.6.0 [[#427](https://github.com/opencloud-eu/web/pull/427)]
 - fix(deps): update dependency eslint-plugin-n to v17.17.0 [[#428](https://github.com/opencloud-eu/web/pull/428)]
 - chore(deps): update collabora/code docker tag to v24.04.13.2.1 [[#267](https://github.com/opencloud-eu/web/pull/267)]
