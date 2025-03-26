@@ -1,22 +1,22 @@
 # Changelog
 
-## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-25
+## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-26
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @PrajwolAmatya, @ScharfViktor, @aduffeck, @individual-it, @kulmann
+@AlexAndBear, @JammingBen, @PrajwolAmatya, @ScharfViktor, @aduffeck, @individual-it, @kulmann, @micbar, @prashant-gurung899
 
-### 📈 Enhancement
+### ✅ Tests
 
-- feat: space readme loading indicator [[#408](https://github.com/opencloud-eu/web/pull/408)]
-- feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
-- Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
-- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
-- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
-- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
+- [full-ci] enable app-provider tests [[#419](https://github.com/opencloud-eu/web/pull/419)]
+- delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
+- Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): align disabled select appearance with other inputs [[#425](https://github.com/opencloud-eu/web/pull/425)]
+- fix(files): hide 'Paste here' label with limited screen space [[#421](https://github.com/opencloud-eu/web/pull/421)]
+- fix(external): shared files opening with secure view [[#418](https://github.com/opencloud-eu/web/pull/418)]
 - fix: various hovers and small visual glitches [[#395](https://github.com/opencloud-eu/web/pull/395)]
 - fix(pkg): space quota background color [[#390](https://github.com/opencloud-eu/web/pull/390)]
 - fix(pkg): add missing delete queue to tiles view [[#389](https://github.com/opencloud-eu/web/pull/389)]
@@ -32,13 +32,24 @@
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
 
-### ✅ Tests
+### 📈 Enhancement
 
-- delete unused uuids after fix #364 [[#378](https://github.com/opencloud-eu/web/pull/378)]
-- Be less strict when waiting for the "change quota" responses [[#364](https://github.com/opencloud-eu/web/pull/364)]
+- feat: space readme loading indicator [[#408](https://github.com/opencloud-eu/web/pull/408)]
+- feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
+- Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
+- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
+- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency luxon to v3.6.0 [[#427](https://github.com/opencloud-eu/web/pull/427)]
+- fix(deps): update dependency eslint-plugin-n to v17.17.0 [[#428](https://github.com/opencloud-eu/web/pull/428)]
+- chore(deps): update collabora/code docker tag to v24.04.13.2.1 [[#267](https://github.com/opencloud-eu/web/pull/267)]
+- fix(deps): update dependency @sentry/vue to v9.9.0 [[#410](https://github.com/opencloud-eu/web/pull/410)]
+- fix(deps): update dependency md-editor-v3 to v5.4.5 [[#417](https://github.com/opencloud-eu/web/pull/417)]
+- fix(deps): update dependency @babel/eslint-parser to v7.27.0 [[#409](https://github.com/opencloud-eu/web/pull/409)]
+- fix(deps): update typescript-eslint monorepo to v8.28.0 [[#411](https://github.com/opencloud-eu/web/pull/411)]
 - fix(deps): update dependency md-editor-v3 to v5.4.4 [[#394](https://github.com/opencloud-eu/web/pull/394)]
 - chore(deps): update dependency vite to v6.2.3 [[#405](https://github.com/opencloud-eu/web/pull/405)]
 - fix(deps): update dependency @sentry/vue to v9.8.0 [[#391](https://github.com/opencloud-eu/web/pull/391)]
