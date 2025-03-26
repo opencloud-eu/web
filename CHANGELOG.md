@@ -6,6 +6,20 @@
 
 @AlexAndBear, @JammingBen, @PrajwolAmatya, @ScharfViktor, @aduffeck, @individual-it, @kulmann, @micbar, @prashant-gurung899
 
+### 📈 Enhancement
+
+- feat(admin-settings): remove appearance section from General page [[#432](https://github.com/opencloud-eu/web/pull/432)]
+- feat: space readme loading indicator [[#408](https://github.com/opencloud-eu/web/pull/408)]
+- feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
+- feat: Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
+- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
+- feat: Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
+- feat: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
+
+### 📚 Documentation
+
+- fix: remove invalid doc links [[#430](https://github.com/opencloud-eu/web/pull/430)]
+
 ### ✅ Tests
 
 - [full-ci] enable app-provider tests [[#419](https://github.com/opencloud-eu/web/pull/419)]
@@ -27,19 +41,10 @@
 - fix(pkg): pixelated previews after searching [[#379](https://github.com/opencloud-eu/web/pull/379)]
 - fix(design-system): jumpyness when focusing password input [[#377](https://github.com/opencloud-eu/web/pull/377)]
 - fix(files): outline on space member filter input [[#368](https://github.com/opencloud-eu/web/pull/368)]
-- Fix: Show disabled spaces switch in wrong order [[#367](https://github.com/opencloud-eu/web/pull/367)]
+- fix: Show disabled spaces switch in wrong order [[#367](https://github.com/opencloud-eu/web/pull/367)]
 - fix: prevent app tokens from showing in public link settings [[#365](https://github.com/opencloud-eu/web/pull/365)]
 - fix: file, folder and space count in right sidebar [[#360](https://github.com/opencloud-eu/web/pull/360)]
 - fix(files): deletion date in file details [[#358](https://github.com/opencloud-eu/web/pull/358)]
-
-### 📈 Enhancement
-
-- feat: space readme loading indicator [[#408](https://github.com/opencloud-eu/web/pull/408)]
-- feat: space image loading indicator [[#398](https://github.com/opencloud-eu/web/pull/398)]
-- Make app token "label" field available to users [[#393](https://github.com/opencloud-eu/web/pull/393)]
-- feat(runtime): enhance app token modal copy view styling [[#386](https://github.com/opencloud-eu/web/pull/386)]
-- Use oc-timeline for activities and versions panel [[#366](https://github.com/opencloud-eu/web/pull/366)]
-- enhancement: show 'Personal' instead of username in right side bar [[#346](https://github.com/opencloud-eu/web/pull/346)]
 
 ### 📦️ Dependencies
 
