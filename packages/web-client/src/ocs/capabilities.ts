@@ -77,7 +77,6 @@ export interface Capabilities {
     core: {
       pollinterval?: number
       status?: {
-        edition?: string
         installed?: boolean
         maintenance?: boolean
         needsDbUpgrade?: boolean

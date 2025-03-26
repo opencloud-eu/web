@@ -15,6 +15,5 @@ export const getBackendVersion = ({
   }
   const product = backendStatus.product || 'OpenCloud'
   const version = backendStatus.productversion || backendStatus.versionstring
-  const edition = backendStatus.edition
-  return `${product} ${version} ${edition}`
+  return `${product} ${version}`
 }

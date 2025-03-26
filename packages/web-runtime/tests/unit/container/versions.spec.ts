@@ -26,27 +26,24 @@ describe('collect version information', () => {
     })
     it('falls back to "OpenCloud" as a product when none is defined', () => {
       const capabilityStore = versionStore({
-        versionstring: '1.0.0',
-        edition: 'Community'
+        versionstring: '1.0.0'
       })
-      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0 Community')
+      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0')
     })
     it('provides the backend version as concatenation of product, version and edition', () => {
       const capabilityStore = versionStore({
         product: 'OpenCloud',
-        versionstring: '1.0.0',
-        edition: 'Reva'
+        versionstring: '1.0.0'
       })
-      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0 Reva')
+      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0')
     })
     it('prefers the productversion over versionstring field if both are provided', () => {
       const capabilityStore = versionStore({
         product: 'OpenCloud',
         versionstring: '1.0.0',
-        productversion: '2.0.0',
-        edition: 'Community'
+        productversion: '2.0.0'
       })
-      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 2.0.0 Community')
+      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 2.0.0')
     })
   })
 })
