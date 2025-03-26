@@ -441,8 +441,8 @@ export default { components: { VueSelect } }
   .vs__open-indicator,
   .vs__search,
   .vs__selected {
-    background-color: var(--oc-role-secondary) !important;
-    color: var(--oc-role-on-secondary) !important;
+    background-color: var(--oc-role-surface-container) !important;
+    color: var(--oc-role-on-surface) !important;
     pointer-events: none;
   }
 

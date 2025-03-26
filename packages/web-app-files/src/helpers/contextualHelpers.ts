@@ -41,8 +41,7 @@ export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) =>
             'The “via folder” is shown next to a share, if access has already been given via a parent folder. Click on the “via folder” to edit the share on its parent folder.'
           )
         }
-      ],
-      readMoreLink: 'https://docs.opencloud.eu/go?to=webui-users-sharing'
+      ]
     },
     options
   )
@@ -81,8 +80,7 @@ export const shareSpaceAddMemberHelp = (options: ContextualHelperOptions) =>
             'Members with the Manager role are able to edit all properties and content of a Space, such as adding or removing members, sharing subfolders with non-members, or creating links to share.'
           )
         }
-      ],
-      readMoreLink: 'https://docs.opencloud.eu/go?to=webui-users-sharing'
+      ]
     },
     options
   )
@@ -96,8 +94,7 @@ export const shareViaLinkHelp = (options: ContextualHelperOptions) =>
             'No login required. Everyone with the link can access. If you share this link with people from the list "Invited people", they need to login so that their individual assigned permissions can take effect. If they are not logged-in, the permissions of the link take effect.'
           )
         }
-      ],
-      readMoreLink: 'https://docs.opencloud.eu/go?to=webui-users-sharing'
+      ]
     },
     options
   )
@@ -116,8 +113,7 @@ export const shareViaIndirectLinkHelp = (options: ContextualHelperOptions) =>
             'Indirect links can only be edited in their parent folder. Click on the folder icon below the link to navigate to the parent folder.'
           )
         }
-      ],
-      readMoreLink: 'https://docs.opencloud.eu/go?to=webui-users-sharing'
+      ]
     },
     options
   )

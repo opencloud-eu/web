@@ -19,7 +19,7 @@ export const config = {
     return withHttp(this.keycloakHost + '/admin/master/console')
   },
   // ocm config
-  federatedbaseUrlOpenCloud: process.env.OC_FEDERATED_BASE_URL ?? 'federation-open-cloud:10200',
+  federatedbaseUrlOpenCloud: process.env.OC_FEDERATED_BASE_URL ?? 'federation-opencloud:10200',
   federatedServer: false,
   get baseUrl() {
     return withHttp(this.federatedServer ? this.federatedbaseUrlOpenCloud : this.baseUrlOpenCloud)

@@ -13,7 +13,7 @@ export const getOpenWithWebUrl = async ({
 }): Promise<string> => {
   const response = await request({
     method: 'POST',
-    path: join('app', 'open-with-web', `?file_id=${fileId}`, `&app_name=${editorName}`),
+    path: join('app', 'open-with-web', `?file_id=${fileId}&app_name=${editorName}`),
     user: user
   })
   checkResponseStatus(response, 'Failed while getting url')

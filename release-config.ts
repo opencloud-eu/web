@@ -44,5 +44,6 @@ export default {
       bump: 'patch',
       weight: -1
     }
-  ]
+  ],
+  useVersionPrefixV: true
 }

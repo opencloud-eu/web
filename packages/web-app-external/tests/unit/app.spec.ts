@@ -53,9 +53,7 @@ describe('The app provider extension', () => {
     })
 
     const { wrapper } = createShallowMountWrapper(makeRequest)
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+    await (wrapper.vm as any).loadAppUrl.last
     expect(wrapper.html()).toMatchSnapshot()
   })
   it('should be able to load an iFrame via post', async () => {
@@ -65,9 +63,7 @@ describe('The app provider extension', () => {
       data: providerSuccessResponsePost
     })
     const { wrapper } = createShallowMountWrapper(makeRequest)
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+    await (wrapper.vm as any).loadAppUrl.last
     expect(wrapper.html()).toMatchSnapshot()
   })
 })

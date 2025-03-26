@@ -23,7 +23,7 @@ const parseShareTable = function (
       collaborator:
         type === 'group'
           ? usersEnvironment.getCreatedGroup({ key: recipient })
-          : usersEnvironment.getCreatedUser({ key: recipient }),
+          : usersEnvironment.getCreatedUser({ key: recipient, shareType: shareType }),
       role,
       type: type as CollaboratorType,
       resourceType,

@@ -152,21 +152,23 @@
         </li>
       </oc-list>
     </oc-drop>
-    <div
-      v-if="showPasteHereButton"
-      id="clipboard-btns"
-      v-oc-tooltip="pasteHereButtonTooltip"
-      class="oc-button-group"
-    >
+    <div v-if="showPasteHereButton" id="clipboard-btns" class="oc-button-group">
       <oc-button
+        v-oc-tooltip="pasteHereButtonTooltip"
         :disabled="isPasteHereButtonDisabled"
+        :aria-label="$gettext('Paste here')"
         class="paste-files-btn"
         @click="pasteFileAction"
       >
         <oc-icon fill-type="line" name="clipboard" />
-        <span v-text="$gettext('Paste here')" />
+        <span v-if="!limitedScreenSpace" v-text="$gettext('Paste here')" />
       </oc-button>
-      <oc-button class="clear-clipboard-btn" @click="clearClipboard">
+      <oc-button
+        v-oc-tooltip="$gettext('Clear clipboard')"
+        :aria-label="$gettext('Clear clipboard')"
+        class="clear-clipboard-btn"
+        @click="clearClipboard"
+      >
         <oc-icon fill-type="line" name="close" />
       </oc-button>
     </div>
@@ -393,6 +395,10 @@ const pasteHereButtonTooltip = computed(() => {
 
   if (unref(isMovingIntoSameFolder)) {
     return $gettext('You cannot cut and paste resources into the same folder.')
+  }
+
+  if (limitedScreenSpace) {
+    return $gettext('Paste here')
   }
 
   return ''

@@ -6,7 +6,7 @@ Feature: details
     Then "Admin" should see the app store
     When "Admin" clicks on the app "Development boilerplate"
     Then "Admin" should see the app details of "Development boilerplate"
-    And "Admin" downloads app version "0.1.0"
+    And "Admin" downloads app version "1.0.0"
     When "Admin" navigates back to the app store overview
     Then "Admin" should see the app store
     And "Admin" downloads the latest version of the app "Development boilerplate"

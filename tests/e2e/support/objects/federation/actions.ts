@@ -8,8 +8,7 @@ const generateInvitationButton =
 const generateInvitationActionConfirmButton = '.oc-modal-body-actions-confirm'
 const invitationToken = 'span:has-text("%s")'
 const invitationInput = '//input[starts-with(@id, "oc-textinput-")]'
-const invitationConnectionRow =
-  '//div[@id="sciencemesh-connections"]//td[text()="%s"]/parent::tr/td[text()="%s"]'
+const invitationConnectionRow = '//div[@id="sciencemesh-connections"]//td[text()="%s"]'
 const acceptInvitationButton = 'button:has(span:has-text("Accept invitation"))'
 
 export const generateInvitation = async (args: { page: Page; user: string }): Promise<void> => {
@@ -42,7 +41,7 @@ export const generateInvitation = async (args: { page: Page; user: string }): Pr
 
 export const acceptInvitation = async (args: { page: Page; sharer: string }): Promise<void> => {
   const { page, sharer } = args
-  const invitation = federatedInvitationCode.get(sharer.toLowerCase())
+  const invitation = federatedInvitationCode.get(sharer)
   await page.locator(invitationInput).fill(invitation.code)
   await Promise.all([
     page.waitForResponse(
@@ -57,8 +56,6 @@ export const acceptInvitation = async (args: { page: Page; sharer: string }): Pr
 
 export const connectionExists = async (args: { page: Page; info }): Promise<boolean> => {
   const { page, info } = args
-  await expect(
-    page.locator(util.format(invitationConnectionRow, info.user, info.email))
-  ).toBeVisible()
+  await expect(page.locator(util.format(invitationConnectionRow, info.user))).toBeVisible()
   return true
 }

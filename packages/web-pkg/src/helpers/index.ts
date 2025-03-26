@@ -3,6 +3,7 @@ export * from './folderLink'
 export * from './resource'
 export * from './router'
 export * from './share'
+export * from './spaces'
 export * from './ui'
 
 export * from './breadcrumbs'

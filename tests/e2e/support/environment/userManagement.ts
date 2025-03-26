@@ -42,8 +42,9 @@ export class UsersEnvironment {
     return user
   }
 
-  getCreatedUser({ key }: { key: string }): User {
-    const store = config.federatedServer ? federatedUserStore : createdUserStore
+  getCreatedUser({ key, shareType }: { key: string; shareType?: string }): User {
+    const store =
+      shareType === 'external' || config.federatedServer ? federatedUserStore : createdUserStore
     if (!store.has(key)) {
       throw new Error(`user with key '${key}' not found`)
     }
