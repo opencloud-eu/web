@@ -32,7 +32,7 @@ export default defineComponent({
 
     const infoItems = [
       { term: $gettext('OpenCloud'), definition: backendProductName },
-      { term: $gettext('Edition'), definition: backendEdition },
+      ...(backendEdition ? [{ term: $gettext('Edition'), definition: backendEdition }] : []),
       { term: $gettext('Version'), definition: backendVersion },
       { term: $gettext('Web client version'), definition: webClientVersion }
     ]
