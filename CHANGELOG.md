@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@amrita-shrestha
+@AlexAndBear, @amrita-shrestha
 
 ### 📦️ Dependencies
 
