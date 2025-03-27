@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-03-27
+
+### ❤️ Thanks to all contributors! ❤️
+
+@amrita-shrestha
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency @types/semver to v7.7.0 [[#439](https://github.com/opencloud-eu/web/pull/439)]
+
 ## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-26
 
 ### ❤️ Thanks to all contributors! ❤️
