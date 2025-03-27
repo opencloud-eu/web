@@ -4,7 +4,12 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @amrita-shrestha
+@AlexAndBear, @JammingBen, @amrita-shrestha
+
+### 🐛 Bug Fixes
+
+- fix: post-processing indicator not updating [[#444](https://github.com/opencloud-eu/web/pull/444)]
+- fix: Don't show backend edition when not set [[#442](https://github.com/opencloud-eu/web/pull/442)]
 
 ### 📦️ Dependencies
 
