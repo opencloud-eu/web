@@ -31,6 +31,13 @@ describe('collect version information', () => {
       })
       expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0 Community')
     })
+    it('does not provide edition, when not set', () => {
+      const capabilityStore = versionStore({
+        product: 'OpenCloud',
+        versionstring: '1.0.0'
+      })
+      expect(getBackendVersion({ capabilityStore })).toBe('OpenCloud 1.0.0')
+    })
     it('provides the backend version as concatenation of product, version and edition', () => {
       const capabilityStore = versionStore({
         product: 'OpenCloud',
