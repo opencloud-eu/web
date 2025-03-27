@@ -1,14 +1,11 @@
 import { Resource, SpaceResource, extractNameWithoutExtension } from '@opencloud-eu/web-client'
 import { computed, Ref, unref } from 'vue'
 import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
 import { FileAction, FileActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
 import { resolveFileNameDuplicate } from '../../../helpers/resource'
 import { join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { isLocationSpacesActive } from '../../../router'
-import { getIndicators } from '../../../helpers'
 import { useFileActions } from './useFileActions'
 import {
   useMessages,
@@ -24,7 +21,6 @@ import { useEmbedMode } from '../../embedMode'
 export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
   const userStore = useUserStore()
-  const router = useRouter()
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
   const appsStore = useAppsStore()
@@ -34,8 +30,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
   const clientService = useClientService()
 
   const resourcesStore = useResourcesStore()
-  const { resources, currentFolder, ancestorMetaData, areFileExtensionsShown } =
-    storeToRefs(resourcesStore)
+  const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(resourcesStore)
 
   const appNewFileMenuExtensions = computed(() =>
     appsStore.fileExtensions.filter(({ newFileMenu }) => !!newFileMenu)
@@ -71,22 +66,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     return null
   }
 
-  const loadIndicatorsForNewFile = computed(() => {
-    return (
-      isLocationSpacesActive(router, 'files-spaces-generic') && unref(space).driveType !== 'share'
-    )
-  })
-
   const openFile = (resource: Resource, appFileExtension: ApplicationFileExtension) => {
-    if (loadIndicatorsForNewFile.value) {
-      resource.indicators = getIndicators({
-        space: unref(space),
-        resource,
-        ancestorMetaData: unref(ancestorMetaData),
-        user: userStore.user
-      })
-    }
-
     resourcesStore.upsertResource(resource)
 
     return openEditor(appFileExtension, unref(space), resource)

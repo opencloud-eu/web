@@ -4,16 +4,29 @@ import { SideBarEventTopics } from '../composables/sideBar'
 import { Resource } from '@opencloud-eu/web-client'
 import { AncestorMetaData } from '../types'
 import {
-  ResourceIndicator,
   SpaceResource,
   isPersonalSpaceResource,
   isProjectSpaceResource
 } from '@opencloud-eu/web-client'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+import { IconFillType } from './resource'
 
 // dummy to trick gettext string extraction into recognizing strings
 const $gettext = (str: string): string => {
   return str
+}
+
+export type ResourceIndicatorCategory = 'system' | 'sharing'
+
+export interface ResourceIndicator {
+  id: string
+  accessibleDescription: string
+  label: string
+  icon: string
+  fillType: IconFillType
+  type: string
+  category: ResourceIndicatorCategory
+  handler?: (resource: Resource) => void
 }
 
 const isUserShare = (shareTypes: number[]) => {

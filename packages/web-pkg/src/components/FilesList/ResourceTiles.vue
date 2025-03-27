@@ -89,10 +89,10 @@
             <slot name="image" :resource="resource" />
           </template>
           <template #indicators>
-            <oc-status-indicators
-              v-if="getIndicators(resource).length"
+            <resource-status-indicators
+              :space="space"
               :resource="resource"
-              :indicators="getIndicators(resource)"
+              :filter="(indicator) => indicator.category === 'system'"
               :disable-handler="isResourceDisabled(resource)"
             />
           </template>
@@ -177,6 +177,7 @@ import {
   useRouter
 } from '../../composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
+import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
 type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
 type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
@@ -515,10 +516,6 @@ const fileDropped = (resource: Resource, event: DragEvent) => {
   dragItem.value = null
   setDropStyling(resource, true, event)
   emit('fileDropped', resource.id)
-}
-
-const getIndicators = (resource: Resource) => {
-  return resource.indicators.filter((indicator) => indicator.category === 'system')
 }
 
 const viewWidth = ref(0)

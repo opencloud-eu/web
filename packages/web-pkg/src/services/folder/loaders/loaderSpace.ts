@@ -14,12 +14,8 @@ import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
+import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
-import {
-  getIndicators,
-  getSharedDriveItem,
-  setCurrentUserShareSpacePermissions
-} from '../../../helpers'
 
 export class FolderLoaderSpace implements FolderLoader {
   public isEnabled(): boolean {
@@ -97,18 +93,6 @@ export class FolderLoaderSpace implements FolderLoader {
           client: webdav,
           signal: signal1
         })
-
-        if (options.loadShares) {
-          const ancestorMetaData = resourcesStore.ancestorMetaData
-          for (const file of resources) {
-            file.indicators = getIndicators({
-              space,
-              resource: file,
-              ancestorMetaData,
-              user: userStore.user
-            })
-          }
-        }
 
         if (isShareSpaceResource(space)) {
           // TODO: remove when server returns share id for federated shares in propfind response

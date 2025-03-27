@@ -234,11 +234,7 @@ const shareIndicators = computed(() => {
 })
 
 const hasAnyShares = computed(() => {
-  return (
-    unref(resource).shareTypes?.length > 0 ||
-    unref(resource).indicators?.length > 0 ||
-    unref(sharedAncestor)
-  )
+  return unref(resource).shareTypes?.length > 0 || unref(sharedAncestor)
 })
 const sharedViaTooltip = computed(() => {
   return $gettext("Navigate to '%{folder}'", { folder: unref(sharedAncestor).path || '' }, true)
