@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-03-28
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @amrita-shrestha, @kulmann
+
+### 🐛 Bug Fixes
+
+- fix: post-processing indicator not updating [[#444](https://github.com/opencloud-eu/web/pull/444)]
+- fix: Don't show backend edition when not set [[#442](https://github.com/opencloud-eu/web/pull/442)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v9.10.0 [[#446](https://github.com/opencloud-eu/web/pull/446)]
+- chore(deps): update dependency @types/semver to v7.7.0 [[#439](https://github.com/opencloud-eu/web/pull/439)]
+
 ## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-26
 
 ### ❤️ Thanks to all contributors! ❤️
