@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-03-27
+## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-03-28
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -13,6 +13,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.10.0 [[#446](https://github.com/opencloud-eu/web/pull/446)]
 - chore(deps): update dependency @types/semver to v7.7.0 [[#439](https://github.com/opencloud-eu/web/pull/439)]
 
 ## [2.1.0](https://github.com/opencloud-eu/web/releases/tag/v2.1.0) - 2025-03-26
