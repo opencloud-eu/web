@@ -198,7 +198,6 @@ const onClick = (event: MouseEvent) => {
     &:focus:not([disabled]):not(button),
     &:hover:not([disabled]):not(button) {
       background-color: transparent;
-      text-decoration: underline;
     }
 
     &:focus:not([disabled]):not(.active):not(.no-hover),

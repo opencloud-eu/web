@@ -17,6 +17,7 @@
       class="oc-mt-m oc-width-medium"
       size="large"
       appearance="filled"
+      color-role="primary"
       v-bind="loginButtonAttrs"
     >
       {{ loginButtonText }}
