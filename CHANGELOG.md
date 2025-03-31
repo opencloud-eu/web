@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-03-28
+## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-03-31
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @amrita-shrestha, @kulmann
+
+### 📈 Enhancement
+
+- feat: change plain view button color [[#455](https://github.com/opencloud-eu/web/pull/455)]
 
 ### 🐛 Bug Fixes
 
