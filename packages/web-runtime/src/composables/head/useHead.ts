@@ -22,7 +22,9 @@ export const useHead = () => {
               .join(', ')
           }
         ],
-        ...(unref(favicon) && { link: [{ rel: 'icon', href: unref(favicon) }] })
+        ...(unref(favicon) && {
+          link: [{ rel: 'icon', type: 'image/svg+xml', href: unref(favicon) }]
+        })
       }
     })
   )
