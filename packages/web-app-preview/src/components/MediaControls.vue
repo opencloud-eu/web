@@ -101,7 +101,7 @@
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"
           >
-            <oc-icon fill-type="line" name="refresh" />
+            <oc-icon fill-type="line" name="reset-left" />
           </oc-button>
         </div>
       </div>
