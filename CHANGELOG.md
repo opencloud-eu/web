@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: hide request-id when it's undefined [[#469](https://github.com/opencloud-eu/web/pull/469)]
 - fix: web doesn't return to correct page (pagination) after closing app [[#466](https://github.com/opencloud-eu/web/pull/466)]
 - fix: archive download with archives >2GB [[#465](https://github.com/opencloud-eu/web/pull/465)]
 - fix: post-processing indicator not updating [[#444](https://github.com/opencloud-eu/web/pull/444)]
