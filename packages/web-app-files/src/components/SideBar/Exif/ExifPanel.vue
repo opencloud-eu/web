@@ -158,12 +158,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+#files-sidebar-panel-exif {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
 .exif-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  margin: 0;
 
-  dt,
-  dd {
+  dt:not(:last-of-type),
+  dd:not(:last-of-type) {
     margin-bottom: var(--oc-space-small);
   }
 

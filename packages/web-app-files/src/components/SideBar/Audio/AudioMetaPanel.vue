@@ -99,17 +99,27 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+#files-sidebar-panel-audio {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
 .audio-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  dt,
-  dd {
+  margin: 0;
+
+  dt:not(:last-of-type),
+  dd:not(:last-of-type) {
     margin-bottom: var(--oc-space-small);
   }
+
   dt {
     font-weight: bold;
     white-space: nowrap;
   }
+
   dd {
     margin-inline-start: var(--oc-space-medium);
   }
