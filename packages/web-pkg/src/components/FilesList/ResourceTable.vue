@@ -314,6 +314,7 @@ import { OcButton, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { OcSpinner } from '@opencloud-eu/design-system/components'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
+import { useGettext } from 'vue3-gettext'
 
 const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
@@ -545,6 +546,7 @@ export default defineComponent({
       targetRouteCallback: computed(() => props.targetRouteCallback)
     })
     const { isSticky } = useIsTopBarSticky()
+    const { $gettext } = useGettext()
     const {
       isLocationPicker,
       isFilePicker,
@@ -579,7 +581,7 @@ export default defineComponent({
     const renameHandler = computed(() => unref(renameActions)[0].handler)
     const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0].handler)
 
-    const getTagToolTip = (text: string) => (text.length > 7 ? text : '')
+    const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
 
     const isResourceDisabled = (resource: Resource) => {
       if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {

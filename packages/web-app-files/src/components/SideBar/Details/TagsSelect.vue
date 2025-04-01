@@ -16,7 +16,12 @@
     @update:model-value="save"
   >
     <template #selected-option-container="{ option, deselect }">
-      <oc-tag class="tags-select-tag oc-ml-xs" :rounded="true" size="small">
+      <oc-tag
+        v-oc-tooltip="getTagToolTip(option.label)"
+        class="tags-select-tag oc-ml-xs"
+        :rounded="true"
+        size="small"
+      >
         <component
           :is="type"
           v-bind="getAdditionalAttributes(option.label)"
@@ -277,6 +282,8 @@ export default defineComponent({
       }
     }
 
+    const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
+
     return {
       loadAvailableTagsTask,
       availableTags,
@@ -294,6 +301,7 @@ export default defineComponent({
       readonly,
       getAdditionalAttributes,
       onTagClicked,
+      getTagToolTip,
       type
     }
   }
