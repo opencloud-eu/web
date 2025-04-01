@@ -17,6 +17,7 @@
       </div>
     </form>
     <iframe
+      ref="appIFrame"
       name="app-iframe"
       class="oc-width-1-1 oc-height-1-1"
       :title="iFrameTitle"
@@ -30,7 +31,7 @@ import { stringify } from 'qs'
 import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import isEmpty from 'lodash-es/isEmpty'
+import { isEmpty } from 'lodash-es'
 import {
   getPermissionsForSpaceMember,
   GraphSharePermission,
@@ -200,11 +201,40 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
     }
   } catch {}
 }
+
 onMounted(() => {
   if (determineOpenAsPreview(unref(appName))) {
     window.addEventListener('message', catchClickMicrosoftEdit)
   } else {
     window.removeEventListener('message', catchClickMicrosoftEdit)
+  }
+})
+
+const appIframe = useTemplateRef('appIFrame')
+const postMessageToIframe = (messageId: string, values?: { [key: string]: unknown }): void => {
+  return unref(appIframe).contentWindow.postMessage({
+    MessageId: messageId,
+    SendTime: Date.now(),
+    ...(values && { Values: values })
+  })
+}
+watch(appIframe, (iframe) => {
+  if (!iframe || !iframe.contentWindow) {
+    return
+  }
+
+  if (unref(appName)?.toLowerCase()?.startsWith('collabora')) {
+    iframe.contentWindow.addEventListener('message', (event: MessageEvent) => {
+      if (event?.data?.MessageId === 'Host_PostmessageReady') {
+        postMessageToIframe('Hide_Menu_Item', { id: 'closedocument' })
+      }
+    })
+
+    // sending 'App_LoadingStatus' triggers a response message, upon which we know that
+    // the UI is ready for further customization
+    // for customization, see handler above
+    // for more info, see https://sdk.collaboraonline.com/docs/postmessage_api.html
+    postMessageToIframe('App_LoadingStatus')
   }
 })
 
