@@ -1,5 +1,5 @@
 <template>
-  <div id="files-sidebar-panel-audio">
+  <div id="files-sidebar-panel-audio" class="oc-rounded">
     <dl class="audio-data-list">
       <dt v-text="$gettext('Title')" />
       <dd data-testid="audio-panel-title" v-text="title" />
@@ -99,17 +99,26 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+#files-sidebar-panel-audio {
+  background-color: var(--oc-role-surface-container);
+  padding: var(--oc-space-medium);
+}
+
 .audio-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  dt,
-  dd {
+  margin: 0;
+
+  dt:not(:last-of-type),
+  dd:not(:last-of-type) {
     margin-bottom: var(--oc-space-small);
   }
+
   dt {
     font-weight: bold;
     white-space: nowrap;
   }
+
   dd {
     margin-inline-start: var(--oc-space-medium);
   }

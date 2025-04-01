@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-file-details-sidebar">
+  <div id="oc-file-details-sidebar" class="oc-rounded">
     <div v-if="hasContent">
       <div
         v-if="isPreviewLoading || preview"
@@ -334,7 +334,6 @@ watch(
 <style lang="scss" scoped>
 #oc-file-details-sidebar {
   background-color: var(--oc-role-surface-container);
-  border-radius: 5px;
   padding: var(--oc-space-medium);
 }
 
