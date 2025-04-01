@@ -17,6 +17,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.10.1 [[#450](https://github.com/opencloud-eu/web/pull/450)]
 - fix(deps): update dependency @vavt/cm-extension to v1.9.0 [[#447](https://github.com/opencloud-eu/web/pull/447)]
 - fix(deps): update dependency luxon to v3.6.1 [[#463](https://github.com/opencloud-eu/web/pull/463)]
 - chore(deps): update dependency vite to v6.2.4 [security] [[#461](https://github.com/opencloud-eu/web/pull/461)]
