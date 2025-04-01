@@ -31,7 +31,7 @@ export const useMessages = defineStore('messages', () => {
 
     return errors
       .map((error) => getXRequestID(error))
-      .filter((xRequestId) => xRequestId !== null)
+      .filter(Boolean)
       .map((item) => `X-Request-Id: ${item}`)
       .join('\r\n')
   }
