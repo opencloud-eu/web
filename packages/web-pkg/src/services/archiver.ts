@@ -92,7 +92,17 @@ export class ArchiverService {
         responseType: 'arraybuffer'
       })
 
-      const blob = new Blob([response.data], { type: 'application/octet-stream' })
+      // create 500MB chunks because blobs have a limit of 2GB
+      const chunkSize = 500 * 1024 * 1024
+      const chunks: ArrayBuffer[] = []
+      let offset = 0
+
+      while (offset < response.data.byteLength) {
+        chunks.push(response.data.slice(offset, offset + chunkSize))
+        offset += chunkSize
+      }
+
+      const blob = new Blob(chunks, { type: 'application/octet-stream' })
       const objectUrl = URL.createObjectURL(blob)
       const fileName = this.getFileNameFromResponseHeaders(response.headers)
       triggerDownloadWithFilename(objectUrl, fileName)
