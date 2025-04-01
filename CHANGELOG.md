@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.7.1 [[#476](https://github.com/opencloud-eu/web/pull/476)]
 - chore(deps): update devdependencies (non-major) [[#474](https://github.com/opencloud-eu/web/pull/474)]
 - chore(deps): update devdependencies (non-major) [[#451](https://github.com/opencloud-eu/web/pull/451)]
 - fix(deps): update dependency @sentry/vue to v9.10.1 [[#450](https://github.com/opencloud-eu/web/pull/450)]
