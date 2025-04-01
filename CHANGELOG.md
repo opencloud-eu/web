@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: make meta data panels more appealing [[#472](https://github.com/opencloud-eu/web/pull/472)]
 - feat: replace reset icon in preview app [[#468](https://github.com/opencloud-eu/web/pull/468)]
 - feat: change plain view button color [[#455](https://github.com/opencloud-eu/web/pull/455)]
 
