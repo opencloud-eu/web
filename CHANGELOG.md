@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-03-31
+## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-01
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -17,6 +17,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.3.5 [[#462](https://github.com/opencloud-eu/web/pull/462)]
+- fix(deps): update typescript-eslint monorepo to v8.29.0 [[#464](https://github.com/opencloud-eu/web/pull/464)]
 - fix(deps): update dependency @sentry/vue to v9.10.0 [[#446](https://github.com/opencloud-eu/web/pull/446)]
 - chore(deps): update dependency @types/semver to v7.7.0 [[#439](https://github.com/opencloud-eu/web/pull/439)]
 
