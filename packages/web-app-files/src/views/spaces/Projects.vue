@@ -214,7 +214,7 @@ const route = useRoute()
 const clientService = useClientService()
 const { can } = useAbility()
 const language = useGettext()
-const { $gettext } = language
+const { $gettext, $ngettext } = language
 const filterTerm = ref('')
 const markInstance = ref(undefined)
 const resourcesStore = useResourcesStore()
@@ -413,15 +413,25 @@ const footerTextTotal = computed(() => {
   const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
 
   if (!disabledSpaces.length) {
-    return $gettext('%{spaceCount} spaces in total', {
-      spaceCount: unref(spaces).length.toString()
-    })
+    return $ngettext(
+      '%{spaceCount} space in total',
+      '%{spaceCount} spaces in total',
+      unref(spaces).length,
+      {
+        spaceCount: unref(spaces).length.toString()
+      }
+    )
   }
 
-  return $gettext('%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)', {
-    spaceCount: unref(spaces).length.toString(),
-    disabledSpaceCount: disabledSpaces.length.toString()
-  })
+  return $ngettext(
+    '%{spaceCount} space in total (including %{disabledSpaceCount} disabled)',
+    '%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)',
+    unref(spaces).length,
+    {
+      spaceCount: unref(spaces).length.toString(),
+      disabledSpaceCount: disabledSpaces.length.toString()
+    }
+  )
 })
 const footerTextFilter = computed(() => {
   return $gettext('%{spaceCount} matching spaces', {
