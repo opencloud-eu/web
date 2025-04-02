@@ -3,11 +3,7 @@
     <div class="oc-flex oc-flex-middle">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
       <div class="files-links-name-wrapper oc-pl-s">
-        <span
-          aria-hidden="true"
-          class="files-links-name oc-text-truncate"
-          v-text="linkShare.displayName"
-        />
+        <span class="files-links-name oc-text-truncate" v-text="linkShare.displayName" />
         <div class="oc-flex oc-flex-nowrap oc-flex-middle">
           <link-role-dropdown
             v-if="isModifiable"
