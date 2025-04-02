@@ -19,15 +19,14 @@
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
           </div>
         </div>
-        <div
-          v-else-if="activeMediaFileCached.isError"
-          class="oc-width-1-1 oc-flex oc-flex-column oc-flex-middle oc-flex-center"
-        >
-          <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
-          <p>
-            {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFileCached.name }) }}
-          </p>
-        </div>
+        <template v-else-if="activeMediaFileCached.isError">
+          <error-image
+            v-if="activeMediaFileCached.isImage"
+            :active-media-file-cached="activeMediaFileCached"
+            @replace-url="({ url }) => replaceUrl(activeMediaFileCached.id, url)"
+          />
+          <error-default v-else :active-media-file-cached="activeMediaFileCached" />
+        </template>
         <media-image
           v-else-if="activeMediaFileCached.isImage"
           :file="activeMediaFileCached"
@@ -99,6 +98,8 @@ import {
   isLocationSharesActive
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
+import ErrorImage from './components/Errors/ErrorImage.vue'
+import ErrorDefault from './components/Errors/ErrorDefault.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
@@ -117,6 +118,8 @@ const PRELOAD_COUNT = 5
 export default defineComponent({
   name: 'Preview',
   components: {
+    ErrorDefault,
+    ErrorImage,
     MediaControls,
     MediaAudio,
     MediaImage,
@@ -207,6 +210,11 @@ export default defineComponent({
       return unref(cachedFiles)[unref(activeFilteredFile)?.id]
     })
 
+    const replaceUrl = (id: string, url: string) => {
+      cachedFiles.value[id].url = url
+      cachedFiles.value[id].isError = false
+    }
+
     const loadFileIntoCache = async (file: Resource) => {
       if (Object.hasOwn(unref(cachedFiles), file.id)) {
         return
@@ -216,6 +224,7 @@ export default defineComponent({
         id: file.id,
         name: file.name,
         url: undefined,
+        fallbackUrl: undefined,
         ext: file.extension,
         mimeType: file.mimeType,
         isVideo: isFileTypeVideo(file),
@@ -227,6 +236,8 @@ export default defineComponent({
       cachedFiles.value[file.id] = cachedFile
 
       try {
+        const url = await props.getUrlForResource(unref(space), file)
+        cachedFile.fallbackUrl = url
         if (cachedFile.isImage) {
           cachedFile.url = await previewService.loadPreview(
             {
@@ -240,7 +251,7 @@ export default defineComponent({
           )
           return
         }
-        cachedFile.url = await props.getUrlForResource(unref(space), file)
+        cachedFile.url = url
       } catch (e) {
         console.error(e)
         cachedFile.isError.value = true
@@ -315,6 +326,7 @@ export default defineComponent({
       activeFilteredFile,
       activeIndex,
       activeMediaFileCached,
+      replaceUrl,
       cachedFiles,
       filteredFiles,
       updateLocalHistory,

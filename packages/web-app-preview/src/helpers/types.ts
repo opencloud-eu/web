@@ -4,6 +4,7 @@ export type CachedFile = {
   id: string
   name: string
   url: string
+  fallbackUrl?: string
   ext: string
   mimeType: string
   isVideo: boolean
