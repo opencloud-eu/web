@@ -862,13 +862,9 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
         environment["WEB_UI_CONFIG_FILE"] = dir["federatedOpenCloudConfig"]
         container_name = "federation-opencloud"
 
-        # ToDo - this seems to be unused, check whether its needed and remove if not?
-        opencloud_domain = "federation-opencloud:10200"
     else:
         container_name = "opencloud"
 
-        # ToDo - this seems to be unused, check whether its needed and remove if not?
-        opencloud_domain = "opencloud:9200"
         environment["OC_URL"] = "https://opencloud:9200"
         environment["WEB_UI_CONFIG_FILE"] = dir["openCloudConfig"]
 
