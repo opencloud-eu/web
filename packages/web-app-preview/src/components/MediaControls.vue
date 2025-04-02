@@ -55,15 +55,6 @@
             <oc-icon fill-type="line" name="zoom-out" />
           </oc-button>
           <oc-button
-            v-oc-tooltip="imageOriginalSizeDescription"
-            class="preview-controls-image-original-size raw-hover-surface oc-p-xs oc-ml-s oc-mr-s"
-            appearance="raw"
-            :aria-label="imageOriginalSizeDescription"
-            @click="$emit('setZoom', 1)"
-          >
-            <span v-text="currentZoomDisplayValue" />
-          </oc-button>
-          <oc-button
             v-oc-tooltip="imageZoomDescription"
             class="preview-controls-image-zoom raw-hover-surface oc-p-xs"
             appearance="raw"
@@ -199,7 +190,6 @@ export default defineComponent({
       imageShrinkDescription: $gettext('Shrink the image'),
       imageZoomDescription: $gettext('Enlarge the image'),
       imageResetDescription: $gettext('Reset'),
-      imageOriginalSizeDescription: $gettext('Show the image at its normal size'),
       imageRotateLeftDescription: $gettext('Rotate the image 90 degrees to the left'),
       imageRotateRightDescription: $gettext('Rotate the image 90 degrees to the right'),
       previousDescription: $gettext('Show previous media file in folder'),

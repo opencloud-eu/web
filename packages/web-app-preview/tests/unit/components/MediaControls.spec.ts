@@ -72,17 +72,6 @@ describe('MediaControls component', () => {
         expect(wrapper.emitted('setZoom').length).toBeDefined()
       })
     })
-    describe('original size button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsImageOriginalSize).exists()).toBeTruthy()
-      })
-      it('emits "setZoom"-event on click', async () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        await wrapper.find(selectors.controlsImageOriginalSize).trigger('click')
-        expect(wrapper.emitted('setZoom').length).toBeDefined()
-      })
-    })
   })
   describe('rotation', () => {
     describe('left button', () => {
