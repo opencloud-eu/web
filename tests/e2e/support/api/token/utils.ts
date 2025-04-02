@@ -43,7 +43,7 @@ const getAuthorizedEndPoint = async (context: APIRequestContext, user: User): Pr
   })
   if (logonResponse.status() !== 200) {
     throw new Error(
-      `Logon failed: Expected status code be 200 but received ${logonResponse.status} Message: ${logonResponse.statusText}`
+      `Logon failed: Expected status code be 200 but received ${logonResponse.status()} Message: ${logonResponse.statusText()}`
     )
   }
 
@@ -67,7 +67,7 @@ const getCode = async (context: APIRequestContext, continueUrl: string): Promise
 
   if (authorizeResponse.status() !== 302) {
     throw new Error(
-      `Authorization failed: Expected status code be 302 but received ${authorizeResponse.status} Message: ${authorizeResponse.statusText}`
+      `Authorization failed: Expected status code be 302 but received ${authorizeResponse.status()} Message: ${authorizeResponse.statusText()}`
     )
   }
 
@@ -94,7 +94,7 @@ const getToken = async (context: APIRequestContext, code: string): Promise<Token
   })
   if (response.status() !== 200) {
     throw new Error(
-      `Request failed: Expected status code be 200 but received ${response.status} Message: ${response.statusText}`
+      `Request failed: Expected status code be 200 but received ${response.status()} Message: ${response.statusText()}`
     )
   }
   return (await response.json()) as Token
