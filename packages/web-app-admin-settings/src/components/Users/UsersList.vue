@@ -144,6 +144,7 @@ import {
 import { findIndex } from 'lodash-es'
 import Mark from 'mark.js'
 import { OcTable } from '@opencloud-eu/design-system/components'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'UsersList',
@@ -332,6 +333,59 @@ export default defineComponent({
       lastSelectedUserId
     )
 
+    const fields = computed<FieldType[]>(() => {
+      return [
+        {
+          name: 'select',
+          title: '',
+          type: 'slot',
+          width: 'shrink',
+          headerType: 'slot'
+        },
+        {
+          name: 'avatar',
+          title: '',
+          type: 'slot',
+          width: 'shrink'
+        },
+        {
+          name: 'onPremisesSamAccountName',
+          title: $gettext('User name'),
+          sortable: true
+        },
+        {
+          name: 'displayName',
+          title: $gettext('First and last name'),
+          sortable: true,
+          tdClass: 'mark-element'
+        },
+        {
+          name: 'mail',
+          title: $gettext('Email'),
+          sortable: true
+        },
+        {
+          name: 'role',
+          title: $gettext('Role'),
+          type: 'slot',
+          sortable: true
+        },
+        {
+          name: 'accountEnabled',
+          title: $gettext('Login'),
+          type: 'slot',
+          sortable: true
+        },
+        {
+          name: 'actions',
+          title: $gettext('Actions'),
+          sortable: false,
+          type: 'slot',
+          alignH: 'right'
+        }
+      ]
+    })
+
     const markInstance = ref<Mark>(null)
     onMounted(async () => {
       await nextTick()
@@ -373,7 +427,8 @@ export default defineComponent({
       unselectAllUsers,
       users,
       isSticky,
-      tableRef
+      tableRef,
+      fields
     }
   },
   computed: {
@@ -384,58 +439,6 @@ export default defineComponent({
       return this.$gettext('%{userCount} users in total', {
         userCount: this.users.length.toString()
       })
-    },
-    fields() {
-      return [
-        {
-          name: 'select',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot'
-        },
-        {
-          name: 'avatar',
-          title: '',
-          type: 'slot',
-          width: 'shrink'
-        },
-        {
-          name: 'onPremisesSamAccountName',
-          title: this.$gettext('User name'),
-          sortable: true
-        },
-        {
-          name: 'displayName',
-          title: this.$gettext('First and last name'),
-          sortable: true,
-          tdClass: 'mark-element'
-        },
-        {
-          name: 'mail',
-          title: this.$gettext('Email'),
-          sortable: true
-        },
-        {
-          name: 'role',
-          title: this.$gettext('Role'),
-          type: 'slot',
-          sortable: true
-        },
-        {
-          name: 'accountEnabled',
-          title: this.$gettext('Login'),
-          type: 'slot',
-          sortable: true
-        },
-        {
-          name: 'actions',
-          title: this.$gettext('Actions'),
-          sortable: false,
-          type: 'slot',
-          alignH: 'right'
-        }
-      ]
     },
     highlighted() {
       return this.selectedUsers.map((user) => user.id)

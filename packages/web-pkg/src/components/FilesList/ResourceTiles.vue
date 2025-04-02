@@ -393,7 +393,7 @@ const toggleSelectionAll = () => {
 }
 
 const showContextMenu = (
-  event: MouseEvent,
+  event: MouseEvent | KeyboardEvent,
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
@@ -411,7 +411,7 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleTile = (data: [Resource, MouseEvent]) => {
+const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
   const resource = data[0]
   const eventData = data[1]
 
@@ -471,11 +471,17 @@ onBeforeUpdate(() => {
   }
 })
 
-const setDropStyling = (resource: Resource, leaving: boolean, event: DragEvent) => {
-  const hasFilePayload = (event.dataTransfer?.types || []).some((e) => e === 'Files')
+const setDropStyling = (
+  resource: Resource,
+  leaving: boolean,
+  event: MouseEvent | KeyboardEvent | DragEvent
+) => {
+  const hasFilePayload = ((event as DragEvent).dataTransfer?.types || []).some((e) => e === 'Files')
   if (
     hasFilePayload ||
-    (event.currentTarget as HTMLElement)?.contains(event.relatedTarget as HTMLElement) ||
+    (event.currentTarget as HTMLElement)?.contains(
+      (event as MouseEvent).relatedTarget as HTMLElement
+    ) ||
     selectedIds.includes(resource.id) ||
     resource.type !== 'folder'
   ) {

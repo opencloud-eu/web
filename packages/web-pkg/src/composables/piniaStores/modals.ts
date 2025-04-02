@@ -34,7 +34,7 @@ export type Modal = {
   hideConfirmButton?: boolean
   hasInput?: boolean
   inputValue?: string
-  inputType?: string
+  inputType?: 'text' | 'number' | 'email' | 'password' | 'date'
   inputSelectionRange?: [number, number]
   inputLabel?: string
   inputError?: string

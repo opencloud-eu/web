@@ -11,7 +11,7 @@
 <script lang="ts">
 import { computed, defineComponent, inject, PropType, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
-import { AVAILABLE_SIZES } from '@opencloud-eu/design-system/helpers'
+import { AVAILABLE_SIZES, SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   IconType,
   createDefaultFileIconMapping,
@@ -50,7 +50,7 @@ export default defineComponent({
      * `xsmall, small, medium, large, xlarge, xxlarge`
      */
     size: {
-      type: String,
+      type: String as PropType<SizeType>,
       default: 'large',
       validator: (value: string): boolean => {
         return AVAILABLE_SIZES.some((e) => e === value)

@@ -69,11 +69,14 @@ const selectedSpacesString = computed(() => {
 })
 
 const items = computed(() => [
-  { term: $gettext('Total quota:'), definition: unref(totalSelectedSpaceQuotaTotal) },
-  { term: $gettext('Remaining quota:'), definition: unref(totalSelectedSpaceQuotaRemaining) },
-  { term: $gettext('Used quota:'), definition: unref(totalSelectedSpaceQuotaUsed) },
-  { term: $gettext('Enabled:'), definition: unref(totalEnabledSpaces) },
-  { term: $gettext('Disabled:'), definition: unref(totalDisabledSpaces) }
+  { term: $gettext('Total quota:'), definition: unref(totalSelectedSpaceQuotaTotal).toString() },
+  {
+    term: $gettext('Remaining quota:'),
+    definition: unref(totalSelectedSpaceQuotaRemaining).toString()
+  },
+  { term: $gettext('Used quota:'), definition: unref(totalSelectedSpaceQuotaUsed).toString() },
+  { term: $gettext('Enabled:'), definition: unref(totalEnabledSpaces).toString() },
+  { term: $gettext('Disabled:'), definition: unref(totalDisabledSpaces).toString() }
 ])
 </script>
 <style lang="scss" scoped>

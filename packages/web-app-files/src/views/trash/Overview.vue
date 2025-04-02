@@ -214,7 +214,7 @@ export default defineComponent({
       }
 
       return {
-        type: 'router-link',
+        type: 'router-link' as const,
         to: getTrashLink(space)
       }
     }

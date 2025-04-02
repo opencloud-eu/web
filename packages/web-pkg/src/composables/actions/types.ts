@@ -3,6 +3,7 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { RouteLocationRaw } from 'vue-router'
 import { IconFillType } from '../../helpers'
 import { StringUnionOrAnyString } from '../../utils'
+import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
@@ -11,7 +12,7 @@ export interface Action<T = ActionOptions> {
   category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
   icon: string
   iconFillType?: IconFillType
-  appearance?: string
+  appearance?: AppearanceType
   id?: string
   img?: string
   class?: string

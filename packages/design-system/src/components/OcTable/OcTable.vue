@@ -178,7 +178,7 @@ export interface Props {
    * @docs The horizontal padding size of the table.
    * @default small
    */
-  paddingX?: SizeType
+  paddingX?: SizeType | 'remove'
   /**
    * @docs The default field to sort by.
    */

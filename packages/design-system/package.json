@@ -125,8 +125,5 @@
     "vite-plugin-node-polyfills": "^0.23.0",
     "vitepress": "^1.6.3",
     "yaml": "^2.3.4"
-  },
-  "peerDependencies": {
-    "vue": "^3.5.11"
   }
 }

@@ -111,6 +111,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { inviteListSchema, inviteSchema } from '../schemas'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 type Token = {
   id: string
@@ -140,7 +141,7 @@ export default defineComponent({
     const tokens = ref<Token[]>([])
     const loading = ref(true)
     const descriptionErrorMessage = ref<string>()
-    const fields = computed(() => {
+    const fields = computed<FieldType[]>(() => {
       const haveLinks = unref(sortedTokens)[0]?.link
 
       return [
@@ -167,7 +168,7 @@ export default defineComponent({
           alignH: 'right',
           type: 'slot'
         }
-      ].filter(Boolean)
+      ].filter(Boolean) as FieldType[]
     })
     const sortedTokens = computed(() => {
       return [...unref(tokens)].sort((a, b) => (a.expirationSeconds < b.expirationSeconds ? 1 : -1))

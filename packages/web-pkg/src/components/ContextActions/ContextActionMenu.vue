@@ -23,6 +23,7 @@
 import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
 import { Action, ActionOptions } from '../../composables'
+import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type MenuSection = {
   name: string
@@ -38,7 +39,7 @@ export default defineComponent({
       required: true
     },
     appearance: {
-      type: String,
+      type: String as PropType<AppearanceType>,
       default: 'raw'
     },
     actionOptions: {

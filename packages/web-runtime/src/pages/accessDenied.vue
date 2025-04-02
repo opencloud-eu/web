@@ -79,12 +79,12 @@ export default defineComponent({
           configLoginURL.searchParams.append('redirectUrl', redirectUrl)
         }
         return {
-          type: 'a',
+          type: 'a' as const,
           href: configLoginURL.toString()
         }
       }
       return {
-        type: 'router-link',
+        type: 'router-link' as const,
         to: {
           name: 'login',
           query: {

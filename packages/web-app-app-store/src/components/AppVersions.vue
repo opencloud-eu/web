@@ -18,6 +18,7 @@ import { App } from '../types'
 import { useGettext } from 'vue3-gettext'
 import AppActions from './AppActions.vue'
 import { isEmpty } from 'lodash-es'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'AppVersions',
@@ -53,7 +54,7 @@ export default defineComponent({
           }
         })
     })
-    const fields = computed(() => {
+    const fields = computed<FieldType[]>(() => {
       return [
         {
           name: 'version',

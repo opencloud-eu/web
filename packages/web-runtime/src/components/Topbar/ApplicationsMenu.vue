@@ -90,7 +90,7 @@ export default defineComponent({
       return item.handler ? { click: item.handler } : {}
     }
     const getAdditionalAttributes = (item: AppMenuItemExtension) => {
-      let type: string
+      let type: 'a' | 'button' | 'router-link'
       if (item.handler) {
         type = 'button'
       } else if (item.path) {
@@ -102,7 +102,7 @@ export default defineComponent({
       return {
         type,
         ...(type === 'router-link' && { to: item.path }),
-        ...(type === 'a' && { href: item.url, target: '_blank' })
+        ...(type === 'a' && { href: item.url, target: '_blank' as const })
       }
     }
     const isMenuItemActive = (item: AppMenuItemExtension) => {

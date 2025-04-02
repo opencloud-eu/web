@@ -159,7 +159,7 @@ export interface Props {
    * @docs Type of the input field.
    * @default text
    */
-  inputType?: 'text' | 'number' | 'email' | 'password'
+  inputType?: 'text' | 'number' | 'email' | 'password' | 'date'
   /**
    * @docs Value of the input field.
    */

@@ -42,7 +42,6 @@ export default defineConfig({
             // include webfontloader to mock it for the tests... won't be a problem if you don't plan to use the ODS standalone
             dep !== 'webfontloader'
         ),
-        ...Object.keys(pkg.peerDependencies),
         '**/tests',
         '**/*.spec.ts'
       ]

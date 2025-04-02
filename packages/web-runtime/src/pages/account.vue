@@ -223,6 +223,7 @@
 
             <oc-table-td v-if="option.singleChoiceValue">
               <oc-select
+                :label="$gettext('Mail notification options')"
                 :model-value="emailNotificationsValues[option.id]"
                 :options="option.singleChoiceValue.options"
                 :clearable="false"
@@ -634,8 +635,8 @@ export default defineComponent({
     const notificationsSettingsFields = computed(() => [
       { label: $gettext('Event') },
       { label: $gettext('Event description'), hidden: true },
-      { label: $gettext('In-App'), alignH: 'right' },
-      { label: $gettext('Mail'), alignH: 'right' }
+      { label: $gettext('In-App'), alignH: 'right' as const },
+      { label: $gettext('Mail'), alignH: 'right' as const }
     ])
 
     const emailNotificationsOptionsFields = computed(() => [

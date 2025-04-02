@@ -3,7 +3,7 @@ import { OcNotificationMessage } from '@opencloud-eu/design-system/components'
 import MessageBar from '../../../src/components/MessageBar.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 
-const messages = [
+const messages: Message[] = [
   {
     id: '101',
     title: 'Error while moving',

@@ -79,14 +79,12 @@
           <div class="oc-mt-s">
             <oc-datepicker
               :label="$gettext('From')"
-              type="date"
               :is-clearable="true"
               :current-date="fromDate"
               @date-changed="(value) => setDateRangeDate(value, 'from')"
             />
             <oc-datepicker
               :label="$gettext('To')"
-              type="date"
               :is-clearable="true"
               :current-date="toDate"
               :min-date="fromDate ? fromDate : undefined"
@@ -266,11 +264,11 @@ export default defineComponent({
     }
 
     const setDateRangeDate = (
-      { date, error }: { date: DateTime; error: Error },
+      { date, error }: { date: DateTime; error: boolean },
       type: 'from' | 'to'
     ) => {
       if (error) {
-        console.error(error)
+        console.error('date could not be set')
         return
       }
 

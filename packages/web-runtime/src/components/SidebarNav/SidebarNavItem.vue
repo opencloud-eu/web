@@ -20,6 +20,7 @@
   </li>
 </template>
 <script lang="ts">
+import { FillType } from '@opencloud-eu/design-system/helpers'
 import { useRouter } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
@@ -49,7 +50,7 @@ export default defineComponent({
       required: true
     },
     fillType: {
-      type: String,
+      type: String as PropType<FillType>,
       required: false,
       default: 'fill'
     },

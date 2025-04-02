@@ -1,5 +1,5 @@
 import { shallowMount } from '@opencloud-eu/web-test-helpers'
-import { AVAILABLE_SIZES } from '@opencloud-eu/design-system/helpers'
+import { AVAILABLE_SIZES, SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceIcon from '../../../../src/components/FilesList/ResourceIcon.vue'
 import {
   ResourceIconMapping,
@@ -57,7 +57,7 @@ function match(resource: Partial<Resource>, additionalText?: string) {
   })
 }
 
-function getWrapper({ resource, size }: { resource: Partial<Resource>; size: string }) {
+function getWrapper({ resource, size }: { resource: Partial<Resource>; size: SizeType }) {
   return {
     wrapper: shallowMount(ResourceIcon, {
       global: {

@@ -12,7 +12,7 @@ export interface Message {
   errors?: MessageError[]
   errorLogContent?: string
   timeout?: number
-  status?: string
+  status?: 'passive' | 'primary' | 'success' | 'warning' | 'danger'
 }
 
 export const useMessages = defineStore('messages', () => {
@@ -39,7 +39,7 @@ export const useMessages = defineStore('messages', () => {
   const showErrorMessage = (data: Omit<Message, 'id'>) => {
     const message = {
       id: uuidV4() as string,
-      status: 'danger',
+      status: 'danger' as const,
       timeout: 0,
       ...(data.errors && { errorLogContent: getXRequestIdsFromErrors(data.errors) }),
       ...data

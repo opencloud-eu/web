@@ -144,6 +144,7 @@ import {
 import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'GroupsList',
@@ -306,6 +307,44 @@ export default defineComponent({
       lastSelectedGroupId
     )
 
+    const fields = computed<FieldType[]>(() => {
+      return [
+        {
+          name: 'select',
+          title: '',
+          type: 'slot',
+          width: 'shrink',
+          headerType: 'slot'
+        },
+        {
+          name: 'avatar',
+          title: '',
+          type: 'slot',
+          width: 'shrink'
+        },
+        {
+          name: 'displayName',
+          title: $gettext('Group name'),
+          type: 'slot',
+          sortable: true,
+          tdClass: 'mark-element'
+        },
+        {
+          name: 'members',
+          title: $gettext('Members'),
+          type: 'slot',
+          sortable: true
+        },
+        {
+          name: 'actions',
+          title: $gettext('Actions'),
+          sortable: false,
+          type: 'slot',
+          alignH: 'right'
+        }
+      ]
+    })
+
     watch(currentPage, () => {
       unselectAllGroups()
     })
@@ -353,47 +392,11 @@ export default defineComponent({
       selectGroups,
       selectGroup,
       groups,
-      isSticky
+      isSticky,
+      fields
     }
   },
   computed: {
-    fields() {
-      return [
-        {
-          name: 'select',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot'
-        },
-        {
-          name: 'avatar',
-          title: '',
-          type: 'slot',
-          width: 'shrink'
-        },
-        {
-          name: 'displayName',
-          title: this.$gettext('Group name'),
-          type: 'slot',
-          sortable: true,
-          tdClass: 'mark-element'
-        },
-        {
-          name: 'members',
-          title: this.$gettext('Members'),
-          type: 'slot',
-          sortable: true
-        },
-        {
-          name: 'actions',
-          title: this.$gettext('Actions'),
-          sortable: false,
-          type: 'slot',
-          alignH: 'right'
-        }
-      ]
-    },
     allGroupsSelected() {
       return this.paginatedItems.length === this.selectedGroups.length
     },

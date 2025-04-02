@@ -1,3 +1,5 @@
+import { SizeType } from './types'
+
 export const EVENT_THEAD_CLICKED = 'thead-clicked' as const
 export const EVENT_TROW_CLICKED = 'highlight' as const
 export const EVENT_TROW_MOUNTED = 'rowMounted' as const
@@ -16,4 +18,4 @@ export const AVAILABLE_SIZES = [
   'xlarge',
   'xxlarge',
   'xxxlarge'
-]
+] as SizeType[]

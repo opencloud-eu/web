@@ -65,6 +65,7 @@ import { computed, defineComponent, PropType, unref } from 'vue'
 import { Action, ActionOptions, useConfigStore } from '../../composables'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'ActionMenuItem',
@@ -78,12 +79,12 @@ export default defineComponent({
       required: true
     },
     size: {
-      type: String,
+      type: String as PropType<'small' | 'medium' | 'large'>,
       required: false,
       default: 'medium'
     },
     appearance: {
-      type: String,
+      type: String as PropType<AppearanceType>,
       default: 'raw'
     },
     shortcutHint: {
@@ -106,7 +107,7 @@ export default defineComponent({
     const configStore = useConfigStore()
     const { options } = storeToRefs(configStore)
 
-    const componentType = computed<string>(() => {
+    const componentType = computed<'a' | 'button' | 'router-link'>(() => {
       if (Object.hasOwn(props.action, 'route')) {
         return 'router-link'
       }
@@ -141,7 +142,7 @@ export default defineComponent({
           href: props.action.href(props.actionOptions)
         }),
         ...(['router-link', 'a'].includes(unref(componentType)) && {
-          target: options.value.cernFeatures ? '_blank' : '_self'
+          target: options.value.cernFeatures ? ('_blank' as const) : ('_self' as const)
         })
       }
     })

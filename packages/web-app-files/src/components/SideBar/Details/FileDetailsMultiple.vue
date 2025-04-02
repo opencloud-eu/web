@@ -49,10 +49,14 @@ const sizeValue = computed(() => {
 })
 
 const details = computed(() => [
-  { term: $gettext('Files'), definition: unref(filesCount) },
-  { term: $gettext('Folders'), definition: unref(foldersCount) },
-  ...((showSpaceCount && [{ term: $gettext('Spaces'), definition: unref(spacesCount) }]) || []),
-  ...((unref(hasSize) && [{ term: $gettext('Size'), definition: unref(sizeValue) }]) || [])
+  { term: $gettext('Files'), definition: unref(filesCount).toString() },
+  { term: $gettext('Folders'), definition: unref(foldersCount).toString() },
+  ...((showSpaceCount && [
+    { term: $gettext('Spaces'), definition: unref(spacesCount).toString() }
+  ]) ||
+    []),
+  ...((unref(hasSize) && [{ term: $gettext('Size'), definition: unref(sizeValue).toString() }]) ||
+    [])
 ])
 
 const selectedFilesCount = computed(() => {

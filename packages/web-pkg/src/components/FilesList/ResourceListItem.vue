@@ -179,9 +179,9 @@ export default defineComponent({
 
     parentFolderLinkIconAttrs() {
       return {
-        'fill-type': 'line',
+        'fill-type': 'line' as const,
         name: 'folder-2',
-        size: 'small',
+        size: 'small' as const,
         ...this.parentFolderLinkIconAdditionalAttributes
       }
     },

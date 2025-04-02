@@ -84,6 +84,7 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { dispatchModal } = useModals()
@@ -153,7 +154,7 @@ const visibleAppTokens = computed(() => {
   return unref(appTokens).slice(0, TOKENS_TO_DISPLAY)
 })
 
-const tableFields = computed(() => {
+const tableFields = computed<FieldType[]>(() => {
   return [
     {
       name: 'label',

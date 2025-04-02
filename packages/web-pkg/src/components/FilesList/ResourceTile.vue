@@ -118,7 +118,7 @@ const {
 
 const emit = defineEmits<{
   (e: 'click'): void
-  (e: 'contextmenu', event: Event): void
+  (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
 }>()
 
@@ -154,14 +154,14 @@ const statusIconAttrs = computed(() => {
   if (resource.locked) {
     return {
       name: 'lock',
-      fillType: 'fill'
+      fillType: 'fill' as const
     }
   }
 
   if (resource.processing) {
     return {
       name: 'loop-right',
-      fillType: 'line'
+      fillType: 'line' as const
     }
   }
 

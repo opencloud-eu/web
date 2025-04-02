@@ -12,23 +12,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { FillType } from '@opencloud-eu/design-system/helpers'
 
-export default defineComponent({
-  name: 'NoContentMessage',
-
-  props: {
-    icon: {
-      type: String,
-      required: true
-    },
-    iconFillType: {
-      type: String,
-      default: 'fill'
-    }
-  }
-})
+const { icon, iconFillType = 'fill' } = defineProps<{
+  icon: string
+  iconFillType?: FillType
+}>()
 </script>
 <style>
 .no-content-message {

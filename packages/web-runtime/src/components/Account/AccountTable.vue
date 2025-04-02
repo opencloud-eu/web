@@ -30,7 +30,7 @@ import { defineComponent } from 'vue'
 
 type AccountTableCell = {
   label: string
-  alignH?: string
+  alignH?: 'left' | 'center' | 'right'
   hidden?: boolean
 }
 

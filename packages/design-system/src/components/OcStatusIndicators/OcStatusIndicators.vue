@@ -67,7 +67,7 @@ export interface Props {
   /**
    * @docs The resource that the indicators are related to.
    */
-  resource: Record<string, unknown>
+  resource: unknown
   /**
    * @docs The indicators to be displayed. Please refer to the component source code for the `Indicator` type definition.
    */

@@ -70,6 +70,7 @@ import {
 import { useGettext } from 'vue3-gettext'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { buildConnection } from '../functions'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   components: {
@@ -107,7 +108,7 @@ export default defineComponent({
     const { $gettext } = useGettext()
     const clientService = useClientService()
 
-    const fields = computed(() => {
+    const fields = computed<FieldType[]>(() => {
       return [
         {
           name: 'display_name',

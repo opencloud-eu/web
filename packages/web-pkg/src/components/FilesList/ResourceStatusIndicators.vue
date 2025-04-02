@@ -7,8 +7,9 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ResourceIndicator, getIndicators } from '../../helpers'
 import { computed, useAttrs } from 'vue'
 import { useResourcesStore, useUserStore } from '../../composables/piniaStores'
+import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 
-const attrs = useAttrs()
+const attrs = useAttrs() as (typeof OcStatusIndicators)['props']
 const { space, resource, filter } = defineProps<{
   space: SpaceResource
   resource: Resource

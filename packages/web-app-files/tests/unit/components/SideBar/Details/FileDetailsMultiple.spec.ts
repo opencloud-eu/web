@@ -46,8 +46,8 @@ describe('Details Multiple Selection SideBar Item', () => {
     const items = definitionList.props('items')
 
     expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
-    expect(items.find(({ term }) => term === 'Files').definition).toBe(0)
-    expect(items.find(({ term }) => term === 'Folders').definition).toBe(2)
+    expect(items.find(({ term }) => term === 'Files').definition).toBe('0')
+    expect(items.find(({ term }) => term === 'Folders').definition).toBe('2')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
   it('should display information for two selected files', () => {
@@ -56,8 +56,8 @@ describe('Details Multiple Selection SideBar Item', () => {
     const items = definitionList.props('items')
 
     expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
-    expect(items.find(({ term }) => term === 'Files').definition).toBe(2)
-    expect(items.find(({ term }) => term === 'Folders').definition).toBe(0)
+    expect(items.find(({ term }) => term === 'Files').definition).toBe('2')
+    expect(items.find(({ term }) => term === 'Folders').definition).toBe('0')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
   it('should display information for one selected file, one selected folder', () => {
@@ -66,8 +66,8 @@ describe('Details Multiple Selection SideBar Item', () => {
     const items = definitionList.props('items')
 
     expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
-    expect(items.find(({ term }) => term === 'Files').definition).toBe(1)
-    expect(items.find(({ term }) => term === 'Folders').definition).toBe(1)
+    expect(items.find(({ term }) => term === 'Files').definition).toBe('1')
+    expect(items.find(({ term }) => term === 'Folders').definition).toBe('1')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
 })

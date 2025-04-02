@@ -158,6 +158,7 @@ import {
 } from '../../composables/keyboardActions'
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'SpacesList',
@@ -282,7 +283,7 @@ export default defineComponent({
       return unref(selectedSpaces).some((s) => s.id === space.id)
     }
 
-    const fields = computed(() => [
+    const fields = computed<FieldType[]>(() => [
       {
         name: 'select',
         title: '',

@@ -52,12 +52,12 @@ export default defineComponent({
       if (configStore.options.loginUrl) {
         const configLoginURL = new URL(encodeURI(configStore.options.loginUrl))
         return {
-          type: 'a',
+          type: 'a' as const,
           href: configLoginURL.toString()
         }
       }
       return {
-        type: 'router-link',
+        type: 'router-link' as const,
         to: {
           name: 'login'
         }

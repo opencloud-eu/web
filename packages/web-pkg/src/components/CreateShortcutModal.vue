@@ -85,6 +85,7 @@
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
+      :label="$gettext('Shortcut name')"
       class="oc-width-1-1"
       :error-message="inputFileNameErrorMessage"
       :fix-message-line="true"
