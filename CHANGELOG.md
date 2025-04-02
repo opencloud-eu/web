@@ -6,19 +6,21 @@
 
 @AlexAndBear, @JammingBen, @amrita-shrestha, @kulmann
 
-### 📈 Enhancement
-
-- feat: make meta data panels more appealing [[#472](https://github.com/opencloud-eu/web/pull/472)]
-- feat: replace reset icon in preview app [[#468](https://github.com/opencloud-eu/web/pull/468)]
-- feat: change plain view button color [[#455](https://github.com/opencloud-eu/web/pull/455)]
-
 ### 🐛 Bug Fixes
 
+- fix: remove zoom indicator to avoid confusion [[#482](https://github.com/opencloud-eu/web/pull/482)]
+- fix: spaces overview item count [[#480](https://github.com/opencloud-eu/web/pull/480)]
 - fix: hide request-id when it's undefined [[#469](https://github.com/opencloud-eu/web/pull/469)]
 - fix: web doesn't return to correct page (pagination) after closing app [[#466](https://github.com/opencloud-eu/web/pull/466)]
 - fix: archive download with archives >2GB [[#465](https://github.com/opencloud-eu/web/pull/465)]
 - fix: post-processing indicator not updating [[#444](https://github.com/opencloud-eu/web/pull/444)]
 - fix: Don't show backend edition when not set [[#442](https://github.com/opencloud-eu/web/pull/442)]
+
+### 📈 Enhancement
+
+- feat: make meta data panels more appealing [[#472](https://github.com/opencloud-eu/web/pull/472)]
+- feat: replace reset icon in preview app [[#468](https://github.com/opencloud-eu/web/pull/468)]
+- feat: change plain view button color [[#455](https://github.com/opencloud-eu/web/pull/455)]
 
 ### 📦️ Dependencies
 
