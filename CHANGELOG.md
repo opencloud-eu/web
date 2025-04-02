@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-01
+## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): bump @babel/runtime to v7.27.0 [[#477](https://github.com/opencloud-eu/web/pull/477)]
 - chore(deps): update pnpm to v10.7.1 [[#476](https://github.com/opencloud-eu/web/pull/476)]
 - chore(deps): update devdependencies (non-major) [[#474](https://github.com/opencloud-eu/web/pull/474)]
 - chore(deps): update devdependencies (non-major) [[#451](https://github.com/opencloud-eu/web/pull/451)]
