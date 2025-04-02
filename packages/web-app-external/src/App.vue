@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { stringify } from 'qs'
-import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef } from 'vue'
+import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef, onUnmounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { isEmpty } from 'lodash-es'
@@ -193,6 +193,10 @@ const determineOpenAsPreview = (appName: string) => {
   return openAsPreview === true || (Array.isArray(openAsPreview) && openAsPreview.includes(appName))
 }
 
+const isCollabora = computed(() => {
+  return unref(appName)?.toLowerCase()?.startsWith('collabora')
+})
+
 // switch to write mode when edit is clicked
 const catchClickMicrosoftEdit = (event: MessageEvent) => {
   try {
@@ -202,39 +206,61 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
   } catch {}
 }
 
+const handlePostMessagesCollabora = (event: MessageEvent) => {
+  try {
+    const message = JSON.parse(event.data || '{}')
+    console.log('message received', message)
+    if (message.MessageId === 'App_LoadingStatus' && message.Values?.Status === 'Initialized') {
+      postMessageToIframe('Hide_Menu_Item', { id: 'closedocument' })
+    }
+    if (message.MessageId === 'Host_PostmessageReady') {
+      postMessageToIframe('Hide_Menu_Item', { id: 'closedocument' })
+    }
+  } catch (e) {
+    console.error('Error parsing Collabora PostMessage', e)
+  }
+}
+
 onMounted(() => {
   if (determineOpenAsPreview(unref(appName))) {
     window.addEventListener('message', catchClickMicrosoftEdit)
   } else {
     window.removeEventListener('message', catchClickMicrosoftEdit)
   }
+
+  if (unref(isCollabora)) {
+    window.addEventListener('message', handlePostMessagesCollabora)
+  }
+})
+onUnmounted(() => {
+  window.removeEventListener('message', catchClickMicrosoftEdit)
+  if (unref(isCollabora)) {
+    window.removeEventListener('message', handlePostMessagesCollabora)
+  }
 })
 
 const appIframe = useTemplateRef('appIFrame')
 const postMessageToIframe = (messageId: string, values?: { [key: string]: unknown }): void => {
-  return unref(appIframe).contentWindow.postMessage({
-    MessageId: messageId,
-    SendTime: Date.now(),
-    ...(values && { Values: values })
-  })
+  return unref(appIframe).contentWindow.postMessage(
+    {
+      MessageId: messageId,
+      SendTime: Date.now(),
+      ...(values && { Values: values })
+    },
+    '*'
+  )
 }
 watch(appIframe, (iframe) => {
   if (!iframe || !iframe.contentWindow) {
     return
   }
 
-  if (unref(appName)?.toLowerCase()?.startsWith('collabora')) {
-    iframe.contentWindow.addEventListener('message', (event: MessageEvent) => {
-      if (event?.data?.MessageId === 'Host_PostmessageReady') {
-        postMessageToIframe('Hide_Menu_Item', { id: 'closedocument' })
-      }
-    })
-
-    // sending 'App_LoadingStatus' triggers a response message, upon which we know that
-    // the UI is ready for further customization
-    // for customization, see handler above
-    // for more info, see https://sdk.collaboraonline.com/docs/postmessage_api.html
-    postMessageToIframe('App_LoadingStatus')
+  if (unref(isCollabora)) {
+    postMessageToIframe('Host_PostmessageReady')
+    postMessageToIframe('Hide_Menu_Item', { id: 'closedocument' })
+    postMessageToIframe('Hide_Menu_Item', { id: 'close' })
+    postMessageToIframe('Hide_Menu_Item', { id: 'closebutton' })
+    postMessageToIframe('Hide_Button', { id: 'closebutton' })
   }
 })
 
