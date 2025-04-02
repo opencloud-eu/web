@@ -1,4 +1,4 @@
-import { Response } from 'node-fetch'
+import { APIResponse } from '@playwright/test'
 import join from 'join-path'
 import { checkResponseStatus, request } from '../http'
 import { Space, User } from '../../types'
@@ -47,10 +47,10 @@ export const createSpace = async ({
   user: User
   space: Space
 }): Promise<string> => {
-  const body = JSON.stringify({
+  const body = {
     id: space.id,
     name: space.name
-  })
+  }
 
   const response = await request({
     method: 'POST',
@@ -104,7 +104,7 @@ export const updateSpaceSpecialSection = async ({
   } else {
     type = 'image'
   }
-  const body = JSON.stringify({
+  const body = {
     special: [
       {
         specialFolder: {
@@ -113,7 +113,7 @@ export const updateSpaceSpecialSection = async ({
         id: fileId
       }
     ]
-  })
+  }
 
   const response = await request({
     method: 'PATCH',
@@ -127,7 +127,7 @@ export const updateSpaceSpecialSection = async ({
   )
 }
 
-export const disableSpace = ({ user, space }: { user: User; space: Space }): Promise<Response> => {
+export const disableSpace = ({ user, space }: { user: User; space: Space }): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
     path: join('graph', 'v1.0', 'drives', space.id),
@@ -135,7 +135,7 @@ export const disableSpace = ({ user, space }: { user: User; space: Space }): Pro
   })
 }
 
-export const deleteSpace = ({ user, space }: { user: User; space: Space }): Promise<Response> => {
+export const deleteSpace = ({ user, space }: { user: User; space: Space }): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
     path: join('graph', 'v1.0', 'drives', space.id),

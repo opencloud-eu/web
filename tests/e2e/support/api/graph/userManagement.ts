@@ -22,12 +22,12 @@ export const me = async ({ user }: { user: User }): Promise<Me> => {
 }
 
 export const createUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
-  const body = JSON.stringify({
+  const body = {
     displayName: user.displayName,
     mail: user.email,
     onPremisesSamAccountName: user.username,
     passwordProfile: { password: user.password }
-  })
+  }
 
   const response = await request({
     method: 'POST',
@@ -79,9 +79,9 @@ export const createGroup = async ({
   group: Group
   admin: User
 }): Promise<Group> => {
-  const body = JSON.stringify({
+  const body = {
     displayName: group.displayName
-  })
+  }
 
   const response = await request({
     method: 'POST',
@@ -125,9 +125,9 @@ export const addUserToGroup = async ({
   groupId: string
   admin: User
 }): Promise<void> => {
-  const body = JSON.stringify({
+  const body = {
     '@odata.id': join(config.baseUrl, 'graph', 'v1.0', 'users', userId)
-  })
+  }
 
   const response = await request({
     method: 'POST',
@@ -153,11 +153,11 @@ export const assignRole = async (admin: User, id: string, role: string): Promise
     method: 'POST',
     path: join('graph', 'v1.0', 'users', id, 'appRoleAssignments'),
     user: admin,
-    body: JSON.stringify({
+    body: {
       principalId: id,
       appRoleId: userRoleStore.get(role),
       resourceId: applicationEntity.id
-    })
+    }
   })
   checkResponseStatus(response, 'Failed while assigning role to the user')
 }

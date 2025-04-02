@@ -19,7 +19,7 @@ export const folderExists = async ({
     user: user
   })
 
-  return getResponse.status === 200
+  return getResponse.status() === 200
 }
 
 const createFolder = async ({

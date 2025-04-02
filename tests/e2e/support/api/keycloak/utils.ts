@@ -1,5 +1,5 @@
 import join from 'join-path'
-import { BodyInit, Response } from 'node-fetch'
+import { APIResponse } from '@playwright/test'
 import { request as httpRequest, checkResponseStatus } from '../http'
 import { User } from '../../types'
 import { TokenEnvironmentFactory } from '../../environment'
@@ -15,25 +15,25 @@ export const realmBasePath = `admin/realms/${config.keycloakRealm}`
 export const request = async (args: {
   method: 'POST' | 'DELETE' | 'PUT' | 'GET' | 'MKCOL' | 'PROPFIND' | 'PATCH'
   path: string
-  body?: BodyInit
+  body?: Record<string, any> | null
   user?: User
   header?: object
-}): Promise<Response> => {
+}): Promise<APIResponse> => {
   return await httpRequest({ ...args, isKeycloakRequest: true })
 }
 
-export const getUserIdFromResponse = (response: Response): string => {
-  return response.headers.get('location').split('/').pop()
+export const getUserIdFromResponse = (response: APIResponse): string => {
+  return response.headers()['location'].split('/').pop()
 }
 
 export const refreshAccessTokenForKeycloakUser = async (user: User): Promise<void> => {
   const tokenEnvironment = TokenEnvironmentFactory('keycloak')
 
-  const body = new URLSearchParams()
-  // client-id `admin-cli` enables us to use password grant type to get access token
-  body.append('client_id', 'admin-cli')
-  body.append('grant_type', 'refresh_token')
-  body.append('refresh_token', tokenEnvironment.getToken({ user }).refreshToken)
+  const body = {
+    client_id: 'admin-cli',
+    grant_type: 'refresh_token',
+    refresh_token: tokenEnvironment.getToken({ user }).refreshToken
+  }
 
   const response = await request({
     method: 'POST',

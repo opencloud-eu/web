@@ -208,7 +208,7 @@ const cleanUpSpaces = async (adminUser: User) => {
           space
         })
         .then(async (res) => {
-          if (res.status === 204) {
+          if (res.status() === 204) {
             await api.graph.deleteSpace({
               user: adminUser,
               space

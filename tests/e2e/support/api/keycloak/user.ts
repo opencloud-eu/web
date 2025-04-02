@@ -18,7 +18,7 @@ const openCloudKeycloakUserRoles: Record<string, string> = {
 
 export const createUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
   const fullName = user.displayName.split(' ')
-  const body = JSON.stringify({
+  const body = {
     username: user.username,
     credentials: [{ value: user.password, type: 'password' }],
     firstName: fullName[0],
@@ -31,7 +31,7 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
     //  - https://github.com/keycloak/keycloak/issues/16449
     // realmRoles: ['openCloudUser', 'offline_access'],
     enabled: true
-  })
+  }
 
   // create a user
   const creationRes = await request({
@@ -85,10 +85,10 @@ export const assignRole = async ({
   return request({
     method: 'POST',
     path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
-    body: JSON.stringify([
+    body: [
       await getRealmRole(openCloudKeycloakUserRoles[role], admin),
       await getRealmRole('offline_access', admin)
-    ]),
+    ],
     user: admin,
     header: { 'Content-Type': 'application/json' }
   })
@@ -107,7 +107,7 @@ export const unAssignRole = async ({
   const response = await request({
     method: 'DELETE',
     path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
-    body: JSON.stringify([await getRealmRole(openCloudKeycloakUserRoles[role], admin)]),
+    body: [await getRealmRole(openCloudKeycloakUserRoles[role], admin)],
     user: admin,
     header: { 'Content-Type': 'application/json' }
   })
