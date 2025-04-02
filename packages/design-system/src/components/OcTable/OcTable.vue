@@ -540,9 +540,6 @@ const handleSort = (field: FieldType) => {
   &-thead-content {
     vertical-align: middle;
     display: inline-table;
-    &:hover {
-      text-decoration: underline;
-    }
   }
 
   &-footer {
@@ -559,6 +556,9 @@ const handleSort = (field: FieldType) => {
 .oc-button-sort {
   display: flex;
   justify-content: start;
+  &:hover {
+    text-decoration: underline;
+  }
   .oc-icon {
     &:hover {
       background-color: var(--oc-role-surface-container);
