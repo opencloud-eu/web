@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(files): truncation on long link names [[#481](https://github.com/opencloud-eu/web/pull/481)]
 - fix: remove zoom indicator to avoid confusion [[#482](https://github.com/opencloud-eu/web/pull/482)]
 - fix: spaces overview item count [[#480](https://github.com/opencloud-eu/web/pull/480)]
 - fix: hide request-id when it's undefined [[#469](https://github.com/opencloud-eu/web/pull/469)]
