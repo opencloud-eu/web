@@ -127,7 +127,13 @@ export const updateSpaceSpecialSection = async ({
   )
 }
 
-export const disableSpace = ({ user, space }: { user: User; space: Space }): Promise<APIResponse> => {
+export const disableSpace = ({
+  user,
+  space
+}: {
+  user: User
+  space: Space
+}): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
     path: join('graph', 'v1.0', 'drives', space.id),
@@ -135,7 +141,13 @@ export const disableSpace = ({ user, space }: { user: User; space: Space }): Pro
   })
 }
 
-export const deleteSpace = ({ user, space }: { user: User; space: Space }): Promise<APIResponse> => {
+export const deleteSpace = ({
+  user,
+  space
+}: {
+  user: User
+  space: Space
+}): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
     path: join('graph', 'v1.0', 'drives', space.id),

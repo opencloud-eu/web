@@ -51,10 +51,7 @@ const getAuthorizedEndPoint = async (context: APIRequestContext, user: User): Pr
   return data.hello.continue_uri
 }
 
-const getCode = async (
-  context: APIRequestContext,
-  continueUrl: string
-): Promise<string> => {
+const getCode = async (context: APIRequestContext, continueUrl: string): Promise<string> => {
   const params = new URLSearchParams({
     client_id: 'web',
     prompt: 'none',
