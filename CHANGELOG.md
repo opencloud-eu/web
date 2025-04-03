@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#495](https://github.com/opencloud-eu/web/pull/495)]
 - chore(deps): update devdependencies (non-major) [[#491](https://github.com/opencloud-eu/web/pull/491)]
 - chore(deps): bump @babel/runtime to v7.27.0 [[#477](https://github.com/opencloud-eu/web/pull/477)]
 - chore(deps): update pnpm to v10.7.1 [[#476](https://github.com/opencloud-eu/web/pull/476)]
