@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-02
+## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-03
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -19,12 +19,14 @@
 
 ### 📈 Enhancement
 
+- feat: add hint for tag searching [[#475](https://github.com/opencloud-eu/web/pull/475)]
 - feat: make meta data panels more appealing [[#472](https://github.com/opencloud-eu/web/pull/472)]
 - feat: replace reset icon in preview app [[#468](https://github.com/opencloud-eu/web/pull/468)]
 - feat: change plain view button color [[#455](https://github.com/opencloud-eu/web/pull/455)]
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#491](https://github.com/opencloud-eu/web/pull/491)]
 - chore(deps): bump @babel/runtime to v7.27.0 [[#477](https://github.com/opencloud-eu/web/pull/477)]
 - chore(deps): update pnpm to v10.7.1 [[#476](https://github.com/opencloud-eu/web/pull/476)]
 - chore(deps): update devdependencies (non-major) [[#474](https://github.com/opencloud-eu/web/pull/474)]
