@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @amrita-shrestha, @kulmann
+@AlexAndBear, @JammingBen, @ScharfViktor, @amrita-shrestha, @kulmann
+
+### ✅ Tests
+
+- [full-ci]use Playwright api instead of node fetch [[#486](https://github.com/opencloud-eu/web/pull/486)]
 
 ### 🐛 Bug Fixes
 
