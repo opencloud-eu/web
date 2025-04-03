@@ -144,7 +144,7 @@ export const createShare = async ({
   const response = await request({
     method: 'POST',
     path: join('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'invite'),
-    body: JSON.stringify({
+    body: {
       recipients: [
         {
           '@libre.graph.recipient.type': shareType,
@@ -152,7 +152,7 @@ export const createShare = async ({
         }
       ],
       roles: [roleId]
-    }),
+    },
     user
   })
   checkResponseStatus(response, 'Failed while creating share')
@@ -182,7 +182,7 @@ export const addMembersToTheProjectSpace = async ({
   const response = await request({
     method: 'POST',
     path: join('graph', 'v1beta1', 'drives', driveId, 'root', 'invite'),
-    body: JSON.stringify({
+    body: {
       recipients: [
         {
           '@libre.graph.recipient.type': shareType,
@@ -190,7 +190,7 @@ export const addMembersToTheProjectSpace = async ({
         }
       ],
       roles: [roleId]
-    }),
+    },
     user
   })
 
@@ -237,11 +237,11 @@ export const createLinkShare = async ({
   const response = await request({
     method: 'POST',
     path: join('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'createLink'),
-    body: JSON.stringify({
+    body: {
       type: roleType,
       password,
       displayName: name
-    }),
+    },
     user
   })
 
@@ -281,11 +281,11 @@ export const createSpaceLinkShare = async ({
   const response = await request({
     method: 'POST',
     path: join('graph', 'v1beta1', 'drives', driveId, 'root', 'createLink'),
-    body: JSON.stringify({
+    body: {
       type: roleType,
       password,
       displayName: name
-    }),
+    },
     user
   })
 

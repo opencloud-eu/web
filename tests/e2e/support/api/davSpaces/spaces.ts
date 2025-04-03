@@ -19,7 +19,7 @@ export const folderExists = async ({
     user: user
   })
 
-  return getResponse.status === 200
+  return getResponse.status() === 200
 }
 
 const createFolder = async ({
@@ -69,7 +69,7 @@ const createFile = async ({
     body: content,
     user: user,
     header: mtimeDeltaDays
-      ? { 'X-OC-Mtime': today.getTime() / 1000 + parseInt(mtimeDeltaDays) * 86400 }
+      ? { 'X-OC-Mtime': String(today.getTime() / 1000 + parseInt(mtimeDeltaDays) * 86400) }
       : {}
   })
 

@@ -1,5 +1,5 @@
 import join from 'join-path'
-import fetch, { BodyInit, Response } from 'node-fetch'
+import { APIResponse, request as apiRequest } from '@playwright/test'
 import { User } from '../types'
 import { config } from '../../config'
 import { TokenEnvironmentFactory } from '../environment'
@@ -26,31 +26,32 @@ export const request = async ({
 }: {
   method: 'POST' | 'DELETE' | 'PUT' | 'GET' | 'MKCOL' | 'PROPFIND' | 'PATCH'
   path: string
-  body?: BodyInit
+  body?: Record<string, any> | string | null
   user?: User
   header?: object
   isKeycloakRequest?: boolean
-}): Promise<Response> => {
+}): Promise<APIResponse> => {
   const authHeader = getAuthHeader(user, isKeycloakRequest)
+  const context = await apiRequest.newContext()
 
   const basicHeader = {
-    'OCS-APIREQUEST': true as any,
+    'OCS-APIREQUEST': 'true',
     ...(user.username && authHeader),
     ...header
   }
 
   const baseUrl = isKeycloakRequest ? config.keycloakUrl : config.baseUrl
 
-  return await fetch(join(baseUrl, path), {
+  return await context.fetch(join(baseUrl, path), {
     method,
-    body,
+    data: body,
     headers: basicHeader
   })
 }
 
-export const checkResponseStatus = (response: Response, message = ''): void => {
+export const checkResponseStatus = (response: APIResponse, message = ''): void => {
   // response.status >= 200 && response.status < 300
-  if (!response.ok) {
-    throw Error(`HTTP Request Failed: ${message}, Status: ${response.status}`)
+  if (!response.ok()) {
+    throw Error(`HTTP Request Failed: ${message}, Status: ${response.status()}`)
   }
 }
