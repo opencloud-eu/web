@@ -155,7 +155,6 @@ export const refreshAccessTokenForKeycloakUser = async (user: User): Promise<voi
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     }
-    // header: { 'Content-Type': 'application/x-www-form-urlencoded' },
   })
   if (refreshResponse.status() !== 200) {
     throw new Error(
