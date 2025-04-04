@@ -4,9 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @individual-it
+@JammingBen, @ScharfViktor, @individual-it
 
+### ✅ Tests
 
+- test for #453 [[#505](https://github.com/opencloud-eu/web/pull/505)]
 
 ## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-04
 
