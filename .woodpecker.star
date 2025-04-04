@@ -1390,8 +1390,6 @@ def pipelineSanityChecks(ctx, pipelines):
 
 def uploadTracingResult(ctx):
     status = ["failure"]
-    if ("with-tracing" in ctx.build.title.lower()):
-        status = ["failure", "success"]
 
     return [{
         "name": "upload-tracing-result",
@@ -1421,9 +1419,6 @@ def uploadTracingResult(ctx):
 
 def logTracingResult(ctx, suite):
     status = ["failure"]
-
-    if ("with-tracing" in ctx.build.title.lower()):
-        status = ["failure", "success"]
 
     return [{
         "name": "log-tracing-result",
