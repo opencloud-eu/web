@@ -563,16 +563,16 @@ def e2eTests(ctx):
             return []
 
         steps += [{
-            "name": "e2e-tests",
-            "image": OC_CI_NODEJS,
-            "environment": environment,
-            "commands": [
-                "cd tests/e2e",
-                command,
-            ],
-        }]  # + \
-        #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
-        #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
+                     "name": "e2e-tests",
+                     "image": OC_CI_NODEJS,
+                     "environment": environment,
+                     "commands": [
+                         "cd tests/e2e",
+                         command,
+                     ],
+                 }] + \
+                 uploadTracingResult(ctx) + \
+                 logTracingResult(ctx, "e2e-tests %s" % suite)
 
         pipelines.append({
             "name": "e2e-tests-%s" % suite,
@@ -1397,23 +1397,21 @@ def uploadTracingResult(ctx):
         "image": PLUGINS_S3,
         "pull": "if-not-exists",
         "settings": {
-            "bucket": {
-                "from_secret": "cache_public_s3_bucket",
-            },
+            "bucket": "public",
             "endpoint": {
-                "from_secret": "cache_public_s3_server",
+                "from_secret": "cache_s3_server",
             },
             "path_style": True,
             "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
             "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
-            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing",
+            "target": "/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing",
         },
         "environment": {
             "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_public_s3_access_key",
+                "from_secret": "cache_s3_access_key",
             },
             "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_public_s3_secret_key",
+                "from_secret": "cache_s3_secret_key",
             },
         },
         "when": {
@@ -1433,7 +1431,7 @@ def logTracingResult(ctx, suite):
         "commands": [
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing/$f \n"; done',
+            'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing/$f \n"; done',
         ],
         "when": {
             "status": status,
