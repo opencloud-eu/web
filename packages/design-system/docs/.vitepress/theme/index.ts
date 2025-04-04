@@ -3,7 +3,7 @@ import { createGettext } from 'vue3-gettext'
 import * as components from './../../../src/components'
 import * as directives from './../../../src/directives'
 import './custom.scss'
-import LiveCodeBlock from '../LiveCodeBlock.vue'
+import LiveCodeBlock from '../components/LiveCodeBlock.vue'
 import ComponentApi from '../components/ComponentApi.vue'
 
 export default {
