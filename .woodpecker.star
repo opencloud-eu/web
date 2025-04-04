@@ -20,7 +20,7 @@ ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
-PLUGINS_S3 = "plugins/s3:1.5"
+PLUGINS_S3 = "woodpeckerci/plugin-s3:1.3.2"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
@@ -1400,18 +1400,16 @@ def uploadTracingResult(ctx):
             "endpoint": {
                 "from_secret": "cache_s3_server",
             },
+            "access_key": {
+                "from_secret": "cache_s3_access_key",
+            },
+            "secret_key": {
+                "from_secret": "cache_s3_secret_key",
+            },
             "path_style": True,
             "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
             "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
             "target": "/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_s3_secret_key",
-            },
         },
         "when": {
             "status": status,
