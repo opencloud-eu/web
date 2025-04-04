@@ -43,6 +43,7 @@ dir = {
     "federatedOpenCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud-federated.json",
     "ocmProviders": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/providers.json",
     "playwrightBrowsersArchive": "/woodpecker/src/github.com/opencloud-eu/web/web/playwright-browsers.tar.gz",
+    "playwrightTracing": "/woodpecker/src/github.com/opencloud-eu/web/web/reports/e2e/playwright/tracing/*zip",
 }
 
 config = {
@@ -1392,25 +1393,13 @@ def uploadTracingResult(ctx):
 
     return [{
         "name": "upload-tracing-result",
-        "image": PLUGINS_S3,
-        "settings": {
-            "bucket": {
-                "from_secret": "cache_s3_bucket",
-            },
-            "endpoint": {
-                "from_secret": "cache_s3_server",
-            },
-            "access_key": {
-                "from_secret": "cache_s3_access_key",
-            },
-            "secret_key": {
-                "from_secret": "cache_s3_secret_key",
-            },
-            "path_style": True,
-            "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
-            "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
-            "target": "/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing",
-        },
+        "image": MINIO_MC,
+        "environment": minio_mc_environment,
+        "commands": [
+            "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+            "mc cp -r -a %s s3/$CACHE_BUCKET/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing/" % dir["playwrightTracing"],
+            "mc ls --recursive s3/$CACHE_BUCKET/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}",
+        ],
         "when": {
             "status": status,
         },
