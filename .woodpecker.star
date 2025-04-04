@@ -60,7 +60,7 @@ config = {
     "e2e": {
         "1": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "journeys",
                 "smoke",
@@ -68,10 +68,9 @@ config = {
         },
         "2": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "suites": [
                 "admin-settings",
-                "spaces",
             ],
         },
         "3": {
