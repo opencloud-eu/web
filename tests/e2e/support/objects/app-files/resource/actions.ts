@@ -116,6 +116,8 @@ const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
 const sideBarActions =
   '//ul[@id="oc-files-actions-sidebar"]//span[contains(@class,"oc-files-context-action-label")]/span'
+const selectAllCheckbox = '#resource-table-select-all'
+const filesTable = '#files-space-table .oc-table-data-cell-select'
 
 // online office locators
 // Collabora
@@ -279,6 +281,31 @@ export const createSpaceFromSelection = async ({
     select: true
   })
   await page.locator(util.format(resourceNameSelector, resources[0])).click({ button: 'right' })
+
+  await page.locator(createSpaceFromResourceAction).click()
+  await page.locator(resourceNameInput).fill(spaceName)
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 201 &&
+        resp.request().method() === 'POST' &&
+        resp.url().endsWith('/drives?template=default')
+    ),
+    page.locator(util.format(actionConfirmationButton, 'Create')).click()
+  ])
+  await page.locator(notificationMessage).waitFor()
+  return (await response.json()) as Space
+}
+
+export const createSpaceFromAll = async ({
+  page,
+  spaceName
+}: {
+  page: Page
+  spaceName: string
+}): Promise<Space> => {
+  await page.locator(selectAllCheckbox).click()
+  await page.locator(filesTable).first().click({ button: 'right' })
 
   await page.locator(createSpaceFromResourceAction).click()
   await page.locator(resourceNameInput).fill(spaceName)
