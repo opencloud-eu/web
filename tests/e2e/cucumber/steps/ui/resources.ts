@@ -394,7 +394,7 @@ When(
 )
 
 When(
-  '{string} enables the option to display the hidden file',
+  '{string} enables/disables the option to display the hidden file',
   async function (this: World, stepUser: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
@@ -682,6 +682,19 @@ When(
     const resourceObject = new objects.applicationFiles.Resource({ page })
     const resources = stepTable.hashes().map((item) => item.resource)
     const space = await resourceObject.createSpaceFromSelection({ resources, spaceName })
+    this.spacesEnvironment.createSpace({
+      key: space.name,
+      space: { name: space.name, id: space.id }
+    })
+  }
+)
+
+When(
+  '{string} creates space {string} from all resources using the context menu',
+  async function (this: World, stepUser: string, spaceName: string) {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const space = await resourceObject.createSpaceFromAll({ spaceName })
     this.spacesEnvironment.createSpace({
       key: space.name,
       space: { name: space.name, id: space.id }

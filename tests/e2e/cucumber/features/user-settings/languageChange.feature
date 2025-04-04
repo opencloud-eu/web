@@ -7,24 +7,25 @@ Feature: language settings
       | id    |
       | Alice |
       | Brian |
-  # skip unti we fix ## skip unti we fix https://github.com/opencloud-eu/opencloud/issues/369
-  # Scenario: system language change
-  #   And "Brian" creates the following folder in personal space using API
-  #     | name          |
-  #     | check_message |
-  #   And "Brian" shares the following resource using API
-  #     | resource      | recipient | type | role     |
-  #     | check_message | Alice     | user | Can edit |
-  #   And "Alice" logs in
-  #   And "Alice" opens the user menu
-  #   And "Alice" changes the language to "Deutsch - German"
-  #   Then "Alice" should see the following account page title "Mein Konto"
-  #   When "Alice" logs out
-  #   And "Alice" logs in
-  #   Then "Alice" should see the following notifications
-  #     | message                                          |
-  #     | Brian Murphy hat check_message mit Ihnen geteilt |
-  #   And "Alice" logs out
+  
+  
+  Scenario: system language change
+    And "Brian" creates the following folder in personal space using API
+      | name          |
+      | check_message |
+    And "Brian" shares the following resource using API
+      | resource      | recipient | type | role     |
+      | check_message | Alice     | user | Can edit |
+    And "Alice" logs in
+    And "Alice" opens the user menu
+    And "Alice" changes the language to "Deutsch - German"
+    Then "Alice" should see the following account page title "Mein Konto"
+    When "Alice" logs out
+    And "Alice" logs in
+    Then "Alice" should see the following notifications
+      | message                                          |
+      | Brian Murphy hat check_message mit Ihnen geteilt |
+    And "Alice" logs out
 
 
   Scenario: anonymous user language change

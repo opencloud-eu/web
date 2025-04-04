@@ -255,6 +255,10 @@ export class Resource {
     return po.createSpaceFromSelection({ ...args, page: this.#page })
   }
 
+  createSpaceFromAll({ spaceName }: { spaceName: string }): Promise<Space> {
+    return po.createSpaceFromAll({ page: this.#page, spaceName })
+  }
+
   async checkThatFileVersionIsNotAvailable(
     args: Omit<po.resourceVersionArgs, 'page'>
   ): Promise<void> {
