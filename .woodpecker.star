@@ -1395,7 +1395,6 @@ def uploadTracingResult(ctx):
     return [{
         "name": "upload-tracing-result",
         "image": PLUGINS_S3,
-        "pull": "if-not-exists",
         "settings": {
             "bucket": "public",
             "endpoint": {
