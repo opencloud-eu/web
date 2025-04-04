@@ -1,17 +1,14 @@
 # Changelog
 
-## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-03
+## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-04
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @amrita-shrestha, @individual-it, @kulmann
 
-### ✅ Tests
-
-- [full-ci]use Playwright api instead of node fetch [[#486](https://github.com/opencloud-eu/web/pull/486)]
-
 ### 🐛 Bug Fixes
 
+- fix(design-system): design system live doc blocks [[#493](https://github.com/opencloud-eu/web/pull/493)]
 - fix(files): truncation on long link names [[#481](https://github.com/opencloud-eu/web/pull/481)]
 - fix: remove zoom indicator to avoid confusion [[#482](https://github.com/opencloud-eu/web/pull/482)]
 - fix: spaces overview item count [[#480](https://github.com/opencloud-eu/web/pull/480)]
@@ -20,6 +17,10 @@
 - fix: archive download with archives >2GB [[#465](https://github.com/opencloud-eu/web/pull/465)]
 - fix: post-processing indicator not updating [[#444](https://github.com/opencloud-eu/web/pull/444)]
 - fix: Don't show backend edition when not set [[#442](https://github.com/opencloud-eu/web/pull/442)]
+
+### ✅ Tests
+
+- [full-ci]use Playwright api instead of node fetch [[#486](https://github.com/opencloud-eu/web/pull/486)]
 
 ### 📈 Enhancement
 
@@ -30,6 +31,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.11.0 [[#496](https://github.com/opencloud-eu/web/pull/496)]
+- chore(deps): update devdependencies (non-major) [[#498](https://github.com/opencloud-eu/web/pull/498)]
 - chore(deps): update devdependencies (non-major) [[#495](https://github.com/opencloud-eu/web/pull/495)]
 - chore(deps): update devdependencies (non-major) [[#491](https://github.com/opencloud-eu/web/pull/491)]
 - chore(deps): bump @babel/runtime to v7.27.0 [[#477](https://github.com/opencloud-eu/web/pull/477)]
