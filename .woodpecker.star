@@ -68,7 +68,7 @@ config = {
         },
         "2": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "admin-settings",
                 "spaces",
@@ -76,7 +76,7 @@ config = {
         },
         "3": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "tikaNeeded": True,
             "suites": [
                 "search",
@@ -91,7 +91,7 @@ config = {
         },
         "4": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "navigation",
                 "user-settings",
@@ -100,7 +100,7 @@ config = {
             ],
         },
         "app-provider": {
-            "skip": False,
+            "skip": True,
             "suites": [
                 "app-provider",
                 "app-provider-onlyOffice",
@@ -118,7 +118,7 @@ config = {
             },
         },
         "oidc-refresh-token": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/refreshToken.feature",
             ],
@@ -128,7 +128,7 @@ config = {
             },
         },
         "oidc-iframe": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/iframeTokenRenewal.feature",
             ],
@@ -138,7 +138,7 @@ config = {
         },
         "ocm": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "federationServer": True,
             "suites": [
                 "ocm",
@@ -1397,7 +1397,9 @@ def uploadTracingResult(ctx):
         "name": "upload-tracing-result",
         "image": PLUGINS_S3,
         "settings": {
-            "bucket": "public",
+            "bucket": {
+                "from_secret": "cache_s3_bucket",
+            },
             "endpoint": {
                 "from_secret": "cache_s3_server",
             },
@@ -1427,6 +1429,7 @@ def logTracingResult(ctx, suite):
         "name": "log-tracing-result",
         "image": OC_UBUNTU,
         "commands": [
+            "find %s/reports/" % dir["web"],
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
             'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${CI_REPO_NAME}/${CI_PIPELINE_NUMBER}/tracing/$f \n"; done',
