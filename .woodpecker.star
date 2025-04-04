@@ -516,6 +516,7 @@ def e2eTests(ctx):
         environment = {
             "HEADLESS": True,
             "RETRY": "1",
+            "REPORT_DIR": "%s/reports/e2e/" % dir["web"],
             "REPORT_TRACING": params["reportTracing"],
             "OC_BASE_URL": "opencloud:9200",
             "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
