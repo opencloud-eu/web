@@ -97,7 +97,7 @@ Feature: users management
     When "anna" logs in
     Then "anna" should have self info:
       | key         | value            |
-      | username    | anna             |
+      | username    | anna2             |
       | displayname | Anna Murphy      |
       | email       | anna@example.org |
     And "anna" logs out
