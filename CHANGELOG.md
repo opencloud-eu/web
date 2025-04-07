@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @individual-it
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it
+
+### 🐛 Bug Fixes
+
+- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
 
 ### ✅ Tests
 
