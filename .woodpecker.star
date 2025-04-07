@@ -206,18 +206,18 @@ def main(ctx):
     #     # run example deploys on cron even if some prior pipelines fail
     #     deploys = pipelinesDependsOn(deploys, pipelines)
     #
-    # pipelineSanityChecks(ctx, pipelines)
+    # pipelineSanityChecks(pipelines)
     return pipelines
 
 def beforePipelines(ctx):
     return checkStarlark() + \
-           licenseCheck(ctx) + \
+           licenseCheck() + \
            pnpmCache(ctx) + \
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
-    # documentation(ctx) + \ # ToDo used to be before pnpmCache
+    # documentation() + \ # ToDo used to be before pnpmCache
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -768,7 +768,7 @@ def buildAndPublishRelease(ctx):
 
     return steps
 
-def documentation(ctx):
+def documentation():
     return [
         {
             "name": "documentation",
@@ -913,8 +913,6 @@ def checkForExistingOpenCloudCache(ctx):
     ]
 
 def cacheOpenCloudPipeline(ctx):
-    steps = []
-
     if ctx.build.event == "cron":
         steps = getOpenCloudlatestCommitId(ctx) + \
                 buildOpenCloud() + \
@@ -1035,11 +1033,11 @@ def example_deploys(ctx):
 
     deploys = []
     for config in configs:
-        deploys.append(deploy(ctx, config, rebuild))
+        deploys.append(deploy(config, rebuild))
 
     return deploys
 
-def deploy(ctx, config, rebuild):
+def deploy(config, rebuild):
     return {
         "name": "deploy_%s" % (config),
         "steps": [
@@ -1124,7 +1122,7 @@ def checkStarlark():
     }]
 
 # ToDo use pnpm cache
-def licenseCheck(ctx):
+def licenseCheck():
     return [{
         "name": "license-check",
         "steps": installPnpm() + [
@@ -1219,8 +1217,6 @@ def skipIfUnchanged(ctx, type):
         skip = base + e2e
     elif type == "cache":
         skip = base
-    else:
-        return []
 
     return skip
 
@@ -1313,14 +1309,13 @@ def rebuildBuildArtifactCache(ctx, name, path):
 def purgeBuildArtifactCache(ctx):
     return genericBuildArtifactCache(ctx, "", "purge", [])
 
-def pipelineSanityChecks(ctx, pipelines):
+def pipelineSanityChecks(pipelines):
     """pipelineSanityChecks helps the CI developers to find errors before running it
 
     These sanity checks are only executed on when converting starlark to yaml.
     Error outputs are only visible when the conversion is done with the drone cli.
 
     Args:
-      ctx: drone passes a context with information which the pipeline can be adapted to
       pipelines: pipelines to be checked, normally you should run this on the return value of main()
 
     Returns:
@@ -1414,7 +1409,7 @@ def uploadTracingResult(ctx):
         },
     }]
 
-def logTracingResult(ctx, suite):
+def logTracingResult(ctx):
     status = ["failure"]
 
     if ("with-tracing" in ctx.build.title.lower()):
