@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.1](https://github.com/opencloud-eu/web/releases/tag/v2.2.1) - 2025-04-04
+## [2.2.1](https://github.com/opencloud-eu/web/releases/tag/v2.2.1) - 2025-04-07
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -9,6 +9,10 @@
 ### ✅ Tests
 
 - test for #453 [[#505](https://github.com/opencloud-eu/web/pull/505)]
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#506](https://github.com/opencloud-eu/web/pull/506)]
 
 ## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-04
 
