@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.2.1](https://github.com/opencloud-eu/web/releases/tag/v2.2.1) - 2025-04-07
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-07
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @individual-it
+
+### ✨ Features
+
+- feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
 
 ### 🐛 Bug Fixes
 
