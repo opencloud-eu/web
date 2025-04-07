@@ -28,7 +28,7 @@ describe('useFileActionsCopyPermanentLink', () => {
         }
       })
     })
-    it('should return false if trashes resource', () => {
+    it('should return false if trash resource', () => {
       getWrapper({
         setup: ({ actions }) => {
           expect(
