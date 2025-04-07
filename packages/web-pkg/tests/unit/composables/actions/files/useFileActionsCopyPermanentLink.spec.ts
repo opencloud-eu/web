@@ -2,7 +2,7 @@ import { unref } from 'vue'
 import { useFileActionsCopyPermanentLink } from '../../../../../src/composables/actions/files'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
 import { useClipboard } from '../../../../../src/composables/clipboard'
 
 vi.mock('../../../../../src/composables/clipboard', () => ({
@@ -24,6 +24,18 @@ describe('useFileActionsCopyPermanentLink', () => {
           const publicSpace = mock<SpaceResource>({ driveType: 'public' })
           expect(
             unref(actions)[0].isVisible({ space: publicSpace, resources: [mock<Resource>()] })
+          ).toBeFalsy()
+        }
+      })
+    })
+    it('should return false if trash resource', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              space: undefined,
+              resources: [mock<TrashResource>({ ddate: '2020-01-01' })]
+            })
           ).toBeFalsy()
         }
       })

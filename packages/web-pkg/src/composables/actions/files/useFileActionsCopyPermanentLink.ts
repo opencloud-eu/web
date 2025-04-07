@@ -3,7 +3,7 @@ import { useGettext } from 'vue3-gettext'
 import { FileAction } from '../types'
 import { useClipboard } from '../../clipboard'
 import { useMessages } from '../../piniaStores'
-import { isPublicSpaceResource } from '@opencloud-eu/web-client'
+import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -34,10 +34,19 @@ export const useFileActionsCopyPermanentLink = () => {
         return copyLinkToClipboard(permalink)
       },
       isVisible: ({ space, resources }) => {
+        if (resources.length !== 1) {
+          return false
+        }
+
         if (isPublicSpaceResource(space)) {
           return false
         }
-        return resources.length === 1
+
+        if (isTrashResource(resources[0])) {
+          return false
+        }
+
+        return true
       },
       class: 'oc-files-actions-copy-permanent-link-trigger'
     }
