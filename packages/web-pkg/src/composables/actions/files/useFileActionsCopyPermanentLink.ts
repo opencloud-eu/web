@@ -4,11 +4,14 @@ import { FileAction } from '../types'
 import { useClipboard } from '../../clipboard'
 import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource } from '@opencloud-eu/web-client'
+import { isLocationTrashActive } from '../../../router'
+import { useRouter } from '../../router'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
   const { copyToClipboard } = useClipboard()
+  const router = useRouter()
 
   const copyLinkToClipboard = async (url: string) => {
     try {
@@ -34,7 +37,7 @@ export const useFileActionsCopyPermanentLink = () => {
         return copyLinkToClipboard(permalink)
       },
       isVisible: ({ space, resources }) => {
-        if (isPublicSpaceResource(space)) {
+        if (isPublicSpaceResource(space) || isLocationTrashActive(router, 'files-trash-generic')) {
           return false
         }
         return resources.length === 1
