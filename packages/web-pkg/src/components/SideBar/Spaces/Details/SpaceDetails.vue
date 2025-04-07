@@ -62,7 +62,9 @@
       <dd>{{ ownerUsernames }}</dd>
       <template v-if="!resource.disabled">
         <dt>{{ $gettext('Quota') }}</dt>
-        <dd><space-quota :space-quota="resource.spaceQuota" /></dd>
+        <dd>
+          <space-quota :space-quota="resource.spaceQuota" />
+        </dd>
       </template>
       <template v-if="showSize">
         <dt>{{ $gettext('Size') }}</dt>
@@ -248,8 +250,10 @@ const expandSharesPanel = () => {
   &-members {
     gap: var(--oc-space-small);
   }
+
   &-image img {
-    max-height: 150px;
+    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
     width: 100%;
   }
