@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
 - fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
 
 ### ✅ Tests
