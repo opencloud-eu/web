@@ -20,6 +20,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @vueuse/core to v13.1.0 [[#519](https://github.com/opencloud-eu/web/pull/519)]
 - chore(deps): update pnpm to v10.8.0 [[#517](https://github.com/opencloud-eu/web/pull/517)]
 - chore(deps): update devdependencies (non-major) [[#506](https://github.com/opencloud-eu/web/pull/506)]
 
