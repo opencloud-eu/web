@@ -20,6 +20,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.8.0 [[#517](https://github.com/opencloud-eu/web/pull/517)]
 - chore(deps): update devdependencies (non-major) [[#506](https://github.com/opencloud-eu/web/pull/506)]
 
 ## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-04
