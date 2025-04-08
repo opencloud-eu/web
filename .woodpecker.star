@@ -4,13 +4,11 @@ docker_repo_slug = "opencloudeu/web"
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:24.04.13.2.1"
-CS3ORG_WOPI_SERVER = "cs3org/wopiserver:v10.3.0"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
-OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_GOLANG = "docker.io/golang:1.24"
 OC_CI_HUGO = "owncloudci/hugo:0.115.2"
 OC_CI_NODEJS = "owncloudci/nodejs:20"
@@ -18,14 +16,11 @@ OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
-PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
 PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
-SONARSOURCE_SONAR_SCANNER_CLI = "sonarsource/sonar-scanner-cli:5.0"
-TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
@@ -34,11 +29,8 @@ WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
     "web": "/woodpecker/src/github.com/opencloud-eu/web/web",
-    "opencloud": "/woodpecker/src/github.com/opencloud-eu/opencloud",
-    "commentsFile": "/woodpecker/src/github.com/opencloud/web/comments.file",
     "app": "/srv/app",
     "openCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud.json",
-    "openCloudIdentifierRegistrationConfig": "/woodpecker/src/github.com/opencloud/web/tests/woodpecker/identifier-registration.yml",
     "openCloudRevaDataRoot": "/srv/app/tmp/opencloud/opencloud/data/",
     "federatedOpenCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud-federated.json",
     "ocmProviders": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/providers.json",
@@ -193,7 +185,7 @@ def main(ctx):
 
     stages = pipelinesDependsOn(stagePipelines(ctx), before)
 
-    if (stages == False):
+    if not stages:
         print("Errors detected. Review messages above.")
         return []
 
@@ -223,7 +215,7 @@ def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
 
     # run only unit tests when publishing a standalone package
-    if (determineReleasePackage(ctx) != None):
+    if determineReleasePackage(ctx) != None:
         return unit_test_pipelines
 
     e2e_pipelines = e2eTests(ctx)
@@ -504,7 +496,7 @@ def e2eTests(ctx):
         if params["skip"]:
             continue
 
-        if ("with-tracing" in ctx.build.title.lower()):
+        if "with-tracing" in ctx.build.title.lower():
             params["reportTracing"] = True
 
         environment = {
@@ -1039,7 +1031,7 @@ def example_deploys(ctx):
 
 def deploy(config, rebuild):
     return {
-        "name": "deploy_%s" % (config),
+        "name": "deploy_%s" % config,
         "steps": [
             {
                 "name": "clone continuous deployment playbook",
@@ -1054,8 +1046,8 @@ def deploy(config, rebuild):
                 "image": OC_CI_DRONE_ANSIBLE,
                 "failure": "ignore",
                 "environment": {
-                    "CONTINUOUS_DEPLOY_SERVERS_CONFIG": "../%s" % (config),
-                    "REBUILD": "%s" % (rebuild),
+                    "CONTINUOUS_DEPLOY_SERVERS_CONFIG": "../%s" % config,
+                    "REBUILD": "%s" % rebuild,
                     "HCLOUD_API_TOKEN": {
                         "from_secret": "hcloud_api_token",
                     },
@@ -1246,7 +1238,7 @@ def genericCache(name, action, mounts, cache_path):
             "secret_key": {
                 "from_secret": "cache_s3_secret_key",
             },
-            "filename": "%s.tar" % (name),
+            "filename": "%s.tar" % name,
             "path": cache_path,
             "fallback_path": cache_path,
         },
@@ -1292,7 +1284,7 @@ def genericCachePurge(flush_path):
 def genericBuildArtifactCache(ctx, name, action, path):
     if action == "rebuild" or action == "restore":
         cache_path = "%s/%s/%s" % ("cache", repo_slug, ctx.build.commit + "-${CI_PIPELINE_NUMBER}")
-        name = "%s_build_artifact_cache" % (name)
+        name = "%s_build_artifact_cache" % name
         return genericCache(name, action, [path], cache_path)
 
     if action == "purge":
@@ -1327,7 +1319,7 @@ def pipelineSanityChecks(pipelines):
     for pipeline in pipelines:
         pipeline_name = pipeline["name"]
         if len(pipeline_name) > max_name_length:
-            print("Error: pipeline name %s is longer than 50 characters" % (pipeline_name))
+            print("Error: pipeline name %s is longer than 50 characters" % pipeline_name)
 
         for step in pipeline["steps"]:
             step_name = step["name"]
@@ -1377,7 +1369,7 @@ def pipelineSanityChecks(pipelines):
 
 def uploadTracingResult(ctx):
     status = ["failure"]
-    if ("with-tracing" in ctx.build.title.lower()):
+    if "with-tracing" in ctx.build.title.lower():
         status = ["failure", "success"]
 
     return [{
@@ -1412,7 +1404,7 @@ def uploadTracingResult(ctx):
 def logTracingResult(ctx):
     status = ["failure"]
 
-    if ("with-tracing" in ctx.build.title.lower()):
+    if "with-tracing" in ctx.build.title.lower():
         status = ["failure", "success"]
 
     return [{
