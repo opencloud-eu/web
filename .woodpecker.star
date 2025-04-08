@@ -4,13 +4,11 @@ docker_repo_slug = "opencloudeu/web"
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:24.04.13.2.1"
-CS3ORG_WOPI_SERVER = "cs3org/wopiserver:v10.3.0"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
-OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_GOLANG = "docker.io/golang:1.24"
 OC_CI_HUGO = "owncloudci/hugo:0.115.2"
 OC_CI_NODEJS = "owncloudci/nodejs:20"
@@ -18,14 +16,11 @@ OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
-PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
 PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
-SONARSOURCE_SONAR_SCANNER_CLI = "sonarsource/sonar-scanner-cli:5.0"
-TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
@@ -34,11 +29,8 @@ WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
     "web": "/woodpecker/src/github.com/opencloud-eu/web/web",
-    "opencloud": "/woodpecker/src/github.com/opencloud-eu/opencloud",
-    "commentsFile": "/woodpecker/src/github.com/opencloud/web/comments.file",
     "app": "/srv/app",
     "openCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud.json",
-    "openCloudIdentifierRegistrationConfig": "/woodpecker/src/github.com/opencloud/web/tests/woodpecker/identifier-registration.yml",
     "openCloudRevaDataRoot": "/srv/app/tmp/opencloud/opencloud/data/",
     "federatedOpenCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud-federated.json",
     "ocmProviders": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/providers.json",
