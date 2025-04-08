@@ -10,6 +10,10 @@
 
 - feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
 
+### 📚 Documentation
+
+- chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
+
 ### 🐛 Bug Fixes
 
 - fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
