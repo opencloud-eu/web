@@ -3,10 +3,10 @@ import { RuntimeError } from '../../../src/errors'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { ClientService } from '../../../src/services'
 import { unref, ref, Ref } from 'vue'
-import { AxiosResponse } from 'axios'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useUserStore } from '../../../src/composables/piniaStores'
+import { Mock } from 'vitest'
 
 const serverUrl = 'https://demo.opencloud.eu'
 const getArchiverServiceInstance = (capabilities: Ref<ArchiverCapability[]>) => {
@@ -14,16 +14,22 @@ const getArchiverServiceInstance = (capabilities: Ref<ArchiverCapability[]>) => 
   const userStore = useUserStore()
 
   const clientServiceMock = mockDeep<ClientService>()
-  clientServiceMock.httpUnAuthenticated.get.mockResolvedValue({
-    data: new ArrayBuffer(8),
-    headers: { 'content-disposition': 'filename="download.tar"' }
-  } as unknown as AxiosResponse)
   clientServiceMock.ocsUserContext.signUrl.mockImplementation((url) => Promise.resolve(url))
 
   return new ArchiverService(clientServiceMock, userStore, serverUrl, capabilities)
 }
 
 describe('archiver', () => {
+  beforeEach(() => {
+    global.window.fetch = vi.fn(() =>
+      Promise.resolve({
+        blob: () => Promise.resolve({ data: new ArrayBuffer(8) }),
+        headers: { get: () => 'filename="download.tar"' },
+        ok: true
+      })
+    ) as Mock
+  })
+
   describe('availability', () => {
     it('is unavailable if no version given via capabilities', () => {
       const capabilities = ref([mock<ArchiverCapability>({ version: undefined })])
