@@ -19,10 +19,10 @@ Feature: Secure view
       | name          |
       | shared folder |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                      | to                            |
-      | filesForUpload/simple.pdf      | shared folder/simple.pdf      |
-      | filesForUpload/testavatar.jpeg | shared folder/testavatar.jpeg |
-      | filesForUpload/lorem.txt       | shared folder/lorem.txt       |
+      | localFile       | to                            |
+      | simple.pdf      | shared folder/simple.pdf      |
+      | testavatar.jpeg | shared folder/testavatar.jpeg |
+      | lorem.txt       | shared folder/lorem.txt       |
     And "Alice" creates the following resources
       | resource           | type         | content                 |
       | secureDocument.odt | OpenDocument | very important document |
@@ -66,10 +66,10 @@ Feature: Secure view
       | name          |
       | shared folder |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                      | to                             |
-      | filesForUpload/simple.pdf      | shared folder/secure.pdf       |
-      | filesForUpload/testavatar.jpeg | shared folder/securePhoto.jpeg |
-      | filesForUpload/lorem.txt       | shared folder/secureFile.txt   |
+      | localFile       | to                             |
+      | simple.pdf      | shared folder/secure.pdf       |
+      | testavatar.jpeg | shared folder/securePhoto.jpeg |
+      | lorem.txt       | shared folder/secureFile.txt   |
     And "Alice" creates the following resources
       | resource           | type         | content                 |
       | secureDocument.odt | OpenDocument | very important document |

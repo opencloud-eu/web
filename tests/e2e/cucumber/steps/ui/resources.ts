@@ -1020,3 +1020,19 @@ Then(
     }
   }
 )
+
+When('{string} selects all files', async function (this: World, stepUser: string) {
+  const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+  const resourceObject = new objects.applicationFiles.Resource({ page })
+  await resourceObject.selectAllFiles()
+})
+
+Then(
+  'the download button should be disabled for user {string} with the tooltip:',
+  async function (this: World, stepUser: string, tooltip: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const downloadButton = await resourceObject.getDownloadButtonTooltip()
+    expect(downloadButton).toBe(tooltip)
+  }
+)

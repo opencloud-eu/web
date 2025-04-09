@@ -12,8 +12,8 @@ Feature: Search
       | id    | role        |
       | Brian | Space Admin |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                   | to              |
-      | filesForUpload/textfile.txt | fileToShare.txt |
+      | localFile    | to              |
+      | textfile.txt | fileToShare.txt |
     And "Alice" adds the following tags for the following resources using API
       | resource        | tags      |
       | fileToShare.txt | alice tag |
@@ -24,11 +24,11 @@ Feature: Search
       | name       |
       | testFolder |
     And "Brian" uploads the following local file into personal space using API
-      | localFile                   | to                           |
-      | filesForUpload/textfile.txt | textfile.txt                 |
-      | filesForUpload/textfile.txt | fileWithTag.txt              |
-      | filesForUpload/textfile.txt | withTag.txt                  |
-      | filesForUpload/textfile.txt | testFolder/innerTextfile.txt |
+      | localFile    | to                           |
+      | textfile.txt | textfile.txt                 |
+      | textfile.txt | fileWithTag.txt              |
+      | textfile.txt | withTag.txt                  |
+      | textfile.txt | testFolder/innerTextfile.txt |
     And "Brian" creates the following project spaces using API
       | name           | id               |
       | FullTextSearch | fulltextsearch.1 |

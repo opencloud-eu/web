@@ -23,8 +23,8 @@ Feature: Users can see all activities of the resources and spaces
       | name                   |
       | sharedFolder/subFolder |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                   | to                        |
-      | filesForUpload/textfile.txt | sharedFolder/textfile.txt |
+      | localFile    | to                        |
+      | textfile.txt | sharedFolder/textfile.txt |
     And "Alice" shares the following resource using API
       | resource     | recipient | type | role     |
       | sharedFolder | Brian     | user | Can edit |

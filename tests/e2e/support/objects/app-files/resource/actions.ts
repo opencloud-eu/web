@@ -2180,3 +2180,13 @@ export const checkEmptyActivity = async ({
   await expect(page.getByTestId(activitySidebarPanel)).toBeVisible()
   await expect(page.locator(activitySidebarPanelBodyContent)).toContainText('No activities')
 }
+
+export const selectAll = async ({ page }: { page: Page }): Promise<void> => {
+  await page.locator(selectAllCheckbox).click()
+}
+
+export const getDownloadButtonTooltip = async ({ page }: { page: Page }): Promise<string> => {
+  const downloadButton = page.locator(downloadButtonBatchAction)
+  await expect(downloadButton).toBeDisabled()
+  return await downloadButton.getAttribute('aria-label')
+}

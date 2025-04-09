@@ -14,8 +14,8 @@ Feature: Users can create shortcuts for resources and sites
       | pathToFile      | content           |
       | docs/notice.txt | important content |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                     | to             |
-      | filesForUpload/testavatar.jpg | testavatar.jpg |
+      | localFile      | to             |
+      | testavatar.jpg | testavatar.jpg |
     And "Alice" shares the following resource using API
       | resource       | recipient | type | role     |
       | testavatar.jpg | Brian     | user | Can view |
