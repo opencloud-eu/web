@@ -70,7 +70,10 @@
                 v-for="(p, index) in panel.isRoot?.(panelContext) ? rootPanels : [panel]"
                 :key="`sidebar-panel-${p.name}`"
                 :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
-                v-bind="p.componentAttrs?.(panelContext) || {}"
+                v-bind="{
+                  ...(p.componentAttrs?.(panelContext) || {}),
+                  isActive: activePanelName === p.name
+                }"
               />
             </slot>
           </div>
@@ -199,7 +202,7 @@ const windowWidth = ref(window.innerWidth)
 
 const fullWidthSideBar = computed(() => unref(windowWidth) <= 580)
 const backgroundContentEl = computed(() => {
-  return unref(appSideBar)?.parentElement?.querySelector('div') as HTMLElement
+  return unref(appSideBar)?.parentElement?.querySelector('div')
 })
 
 const handleBackgroundContentVisibility = () => {
@@ -382,12 +385,6 @@ onBeforeUnmount(() => {
     &-content-stretch {
       flex: 1;
     }
-
-    // &-content {
-    //   background-color: var(--oc-role-surface-container);
-    //   border-radius: 5px;
-    //   padding: var(--oc-space-medium);
-    // }
   }
 
   &__navigation {
