@@ -113,6 +113,13 @@ export class ClientService {
     return this.language.current
   }
 
+  public getRequestHeaders = ({ useAuth = true }: { useAuth?: boolean } = {}) => {
+    return {
+      ...this.staticHeaders,
+      ...this.getDynamicHeaders({ useAuth })
+    }
+  }
+
   private initGraphClient() {
     const axiosClient = axios.create({ headers: this.staticHeaders })
     axiosClient.interceptors.request.use((config) => {

@@ -15,7 +15,6 @@ import { triggerDownloadWithFilename } from '../helpers/download'
 import { Ref, ref, computed, unref } from 'vue'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
 import { UserStore } from '../composables'
-import { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios'
 
 interface TriggerDownloadOptions {
   dir?: string
@@ -81,28 +80,23 @@ export class ArchiverService {
         )
 
     try {
-      const response = await this.clientService.httpUnAuthenticated.get<ArrayBuffer>(url, {
+      // use fetch because we can't reliably retrieve large data streams with axios
+      const response = await fetch(url, {
         headers: {
+          ...this.clientService.getRequestHeaders({ useAuth: !options.publicLinkPassword }),
           ...(!!options.publicLinkPassword && {
             Authorization:
               'Basic ' +
               Buffer.from(['public', options.publicLinkPassword].join(':')).toString('base64')
           })
-        },
-        responseType: 'arraybuffer'
+        }
       })
 
-      // create 500MB chunks because blobs have a limit of 2GB
-      const chunkSize = 500 * 1024 * 1024
-      const chunks: ArrayBuffer[] = []
-      let offset = 0
-
-      while (offset < response.data.byteLength) {
-        chunks.push(response.data.slice(offset, offset + chunkSize))
-        offset += chunkSize
+      if (!response.ok) {
+        throw new HttpError('', response)
       }
 
-      const blob = new Blob(chunks, { type: 'application/octet-stream' })
+      const blob = await response.blob()
       const objectUrl = URL.createObjectURL(blob)
       const fileName = this.getFileNameFromResponseHeaders(response.headers)
       triggerDownloadWithFilename(objectUrl, fileName)
@@ -150,8 +144,8 @@ export class ArchiverService {
     return urlJoin(this.serverUrl, capability.archiver_url)
   }
 
-  private getFileNameFromResponseHeaders(headers: RawAxiosResponseHeaders | AxiosResponseHeaders) {
-    const fileName = headers['content-disposition']?.split('"')[1]
+  private getFileNameFromResponseHeaders(headers: Headers) {
+    const fileName = headers.get('content-disposition')?.split('"')[1]
     return decodeURI(fileName)
   }
 }
