@@ -729,7 +729,6 @@ def buildAndPublishRelease(ctx):
                         "sha256",
                     ],
                     "title": ctx.build.ref.replace("refs/tags/v", ""),
-                    "overwrite": True,
                     "prerelease": len(ctx.build.ref.split("-")) > 1,
                 },
                 "when": [
