@@ -10,6 +10,12 @@
 
 - feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
 
+### 🐛 Bug Fixes
+
+- fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
+- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
+- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
+
 ### ✅ Tests
 
 - download big archive [[#532](https://github.com/opencloud-eu/web/pull/532)]
@@ -18,11 +24,6 @@
 ### 📚 Documentation
 
 - chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
-
-### 🐛 Bug Fixes
-
-- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
-- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
 
 ### 📦️ Dependencies
 
