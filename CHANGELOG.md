@@ -26,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#529](https://github.com/opencloud-eu/web/pull/529)]
 - fix(deps): update dependency @sentry/vue to v9.12.0 [[#522](https://github.com/opencloud-eu/web/pull/522)]
 - fix(deps): update dependency pinia to v3.0.2 [[#531](https://github.com/opencloud-eu/web/pull/531)]
 - fix(deps): update dependency @vueuse/core to v13.1.0 [[#519](https://github.com/opencloud-eu/web/pull/519)]
