@@ -5,7 +5,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
   <div data-v-5d17c3fa="" class="oc-flex oc-flex-between oc-flex-middle">
     <div data-v-5d17c3fa="" class="oc-flex">
       <h3 data-v-5d17c3fa="" class="oc-text-bold oc-text-medium oc-m-rm" data-msgid="Share with people" data-current-language="en">Share with people</h3>
-      <oc-contextual-helper-stub data-v-5d17c3fa="" title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="" text="Use the input field to search for users and groups. Select them to share the item." class="oc-pl-xs"></oc-contextual-helper-stub>
+      <oc-contextual-helper-stub data-v-5d17c3fa="" title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="oc-pl-xs"></oc-contextual-helper-stub>
     </div>
     <copy-private-link-stub data-v-5d17c3fa="" resource="undefined"></copy-private-link-stub>
   </div>
@@ -42,7 +42,7 @@ exports[`FileShares > current space > loads space members if a space is given an
   <div data-v-5d17c3fa="" class="oc-flex oc-flex-between oc-flex-middle">
     <div data-v-5d17c3fa="" class="oc-flex">
       <h3 data-v-5d17c3fa="" class="oc-text-bold oc-text-medium oc-m-rm" data-msgid="Share with people" data-current-language="en">Share with people</h3>
-      <oc-contextual-helper-stub data-v-5d17c3fa="" title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="" text="Use the input field to search for users and groups. Select them to share the item." class="oc-pl-xs"></oc-contextual-helper-stub>
+      <oc-contextual-helper-stub data-v-5d17c3fa="" title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="oc-pl-xs"></oc-contextual-helper-stub>
     </div>
     <copy-private-link-stub data-v-5d17c3fa="" resource="undefined"></copy-private-link-stub>
   </div>
