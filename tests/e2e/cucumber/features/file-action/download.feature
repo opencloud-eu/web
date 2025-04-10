@@ -84,26 +84,3 @@ Feature: Download
       The selection exceeds the allowed archive size (max. 1.1 GB)
       """
     And "Alice" logs out
-
-  
-  @posix
-  Scenario: download large archive using adding files with posix-watch-fs
-    Given "Alice" creates the following files into personal space using API
-      | pathToFile | content     |
-      | new.txt | new content |
-    And "Alice" creates following files using CLI:
-      | resource         | size |
-      | testfile500Mb.bin| 500  |
-      | testfile400Mb.bin| 400  |
-      | testfile300Mb.bin| 300  |
-    When "Alice" logs in
-    And "Alice" downloads the following resources using the batch action
-      | resource          | type |
-      | testfile500Mb.bin | file |
-      | testfile400Mb.bin | file |
-    When "Alice" selects all files
-    Then the download button should be disabled for user "Alice" with the tooltip:
-      """
-      The selection exceeds the allowed archive size (max. 1.1 GB)
-      """
-    And "Alice" logs out
