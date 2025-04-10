@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-08
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-10
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -25,6 +25,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency pinia to v3.0.2 [[#531](https://github.com/opencloud-eu/web/pull/531)]
 - fix(deps): update dependency @vueuse/core to v13.1.0 [[#519](https://github.com/opencloud-eu/web/pull/519)]
 - chore(deps): update pnpm to v10.8.0 [[#517](https://github.com/opencloud-eu/web/pull/517)]
 - chore(deps): update devdependencies (non-major) [[#506](https://github.com/opencloud-eu/web/pull/506)]
