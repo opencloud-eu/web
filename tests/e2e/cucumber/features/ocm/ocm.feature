@@ -13,10 +13,10 @@ Feature: federation management
       | name         |
       | folderPublic |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                     | to                      |
-      | filesForUpload/simple.pdf     | folderPublic/simple.pdf |
-      | filesForUpload/testavatar.jpg | testavatar.jpg          |
-      | filesForUpload/sampleGif.gif  | sampleGif.gif           |
+      | localFile      | to                      |
+      | simple.pdf     | folderPublic/simple.pdf |
+      | testavatar.jpg | testavatar.jpg          |
+      | sampleGif.gif  | sampleGif.gif           |
     And "Alice" logs in
     And "Alice" opens the "open-cloud-mesh" app
     And "Alice" generates invitation token for the federation share

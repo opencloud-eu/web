@@ -108,10 +108,10 @@ Feature: link
       | folderPublic/shareToBrian.txt | some text |
       | folderPublic/shareToBrian.md  | readme    |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                     | to             |
-      | filesForUpload/simple.pdf     | simple.pdf     |
-      | filesForUpload/testavatar.jpg | testavatar.jpg |
-      | filesForUpload/test_video.mp4 | test_video.mp4 |
+      | localFile      | to             |
+      | simple.pdf     | simple.pdf     |
+      | testavatar.jpg | testavatar.jpg |
+      | test_video.mp4 | test_video.mp4 |
     And "Alice" shares the following resource using API
       | resource       | recipient | type | role     |
       | folderPublic   | Brian     | user | Can edit |

@@ -169,7 +169,7 @@ Then(
   async function (this: World, stepUser: string, localFile: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const generalObject = new objects.applicationAdminSettings.General({ page })
-    const logoPath = this.filesEnvironment.getFile({ name: localFile.split('/').pop() }).path
+    const logoPath = this.filesEnvironment.getFile({ name: localFile }).path
     await generalObject.uploadLogo({ path: logoPath })
   }
 )

@@ -376,4 +376,12 @@ export class Resource {
   async createFileFromTemplate(resource: string, webOffice: string, via: string): Promise<void> {
     await po.createFileFromTemplate({ page: this.#page, resource, webOffice, via })
   }
+
+  async selectAllFiles(): Promise<void> {
+    await po.selectAll({ page: this.#page })
+  }
+
+  async getDownloadButtonTooltip(): Promise<string> {
+    return await po.getDownloadButtonTooltip({ page: this.#page })
+  }
 }

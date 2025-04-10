@@ -13,8 +13,8 @@ Feature: Search
       | name                 |
       | new_share_from_brian |
     And "Brian" uploads the following local file into personal space using API
-      | localFile                        | to                |
-      | filesForUpload/new-lorem-big.txt | new-lorem-big.txt |
+      | localFile         | to                |
+      | new-lorem-big.txt | new-lorem-big.txt |
     And "Brian" logs in
     And "Brian" shares the following resource using the sidebar panel
       | resource             | recipient | type | role     | resourceType |
@@ -158,8 +158,8 @@ Feature: Search
       | name      |
       | mediaTest |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                     | to            |
-      | filesForUpload/testavatar.jpg | mediaTest.jpg |
+      | localFile      | to            |
+      | testavatar.jpg | mediaTest.jpg |
     And "Alice" creates the following files into personal space using API
       | pathToFile    | content        |
       | mediaTest.txt | I'm a Document |

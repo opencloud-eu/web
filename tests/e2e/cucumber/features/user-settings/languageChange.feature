@@ -33,8 +33,8 @@ Feature: language settings
       | name         |
       | folderPublic |
     And "Alice" uploads the following local file into personal space using API
-      | localFile                | to        |
-      | filesForUpload/lorem.txt | lorem.txt |
+      | localFile | to        |
+      | lorem.txt | lorem.txt |
 
     And "Alice" creates a public link of following resource using API
       | resource     | password |

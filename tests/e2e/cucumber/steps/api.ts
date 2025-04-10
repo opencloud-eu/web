@@ -166,7 +166,7 @@ Given(
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
     for (const info of stepTable.hashes()) {
-      const fileInfo = this.filesEnvironment.getFile({ name: info.localFile.split('/').pop() })
+      const fileInfo = this.filesEnvironment.getFile({ name: info.localFile })
       const content = fs.readFileSync(fileInfo.path)
       await api.dav.uploadFileInPersonalSpace({
         user,
