@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-10
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -9,6 +9,11 @@
 ### ✨ Features
 
 - feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
+
+### 📚 Documentation
+
+- docs: fix 404 links in readme [[#538](https://github.com/opencloud-eu/web/pull/538)]
+- chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
 
 ### 🐛 Bug Fixes
 
@@ -20,10 +25,6 @@
 
 - download big archive [[#532](https://github.com/opencloud-eu/web/pull/532)]
 - test for #453 [[#505](https://github.com/opencloud-eu/web/pull/505)]
-
-### 📚 Documentation
-
-- chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
 
 ### 📦️ Dependencies
 
