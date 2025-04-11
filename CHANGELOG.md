@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-11
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @amrita-shrestha, @individual-it
+
+### ✨ Features
+
+- feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
+
+### 📚 Documentation
+
+- docs: fix 404 links in readme [[#538](https://github.com/opencloud-eu/web/pull/538)]
+- chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
+
+### 🐛 Bug Fixes
+
+- fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
+- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
+- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
+
+### ✅ Tests
+
+- download big archive [[#532](https://github.com/opencloud-eu/web/pull/532)]
+- test for #453 [[#505](https://github.com/opencloud-eu/web/pull/505)]
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#529](https://github.com/opencloud-eu/web/pull/529)]
+- fix(deps): update dependency @sentry/vue to v9.12.0 [[#522](https://github.com/opencloud-eu/web/pull/522)]
+- fix(deps): update dependency pinia to v3.0.2 [[#531](https://github.com/opencloud-eu/web/pull/531)]
+- fix(deps): update dependency @vueuse/core to v13.1.0 [[#519](https://github.com/opencloud-eu/web/pull/519)]
+- chore(deps): update pnpm to v10.8.0 [[#517](https://github.com/opencloud-eu/web/pull/517)]
+- chore(deps): update devdependencies (non-major) [[#506](https://github.com/opencloud-eu/web/pull/506)]
+
 ## [2.2.0](https://github.com/opencloud-eu/web/releases/tag/v2.2.0) - 2025-04-04
 
 ### ❤️ Thanks to all contributors! ❤️
