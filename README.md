@@ -20,7 +20,7 @@ Here are some examples of what you can do with OpenCloud Web:
 - 🗂 **Files**: Upload, download, search and manage files (as you may know it for example from Dropbox, OneDrive, Google Drive etc.).
 - 👥 **Share:** Allow fine-grained access to files and whole folders directly with other users on your OpenCloud.
 - 🔗 **Links**: Create links and share them with anyone in the world - optional password-protection available.
-- 📝 **Write**: Edit your documents with the editor of your choice like ONLYOFFICE, Collabora or Microsoft Word and more.
+- 📝 **Write**: Edit your documents with the editor of your choice like Collabora, ONLYOFFICE or Microsoft Word and more.
 - 🤝 **Collaborate** in real-time on documents.
 - 🚀 **Spaces**: You have to manage important projects? Let Spaces, the new special folders, keep order.
 - ◀️ **Versioning** Saved the wrong version? We have the time machine you were looking for! Easily go back in time and restore older versions of your files.
@@ -60,7 +60,7 @@ The repository's `packages` also contains the following apps, which can be en-/d
 - **text-editor:** An extension for creating, opening and editing plain text files, like e.g. `.md` or `.txt`
 - **webfinger:** Redirect app for the OpenCloud webfinger service
 
-The full documentation on all available packages and the general repository structure [can be found in the docs](https://docs.opencloud.eu/clients/web/development/repo-structure/).
+The full documentation on all available packages and the general repository structure [can be found in the docs](https://docs.opencloud.eu/docs/dev/web/development/repo-structure).
 
 ## Releases
 
@@ -68,16 +68,16 @@ We currently publish a new release every couple of weeks, strictly following [se
 
 ## Documentation
 
-The documentation is an important part of this project and can be found on [opencloud.dev](https://docs.opencloud.eu/clients/web).
-If you want to contribute to the documentation you can find the source files in the [docs](https://github.com/opencloud-eu/web/tree/main/docs) folder of this repository.
+The documentation is an important part of this project and can be found in the [Web dev docs](https://docs.opencloud.eu/docs/dev/web/).
+If you want to contribute to the documentation you can find the source files in the [docs repository](https://github.com/opencloud-eu/docs/tree/main/docs/dev/20-web).
 
 ## Contribution
 
-Contribution in the form of bug reports, user feedback or actual code is always welcome! We do have a [contribution guide](https://github.com/opencloud-eu/web/blob/main/.github/CONTRIBUTING.md), actively use the [good-first-issue](https://github.com/opencloud-eu/web/issues?q=is%3Aopen+is%3Aissue+label%3A%22good%20first%20issue%22) label and try to feedback on issues and pull requests in a timely manner. There is also a [setup guide](https://docs.opencloud.eu/clients/web/getting-started/) for building and running `web` locally.
+Contribution in the form of bug reports, user feedback or actual code is always welcome! We do have a [contribution guide](https://github.com/opencloud-eu/opencloud/blob/main/CONTRIBUTING.md), actively use the [good-first-issue](https://github.com/opencloud-eu/web/issues?q=is%3Aissue%20state%3Aopen%20label%3AType%3AGood-First-Issue) label and try to feedback on issues and pull requests in a timely manner. There is also a [setup guide](https://docs.opencloud.eu/docs/dev/web/getting-started) for building and running `web` locally.
 
 ## Tests
 
-We assert the quality of this project by running an automated CI, while a guide on running the tests locally can be found in the [testing documentation](https://docs.opencloud.eu/clients/web/testing/testing/).
+We assert the quality of this project by running an automated CI, while a guide on running the tests locally can be found in the [testing documentation](https://docs.opencloud.eu/docs/dev/web/testing/).
 
 ## Jobs
 
