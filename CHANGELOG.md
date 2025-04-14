@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v24.04.13.3.1 [[#542](https://github.com/opencloud-eu/web/pull/542)]
 - chore(deps): update pnpm to v10.8.1 [[#547](https://github.com/opencloud-eu/web/pull/547)]
 - chore(deps): update devdependencies (non-major) [[#544](https://github.com/opencloud-eu/web/pull/544)]
 - chore(deps): update devdependencies (non-major) [[#529](https://github.com/opencloud-eu/web/pull/529)]
