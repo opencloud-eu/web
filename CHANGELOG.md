@@ -4,22 +4,23 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @amrita-shrestha, @individual-it
+@AlexAndBear, @JammingBen, @ScharfViktor, @amrita-shrestha, @individual-it, @tammi-23
 
 ### ✨ Features
 
 - feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
 
+### 🐛 Bug Fixes
+
+- fix: added padding to readonly-text-editor [[#549](https://github.com/opencloud-eu/web/pull/549)]
+- fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
+- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
+- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
+
 ### 📚 Documentation
 
 - docs: fix 404 links in readme [[#538](https://github.com/opencloud-eu/web/pull/538)]
 - chore: remove dev docs, since added to opencloud-eu/opencloud repo [[#523](https://github.com/opencloud-eu/web/pull/523)]
-
-### 🐛 Bug Fixes
-
-- fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
-- fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
-- fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
 
 ### ✅ Tests
 
