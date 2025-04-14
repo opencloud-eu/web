@@ -20,7 +20,7 @@
     "licenses:save": "license-checker-rseidelsohn --relativeLicensePath --out /dev/null --files ./third-party-licenses/third-party-licenses",
     "vite": "vue-demi-fix && vite",
     "check:types": "pnpm build:tokens && vue-tsc --noEmit",
-    "check:all": "pnpm check:types && pnpm lint && pnpm format && --fix && pnpm test:unit"
+    "check:all": "pnpm check:types && pnpm lint --fix && pnpm format:write && pnpm test:unit"
   },
   "browserslist": [
     "last 1 year",
