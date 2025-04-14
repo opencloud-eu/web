@@ -39,5 +39,6 @@ export default defineComponent({
   //Fixes in readonly mode vertical scrolling is not available
   height: calc(100vh - 52px);
   overflow: auto;
+  padding: var(--oc-space-medium);
 }
 </style>
