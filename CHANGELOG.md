@@ -33,6 +33,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update uppy monorepo [[#521](https://github.com/opencloud-eu/web/pull/521)]
 - chore(deps): update devdependencies (non-major) [[#552](https://github.com/opencloud-eu/web/pull/552)]
 - chore(deps): update collabora/code docker tag to v24.04.13.3.1 [[#542](https://github.com/opencloud-eu/web/pull/542)]
 - chore(deps): update pnpm to v10.8.1 [[#547](https://github.com/opencloud-eu/web/pull/547)]
