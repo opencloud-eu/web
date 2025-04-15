@@ -41,8 +41,8 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(@cucumber/cucumber@11.2.0)(@cucumber/messages@27.2.0)
       '@noble/hashes':
-        specifier: 1.7.1
-        version: 1.7.1
+        specifier: 1.7.2
+        version: 1.7.2
       '@opencloud-eu/babel-preset':
         specifier: workspace:*
         version: link:packages/babel-preset
@@ -2460,8 +2460,8 @@ packages:
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
 
-  '@noble/hashes@1.7.1':
-    resolution: {integrity: sha512-B8XBPsn4vT/KJAGqDzbwztd+6Yte3P4V7iafm24bxgDe/mlRuK6xmWPuCNrKt2vDafZ8MfJLlchDG/vYafQEjQ==}
+  '@noble/hashes@1.7.2':
+    resolution: {integrity: sha512-biZ0NUSxyjLLqo6KxEJ1b+C2NAx0wtDoFvCaXHGgUkeHzf3Xc1xKumFKREuT7f7DARNZ/slvYUwFG6B0f2b6hQ==}
     engines: {node: ^14.21.3 || >=16}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -8357,7 +8357,7 @@ snapshots:
     dependencies:
       eslint-scope: 5.1.1
 
-  '@noble/hashes@1.7.1': {}
+  '@noble/hashes@1.7.2': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
