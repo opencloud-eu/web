@@ -2,7 +2,7 @@
   <div class="oc-ml-s">
     <oc-text-input
       v-model="filterTerm"
-      class="oc-text-truncate oc-mr-s oc-mt-m"
+      class="oc-mr-s oc-mt-m"
       :label="$gettext('Filter members')"
     />
     <div ref="membersListRef" data-testid="space-members">

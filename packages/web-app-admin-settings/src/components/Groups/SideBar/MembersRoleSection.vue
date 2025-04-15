@@ -7,7 +7,9 @@
       data-testid="group-members-list"
     >
       <oc-avatar :user-name="member.displayName" :width="36" class="oc-mr-s" />
-      <span>{{ member.displayName }}</span>
+      <span class="oc-text-truncate" :title="member.displayName">
+        {{ member.displayName }}
+      </span>
     </li>
   </ul>
 </template>

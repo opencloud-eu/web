@@ -131,6 +131,7 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
   text-align: center;
   user-select: none;
   display: flex;
+  flex-shrink: 0;
   border-radius: 50%;
 
   .avatarImg {
