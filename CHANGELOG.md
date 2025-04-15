@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-14
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-15
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,7 +12,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix: added avatar styling and truncated user name to avoid compressed… [[#550](https://github.com/opencloud-eu/web/pull/550)]
 - fix: added padding to readonly-text-editor [[#549](https://github.com/opencloud-eu/web/pull/549)]
+- fix: introduce web applications link [[#543](https://github.com/opencloud-eu/web/pull/543)]
 - fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
 - fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
 - fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
