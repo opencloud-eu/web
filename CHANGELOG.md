@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: removed unnecessary oc-text-truncate to avoid a cut off [[#551](https://github.com/opencloud-eu/web/pull/551)]
 - fix: added avatar styling and truncated user name to avoid compressed… [[#550](https://github.com/opencloud-eu/web/pull/550)]
 - fix: added padding to readonly-text-editor [[#549](https://github.com/opencloud-eu/web/pull/549)]
 - fix: introduce web applications link [[#543](https://github.com/opencloud-eu/web/pull/543)]
