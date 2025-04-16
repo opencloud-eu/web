@@ -1,6 +1,0 @@
-{
-  "ignores": [
-    "requirejs",
-    "@babel/register"
-  ]
-}
