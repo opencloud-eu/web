@@ -217,8 +217,8 @@ def beforePipelines(ctx):
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
-    # documentation() + \ # ToDo used to be before pnpmCache
+           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx)) + \
+           designSystemDocs(ctx)
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -712,64 +712,6 @@ def buildAndPublishRelease(ctx):
 
     return steps
 
-def documentation():
-    return [
-        {
-            "name": "documentation",
-            "steps": [
-                {
-                    "name": "prepare",
-                    "image": OC_CI_ALPINE,
-                    "commands": [
-                        "make docs-copy",
-                    ],
-                },
-                {
-                    "name": "test",
-                    "image": OC_CI_HUGO,
-                    "commands": [
-                        "cd hugo",
-                        "hugo",
-                    ],
-                },
-                {
-                    "name": "list",
-                    "image": OC_CI_ALPINE,
-                    "commands": [
-                        "tree hugo/public",
-                    ],
-                },
-                {
-                    "name": "publish",
-                    "image": PLUGINS_GH_PAGES,
-                    "settings": {
-                        "username": {
-                            "from_secret": "github_username",
-                        },
-                        "password": {
-                            "from_secret": "github_token",
-                        },
-                        "pages_directory": "docs/",
-                        "copy_contents": True,
-                        "target_branch": "docs",
-                        "delete": True,
-                    },
-                    "when": {
-                        "ref": {
-                            "exclude": [
-                                "refs/pull/**",
-                            ],
-                        },
-                    },
-                },
-            ],
-            "when": [
-                event["pull_request"],
-                event["main_branch"],
-            ],
-        },
-    ]
-
 def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
     environment = {
         "IDM_ADMIN_PASSWORD": "admin",  # override the random admin password from `opencloud init`
@@ -1075,6 +1017,56 @@ def licenseCheck():
         "workspace": web_workspace,
     }]
 
+def designSystemDocs(ctx):
+    return [{
+        "name": "design-system-docs",
+        "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + [
+            {
+                "name": "build",
+                "image": OC_CI_NODEJS,
+                "commands": [
+                    # FIXME: remove node install as soon as we have our own node 22 image
+                    "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash",
+                    'export NVM_DIR="$HOME/.nvm"',
+                    "[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"",
+                    "nvm install 22",
+                    "nvm use 22",
+                    "corepack enable pnpm",
+                    "pnpm --filter 'design-system' docs:build",
+                    "cp -R packages/design-system/docs/.vitepress/dist docs",
+                ],
+            },
+            {
+                "name": "publish",
+                "image": PLUGINS_GH_PAGES,
+                "settings": {
+                    "username": {
+                        "from_secret": "github_username",
+                    },
+                    "password": {
+                        "from_secret": "github_token",
+                    },
+                    "pages_directory": "docs/",
+                    "copy_contents": True,
+                    "target_branch": "design-system-docs",
+                    "delete": True,
+                },
+                "when": [
+                    {
+                        "event": ["push"],
+                        "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                        "path": "packages/design-system/**",
+                    },
+                ],
+            },
+        ],
+        "when": [
+            event["pull_request"],
+            event["main_branch"],
+        ],
+        "workspace": web_workspace,
+    }]
+
 def pipelineDependsOn(pipeline, dependant_pipelines):
     if "depends_on" in pipeline.keys():
         pipeline["depends_on"] = pipeline["depends_on"] + getPipelineNames(dependant_pipelines)
@@ -1109,12 +1101,9 @@ def skipIfUnchanged(ctx, type):
 
     base = [
         "^.github/.*",
-        "^changelog/.*",
         "^config/.*",
         "^deployments/.*",
         "^dev/.*",
-        "^docs/.*",
-        "^packages/web-app-skeleton/.*",
         "README.md",
     ]
 
@@ -1434,33 +1423,6 @@ def wopiCollaborationService(name):
             ],
         },
     ]
-
-def buildDesignSystemDocs():
-    return [{
-        "name": "build-design-system-docs",
-        "image": OC_CI_NODEJS,
-        "commands": [
-            "pnpm --filter @opencloud-eu/design-system build:docs",
-        ],
-    }]
-
-def buildAndTestDesignSystem(ctx):
-    design_system_trigger = [
-        event["base"],
-        event["pull_request"],
-        event["tag"],
-    ]
-
-    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-            installPnpm() + \
-            buildDesignSystemDocs()
-
-    return [{
-        "name": "build-design-system-docs",
-        "workspace": web_workspace,
-        "steps": steps,
-        "when": design_system_trigger,
-    }]
 
 def postgresService():
     return [

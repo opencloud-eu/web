@@ -11,7 +11,7 @@ const stripScssMarker = '/* STYLES STRIP IMPORTS MARKER */'
 export default defineConfig({
   title: 'OpenCloud Design System',
   description: 'Design System for OpenCloud',
-  base: '/',
+  base: '/design-system/',
   appearance: false,
   head: [['link', { rel: 'icon', href: '/logo.svg' }]],
   vite: {

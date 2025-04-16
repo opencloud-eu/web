@@ -107,7 +107,7 @@ const isLoading = ref(true)
 const load = async (type: string, componentName: string) => {
   try {
     const response = await fetch(`../${type}/${componentName}.json`)
-    if (response.headers?.get('content-type') === 'application/json') {
+    if (response.headers?.get('content-type')?.startsWith('application/json')) {
       return response.json()
     }
     return []

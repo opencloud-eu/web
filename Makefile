@@ -1,6 +1,5 @@
 NAME := web
 DIST := ${CURDIR}/dist
-HUGO := ${CURDIR}/hugo
 RELEASE := ${CURDIR}/release
 NODE_MODULES := ${CURDIR}/node_modules
 
@@ -10,7 +9,7 @@ node_modules: package.json pnpm-lock.yaml
 
 .PHONY: clean
 clean:
-	rm -rf ${DIST} ${HUGO} ${RELEASE} ${NODE_MODULES}
+	rm -rf ${DIST} ${RELEASE} ${NODE_MODULES}
 
 .PHONY: release
 release: clean
@@ -24,26 +23,6 @@ release: clean
 .PHONY: dist
 dist:
 	make -f Makefile.release
-
-.PHONY: docs
-docs: docs-copy docs-build
-
-.PHONY: docs-copy
-docs-copy:
-	mkdir -p $(HUGO); \
-	mkdir -p $(HUGO)/content/extensions; \
-	cd $(HUGO); \
-	git init; \
-	git remote rm origin; \
-	git remote add origin https://github.com/opencloud-eu/opencloud-eu.github.io; \
-	git fetch; \
-	git checkout origin/main -f; \
-	make -C $(HUGO) theme; \
-	rsync --delete -ax ../docs/ content/$(NAME)
-
-.PHONY: docs-build
-docs-build:
-	cd $(HUGO); hugo
 
 .PHONY: l10n-push
 l10n-push:
