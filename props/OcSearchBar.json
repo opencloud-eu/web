@@ -1,0 +1,100 @@
+[
+  {
+    "name": "icon",
+    "required": false,
+    "description": "The name of the icon to be displayed in the search bar. Please refer to the `OcIcon` component to see how to use icon names.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "placeholder",
+    "required": false,
+    "description": "The placeholder text of the search bar input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the search bar input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "small",
+    "required": false,
+    "description": "Determines if the search bar is small.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "buttonLabel",
+    "required": false,
+    "description": "The label of the search button.",
+    "default": "Search",
+    "type": "string"
+  },
+  {
+    "name": "buttonHidden",
+    "required": false,
+    "description": "Determines if the search button is hidden.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "typeAhead",
+    "required": false,
+    "description": "Determines if the search bar should perform a search on each keyup event.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "trimQuery",
+    "required": false,
+    "description": "Determines if the search query should be trimmed.",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
+    "name": "loading",
+    "required": false,
+    "description": "Determines if the search bar is in a loading state.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "isFilter",
+    "required": false,
+    "description": "Determines if the search bar acts as a local filter. If set to `true`, the `role` attribute will not be set.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "loadingAccessibleLabel",
+    "required": false,
+    "description": "The accessible label for the loading spinner.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "showCancelButton",
+    "required": false,
+    "description": "Determines if the cancel button should be shown. This is mostly used in mobile views.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "cancelButtonAppearance",
+    "required": false,
+    "description": "The appearance of the cancel button.",
+    "default": "raw",
+    "type": "AppearanceType"
+  },
+  {
+    "name": "cancelHandler",
+    "required": false,
+    "description": "The handler for the cancel button.",
+    "default": "",
+    "type": "() => void"
+  }
+]

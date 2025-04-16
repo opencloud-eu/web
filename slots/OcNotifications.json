@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "The content of the notification. This is usually the `OcNotificationMessage` component.",
+    "type": "() => unknown"
+  }
+]

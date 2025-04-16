@@ -1,0 +1,44 @@
+[
+  {
+    "name": "accessibleLabel",
+    "required": false,
+    "description": "The accessible label for the avatar. Only needed in case the avatar is used alone. If not specified, the avatar will get `aria-hidden=\"true\"`.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "color",
+    "required": false,
+    "description": "The color of the text displayed in the avatar.",
+    "default": "white",
+    "type": "string"
+  },
+  {
+    "name": "backgroundColor",
+    "required": false,
+    "description": "The background color of the avatar. If not specified, a random color will be generated based on the username.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "src",
+    "required": false,
+    "description": "The source of the image to be displayed.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "userName",
+    "required": false,
+    "description": "The user name to extract the initials from if `src` is empty.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "width",
+    "required": false,
+    "description": "The width of the avatar.",
+    "default": "50",
+    "type": "number"
+  }
+]

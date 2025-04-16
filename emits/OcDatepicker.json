@@ -1,0 +1,7 @@
+[
+  {
+    "name": "dateChanged",
+    "description": "Emitted when the date has been changed.",
+    "type": "(e: 'dateChanged', data: { date: DateTime | null; error: boolean }): void"
+  }
+]

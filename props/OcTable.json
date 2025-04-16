@@ -1,0 +1,107 @@
+[
+  {
+    "name": "data",
+    "required": true,
+    "description": "The data to be displayed in the table.",
+    "default": "",
+    "type": "Item[]"
+  },
+  {
+    "name": "fields",
+    "required": true,
+    "description": "The fields to be displayed as table headers.",
+    "default": "",
+    "type": "FieldType[]"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "The IDs of the rows that should be disabled.",
+    "default": "",
+    "type": "Array<string | number>"
+  },
+  {
+    "name": "dragDrop",
+    "required": false,
+    "description": "Determines if the table supports dragging and dropping items onto rows.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hasHeader",
+    "required": false,
+    "description": "Determines if the table has a header row.",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
+    "name": "headerPosition",
+    "required": false,
+    "description": "The position of the sticky header.",
+    "default": "0",
+    "type": "number"
+  },
+  {
+    "name": "highlighted",
+    "required": false,
+    "description": "The IDs of the rows that should be highlighted.",
+    "default": "",
+    "type": "string | string[]"
+  },
+  {
+    "name": "hover",
+    "required": false,
+    "description": "Determines if the table rows should have a hover effect.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "idKey",
+    "required": false,
+    "description": "The key to be used as the unique identifier for each row.",
+    "default": "'id'",
+    "type": "string"
+  },
+  {
+    "name": "itemDomSelector",
+    "required": false,
+    "description": "A function to get the dom selector for each item.",
+    "default": "",
+    "type": "(item: Item) => string"
+  },
+  {
+    "name": "lazy",
+    "required": false,
+    "description": "Determines if the table should be lazy loaded.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "paddingX",
+    "required": false,
+    "description": "The horizontal padding size of the table.",
+    "default": "small",
+    "type": "SizeType | 'remove'"
+  },
+  {
+    "name": "sortBy",
+    "required": false,
+    "description": "The default field to sort by.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "sortDir",
+    "required": false,
+    "description": "The default sort direction.",
+    "default": "",
+    "type": "'asc' | 'desc'"
+  },
+  {
+    "name": "sticky",
+    "required": false,
+    "description": "Determines if the table header should be sticky. This is helpful when it should still be visible when scrolling.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

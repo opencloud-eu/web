@@ -1,0 +1,9 @@
+[
+  {
+    "name": "recipient",
+    "required": true,
+    "description": "The recipient object. Please refer to the component source for the `Recipient` type definition.",
+    "default": "",
+    "type": "Recipient"
+  }
+]

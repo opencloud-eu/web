@@ -1,0 +1,9 @@
+[
+  {
+    "name": "position",
+    "required": false,
+    "description": "The position of the notification.",
+    "default": "default",
+    "type": "'default' | 'top-left' | 'top-center' | 'top-right'"
+  }
+]

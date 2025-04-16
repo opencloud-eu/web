@@ -1,0 +1,7 @@
+[
+  {
+    "name": "itemDroppedBreadcrumb",
+    "description": "Emitted when an item has been droped onto a breadcrumb element.",
+    "type": "(e: 'itemDroppedBreadcrumb', to: RouteLocationPathRaw): void"
+  }
+]

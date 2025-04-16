@@ -1,0 +1,16 @@
+[
+  {
+    "name": "ariaLabel",
+    "required": false,
+    "description": "Aria label to describe the loader's purpose for screen readers.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "flat",
+    "required": false,
+    "description": "Determines if the loader is visually flat.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

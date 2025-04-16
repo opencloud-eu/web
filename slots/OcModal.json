@@ -1,0 +1,7 @@
+[
+  {
+    "name": "content",
+    "description": "Custom content of the modal.",
+    "type": "() => unknown"
+  }
+]

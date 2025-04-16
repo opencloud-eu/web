@@ -1,0 +1,12 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the drop that is displayed in a card-style.",
+    "type": "() => unknown"
+  },
+  {
+    "name": "special",
+    "description": "This slot can be used if you don't want the drop to be displayed in a card-style.",
+    "type": "() => unknown"
+  }
+]

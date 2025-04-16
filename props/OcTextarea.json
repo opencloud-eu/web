@@ -1,0 +1,37 @@
+[
+  {
+    "name": "id",
+    "required": false,
+    "description": "The ID attribute of the textarea.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the textarea.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "errorMessage",
+    "required": false,
+    "description": "The error message to be displayed below the textarea.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "descriptionMessage",
+    "required": false,
+    "description": "The description message to be displayed below the textarea.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fixMessageLine",
+    "required": false,
+    "description": "Determines if the message line should be fixed.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

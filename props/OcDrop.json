@@ -1,0 +1,72 @@
+[
+  {
+    "name": "closeOnClick",
+    "required": false,
+    "description": "Determines if the drop should close when clicked.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "dropId",
+    "required": false,
+    "description": "The element ID of the drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "isNested",
+    "required": false,
+    "description": "Determines if the drop is nested.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "mode",
+    "required": false,
+    "description": "Determines the event that triggers the drop.",
+    "default": "'click'",
+    "type": "'click' | 'hover' | 'manual'"
+  },
+  {
+    "name": "offset",
+    "required": false,
+    "description": "The visual offset of the drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "paddingSize",
+    "required": false,
+    "description": "The padding size of the drop.",
+    "default": "'medium'",
+    "type": "SizeType | 'remove'"
+  },
+  {
+    "name": "popperOptions",
+    "required": false,
+    "description": "The popper options of the drop. Please refer to the component source for more information.",
+    "default": "",
+    "type": "TippyProps['popperOptions']"
+  },
+  {
+    "name": "position",
+    "required": false,
+    "description": "The position of the drop.",
+    "default": "'bottom-start'",
+    "type": "| 'top-start'\n    | 'right-start'\n    | 'bottom-start'\n    | 'left-start'\n    | 'auto-start'\n    | 'top-end'\n    | 'right-end'\n    | 'bottom-end'\n    | 'left-end'\n    | 'auto-end'"
+  },
+  {
+    "name": "target",
+    "required": false,
+    "description": "Element selector that can be used as a target of the drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "toggle",
+    "required": false,
+    "description": "CSS selector for the element to be used as toggle. By default, the preceding element is used.",
+    "default": "",
+    "type": "string"
+  }
+]

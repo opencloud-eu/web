@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the list, usually a bunch of HTML `li` elements.",
+    "type": "() => unknown"
+  }
+]

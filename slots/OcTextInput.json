@@ -1,0 +1,7 @@
+[
+  {
+    "name": "label",
+    "description": "Can be used to overwrite the default rendering of the label.",
+    "type": "() => unknown"
+  }
+]

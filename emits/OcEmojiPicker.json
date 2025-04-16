@@ -1,0 +1,12 @@
+[
+  {
+    "name": "emojiSelect",
+    "description": "Emitted when an emoji has been selected.",
+    "type": "(e: 'emojiSelect', emoji: string): void"
+  },
+  {
+    "name": "clickOutside",
+    "description": "Emitted when the user has clicked outside of the emoji picker.",
+    "type": "(e: 'clickOutside'): void"
+  }
+]

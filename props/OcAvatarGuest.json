@@ -1,0 +1,30 @@
+[
+  {
+    "name": "name",
+    "required": true,
+    "description": "",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "accessibleLabel",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "iconSize",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "SizeType"
+  },
+  {
+    "name": "width",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "number"
+  }
+]

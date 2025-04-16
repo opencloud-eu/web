@@ -1,0 +1,12 @@
+[
+  {
+    "name": "hideDrop",
+    "description": "Emitted when the drop has been hidden.",
+    "type": "(e: 'hideDrop'): void"
+  },
+  {
+    "name": "showDrop",
+    "description": "Emitted when the drop has been displayed.",
+    "type": "(e: 'showDrop'): void"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "items",
+    "required": true,
+    "description": "List of items to display. Please refer to the component source for the `Item` type definition.",
+    "default": "",
+    "type": "Item[]"
+  },
+  {
+    "name": "accessibleDescription",
+    "required": false,
+    "description": "Accessible description for the component.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "isTooltipDisplayed",
+    "required": false,
+    "description": "Determines if the tooltip is displayed when hovering over the component.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "maxDisplayed",
+    "required": false,
+    "description": "Maximum number of items to display. If the number of items is greater than this value, a `+X` counter will be displayed.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "stacked",
+    "required": false,
+    "description": "Determines if the avatars are displayed in a stacked layout.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

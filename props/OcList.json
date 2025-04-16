@@ -1,0 +1,9 @@
+[
+  {
+    "name": "raw",
+    "required": false,
+    "description": "Render the list without any list style type.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

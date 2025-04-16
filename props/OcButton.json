@@ -1,0 +1,100 @@
+[
+  {
+    "name": "appearance",
+    "required": false,
+    "description": "The appearance of the button.",
+    "default": "outline",
+    "type": "AppearanceType"
+  },
+  {
+    "name": "ariaLabel",
+    "required": false,
+    "description": "The aria label of the button. Needs to be present if the button doesn't have a visible label.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "colorRole",
+    "required": false,
+    "description": "Material design color role.",
+    "default": "secondary",
+    "type": "| 'primary'\n    | 'primaryContainer'\n    | 'primaryFixed'\n    | 'secondary'\n    | 'secondaryContainer'\n    | 'secondaryFixed'\n    | 'tertiary'\n    | 'tertiaryContainer'\n    | 'tertiaryFixed'\n    | 'surface'\n    | 'surfaceContainer'\n    | 'chrome'"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the button is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "gapSize",
+    "required": false,
+    "description": "The gap size between content elements of the button.",
+    "default": "medium",
+    "type": "SizeType | 'none'"
+  },
+  {
+    "name": "href",
+    "required": false,
+    "description": "The href if the `type` is set to `a'.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "justifyContent",
+    "required": false,
+    "description": "The alignment of the button content.",
+    "default": "center",
+    "type": "'left' | 'center' | 'right' | 'space-around' | 'space-between' | 'space-evenly'"
+  },
+  {
+    "name": "showSpinner",
+    "required": false,
+    "description": "Determines if a spinner should be shown inside the button.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the button.",
+    "default": "medium",
+    "type": "'small' | 'medium' | 'large'"
+  },
+  {
+    "name": "submit",
+    "required": false,
+    "description": "The type of the button element. Only takes effect if the `type` is set to `button`.",
+    "default": "button",
+    "type": "'null' | 'button' | 'submit' | 'reset'"
+  },
+  {
+    "name": "target",
+    "required": false,
+    "description": "The target of the button if the `type` is set to `a`.",
+    "default": "",
+    "type": "'_blank' | '_self' | '_parent' | '_top'"
+  },
+  {
+    "name": "to",
+    "required": false,
+    "description": "The route location if the `type` is set to `router-link`.",
+    "default": "",
+    "type": "RouteLocationRaw"
+  },
+  {
+    "name": "type",
+    "required": false,
+    "description": "The type of the button element.",
+    "default": "button",
+    "type": "'button' | 'a' | 'router-link'"
+  },
+  {
+    "name": "noHover",
+    "required": false,
+    "description": "Determines if the button should have no hover effect.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

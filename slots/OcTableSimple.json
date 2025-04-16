@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Table content.",
+    "type": "() => unknown"
+  }
+]

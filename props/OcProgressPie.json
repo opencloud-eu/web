@@ -1,0 +1,23 @@
+[
+  {
+    "name": "max",
+    "required": false,
+    "description": "The maximum value of the progress.",
+    "default": "100",
+    "type": "number"
+  },
+  {
+    "name": "progress",
+    "required": false,
+    "description": "The current progress value.",
+    "default": "0",
+    "type": "number"
+  },
+  {
+    "name": "showLabel",
+    "required": false,
+    "description": "Determines if the label should be shown.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

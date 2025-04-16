@@ -1,0 +1,142 @@
+[
+  {
+    "name": "title",
+    "required": true,
+    "description": "Title of the modal.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "buttonCancelText",
+    "required": false,
+    "description": "Text for the cancel button.",
+    "default": "Cancel",
+    "type": "string"
+  },
+  {
+    "name": "buttonConfirmDisabled",
+    "required": false,
+    "description": "Disables the confirm button.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "buttonConfirmText",
+    "required": false,
+    "description": "Text for the confirm button.",
+    "default": "Confirm",
+    "type": "string"
+  },
+  {
+    "name": "contextualHelperData",
+    "required": false,
+    "description": "Contextual helper data. Please refer to the component source for the `ContextualHelperData` type definition.",
+    "default": "",
+    "type": "ContextualHelperData"
+  },
+  {
+    "name": "contextualHelperLabel",
+    "required": false,
+    "description": "Label of the contextual helper.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "elementClass",
+    "required": false,
+    "description": "Additional class(es) to be added to the modal.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "elementId",
+    "required": false,
+    "description": "Element ID of the modal.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "focusTrapInitial",
+    "required": false,
+    "description": "Selector of the element that is supposed to receive the initial focus inside the modal.",
+    "default": "",
+    "type": "string | boolean"
+  },
+  {
+    "name": "hasInput",
+    "required": false,
+    "description": "Determines if the modal has an input field.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hideActions",
+    "required": false,
+    "description": "Hide the action buttons.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hideConfirmButton",
+    "required": false,
+    "description": "Hide the confirm button.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "inputDescription",
+    "required": false,
+    "description": "Description to be displayed below the input field.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "inputError",
+    "required": false,
+    "description": "Error message to be displayed below the input field.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "inputLabel",
+    "required": false,
+    "description": "Label of the input field.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "inputSelectionRange",
+    "required": false,
+    "description": "Selection range of the input field in case parts of the input content should be selected on first render.",
+    "default": "",
+    "type": "[number, number]"
+  },
+  {
+    "name": "inputType",
+    "required": false,
+    "description": "Type of the input field.",
+    "default": "text",
+    "type": "'text' | 'number' | 'email' | 'password' | 'date'"
+  },
+  {
+    "name": "inputValue",
+    "required": false,
+    "description": "Value of the input field.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "isLoading",
+    "required": false,
+    "description": "Determines if the modal is in a loading state.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "message",
+    "required": false,
+    "description": "Message of the modal.",
+    "default": "",
+    "type": "string"
+  }
+]

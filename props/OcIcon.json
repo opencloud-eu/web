@@ -1,0 +1,44 @@
+[
+  {
+    "name": "accessibleLabel",
+    "required": false,
+    "description": "Accessible label for the icon. Should be set if the icon fulfills a purpose and is not purely decorative.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "color",
+    "required": false,
+    "description": "Color of the icon.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fillType",
+    "required": false,
+    "description": "Fill type of the icon.",
+    "default": "fill",
+    "type": "FillType"
+  },
+  {
+    "name": "name",
+    "required": false,
+    "description": "Name of the icon. Please refer to `Remixicon` for a list of available icons.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "Size of the icon.",
+    "default": "medium",
+    "type": "SizeType"
+  },
+  {
+    "name": "type",
+    "required": false,
+    "description": "HTML element to be used for the icon.",
+    "default": "span",
+    "type": "string"
+  }
+]

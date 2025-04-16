@@ -1,0 +1,7 @@
+[
+  {
+    "name": "click",
+    "description": "Emitted when the checkbox has been clicked.",
+    "type": "(e: 'click', event: MouseEvent | KeyboardEvent): void"
+  }
+]

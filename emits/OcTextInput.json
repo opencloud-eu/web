@@ -1,0 +1,27 @@
+[
+  {
+    "name": "change",
+    "description": "Emitted when the value of the input has changed after the user confirms or leaves the focus.",
+    "type": "(e: 'change', value: string): void"
+  },
+  {
+    "name": "update:modelValue",
+    "description": "Emitted when the value of the input has updated.",
+    "type": "(e: 'update:modelValue', value: string): void"
+  },
+  {
+    "name": "focus",
+    "description": "Emitted when the input has been focused.",
+    "type": "(e: 'focus', value: string): void"
+  },
+  {
+    "name": "passwordChallengeCompleted",
+    "description": "Emitted when the password challenge has been completed successfully.",
+    "type": "(e: 'passwordChallengeCompleted'): void"
+  },
+  {
+    "name": "passwordChallengeFailed",
+    "description": "Emitted when the password challenge has failed.",
+    "type": "(e: 'passwordChallengeFailed'): void"
+  }
+]

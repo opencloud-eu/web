@@ -1,0 +1,9 @@
+[
+  {
+    "name": "theme",
+    "required": false,
+    "description": "Theme of the emoji picker.",
+    "default": "light",
+    "type": "'light' | 'dark'"
+  }
+]

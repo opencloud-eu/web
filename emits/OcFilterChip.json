@@ -1,0 +1,22 @@
+[
+  {
+    "name": "clearFilter",
+    "description": "Emitted when the filter has been cleared.",
+    "type": "(e: 'clearFilter'): void"
+  },
+  {
+    "name": "hideDrop",
+    "description": "Emitted when the drop has been hidden.",
+    "type": "(e: 'hideDrop'): void"
+  },
+  {
+    "name": "showDrop",
+    "description": "Emitted when the drop has been displayed.",
+    "type": "(e: 'showDrop'): void"
+  },
+  {
+    "name": "toggleFilter",
+    "description": "Emitted when the filter has been toggled.",
+    "type": "(e: 'toggleFilter'): void"
+  }
+]

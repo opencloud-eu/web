@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the tag.",
+    "type": "() => unknown"
+  }
+]

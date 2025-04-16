@@ -1,0 +1,17 @@
+[
+  {
+    "name": "cancel",
+    "description": "Emitted when the cancel button has been clicked.",
+    "type": "(e: 'cancel'): void"
+  },
+  {
+    "name": "confirm",
+    "description": "Emitted when the confirm button has been clicked.",
+    "type": "(e: 'confirm', value: string): void"
+  },
+  {
+    "name": "input",
+    "description": "Emitted when the user has typed something in the input field.",
+    "type": "(e: 'input', value: string): void"
+  }
+]

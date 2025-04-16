@@ -1,0 +1,37 @@
+[
+  {
+    "name": "title",
+    "required": true,
+    "description": "The title of the notification message.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "errorLogContent",
+    "required": false,
+    "description": "The content of the error log that can be copied.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "message",
+    "required": false,
+    "description": "The message of the notification.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "status",
+    "required": false,
+    "description": "The status of the notification message.",
+    "default": "passive",
+    "type": "'passive' | 'primary' | 'success' | 'warning' | 'danger'"
+  },
+  {
+    "name": "timeout",
+    "required": false,
+    "description": "The timeout in seconds after which the notification message will be closed.",
+    "default": "5",
+    "type": "number"
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "close",
+    "description": "Emitted when the notification message has been closed.",
+    "type": "(e: 'close'): void"
+  }
+]

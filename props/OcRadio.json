@@ -1,0 +1,44 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the radio button.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the radio button is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hideLabel",
+    "required": false,
+    "description": "Determines if the label should be visually hidden. Note that it will still be accessible to screen readers.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the radio button.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "option",
+    "required": false,
+    "description": "The value of the radio button.",
+    "default": "",
+    "type": "unknown"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the radio button.",
+    "default": "medium",
+    "type": "'small' | 'medium' | 'large'"
+  }
+]

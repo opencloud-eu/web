@@ -1,0 +1,7 @@
+[
+  {
+    "name": "contextMenu",
+    "description": "Context menu for the last breadcrumb item. Needs `showContextActions` to be `true`.",
+    "type": "() => unknown"
+  }
+]

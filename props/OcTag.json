@@ -1,0 +1,30 @@
+[
+  {
+    "name": "type",
+    "required": false,
+    "description": "The type of the tag element.",
+    "default": "span",
+    "type": "'span' | 'button' | 'router-link' | 'a'"
+  },
+  {
+    "name": "to",
+    "required": false,
+    "description": "The route to navigate to if the `type` is set to `router-link`.",
+    "default": "",
+    "type": "string | RouteLocationRaw"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the tag.",
+    "default": "medium",
+    "type": "'small' | 'medium' | 'large'"
+  },
+  {
+    "name": "rounded",
+    "required": false,
+    "description": "Determines if the tag should be rounded.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "alignH",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "'left' | 'center' | 'right'"
+  },
+  {
+    "name": "alignV",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "'top' | 'middle' | 'bottom'"
+  },
+  {
+    "name": "type",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "'td' | 'th'"
+  },
+  {
+    "name": "width",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "'auto' | 'shrink' | 'expand'"
+  },
+  {
+    "name": "wrap",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "'break' | 'nowrap' | 'truncate'"
+  }
+]

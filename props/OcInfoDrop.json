@@ -1,0 +1,58 @@
+[
+  {
+    "name": "title",
+    "required": true,
+    "description": "Title of the info drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "dropId",
+    "required": false,
+    "description": "Element ID of the info drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "endText",
+    "required": false,
+    "description": "Text at the end of the info drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "list",
+    "required": false,
+    "description": "List of items to display in the info drop. Please refer to the component source for the `ContextualHelperDataListItem` type definition.",
+    "default": "",
+    "type": "ContextualHelperDataListItem[]"
+  },
+  {
+    "name": "mode",
+    "required": false,
+    "description": "Event that triggers the info drop.",
+    "default": "'click'",
+    "type": "OcDropProps['mode']"
+  },
+  {
+    "name": "readMoreLink",
+    "required": false,
+    "description": "Link at the end of the info drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "text",
+    "required": false,
+    "description": "Text to display in the info drop.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "toggle",
+    "required": false,
+    "description": "CSS selector for the element to be used as toggle. By default, the preceding element is used.",
+    "default": "",
+    "type": "string"
+  }
+]

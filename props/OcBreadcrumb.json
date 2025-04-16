@@ -1,0 +1,51 @@
+[
+  {
+    "name": "items",
+    "required": true,
+    "description": "The items to display in the breadcrumb. Please refer to the component source for the `BreadcrumbItem` type definition.",
+    "default": "",
+    "type": "BreadcrumbItem[]"
+  },
+  {
+    "name": "contextMenuPadding",
+    "required": false,
+    "description": "The padding size of the context menu dropdown.",
+    "default": "medium",
+    "type": "SizeType | 'remove'"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the breadcrumb.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "maxWidth",
+    "required": false,
+    "description": "The maximum width of the breadcrumb. If the breadcrumb exceeds this width, items will be truncated. Set to `-1` to disable truncation.",
+    "default": "-1",
+    "type": "number"
+  },
+  {
+    "name": "showContextActions",
+    "required": false,
+    "description": "Determines if the context actions are shown for the last breadcrumb item.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "truncationOffset",
+    "required": false,
+    "description": "The number of items to show before truncating the breadcrumb.",
+    "default": "2",
+    "type": "number"
+  },
+  {
+    "name": "variation",
+    "required": false,
+    "description": "The variation of the breadcrumb.",
+    "default": "default",
+    "type": "'default' | 'lead'"
+  }
+]

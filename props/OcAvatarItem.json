@@ -1,0 +1,58 @@
+[
+  {
+    "name": "name",
+    "required": true,
+    "description": "The name of the avatar item. This will not be displayed on the screen however.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "accessibleLabel",
+    "required": false,
+    "description": "The accessible label for the avatar item. Only needed in case the item is used alone. If not specified, the item will get `aria-hidden=\"true\"`.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "background",
+    "required": false,
+    "description": "The background color of the avatar item.",
+    "default": "var(--oc-role-secondary)",
+    "type": "string"
+  },
+  {
+    "name": "icon",
+    "required": false,
+    "description": "The icon to be displayed in the avatar item. Please refer to the `OcIcon` component to see how to use icon names.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "iconColor",
+    "required": false,
+    "description": "The color of the icon.",
+    "default": "var(--oc-role-on-secondary)",
+    "type": "string"
+  },
+  {
+    "name": "iconFillType",
+    "required": false,
+    "description": "The fill type of the icon.",
+    "default": "'fill'",
+    "type": "FillType"
+  },
+  {
+    "name": "iconSize",
+    "required": false,
+    "description": "The size of the icon.",
+    "default": "'small'",
+    "type": "SizeType"
+  },
+  {
+    "name": "width",
+    "required": false,
+    "description": "The width of the avatar item.",
+    "default": "30",
+    "type": "number"
+  }
+]

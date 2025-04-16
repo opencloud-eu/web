@@ -1,0 +1,7 @@
+[
+  {
+    "name": "click",
+    "description": "Emitted when the tag has been clicked.",
+    "type": "(e: 'click', event: MouseEvent): void"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "name": "hover",
+    "required": false,
+    "description": "Determines if the table rows should have a hover effect.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "advancedSearch",
+    "description": "Emitted when the search button has been clicked.",
+    "type": "(e: 'advancedSearch', event: MouseEvent): void"
+  },
+  {
+    "name": "keyup",
+    "description": "Emitted when the user has typed.",
+    "type": "(e: 'keyup', event: KeyboardEvent): void"
+  },
+  {
+    "name": "search",
+    "description": "Emitted when the user has performed a search.",
+    "type": "(e: 'search', query: string): void"
+  }
+]

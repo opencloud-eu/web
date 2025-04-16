@@ -1,0 +1,7 @@
+[
+  {
+    "name": "change",
+    "description": "Emitted when the value of the select has changed.",
+    "type": "(event: 'change', value: string | boolean): void"
+  }
+]

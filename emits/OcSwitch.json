@@ -1,0 +1,7 @@
+[
+  {
+    "name": "update:checked",
+    "description": "Emitted when the switch has been toggled.",
+    "type": "(e: 'update:checked', value: boolean): void"
+  }
+]

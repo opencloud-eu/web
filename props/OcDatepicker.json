@@ -1,0 +1,30 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "Label of the date picker.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "currentDate",
+    "required": false,
+    "description": "Current date which acts as the pre-filled date.",
+    "default": "",
+    "type": "DateTime"
+  },
+  {
+    "name": "isClearable",
+    "required": false,
+    "description": "Determines if the date picker is clearable.",
+    "default": "",
+    "type": "boolean"
+  },
+  {
+    "name": "minDate",
+    "required": false,
+    "description": "Minimum date that can be selected. Dates before this date will be disabled.",
+    "default": "",
+    "type": "DateTime"
+  }
+]

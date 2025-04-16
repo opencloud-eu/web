@@ -1,6 +1,0 @@
-export * from './applyCustomProp'
-export * from './colors'
-export * from './constants'
-export * from './sizeClasses'
-export * from './types'
-export * from './uniqueId'

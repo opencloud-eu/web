@@ -1,0 +1,107 @@
+[
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "type",
+    "required": false,
+    "description": "The type of the input.",
+    "default": "text",
+    "type": "'text' | 'number' | 'email' | 'password' | 'date'"
+  },
+  {
+    "name": "modelValue",
+    "required": false,
+    "description": "The value of the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "selectionRange",
+    "required": false,
+    "description": "The selection range of the input.",
+    "default": "",
+    "type": "[number, number]"
+  },
+  {
+    "name": "clearButtonEnabled",
+    "required": false,
+    "description": "Determines if the input should have a clear button.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "clearButtonAccessibleLabel",
+    "required": false,
+    "description": "The accessible label of the clear button.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "defaultValue",
+    "required": false,
+    "description": "The default value of the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the input is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the input element.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "errorMessage",
+    "required": false,
+    "description": "The error message to be displayed below the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fixMessageLine",
+    "required": false,
+    "description": "Determines if the message line should be fixed.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "descriptionMessage",
+    "required": false,
+    "description": "The description message to be displayed below the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "readOnly",
+    "required": false,
+    "description": "Determines if the input is read-only.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "passwordPolicy",
+    "required": false,
+    "description": "The password policy if the `type` is set to `password`. Please refer to the component source for the `PasswordPolicy` type definition.",
+    "default": "",
+    "type": "PasswordPolicy"
+  },
+  {
+    "name": "generatePasswordMethod",
+    "required": false,
+    "description": "The method to generate a password if the `type` is set to `password`.",
+    "default": "",
+    "type": "(...args: unknown[]) => string"
+  }
+]

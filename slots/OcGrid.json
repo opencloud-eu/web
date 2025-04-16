@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "The content of the grid.",
+    "type": "() => unknown"
+  }
+]

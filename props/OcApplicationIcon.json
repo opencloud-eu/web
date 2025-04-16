@@ -1,0 +1,16 @@
+[
+  {
+    "name": "icon",
+    "required": true,
+    "description": "Name of the icon to display. Please refer to the `OcIcon` component to see how to use icon names.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "colorPrimary",
+    "required": false,
+    "description": "Hex-code of the primary color to display. This color is being used for the left side of the gradient.",
+    "default": "",
+    "type": "string"
+  }
+]

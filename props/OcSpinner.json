@@ -1,0 +1,16 @@
+[
+  {
+    "name": "ariaLabel",
+    "required": false,
+    "description": "The aria label of the spinner. It should describe the purpose of the spinner.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the spinner.",
+    "default": "medium",
+    "type": "SizeType"
+  }
+]

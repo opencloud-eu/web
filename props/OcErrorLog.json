@@ -1,0 +1,9 @@
+[
+  {
+    "name": "content",
+    "required": true,
+    "description": "The content to be displayed in the error log.",
+    "default": "",
+    "type": "string"
+  }
+]

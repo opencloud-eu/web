@@ -1,0 +1,16 @@
+[
+  {
+    "name": "count",
+    "required": true,
+    "description": "The number to display inside the avatar.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size in px of the avatar.",
+    "default": "30",
+    "type": "number"
+  }
+]

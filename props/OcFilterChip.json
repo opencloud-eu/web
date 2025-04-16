@@ -1,0 +1,51 @@
+[
+  {
+    "name": "filterLabel",
+    "required": true,
+    "description": "The label of the filter.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "closeOnClick",
+    "required": false,
+    "description": "Determines if the drop should close when an item is clicked.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the filter.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "isToggle",
+    "required": false,
+    "description": "Determines if the filter is a binary toggle.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "isToggleActive",
+    "required": false,
+    "description": "Determines if the toggle is active.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "raw",
+    "required": false,
+    "description": "Determines if the filter has a raw appearance.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "selectedItemNames",
+    "required": false,
+    "description": "The names of the selected items.",
+    "default": "",
+    "type": "string[]"
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "loaded",
+    "description": "Emitted when the SVG has been loaded.",
+    "type": "(e: 'loaded'): void"
+  }
+]

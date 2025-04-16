@@ -1,7 +1,0 @@
-_extends: gh-labels
-
-repository:
-  name: web
-  description: '🐻 Web UI for OpenCloud built with Vue.js and TypeScript'
-  homepage: https://opencloud.eu
-  has_wiki: false

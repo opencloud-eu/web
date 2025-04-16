@@ -1,0 +1,7 @@
+[
+  {
+    "name": "append",
+    "description": "Append content for additional info.",
+    "type": "() => unknown"
+  }
+]

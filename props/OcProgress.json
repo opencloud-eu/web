@@ -1,0 +1,44 @@
+[
+  {
+    "name": "color",
+    "required": false,
+    "description": "The color of the progress bar. It can be any valid CSS color or registered color role.",
+    "default": "var(--oc-role-secondary)",
+    "type": "string"
+  },
+  {
+    "name": "backgroundColor",
+    "required": false,
+    "description": "The background color of the progress bar. It can be any valid CSS color or registered color role.",
+    "default": "var(--oc-role-surface-container)",
+    "type": "string"
+  },
+  {
+    "name": "indeterminate",
+    "required": false,
+    "description": "Determines if the progress bar is indeterminate.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "max",
+    "required": false,
+    "description": "The maximum value of the progress bar.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the progress bar.",
+    "default": "default",
+    "type": "'default' | 'small'"
+  },
+  {
+    "name": "value",
+    "required": false,
+    "description": "The current value of the progress bar.",
+    "default": "0",
+    "type": "number"
+  }
+]

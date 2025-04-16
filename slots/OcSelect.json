@@ -1,0 +1,7 @@
+[
+  {
+    "name": "selectedOption",
+    "description": "Slot for when an option is selected.",
+    "type": "() => unknown"
+  }
+]

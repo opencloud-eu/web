@@ -1,0 +1,47 @@
+[
+  {
+    "name": "itemDropped",
+    "description": "Emitted when an item has been dropped onto a row.",
+    "type": "(e: 'itemDropped', selector: string, event: DragEvent): void"
+  },
+  {
+    "name": "itemDragged",
+    "description": "Emitted when an item has been dragged onto a row.",
+    "type": "(e: 'itemDragged', item: Item, event: DragEvent): void"
+  },
+  {
+    "name": "theadClicked",
+    "description": "Emitted when a table header has been clicked.",
+    "type": "(e: 'theadClicked', event: MouseEvent): void"
+  },
+  {
+    "name": "highlight",
+    "description": "Emitted when a table row has been clicked.",
+    "type": "(e: 'highlight', args: [Item, MouseEvent]): void"
+  },
+  {
+    "name": "rowMounted",
+    "description": "Emitted when a table row has been mounted.",
+    "type": "(e: 'rowMounted', item: Item, element: HTMLElement): void"
+  },
+  {
+    "name": "contextmenuClicked",
+    "description": "Emitted when a table row has been right-clicked.",
+    "type": "(e: 'contextmenuClicked', element: HTMLElement, event: MouseEvent, item: Item): void"
+  },
+  {
+    "name": "sort",
+    "description": "Emitted when a column has been sorted.",
+    "type": "(e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void"
+  },
+  {
+    "name": "dropRowStyling",
+    "description": "Emitted when an element has entered a drop zone inside the table.",
+    "type": "(e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void"
+  },
+  {
+    "name": "itemVisible",
+    "description": "Emitted when an item has been scrolled into the view.",
+    "type": "(e: 'itemVisible', item: Item): void"
+  }
+]

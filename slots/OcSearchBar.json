@@ -1,0 +1,7 @@
+[
+  {
+    "name": "locationFilter",
+    "description": "Can be used to add additional filter options inside the search input.",
+    "type": "() => unknown"
+  }
+]

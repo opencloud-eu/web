@@ -1,0 +1,44 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the checkbox element.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the checkbox is disabled.",
+    "default": "",
+    "type": "boolean"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the checkbox.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "labelHidden",
+    "required": false,
+    "description": "Determines if the label is hidden visually. Note that the label will still be read by screen readers.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "option",
+    "required": false,
+    "description": "The option value of the checkbox.",
+    "default": "",
+    "type": "unknown"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the checkbox.",
+    "default": "medium",
+    "type": "'small' | 'medium' | 'large'"
+  }
+]

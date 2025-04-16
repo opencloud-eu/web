@@ -1,0 +1,23 @@
+[
+  {
+    "name": "checked",
+    "required": false,
+    "description": "Determines if the switch is checked.",
+    "default": "",
+    "type": "boolean"
+  },
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the switch.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "labelId",
+    "required": false,
+    "description": "The element ID of the label.",
+    "default": "",
+    "type": "string"
+  }
+]

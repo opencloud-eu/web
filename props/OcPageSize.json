@@ -1,0 +1,30 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the select.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "options",
+    "required": true,
+    "description": "The available options of the select.",
+    "default": "",
+    "type": "unknown[]"
+  },
+  {
+    "name": "selected",
+    "required": true,
+    "description": "The selected value.",
+    "default": "",
+    "type": "string | number"
+  },
+  {
+    "name": "selectId",
+    "required": false,
+    "description": "The element ID of the select.",
+    "default": "",
+    "type": "string"
+  }
+]

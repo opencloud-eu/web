@@ -1,0 +1,30 @@
+[
+  {
+    "name": "currentPage",
+    "required": true,
+    "description": "The current page number.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "currentRoute",
+    "required": true,
+    "description": "The current route object.",
+    "default": "",
+    "type": "RouteLocation"
+  },
+  {
+    "name": "pages",
+    "required": true,
+    "description": "The total number of pages.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "maxDisplayed",
+    "required": false,
+    "description": "The maximum number of displayed pages.",
+    "default": "",
+    "type": "number"
+  }
+]

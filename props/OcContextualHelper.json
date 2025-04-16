@@ -1,0 +1,37 @@
+[
+  {
+    "name": "title",
+    "required": true,
+    "description": "Title of the contextual helper.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "endText",
+    "required": false,
+    "description": "Text to be displayed at the end.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "list",
+    "required": false,
+    "description": "List of items to be displayed. Please refer to the component source for the `ContextualHelperDataListItem` type definition.",
+    "default": "",
+    "type": "ContextualHelperDataListItem[]"
+  },
+  {
+    "name": "readMoreLink",
+    "required": false,
+    "description": "Link for external references. Gets labeled with `Read more`.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "text",
+    "required": false,
+    "description": "Text to be displayed.",
+    "default": "",
+    "type": "string"
+  }
+]

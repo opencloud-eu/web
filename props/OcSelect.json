@@ -1,0 +1,114 @@
+[
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the select.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "filter",
+    "required": false,
+    "description": "The filter function for the select. Defaults to searching by label.",
+    "default": "",
+    "type": "(items: unknown[], search: string, { label }: { label?: string }) => unknown[]"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the select is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the select input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "labelHidden",
+    "required": false,
+    "description": "Determines if the label is visually hidden. Note that it will still be read by screen readers.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "contextualHelper",
+    "required": false,
+    "description": "The contextual helper for the select. Please refer to the component source for the `ContextualHelper` type definition.",
+    "default": "",
+    "type": "ContextualHelper"
+  },
+  {
+    "name": "optionLabel",
+    "required": false,
+    "description": "The label key of the options object.",
+    "default": "label",
+    "type": "string"
+  },
+  {
+    "name": "searchable",
+    "required": false,
+    "description": "Determines if the options of the select are searchable.",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
+    "name": "clearable",
+    "required": false,
+    "description": "Determines if the select is clearable.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "loading",
+    "required": false,
+    "description": "Determines if the select is in a loading state.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "errorMessage",
+    "required": false,
+    "description": "The error message to be displayed below the select.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fixMessageLine",
+    "required": false,
+    "description": "Determines if the message line should be fixed.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "descriptionMessage",
+    "required": false,
+    "description": "The description message to be displayed below the select.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "multiple",
+    "required": false,
+    "description": "Determines if the select allows multiple selections.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "readOnly",
+    "required": false,
+    "description": "Determines if the select is read-only.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "positionFixed",
+    "required": false,
+    "description": "Determines if the dropdown menu should be fixed to the viewport.",
+    "default": "false",
+    "type": "boolean"
+  }
+]

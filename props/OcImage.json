@@ -1,0 +1,30 @@
+[
+  {
+    "name": "src",
+    "required": true,
+    "description": "The image source URL.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "alt",
+    "required": false,
+    "description": "The image alt text. Should be provided for screen readers.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "loadingType",
+    "required": false,
+    "description": "The loading type of the image.",
+    "default": "eager",
+    "type": "'lazy' | 'eager'"
+  },
+  {
+    "name": "title",
+    "required": false,
+    "description": "The image title attribute.",
+    "default": "",
+    "type": "string"
+  }
+]

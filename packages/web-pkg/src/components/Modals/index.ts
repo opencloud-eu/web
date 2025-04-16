@@ -1,7 +1,0 @@
-export { default as DatePickerModal } from './DatePickerModal.vue'
-export { default as ResourceConflictModal } from './ResourceConflictModal.vue'
-export { default as SpaceMoveInfoModal } from './SpaceMoveInfoModal.vue'
-export { default as EmojiPickerModal } from './EmojiPickerModal.vue'
-export { default as FilePickerModal } from './FilePickerModal.vue'
-export { default as SaveAsModal } from './SaveAsModal.vue'
-export { default as UnsavedChangesModal } from './UnsavedChangesModal.vue'

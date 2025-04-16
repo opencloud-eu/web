@@ -1,0 +1,16 @@
+[
+  {
+    "name": "announcement",
+    "required": true,
+    "description": "The announcement to be read by screen readers.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "level",
+    "required": false,
+    "description": "Describes the politeness level for the announcement.",
+    "default": "polite",
+    "type": "HTMLAttributes['aria-live']"
+  }
+]

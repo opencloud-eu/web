@@ -1,0 +1,12 @@
+[
+  {
+    "name": "search:input",
+    "description": "Emitted when the user has typed.",
+    "type": "(e: 'search:input', search: string): void"
+  },
+  {
+    "name": "update:modelValue",
+    "description": "Emitted when the user has selected an option.",
+    "type": "(e: 'update:modelValue', value: unknown): void"
+  }
+]

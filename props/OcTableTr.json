@@ -1,0 +1,9 @@
+[
+  {
+    "name": "lazy",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "{ colspan: number }"
+  }
+]
