@@ -100,7 +100,6 @@ Feature: share
     Then "Alice" should see thumbnail and preview for file "sampleGif.gif"
     And "Alice" should see thumbnail and preview for file "testavatar.jpeg"
     And "Alice" should see thumbnail and preview for file "testavatar.png"
-    And "Alice" should see preview for file "shareToBrian.txt"
     When "Alice" opens a file "testavatar.png" in the media-viewer using the sidebar panel
     Then "Alice" is in a media-viewer
     When "Alice" closes the file viewer
@@ -221,8 +220,8 @@ Feature: share
       | Type | User         |
     And "Alice" sets the expiration date of share "myfolder" of group "sales" to "+3 days"
     And "Alice" checks the following access details of share "myfolder" for group "sales"
-      | Name | sales  |
-      | Type | Group  |
+      | Name | sales |
+      | Type | Group |
     # remove share with group
     When "Alice" removes following sharee
       | resource | recipient | type  |

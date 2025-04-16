@@ -43,7 +43,6 @@ export class PreviewService {
         'image/gif',
         'image/png',
         'image/jpeg',
-        'text/plain',
         'image/tiff',
         'image/bmp',
         'image/x-ms-bmp',
