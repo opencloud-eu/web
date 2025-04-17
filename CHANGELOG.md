@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-16
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -37,6 +37,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#563](https://github.com/opencloud-eu/web/pull/563)]
+- fix(deps): update dependency @sentry/vue to v9.13.0 [[#560](https://github.com/opencloud-eu/web/pull/560)]
+- fix(deps): update dependency zod to v3.24.3 [[#562](https://github.com/opencloud-eu/web/pull/562)]
 - chore(deps): update devdependencies (non-major) [[#557](https://github.com/opencloud-eu/web/pull/557)]
 - fix(deps): update uppy monorepo [[#521](https://github.com/opencloud-eu/web/pull/521)]
 - chore(deps): update devdependencies (non-major) [[#552](https://github.com/opencloud-eu/web/pull/552)]
