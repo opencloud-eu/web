@@ -37,6 +37,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @vavt/cm-extension to v1.9.1 [[#571](https://github.com/opencloud-eu/web/pull/571)]
+- fix(deps): update dependency dompurify to v3.2.5 [[#572](https://github.com/opencloud-eu/web/pull/572)]
 - chore(deps): update pnpm to v10.9.0 [[#577](https://github.com/opencloud-eu/web/pull/577)]
 - fix(deps): update dependency @pinia/testing to v1.0.1 [[#570](https://github.com/opencloud-eu/web/pull/570)]
 - chore(deps): update devdependencies (non-major) [[#567](https://github.com/opencloud-eu/web/pull/567)]
