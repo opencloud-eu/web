@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-17
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -37,6 +37,11 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @pinia/testing to v1.0.1 [[#570](https://github.com/opencloud-eu/web/pull/570)]
+- chore(deps): update devdependencies (non-major) [[#567](https://github.com/opencloud-eu/web/pull/567)]
+- chore(deps): update traefik docker tag to v3.3.6 [[#569](https://github.com/opencloud-eu/web/pull/569)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.2 [[#573](https://github.com/opencloud-eu/web/pull/573)]
+- fix(deps): update typescript-eslint monorepo to v8.31.0 [[#575](https://github.com/opencloud-eu/web/pull/575)]
 - chore(deps): update devdependencies (non-major) [[#563](https://github.com/opencloud-eu/web/pull/563)]
 - fix(deps): update dependency @sentry/vue to v9.13.0 [[#560](https://github.com/opencloud-eu/web/pull/560)]
 - fix(deps): update dependency zod to v3.24.3 [[#562](https://github.com/opencloud-eu/web/pull/562)]
