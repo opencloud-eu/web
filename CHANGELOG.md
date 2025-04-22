@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency yaml to v2.7.1 [[#579](https://github.com/opencloud-eu/web/pull/579)]
 - fix(deps): update dependency @vavt/cm-extension to v1.9.1 [[#571](https://github.com/opencloud-eu/web/pull/571)]
 - fix(deps): update dependency dompurify to v3.2.5 [[#572](https://github.com/opencloud-eu/web/pull/572)]
 - chore(deps): update pnpm to v10.9.0 [[#577](https://github.com/opencloud-eu/web/pull/577)]
