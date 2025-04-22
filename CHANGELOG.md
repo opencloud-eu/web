@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.9.0 [[#577](https://github.com/opencloud-eu/web/pull/577)]
 - fix(deps): update dependency @pinia/testing to v1.0.1 [[#570](https://github.com/opencloud-eu/web/pull/570)]
 - chore(deps): update devdependencies (non-major) [[#567](https://github.com/opencloud-eu/web/pull/567)]
 - chore(deps): update traefik docker tag to v3.3.6 [[#569](https://github.com/opencloud-eu/web/pull/569)]
