@@ -1,18 +1,12 @@
 # Changelog
 
-## [2.2.1](https://github.com/opencloud-eu/web/releases/tag/v2.2.1) - 2025-04-17
+## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-04-23
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+@JammingBen, @ScharfViktor
 
-### 🐛 Bug Fixes
 
-- fix: use native fetch for downloading archives [[#525](https://github.com/opencloud-eu/web/pull/525)]
-- fix: hide request-id when it's undefined [[#470](https://github.com/opencloud-eu/web/pull/470)]
-- fix(files): truncation on long link names [[#489](https://github.com/opencloud-eu/web/pull/489)]
-- fix: archive download with archives >2GB [[#467](https://github.com/opencloud-eu/web/pull/467)]
-- Don't show backend edition when not set [[#443](https://github.com/opencloud-eu/web/pull/443)]
 
 ## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-04-09
 
