@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-22
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-23
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-tsc to v2.2.10 [[#581](https://github.com/opencloud-eu/web/pull/581)]
 - chore(deps): update dependency yaml to v2.7.1 [[#579](https://github.com/opencloud-eu/web/pull/579)]
 - fix(deps): update dependency @vavt/cm-extension to v1.9.1 [[#571](https://github.com/opencloud-eu/web/pull/571)]
 - fix(deps): update dependency dompurify to v3.2.5 [[#572](https://github.com/opencloud-eu/web/pull/572)]
