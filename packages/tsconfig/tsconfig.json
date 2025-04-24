@@ -18,7 +18,7 @@
     "module": "preserve",
     "sourceMap": true,
 
-    "lib": ["ESNext", "es2022", "dom", "dom.iterable"],
+    "lib": ["ESNext", "es2022", "dom", "dom.iterable", "WebWorker"],
 
     "types": ["vitest/globals"]
   },

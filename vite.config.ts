@@ -24,6 +24,7 @@ import { getUserAgentRegex } from 'browserslist-useragent-regexp'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // @ts-ignore
 import ejs from 'ejs'
@@ -331,7 +332,35 @@ export default defineConfig(({ mode, command }) => {
           ? null
           : visualizer({
               filename: join('dist', 'report.html')
-            })
+            }),
+        VitePWA({
+          registerType: 'autoUpdate',
+          workbox: {
+            runtimeCaching: [
+              {
+                urlPattern: (options) =>
+                  options?.url?.pathname?.includes('/graph/') ||
+                  options?.url?.pathname?.includes('/themes/'),
+                handler: 'NetworkFirst',
+                method: 'GET',
+                options: {
+                  cacheName: 'apicache-graph',
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 60 * 24
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200]
+                  }
+                }
+              }
+            ]
+          },
+          // strategies: 'injectManifest',
+          // srcDir: 'packages/web-runtime/src',
+          // filename: 'sw.ts',
+          manifest: false
+        })
       ] as Plugin[]
     },
     config

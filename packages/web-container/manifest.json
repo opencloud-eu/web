@@ -1,10 +1,11 @@
 {
   "name": "OpenCloud",
   "short_name": "OpenCloud",
+  "description": "OpenCloud Web client",
   "icons": [
     {
       "src": "img/opencloud-icon-lilac.svg",
-      "sizes": "230x300",
+      "sizes": "192x192",
       "type": "image/svg+xml"
     }
   ],
@@ -15,5 +16,7 @@
   "orientation": "portrait",
 
   "background_color": "#FFFFFF",
-  "theme_color": "#375f7E"
+  "theme_color": "#375f7E",
+
+  "scope": "./"
 }
