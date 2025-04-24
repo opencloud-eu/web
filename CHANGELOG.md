@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-23
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -10,12 +10,9 @@
 
 - feat: adjust sidebar preview in the spaces view, so they look equal as the tiles [[#512](https://github.com/opencloud-eu/web/pull/512)]
 
-### 📈 Enhancement
-
-- feat: disabled preview for txt files [[#555](https://github.com/opencloud-eu/web/pull/555)]
-
 ### 🐛 Bug Fixes
 
+- fix: remove outline on markdown editor and make input and preview are… [[#586](https://github.com/opencloud-eu/web/pull/586)]
 - fix: added oc-text-truncate to avoid line overflows in search preview [[#553](https://github.com/opencloud-eu/web/pull/553)]
 - fix: removed unnecessary oc-text-truncate to avoid a cut off [[#551](https://github.com/opencloud-eu/web/pull/551)]
 - fix: added avatar styling and truncated user name to avoid compressed… [[#550](https://github.com/opencloud-eu/web/pull/550)]
@@ -24,6 +21,10 @@
 - fix: reintroduce ct helper read more links [[#536](https://github.com/opencloud-eu/web/pull/536)]
 - fix: use native fetch for downloading archives [[#520](https://github.com/opencloud-eu/web/pull/520)]
 - fix: copy permanent link available in trash [[#509](https://github.com/opencloud-eu/web/pull/509)]
+
+### 📈 Enhancement
+
+- feat: disabled preview for txt files [[#555](https://github.com/opencloud-eu/web/pull/555)]
 
 ### 📚 Documentation
 
