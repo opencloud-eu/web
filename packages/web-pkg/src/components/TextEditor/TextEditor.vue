@@ -156,6 +156,11 @@ export default defineComponent({
 .md-editor {
   height: 100%;
 
+  &-preview-wrapper,
+  &-resize-operate {
+    background-color: var(--oc-role-surface-container);
+  }
+
   &-code-head {
     justify-content: end !important;
   }
