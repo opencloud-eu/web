@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-25
+## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-28
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -38,6 +38,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.10.0 [[#597](https://github.com/opencloud-eu/web/pull/597)]
+- fix(deps): update dependency vue-router to v4.5.1 [[#595](https://github.com/opencloud-eu/web/pull/595)]
 - fix(deps): update dependency axios to v1.9.0 [[#589](https://github.com/opencloud-eu/web/pull/589)]
 - chore(deps): update node.js to v22.15.0 [[#583](https://github.com/opencloud-eu/web/pull/583)]
 - chore(deps): update dependency vue-tsc to v2.2.10 [[#581](https://github.com/opencloud-eu/web/pull/581)]
