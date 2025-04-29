@@ -384,8 +384,4 @@ export class Resource {
   async getDownloadButtonTooltip(): Promise<string> {
     return await po.getDownloadButtonTooltip({ page: this.#page })
   }
-
-  async deleteResourceViaAppTopbar(): Promise<void> {
-    await po.deleteResourceViaAppTopbar({ page: this.#page })
-  }
 }

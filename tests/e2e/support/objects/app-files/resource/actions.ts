@@ -2190,12 +2190,3 @@ export const getDownloadButtonTooltip = async ({ page }: { page: Page }): Promis
   await expect(downloadButton).toBeDisabled()
   return await downloadButton.getAttribute('aria-label')
 }
-
-export const deleteResourceViaAppTopbar = async ({ page }: { page: Page }): Promise<void> => {
-  const appTopbarContextButton = page.locator(appBarContextMenu)
-  await appTopbarContextButton.click()
-  await Promise.all([
-    page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'DELETE'),
-    page.locator(deleteButtonBatchAction).click()
-  ])
-}

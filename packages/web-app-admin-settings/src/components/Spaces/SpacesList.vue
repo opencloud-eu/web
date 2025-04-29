@@ -428,9 +428,7 @@ export default defineComponent({
       if (contextActionClicked) {
         return
       }
-      if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
-        eventBus.publish('app.files.shiftAnchor.reset')
-      }
+
       if (eventData?.metaKey) {
         return eventBus.publish('app.resources.list.clicked.meta', resource)
       }
