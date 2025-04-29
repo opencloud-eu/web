@@ -10,7 +10,6 @@ import { useDeleteWorker } from '../../../../../src/composables/webWorkers/delet
 import { useGetMatchingSpace } from '../../../../../src/composables/spaces/useGetMatchingSpace'
 import { useResourcesStore } from '../../../../../src/composables/piniaStores'
 import { eventBus } from '../../../../../src'
-import { expect } from '@playwright/test'
 
 vi.mock('../../../../../src/composables/webWorkers/deleteWorker')
 vi.mock('../../../../../src/composables/spaces/useGetMatchingSpace')
