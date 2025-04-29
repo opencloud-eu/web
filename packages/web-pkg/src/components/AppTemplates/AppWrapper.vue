@@ -492,7 +492,10 @@ export default defineComponent({
 
     let autosaveIntervalId: ReturnType<typeof setInterval> = null
     onMounted(() => {
-      deleteResourceEventToken = eventBus.subscribe('runtime.resource.deleted', closeApp)
+      deleteResourceEventToken = eventBus.subscribe(
+        'runtime.resource.deleted',
+        deleteResourceHandler
+      )
 
       if (resourcesStore.ancestorMetaData?.['/'] && unref(space)) {
         const clearAncestorData = resourcesStore.ancestorMetaData['/'].spaceId !== unref(space).id
@@ -580,6 +583,10 @@ export default defineComponent({
         autosavePopup()
       }
       originalAction(args)
+    }
+
+    const deleteResourceHandler = () => {
+      closeApp()
     }
 
     const menuItemsContext = computed(() => {
