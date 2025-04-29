@@ -444,7 +444,7 @@ export default defineComponent({
     )
     useKeyboardTableMouseActions(keyActions, resourcesViewDefaults.viewMode)
     useKeyboardTableSpaceActions(keyActions, space)
-
+    // TODO Reset einfügen
     const performLoaderTask = async (
       sameRoute: boolean,
       path?: string,
