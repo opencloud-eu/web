@@ -9,6 +9,8 @@ import {
 import { useDeleteWorker } from '../../../../../src/composables/webWorkers/deleteWorker'
 import { useGetMatchingSpace } from '../../../../../src/composables/spaces/useGetMatchingSpace'
 import { useResourcesStore } from '../../../../../src/composables/piniaStores'
+import { eventBus } from '../../../../../src'
+import { expect } from '@playwright/test'
 
 vi.mock('../../../../../src/composables/webWorkers/deleteWorker')
 vi.mock('../../../../../src/composables/spaces/useGetMatchingSpace')
@@ -58,6 +60,23 @@ describe('deleteResources', () => {
 
       const { addResourcesIntoDeleteQueue } = useResourcesStore()
       expect(addResourcesIntoDeleteQueue).toHaveBeenCalledWith(['2'])
+    })
+
+    it('should publish event "runtime.resource.deleted"', () => {
+      const filesToDelete = [{ id: '2', path: '/folder/fileToDelete.txt' }]
+      const spyBus = vi.spyOn(eventBus, 'publish')
+
+      getWrapper({
+        currentFolder,
+        result: filesToDelete,
+        setup: ({ filesList_delete }) => {
+          filesList_delete(filesToDelete)
+        }
+      })
+
+      const { addResourcesIntoDeleteQueue } = useResourcesStore()
+      expect(addResourcesIntoDeleteQueue).toHaveBeenCalledWith(['2'])
+      expect(spyBus).toHaveBeenCalledWith('runtime.resource.deleted', filesToDelete[0])
     })
   })
 })
