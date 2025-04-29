@@ -1,12 +1,14 @@
 # Changelog
 
-## [2.3.1](https://github.com/opencloud-eu/web/releases/tag/v2.3.1) - 2025-04-28
+## [2.3.1](https://github.com/opencloud-eu/web/releases/tag/v2.3.1) - 2025-04-29
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor
+@ScharfViktor, @kulmann
 
+### 🐛 Bug Fixes
 
+- fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
 
 ## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-28
 
