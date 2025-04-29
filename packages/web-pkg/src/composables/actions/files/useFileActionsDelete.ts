@@ -1,4 +1,4 @@
-import { useFileActionsDeleteResources } from '../helpers'
+import { useFileActionsDeleteResources, useIsAppActive } from '../helpers'
 import {
   isLocationPublicActive,
   isLocationSpacesActive,
@@ -9,13 +9,14 @@ import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { useRouter } from '../../router'
 import { useGettext } from 'vue3-gettext'
 import { FileAction, FileActionOptions } from '../types'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useUserStore, useCapabilityStore } from '../../piniaStores'
 
 export const useFileActionsDelete = () => {
   const userStore = useUserStore()
   const capabilityStore = useCapabilityStore()
   const router = useRouter()
+  const isAppActive = useIsAppActive()
   const { displayDialog, filesList_delete } = useFileActionsDeleteResources()
 
   const { $gettext } = useGettext()
@@ -48,7 +49,8 @@ export const useFileActionsDelete = () => {
         if (
           !isLocationSpacesActive(router, 'files-spaces-generic') &&
           !isLocationPublicActive(router, 'files-public-link') &&
-          !isLocationCommonActive(router, 'files-common-search')
+          !isLocationCommonActive(router, 'files-common-search') &&
+          !unref(isAppActive)
         ) {
           return false
         }

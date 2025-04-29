@@ -284,6 +284,10 @@ export default defineComponent({
     )
 
     watch(activeFilteredFile, (file) => {
+      if (!file) {
+        return
+      }
+
       emit('update:resource', file)
     })
 

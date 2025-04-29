@@ -22,6 +22,7 @@ import {
 } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
+import { useEventBus } from '../../eventBus'
 
 export const useFileActionsDeleteResources = () => {
   const configStore = useConfigStore()
@@ -34,6 +35,7 @@ export const useFileActionsDeleteResources = () => {
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
   const sharesStore = useSharesStore()
+  const eventBus = useEventBus()
   const { startWorker } = useDeleteWorker({
     concurrentRequests: configStore.options.concurrentRequests.resourceBatchActions
   })
@@ -193,6 +195,7 @@ export const useFileActionsDeleteResources = () => {
                     )
 
               messageStore.showMessage({ title })
+              eventBus.publish('runtime.resource.deleted', successful[0])
             }
 
             resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))
