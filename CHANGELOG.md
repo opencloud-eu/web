@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @kulmann
+@JammingBen, @ScharfViktor, @kulmann
 
 ### 🐛 Bug Fixes
 
+- fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
 
 ### 📦️ Dependencies
