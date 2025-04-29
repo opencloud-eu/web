@@ -83,10 +83,6 @@ const defaultActivities = [
   }
 ]
 describe('ActivitiesPanel', () => {
-  it('should not render the panel if not active', () => {
-    const { wrapper } = getMountedWrapper({ isActive: false })
-    expect(wrapper.find('div').exists()).toBeFalsy()
-  })
   it('should show no activities message if there is no data', async () => {
     const { wrapper } = getMountedWrapper({ activities: [] })
     await flushPromises()
@@ -104,8 +100,7 @@ describe('ActivitiesPanel', () => {
 })
 
 function getMountedWrapper({
-  activities = defaultActivities,
-  isActive = true
+  activities = defaultActivities
 }: {
   activities?: any[]
   isActive?: boolean
@@ -117,7 +112,6 @@ function getMountedWrapper({
 
   return {
     wrapper: mount(ActivitiesPanel, {
-      props: { isActive },
       global: {
         mocks,
         plugins: [...defaultPlugins()],

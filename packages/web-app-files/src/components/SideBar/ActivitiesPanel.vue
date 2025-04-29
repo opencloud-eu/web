@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isActive">
+  <div>
     <oc-loader v-if="isLoading" />
     <template v-else>
       <p v-if="!activities.length" v-text="$gettext('No activities')" />
@@ -28,8 +28,6 @@ import { call, Resource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
 import escape from 'lodash-es/escape'
-
-const { isActive } = defineProps<{ isActive: boolean }>()
 
 const { $ngettext, current: currentLanguage } = useGettext()
 const clientService = useClientService()
@@ -77,11 +75,8 @@ const getTimeFromActivity = (activity: Activity) => {
 }
 
 watch(
-  () => [resource, isActive],
+  resource,
   () => {
-    if (!unref(isActive)) {
-      return
-    }
     loadActivitiesTask.perform()
   },
   {

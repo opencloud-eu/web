@@ -65,16 +65,17 @@
             :class="{ 'sidebar-panel__body-content-stretch': !panel.isRoot?.(panelContext) }"
           >
             <slot name="body">
-              <component
-                :is="p.component"
+              <div
                 v-for="(p, index) in panel.isRoot?.(panelContext) ? rootPanels : [panel]"
                 :key="`sidebar-panel-${p.name}`"
-                :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
-                v-bind="{
-                  ...(p.componentAttrs?.(panelContext) || {}),
-                  isActive: activePanelName === p.name
-                }"
-              />
+              >
+                <component
+                  :is="p.component"
+                  v-if="[activePanelName, oldPanelName].includes(p.name)"
+                  :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
+                  v-bind="p.componentAttrs?.(panelContext) || {}"
+                />
+              </div>
             </slot>
           </div>
 
