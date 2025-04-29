@@ -16,7 +16,7 @@ import {
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
-} from '../../router'
+} from '../../router/helpers'
 import { unref } from 'vue'
 import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
@@ -108,7 +108,8 @@ export class AuthService implements AuthServiceInterface {
         authStore: this.authStore,
         capabilityStore: this.capabilityStore,
         webWorkersStore: this.webWorkersStore,
-        accessTokenExpiryThreshold: this.accessTokenExpiryThreshold
+        accessTokenExpiryThreshold: this.accessTokenExpiryThreshold,
+        router: this.router
       })
 
       // don't load worker in the silent redirect iframe

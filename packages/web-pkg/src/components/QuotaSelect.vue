@@ -34,7 +34,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { isNumber } from 'lodash-es'
-import { formatFileSize } from '../helpers'
+import { formatFileSize } from '../helpers/filesize'
 
 type Option = {
   value: number

@@ -13,11 +13,11 @@ import { ClientService } from '@opencloud-eu/web-pkg'
 import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
-import { router } from '../../router'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
 import { User as OcUser } from '@opencloud-eu/web-client/graph/generated'
 import { SettingsBundle } from '../../helpers/settings'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
+import { Router } from 'vue-router'
 
 const postLoginRedirectUrlKey = 'oc.postLoginRedirectUrl'
 type UnloadReason = 'authError' | 'logout'
@@ -29,6 +29,7 @@ export interface UserManagerOptions {
   language: Language
   userStore: UserStore
   authStore: AuthStore
+  router: Router
   capabilityStore: CapabilityStore
   webWorkersStore: WebWorkersStore
 
@@ -61,13 +62,13 @@ export class UserManager extends OidcUserManager {
     })
     const openIdConfig: UserManagerSettings = {
       userStore,
-      redirect_uri: buildUrl(router, '/oidc-callback.html'),
-      silent_redirect_uri: buildUrl(router, '/oidc-silent-redirect.html'),
+      redirect_uri: buildUrl(options.router, '/oidc-callback.html'),
+      silent_redirect_uri: buildUrl(options.router, '/oidc-silent-redirect.html'),
 
       response_mode: 'query',
       response_type: 'code', // "code" triggers auth code grant flow
 
-      post_logout_redirect_uri: buildUrl(router, '/'),
+      post_logout_redirect_uri: buildUrl(options.router, '/'),
       accessTokenExpiringNotificationTimeInSeconds: options.accessTokenExpiryThreshold,
       authority: '',
       client_id: '',

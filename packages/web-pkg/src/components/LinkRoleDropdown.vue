@@ -64,7 +64,7 @@ import { defineComponent, PropType } from 'vue'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
-import { useLinkTypes } from '../composables'
+import { useLinkTypes } from '../composables/links'
 
 export default defineComponent({
   name: 'LinkRoleDropdown',

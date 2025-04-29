@@ -54,8 +54,9 @@ import {
   useRouter,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
-import { isRuntimeRoute } from '../../router'
+import { routeNames } from '../../router/names'
 import { appMenuExtensionPoint, topBarCenterExtensionPoint } from '../../extensionPoints'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 
 export default {
   components: {
@@ -110,6 +111,9 @@ export default {
       return '/'
     })
 
+    const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
+      return Object.values(routeNames).includes(route.name.toString())
+    }
     const isSideBarToggleVisible = computed(() => {
       return authStore.userContextReady || authStore.publicLinkContextReady
     })

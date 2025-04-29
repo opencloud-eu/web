@@ -8,12 +8,8 @@ import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
-import {
-  createWebHashHistory,
-  createWebHistory,
-  createRouter,
-  RouteLocationNormalizedLoaded
-} from 'vue-router'
+import { routeNames } from './names'
+import { createWebHashHistory, createWebHistory, createRouter } from 'vue-router'
 
 // @ts-ignore
 import qs from 'qs'
@@ -30,67 +26,67 @@ export const base = document.querySelector('base')
 const routes = [
   {
     path: '/login',
-    name: 'login',
+    name: routeNames.login,
     component: LoginPage,
     meta: { title: $gettext('Login'), authContext: 'anonymous' }
   },
   {
     path: '/logout',
-    name: 'logout',
+    name: routeNames.logout,
     component: LogoutPage,
     meta: { title: $gettext('Logout'), authContext: 'anonymous' }
   },
   {
     path: '/web-oidc-callback',
-    name: 'oidcCallback',
+    name: routeNames.oidcCallback,
     component: OidcCallbackPage,
     meta: { title: $gettext('Oidc callback'), authContext: 'anonymous' }
   },
   {
     path: '/web-oidc-silent-redirect',
-    name: 'oidcSilentRedirect',
+    name: routeNames.oidcSilentRedirect,
     component: OidcCallbackPage,
     meta: { title: $gettext('Oidc redirect'), authContext: 'anonymous' }
   },
   {
     path: '/f/:fileId',
-    name: 'resolvePrivateLink',
+    name: routeNames.resolvePrivateLink,
     component: ResolvePrivateLinkPage,
     meta: { title: $gettext('Private link'), authContext: 'user' }
   },
   {
     path: '/s/:token/:driveAliasAndItem(.*)?',
-    name: 'resolvePublicLink',
+    name: routeNames.resolvePublicLink,
     component: ResolvePublicLinkPage,
     meta: { title: $gettext('Public link'), authContext: 'anonymous' }
   },
   {
     path: '/i/:token/:driveAliasAndItem(.*)?',
-    name: 'resolveInternalLink',
+    name: routeNames.resolveInternalLink,
     component: ResolvePublicLinkPage,
     meta: { title: $gettext('Internal link'), authContext: 'user' }
   },
   {
     path: '/o/:token/:driveAliasAndItem(.*)?',
-    name: 'resolvePublicOcmLink',
+    name: routeNames.resolvePublicOcmLink,
     component: ResolvePublicLinkPage,
     meta: { title: $gettext('OCM link'), authContext: 'anonymous' }
   },
   {
     path: '/access-denied',
-    name: 'accessDenied',
+    name: routeNames.accessDenied,
     component: AccessDeniedPage,
     meta: { title: $gettext('Access denied'), authContext: 'anonymous' }
   },
   {
     path: '/account',
-    name: 'account',
+    name: routeNames.account,
     component: Account,
     meta: { title: $gettext('Account'), authContext: 'hybrid' }
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'notFound',
+    name: routeNames.notFound,
     component: NotFoundPage,
     meta: { title: $gettext('Not found'), authContext: 'hybrid' }
   }
@@ -111,9 +107,5 @@ export const router = patchRouter(
     routes
   })
 )
-
-export const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
-  return routes.map((r) => r.name).includes(route.name.toString())
-}
 
 setupAuthGuard(router)
