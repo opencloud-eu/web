@@ -302,7 +302,8 @@ export default defineComponent({
         title: $gettext('Name'),
         type: 'slot',
         sortable: true,
-        tdClass: 'mark-element'
+        tdClass: 'mark-element',
+        width: 'expand'
       },
       {
         name: 'status',
@@ -386,6 +387,9 @@ export default defineComponent({
       return formatFileSize(space.spaceQuota.used, language.current)
     }
     const getRemainingQuota = (space: SpaceResource) => {
+      if (space.spaceQuota.total === 0) {
+        return $gettext('Unrestricted')
+      }
       if (space.spaceQuota.remaining === undefined) {
         return '-'
       }

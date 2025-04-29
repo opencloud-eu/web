@@ -381,6 +381,9 @@ const getUsedQuota = (space: SpaceResource) => {
   return formatFileSize(space.spaceQuota.used, language.current)
 }
 const getRemainingQuota = (space: SpaceResource) => {
+  if (space.spaceQuota.total === 0) {
+    return $gettext('Unrestricted')
+  }
   if (space.spaceQuota.remaining === undefined) {
     return '-'
   }
