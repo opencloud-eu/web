@@ -10,6 +10,10 @@
 
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
 
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#584](https://github.com/opencloud-eu/web/pull/584)]
+
 ## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-28
 
 ### ❤️ Thanks to all contributors! ❤️
