@@ -70,7 +70,9 @@ import {
   FileAction,
   useLoadingService,
   useFileActionsSaveAs,
-  useSharesStore
+  useSharesStore,
+  useFileActionsDelete,
+  useEventBus
 } from '../../composables'
 import {
   Action,
@@ -149,6 +151,7 @@ export default defineComponent({
     const configStore = useConfigStore()
     const resourcesStore = useResourcesStore()
     const sharesStore = useSharesStore()
+    const eventBus = useEventBus()
 
     const { actions: openWithAppActions } = useFileActionsOpenWithApp({
       appId: props.applicationId
@@ -157,6 +160,7 @@ export default defineComponent({
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: showDetailsActions } = useFileActionsShowDetails()
     const { actions: showSharesActions } = useFileActionsShowShares()
+    const { actions: deleteFileActions } = useFileActionsDelete()
 
     const noResourceLoading = computed(() => {
       // component has its own way to load the resource(s)
@@ -172,6 +176,7 @@ export default defineComponent({
     const isReadOnly = ref(false)
     const serverContent = ref()
     const currentContent = ref()
+    const deleteResourceEventToken = ref()
 
     const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
@@ -487,6 +492,11 @@ export default defineComponent({
 
     let autosaveIntervalId: ReturnType<typeof setInterval> = null
     onMounted(() => {
+      deleteResourceEventToken.value = eventBus.subscribe(
+        'runtime.resource.deleted',
+        deleteResourceHandler
+      )
+
       if (resourcesStore.ancestorMetaData?.['/'] && unref(space)) {
         const clearAncestorData = resourcesStore.ancestorMetaData['/'].spaceId !== unref(space).id
         if (clearAncestorData) {
@@ -512,6 +522,8 @@ export default defineComponent({
       }
     })
     onBeforeUnmount(() => {
+      eventBus.unsubscribe('runtime.resource.deleted', unref(deleteResourceEventToken))
+
       if (!loadingService.isLoading) {
         window.removeEventListener('beforeunload', preventUnload)
       }
@@ -573,6 +585,16 @@ export default defineComponent({
       originalAction(args)
     }
 
+    const deleteResourceHandler = (deletedResources: Resource[]) => {
+      const currentResourceDeleted = deletedResources.find(
+        (deletedResource) => deletedResource.id === unref(resource).id
+      )
+
+      if (currentResourceDeleted) {
+        closeApp()
+      }
+    }
+
     const menuItemsContext = computed(() => {
       return [
         ...unref(openWithAppActions),
@@ -595,7 +617,8 @@ export default defineComponent({
         ...unref(downloadFileActions).map((originalAction) => ({
           ...originalAction,
           handler: (args) => downloadFileActionInterceptor(args, originalAction.handler)
-        }))
+        })),
+        ...unref(deleteFileActions)
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
     const menuItemsSidebar = computed(() => {
