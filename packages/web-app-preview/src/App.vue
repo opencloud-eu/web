@@ -64,6 +64,7 @@
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
+        @delete-resource="deleteResourceHandler"
       />
     </div>
   </div>
