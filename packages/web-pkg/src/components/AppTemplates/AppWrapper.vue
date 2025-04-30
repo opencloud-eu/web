@@ -590,9 +590,11 @@ export default defineComponent({
         (deletedResource) => deletedResource.id === unref(resource).id
       )
 
-      if (currentResourceDeleted) {
-        closeApp()
+      if (!currentResourceDeleted) {
+        return
       }
+
+      closeApp()
     }
 
     const menuItemsContext = computed(() => {
