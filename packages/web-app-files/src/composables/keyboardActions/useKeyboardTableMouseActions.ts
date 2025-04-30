@@ -60,7 +60,6 @@ export const useKeyboardTableMouseActions = (
 
     resourcesStore.setLastSelectedId(resource.id)
 
-    console.log('handleShiftClickAction', resource.id, skipTargetSelection)
   }
 
   const handleTilesShiftClickAction = ({
