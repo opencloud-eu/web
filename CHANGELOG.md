@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.3.1](https://github.com/opencloud-eu/web/releases/tag/v2.3.1) - 2025-04-29
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-04-30
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @kulmann
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+
+### ✨ Features
+
+- feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
 ### 🐛 Bug Fixes
 
