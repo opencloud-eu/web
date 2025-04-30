@@ -1119,6 +1119,10 @@ export default defineComponent({
       const eventData = data[1]
       const skipTargetSelection = data[2] ?? false
 
+      if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
+        eventBus.publish('app.files.shiftAnchor.reset')
+      }
+
       const isCheckboxClicked =
         (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
       const contextActionClicked =
