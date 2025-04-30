@@ -176,7 +176,7 @@ export default defineComponent({
     const isReadOnly = ref(false)
     const serverContent = ref()
     const currentContent = ref()
-    const deleteResourceEventToken = ref()
+    let deleteResourceEventToken = ''
 
     const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
@@ -492,7 +492,7 @@ export default defineComponent({
 
     let autosaveIntervalId: ReturnType<typeof setInterval> = null
     onMounted(() => {
-      deleteResourceEventToken.value = eventBus.subscribe(
+      deleteResourceEventToken = eventBus.subscribe(
         'runtime.resource.deleted',
         deleteResourceHandler
       )
@@ -522,7 +522,7 @@ export default defineComponent({
       }
     })
     onBeforeUnmount(() => {
-      eventBus.unsubscribe('runtime.resource.deleted', unref(deleteResourceEventToken))
+      eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
 
       if (!loadingService.isLoading) {
         window.removeEventListener('beforeunload', preventUnload)
