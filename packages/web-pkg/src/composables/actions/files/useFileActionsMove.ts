@@ -11,6 +11,7 @@ import { useRouter } from '../../router'
 import { useClipboardStore, useResourcesStore } from '../../piniaStores'
 import { Resource } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
+import { isMacOs } from '../../../helpers'
 
 export const useFileActionsMove = () => {
   const router = useRouter()
@@ -21,12 +22,8 @@ export const useFileActionsMove = () => {
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
 
-  const isMacOs = computed(() => {
-    return window.navigator.platform.match('Mac')
-  })
-
   const cutShortcutString = computed(() => {
-    if (unref(isMacOs)) {
+    if (isMacOs()) {
       return $gettext('⌘ + X')
     }
     return $gettext('Ctrl + X')

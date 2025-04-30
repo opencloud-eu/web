@@ -11,7 +11,7 @@ import { useRouter } from '../../router'
 import { FileAction, FileActionOptions } from '../types'
 import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
 import { useClipboardStore, useResourcesStore } from '../../piniaStores'
-import { ClipboardActions, ResourceTransfer, TransferType } from '../../../helpers'
+import { ClipboardActions, isMacOs, ResourceTransfer, TransferType } from '../../../helpers'
 import { storeToRefs } from 'pinia'
 import { usePasteWorker } from '../../webWorkers/pasteWorker'
 
@@ -26,12 +26,8 @@ export const useFileActionsPaste = () => {
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
 
-  const isMacOs = computed(() => {
-    return window.navigator.platform.match('Mac')
-  })
-
   const pasteShortcutString = computed(() => {
-    if (unref(isMacOs)) {
+    if (isMacOs()) {
       return $gettext('⌘ + V')
     }
     return $gettext('Ctrl + V')

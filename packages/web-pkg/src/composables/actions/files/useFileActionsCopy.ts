@@ -11,6 +11,7 @@ import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { useRouter } from '../../router'
 import { useConfigStore, useClipboardStore, useResourcesStore } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
+import { isMacOs } from '../../../helpers'
 
 export const useFileActionsCopy = () => {
   const configStore = useConfigStore()
@@ -22,12 +23,8 @@ export const useFileActionsCopy = () => {
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
 
-  const isMacOs = computed(() => {
-    return window.navigator.platform.match('Mac')
-  })
-
   const copyShortcutString = computed(() => {
-    if (unref(isMacOs)) {
+    if (isMacOs()) {
       return $gettext('⌘ + C')
     }
     return $gettext('Ctrl + C')

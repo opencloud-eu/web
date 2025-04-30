@@ -111,9 +111,10 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
+import { isMacOs } from '@opencloud-eu/web-pkg/src'
 
 export default defineComponent({
   name: 'MediaControls',
@@ -193,13 +194,9 @@ export default defineComponent({
       emit('setRotation', props.currentImageRotation === 270 ? 0 : props.currentImageRotation + 90)
     }
 
-    const isMacOs = computed(() => {
-      return window.navigator.platform.match('Mac')
-    })
-
     const resourceDeleteDescription = computed(() => {
       return $gettext('Delete (%{key})', {
-        key: unref(isMacOs) ? $gettext('⌘ + backspace') : $gettext('del')
+        key: isMacOs() ? $gettext('⌘ + backspace') : $gettext('del')
       })
     })
 

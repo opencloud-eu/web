@@ -66,6 +66,7 @@ import { Action, ActionOptions, useConfigStore } from '../../composables'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
+import { isMacOs } from '../../helpers'
 
 export default defineComponent({
   name: 'ActionMenuItem',
@@ -147,14 +148,10 @@ export default defineComponent({
       }
     })
 
-    const isMacOs = computed(() => {
-      return window.navigator.platform.match('Mac')
-    })
-
     const openInNewTabHint = computed(() => {
       return $gettext(
         'Hold %{key} and click to open in new tab',
-        { key: unref(isMacOs) ? '⌘' : $gettext('ctrl') },
+        { key: isMacOs() ? '⌘' : $gettext('ctrl') },
         true
       )
     })
