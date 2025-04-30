@@ -122,6 +122,14 @@ When(
 )
 
 When(
+  /^"([^"]*)" deletes the resource using the app topbar$/,
+  async function (this: World, stepUser: string) {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.deleteResourceViaAppTopbar()
+  }
+)
+When(
   '{string} renames the following resource(s)',
   async function (this: World, stepUser: string, stepTable: DataTable) {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
