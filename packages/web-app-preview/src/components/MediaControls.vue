@@ -196,7 +196,7 @@ export default defineComponent({
 
     const resourceDeleteDescription = computed(() => {
       return $gettext('Delete (%{key})', {
-        key: isMacOs() ? $gettext('⌘ + backspace') : $gettext('del')
+        key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('DEL')
       })
     })
 
