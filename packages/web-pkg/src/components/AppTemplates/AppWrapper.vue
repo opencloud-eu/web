@@ -712,6 +712,22 @@ export default defineComponent({
         appOnDeleteResourceHandler = value
       },
 
+      'onDelete:resource': (resource: Resource) => {
+        if (
+          !unref(deleteFileActions)[0].isVisible({
+            space: unref(space),
+            resources: [resource]
+          })
+        ) {
+          return
+        }
+
+        unref(deleteFileActions)[0].handler({
+          space: unref(space),
+          resources: [resource]
+        })
+      },
+
       onSave: save,
       onClose: closeApp,
       loadFolderForFileContext,

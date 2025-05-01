@@ -64,7 +64,7 @@
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
-        @delete-resource="deleteResourceHandler"
+        @delete-resource="$emit('delete:resource', activeFilteredFile)"
       />
     </div>
   </div>
@@ -101,8 +101,7 @@ import {
   useAppNavigation,
   useKeyboardActions,
   Modifier,
-  Key,
-  useFileActionsDelete
+  Key
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -142,7 +141,7 @@ export default defineComponent({
     revokeUrl: { type: Function as PropType<AppFileHandlingResult['revokeUrl']>, required: true },
     isFolderLoading: { type: Boolean, required: true }
   },
-  emits: ['update:resource', 'register:onDeleteResourceHandler'],
+  emits: ['update:resource', 'register:onDeleteResourceHandler', 'delete:resource'],
   setup(props, { emit }) {
     const router = useRouter()
     const route = useRoute()
@@ -156,7 +155,6 @@ export default defineComponent({
     const { getMatchingSpace } = useGetMatchingSpace()
     const { closeApp } = useAppNavigation({ router, currentFileContext: props.currentFileContext })
     const { bindKeyAction, removeKeyAction } = useKeyboardActions()
-    const { actions: deleteActions } = useFileActionsDelete()
 
     const activeIndex = ref<number>()
     const cachedFiles = ref<Record<string, CachedFile>>({})
@@ -279,22 +277,6 @@ export default defineComponent({
       updateLocalHistory()
     }
 
-    const deleteResourceHandler = () => {
-      if (
-        !unref(deleteActions)[0].isVisible({
-          space: unref(space),
-          resources: [unref(activeFilteredFile)]
-        })
-      ) {
-        return
-      }
-
-      unref(deleteActions)[0].handler({
-        space: unref(space),
-        resources: [unref(activeFilteredFile)]
-      })
-    }
-
     const onDeleteResourceHandler = async () => {
       await nextTick()
 
@@ -398,8 +380,7 @@ export default defineComponent({
       goToPrev,
       keyBindings,
       bindKeyAction,
-      removeKeyAction,
-      deleteResourceHandler
+      removeKeyAction
     }
   },
 
@@ -424,12 +405,15 @@ export default defineComponent({
     window.addEventListener('popstate', this.handleLocalHistoryEvent)
     this.$emit('register:onDeleteResourceHandler', this.onDeleteResourceHandler)
     this.keyBindings.push(
-      this.bindKeyAction(
-        { modifier: Modifier.Ctrl, primary: Key.Backspace },
-        this.deleteResourceHandler
+      this.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
+        this.$emit('delete:resource', this.activeFilteredFile)
       )
     )
-    this.keyBindings.push(this.bindKeyAction({ primary: Key.Delete }, this.deleteResourceHandler))
+    this.keyBindings.push(
+      this.bindKeyAction({ primary: Key.Delete }, () =>
+        this.$emit('delete:resource', this.activeFilteredFile)
+      )
+    )
   },
 
   beforeUnmount() {
