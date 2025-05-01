@@ -177,7 +177,7 @@ export default defineComponent({
     const serverContent = ref()
     const currentContent = ref()
     let deleteResourceEventToken = ''
-    let appOnDeleteResourceCallback = null
+    let appOnDeleteResourceCallback: (() => void) | null = null
 
     const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
