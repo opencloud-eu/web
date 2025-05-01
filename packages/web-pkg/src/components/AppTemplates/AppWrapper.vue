@@ -708,7 +708,7 @@ export default defineComponent({
         currentContent.value = value
       },
 
-      'onRegister:onDeleteResourceCallback': (value: unknown) => {
+      'onRegister:onDeleteResourceCallback': (value: () => void) => {
         appOnDeleteResourceCallback = value
       },
 
