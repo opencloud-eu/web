@@ -10,7 +10,7 @@ Feature: Delete
       | Brian |
 
 
-  Scenario: delete file from insinde an app
+  Scenario: delete file from inside an app
     And "Alice" creates the following files into personal space using API
       | pathToFile       | content     |
       | new file.txt     | lorem ipsum |
@@ -28,7 +28,7 @@ Feature: Delete
       | new testfile.txt |
     And "Alice" logs out
 
-  Scenario: delete files from insinde the mediaviewer app
+  Scenario: delete files from inside the mediaviewer app
     And "Alice" uploads the following local file into personal space using API
       | localFile      | to             |
       | testavatar.jpg | testavatar.jpg |
