@@ -177,7 +177,7 @@ export default defineComponent({
     const serverContent = ref()
     const currentContent = ref()
     let deleteResourceEventToken = ''
-    let appOnDeleteResourceHandler = null
+    let appOnDeleteResourceCallback = null
 
     const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
@@ -495,7 +495,7 @@ export default defineComponent({
     onMounted(() => {
       deleteResourceEventToken = eventBus.subscribe(
         'runtime.resource.deleted',
-        onDeleteResourceHandler
+        onDeleteResourceCallback
       )
 
       if (resourcesStore.ancestorMetaData?.['/'] && unref(space)) {
@@ -586,7 +586,7 @@ export default defineComponent({
       originalAction(args)
     }
 
-    const onDeleteResourceHandler = (deletedResources: Resource[]) => {
+    const onDeleteResourceCallback = (deletedResources: Resource[]) => {
       const currentResourceDeleted = deletedResources.find(
         (deletedResource) => deletedResource.id === unref(resource).id
       )
@@ -595,8 +595,8 @@ export default defineComponent({
         return
       }
 
-      if (appOnDeleteResourceHandler) {
-        return appOnDeleteResourceHandler()
+      if (appOnDeleteResourceCallback) {
+        return appOnDeleteResourceCallback()
       }
 
       closeApp()
@@ -708,8 +708,8 @@ export default defineComponent({
         currentContent.value = value
       },
 
-      'onRegister:onDeleteResourceHandler': (value: unknown) => {
-        appOnDeleteResourceHandler = value
+      'onRegister:onDeleteResourceCallback': (value: unknown) => {
+        appOnDeleteResourceCallback = value
       },
 
       'onDelete:resource': (resource: Resource) => {

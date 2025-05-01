@@ -141,7 +141,7 @@ export default defineComponent({
     revokeUrl: { type: Function as PropType<AppFileHandlingResult['revokeUrl']>, required: true },
     isFolderLoading: { type: Boolean, required: true }
   },
-  emits: ['update:resource', 'register:onDeleteResourceHandler', 'delete:resource'],
+  emits: ['update:resource', 'register:onDeleteResourceCallback', 'delete:resource'],
   setup(props, { emit }) {
     const router = useRouter()
     const route = useRoute()
@@ -277,7 +277,7 @@ export default defineComponent({
       updateLocalHistory()
     }
 
-    const onDeleteResourceHandler = async () => {
+    const onDeleteResourceCallback = async () => {
       await nextTick()
 
       if (!unref(filteredFiles).length) {
@@ -375,7 +375,7 @@ export default defineComponent({
       isFileTypeImage,
       loadFileIntoCache,
       space,
-      onDeleteResourceHandler,
+      onDeleteResourceCallback,
       goToNext,
       goToPrev,
       keyBindings,
@@ -403,7 +403,7 @@ export default defineComponent({
   mounted() {
     // keep a local history for this component
     window.addEventListener('popstate', this.handleLocalHistoryEvent)
-    this.$emit('register:onDeleteResourceHandler', this.onDeleteResourceHandler)
+    this.$emit('register:onDeleteResourceCallback', this.onDeleteResourceCallback)
     this.keyBindings.push(
       this.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
         this.$emit('delete:resource', this.activeFilteredFile)
@@ -418,8 +418,8 @@ export default defineComponent({
 
   beforeUnmount() {
     window.removeEventListener('popstate', this.handleLocalHistoryEvent)
-    this.keyBindings.forEach((index) => {
-      this.removeKeyAction(index)
+    this.keyBindings.forEach((keyBindingId) => {
+      this.removeKeyAction(keyBindingId)
     })
 
     Object.values(this.cachedFiles).forEach((cachedFile) => {
