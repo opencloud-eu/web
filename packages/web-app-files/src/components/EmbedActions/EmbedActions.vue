@@ -48,7 +48,7 @@
         >
           {{ $gettext('Attach as copy') }}
         </oc-button>
-      </div>
+      </template>
     </div>
   </section>
 </template>
