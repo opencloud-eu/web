@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-04-30
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
 
