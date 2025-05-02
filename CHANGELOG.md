@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: space description has a grey background [[#623](https://github.com/opencloud-eu/web/pull/623)]
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
