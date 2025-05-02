@@ -586,6 +586,18 @@ When(
 )
 
 Then(
+  '{string} should see resource {string} of {string} in the mediaviewer controls',
+  async function (this: World, stepUser: string, currentIndex: string, totalCount: string) {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.checkMediaViewerCount({
+      currentIndex: parseInt(currentIndex),
+      totalCount: parseInt(totalCount)
+    })
+  }
+)
+
+Then(
   'the following resource(s) should contain the following tag(s) in the files list for user {string}',
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })

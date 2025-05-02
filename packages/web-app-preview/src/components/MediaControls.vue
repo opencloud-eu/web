@@ -96,6 +96,17 @@
           </oc-button>
         </div>
       </div>
+      <div>
+        <oc-button
+          v-oc-tooltip="resourceDeleteDescription"
+          class="preview-controls-delete raw-hover-surface oc-p-xs"
+          appearance="raw"
+          :aria-label="resourceDeleteDescription"
+          @click="$emit('deleteResource')"
+        >
+          <oc-icon fill-type="line" name="delete-bin" />
+        </oc-button>
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +114,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
+import { isMacOs } from '@opencloud-eu/web-pkg/src'
 
 export default defineComponent({
   name: 'MediaControls',
@@ -142,7 +154,8 @@ export default defineComponent({
     'toggleFullScreen',
     'toggleNext',
     'togglePrevious',
-    'resetImage'
+    'resetImage',
+    'deleteResource'
   ],
   setup(props, { emit }) {
     const { $gettext } = useGettext()
@@ -181,10 +194,17 @@ export default defineComponent({
       emit('setRotation', props.currentImageRotation === 270 ? 0 : props.currentImageRotation + 90)
     }
 
+    const resourceDeleteDescription = computed(() => {
+      return $gettext('Delete (%{key})', {
+        key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
+      })
+    })
+
     return {
       currentZoomDisplayValue,
       screenreaderFileCount,
       ariaHiddenFileCount,
+      resourceDeleteDescription,
       enterFullScreenDescription: $gettext('Enter full screen mode'),
       exitFullScreenDescription: $gettext('Exit full screen mode'),
       imageShrinkDescription: $gettext('Shrink the image'),

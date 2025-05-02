@@ -64,6 +64,7 @@
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
+        @delete-resource="$emit('delete:resource', activeFilteredFile)"
       />
     </div>
   </div>
@@ -96,7 +97,11 @@ import {
   useRouter,
   usePreviewService,
   useGetMatchingSpace,
-  isLocationSharesActive
+  isLocationSharesActive,
+  useAppNavigation,
+  useKeyboardActions,
+  Modifier,
+  Key
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -136,7 +141,7 @@ export default defineComponent({
     revokeUrl: { type: Function as PropType<AppFileHandlingResult['revokeUrl']>, required: true },
     isFolderLoading: { type: Boolean, required: true }
   },
-  emits: ['update:resource'],
+  emits: ['update:resource', 'register:onDeleteResourceCallback', 'delete:resource'],
   setup(props, { emit }) {
     const router = useRouter()
     const route = useRoute()
@@ -148,12 +153,15 @@ export default defineComponent({
     const previewService = usePreviewService()
     const { dimensions } = usePreviewDimensions()
     const { getMatchingSpace } = useGetMatchingSpace()
+    const { closeApp } = useAppNavigation({ router, currentFileContext: props.currentFileContext })
+    const { bindKeyAction, removeKeyAction } = useKeyboardActions()
 
     const activeIndex = ref<number>()
     const cachedFiles = ref<Record<string, CachedFile>>({})
     const folderLoaded = ref(false)
     const isAutoPlayEnabled = ref(true)
     const preview = ref<HTMLElement>()
+    const keyBindings: string[] = []
 
     const space = computed(() => {
       return getMatchingSpace(unref(activeFilteredFile))
@@ -249,6 +257,34 @@ export default defineComponent({
       }
     }
 
+    const goToNext = () => {
+      if (unref(activeIndex) + 1 >= unref(filteredFiles).length) {
+        activeIndex.value = 0
+        updateLocalHistory()
+        return
+      }
+      activeIndex.value = unref(activeIndex) + 1
+      updateLocalHistory()
+    }
+
+    const goToPrev = () => {
+      if (unref(activeIndex) === 0) {
+        activeIndex.value = unref(filteredFiles).length - 1
+        updateLocalHistory()
+        return
+      }
+      activeIndex.value = unref(activeIndex) - 1
+      updateLocalHistory()
+    }
+
+    const onDeleteResourceCallback = async () => {
+      await nextTick()
+
+      if (!unref(filteredFiles).length) {
+        return closeApp()
+      }
+    }
+
     const updateLocalHistory = () => {
       // this is a rare edge case when browsing quickly through a lot of files
       // we workaround context being null, when useDriveResolver is in loading state
@@ -266,6 +302,7 @@ export default defineComponent({
     }
 
     const instance = getCurrentInstance()
+
     watch(
       () => props.currentFileContext,
       async () => {
@@ -282,6 +319,17 @@ export default defineComponent({
       },
       { immediate: true }
     )
+
+    watch(filteredFiles, () => {
+      if (!unref(filteredFiles).length) {
+        return
+      }
+
+      if (unref(activeIndex) >= unref(filteredFiles).length) {
+        activeIndex.value = 0
+        updateLocalHistory()
+      }
+    })
 
     watch(activeFilteredFile, (file) => {
       if (!file) {
@@ -326,7 +374,13 @@ export default defineComponent({
       preview,
       isFileTypeImage,
       loadFileIntoCache,
-      space
+      space,
+      onDeleteResourceCallback,
+      goToNext,
+      goToPrev,
+      keyBindings,
+      bindKeyAction,
+      removeKeyAction
     }
   },
 
@@ -349,10 +403,24 @@ export default defineComponent({
   mounted() {
     // keep a local history for this component
     window.addEventListener('popstate', this.handleLocalHistoryEvent)
+    this.$emit('register:onDeleteResourceCallback', this.onDeleteResourceCallback)
+    this.keyBindings.push(
+      this.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
+        this.$emit('delete:resource', this.activeFilteredFile)
+      )
+    )
+    this.keyBindings.push(
+      this.bindKeyAction({ primary: Key.Delete }, () =>
+        this.$emit('delete:resource', this.activeFilteredFile)
+      )
+    )
   },
 
   beforeUnmount() {
     window.removeEventListener('popstate', this.handleLocalHistoryEvent)
+    this.keyBindings.forEach((keyBindingId) => {
+      this.removeKeyAction(keyBindingId)
+    })
 
     Object.values(this.cachedFiles).forEach((cachedFile) => {
       this.revokeUrl(cachedFile.url)
@@ -378,24 +446,6 @@ export default defineComponent({
     // react to PopStateEvent ()
     handleLocalHistoryEvent() {
       this.setActiveFile()
-    },
-    goToNext() {
-      if (this.activeIndex + 1 >= this.filteredFiles.length) {
-        this.activeIndex = 0
-        this.updateLocalHistory()
-        return
-      }
-      this.activeIndex++
-      this.updateLocalHistory()
-    },
-    goToPrev() {
-      if (this.activeIndex === 0) {
-        this.activeIndex = this.filteredFiles.length - 1
-        this.updateLocalHistory()
-        return
-      }
-      this.activeIndex--
-      this.updateLocalHistory()
     },
     preloadImages() {
       const preloadFile = (preloadFileIndex: number) => {

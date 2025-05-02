@@ -80,6 +80,7 @@ const hiddenFilesToggleButton = '//*[@data-testid="files-switch-hidden-files"]//
 const previewImage = '//main[@id="preview"]//div[contains(@class,"stage_media")]//img'
 const previewAudio = '//main[@id="preview"]//div[contains(@class,"stage_media")]//audio//source'
 const previewVideo = '//main[@id="preview"]//div[contains(@class,"stage_media")]//video//source'
+const previewControlsCount = '.preview-controls-action-count > :first-child'
 const externalEditorIframe = '[name="app-iframe"]'
 const copyPasteWarningPopup = '#copy_paste_warning-box'
 const tagTableCell =
@@ -1832,6 +1833,19 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       break
     }
   }
+}
+
+export const checkMediaViewerCount = async ({
+  page,
+  currentIndex,
+  totalCount
+}: {
+  page: Page
+  currentIndex: number
+  totalCount: number
+}): Promise<void> => {
+  const elementCount = await page.locator(previewControlsCount).textContent()
+  expect(elementCount).toEqual(`${currentIndex} of ${totalCount}`)
 }
 
 export const previewMediaFromSidebarPanel = async ({

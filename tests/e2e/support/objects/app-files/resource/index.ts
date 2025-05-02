@@ -231,6 +231,16 @@ export class Resource {
     await po.openFileInViewer({ ...args, page: this.#page })
   }
 
+  async checkMediaViewerCount({
+    currentIndex,
+    totalCount
+  }: {
+    currentIndex: number
+    totalCount: number
+  }): Promise<void> {
+    await po.checkMediaViewerCount({ page: this.#page, currentIndex, totalCount })
+  }
+
   async addTags(args: Omit<po.resourceTagsArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.addTagsToResource({ ...args, page: this.#page })
