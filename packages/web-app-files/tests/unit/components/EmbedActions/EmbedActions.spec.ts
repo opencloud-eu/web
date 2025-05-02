@@ -51,14 +51,17 @@ describe('EmbedActions', () => {
     })
 
     it('should enable select action when embedTarget is set to location', () => {
-      const { wrapper } = getWrapper({ isLocationPicker: true })
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        currentFolder: { canCreate: () => true } as Resource
+      })
 
       expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
 
     it('should emit select event with currentFolder as selected resource when select action is triggered', async () => {
       const { wrapper, mocks } = getWrapper({
-        currentFolder: { id: '1' } as Resource,
+        currentFolder: { id: '1', canCreate: () => true } as Resource,
         isLocationPicker: true
       })
 
@@ -68,7 +71,7 @@ describe('EmbedActions', () => {
     })
     it('should display the file name input when chooseFileName is configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1' } as Resource,
+        currentFolder: { id: '1', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
@@ -77,7 +80,7 @@ describe('EmbedActions', () => {
     })
     it('should hide the file name input when chooseFileName is not configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1' } as Resource,
+        currentFolder: { id: '1', canCreate: () => true } as Resource,
         isLocationPicker: true
       })
 
@@ -85,7 +88,7 @@ describe('EmbedActions', () => {
     })
     it('should emit select event with currentFolder as selected resource and fileName when select action is triggered and chooseFileName is configured', async () => {
       const { wrapper, mocks } = getWrapper({
-        currentFolder: { id: '1' } as Resource,
+        currentFolder: { id: '1', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
