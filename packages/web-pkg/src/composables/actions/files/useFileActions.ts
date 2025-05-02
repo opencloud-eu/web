@@ -10,6 +10,7 @@ import {
   Action,
   FileAction,
   FileActionOptions,
+  useIsFilesAppActive,
   useIsSearchActive,
   useWindowOpen
 } from '../../actions'
@@ -55,6 +56,7 @@ export const useFileActions = () => {
   const isSearchActive = useIsSearchActive()
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
   const { requestExtensions } = useExtensionRegistry()
+  const isFilesAppActive = useIsFilesAppActive()
 
   const { openUrl } = useWindowOpen()
 
@@ -141,6 +143,10 @@ export const useFileActions = () => {
           },
           handler: (options) => openEditor(fileExtension, options.space, options.resources[0]),
           isVisible: ({ resources }) => {
+            if (!unref(isFilesAppActive)) {
+              return false
+            }
+
             if (resources.length !== 1) {
               return false
             }
