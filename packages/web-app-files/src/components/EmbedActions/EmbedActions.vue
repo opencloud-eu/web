@@ -29,7 +29,7 @@
       >
         {{ $gettext('Share link(s)') }}
       </oc-button>
-      <div v-if="!isFilePicker">
+      <template v-if="!isFilePicker">
         <oc-button
           v-if="isLocationPicker"
           data-testid="button-select"
