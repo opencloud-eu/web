@@ -24,23 +24,31 @@
         class="oc-mr-m"
         data-testid="button-share"
         appearance="filled"
-        :disabled="
-          areSelectActionsDisabled ||
-          !createLinkAction.isVisible({ resources: selectedFiles, space })
-        "
+        :disabled="isShareLinksButtonDisabled"
         @click="createLinkAction.handler({ resources: selectedFiles, space })"
       >
         {{ $gettext('Share link(s)') }}
       </oc-button>
-      <oc-button
-        v-if="!isFilePicker"
-        data-testid="button-select"
-        appearance="filled"
-        :disabled="areSelectActionsDisabled"
-        @click="emitSelect"
-      >
-        {{ selectLabel }}
-      </oc-button>
+      <template v-if="!isFilePicker">
+        <oc-button
+          v-if="isLocationPicker"
+          data-testid="button-select"
+          appearance="filled"
+          :disabled="isChooseButtonDisabled"
+          @click="emitSelect"
+        >
+          {{ $gettext('Choose') }}
+        </oc-button>
+        <oc-button
+          v-else
+          data-testid="button-select"
+          appearance="filled"
+          :disabled="isAttachAsCopyButtonDisabled"
+          @click="emitSelect"
+        >
+          {{ $gettext('Attach as copy') }}
+        </oc-button>
+      </template>
     </div>
   </section>
 </template>
@@ -91,13 +99,26 @@ export default defineComponent({
     const { actions: createLinkActions } = useFileActionsCreateLink({ enforceModal: true })
     const createLinkAction = computed<FileAction>(() => unref(createLinkActions)[0])
 
-    const areSelectActionsDisabled = computed<boolean>(() => selectedFiles.value.length < 1)
+    const isAttachAsCopyButtonDisabled = computed<boolean>(() => selectedFiles.value.length < 1)
+
+    const isShareLinksButtonDisabled = computed<boolean>(
+      () =>
+        selectedFiles.value.length < 1 ||
+        !unref(createLinkAction).isVisible({
+          resources: unref(selectedFiles),
+          space: unref(space)
+        })
+    )
+
+    const isChooseButtonDisabled = computed<boolean>(() => {
+      return (
+        selectedFiles.value.length < 1 ||
+        !unref(currentFolder) ||
+        !unref(currentFolder)?.canCreate()
+      )
+    })
 
     const canCreatePublicLinks = computed<boolean>(() => ability.can('create-all', 'PublicLink'))
-
-    const selectLabel = computed<string>(() =>
-      isLocationPicker.value ? $gettext('Choose') : $gettext('Attach as copy')
-    )
 
     const fileNameInputSelectionRange = computed(() => {
       return [0, unref(fileName).split('.')[0].length] as [number, number]
@@ -127,11 +148,12 @@ export default defineComponent({
       chooseFileName,
       chooseFileNameSuggestion,
       selectedFiles,
-      areSelectActionsDisabled,
+      isAttachAsCopyButtonDisabled,
+      isShareLinksButtonDisabled,
+      isChooseButtonDisabled,
       canCreatePublicLinks,
       isLocationPicker,
       isFilePicker,
-      selectLabel,
       emitCancel,
       emitSelect,
       space,
