@@ -10,16 +10,17 @@
 
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
-### 📈 Enhancement
-
-- feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
-
 ### 🐛 Bug Fixes
 
+- fix: embed mode allows to choose locations that are not accessible [[#621](https://github.com/opencloud-eu/web/pull/621)]
 - fix: space description has a grey background [[#623](https://github.com/opencloud-eu/web/pull/623)]
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
+
+### 📈 Enhancement
+
+- feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 
 ### 📦️ Dependencies
 
