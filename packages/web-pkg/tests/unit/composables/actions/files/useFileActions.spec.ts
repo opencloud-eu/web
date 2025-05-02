@@ -63,7 +63,7 @@ describe('fileActions', () => {
 function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useFileActions>) => void }) {
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
+      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic', path: '/files' })
     })
   }
   return {

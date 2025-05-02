@@ -43,8 +43,14 @@ export default defineConfig({
             dep !== 'webfontloader'
         ),
         '**/tests',
-        '**/*.spec.ts'
-      ]
+        '**/*.spec.ts',
+        'vue'
+      ],
+      output: {
+        globals: {
+          vue: 'Vue'
+        }
+      }
     }
   },
   plugins: [vue(), dts({ exclude: ['**/tests', '**/*.spec.ts'] })]

@@ -66,6 +66,9 @@
         "default": "./dist/design-system/helpers.js",
         "require": "./dist/design-system/helpers.cjs",
         "types": "./dist/src/helpers/index.d.ts"
+      },
+      "./dist/design-system.css": {
+        "default": "./dist/design-system.css"
       }
     }
   },

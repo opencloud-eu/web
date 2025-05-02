@@ -6,7 +6,7 @@ The **OpenCloud Design System** provides components and utilities for applicatio
 OpenCloud Web ecosystem. It can be developed standalone via the design system documentation. The documentation is
 built with [VitePress](https://vitepress.dev/).
 
-Head over to the [hosted docs](https://design.opencloud.eu/) for more information!
+Head over to the [hosted docs](https://docs.opencloud.eu/design-system/) for more information!
 
 ## Running the docs locally
 
@@ -24,14 +24,62 @@ pnpm docs:dev
 
 ## Usage as a package
 
-To use the components and utilities of the design-system in your application, you first need to install the package. Depending on your package manager, run one of the following commands:
+### Installation
+
+To use the design-system in your application, you first need to install the package. Depending on your package manager, run one of the following commands:
 
 ```
-$ npm install @opencloud-eu/design-system --save-dev
+$ npm install @opencloud-eu/design-system
 
-$ pnpm add -D @opencloud-eu/design-system
+$ pnpm add @opencloud-eu/design-system
 
-$ yarn add @opencloud-eu/design-system --dev
+$ yarn add @opencloud-eu/design-system
 ```
 
-It's recommended to install this package as a dev dependency because it's only really needed for providing autocompletion in your IDE and unit tests. In a runtime context, the OpenCloud Web runtime provides the actual implementation.
+Note that if you're using the design-system in an OpenCloud Web app, it's recommended to install it as dev dependency. This is because the Web runtime already ships the design-system and you only need it for development purposes in your IDE.
+
+### Styles
+
+In order to use the provided CSS classes and to ensure the components are styled correctly, you need to import the styles like so:
+
+```
+import '@opencloud-eu/design-system/dist/design-system.css'
+```
+
+Again, this is not needed if you're using the design-system in an OpenCloud Web app because the styles are already available via the Web runtime.
+
+### Components
+
+To use a component, you need to import it. For example, to use the `OcButton` component:
+
+```
+import { OcButton } from '@opencloud-eu/design-system/components'
+
+<oc-button>
+  Click me!
+</oc-button>
+```
+
+You can also register the components globally in your standalone Vue app. This way you don't need to import them any time you want to use them.
+
+```
+import { createApp } from 'vue'
+import DesignSystem from '@opencloud-eu/design-system'
+
+const app = createApp({ ... })
+app.use(DesignSystem)
+```
+
+Optionally, you can pass custom design tokens to the design-system. Check the [example theme](https://github.com/opencloud-eu/opencloud/blob/v2.2.0/services/web/assets/themes/opencloud/theme.json) for a list of available tokens.
+
+```
+const tokens = {
+  spacing: {
+    small: '4px',
+    medium: '8px',
+    large: '16px',
+  }
+}
+
+app.use(DesignSystem, { tokens })
+```

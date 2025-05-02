@@ -11,6 +11,7 @@ const initializeCustomProps = (tokens: string[] = [], prefix: string) => {
 }
 
 export default {
+  // TODO: properly type the options
   install(app: App, options: any = {}) {
     import('./utils/webFontLoader')
 
