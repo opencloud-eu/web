@@ -54,7 +54,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     <!--v-if-->
     <div class="markdown-container oc-flex">
       <!---->
-      <div class="markdown-container-edit oc-ml-s"><a attrs="[object Object]" aria-label="Edit description" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-mt-s oc-p-xs"></a></div>
+      <div class="markdown-container-edit oc-ml-s"><a attrs="[object Object]" aria-label="Edit description" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-p-xs"></a></div>
     </div>
     <!--v-if-->
   </div>

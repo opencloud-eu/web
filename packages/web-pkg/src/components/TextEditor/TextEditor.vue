@@ -153,13 +153,15 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.md-editor {
-  height: 100%;
-
-  &-preview-wrapper,
-  &-resize-operate {
+#text-editor-component {
+  .md-editor-preview-wrapper,
+  .md-editor-resize-operate {
     background-color: var(--oc-role-surface-container);
   }
+}
+
+.md-editor {
+  height: 100%;
 
   &-code-head {
     justify-content: end !important;

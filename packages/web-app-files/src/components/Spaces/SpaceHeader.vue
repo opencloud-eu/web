@@ -83,7 +83,7 @@
             size="small"
             :aria-label="$gettext('Edit description')"
             appearance="raw"
-            class="oc-mt-s oc-p-xs"
+            class="oc-p-xs"
             :to="editReadMeContentLink"
           >
             <oc-icon name="pencil" size="small" fill-type="line" />
