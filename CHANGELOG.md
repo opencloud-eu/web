@@ -10,6 +10,10 @@
 
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
+### 📈 Enhancement
+
+- feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
+
 ### 🐛 Bug Fixes
 
 - fix: space description has a grey background [[#623](https://github.com/opencloud-eu/web/pull/623)]
