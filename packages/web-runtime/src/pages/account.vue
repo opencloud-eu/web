@@ -25,6 +25,13 @@
           </div>
         </template>
         <oc-table-tr class="account-page-info-username">
+          <oc-table-td>{{ $gettext('Profile picture') }}</oc-table-td>
+          <oc-table-td>{{ $gettext('Max. 10MB, JPG, PNG') }}</oc-table-td>
+          <oc-table-td>
+            <avatar-upload class="oc-mb-s" />
+          </oc-table-td>
+        </oc-table-tr>
+        <oc-table-tr class="account-page-info-username">
           <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
           <oc-table-td>{{ user.onPremisesSamAccountName }}</oc-table-td>
         </oc-table-tr>
@@ -324,11 +331,13 @@ import AccountTable from '../components/Account/AccountTable.vue'
 import { useNotificationsSettings } from '../composables/notificationsSettings'
 import { captureException } from '@sentry/vue'
 import { preferencesPanelExtensionPoint } from '../extensionPoints'
+import AvatarUpload from '@opencloud-eu/web-pkg/src/components/AvatarUpload.vue'
 
 const MOBILE_BREAKPOINT = 800
 export default defineComponent({
   name: 'AccountPage',
   components: {
+    AvatarUpload,
     QuotaInformation,
     AppLoadingSpinner,
     GdprExport,
