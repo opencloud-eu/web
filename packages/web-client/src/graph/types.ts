@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance, ResponseType } from 'axios'
 import type { Configuration } from './generated'
 
 export interface GraphFactoryOptions {
@@ -10,4 +10,5 @@ export interface GraphRequestOptions {
   headers?: Record<string, string>
   params?: Record<string, string>
   signal?: AbortSignal
+  responseType?: ResponseType
 }

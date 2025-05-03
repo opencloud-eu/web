@@ -19,6 +19,26 @@ exports[`account page > account information section > displays basic user inform
       </tr>
     </thead>
     <tbody>
+      <tr class="account-page-info-profile-picture">
+        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Profile picture</td>
+        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Max. 10MB, JPG, PNG</td>
+        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
+          <div class="avatar-upload oc-mb-s"><input class="oc-invisible" type="file" accept="image/jpeg, image/png">
+            <div class="oc-flex oc-flex-column oc-flex-middle"><span class="vue-avatar--wrapper oc-avatar oc-mb-m" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname" userid="some-username"><span class="avatar-initials" style="color: white;">SD</span></span>
+              <div>
+                <div class="oc-button-group"><button type="button" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+                    <!--v-if-->
+                    <!-- @slot Content of the button --> Upload
+                  </button>
+                  <!--v-if-->
+                </div>
+              </div>
+            </div>
+            <!--v-if-->
+            <!--v-if-->
+          </div>
+        </td>
+      </tr>
       <tr class="account-page-info-username">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Username</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">some-username</td>

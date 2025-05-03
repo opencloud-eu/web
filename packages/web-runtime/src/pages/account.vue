@@ -24,6 +24,13 @@
             </oc-button>
           </div>
         </template>
+        <oc-table-tr class="account-page-info-profile-picture">
+          <oc-table-td>{{ $gettext('Profile picture') }}</oc-table-td>
+          <oc-table-td>{{ $gettext('Max. 10MB, JPG, PNG') }}</oc-table-td>
+          <oc-table-td>
+            <avatar-upload class="oc-mb-s" />
+          </oc-table-td>
+        </oc-table-tr>
         <oc-table-tr class="account-page-info-username">
           <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
           <oc-table-td>{{ user.onPremisesSamAccountName }}</oc-table-td>
@@ -313,7 +320,7 @@ import { setCurrentLanguage, loadAppTranslations } from '../helpers/language'
 import GdprExport from '../components/Account/GdprExport.vue'
 import ThemeSwitcher from '../components/Account/ThemeSwitcher.vue'
 import ExtensionPreference from '../components/Account/ExtensionPreference.vue'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, AvatarUpload } from '@opencloud-eu/web-pkg'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
 import { supportedLanguages } from '../defaults'
 import { User } from '@opencloud-eu/web-client/graph/generated'
@@ -329,6 +336,7 @@ const MOBILE_BREAKPOINT = 800
 export default defineComponent({
   name: 'AccountPage',
   components: {
+    AvatarUpload,
     QuotaInformation,
     AppLoadingSpinner,
     GdprExport,
