@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#620](https://github.com/opencloud-eu/web/pull/620)]
 - fix(deps): update dependency @sentry/vue to v9.15.0 [[#585](https://github.com/opencloud-eu/web/pull/585)]
 - chore(deps): update devdependencies (non-major) [[#584](https://github.com/opencloud-eu/web/pull/584)]
 
