@@ -722,6 +722,9 @@ export default defineComponent({
           return
         }
 
+        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
+        resource.remoteItemId = unref(space).id
+
         unref(deleteFileActions)[0].handler({
           space: unref(space),
           resources: [resource]
