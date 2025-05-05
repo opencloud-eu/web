@@ -56,6 +56,7 @@
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
         :show-image-controls="activeMediaFileCached?.isImage && !activeMediaFileCached?.isError"
+        :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
         :current-image-zoom="currentImageZoom"
         @set-rotation="currentImageRotation = $event"
@@ -101,7 +102,8 @@ import {
   useAppNavigation,
   useKeyboardActions,
   Modifier,
-  Key
+  Key,
+  useFileActionsDelete
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -155,6 +157,7 @@ export default defineComponent({
     const { getMatchingSpace } = useGetMatchingSpace()
     const { closeApp } = useAppNavigation({ router, currentFileContext: props.currentFileContext })
     const { bindKeyAction, removeKeyAction } = useKeyboardActions()
+    const { actions: deleteFileActions } = useFileActionsDelete()
 
     const activeIndex = ref<number>()
     const cachedFiles = ref<Record<string, CachedFile>>({})
@@ -166,6 +169,13 @@ export default defineComponent({
     const space = computed(() => {
       return getMatchingSpace(unref(activeFilteredFile))
     })
+
+    const isDeleteButtonVisible = computed(() =>
+      unref(deleteFileActions)[0]?.isVisible({
+        space: unref(space),
+        resources: [unref(activeFilteredFile)]
+      })
+    )
 
     const sortBy = computed(() => {
       if (!unref(contextRouteQuery)) {
@@ -380,7 +390,8 @@ export default defineComponent({
       goToPrev,
       keyBindings,
       bindKeyAction,
-      removeKeyAction
+      removeKeyAction,
+      isDeleteButtonVisible
     }
   },
 

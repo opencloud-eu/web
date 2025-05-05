@@ -96,17 +96,16 @@
           </oc-button>
         </div>
       </div>
-      <div>
-        <oc-button
-          v-oc-tooltip="resourceDeleteDescription"
-          class="preview-controls-delete raw-hover-surface oc-p-xs"
-          appearance="raw"
-          :aria-label="resourceDeleteDescription"
-          @click="$emit('deleteResource')"
-        >
-          <oc-icon fill-type="line" name="delete-bin" />
-        </oc-button>
-      </div>
+      <oc-button
+        v-if="showDeleteButton"
+        v-oc-tooltip="resourceDeleteDescription"
+        class="preview-controls-delete raw-hover-surface oc-p-xs"
+        appearance="raw"
+        :aria-label="resourceDeleteDescription"
+        @click="$emit('deleteResource')"
+      >
+        <oc-icon fill-type="line" name="delete-bin" />
+      </oc-button>
     </div>
   </div>
 </template>
@@ -138,6 +137,10 @@ export default defineComponent({
     showImageControls: {
       type: Boolean,
       default: false
+    },
+    showDeleteButton: {
+      type: Boolean,
+      default: true
     },
     currentImageZoom: {
       type: Number,
