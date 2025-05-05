@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: preview user cannot delete file in the shared with me page [[#633](https://github.com/opencloud-eu/web/pull/633)]
 - fix: embed mode allows to choose locations that are not accessible [[#621](https://github.com/opencloud-eu/web/pull/621)]
 - fix: space description has a grey background [[#623](https://github.com/opencloud-eu/web/pull/623)]
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
