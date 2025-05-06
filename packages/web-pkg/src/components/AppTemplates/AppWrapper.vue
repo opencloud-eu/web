@@ -623,9 +623,20 @@ export default defineComponent({
       return [
         ...unref(downloadFileActions).map((originalAction) => ({
           ...originalAction,
-          handler: (args) => downloadFileActionInterceptor(args, originalAction.handler)
+          handler: (args: FileActionOptions) =>
+            downloadFileActionInterceptor(args, originalAction.handler)
         })),
-        ...unref(deleteFileActions)
+        ...unref(deleteFileActions).map((originalAction) => {
+          // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the handler wrapper below
+
+          return {
+            ...originalAction,
+            handler: (args: FileActionOptions) => {
+              args.resources[0].remoteItemId = unref(space).id
+              originalAction.handler(args)
+            }
+          }
+        })
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
     const menuItemsSidebar = computed(() => {
