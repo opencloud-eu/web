@@ -632,7 +632,9 @@ export default defineComponent({
           return {
             ...originalAction,
             handler: (args: FileActionOptions) => {
-              args.resources[0].remoteItemId = unref(space).id
+              const { resources, space } = args
+              resources.map((resource) => (resource.remoteItemId = space.id))
+
               originalAction.handler(args)
             }
           }
