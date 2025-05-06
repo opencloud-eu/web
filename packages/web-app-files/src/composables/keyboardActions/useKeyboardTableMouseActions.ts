@@ -59,7 +59,6 @@ export const useKeyboardTableMouseActions = (
     }
 
     resourcesStore.setLastSelectedId(resource.id)
-
   }
 
   const handleTilesShiftClickAction = ({
@@ -77,11 +76,13 @@ export const useKeyboardTableMouseActions = (
     const tilesListCard = document.querySelectorAll('#tiles-view > ul > li > div')
     const startIndex = findIndex(
       tilesListCard,
-      (r) => r.getAttribute('data-item-id') === resource.id
+      (r: { getAttribute: (arg0: string) => string }) =>
+        r.getAttribute('data-item-id') === resource.id
     )
     const endIndex = findIndex(
       tilesListCard,
-      (r) => r.getAttribute('data-item-id') === unref(latestSelectedId)
+      (r: { getAttribute: (arg0: string) => string }) =>
+        r.getAttribute('data-item-id') === shiftSelectionAnchorId
     )
     const minIndex = Math.min(endIndex, startIndex)
     const maxIndex = Math.max(endIndex, startIndex)
