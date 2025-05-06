@@ -25,6 +25,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update typescript-eslint monorepo to v8.32.0 [[#604](https://github.com/opencloud-eu/web/pull/604)]
+- chore(deps): update devdependencies (non-major) [[#632](https://github.com/opencloud-eu/web/pull/632)]
+- chore(deps): update traefik docker tag to v3.4.0 [[#637](https://github.com/opencloud-eu/web/pull/637)]
 - fix(deps): update dependency zod to v3.24.4 [[#627](https://github.com/opencloud-eu/web/pull/627)]
 - chore(deps): update devdependencies (non-major) [[#620](https://github.com/opencloud-eu/web/pull/620)]
 - fix(deps): update dependency @sentry/vue to v9.15.0 [[#585](https://github.com/opencloud-eu/web/pull/585)]
