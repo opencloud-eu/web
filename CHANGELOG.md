@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: preview user cannot delete file in the shared with me page (followup) [[#640](https://github.com/opencloud-eu/web/pull/640)]
 - fix: opening previews in share spaces [[#639](https://github.com/opencloud-eu/web/pull/639)]
 - fix: delete button in preview app media controls visible, even if permissions missions aren't granted [[#630](https://github.com/opencloud-eu/web/pull/630)]
 - fix: preview user cannot delete file in the shared with me page [[#633](https://github.com/opencloud-eu/web/pull/633)]
