@@ -702,6 +702,9 @@ export default defineComponent({
       'onUpdate:resource': (value: Resource) => {
         resource.value = value
         space.value = unref(unref(currentFileContext).space)
+
+        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
+        unref(resource).remoteItemId = unref(space).id
         selectedResources.value = [value]
       },
       'onUpdate:currentContent': (value: unknown) => {
@@ -721,9 +724,6 @@ export default defineComponent({
         ) {
           return
         }
-
-        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
-        resource.remoteItemId = unref(space).id
 
         unref(deleteFileActions)[0].handler({
           space: unref(space),
