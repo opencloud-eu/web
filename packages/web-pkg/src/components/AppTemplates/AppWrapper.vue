@@ -700,9 +700,17 @@ export default defineComponent({
       isFolderLoading: unref(isFolderLoading),
 
       'onUpdate:resource': (value: Resource) => {
-        resource.value = value
         space.value = unref(unref(currentFileContext).space)
-        selectedResources.value = [value]
+
+        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
+        resource.value = {
+          ...value,
+          ...(isShareSpaceResource(unref(space)) && {
+            remoteItemId: unref(space).id
+          })
+        }
+
+        selectedResources.value = [unref(resource)]
       },
       'onUpdate:currentContent': (value: unknown) => {
         currentContent.value = value
@@ -712,22 +720,19 @@ export default defineComponent({
         appOnDeleteResourceCallback = value
       },
 
-      'onDelete:resource': (resource: Resource) => {
+      'onDelete:resource': () => {
         if (
           !unref(deleteFileActions)[0].isVisible({
             space: unref(space),
-            resources: [resource]
+            resources: [unref(resource)]
           })
         ) {
           return
         }
 
-        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
-        resource.remoteItemId = unref(space).id
-
         unref(deleteFileActions)[0].handler({
           space: unref(space),
-          resources: [resource]
+          resources: [unref(resource)]
         })
       },
 

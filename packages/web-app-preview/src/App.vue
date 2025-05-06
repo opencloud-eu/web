@@ -65,7 +65,7 @@
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
-        @delete-resource="$emit('delete:resource', activeFilteredFile)"
+        @delete-resource="$emit('delete:resource')"
       />
     </div>
   </div>
