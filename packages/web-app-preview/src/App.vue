@@ -167,15 +167,21 @@ export default defineComponent({
     const keyBindings: string[] = []
 
     const space = computed(() => {
+      if (!unref(activeFilteredFile)) {
+        return null
+      }
       return getMatchingSpace(unref(activeFilteredFile))
     })
 
-    const isDeleteButtonVisible = computed(() =>
-      unref(deleteFileActions)[0]?.isVisible({
+    const isDeleteButtonVisible = computed(() => {
+      if (!unref(space)) {
+        return false
+      }
+      return unref(deleteFileActions)[0]?.isVisible({
         space: unref(space),
         resources: [unref(activeFilteredFile)]
       })
-    )
+    })
 
     const sortBy = computed(() => {
       if (!unref(contextRouteQuery)) {
