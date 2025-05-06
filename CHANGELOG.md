@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: opening previews in share spaces [[#639](https://github.com/opencloud-eu/web/pull/639)]
 - fix: delete button in preview app media controls visible, even if permissions missions aren't granted [[#630](https://github.com/opencloud-eu/web/pull/630)]
 - fix: preview user cannot delete file in the shared with me page [[#633](https://github.com/opencloud-eu/web/pull/633)]
 - fix: embed mode allows to choose locations that are not accessible [[#621](https://github.com/opencloud-eu/web/pull/621)]
