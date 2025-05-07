@@ -24,10 +24,6 @@ export const useAvatarsStore = defineStore('avatars', () => {
     unref(avatarMap)[userId] = null
   }
 
-  const getUserAvatar = () => {
-    return userAvatar
-  }
-
   const setUserAvatar = (avatar: Avatar) => {
     userAvatar.value = avatar
     avatarMap[unref(user).id] = avatar
@@ -48,7 +44,6 @@ export const useAvatarsStore = defineStore('avatars', () => {
     getAvatar,
     addAvatar,
     removeAvatar,
-    getUserAvatar,
     setUserAvatar,
     removeUserAvatar,
     reset

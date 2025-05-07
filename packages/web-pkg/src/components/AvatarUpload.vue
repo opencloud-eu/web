@@ -20,7 +20,7 @@
           <oc-button size="small" @click="triggerFileInput">
             {{ $gettext('Upload') }}
           </oc-button>
-          <oc-button v-if="userAvatar" size="small" @click="removeImage">
+          <oc-button v-if="userAvatar" size="small" @click="showRemoveModal = true">
             {{ $gettext('Remove') }}
           </oc-button>
         </div>
@@ -32,42 +32,52 @@
       :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!cropperReady"
-      @cancel="onModalCancel"
-      @confirm="onModalConfirm"
+      @cancel="onCropModalCancel"
+      @confirm="onCropModalConfirm"
     >
       <template #content>
         <div v-if="imageUrl">
-          <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
+          <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl"/>
         </div>
       </template>
     </oc-modal>
+    <oc-modal
+      v-if="showRemoveModal"
+      :message="$gettext('Are you sure you want to remove your profile picture?')"
+      :title="$gettext('Remove profile picture')"
+      :button-cancel-text="$gettext('Cancel')"
+      :button-confirm-text="$gettext('Remove')"
+      @cancel="showRemoveModal = fals"
+      @confirm="onRemoveModalConfirm"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, nextTick, useTemplateRef, unref } from 'vue'
+import {defineComponent, ref, watch, nextTick, useTemplateRef, unref} from 'vue'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
-import { useAvatarsStore, useMessages, useUserStore } from '../composables'
-import { storeToRefs } from 'pinia'
-import { useGettext } from 'vue3-gettext'
+import {useAvatarsStore, useMessages, useUserStore} from '../composables'
+import {storeToRefs} from 'pinia'
+import {useGettext} from 'vue3-gettext'
 
 export default defineComponent({
   name: 'AvatarUpload',
   setup() {
     const userStore = useUserStore()
-    const { $gettext } = useGettext()
+    const {$gettext} = useGettext()
     const avatarsStore = useAvatarsStore()
-    const { showErrorMessage, showMessage } = useMessages()
+    const {showErrorMessage, showMessage} = useMessages()
 
-    const { user } = storeToRefs(userStore)
-    const { userAvatar } = storeToRefs(avatarsStore)
+    const {user} = storeToRefs(userStore)
+    const {userAvatar} = storeToRefs(avatarsStore)
 
     const imageUrl = ref(null)
     const imageRef = ref(null)
     const cropper = ref(null)
     const cropperReady = ref(false)
     const showCropModal = ref(false)
+    const showRemoveModal = ref(false)
     const fileInputRef = useTemplateRef<HTMLInputElement>('fileInputRef')
     const maxFileSize = 10 * 1024 * 1024 // 10MB
 
@@ -123,12 +133,12 @@ export default defineComponent({
       unref(fileInputRef).click()
     }
 
-    const onModalCancel = () => {
+    const onCropModalCancel = () => {
       showCropModal.value = false
       destroyCropper()
     }
 
-    const onModalConfirm = async () => {
+    const onCropModalConfirm = async () => {
       const croppedImage = getCroppedImage()
       const objectUrl = await getCanvasBlobUrl(croppedImage)
 
@@ -139,7 +149,7 @@ export default defineComponent({
       showCropModal.value = false
       destroyCropper()
 
-      showMessage({ title: $gettext('Profile picture was set successfully') })
+      showMessage({title: $gettext('Profile picture was set successfully')})
     }
 
     const getCanvasBlobUrl = async (canvas: HTMLCanvasElement) => {
@@ -147,7 +157,8 @@ export default defineComponent({
       return URL.createObjectURL(blob)
     }
 
-    const removeImage = () => {
+    const onRemoveModalConfirm = () => {
+      showRemoveModal.value = false
       avatarsStore.removeUserAvatar()
     }
 
@@ -167,13 +178,14 @@ export default defineComponent({
       cropperReady,
       onFileChange,
       showCropModal,
-      onModalCancel,
-      onModalConfirm,
+      onCropModalCancel,
+      onCropModalConfirm,
+      onRemoveModalConfirm,
       triggerFileInput,
       fileInputRef,
-      removeImage,
       user,
-      userAvatar
+      userAvatar,
+      showRemoveModal
     }
   }
 })
