@@ -2,7 +2,7 @@ import ActivitiesPanel from '../../../../src/components/SideBar/ActivitiesPanel.
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
-import { nextTick } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 
 const defaultActivities = [
   {
@@ -85,22 +85,16 @@ const defaultActivities = [
 describe('ActivitiesPanel', () => {
   it('should show no activities message if there is no data', async () => {
     const { wrapper } = getMountedWrapper({ activities: [] })
-    wrapper.vm.isVisible = true
-    await nextTick()
-    await wrapper.vm.loadActivitiesTask.last
+    await flushPromises()
     expect(wrapper.html()).toContain('No activities')
   })
-  it('should show loading spinner when fetching data', async () => {
+  it('should show loading spinner when fetching data', () => {
     const { wrapper } = getMountedWrapper()
-    wrapper.vm.isVisible = true
-    await nextTick()
-    expect(wrapper.find('#app-loading-spinner').exists()).toBeTruthy()
+    expect(wrapper.find('.oc-loader').exists()).toBeTruthy()
   })
   it('should render a list of activities when data is present', async () => {
     const { wrapper } = getMountedWrapper()
-    wrapper.vm.isVisible = true
-    await nextTick()
-    await wrapper.vm.loadActivitiesTask.last
+    await flushPromises()
     expect(wrapper.html()).toMatchSnapshot()
   })
 })
@@ -109,6 +103,7 @@ function getMountedWrapper({
   activities = defaultActivities
 }: {
   activities?: any[]
+  isActive?: boolean
 } = {}) {
   const mocks = {
     ...defaultComponentMocks()
