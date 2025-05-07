@@ -1,12 +1,14 @@
 # Changelog
 
-## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-04-23
+## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-05-07
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @JammingBen, @ScharfViktor
 
+### 🐛 Bug Fixes
 
+- fix: chrome oh snap errors [[#642](https://github.com/opencloud-eu/web/pull/642)]
 
 ## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-04-09
 
