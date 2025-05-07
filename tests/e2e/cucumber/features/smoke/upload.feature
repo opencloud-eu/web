@@ -4,15 +4,10 @@ Feature: Upload
   So that I can store them in OpenCloud
 
   Background:
-    Given "Admin" logs in
-    And "Admin" creates following user using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
     And "Alice" logs in
-    And "Admin" opens the "admin-settings" app
-    And "Admin" navigates to the users management page
-    When "Admin" changes the quota of the user "Alice" to "0.00003" using the sidebar panel
-    And "Admin" logs out
     And "Alice" opens the "files" app
 
 
@@ -38,9 +33,6 @@ Feature: Upload
       | resource       |
       | simple.pdf     |
       | testavatar.jpg |
-    And "Alice" tries to upload the following resource
-      | resource      | error              |
-      | lorem-big.txt | Insufficient quota |
     And "Alice" downloads the following resources using the sidebar panel
       | resource      | type   |
       | PARENT        | folder |
@@ -68,7 +60,38 @@ Feature: Upload
     And "Alice" closes the file viewer
 
     # upload empty folder
-    And "Alice" uploads the following resources
+    When "Alice" uploads the following resources
       | resource | type   |
       | FOLDER   | folder |
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource |
+      | FOLDER   |
+    
+    # folder upload via drag-n-drop
+    When "Alice" uploads the following resources via drag-n-drop
+      | resource |
+      | PARENT   |
+    And "Alice" opens folder "PARENT/CHILD"
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | child.txt |
     And "Alice" logs out
+
+
+  Scenario: try to upload resources when the quota is insufficient
+    Given "Admin" logs in
+    And "Admin" opens the "admin-settings" app
+    And "Admin" navigates to the users management page
+    And "Admin" changes the quota of the user "Alice" to "0.000001" using the sidebar panel
+    And "Admin" logs out
+
+    And "Alice" opens the "files" app
+    And "Alice" creates the following resources
+      | resource          | type    | content             |
+      | new-lorem-big.txt | txtFile | new lorem big file  |
+    When "Alice" tries to upload the following resource
+      | resource      | error              |
+      | lorem-big.txt | Insufficient quota |
+    Then following resources should not be displayed in the files list for user "Alice"
+      | resource      |
+      | lorem-big.txt |
