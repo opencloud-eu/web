@@ -1,7 +1,7 @@
 ---
 font:
   family:
-    value: 'OpenCloud, Inter'
+    value: 'OpenCloud, Inter, sans-serif'
   size:
     default:
       value: 0.875rem
