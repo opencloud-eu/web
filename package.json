@@ -35,7 +35,7 @@
   "devDependencies": {
     "@babel/core": "7.27.1",
     "@babel/polyfill": "7.12.1",
-    "@babel/preset-env": "7.27.1",
+    "@babel/preset-env": "7.27.2",
     "@babel/register": "7.27.1",
     "@cucumber/cucumber": "11.2.0",
     "@cucumber/messages": "27.2.0",
