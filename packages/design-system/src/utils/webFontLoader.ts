@@ -8,7 +8,7 @@ import WebFont from 'webfontloader'
 
 WebFont.load({
   custom: {
-    families: ['OpenCloud'],
-    urls: ['/fonts/opencloud.css']
+    families: ['OpenCloud', 'Inter'],
+    urls: ['/fonts/opencloud.css', 'fonts/inter.css']
   }
 })
