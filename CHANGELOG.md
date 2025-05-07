@@ -11,6 +11,10 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
+### ✅ Tests
+
+- upload folder via dragAndDrop [[#649](https://github.com/opencloud-eu/web/pull/649)]
+
 ### 🐛 Bug Fixes
 
 - fix: add fallback font [[#645](https://github.com/opencloud-eu/web/pull/645)]
