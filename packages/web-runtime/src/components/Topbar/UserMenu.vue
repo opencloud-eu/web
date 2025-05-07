@@ -144,7 +144,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
-import avatar from '../Avatar.vue'
 
 export default defineComponent({
   components: { QuotaInformation },
@@ -193,9 +192,6 @@ export default defineComponent({
     }
   },
   computed: {
-    avatar() {
-      return avatar
-    },
     onPremisesSamAccountName() {
       return this.user?.onPremisesSamAccountName
     },
