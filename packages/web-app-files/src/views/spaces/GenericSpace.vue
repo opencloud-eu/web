@@ -178,9 +178,9 @@ import { useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
-  useKeyboardTableMouseActions,
-  useKeyboardTableNavigation,
-  useKeyboardTableSpaceActions
+  useKeyboardFileMouseActions,
+  useKeyboardFileNavigation,
+  useKeyboardFileSpaceActions
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
@@ -437,13 +437,13 @@ export default defineComponent({
     })
 
     const keyActions = useKeyboardActions()
-    useKeyboardTableNavigation(
+    useKeyboardFileNavigation(
       keyActions,
       resourcesViewDefaults.paginatedResources,
       resourcesViewDefaults.viewMode
     )
-    useKeyboardTableMouseActions(keyActions, resourcesViewDefaults.viewMode)
-    useKeyboardTableSpaceActions(keyActions, space)
+    useKeyboardFileMouseActions(keyActions, resourcesViewDefaults.viewMode)
+    useKeyboardFileSpaceActions(keyActions, space)
 
     const performLoaderTask = async (
       sameRoute: boolean,

@@ -196,9 +196,9 @@ import { isLocationCommonActive } from '@opencloud-eu/web-pkg'
 import { ItemFilterToggle } from '@opencloud-eu/web-pkg'
 import { useKeyboardActions, ResourceIcon } from '@opencloud-eu/web-pkg'
 import {
-  useKeyboardTableNavigation,
-  useKeyboardTableMouseActions,
-  useKeyboardTableActions
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions,
+  useKeyboardFileActions
 } from '../../composables/keyboardActions'
 import { extractDomSelector } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
@@ -264,9 +264,9 @@ export default defineComponent({
     const resourcesView = useResourcesViewDefaults<Resource, any, any[]>()
     const { loadPreview } = useLoadPreview(resourcesView.viewMode)
     const keyActions = useKeyboardActions()
-    useKeyboardTableNavigation(keyActions, resourcesView.paginatedResources, resourcesView.viewMode)
-    useKeyboardTableMouseActions(keyActions, resourcesView.viewMode)
-    useKeyboardTableActions(keyActions)
+    useKeyboardFileNavigation(keyActions, resourcesView.paginatedResources, resourcesView.viewMode)
+    useKeyboardFileMouseActions(keyActions, resourcesView.viewMode)
+    useKeyboardFileActions(keyActions)
 
     const searchTerm = computed(() => {
       return queryItemAsString(unref(searchTermQuery))

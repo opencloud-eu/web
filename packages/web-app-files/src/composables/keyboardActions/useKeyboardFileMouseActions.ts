@@ -6,7 +6,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import { findIndex } from 'lodash-es'
 import { storeToRefs } from 'pinia'
 
-export const useKeyboardTableMouseActions = (
+export const useKeyboardFileMouseActions = (
   keyActions: KeyboardActions,
   viewMode: Ref<string | QueryValue>
 ) => {
