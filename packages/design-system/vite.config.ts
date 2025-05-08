@@ -18,12 +18,6 @@ export default defineConfig({
       }
     }
   },
-  resolve: {
-    alias: {
-      // this is a hack to mock it for the tests... won't be a problem if you don't plan to use the ODS standalone
-      webfontloader: resolve(__dirname, './../../tests/unit/stubs/webfontloader.ts')
-    }
-  },
   build: {
     lib: {
       entry: {
@@ -38,9 +32,7 @@ export default defineConfig({
         ...Object.keys(pkg.dependencies).filter(
           (dep) =>
             // include vue-select because there is something off with its module type
-            dep !== 'vue-select' &&
-            // include webfontloader to mock it for the tests... won't be a problem if you don't plan to use the ODS standalone
-            dep !== 'webfontloader'
+            dep !== 'vue-select'
         ),
         '**/tests',
         '**/*.spec.ts',
@@ -53,5 +45,5 @@ export default defineConfig({
       }
     }
   },
-  plugins: [vue(), dts({ exclude: ['**/tests', '**/*.spec.ts'] })]
+  plugins: [vue(), dts({ copyDtsFiles: true, exclude: ['**/tests', '**/*.spec.ts'] })]
 })

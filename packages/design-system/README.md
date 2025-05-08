@@ -70,6 +70,12 @@ const app = createApp({ ... })
 app.use(DesignSystem)
 ```
 
+In order for your IDE to pick up the correct component types, you need to add the following to your `types.d.ts` file:
+
+```
+/// <reference types="@opencloud-eu/design-system/types" />
+```
+
 Optionally, you can pass custom design tokens to the design-system. Check the [example theme](https://github.com/opencloud-eu/opencloud/blob/v2.2.0/services/web/assets/themes/opencloud/theme.json) for a list of available tokens.
 
 ```

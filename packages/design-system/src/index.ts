@@ -4,6 +4,9 @@ import { applyCustomProp } from './helpers'
 import * as components from './components'
 import * as directives from './directives'
 
+// fonts must be imported here to ensure they are included in the build
+import './styles/fonts.scss'
+
 const initializeCustomProps = (tokens: string[] = [], prefix: string) => {
   for (const param in tokens) {
     applyCustomProp(prefix + param, tokens[param])
@@ -13,8 +16,6 @@ const initializeCustomProps = (tokens: string[] = [], prefix: string) => {
 export default {
   // TODO: properly type the options
   install(app: App, options: any = {}) {
-    import('./utils/webFontLoader')
-
     const themeOptions = options.tokens
     initializeCustomProps(themeOptions?.breakpoints, 'breakpoint-')
     initializeCustomProps(themeOptions?.colorPalette, 'color-')

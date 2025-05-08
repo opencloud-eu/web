@@ -220,9 +220,6 @@ importers:
       vue3-gettext:
         specifier: ^2.4.0
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.13)(vue@3.5.13(typescript@5.8.3))
-      webfontloader:
-        specifier: ^1.6.28
-        version: 1.6.28
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -6691,9 +6688,6 @@ packages:
     resolution: {integrity: sha512-iuFG7NamJ41Oshg4930iQgfIpRrUiatPWIekeznYgEf2EOraTRcDPTjy7gIOMtkdpKTaqPk1E68NO5PAGtJahA==}
     engines: {node: '>=14'}
 
-  webfontloader@1.6.28:
-    resolution: {integrity: sha512-Egb0oFEga6f+nSgasH3E0M405Pzn6y3/9tOVanv/DLfa1YBIgcv90L18YyWnvXkRbIM17v5Kv6IT2N6g1x5tvQ==}
-
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
@@ -13034,8 +13028,6 @@ snapshots:
       path-posix: 1.0.0
       url-join: 5.0.0
       url-parse: 1.5.10
-
-  webfontloader@1.6.28: {}
 
   webidl-conversions@3.0.1: {}
 
