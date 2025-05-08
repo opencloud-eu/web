@@ -347,6 +347,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #files-app-bar {
   background-color: var(--oc-role-surface);
+  border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;
