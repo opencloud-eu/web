@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-07
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-08
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -11,12 +11,9 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
-### ✅ Tests
-
-- upload folder via dragAndDrop [[#649](https://github.com/opencloud-eu/web/pull/649)]
-
 ### 🐛 Bug Fixes
 
+- fix: bring back the left top rounded corner in the app bar [[#647](https://github.com/opencloud-eu/web/pull/647)]
 - fix: add fallback font [[#645](https://github.com/opencloud-eu/web/pull/645)]
 - fix: preview user cannot delete file in the shared with me page (followup) [[#640](https://github.com/opencloud-eu/web/pull/640)]
 - fix: opening previews in share spaces [[#639](https://github.com/opencloud-eu/web/pull/639)]
@@ -27,6 +24,10 @@
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
+
+### ✅ Tests
+
+- upload folder via dragAndDrop [[#649](https://github.com/opencloud-eu/web/pull/649)]
 
 ### 📦️ Dependencies
 
