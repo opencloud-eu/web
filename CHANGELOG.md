@@ -1,5 +1,52 @@
 # Changelog
 
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-09
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+
+### ✨ Features
+
+- feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
+- feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
+
+### 📈 Enhancement
+
+- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
+
+### 🐛 Bug Fixes
+
+- fix: bring back the left top rounded corner in the app bar [[#647](https://github.com/opencloud-eu/web/pull/647)]
+- fix: add fallback font [[#645](https://github.com/opencloud-eu/web/pull/645)]
+- fix: preview user cannot delete file in the shared with me page (followup) [[#640](https://github.com/opencloud-eu/web/pull/640)]
+- fix: opening previews in share spaces [[#639](https://github.com/opencloud-eu/web/pull/639)]
+- fix: delete button in preview app media controls visible, even if permissions missions aren't granted [[#630](https://github.com/opencloud-eu/web/pull/630)]
+- fix: preview user cannot delete file in the shared with me page [[#633](https://github.com/opencloud-eu/web/pull/633)]
+- fix: embed mode allows to choose locations that are not accessible [[#621](https://github.com/opencloud-eu/web/pull/621)]
+- fix: space description has a grey background [[#623](https://github.com/opencloud-eu/web/pull/623)]
+- fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
+- fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
+- fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
+
+### ✅ Tests
+
+- upload folder via dragAndDrop [[#649](https://github.com/opencloud-eu/web/pull/649)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v9.16.1 [[#650](https://github.com/opencloud-eu/web/pull/650)]
+- fix(deps): update dependency globals to v16.1.0 [[#644](https://github.com/opencloud-eu/web/pull/644)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.3 [[#643](https://github.com/opencloud-eu/web/pull/643)]
+- chore(deps): update dependency @babel/preset-env to v7.27.2 [[#641](https://github.com/opencloud-eu/web/pull/641)]
+- fix(deps): update typescript-eslint monorepo to v8.32.0 [[#604](https://github.com/opencloud-eu/web/pull/604)]
+- chore(deps): update devdependencies (non-major) [[#632](https://github.com/opencloud-eu/web/pull/632)]
+- chore(deps): update traefik docker tag to v3.4.0 [[#637](https://github.com/opencloud-eu/web/pull/637)]
+- fix(deps): update dependency zod to v3.24.4 [[#627](https://github.com/opencloud-eu/web/pull/627)]
+- chore(deps): update devdependencies (non-major) [[#620](https://github.com/opencloud-eu/web/pull/620)]
+- fix(deps): update dependency @sentry/vue to v9.15.0 [[#585](https://github.com/opencloud-eu/web/pull/585)]
+- chore(deps): update devdependencies (non-major) [[#584](https://github.com/opencloud-eu/web/pull/584)]
+
 ## [2.3.0](https://github.com/opencloud-eu/web/releases/tag/v2.3.0) - 2025-04-28
 
 ### ❤️ Thanks to all contributors! ❤️
