@@ -3,6 +3,7 @@ import { defineConfig, searchForWorkspaceRoot } from 'vite'
 import dts from 'vite-plugin-dts'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
 
@@ -45,5 +46,18 @@ export default defineConfig({
       }
     }
   },
-  plugins: [vue(), dts({ copyDtsFiles: true, exclude: ['**/tests', '**/*.spec.ts'] })]
+  plugins: [
+    vue(),
+    viteStaticCopy({
+      targets: (() => {
+        return [
+          {
+            src: `./src/assets/icons/*`,
+            dest: `icons`
+          }
+        ]
+      })()
+    }),
+    dts({ copyDtsFiles: true, exclude: ['**/tests', '**/*.spec.ts'] })
+  ]
 })
