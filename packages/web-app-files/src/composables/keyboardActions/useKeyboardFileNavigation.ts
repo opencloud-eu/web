@@ -10,7 +10,7 @@ const enum Direction {
   LEFT = 'left',
   RIGHT = 'right'
 }
-export const useKeyboardTableNavigation = (
+export const useKeyboardFileNavigation = (
   keyActions: KeyboardActions,
   paginatedResources: Ref<Resource[]>,
   viewMode: Ref<string | QueryValue>

@@ -6,7 +6,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import { findIndex } from 'lodash-es'
 import { storeToRefs } from 'pinia'
 
-export const useKeyboardTableMouseActions = (
+export const useKeyboardFileMouseActions = (
   keyActions: KeyboardActions,
   viewMode: Ref<string | QueryValue>
 ) => {
@@ -14,8 +14,10 @@ export const useKeyboardTableMouseActions = (
   const { latestSelectedId } = storeToRefs(resourcesStore)
 
   let fileListClickedEvent: string
+  let shiftAnchorResetEvent: string
   let fileListClickedMetaEvent: string
   let fileListClickedShiftEvent: string
+  let shiftSelectionAnchorId: string | null = null
 
   const handleCtrlClickAction = (resource: Resource) => {
     resourcesStore.toggleSelection(resource.id)
@@ -28,19 +30,24 @@ export const useKeyboardTableMouseActions = (
     resource: Resource
     skipTargetSelection: boolean
   }) => {
+    if (!shiftSelectionAnchorId) {
+      shiftSelectionAnchorId = unref(latestSelectedId)
+    }
+    resourcesStore.setSelection([])
+
     const parent = document.querySelectorAll(`[data-item-id='${resource.id}']`)[0]
     const resourceNodes = Object.values(parent.parentNode.children)
-    const latestNode = resourceNodes.find(
-      (r) => r.getAttribute('data-item-id') === unref(latestSelectedId)
+    const anchorNode = resourceNodes.find(
+      (r) => r.getAttribute('data-item-id') === shiftSelectionAnchorId
     )
     const clickedNode = resourceNodes.find((r) => r.getAttribute('data-item-id') === resource.id)
 
-    let latestNodeIndex = resourceNodes.indexOf(latestNode)
-    latestNodeIndex = latestNodeIndex === -1 ? 0 : latestNodeIndex
+    let anchorIndex = resourceNodes.indexOf(anchorNode)
+    anchorIndex = anchorIndex === -1 ? 0 : anchorIndex
 
-    const clickedNodeIndex = resourceNodes.indexOf(clickedNode)
-    const minIndex = Math.min(latestNodeIndex, clickedNodeIndex)
-    const maxIndex = Math.max(latestNodeIndex, clickedNodeIndex)
+    const clickedIndex = resourceNodes.indexOf(clickedNode)
+    const minIndex = Math.min(anchorIndex, clickedIndex)
+    const maxIndex = Math.max(anchorIndex, clickedIndex)
 
     for (let i = minIndex; i <= maxIndex; i++) {
       const nodeId = resourceNodes[i].getAttribute('data-item-id')
@@ -50,6 +57,7 @@ export const useKeyboardTableMouseActions = (
       }
       resourcesStore.addSelection(nodeId)
     }
+
     resourcesStore.setLastSelectedId(resource.id)
   }
 
@@ -60,14 +68,21 @@ export const useKeyboardTableMouseActions = (
     resource: Resource
     skipTargetSelection: boolean
   }) => {
+    if (!shiftSelectionAnchorId) {
+      shiftSelectionAnchorId = unref(latestSelectedId)
+    }
+    resourcesStore.setSelection([])
+
     const tilesListCard = document.querySelectorAll('#tiles-view > ul > li > div')
     const startIndex = findIndex(
       tilesListCard,
-      (r) => r.getAttribute('data-item-id') === resource.id
+      (r: { getAttribute: (arg0: string) => string }) =>
+        r.getAttribute('data-item-id') === resource.id
     )
     const endIndex = findIndex(
       tilesListCard,
-      (r) => r.getAttribute('data-item-id') === unref(latestSelectedId)
+      (r: { getAttribute: (arg0: string) => string }) =>
+        r.getAttribute('data-item-id') === shiftSelectionAnchorId
     )
     const minIndex = Math.min(endIndex, startIndex)
     const maxIndex = Math.max(endIndex, startIndex)
@@ -89,6 +104,9 @@ export const useKeyboardTableMouseActions = (
       'app.files.list.clicked',
       keyActions.resetSelectionCursor
     )
+    shiftAnchorResetEvent = eventBus.subscribe('app.files.shiftAnchor.reset', () => {
+      shiftSelectionAnchorId = null
+    })
     fileListClickedMetaEvent = eventBus.subscribe(
       'app.files.list.clicked.meta',
       handleCtrlClickAction
@@ -96,6 +114,7 @@ export const useKeyboardTableMouseActions = (
   })
 
   onBeforeUnmount(() => {
+    eventBus.unsubscribe('app.files.shiftAnchor.reset', shiftAnchorResetEvent)
     eventBus.unsubscribe('app.files.list.clicked', fileListClickedEvent)
     eventBus.unsubscribe('app.files.list.clicked.meta', fileListClickedMetaEvent)
     eventBus.unsubscribe('app.files.list.clicked.shift', fileListClickedShiftEvent)

@@ -199,9 +199,9 @@ import { defaultFuseOptions, formatFileSize, ResourceIcon } from '@opencloud-eu/
 import { useGettext } from 'vue3-gettext'
 import { useKeyboardActions } from '@opencloud-eu/web-pkg'
 import {
-  useKeyboardTableNavigation,
-  useKeyboardTableMouseActions,
-  useKeyboardTableActions
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions,
+  useKeyboardFileActions
 } from '../../composables/keyboardActions'
 import { orderBy } from 'lodash-es'
 import { useResourcesViewDefaults } from '../../composables'
@@ -351,9 +351,9 @@ const viewModeStr = computed(() => queryItemAsString(unref(viewMode)))
 const { loadPreview } = useLoadPreview(viewModeStr)
 
 const keyActions = useKeyboardActions()
-useKeyboardTableNavigation(keyActions, runtimeSpaces, viewMode)
-useKeyboardTableMouseActions(keyActions, viewMode)
-useKeyboardTableActions(keyActions)
+useKeyboardFileNavigation(keyActions, runtimeSpaces, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
+useKeyboardFileActions(keyActions)
 
 const getManagerNames = (space: SpaceResource) => {
   const allManagers = getSpaceManagers(space)

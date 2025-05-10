@@ -6,7 +6,7 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
-export const useKeyboardTableActions = (keyActions: KeyboardActions) => {
+export const useKeyboardFileActions = (keyActions: KeyboardActions) => {
   const resourcesStore = useResourcesStore()
   const { copyResources } = useClipboardStore()
 
