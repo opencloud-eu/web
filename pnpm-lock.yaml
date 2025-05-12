@@ -890,7 +890,7 @@ importers:
         version: 6.0.2
       semver:
         specifier: ^7.6.3
-        version: 7.7.1
+        version: 7.7.2
       uuid:
         specifier: ^11.0.0
         version: 11.1.0
@@ -1020,8 +1020,8 @@ importers:
         specifier: 6.14.0
         version: 6.14.0
       semver:
-        specifier: 7.7.1
-        version: 7.7.1
+        specifier: 7.7.2
+        version: 7.7.2
       utf8:
         specifier: ^3.0.0
         version: 3.0.0
@@ -5894,8 +5894,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.7.1:
-    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+  semver@7.7.2:
+    resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -8524,7 +8524,7 @@ snapshots:
 
   '@npmcli/fs@3.1.1':
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   '@one-ini/wasm@0.1.1': {}
 
@@ -8931,7 +8931,7 @@ snapshots:
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.1
+      semver: 7.7.2
       ts-api-utils: 2.1.0(typescript@5.8.3)
       typescript: 5.8.3
     transitivePeerDependencies:
@@ -10014,7 +10014,7 @@ snapshots:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.7.1
+      semver: 7.7.2
 
   ee-first@1.1.1: {}
 
@@ -10183,7 +10183,7 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@9.26.0):
     dependencies:
       eslint: 9.26.0
-      semver: 7.7.1
+      semver: 7.7.2
 
   eslint-config-prettier@10.1.5(eslint@9.26.0):
     dependencies:
@@ -10206,7 +10206,7 @@ snapshots:
       globals: 15.15.0
       ignore: 5.3.2
       minimatch: 9.0.5
-      semver: 7.7.1
+      semver: 7.7.2
 
   eslint-plugin-promise@7.2.1(eslint@9.26.0):
     dependencies:
@@ -10226,7 +10226,7 @@ snapshots:
       natural-compare: 1.4.0
       nth-check: 2.1.1
       postcss-selector-parser: 6.1.2
-      semver: 7.7.1
+      semver: 7.7.2
       vue-eslint-parser: 9.4.3(eslint@9.26.0)
       xml-name-validator: 4.0.0
 
@@ -11067,7 +11067,7 @@ snapshots:
       mkdirp: 1.0.4
       nopt: 7.2.1
       read-installed-packages: 2.0.1
-      semver: 7.7.1
+      semver: 7.7.2
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
       spdx-satisfies: 5.0.1
@@ -11203,7 +11203,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   make-error@1.3.6: {}
 
@@ -11473,13 +11473,13 @@ snapshots:
     dependencies:
       hosted-git-info: 6.1.3
       is-core-module: 2.16.1
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
 
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -11664,7 +11664,7 @@ snapshots:
       minimist: 1.2.8
       open: 7.4.2
       rimraf: 2.7.1
-      semver: 7.7.1
+      semver: 7.7.2
       slash: 2.0.0
       tmp: 0.0.33
       yaml: 2.7.1
@@ -11920,7 +11920,7 @@ snapshots:
       '@npmcli/fs': 3.1.1
       debug: 4.4.0(supports-color@8.1.1)
       read-package-json: 6.0.4
-      semver: 7.7.1
+      semver: 7.7.2
       slide: 1.1.6
     optionalDependencies:
       graceful-fs: 4.2.11
@@ -12179,7 +12179,7 @@ snapshots:
     dependencies:
       lru-cache: 6.0.0
 
-  semver@7.7.1: {}
+  semver@7.7.2: {}
 
   send@1.2.0:
     dependencies:
@@ -12955,7 +12955,7 @@ snapshots:
       espree: 9.6.1
       esquery: 1.6.0
       lodash: 4.17.21
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
 
