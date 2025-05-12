@@ -1,0 +1,10 @@
+{
+  // Required
+  "repoOwner": "opencloud-eu",
+  "repoName": "web",
+
+  // the branches available to backport to
+  "targetBranchChoices": ["main", "stable-2.1"],
+
+  "fork": false
+}
