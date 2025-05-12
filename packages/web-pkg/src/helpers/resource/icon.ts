@@ -171,6 +171,7 @@ const fileIcon = {
     icon: { name: 'resource-type-presentation', color: 'var(--oc-color-icon-presentation)' },
     extensions: [
       'odp',
+      'otp',
       'pot',
       'potm',
       'potx',
