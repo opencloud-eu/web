@@ -42,6 +42,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.17.0 [[#657](https://github.com/opencloud-eu/web/pull/657)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.5 [[#659](https://github.com/opencloud-eu/web/pull/659)]
+- chore(deps): update devdependencies (non-major) [[#662](https://github.com/opencloud-eu/web/pull/662)]
 - fix(deps): update dependency @sentry/vue to v9.16.1 [[#650](https://github.com/opencloud-eu/web/pull/650)]
 - fix(deps): update dependency globals to v16.1.0 [[#644](https://github.com/opencloud-eu/web/pull/644)]
 - fix(deps): update dependency eslint-config-prettier to v10.1.3 [[#643](https://github.com/opencloud-eu/web/pull/643)]
