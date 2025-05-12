@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): adjust primary and onPrimary color roles [[#669](https://github.com/opencloud-eu/web/pull/669)]
 - fix: add missing icon for otp [[#667](https://github.com/opencloud-eu/web/pull/667)]
 - fix: bring back the left top rounded corner in the app bar [[#647](https://github.com/opencloud-eu/web/pull/647)]
 - fix: add fallback font [[#645](https://github.com/opencloud-eu/web/pull/645)]
