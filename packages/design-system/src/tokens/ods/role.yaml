@@ -1,9 +1,9 @@
 ---
 role:
   primary:
-    value: '#07677F'
+    value: '#E2BAFF'
   onPrimary:
-    value: '#FFFFFF'
+    value: '#19353F'
   primaryContainer:
     value: '#B7EAFF'
   onPrimaryContainer:
@@ -13,7 +13,7 @@ role:
   onPrimaryFixed:
     value: '#001F28'
   secondary:
-    value: '#20434f'
+    value: '#20434F'
   onSecondary:
     value: '#FFFFFF'
   secondaryContainer:
