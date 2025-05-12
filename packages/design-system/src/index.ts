@@ -1,5 +1,5 @@
 import { App } from 'vue'
-import { applyCustomProp } from './helpers'
+import { applyCustomProp, setIconUrlPrefix, InstallOptions } from './helpers'
 
 import * as components from './components'
 import * as directives from './directives'
@@ -7,15 +7,16 @@ import * as directives from './directives'
 // fonts must be imported here to ensure they are included in the build
 import './styles/fonts.scss'
 
-const initializeCustomProps = (tokens: string[] = [], prefix: string) => {
+const initializeCustomProps = (tokens: Record<string, string>, prefix: string) => {
   for (const param in tokens) {
     applyCustomProp(prefix + param, tokens[param])
   }
 }
 
 export default {
-  // TODO: properly type the options
-  install(app: App, options: any = {}) {
+  install(app: App, options: InstallOptions = {}) {
+    setIconUrlPrefix(options.iconUrlPrefix || '')
+
     const themeOptions = options.tokens
     initializeCustomProps(themeOptions?.breakpoints, 'breakpoint-')
     initializeCustomProps(themeOptions?.colorPalette, 'color-')

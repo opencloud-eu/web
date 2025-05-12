@@ -89,3 +89,11 @@ const tokens = {
 
 app.use(DesignSystem, { tokens })
 ```
+
+### Icons
+
+To make sure all icons are loaded properly, you need to make sure they are served by your application. They are located under `node_modules/@opencloud-eu/design-system/dist/icons`. It's recommended to copy them to your public folder. You might need to set `iconUrlPrefix: '/'` when installing the design-system to ensure they are always loaded from the correct path.
+
+### Fonts
+
+There is no need to serve the fonts yourself since they are embedded in the CSS.

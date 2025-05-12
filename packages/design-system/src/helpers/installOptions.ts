@@ -1,0 +1,106 @@
+export type InstallOptions = {
+  /**
+   * Prefix the url under which the icons are served.
+   * Set this to '/' if all icons are served from the root of your application.
+   * @default ''
+   */
+  iconUrlPrefix?: string
+  /**
+   * Tokens that can be used to customize the appearance of the design system.
+   * @default null
+   */
+  tokens?: {
+    roles?: {
+      primary?: string
+      surfaceTint?: string
+      onPrimary?: string
+      primaryContainer?: string
+      onPrimaryContainer?: string
+      secondary?: string
+      onSecondary?: string
+      secondaryContainer?: string
+      onSecondaryContainer?: string
+      tertiary?: string
+      onTertiary?: string
+      tertiaryContainer?: string
+      onTertiaryContainer?: string
+      error?: string
+      onError?: string
+      errorContainer?: string
+      onErrorContainer?: string
+      background?: string
+      onBackground?: string
+      surface?: string
+      onSurface?: string
+      surfaceVariant?: string
+      onSurfaceVariant?: string
+      outline?: string
+      outlineVariant?: string
+      shadow?: string
+      scrim?: string
+      inverseSurface?: string
+      inverseOnSurface?: string
+      inversePrimary?: string
+      primaryFixed?: string
+      onPrimaryFixed?: string
+      primaryFixedDim?: string
+      onPrimaryFixedVariant?: string
+      secondaryFixed?: string
+      onSecondaryFixed?: string
+      secondaryFixedDim?: string
+      onSecondaryFixedVariant?: string
+      tertiaryFixed?: string
+      onTertiaryFixed?: string
+      tertiaryFixedDim?: string
+      onTertiaryFixedVariant?: string
+      surfaceDim?: string
+      surfaceBright?: string
+      surfaceContainerLowest?: string
+      surfaceContainerLow?: string
+      surfaceContainer?: string
+      surfaceContainerHigh?: string
+      surfaceContainerHighest?: string
+      chrome?: string
+      onChrome?: string
+    }
+    colorPalette?: Record<string, string>
+    fontFamily?: string
+    fontSizes?: {
+      xsmall?: string
+      small?: string
+      default?: string
+      medium?: string
+      large?: string
+      xlarge?: string
+    }
+    sizes?: {
+      'form-check-default'?: string
+      'height-small'?: string
+      'height-table-row'?: string
+      'icon-default'?: string
+      'max-height-logo'?: string
+      'max-width-logo'?: string
+      'width-medium'?: string
+      'tiles-default'?: string
+      'tiles-resize-step'?: string
+    }
+    spacing?: {
+      xsmall?: string
+      small?: string
+      medium?: string
+      large?: string
+      xlarge?: string
+      xxlarge?: string
+    }
+    breakpoints?: {
+      'xsmall-max'?: string
+      'small-default'?: string
+      'small-max'?: string
+      'medium-default'?: string
+      'medium-max'?: string
+      'large-default'?: string
+      'large-max'?: string
+      xlarge?: string
+    }
+  }
+}
