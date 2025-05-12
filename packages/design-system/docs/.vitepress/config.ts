@@ -163,6 +163,10 @@ export default defineConfig({
               link: '/OcErrorLog'
             },
             {
+              text: 'OcFileInput',
+              link: '/OcFileInput'
+            },
+            {
               text: 'OcFilterChip',
               link: '/OcFilterChip'
             },
