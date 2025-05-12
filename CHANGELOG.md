@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-09
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -11,8 +11,13 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
+### 📚 Documentation
+
+- docs(design-system): type install options [[#665](https://github.com/opencloud-eu/web/pull/665)]
+
 ### 📈 Enhancement
 
+- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
 - feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
 
 ### 🐛 Bug Fixes
