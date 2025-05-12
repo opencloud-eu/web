@@ -11,17 +11,9 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
-### 📚 Documentation
-
-- docs(design-system): type install options [[#665](https://github.com/opencloud-eu/web/pull/665)]
-
-### 📈 Enhancement
-
-- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
-- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
-
 ### 🐛 Bug Fixes
 
+- fix: add missing icon for otp [[#667](https://github.com/opencloud-eu/web/pull/667)]
 - fix: bring back the left top rounded corner in the app bar [[#647](https://github.com/opencloud-eu/web/pull/647)]
 - fix: add fallback font [[#645](https://github.com/opencloud-eu/web/pull/645)]
 - fix: preview user cannot delete file in the shared with me page (followup) [[#640](https://github.com/opencloud-eu/web/pull/640)]
@@ -33,6 +25,15 @@
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
+
+### 📚 Documentation
+
+- docs(design-system): type install options [[#665](https://github.com/opencloud-eu/web/pull/665)]
+
+### 📈 Enhancement
+
+- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
+- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
 
 ### ✅ Tests
 
