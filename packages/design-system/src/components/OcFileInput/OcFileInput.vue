@@ -211,13 +211,15 @@ const focus = () => {
 }
 defineExpose({ focus })
 
-const fileNames = computed(() => {
+const fileNames = ref('')
+const setFileNames = () => {
   if (unref(inputRef)?.files) {
     const files = Array.from(unref(inputRef).files)
-    return files.map((file) => file.name).join(', ')
+    fileNames.value = files.map((file) => file.name).join(', ')
+    return
   }
-  return ''
-})
+  fileNames.value = ''
+}
 
 const addFiles = () => {
   if (unref(inputRef)) {
@@ -229,11 +231,13 @@ const onClear = () => {
   emit('update:modelValue', null)
   unref(inputRef).value = null
   inputValue.value = ''
+  setFileNames()
 }
 
 const onChange = (value: string) => {
   emit('update:modelValue', unref(inputRef).files)
   inputValue.value = value
+  setFileNames()
 }
 
 const onFocus = async () => {
