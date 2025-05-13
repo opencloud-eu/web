@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-12
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-13
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -42,6 +42,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update typescript-eslint monorepo to v8.32.1 [[#681](https://github.com/opencloud-eu/web/pull/681)]
 - chore(deps): update dependency vite-plugin-static-copy to v3 [[#666](https://github.com/opencloud-eu/web/pull/666)]
 - fix(deps): update dependency @sentry/vue to v9.17.0 [[#657](https://github.com/opencloud-eu/web/pull/657)]
 - fix(deps): update dependency eslint-config-prettier to v10.1.5 - autoclosed [[#659](https://github.com/opencloud-eu/web/pull/659)]
