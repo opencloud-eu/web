@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat(design-system): add required mark to text input component [[#675](https://github.com/opencloud-eu/web/pull/675)]
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
