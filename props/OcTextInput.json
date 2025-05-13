@@ -91,6 +91,13 @@
     "type": "boolean"
   },
   {
+    "name": "requiredMark",
+    "required": false,
+    "description": "Determines if a required mark (*) should be displayed next to the label.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
     "name": "passwordPolicy",
     "required": false,
     "description": "The password policy if the `type` is set to `password`. Please refer to the component source for the `PasswordPolicy` type definition.",
