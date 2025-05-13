@@ -25,7 +25,7 @@ Object.assign(navigator, {
 
 // @vitest-environment jsdom
 describe('OcTextInput', () => {
-  function getShallowWrapper(props = {}) {
+  function getShallowWrapper(props: PartialComponentProps<typeof OcTextInput> = {}) {
     return shallowMount(OcTextInput, {
       props: {
         ...defaultProps,
@@ -350,6 +350,13 @@ describe('OcTextInput', () => {
       // by just passing in the value it should remain unchanged
       expect((input.element as HTMLInputElement).value).toEqual('non-empty-value')
       expect(document.activeElement.id).toBe(input.element.id)
+    })
+  })
+
+  describe('required mark', () => {
+    it('should be displayed', () => {
+      const wrapper = getShallowWrapper({ requiredMark: true })
+      expect(wrapper.find('.oc-label span').text()).toContain('*')
     })
   })
 })

@@ -2,7 +2,9 @@
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
 "<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-3">Filter members</label>
+  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-3">Filter members
+      <!--v-if-->
+    </label>
     <div class="oc-position-relative">
       <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="no-match">
       <!--v-if-->
@@ -30,7 +32,9 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
 "<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-1">Filter members</label>
+  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-1">Filter members
+      <!--v-if-->
+    </label>
     <div class="oc-position-relative">
       <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
       <!--v-if-->

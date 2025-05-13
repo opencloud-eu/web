@@ -1,7 +1,10 @@
 <template>
   <div :class="$attrs.class">
     <slot name="label">
-      <label class="oc-label" :for="id" v-text="label" />
+      <label class="oc-label" :for="id">
+        {{ label }}
+        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+      </label>
     </slot>
     <div class="oc-position-relative">
       <oc-icon
@@ -145,6 +148,11 @@ export interface Props {
    */
   readOnly?: boolean
   /**
+   * @docs Determines if a required mark (*) should be displayed next to the label.
+   * @default false
+   */
+  requiredMark?: boolean
+  /**
    * @docs The password policy if the `type` is set to `password`. Please refer to the component source for the `PasswordPolicy` type definition.
    */
   passwordPolicy?: PasswordPolicy
@@ -198,6 +206,7 @@ const {
   fixMessageLine = false,
   descriptionMessage,
   readOnly = false,
+  requiredMark = false,
   passwordPolicy = {},
   generatePasswordMethod
 } = defineProps<Props>()

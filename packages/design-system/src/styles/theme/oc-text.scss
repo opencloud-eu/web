@@ -192,6 +192,13 @@ td.oc-text-break {
   color: var(--oc-role-on-surface-variant);
 }
 
+/**
+ * Give text a red color.
+ */
+.oc-text-error {
+  color: var(--oc-role-error);
+}
+
 /*
  * Transform text to all uppercase
  */
