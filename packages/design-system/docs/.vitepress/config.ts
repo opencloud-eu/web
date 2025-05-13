@@ -135,6 +135,10 @@ export default defineConfig({
               link: '/OcCheckbox'
             },
             {
+              text: 'OcColorInput',
+              link: '/OcColorInput'
+            },
+            {
               text: 'OcContextualHelper',
               link: '/OcContextualHelper'
             },
