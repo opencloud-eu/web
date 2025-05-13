@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.18.0 [[#683](https://github.com/opencloud-eu/web/pull/683)]
 - fix(deps): update typescript-eslint monorepo to v8.32.1 [[#681](https://github.com/opencloud-eu/web/pull/681)]
 - chore(deps): update dependency vite-plugin-static-copy to v3 [[#666](https://github.com/opencloud-eu/web/pull/666)]
 - fix(deps): update dependency @sentry/vue to v9.17.0 [[#657](https://github.com/opencloud-eu/web/pull/657)]
