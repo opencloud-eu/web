@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-small" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-flex oc-flex-middle">
