@@ -218,7 +218,7 @@ const onClick = (event: MouseEvent) => {
 
   &-filled {
     background-color: $color;
-    color: $on-color;
+    color: $on-color !important;
     .oc-icon > svg {
       fill: $on-color;
     }
