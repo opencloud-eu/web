@@ -1,0 +1,12 @@
+[
+  {
+    "name": "update:modelValue",
+    "description": "Emitted when the value of the input has updated.",
+    "type": "(e: 'update:modelValue', value: FileList): void"
+  },
+  {
+    "name": "focus",
+    "description": "Emitted when the input has been focused.",
+    "type": "(e: 'focus', value: HTMLElement): void"
+  }
+]

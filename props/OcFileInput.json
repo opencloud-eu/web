@@ -1,0 +1,72 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the input element.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fileTypes",
+    "required": false,
+    "description": "The file types that the input should accept. E.g. 'image/*, .pdf'.",
+    "default": "''",
+    "type": "string"
+  },
+  {
+    "name": "multiple",
+    "required": false,
+    "description": "Determines if the input should accept multiple files.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "clearButtonEnabled",
+    "required": false,
+    "description": "Determines if the input should have a clear button. Only gets displayed if the input has a value.",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the input is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "errorMessage",
+    "required": false,
+    "description": "The error message to be displayed below the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "fixMessageLine",
+    "required": false,
+    "description": "Determines if the message line should be fixed.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "descriptionMessage",
+    "required": false,
+    "description": "The description message to be displayed below the input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "requiredMark",
+    "required": false,
+    "description": "Determines if a required mark (*) should be displayed next to the label.",
+    "default": "false",
+    "type": "boolean"
+  }
+]
