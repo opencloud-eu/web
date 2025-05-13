@@ -12,6 +12,12 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
+### 📈 Enhancement
+
+- feat(design-system): add file input component [[#678](https://github.com/opencloud-eu/web/pull/678)]
+- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
+- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
+
 ### 🐛 Bug Fixes
 
 - fix(design-system): adjust primary and onPrimary color roles [[#669](https://github.com/opencloud-eu/web/pull/669)]
@@ -31,11 +37,6 @@
 ### 📚 Documentation
 
 - docs(design-system): type install options [[#665](https://github.com/opencloud-eu/web/pull/665)]
-
-### 📈 Enhancement
-
-- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
-- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
 
 ### ✅ Tests
 
