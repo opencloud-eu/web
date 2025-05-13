@@ -8,6 +8,10 @@ import OcTextInput from './OcTextInput.vue'
 import { PasswordPolicy } from '../../helpers'
 import { mock } from 'vitest-mock-extended'
 
+vi.mock('portal-vue', () => ({
+  PortalTarget: undefined
+}))
+
 const defaultProps = {
   label: 'label'
 }

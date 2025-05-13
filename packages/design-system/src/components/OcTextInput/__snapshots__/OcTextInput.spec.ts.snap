@@ -23,7 +23,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
     <!--v-if-->
   </div>
   <!--v-if-->
-  <portal-target name="app.design-system.password-policy"></portal-target>
+  <!---->
 </div>"
 `;
 
@@ -50,6 +50,6 @@ exports[`OcTextInput > password input field > password policy > displays success
     <!--v-if-->
   </div>
   <!--v-if-->
-  <portal-target name="app.design-system.password-policy"></portal-target>
+  <!---->
 </div>"
 `;
