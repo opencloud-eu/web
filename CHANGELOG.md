@@ -12,15 +12,9 @@
 - feat: delete file from within preview app [[#616](https://github.com/opencloud-eu/web/pull/616)]
 - feat: allow delete file within app [[#610](https://github.com/opencloud-eu/web/pull/610)]
 
-### 📈 Enhancement
-
-- feat(design-system): add OcColorInput component [[#684](https://github.com/opencloud-eu/web/pull/684)]
-- feat(design-system): add file input component [[#678](https://github.com/opencloud-eu/web/pull/678)]
-- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
-- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
-
 ### 🐛 Bug Fixes
 
+- fix: minor design system issues and styling [[#686](https://github.com/opencloud-eu/web/pull/686)]
 - fix(design-system): filled a button hover [[#682](https://github.com/opencloud-eu/web/pull/682)]
 - fix(design-system): adjust primary and onPrimary color roles [[#669](https://github.com/opencloud-eu/web/pull/669)]
 - fix: add missing icon for otp [[#667](https://github.com/opencloud-eu/web/pull/667)]
@@ -35,6 +29,13 @@
 - fix:open in app action is available inside an app [[#622](https://github.com/opencloud-eu/web/pull/622)]
 - fix: chrome oh snap errors [[#578](https://github.com/opencloud-eu/web/pull/578)]
 - fix: show remaining quota as unrestricted if quota is unrestricted [[#607](https://github.com/opencloud-eu/web/pull/607)]
+
+### 📈 Enhancement
+
+- feat(design-system): add OcColorInput component [[#684](https://github.com/opencloud-eu/web/pull/684)]
+- feat(design-system): add file input component [[#678](https://github.com/opencloud-eu/web/pull/678)]
+- feat(design-system): add option for icon url prefix [[#664](https://github.com/opencloud-eu/web/pull/664)]
+- feat(design-system): make component types available for lib usage [[#654](https://github.com/opencloud-eu/web/pull/654)]
 
 ### 📚 Documentation
 
