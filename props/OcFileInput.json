@@ -28,6 +28,13 @@
     "type": "boolean"
   },
   {
+    "name": "modelValue",
+    "required": false,
+    "description": "Value of the input element.",
+    "default": "",
+    "type": "FileList"
+  },
+  {
     "name": "clearButtonEnabled",
     "required": false,
     "description": "Determines if the input should have a clear button. Only gets displayed if the input has a value.",
