@@ -235,11 +235,6 @@ describe('OcTextInput', () => {
     it('should show the description message as the input message text', () => {
       expect(wrapper.find(selectors.textInputMessage).text()).toBe('You should pass.')
     })
-
-    const mountedWrapper = getMountedWrapper({ props: { descriptionMessage: 'You should pass.' } })
-    it('should show an info icon', () => {
-      expect(mountedWrapper.find(selectors.infoIcon).exists()).toBe(true)
-    })
   })
 
   describe('when an error message is provided', () => {

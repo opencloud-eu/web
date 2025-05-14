@@ -11,10 +11,12 @@ import OcBreadcrumb from './src/components/OcBreadcrumb/OcBreadcrumb.vue'
 import OcButton from './src/components/OcButton/OcButton.vue'
 import OcCheckbox from './src/components/OcCheckbox/OcCheckbox.vue'
 import OcContextualHelper from './src/components/OcContextualHelper/OcContextualHelper.vue'
+import OcColorInput from './src/components/OcColorInput/OcColorInput.vue'
 import OcDatepicker from './src/components/OcDatepicker/OcDatepicker.vue'
 import OcDefinitionList from './src/components/OcDefinitionList/OcDefinitionList.vue'
 import OcDrop from './src/components/OcDrop/OcDrop.vue'
 import OcDropzone from './src/components/OcDropzone/OcDropzone.vue'
+import OcFileInput from './src/components/OcFileInput/OcFileInput.vue'
 import OcFilterChip from './src/components/OcFilterChip/OcFilterChip.vue'
 import OcGrid from './src/components/OcGrid/OcGrid.vue'
 import OcHiddenAnnouncer from './src/components/OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
@@ -65,11 +67,13 @@ declare module 'vue' {
     OcBreadcrumb: typeof OcBreadcrumb
     OcButton: typeof OcButton
     OcCheckbox: typeof OcCheckbox
+    OcColorInput: typeof OcColorInput
     OcContextualHelper: typeof OcContextualHelper
     OcDatepicker: typeof OcDatepicker
     OcDefinitionList: typeof OcDefinitionList
     OcDrop: typeof OcDrop
     OcDropzone: typeof OcDropzone
+    OcFileInput: typeof OcFileInput
     OcFilterChip: typeof OcFilterChip
     OcGrid: typeof OcGrid
     OcHiddenAnnouncer: typeof OcHiddenAnnouncer

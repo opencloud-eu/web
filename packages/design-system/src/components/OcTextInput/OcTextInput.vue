@@ -48,19 +48,19 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message"
+      class="oc-text-input-message oc-text-small"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
         'oc-text-input-danger': !!errorMessage
       }"
     >
       <oc-icon
-        v-if="messageText !== null && !!descriptionMessage"
-        name="information"
+        v-if="!!errorMessage"
+        name="error-warning"
         size="small"
         fill-type="line"
-        accessible-label="info"
         aria-hidden="true"
+        class="oc-mr-xs"
       />
 
       <span
@@ -304,8 +304,6 @@ const onFocus = async (target: HTMLInputElement) => {
   display: flex;
   align-items: center;
   position: relative;
-  padding-left: var(--oc-space-large);
-  padding-top: calc(var(--oc-space-xsmall) - 2px);
 
   .oc-icon {
     position: absolute;

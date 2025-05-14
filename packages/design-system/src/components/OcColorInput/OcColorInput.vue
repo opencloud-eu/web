@@ -34,19 +34,19 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-color-input-message"
+      class="oc-color-input-message oc-text-small"
       :class="{
         'oc-color-input-description': !!descriptionMessage,
         'oc-color-input-danger': !!errorMessage
       }"
     >
       <oc-icon
-        v-if="messageText !== null && !!descriptionMessage"
-        name="information"
+        v-if="!!errorMessage"
+        name="error-warning"
         size="small"
         fill-type="line"
-        accessible-label="info"
         aria-hidden="true"
+        class="oc-mr-xs"
       />
 
       <span
@@ -198,8 +198,6 @@ const onInput = (value: string) => {
   display: flex;
   align-items: center;
   position: relative;
-  padding-left: var(--oc-space-large);
-  padding-top: calc(var(--oc-space-xsmall) - 2px);
 
   .oc-icon {
     position: absolute;
@@ -209,8 +207,8 @@ const onInput = (value: string) => {
 }
 
 .oc-color-input {
-  padding-top: math.div(var(--oc-space-xsmall), 2) !important;
-  padding-bottom: math.div(var(--oc-space-xsmall), 2) !important;
+  padding-top: calc(var(--oc-space-xsmall) - 2px) !important;
+  padding-bottom: calc(var(--oc-space-xsmall) - 2px) !important;
 
   &-wrapper {
     max-width: 5rem !important;

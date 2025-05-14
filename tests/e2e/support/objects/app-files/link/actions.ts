@@ -89,7 +89,7 @@ const deleteLinkButton =
   `//ancestor::li//button/span[text()="Delete link"]`
 const confirmDeleteButton = `//button[contains(@class,"oc-modal-body-actions-confirm") and text()="Delete"]`
 const notificationContainer = 'div.oc-notification'
-const publicLinkPasswordErrorMessage = `//div[contains(@class, "oc-text-input-message oc-text-input-danger")]/span`
+const publicLinkPasswordErrorMessage = `//div[contains(@class, "oc-text-input-message")]/span[contains(@class, "oc-text-input-danger")]`
 const cancelButton = '.oc-modal-body-actions-cancel'
 const showOrHidePasswordButton = '.oc-text-input-show-password-toggle'
 const copyPasswordButton = '.oc-text-input-copy-password-button'
