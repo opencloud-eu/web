@@ -89,7 +89,7 @@
   },
   "packageManager": "pnpm@10.10.0",
   "volta": {
-    "node": "22.15.0"
+    "node": "22.15.1"
   },
   "pnpm": {
     "patchedDependencies": {
