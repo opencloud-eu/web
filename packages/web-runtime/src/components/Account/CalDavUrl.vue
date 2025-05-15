@@ -2,7 +2,7 @@
   <div v-if="checked && calDavAvailable">
     <account-table
       :title="$gettext('Calendar')"
-      :fields="[$gettext('CalDAV information name'), $gettext('CalCAD information value')]"
+      :fields="[$gettext('CalDAV information name'), $gettext('CalCAV information value')]"
       class="account-page-caldav"
     >
       <template #header="{ title }">
@@ -77,7 +77,6 @@ import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import AccountTable from './AccountTable.vue'
-import axios from 'axios'
 
 const { $gettext } = useGettext()
 const userStore = useUserStore()
@@ -98,7 +97,7 @@ const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
 
 const copyCalDavUrlToClipboard = () => {
-  navigator.clipboard.writeText(calDavUrl.value)
+  navigator.clipboard.writeText(unref(calDavUrl))
   copyCalDavUrlIcon.value = copiedIcon
   setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
 }
@@ -111,18 +110,18 @@ const copyCalDavUsernameToClipboard = () => {
 
 onMounted(async () => {
   try {
-    const wellKnownUrl = `${configStore.serverUrl}/.well-known/caldav`
+    const wellKnownUrl = `${configStore.serverUrl}.well-known/caldav`
 
     try {
       const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
         method: 'OPTIONS'
       })
-
-      if (response.request.responseURL.includes('/caldav/')) {
+      console.info('CalDAV check response:', response.request.responseURL)
+      if (response.request.responseURL.includes(`${configStore.serverUrl}caldav/`)) {
         calDavAvailable.value = true
       }
     } catch (error) {
-      console.error('CalDAV check failed:', error)
+      console.info('CalDAV check failed:', error)
     }
   } finally {
     checked.value = true
