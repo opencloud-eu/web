@@ -48,6 +48,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.15.1 [[#695](https://github.com/opencloud-eu/web/pull/695)]
 - chore(deps): update devdependencies (non-major) [[#694](https://github.com/opencloud-eu/web/pull/694)]
 - fix(deps): update vue monorepo to v3.5.14 [[#696](https://github.com/opencloud-eu/web/pull/696)]
 - fix(deps): update dependency @sentry/vue to v9.18.0 [[#683](https://github.com/opencloud-eu/web/pull/683)]
