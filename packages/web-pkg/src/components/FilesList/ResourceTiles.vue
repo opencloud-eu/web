@@ -418,6 +418,9 @@ const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
   if (eventData && eventData.metaKey) {
     return eventBus.publish('app.files.list.clicked.meta', resource)
   }
+  if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
+    eventBus.publish('app.files.shiftAnchor.reset')
+  }
   if (eventData && eventData.shiftKey) {
     return eventBus.publish('app.files.list.clicked.shift', {
       resource,
