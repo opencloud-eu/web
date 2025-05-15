@@ -1,23 +1,25 @@
 <template>
-  <div v-if="calDavAvailable">
+  <div v-if="checked && calDavAvailable">
     <account-table
       :title="$gettext('Calendar')"
       :fields="[$gettext('CalDAV information name'), $gettext('CalCAD information value')]"
       class="account-page-caldav"
     >
       <template #header="{ title }">
-        <h2>{{ title }}<oc-tag :rounded="true" class="oc-ml-s">New</oc-tag></h2>
+        <h2>
+          {{ title
+          }}<oc-tag :rounded="true" color="custom-purple" class="oc-ml-s">
+            {{ $gettext('NEW') }}
+          </oc-tag>
+        </h2>
       </template>
 
       <oc-table-tr class="account-page-info-caldav-integration">
-        <oc-table-td>{{ $gettext('Calendar integration') }}</oc-table-td>
-        <oc-table-td colspan="2">
-          {{
-            $gettext(
-              'The user has their own calendar available for integration into third party apps (Thunderbird, Apple Calendar, etc).'
-            )
-          }}
-        </oc-table-td>
+        <oc-table-td colspan="3">{{
+          $gettext(
+            'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
+          )
+        }}</oc-table-td>
       </oc-table-tr>
       <oc-table-tr class="account-page-info-caldav-url">
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
@@ -26,7 +28,7 @@
             <span class="oc-text-truncate">{{ calDavUrl }}</span>
             <oc-button
               v-oc-tooltip="$gettext('Copy CalDAV URL')"
-              class="oc-ml-xs"
+              class="oc-ml-m"
               appearance="raw"
               size="small"
               :aria-label="$gettext('Copy CalDAV URL to clipboard')"
@@ -34,18 +36,19 @@
               @click="copyCalDavUrlToClipboard"
             >
               <oc-icon :name="copyCalDavUrlIcon" size="small" />
+              <span class="oc-ml-2xs">{{ $gettext('Copy') }}</span>
             </oc-button>
           </div>
         </oc-table-td>
       </oc-table-tr>
       <oc-table-tr class="account-page-info-caldav-username">
-        <oc-table-td>{{ $gettext('CalDAV Username') }}</oc-table-td>
+        <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
         <oc-table-td colspan="2">
           <div class="oc-flex oc-flex-middle">
             <span>{{ user.onPremisesSamAccountName }}</span>
             <oc-button
               v-oc-tooltip="$gettext('Copy CalDAV username')"
-              class="oc-ml-xs"
+              class="oc-ml-m"
               appearance="raw"
               size="small"
               :aria-label="$gettext('Copy CalDAV username to clipboard')"
@@ -53,12 +56,13 @@
               @click="copyCalDavUsernameToClipboard"
             >
               <oc-icon :name="copyCalDavUsernameIcon" size="small" />
+              <span class="oc-ml-2xs">{{ $gettext('Copy') }}</span>
             </oc-button>
           </div>
         </oc-table-td>
       </oc-table-tr>
       <oc-table-tr class="account-page-info-caldav-password">
-        <oc-table-td>{{ $gettext('CalDAV Password') }}</oc-table-td>
+        <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
         <oc-table-td colspan="2">
           {{ $gettext('An app token needs to be generated and then can be used.') }}
         </oc-table-td>
@@ -68,11 +72,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import AccountTable from './AccountTable.vue'
+import axios from 'axios'
 
 const { $gettext } = useGettext()
 const userStore = useUserStore()
@@ -83,9 +88,10 @@ const clientService = useClientService()
 const calDavAvailable = ref(false)
 const copiedIcon = 'check'
 const copyIcon = 'file-copy'
+const checked = ref(false)
 
 const calDavUrl = computed(() => {
-  return `${configStore.serverUrl}/caldav/${user.value.id}/def-calendar/`
+  return `${configStore.serverUrl}`
 })
 
 const copyCalDavUrlIcon = ref(copyIcon)
@@ -106,16 +112,20 @@ const copyCalDavUsernameToClipboard = () => {
 onMounted(async () => {
   try {
     const wellKnownUrl = `${configStore.serverUrl}/.well-known/caldav`
-    const response = await clientService.httpUnAuthenticated.get(wellKnownUrl, {
-      method: 'OPTIONS',
-      maxRedirects: 0
-    })
 
-    if (response.status === 301 && response.headers['Location'] === '/caldav/') {
-      calDavAvailable.value = true
+    try {
+      const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
+        method: 'OPTIONS'
+      })
+
+      if (response.request.responseURL.includes('/caldav/')) {
+        calDavAvailable.value = true
+      }
+    } catch (error) {
+      console.error('CalDAV check failed:', error)
     }
-  } catch (error) {
-    console.error('CalDAV check failed:', error)
+  } finally {
+    checked.value = true
   }
 })
 </script>
