@@ -30,6 +30,10 @@ export interface Props {
    * @default false
    */
   rounded?: boolean
+  /**
+   * @docs The color of the tag.
+   */
+  color?: 'default' | 'warning' | 'custom-purple'
 }
 
 export interface Emits {
@@ -46,7 +50,13 @@ export interface Slots {
   default?: () => unknown
 }
 
-const { type = 'span', to = '', size = 'medium', rounded = false } = defineProps<Props>()
+const {
+  type = 'span',
+  to = '',
+  size = 'medium',
+  rounded = false,
+  color = 'default'
+} = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
@@ -60,6 +70,9 @@ const tagClasses = computed(() => {
 
   if (rounded) {
     classes.push('oc-tag-rounded')
+  }
+  if (color && color !== 'default') {
+    classes.push(`oc-tag-color-${color}`)
   }
 
   return classes
@@ -112,5 +125,10 @@ function $_ocTag_click(event: MouseEvent) {
       transition: fill $transition-duration-short ease-in-out;
     }
   }
+}
+
+.oc-tag-color-custom-purple {
+  background-color: #ca8df5;
+  color: white;
 }
 </style>

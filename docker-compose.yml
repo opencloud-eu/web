@@ -101,9 +101,15 @@ services:
       traefik.http.routers.opencloud.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.opencloud.entrypoints: opencloud
       traefik.http.services.opencloud.loadbalancer.server.port: 9200
-      traefik.http.routers.opencloud.middlewares: cors
+      traefik.http.routers.opencloud.middlewares: cors,redirect-caldav
+
+      traefik.http.middlewares.redirect-caldav.redirectregex.regex: "^/.well-known/caldav$"
+      traefik.http.middlewares.redirect-caldav.redirectregex.replacement: "/caldav/"
+      traefik.http.middlewares.redirect-caldav.redirectregex.permanent: true
+
     volumes:
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
+      - ./dev/docker/opencloud/proxy.yaml:/etc/opencloud/proxy.yaml
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
@@ -249,6 +255,9 @@ services:
       traefik.http.middlewares.cors.headers.accesscontrolexposeheaders: '*'
       traefik.http.middlewares.cors.headers.accesscontrolmaxage: 100
       traefik.http.middlewares.cors.headers.addvaryheader: true
+      traefik.http.middlewares.radicale-redirect.redirectregex.regex: "^http://(.*):5232(.*)"
+      traefik.http.middlewares.radicale-redirect.redirectregex.replacement: "http://$1:9201$2"
+      traefik.http.middlewares.radicale-redirect.redirectregex.permanent: true
     ports:
       - '80:80'
       - '8090:8080'
@@ -277,6 +286,25 @@ services:
     container_name: web_tika
     ports:
       - 9998:9998
+    restart: unless-stopped
+
+  radicale:
+    image: ${RADICALE_DOCKER_IMAGE:-opencloudeu/radicale}:${RADICALE_DOCKER_TAG:-latest}
+    container_name: web_radicale
+    environment:
+      RADICALE_LOG_LEVEL: ${RADICALE_LOG_LEVEL:-info}
+      RADICALE_STORAGE_BACKEND: ${RADICALE_STORAGE_BACKEND:-filesystem} # Map  9201 to 5232
+      RADICALE_STORAGE_FILESYSTEM_FOLDER: /data
+    ports:
+      - '5232:5232'
+    volumes:
+      - ./dev/docker/radicale/data:/data
+    labels:
+      traefik.enable: true
+      traefik.http.routers.radicale.tls: true
+      traefik.http.routers.radicale.rule: PathPrefix(`/`)
+      traefik.http.routers.radicale.entrypoints: websecure
+      traefik.http.services.radicale.loadbalancer.server.port: 5232
     restart: unless-stopped
 
 volumes:
