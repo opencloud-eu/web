@@ -48,6 +48,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @vueuse/core to v13.2.0 [[#689](https://github.com/opencloud-eu/web/pull/689)]
+- chore(deps): update pnpm to v10.11.0 [[#688](https://github.com/opencloud-eu/web/pull/688)]
 - fix(deps): update dependency @sentry/vue to v9.19.0 [[#692](https://github.com/opencloud-eu/web/pull/692)]
 - chore(deps): update node.js to v22.15.1 [[#695](https://github.com/opencloud-eu/web/pull/695)]
 - chore(deps): update devdependencies (non-major) [[#694](https://github.com/opencloud-eu/web/pull/694)]
