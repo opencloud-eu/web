@@ -16,3 +16,15 @@
   font-weight: 100 900;
   font-style: oblique 0deg 12deg;
 }
+@font-face {
+  font-family: OpenDyslexic;
+  src: url('./../assets/fonts/OpenDyslexic-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: OpenDyslexic;
+  src: url('./../assets/fonts/OpenCloud750-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
