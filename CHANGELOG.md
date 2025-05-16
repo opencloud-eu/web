@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-15
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-16
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): text input error message icon position [[#691](https://github.com/opencloud-eu/web/pull/691)]
 - Added better shift-click handling for files and folders [[#618](https://github.com/opencloud-eu/web/pull/618)]
 - fix: minor design system issues and styling [[#686](https://github.com/opencloud-eu/web/pull/686)]
 - fix(design-system): filled a button hover [[#682](https://github.com/opencloud-eu/web/pull/682)]
