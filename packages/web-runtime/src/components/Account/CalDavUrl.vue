@@ -30,6 +30,7 @@
               v-oc-tooltip="$gettext('Copy CalDAV URL')"
               class="oc-ml-m"
               appearance="raw"
+              data-testid="copy-caldav-url"
               size="small"
               :aria-label="$gettext('Copy CalDAV URL to clipboard')"
               no-hover
@@ -50,6 +51,7 @@
               v-oc-tooltip="$gettext('Copy CalDAV username')"
               class="oc-ml-m"
               appearance="raw"
+              data-testid="copy-caldav-username"
               size="small"
               :aria-label="$gettext('Copy CalDAV username to clipboard')"
               no-hover
