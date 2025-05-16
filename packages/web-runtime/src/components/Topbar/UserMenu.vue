@@ -9,7 +9,7 @@
       no-hover
       :aria-label="$gettext('My Account')"
     >
-      <avatar-image
+      <oc-avatar
         v-if="onPremisesSamAccountName"
         class="oc-topbar-avatar oc-topbar-personal-avatar oc-flex-inline oc-flex-center oc-flex-middle"
         :width="32"
@@ -17,6 +17,7 @@
         :user-name="user.displayName"
         background-color="var(--oc-role-on-chrome)"
         color="var(--oc-role-chrome)"
+        :src="userAvatar"
       />
       <oc-avatar-item
         v-else
@@ -65,12 +66,13 @@
         </template>
         <template v-else>
           <li class="profile-info-wrapper oc-pl-s">
-            <avatar-image
+            <oc-avatar
               :width="32"
               :userid="onPremisesSamAccountName"
               :user-name="user.displayName"
               color="var(--oc-role-on-chrome)"
               background-color="var(--oc-role-chrome)"
+              :src="userAvatar"
             />
             <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
@@ -137,7 +139,8 @@ import {
   useThemeStore,
   useUserStore,
   routeToContextQuery,
-  useAuthService
+  useAuthService,
+  useAvatarsStore
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
@@ -146,12 +149,14 @@ export default defineComponent({
   components: { QuotaInformation },
   setup() {
     const route = useRoute()
+    const avatarsStore = useAvatarsStore()
     const userStore = useUserStore()
     const themeStore = useThemeStore()
     const spacesStore = useSpacesStore()
     const authService = useAuthService()
 
     const { user } = storeToRefs(userStore)
+    const { userAvatar } = storeToRefs(avatarsStore)
 
     const accountPageRoute = computed(() => ({
       name: 'account',
@@ -182,7 +187,8 @@ export default defineComponent({
       imprintUrl,
       privacyUrl,
       quota,
-      logout
+      logout,
+      userAvatar
     }
   },
   computed: {

@@ -232,7 +232,7 @@ export default {
     }
   }
 
-  img {
+  .oc-logo-image {
     max-height: 26px;
     margin-left: var(--oc-space-xsmall);
     vertical-align: middle;

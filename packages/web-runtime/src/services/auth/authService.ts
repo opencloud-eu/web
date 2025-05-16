@@ -4,6 +4,7 @@ import {
   AuthStore,
   ClientService,
   UserStore,
+  AvatarsStore,
   CapabilityStore,
   ConfigStore,
   useTokenTimerWorker,
@@ -33,6 +34,7 @@ export class AuthService implements AuthServiceInterface {
   private ability: Ability
   private language: Language
   private userStore: UserStore
+  private avatarsStore: AvatarsStore
   private authStore: AuthStore
   private capabilityStore: CapabilityStore
   private webWorkersStore: WebWorkersStore
@@ -52,6 +54,7 @@ export class AuthService implements AuthServiceInterface {
     ability: Ability,
     language: Language,
     userStore: UserStore,
+    avatarsStore: AvatarsStore,
     authStore: AuthStore,
     capabilityStore: CapabilityStore,
     webWorkersStore: WebWorkersStore
@@ -63,6 +66,7 @@ export class AuthService implements AuthServiceInterface {
     this.ability = ability
     this.language = language
     this.userStore = userStore
+    this.avatarsStore = avatarsStore
     this.authStore = authStore
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
@@ -105,6 +109,7 @@ export class AuthService implements AuthServiceInterface {
         ability: this.ability,
         language: this.language,
         userStore: this.userStore,
+        avatarsStore: this.avatarsStore,
         authStore: this.authStore,
         capabilityStore: this.capabilityStore,
         webWorkersStore: this.webWorkersStore,
