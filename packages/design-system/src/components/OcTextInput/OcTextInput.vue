@@ -304,12 +304,6 @@ const onFocus = async (target: HTMLInputElement) => {
   display: flex;
   align-items: center;
   position: relative;
-
-  .oc-icon {
-    position: absolute;
-    left: var(--oc-space-xsmall);
-    top: var(--oc-space-xsmall);
-  }
 }
 
 .oc-text-input {
