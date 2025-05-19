@@ -4,6 +4,11 @@
       <h2 class="account-table-title" v-text="title" />
     </slot>
     <oc-table-simple>
+      <colgroup>
+        <col style="width: 30%" />
+        <col style="width: 40%" />
+        <col style="width: 30%" />
+      </colgroup>
       <oc-table-head :class="{ 'oc-invisible-sr': !showHead }">
         <oc-table-tr>
           <template v-for="field in fields" :key="typeof field === 'string' ? field : field.label">
@@ -70,26 +75,14 @@ export default defineComponent({
       font-size: var(--oc-font-size-large);
       font-weight: var(--oc-font-weight-default);
     }
-
-    .oc-select {
-      width: 100%;
-    }
   }
 }
 
 .account-table {
-  .oc-select {
-    min-width: 200px;
-  }
-
   tr {
     border-top: 0;
     border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
-  }
-
-  td:first-of-type {
-    width: 20%;
   }
 
   @media (min-width: $oc-breakpoint-medium-default) {
@@ -98,6 +91,12 @@ export default defineComponent({
       justify-content: end;
       align-items: center;
       min-height: var(--oc-size-height-table-row);
+    }
+  }
+
+  @media (max-width: $oc-breakpoint-medium-default) {
+    col {
+      width: auto !important;
     }
   }
 }

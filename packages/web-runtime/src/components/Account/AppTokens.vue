@@ -29,7 +29,7 @@
       v-text="$gettext('No app tokens available.')"
     />
     <div v-else>
-      <oc-table :data="visibleAppTokens" :fields="tableFields">
+      <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
         <template #label="{ item }">
           <div class="oc-width-1-1 oc-text-truncate">
             <span v-text="item.label || '-'" />
@@ -47,13 +47,15 @@
         </template>
         <template #actions="{ item }">
           <oc-button
-            v-oc-tooltip="$gettext('Delete app token')"
             appearance="raw"
-            class="delete-app-token-btn oc-p-xs oc-ml-m"
-            :aria-label="$gettext('Delete app token')"
+            no-hover
+            gap-size="none"
+            size="small"
+            class="delete-app-token-btn"
             @click="openDeleteAppTokenModal(item)"
           >
-            <oc-icon name="delete-bin-5" fill-type="line" />
+            <oc-icon name="delete-bin-5" size="small" fill-type="line" />
+            <span class="oc-ml-xs" v-text="$gettext('Delete app token')" />
           </oc-button>
         </template>
       </oc-table>
@@ -178,7 +180,6 @@ const tableFields = computed<FieldType[]>(() => {
     {
       name: 'actions',
       type: 'slot',
-      alignH: 'right',
       width: 'shrink',
       title: $gettext('Actions')
     }
@@ -196,11 +197,25 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .delete-app-token-btn,
 .copy-app-token-btn {
   &:hover {
     border-radius: 3px;
+  }
+}
+
+.app-token-table {
+  td:nth-of-type(1) {
+    width: 30% !important;
+  }
+
+  td:nth-of-type(2) {
+    width: 20%;
+  }
+
+  td:nth-of-type(3) {
+    width: 20%;
   }
 }
 </style>
