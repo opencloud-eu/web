@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-16
+## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#697](https://github.com/opencloud-eu/web/pull/697)]
 - fix(deps): update dependency @vueuse/core to v13.2.0 [[#689](https://github.com/opencloud-eu/web/pull/689)]
 - chore(deps): update pnpm to v10.11.0 [[#688](https://github.com/opencloud-eu/web/pull/688)]
 - fix(deps): update dependency @sentry/vue to v9.19.0 [[#692](https://github.com/opencloud-eu/web/pull/692)]
