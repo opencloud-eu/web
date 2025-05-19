@@ -207,7 +207,7 @@ onUnmounted(() => {
 
 .app-token-table {
   td:nth-of-type(1) {
-    width: 30% !important;
+    width: 30%;
   }
 
   td:nth-of-type(2) {
@@ -216,6 +216,10 @@ onUnmounted(() => {
 
   td:nth-of-type(3) {
     width: 20%;
+  }
+
+  td:nth-of-type(4) {
+    width: 30%;
   }
 }
 </style>
