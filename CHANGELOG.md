@@ -2,8 +2,14 @@
 
 ## [2.4.1](https://github.com/opencloud-eu/web/releases/tag/v2.4.1) - 2025-05-20
 
+### ❤️ Thanks to all contributors! ❤️
+
+@ScharfViktor
+
 ### 📦️ Dependencies
 
+- chore(deps): update dependency commander to v14 [[#702](https://github.com/opencloud-eu/web/pull/702)]
+- [full-ci] opencloud bump v 2.3.0. run all tests [[#714](https://github.com/opencloud-eu/web/pull/714)]
 - fix(deps): update dependency @sentry/vue to v9.20.0 [[#710](https://github.com/opencloud-eu/web/pull/710)]
 - fix(deps): update dependency dompurify to v3.2.6 - autoclosed [[#716](https://github.com/opencloud-eu/web/pull/716)]
 - fix(deps): update dependency zod to v3.25.7 [[#712](https://github.com/opencloud-eu/web/pull/712)]
