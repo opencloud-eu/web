@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### ✨ Features
+
+- feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
 ### 📈 Enhancement
 
