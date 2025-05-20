@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.4.1](https://github.com/opencloud-eu/web/releases/tag/v2.4.1) - 2025-05-20
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v9.20.0 [[#710](https://github.com/opencloud-eu/web/pull/710)]
+- fix(deps): update dependency dompurify to v3.2.6 - autoclosed [[#716](https://github.com/opencloud-eu/web/pull/716)]
+- fix(deps): update dependency zod to v3.25.7 [[#712](https://github.com/opencloud-eu/web/pull/712)]
+- chore(deps): update devdependencies (non-major) to v3.1.4 [[#715](https://github.com/opencloud-eu/web/pull/715)]
+
 ## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
