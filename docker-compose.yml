@@ -101,11 +101,12 @@ services:
       traefik.http.routers.opencloud.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.opencloud.entrypoints: opencloud
       traefik.http.services.opencloud.loadbalancer.server.port: 9200
-      traefik.http.routers.opencloud.middlewares: cors,redirect-caldav
+      traefik.http.routers.opencloud.middlewares: cors
+      #traefik.http.routers.opencloud.middlewares: cors,redirect-caldav
+      #traefik.http.middlewares.redirect-caldav.redirectregex.regex: '^/.well-known/caldav$'
+      #traefik.http.middlewares.redirect-caldav.redirectregex.replacement: '/caldav/'
+      #traefik.http.middlewares.redirect-caldav.redirectregex.permanent: true
 
-      traefik.http.middlewares.redirect-caldav.redirectregex.regex: '^/.well-known/caldav$'
-      traefik.http.middlewares.redirect-caldav.redirectregex.replacement: '/caldav/'
-      traefik.http.middlewares.redirect-caldav.redirectregex.permanent: true
 
     volumes:
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
@@ -299,12 +300,12 @@ services:
       - '5232:5232'
     volumes:
       - ./dev/docker/radicale/data:/data
-    labels:
-      traefik.enable: true
-      traefik.http.routers.radicale.tls: true
-      traefik.http.routers.radicale.rule: PathPrefix(`/`)
-      traefik.http.routers.radicale.entrypoints: websecure
-      traefik.http.services.radicale.loadbalancer.server.port: 5232
+    #labels:
+      #traefik.enable: true
+      #traefik.http.routers.radicale.tls: true
+      #traefik.http.routers.radicale.rule: PathPrefix(`/`)
+      #traefik.http.routers.radicale.entrypoints: websecure
+      #traefik.http.services.radicale.loadbalancer.server.port: 5232
     restart: unless-stopped
 
 volumes:

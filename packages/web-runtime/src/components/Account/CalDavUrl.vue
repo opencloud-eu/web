@@ -8,7 +8,7 @@
       <template #header="{ title }">
         <h2>
           {{ title
-          }}<oc-tag :rounded="true" color="custom-purple" class="oc-ml-s">
+          }}<oc-tag :rounded="true" color="primary" appearance="filled" class="oc-ml-s">
             {{ $gettext('NEW') }}
           </oc-tag>
         </h2>
@@ -25,7 +25,7 @@
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
         <oc-table-td colspan="2">
           <div class="oc-flex oc-flex-middle">
-            <span class="oc-text-truncate">{{ calDavUrl }}</span>
+            <span class="oc-text-truncate">{{ configStore.serverUrl }}</span>
             <oc-button
               v-oc-tooltip="$gettext('Copy CalDAV URL')"
               class="oc-ml-m"
@@ -79,6 +79,7 @@ import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import AccountTable from './AccountTable.vue'
+import { urlJoin } from '@opencloud-eu/web-client'
 
 const { $gettext } = useGettext()
 const userStore = useUserStore()
@@ -91,15 +92,11 @@ const copiedIcon = 'check'
 const copyIcon = 'file-copy'
 const checked = ref(false)
 
-const calDavUrl = computed(() => {
-  return `${configStore.serverUrl}`
-})
-
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
 
 const copyCalDavUrlToClipboard = () => {
-  navigator.clipboard.writeText(unref(calDavUrl))
+  navigator.clipboard.writeText(unref(configStore.serverUrl))
   copyCalDavUrlIcon.value = copiedIcon
   setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
 }
@@ -112,14 +109,16 @@ const copyCalDavUsernameToClipboard = () => {
 
 onMounted(async () => {
   try {
-    const wellKnownUrl = `${configStore.serverUrl}.well-known/caldav`
-
+    const wellKnownUrl = '.well-known/caldav'
     try {
       const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
         method: 'OPTIONS'
       })
+      console.log('CalDAV check response:', response)
       console.info('CalDAV check response:', response.request.responseURL)
-      if (response.request.responseURL.includes(`${configStore.serverUrl}caldav/`)) {
+      console.log('JOIN:', urlJoin(configStore.serverUrl, 'caldav'))
+      if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
+        console.log('ICH WAR HIER')
         calDavAvailable.value = true
       }
     } catch (error) {

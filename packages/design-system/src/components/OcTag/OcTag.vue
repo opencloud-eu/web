@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getSizeClass } from '../../helpers'
+import { AppearanceType, getSizeClass } from '../../helpers'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface Props {
@@ -32,8 +32,14 @@ export interface Props {
   rounded?: boolean
   /**
    * @docs The color of the tag.
+   * @default secondary
    */
-  color?: 'default' | 'warning' | 'custom-purple'
+  color?: 'primary' | 'secondary' | 'tertiary'
+  /**
+   * @docs The appearance of the button.
+   * @default outline
+   */
+  appearance?: 'outline' | 'filled'
 }
 
 export interface Emits {
@@ -55,7 +61,8 @@ const {
   to = '',
   size = 'medium',
   rounded = false,
-  color = 'default'
+  color = 'secondary',
+  appearance = 'outline'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -67,12 +74,10 @@ const tagClasses = computed(() => {
   type === 'router-link' || type === 'a'
     ? classes.push('oc-tag-link')
     : classes.push(`oc-tag-${type}`)
-
+  classes.push(`oc-tag-color-${color}`)
+  classes.push(`oc-tag-appearance-${appearance}`)
   if (rounded) {
     classes.push('oc-tag-rounded')
-  }
-  if (color && color !== 'default') {
-    classes.push(`oc-tag-color-${color}`)
   }
 
   return classes
@@ -125,10 +130,33 @@ function $_ocTag_click(event: MouseEvent) {
       transition: fill $transition-duration-short ease-in-out;
     }
   }
-}
 
-.oc-tag-color-custom-purple {
-  background-color: #ca8df5;
-  color: white;
+  &-appearance-outline.oc-tag-color-primary {
+    color: var(--oc-role-primary);
+    border: 1px solid var(--oc-role-primary);
+  }
+  &-appearance-outline.oc-tag-color-secondary {
+    color: var(--oc-role-secondary);
+    border: 1px solid var(--oc-role-secondary);
+  }
+  &-appearance-outline.oc-tag-color-tertiary {
+    color: var(--oc-role-tertiary);
+    border: 1px solid var(--oc-role-tertiary);
+  }
+  &-appearance-filled.oc-tag-color-primary {
+    background-color: var(--oc-role-primary);
+    color: var(--oc-role-on-primary);
+    border: 1px solid var(--oc-role-on-primary);
+  }
+  &-appearance-filled.oc-tag-color-secondary {
+    background-color: var(--oc-role-secondary);
+    color: var(--oc-role-on-secondary);
+    border: 1px solid var(--oc-role-on-secondary);
+  }
+  &-appearance-filled.oc-tag-color-tertiary {
+    background-color: var(--oc-role-tertiary);
+    color: var(--oc-role-on-tertiary);
+    border: 1px solid var(--oc-role-on-tertiary);
+  }
 }
 </style>

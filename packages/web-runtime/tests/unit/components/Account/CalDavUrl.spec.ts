@@ -1,10 +1,7 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import CalDavUrl from '../../../../src/components/Account/CalDavUrl.vue'
-import { vi } from 'vitest'
-
-import { ref } from 'vue'
 
 beforeEach(() => {
   vi.stubGlobal('navigator', {
@@ -14,56 +11,54 @@ beforeEach(() => {
   })
 })
 
-vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
-  const actual = await importOriginal()
-  return {
-    ...(actual as Record<string, unknown>),
-    useClientService: () => ({
-      httpAuthenticated: {
-        get: vi.fn().mockResolvedValue({
-          status: 301,
-          headers: {
-            location: '/caldav/'
-          },
-          request: {
-            responseURL: 'https://example.com/caldav/'
+function getWrapper(overrides: { props?: any } = {}) {
+  const mocks = {
+    ...defaultComponentMocks()
+  }
+  mocks.$clientService.httpAuthenticated.get.mockResolvedValue({
+    status: 301,
+    headers: {
+      location: '/caldav/'
+    },
+    request: {
+      responseURL: 'https://example.com/caldav/'
+    }
+  })
+  return mount(CalDavUrl, {
+    global: {
+      plugins: [
+        ...defaultPlugins({
+          piniaOptions: {
+            userState: {
+              user: {
+                onPremisesSamAccountName: 'test-user',
+                displayName: 'test-user'
+              }
+            },
+            configState: {
+              server: 'https://example.com/'
+            }
           }
         })
-      }
-    }),
-    useUserStore: () => ({
-      user: ref({
-        onPremisesSamAccountName: 'test-user'
-      })
-    }),
-    useConfigStore: () => ({
-      serverUrl: 'https://example.com/'
-    })
-  }
-})
+      ],
+      mocks,
+      provide: mocks
+    },
+    props: {
+      checked: true,
+      calDavAvailable: true,
+      ...overrides.props
+    }
+  })
+}
 
 describe('CalDavUrl component', () => {
   it('renders CalDAV information when available', async () => {
-    const wrapper = mount(CalDavUrl, {
-      global: {
-        plugins: defaultPlugins(),
-        mocks: {
-          ...defaultComponentMocks,
-          $gettext: (msg: string) => msg,
-          authStore: {
-            userContextReady: true
-          }
-        }
-      },
-      props: {
-        checked: true,
-        calDavAvailable: true
-      }
-    })
+    const wrapper = getWrapper()
 
     await flushPromises()
     await nextTick()
-
+    console.log(wrapper.html())
     expect(wrapper.text()).toContain('Calendar')
     expect(wrapper.text()).toContain('CalDAV URL')
     expect(wrapper.text()).toContain(
@@ -72,17 +67,7 @@ describe('CalDavUrl component', () => {
   })
 
   it('does not render content if CalDAV is not available', () => {
-    const wrapper = mount(CalDavUrl, {
-      global: {
-        plugins: defaultPlugins(),
-        mocks: {
-          ...defaultComponentMocks,
-          $gettext: (msg: string) => msg,
-          authStore: {
-            userContextReady: true
-          }
-        }
-      },
+    const wrapper = getWrapper({
       props: {
         checked: false,
         calDavAvailable: false
@@ -94,15 +79,7 @@ describe('CalDavUrl component', () => {
   })
 
   it('copies CalDAV URL and username to clipboard on button click', async () => {
-    const wrapper = mount(CalDavUrl, {
-      global: {
-        plugins: defaultPlugins()
-      },
-      props: {
-        checked: true,
-        calDavAvailable: true
-      }
-    })
+    const wrapper = getWrapper()
 
     await flushPromises()
 
