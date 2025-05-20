@@ -1,5 +1,4 @@
-import { useFileActionsSetImage } from '../../../../../src'
-import { useMessages } from '../../../../../src/composables/piniaStores'
+import { useFileActionsSetImage, useModals } from '../../../../../src'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import {
@@ -69,12 +68,13 @@ describe('setImage', () => {
   })
 
   describe('handler', () => {
-    it('should show message on success', () => {
+    it('should create a modal', () => {
       const space = mock<SpaceResource>({ id: '1' })
 
       getWrapper({
         setup: async ({ actions }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(space)
+          clientService.webdav.getFileContents.mockResolvedValue({ body: new Blob() })
+          const { dispatchModal } = useModals()
           await unref(actions)[0].handler({
             space,
             resources: [
@@ -84,28 +84,7 @@ describe('setImage', () => {
               }
             ] as Resource[]
           })
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
-    })
-
-    it('should show message on error', () => {
-      vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        setup: async ({ actions }) => {
-          await unref(actions)[0].handler({
-            space,
-            resources: [
-              {
-                webDavPath: '/spaces/1fe58d8b-aa69-4c22-baf7-97dd57479f22/subfolder/image.png',
-                name: 'image.png'
-              }
-            ] as Resource[]
-          })
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
+          expect(dispatchModal).toHaveBeenCalled()
         }
       })
     })

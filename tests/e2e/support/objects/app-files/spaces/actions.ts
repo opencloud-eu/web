@@ -221,10 +221,11 @@ export const changeSpaceImage = async (args: {
     ),
     page.waitForResponse(
       (resp) =>
-        resp.url().includes(resource.name) &&
+        resp.url().includes('image.png') &&
         resp.status() === 200 &&
         resp.request().method() === 'GET'
     ),
+    page.locator(actionConfirmButton).click(),
     fileChooser.setFiles(resource.path)
   ])
 

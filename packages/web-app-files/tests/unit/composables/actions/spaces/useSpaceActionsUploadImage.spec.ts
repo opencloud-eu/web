@@ -6,7 +6,7 @@ import {
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
 import { unref, VNodeRef } from 'vue'
-import { eventBus, useMessages, useSpaceHelpers } from '@opencloud-eu/web-pkg'
+import { useSpaceHelpers } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -15,61 +15,37 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('uploadImage', () => {
-  describe('method "uploadImageSpace"', () => {
-    it('should show message on success', () => {
+  describe('isVisible property', () => {
+    it('should be true if canEditImage is true', () => {
+      const spaceMock = mock<SpaceResource>({ canEditImage: () => true })
+
       getWrapper({
-        setup: async ({ uploadImageSpace }, { clientService }) => {
-          const busStub = vi.spyOn(eventBus, 'publish')
-          const spaceMock = mock<SpaceResource>({ spaceImageData: {} })
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(spaceMock)
-          clientService.webdav.putFileContents.mockResolvedValue(
-            mock<Resource>({
-              fileId:
-                'YTE0ODkwNGItNTZhNy00NTQ4LTk2N2MtZjcwZjhhYTY0Y2FjOmQ4YzMzMmRiLWUxNWUtNDRjMy05NGM2LTViYjQ2MGMwMWJhMw=='
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [spaceMock]
             })
-          )
-
-          await uploadImageSpace({
-            currentTarget: {
-              files: [
-                {
-                  name: 'image.png',
-                  lastModifiedDate: new Date(),
-                  type: 'image/png',
-                  arrayBuffer: () => new ArrayBuffer(0)
-                }
-              ]
-            }
-          } as unknown as Event)
-
-          expect(busStub).toHaveBeenCalledWith('app.files.spaces.uploaded-image', expect.anything())
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
+          ).toBe(true)
         }
       })
     })
-
-    it('should show showErrorMessage on error', () => {
-      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    it('should be false when no resource given', () => {
       getWrapper({
-        setup: async ({ uploadImageSpace }, { clientService }) => {
-          clientService.webdav.putFileContents.mockRejectedValue(new Error(''))
+        setup: ({ actions }) => {
+          expect(unref(actions)[0].isVisible({ resources: [] })).toBe(false)
+        }
+      })
+    })
+    it('should be false if canEditImage is false', () => {
+      const spaceMock = mock<SpaceResource>({ canEditImage: () => false })
 
-          await uploadImageSpace({
-            currentTarget: {
-              files: [
-                {
-                  name: 'image.png',
-                  lastModifiedDate: new Date(),
-                  type: 'image/png',
-                  arrayBuffer: () => new ArrayBuffer(0)
-                }
-              ]
-            }
-          } as unknown as Event)
-
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [spaceMock]
+            })
+          ).toBe(false)
         }
       })
     })
@@ -99,7 +75,6 @@ function getWrapper({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
     })
   }
-  mocks.$previewService.isMimetypeSupported.mockReturnValue(true)
 
   return {
     wrapper: getComposableWrapper(

@@ -4,69 +4,34 @@ import { useClientService } from '../../clientService'
 import { useLoadingService } from '../../loadingService'
 import { useRouter } from '../../router'
 import { useGettext } from 'vue3-gettext'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { FileAction, FileActionOptions } from '../types'
-import { useMessages, useSharesStore, useSpacesStore, useUserStore } from '../../piniaStores'
-import { useCreateSpace, useSpaceHelpers } from '../../spaces'
+import { useModals, useUserStore } from '../../piniaStores'
+import { SpaceImageModal } from '../../../components'
 
 export const useFileActionsSetImage = () => {
-  const { showMessage, showErrorMessage } = useMessages()
   const userStore = useUserStore()
   const router = useRouter()
   const { $gettext } = useGettext()
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const previewService = usePreviewService()
-  const spacesStore = useSpacesStore()
-  const sharesStore = useSharesStore()
-  const { createDefaultMetaFolder } = useCreateSpace()
-  const { getDefaultMetaFolder } = useSpaceHelpers()
+  const { dispatchModal } = useModals()
 
   const handler = async ({ space, resources }: FileActionOptions) => {
-    const graphClient = clientService.graphAuthenticated
-    const storageId = space?.id
-    const { copyFiles, getFileInfo } = clientService.webdav
+    const { getFileContents } = clientService.webdav
 
-    try {
-      let metaFolder = await getDefaultMetaFolder(space)
-      if (!metaFolder) {
-        metaFolder = await createDefaultMetaFolder(space)
-      }
+    const response = await getFileContents(space, resources[0], {
+      responseType: 'blob'
+    })
+    const file = new File([response.body], resources[0].name)
 
-      if (resources[0].id !== space.spaceImageData?.id) {
-        await copyFiles(
-          space,
-          { fileId: resources[0].id },
-          space,
-          { parentFolderId: metaFolder.id, name: resources[0].name },
-          { overwrite: true }
-        )
-      }
-
-      const { fileId } = await getFileInfo(space, { fileId: resources[0].id })
-      const updatedSpace = await graphClient.drives.updateDrive(
-        storageId,
-        {
-          name: space.name,
-          special: [{ specialFolder: { name: 'image' }, id: fileId }]
-        },
-        sharesStore.graphRoles
-      )
-
-      spacesStore.updateSpaceField({
-        id: storageId,
-        field: 'spaceImageData',
-        value: updatedSpace.spaceImageData
-      })
-
-      showMessage({ title: $gettext('Space image was set successfully') })
-    } catch (error) {
-      console.error(error)
-      showErrorMessage({
-        title: $gettext('Failed to set space image'),
-        errors: [error]
-      })
-    }
+    dispatchModal({
+      title: $gettext('Crop your Space image'),
+      confirmText: $gettext('Confirm'),
+      customComponent: markRaw(SpaceImageModal),
+      customComponentAttrs: () => ({ file, space: space })
+    })
   }
 
   const actions = computed((): FileAction[] => [
