@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, unref } from 'vue'
+import { ref, onMounted, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'

@@ -1,12 +1,11 @@
 import {
   defaultComponentMocks,
   defaultPlugins,
-  mockAxiosResolve,
   mount,
   writable
 } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 import CalDavUrl from '../../../../src/components/Account/CalDavUrl.vue'
 import { useConfigStore } from '@opencloud-eu/web-pkg'
 import { AxiosResponse } from 'axios'
