@@ -7,6 +7,11 @@ exports[`account page > account information section > displays basic user inform
     <!--v-if-->
   </div>
   <table class="oc-table-simple">
+    <colgroup>
+      <col style="width: 30%;">
+      <col style="width: 40%;">
+      <col style="width: 30%;">
+    </colgroup>
     <thead class="oc-thead oc-invisible-sr">
       <tr>
         <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Information name</th>
@@ -60,6 +65,11 @@ exports[`account page > public link context > should render a limited view 1`] =
     <div class="account-table account-page-preferences">
       <h2 class="account-table-title">Preferences</h2>
       <table class="oc-table-simple">
+        <colgroup>
+          <col style="width: 30%;">
+          <col style="width: 40%;">
+          <col style="width: 30%;">
+        </colgroup>
         <thead class="oc-thead oc-invisible-sr">
           <tr>
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Preference name</th>
