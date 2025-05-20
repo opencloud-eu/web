@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.4.1](https://github.com/opencloud-eu/web/releases/tag/v2.4.1) - 2025-05-20
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-20
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor
+@JammingBen, @ScharfViktor
+
+### 📈 Enhancement
+
+- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
 
 ### 📦️ Dependencies
 
