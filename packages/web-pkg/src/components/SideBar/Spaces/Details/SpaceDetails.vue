@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { inject, ref, Ref, computed, unref, watch } from 'vue'
-import { buildSpaceImageResource, getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
+import { buildSpaceImageResource, isManager, SpaceResource } from '@opencloud-eu/web-client'
 import {
   useUserStore,
   useSharesStore,
@@ -122,6 +122,10 @@ const spaceImage = ref('')
 
 const { user } = storeToRefs(userStore)
 
+const spaceMembers = computed(() => {
+  return spacesStore.getSpaceMembers(unref(resource))
+})
+
 const linkShareCount = computed(() => sharesStore.linkShares.length)
 const showWebDavDetails = computed(() => resourcesStore.areWebDavDetailsShown)
 const showSize = computed(() => {
@@ -153,14 +157,13 @@ watch(
 )
 
 const ownerUsernames = computed(() => {
-  const managers = getSpaceManagers(unref(resource))
-  return managers
-    .map((share) => {
-      const member = share.grantedTo.user || share.grantedTo.group
-      if (member.id === unref(user)?.id) {
-        return $gettext('%{displayName} (me)', { displayName: member.displayName })
+  const managerPermissions = unref(spaceMembers).filter(isManager)
+  return managerPermissions
+    .map(({ sharedWith }) => {
+      if (sharedWith.id === unref(user)?.id) {
+        return $gettext('%{displayName} (me)', { displayName: sharedWith.displayName })
       }
-      return member.displayName
+      return sharedWith.displayName
     })
     .join(', ')
 })
@@ -216,7 +219,7 @@ const hasLinkShares = computed(() => {
   return unref(linkShareCount) > 0
 })
 const memberShareCount = computed(() => {
-  return Object.keys(unref(resource).members).length
+  return unref(spaceMembers).length
 })
 const memberShareLabel = computed(() => {
   return $ngettext(

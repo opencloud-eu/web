@@ -137,8 +137,7 @@ export const getIndicators = ({
   }
 
   const shareIndicatorsAllowed =
-    (isProjectSpaceResource(space) && space.isMember(user)) ||
-    (isPersonalSpaceResource(space) && space.isOwner(user))
+    isProjectSpaceResource(space) || (isPersonalSpaceResource(space) && space.isOwner(user))
 
   if (shareIndicatorsAllowed) {
     const parentShareTypes = Object.values(ancestorMetaData).reduce<number[]>((acc, data) => {

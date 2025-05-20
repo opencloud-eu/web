@@ -131,12 +131,6 @@
                 />
               </span>
             </template>
-            <template #manager="{ resource }">
-              {{ getManagerNames(resource) }}
-            </template>
-            <template #members="{ resource }">
-              {{ getMemberCount(resource) }}
-            </template>
             <template #totalQuota="{ resource }">
               {{ getTotalQuota(resource) }}
             </template>
@@ -186,7 +180,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from '../../components/Spaces/SpaceContextActions.vue'
 import {
-  getSpaceManagers,
   isProjectSpaceResource,
   ProjectSpaceResource,
   SpaceResource
@@ -261,8 +254,6 @@ const selectedSpace = computed(() => {
 const tableDisplayFields = [
   'image',
   'name',
-  'manager',
-  'members',
   'totalQuota',
   'usedQuota',
   'remainingQuota',
@@ -355,18 +346,6 @@ useKeyboardFileNavigation(keyActions, runtimeSpaces, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 
-const getManagerNames = (space: SpaceResource) => {
-  const allManagers = getSpaceManagers(space)
-  const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
-  let managerStr = managers
-    .map(({ grantedTo }) => (grantedTo.user || grantedTo.group).displayName)
-    .join(', ')
-  if (allManagers.length > 2) {
-    managerStr += `... +${allManagers.length - 2}`
-  }
-  return managerStr
-}
-
 const getTotalQuota = (space: SpaceResource) => {
   if (space.spaceQuota.total === 0) {
     return $gettext('Unrestricted')
@@ -388,9 +367,6 @@ const getRemainingQuota = (space: SpaceResource) => {
     return '-'
   }
   return formatFileSize(space.spaceQuota.remaining, language.current)
-}
-const getMemberCount = (space: SpaceResource) => {
-  return Object.keys(space.members).length
 }
 
 onMounted(async () => {

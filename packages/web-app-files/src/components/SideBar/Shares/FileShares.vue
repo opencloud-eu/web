@@ -307,11 +307,7 @@ export default defineComponent({
     },
 
     showSpaceMembers() {
-      return (
-        this.space?.driveType === 'project' &&
-        this.resource.type !== 'space' &&
-        this.space?.isMember(this.user)
-      )
+      return isProjectSpaceResource(this.space) && this.resource.type !== 'space'
     }
   },
   methods: {

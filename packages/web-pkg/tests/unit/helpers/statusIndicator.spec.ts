@@ -28,13 +28,6 @@ describe('status indicators', () => {
   })
 
   describe('sharing indicators', () => {
-    it('should not be present if the user is not a member of the project space', () => {
-      const space = mock<SpaceResource>({ driveType: 'project', isMember: () => false })
-      const resource = mock<Resource>({ id: 'resource', shareTypes: [0, 3] })
-      const indicators = getIndicators({ space, resource, ancestorMetaData: {}, user })
-
-      expect(indicators.some(({ category }) => category === 'sharing')).toBeFalsy()
-    })
     it("should not be present in another user's personal space", () => {
       const space = mock<SpaceResource>({ driveType: 'personal', isOwner: () => false })
       const resource = mock<Resource>({ id: 'resource', shareTypes: [0, 3] })
@@ -57,7 +50,7 @@ describe('status indicators', () => {
       expect(indicators.some(({ category }) => category === 'sharing')).toBeFalsy()
     })
     it('should be present for direct collaborator and link shares', () => {
-      const space = mock<SpaceResource>({ driveType: 'project', isMember: () => true })
+      const space = mock<SpaceResource>({ driveType: 'project' })
       const resource = mock<Resource>({ id: 'resource', shareTypes: [0, 3] })
       const indicators = getIndicators({ space, resource, ancestorMetaData: {}, user })
 
@@ -73,7 +66,7 @@ describe('status indicators', () => {
         '/': mock<AncestorMetaDataValue>({ shareTypes: [0, 3] })
       }
 
-      const space = mock<SpaceResource>({ driveType: 'project', isMember: () => true })
+      const space = mock<SpaceResource>({ driveType: 'project' })
       const resource = mock<Resource>({ id: 'resource', shareTypes: [] })
       const indicators = getIndicators({ space, resource, ancestorMetaData, user })
 

@@ -119,7 +119,7 @@ describe('FileShares', () => {
   describe('current space', () => {
     it('loads space members if a space is given and the current user is member', () => {
       const user = { id: '1' } as User
-      const space = mock<SpaceResource>({ driveType: 'project', isMember: () => true })
+      const space = mock<SpaceResource>({ driveType: 'project' })
       const spaceMembers = [
         { sharedWith: { id: user.id, displayName: '' }, resourceId: space.id, permissions: [] },
         { sharedWith: { id: '2', displayName: '' }, resourceId: space.id, permissions: [] }
@@ -133,20 +133,6 @@ describe('FileShares', () => {
       expect(wrapper.find('#files-collaborators-list').exists()).toBeTruthy()
       expect(wrapper.findAll('#files-collaborators-list li').length).toBe(1)
       expect(wrapper.html()).toMatchSnapshot()
-    })
-    it('does not load space members if a space is given but the current user not a member', () => {
-      const user = { id: '1' } as User
-      const space = mock<SpaceResource>({ driveType: 'project' })
-      const spaceMembers = [
-        { sharedWith: { id: `${user}-2`, displayName: '' }, resourceId: space.id, permissions: [] }
-      ] as CollaboratorShare[]
-      const collaborator = getCollaborator()
-      collaborator.sharedWith = {
-        ...collaborator.sharedWith,
-        id: user.id
-      }
-      const { wrapper } = getWrapper({ space, collaborators: [collaborator], user, spaceMembers })
-      expect(wrapper.find('#space-collaborators-list').exists()).toBeFalsy()
     })
   })
 

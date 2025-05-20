@@ -238,8 +238,8 @@ export const useResourcesStore = defineStore('resources', () => {
     let fullyAccessibleSpace = true
     if (configStore.options.routing.fullShareOwnerPaths) {
       // keep logic in sync with "isResourceAccessible" from useGetMatchingSpace
-      const projectSpace = spaces.find((s) => isProjectSpaceResource(s) && s.id === space.id)
-      fullyAccessibleSpace = space.isOwner(userStore.user) || projectSpace?.isMember(userStore.user)
+      const projectSpace = spaces.some((s) => isProjectSpaceResource(s) && s.id === space.id)
+      fullyAccessibleSpace = space.isOwner(userStore.user) || projectSpace
     }
 
     for (const path of parentPaths) {

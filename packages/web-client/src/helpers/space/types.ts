@@ -49,7 +49,6 @@ export interface SpaceResource extends Resource {
   getWebDavTrashUrl({ path }: { path: string }): string
   getDriveAliasAndItem(resource: Resource): string
 
-  isMember(user: User): boolean
   isOwner(user: User): boolean
 }
 

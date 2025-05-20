@@ -16,6 +16,7 @@ const spaceMock = {
   type: 'space',
   name: ' space',
   id: '1',
+  driveType: 'project',
   mdate: 'Wed, 21 Oct 2015 07:28:00 GMT',
   members: [
     mock<SpaceMember>({
@@ -32,10 +33,12 @@ const spaceMock = {
 const spaceShare = {
   id: '1',
   sharedWith: {
-    id: 'Alice',
+    id: '1',
     displayName: 'alice'
   },
-  role: mock<ShareRole>()
+  resourceId: '1',
+  role: mock<ShareRole>(),
+  permissions: [GraphSharePermission.deletePermissions]
 } as CollaboratorShare
 
 const selectors = {
@@ -82,6 +85,7 @@ function createWrapper({ spaceResource = spaceMock, props = {} } = {}) {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions: false,
               userState: { user: { id: '1', onPremisesSamAccountName: 'marie' } as User },
               sharesState: { collaboratorShares: [spaceShare] },
               resourcesStore: { resources: [mock<Resource>({ name: 'file1', type: 'file' })] }

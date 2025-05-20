@@ -8,7 +8,6 @@ import {
 } from '../resource'
 import {
   isPersonalSpaceResource,
-  isPublicSpaceResource,
   PublicSpaceResource,
   ShareSpaceResource,
   SpaceMember,
@@ -19,7 +18,7 @@ import { DavProperty } from '../../webdav/constants'
 import { buildWebDavPublicPath, buildWebDavOcmPath } from '../publicLink'
 import { urlJoin } from '../../utils'
 import { Drive, DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { GraphSharePermission, ShareRole } from '../share'
+import { CollaboratorShare, GraphSharePermission, ShareRole } from '../share'
 
 export function buildWebDavSpacesPath(storageId: string, path?: string) {
   return urlJoin('spaces', storageId, path, {
@@ -53,6 +52,11 @@ export function getSpaceManagers(space: SpaceResource) {
     // delete permissions implies that the user/group is a manager
     permissions.includes(GraphSharePermission.deletePermissions)
   )
+}
+
+export function isManager(share: CollaboratorShare) {
+  // delete permissions implies that the user/group is a manager
+  return share.permissions.includes(GraphSharePermission.deletePermissions)
 }
 
 export type PublicLinkType = 'ocm' | 'public-link'
@@ -331,15 +335,6 @@ export function buildSpace(
     },
     getWebDavTrashUrl({ path }: { path: string }): string {
       return urlJoin(webDavTrashUrl, path)
-    },
-    isMember(user: User): boolean {
-      if (isPublicSpaceResource(this)) {
-        return false
-      }
-      if (this.isOwner(user) || !!this.members[user.id]) {
-        return true
-      }
-      return user.memberOf?.some((group) => !!this.members[group.id])
     },
     isOwner(user: User): boolean {
       return user?.id === this.owner?.id
