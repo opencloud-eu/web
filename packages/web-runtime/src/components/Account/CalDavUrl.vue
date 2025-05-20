@@ -114,15 +114,12 @@ onMounted(async () => {
       const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
         method: 'OPTIONS'
       })
-      console.log('CalDAV check response:', response)
-      console.info('CalDAV check response:', response.request.responseURL)
-      console.log('JOIN:', urlJoin(configStore.serverUrl, 'caldav'))
+
       if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
-        console.log('ICH WAR HIER')
         calDavAvailable.value = true
       }
     } catch (error) {
-      console.info('CalDAV check failed:', error)
+      console.error('CalDAV check failed:', error)
     }
   } finally {
     checked.value = true

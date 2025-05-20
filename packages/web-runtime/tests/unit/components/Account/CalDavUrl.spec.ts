@@ -1,7 +1,15 @@
-import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  mockAxiosResolve,
+  mount,
+  writable
+} from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
 import CalDavUrl from '../../../../src/components/Account/CalDavUrl.vue'
+import { useConfigStore } from '@opencloud-eu/web-pkg'
+import { AxiosResponse } from 'axios'
 
 beforeEach(() => {
   vi.stubGlobal('navigator', {
@@ -15,32 +23,33 @@ function getWrapper(overrides: { props?: any } = {}) {
   const mocks = {
     ...defaultComponentMocks()
   }
+
+  const plugins = defaultPlugins({
+    piniaOptions: {
+      userState: {
+        user: {
+          onPremisesSamAccountName: 'test-user',
+          displayName: 'test-user'
+        }
+      },
+      configState: {
+        server: 'https://example.com/'
+      }
+    }
+  })
+
+  const configStore = useConfigStore()
+  writable(configStore).serverUrl = 'https://example.com/'
+
   mocks.$clientService.httpAuthenticated.get.mockResolvedValue({
     status: 301,
-    headers: {
-      location: '/caldav/'
-    },
     request: {
       responseURL: 'https://example.com/caldav/'
     }
-  })
+  } as AxiosResponse)
   return mount(CalDavUrl, {
     global: {
-      plugins: [
-        ...defaultPlugins({
-          piniaOptions: {
-            userState: {
-              user: {
-                onPremisesSamAccountName: 'test-user',
-                displayName: 'test-user'
-              }
-            },
-            configState: {
-              server: 'https://example.com/'
-            }
-          }
-        })
-      ],
+      plugins: plugins,
       mocks,
       provide: mocks
     },
@@ -58,7 +67,7 @@ describe('CalDavUrl component', () => {
 
     await flushPromises()
     await nextTick()
-    console.log(wrapper.html())
+
     expect(wrapper.text()).toContain('Calendar')
     expect(wrapper.text()).toContain('CalDAV URL')
     expect(wrapper.text()).toContain(
