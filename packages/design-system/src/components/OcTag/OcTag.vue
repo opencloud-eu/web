@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { AppearanceType, getSizeClass } from '../../helpers'
+import { getSizeClass } from '../../helpers'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface Props {

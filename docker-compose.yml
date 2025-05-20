@@ -107,7 +107,6 @@ services:
       #traefik.http.middlewares.redirect-caldav.redirectregex.replacement: '/caldav/'
       #traefik.http.middlewares.redirect-caldav.redirectregex.permanent: true
 
-
     volumes:
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
       - ./dev/docker/opencloud/proxy.yaml:/etc/opencloud/proxy.yaml
@@ -301,11 +300,11 @@ services:
     volumes:
       - ./dev/docker/radicale/data:/data
     #labels:
-      #traefik.enable: true
-      #traefik.http.routers.radicale.tls: true
-      #traefik.http.routers.radicale.rule: PathPrefix(`/`)
-      #traefik.http.routers.radicale.entrypoints: websecure
-      #traefik.http.services.radicale.loadbalancer.server.port: 5232
+    #traefik.enable: true
+    #traefik.http.routers.radicale.tls: true
+    #traefik.http.routers.radicale.rule: PathPrefix(`/`)
+    #traefik.http.routers.radicale.entrypoints: websecure
+    #traefik.http.services.radicale.loadbalancer.server.port: 5232
     restart: unless-stopped
 
 volumes:
