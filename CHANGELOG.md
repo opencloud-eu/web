@@ -8,6 +8,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update uppy monorepo [[#703](https://github.com/opencloud-eu/web/pull/703)]
 - chore(deps): update dependency commander to v14 [[#702](https://github.com/opencloud-eu/web/pull/702)]
 - [full-ci] opencloud bump v 2.3.0. run all tests [[#714](https://github.com/opencloud-eu/web/pull/714)]
 - fix(deps): update dependency @sentry/vue to v9.20.0 [[#710](https://github.com/opencloud-eu/web/pull/710)]
