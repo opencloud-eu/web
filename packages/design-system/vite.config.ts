@@ -52,8 +52,12 @@ export default defineConfig({
       targets: (() => {
         return [
           {
-            src: `./src/assets/icons/*`,
-            dest: `icons`
+            src: './src/assets/icons/*',
+            dest: 'icons'
+          },
+          {
+            src: './l10n/translations.json',
+            dest: '.'
           }
         ]
       })()

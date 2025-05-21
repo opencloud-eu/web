@@ -97,3 +97,51 @@ To make sure all icons are loaded properly, you need to make sure they are serve
 ### Fonts
 
 There is no need to serve the fonts yourself since they are embedded in the CSS.
+
+### Translations
+
+The design-system uses [vue3-gettext](https://jshmrtn.github.io/vue3-gettext/) for translations. If your application doesn't use `vue3-gettext`, you need to tell the design-system to initialize it. This is done by passing the `initGettext` option:
+
+```
+app.use(DesignSystem, {
+  language: {
+    initGettext: true,
+    defaultLanguage: 'en'
+  }
+})
+```
+
+The provided `setLanguage` method must then be called when switching languages in your application:
+
+```
+import { setLanguage } from '@opencloud-eu/design-system'
+
+setLanguage('de')
+```
+
+You can also provide custom translations:
+
+```
+app.use(DesignSystem, {
+  language: {
+    initGettext: true,
+    defaultLanguage: 'en',
+    translations: {
+      'en': {
+        'hello': 'Hello',
+        'world': 'World'
+      },
+      'de': {
+        'hello': 'Hallo',
+        'world': 'Welt'
+      }
+    }
+  }
+})
+```
+
+If your application already uses `vue3-gettext`, there is no need for all of this. However, you might want to include the provided translations in your `vue3-gettext` instance. They can be imported like so:
+
+```
+import translations from '@opencloud-eu/design-system/dist/translations.json'
+```

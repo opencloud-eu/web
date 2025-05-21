@@ -10,7 +10,7 @@
     "design",
     "system"
   ],
-  "homepage": "https://opencloud.design/",
+  "homepage": "https://docs.opencloud.eu/design-system/",
   "repository": {
     "type": "git",
     "url": "https://github.com/opencloud-eu/web",
@@ -69,6 +69,9 @@
       },
       "./dist/design-system.css": {
         "default": "./dist/design-system.css"
+      },
+      "./dist/translations.json": {
+        "default": "./dist/translations.json"
       },
       "./types": {
         "types": "./dist/types.d.ts"

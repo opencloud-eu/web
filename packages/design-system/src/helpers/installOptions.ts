@@ -1,3 +1,5 @@
+import { Translations } from 'vue3-gettext'
+
 export type InstallOptions = {
   /**
    * Prefix the url under which the icons are served.
@@ -5,6 +7,28 @@ export type InstallOptions = {
    * @default ''
    */
   iconUrlPrefix?: string
+
+  language?: {
+    /**
+     * Whether to initialize the vue3-gettext plugin. This is required if your application
+     * does not already use vue3-gettext.
+     * @default false
+     */
+    initGettext?: boolean
+    /**
+     * Default language the design-system is being initialized with.
+     * @default en
+     */
+    defaultLanguage?: string
+    /**
+     * Custom translations that override the default translations.
+     * They need to be passed like so:
+     * `{ en: { hello: 'world' } }`
+     * @default undefined
+     */
+    translations?: Translations
+  }
+
   /**
    * Tokens that can be used to customize the appearance of the design system.
    * @default null
