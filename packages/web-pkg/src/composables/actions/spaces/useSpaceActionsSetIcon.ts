@@ -85,7 +85,7 @@ export const useSpaceActionsSetIcon = () => {
       try {
         const { fileId } = await clientService.webdav.putFileContents(space, {
           parentFolderId: metaFolder.id,
-          fileName: 'emoji.png',
+          fileName: 'image.png',
           content,
           headers,
           overwrite: true
