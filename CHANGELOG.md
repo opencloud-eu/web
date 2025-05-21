@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.6.0 [[#730](https://github.com/opencloud-eu/web/pull/730)]
 - fix(deps): update dependency zod to v3.25.17 [[#729](https://github.com/opencloud-eu/web/pull/729)]
 - fix(deps): update dependency zod to v3.25.13 [[#725](https://github.com/opencloud-eu/web/pull/725)]
 - fix(deps): update dependency @sentry/vue to v9.22.0 [[#723](https://github.com/opencloud-eu/web/pull/723)]
