@@ -16,6 +16,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.22.0 [[#723](https://github.com/opencloud-eu/web/pull/723)]
 - fix(deps): update dependency @sentry/vue to v9.20.0 [[#719](https://github.com/opencloud-eu/web/pull/719)]
 - fix(deps): update uppy monorepo [[#703](https://github.com/opencloud-eu/web/pull/703)]
 - chore(deps): update dependency commander to v14 [[#702](https://github.com/opencloud-eu/web/pull/702)]
