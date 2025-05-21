@@ -1,5 +1,5 @@
 <template>
-  <div v-if="checked && calDavAvailable">
+  <div v-if="checkedCalDavAvailability && isCalDavAvailable">
     <account-table
       :title="$gettext('Calendar')"
       :fields="[$gettext('CalDAV information name'), $gettext('CalCAV information value')]"
@@ -87,10 +87,10 @@ const { user } = storeToRefs(userStore)
 const configStore = useConfigStore()
 const clientService = useClientService()
 
-const calDavAvailable = ref(false)
+const isCalDavAvailable = ref(false)
 const copiedIcon = 'check'
 const copyIcon = 'file-copy'
-const checked = ref(false)
+const checkedCalDavAvailability = ref(false)
 
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
@@ -116,13 +116,13 @@ onMounted(async () => {
       })
 
       if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
-        calDavAvailable.value = true
+        isCalDavAvailable.value = true
       }
     } catch (error) {
-      console.error('CalDAV check failed:', error)
+      console.info('CalDAV check failed:', error)
     }
   } finally {
-    checked.value = true
+    checkedCalDavAvailability.value = true
   }
 })
 </script>
