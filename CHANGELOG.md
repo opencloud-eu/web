@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
 ### 📈 Enhancement
