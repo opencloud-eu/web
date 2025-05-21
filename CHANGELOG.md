@@ -11,6 +11,10 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### ✅ Tests
+
+- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
+
 ### 📈 Enhancement
 
 - feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
