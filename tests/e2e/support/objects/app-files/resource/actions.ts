@@ -2172,7 +2172,15 @@ export const checkActivity = async ({
     await clickResource({ page, path })
   }
   await sidebar.open({ page: page, resource: finalResource })
-  await sidebar.openPanel({ page: page, name: 'activities' })
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 200 &&
+        resp.request().method() === 'GET' &&
+        resp.request().url().includes('/extensions/org.libregraph/activities')
+    ),
+    sidebar.openPanel({ page: page, name: 'activities' })
+  ])
   await expect(page.getByTestId(activitySidebarPanel)).toBeVisible()
   await expect(page.locator(activitySidebarPanelBodyContent)).toContainText(activity)
 }
