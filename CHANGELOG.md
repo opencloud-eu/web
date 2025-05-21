@@ -13,6 +13,7 @@
 
 ### ✅ Tests
 
+- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
 - disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
 
 ### 📈 Enhancement
