@@ -107,4 +107,8 @@ export class Spaces {
   async checkSpaceActivity({ activity }: { activity: string | RegExp }): Promise<void> {
     await po.checkSpaceActivity({ page: this.#page, activity })
   }
+
+  async getSpaceImageRatio(): Promise<{ width: number; height: number }> {
+    return await po.getSpaceImageRatio(this.#page)
+  }
 }
