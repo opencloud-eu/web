@@ -7,7 +7,7 @@
       name="file"
       tabindex="-1"
       :accept="supportedSpaceImageMimeTypes"
-      @change="uploadImageSpace"
+      @change="showModalImageSpace"
     />
     <oc-list id="oc-spaces-actions-sidebar" class-name="oc-mt-s">
       <action-menu-item
@@ -68,7 +68,7 @@ export default defineComponent({
     const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
     const { actions: renameActions } = useSpaceActionsRename()
     const { actions: restoreActions } = useSpaceActionsRestore()
-    const { actions: uploadImageActions, uploadImageSpace } = useSpaceActionsUploadImage({
+    const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
       spaceImageInput
     })
     const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
@@ -97,7 +97,7 @@ export default defineComponent({
       supportedSpaceImageMimeTypes,
 
       uploadImageActions,
-      uploadImageSpace
+      showModalImageSpace
     }
   }
 })

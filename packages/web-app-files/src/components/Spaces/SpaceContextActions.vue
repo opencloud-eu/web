@@ -9,7 +9,7 @@
       multiple
       tabindex="-1"
       :accept="supportedSpaceImageMimeTypes"
-      @change="uploadImageSpace"
+      @change="showModalImageSpace"
     />
   </div>
 </template>
@@ -70,7 +70,7 @@ export default defineComponent({
     const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
 
     const spaceImageInput: VNodeRef = ref(null)
-    const { actions: uploadImageActions, uploadImageSpace } = useSpaceActionsUploadImage({
+    const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
       spaceImageInput
     })
 
@@ -149,7 +149,7 @@ export default defineComponent({
       menuSections,
       spaceImageInput,
       uploadImageActions,
-      uploadImageSpace,
+      showModalImageSpace,
 
       supportedSpaceImageMimeTypes
     }
