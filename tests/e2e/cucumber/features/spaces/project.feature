@@ -37,6 +37,7 @@ Feature: spaces.personal
     And "Alice" updates the space "team.1" description to "developer team - description"
     And "Alice" updates the space "team.1" quota to "50"
     And "Alice" updates the space "team.1" image to "testavatar.png"
+    Then space image should match 16/9 ratio for user "Alice"
 
     # shared examples
     And "Alice" creates the following resources
@@ -91,7 +92,7 @@ Feature: spaces.personal
 
     # borrowed from share.feature
     And "Brian" logs in
-    And "Brian" opens the "files" app
+    When "Brian" opens the "files" app
     And "Brian" navigates to the shared with me page
     And "Brian" renames the following resource
       | resource                   | as            |
@@ -101,6 +102,7 @@ Feature: spaces.personal
       | simple.pdf | folder_to_shared |
     And "Alice" navigates to the project space "team.1"
     And "Alice" updates the space "team.1" image to "testavatar.jpeg"
+    Then space image should match 16/9 ratio for user "Alice"
     And "Alice" uploads the following resource
       | resource          | to               | option  |
       | PARENT/simple.pdf | folder_to_shared | replace |
