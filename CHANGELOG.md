@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
 
 ### ✨ Features
 
+- feat: Added CalDAV URL to the Accountpage [[#693](https://github.com/opencloud-eu/web/pull/693)]
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
