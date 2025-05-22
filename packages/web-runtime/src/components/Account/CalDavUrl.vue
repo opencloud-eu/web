@@ -1,5 +1,5 @@
 <template>
-  <div v-if="checkedCalDavAvailability && isCalDavAvailable">
+  <div v-if="isCalDavAvailable">
     <account-table
       :title="$gettext('Calendar')"
       :fields="[
@@ -88,7 +88,6 @@ const clientService = useClientService()
 const isCalDavAvailable = ref(false)
 const copiedIcon = 'check'
 const copyIcon = 'file-copy'
-const checkedCalDavAvailability = ref(false)
 
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
@@ -106,21 +105,17 @@ const copyCalDavUsernameToClipboard = () => {
 }
 
 onMounted(async () => {
+  const wellKnownUrl = '.well-known/caldav'
   try {
-    const wellKnownUrl = '.well-known/caldav'
-    try {
-      const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
-        method: 'OPTIONS'
-      })
+    const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
+      method: 'OPTIONS'
+    })
 
-      if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
-        isCalDavAvailable.value = true
-      }
-    } catch (error) {
-      console.info('CalDAV check failed:', error)
+    if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
+      isCalDavAvailable.value = true
     }
-  } finally {
-    checkedCalDavAvailability.value = true
+  } catch (error) {
+    console.info('CalDAV check failed:', error)
   }
 })
 </script>
