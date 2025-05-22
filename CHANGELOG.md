@@ -12,6 +12,11 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 📈 Enhancement
+
+- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
+- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
+
 ### 🐛 Bug Fixes
 
 - fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
@@ -20,10 +25,6 @@
 
 - check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
 - disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
-
-### 📈 Enhancement
-
-- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
 
 ### 📦️ Dependencies
 
