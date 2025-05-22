@@ -11,6 +11,10 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 🐛 Bug Fixes
+
+- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
+
 ### ✅ Tests
 
 - check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
