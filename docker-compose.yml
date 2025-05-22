@@ -105,6 +105,7 @@ services:
       traefik.http.routers.opencloud.middlewares: cors
     volumes:
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
+      - ./dev/docker/opencloud/proxy.yaml:/etc/opencloud/proxy.yaml
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
@@ -250,6 +251,7 @@ services:
       traefik.http.middlewares.cors.headers.accesscontrolexposeheaders: '*'
       traefik.http.middlewares.cors.headers.accesscontrolmaxage: 100
       traefik.http.middlewares.cors.headers.addvaryheader: true
+
     ports:
       - '80:80'
       - '8090:8080'
@@ -278,6 +280,19 @@ services:
     container_name: web_tika
     ports:
       - 9998:9998
+    restart: unless-stopped
+
+  radicale:
+    image: ${RADICALE_DOCKER_IMAGE:-opencloudeu/radicale}:${RADICALE_DOCKER_TAG:-latest}
+    container_name: web_radicale
+    environment:
+      RADICALE_LOG_LEVEL: ${RADICALE_LOG_LEVEL:-info}
+      RADICALE_STORAGE_BACKEND: ${RADICALE_STORAGE_BACKEND:-filesystem} # Map  9201 to 5232
+      RADICALE_STORAGE_FILESYSTEM_FOLDER: /data
+    ports:
+      - '5232:5232'
+    volumes:
+      - ./dev/docker/radicale/data:/data
     restart: unless-stopped
 
 volumes:
