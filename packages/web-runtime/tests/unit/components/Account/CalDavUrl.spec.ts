@@ -53,8 +53,7 @@ function getWrapper(overrides: { props?: any } = {}) {
       provide: mocks
     },
     props: {
-      checked: true,
-      calDavAvailable: true,
+      isCalDavAvailable: true,
       ...overrides.props
     }
   })
@@ -77,8 +76,7 @@ describe('CalDavUrl component', () => {
   it('does not render content if CalDAV is not available', () => {
     const wrapper = getWrapper({
       props: {
-        checked: false,
-        calDavAvailable: false
+        isCalDavAvailable: false
       }
     })
 
