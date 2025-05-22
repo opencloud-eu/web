@@ -52,10 +52,11 @@
             gap-size="none"
             size="small"
             class="delete-app-token-btn"
+            :aria-label="$gettext('Delete app token')"
             @click="openDeleteAppTokenModal(item)"
           >
             <oc-icon name="delete-bin-5" size="small" fill-type="line" />
-            <span class="oc-ml-xs" v-text="$gettext('Delete app token')" />
+            <span class="oc-ml-xs" v-text="$gettext('Delete')" />
           </oc-button>
         </template>
       </oc-table>
