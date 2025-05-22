@@ -4,10 +4,10 @@ import { useClientService } from '../../clientService'
 import { useLoadingService } from '../../loadingService'
 import { useRouter } from '../../router'
 import { useGettext } from 'vue3-gettext'
-import { computed, markRaw } from 'vue'
+import { computed } from 'vue'
 import { FileAction, FileActionOptions } from '../types'
 import { useModals, useUserStore } from '../../piniaStores'
-import { SpaceImageModal } from '../../../components'
+import SpaceImageModal from '../../../components/Spaces/SpaceImageModal.vue'
 
 export const useFileActionsSetImage = () => {
   const userStore = useUserStore()
@@ -29,7 +29,7 @@ export const useFileActionsSetImage = () => {
     dispatchModal({
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
-      customComponent: markRaw(SpaceImageModal),
+      customComponent: SpaceImageModal,
       customComponentAttrs: () => ({ file, space: space })
     })
   }
