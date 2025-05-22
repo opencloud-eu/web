@@ -26,5 +26,19 @@
     "description": "Determines if the tag should be rounded.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "color",
+    "required": false,
+    "description": "The color of the tag.",
+    "default": "secondary",
+    "type": "'primary' | 'secondary' | 'tertiary'"
+  },
+  {
+    "name": "appearance",
+    "required": false,
+    "description": "The appearance of the button.",
+    "default": "outline",
+    "type": "'outline' | 'filled'"
   }
 ]
