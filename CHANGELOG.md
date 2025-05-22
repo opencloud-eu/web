@@ -26,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v25.04.2.1.1 [[#619](https://github.com/opencloud-eu/web/pull/619)]
 - fix(deps): update dependency semver to v7.7.2 [[#680](https://github.com/opencloud-eu/web/pull/680)]
 - chore(deps): update node.js to v22.16.0 [[#732](https://github.com/opencloud-eu/web/pull/732)]
 - fix(deps): update dependency zod to v3.25.20 [[#733](https://github.com/opencloud-eu/web/pull/733)]
