@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-21
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -22,6 +22,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.16.0 [[#732](https://github.com/opencloud-eu/web/pull/732)]
+- fix(deps): update dependency zod to v3.25.20 [[#733](https://github.com/opencloud-eu/web/pull/733)]
 - fix(deps): update dependency md-editor-v3 to v5.6.0 [[#730](https://github.com/opencloud-eu/web/pull/730)]
 - fix(deps): update dependency zod to v3.25.17 [[#729](https://github.com/opencloud-eu/web/pull/729)]
 - fix(deps): update dependency zod to v3.25.13 [[#725](https://github.com/opencloud-eu/web/pull/725)]
