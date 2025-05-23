@@ -1,5 +1,6 @@
 import AvatarUpload from '../../../src/components/AvatarUpload.vue'
 import {
+  createMockFile,
   defaultComponentMocks,
   defaultPlugins,
   mount,
@@ -144,16 +145,6 @@ describe('AvatarUpload', () => {
     })
   })
 })
-
-const createMockFile = (
-  name: string,
-  sizeInBytes: number,
-  type = 'application/octet-stream'
-): File => {
-  const buffer = new Uint8Array(sizeInBytes)
-  const blob = new Blob([buffer], { type })
-  return new File([blob], name, { type })
-}
 
 const getWrapper = ({ userHasAvatar = true } = {}) => {
   const mocks = {
