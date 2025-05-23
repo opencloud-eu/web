@@ -2,6 +2,12 @@
   <div v-if="isCalDavAvailable">
     <account-table
       :title="$gettext('Calendar')"
+      :new-tag="true"
+      :subtitle="
+        $gettext(
+          'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
+        )
+      "
       :fields="[
         $gettext('CalDAV information name'),
         $gettext('CalCAV information value'),
@@ -9,22 +15,6 @@
       ]"
       class="account-page-caldav"
     >
-      <template #header="{ title }">
-        <h2 class="oc-flex oc-flex-middle oc-mb-s">
-          {{ title }}
-          <oc-tag :rounded="true" color="primary" appearance="filled" size="small" class="oc-ml-s">
-            {{ $gettext('NEW') }}
-          </oc-tag>
-        </h2>
-        <span
-          class="oc-text-small oc-display-block oc-mb-m"
-          v-text="
-            $gettext(
-              'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
-            )
-          "
-        />
-      </template>
       <oc-table-tr class="account-page-info-caldav-url">
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
         <oc-table-td>
@@ -72,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, unref } from 'vue'
+import { onMounted, ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
