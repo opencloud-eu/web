@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 import util from 'util'
 import { config } from '../../../config'
 
@@ -12,6 +12,10 @@ const languageInput = '[data-testid="language"] .vs__search'
 const languageValueDropDown = `.vs__dropdown-menu :text-is("%s")`
 const languageValue = '[data-testid="language"] .vs__selected'
 const accountPageTitle = '#account-page-title'
+const confirmButton = '.oc-modal-body-actions-confirm'
+const topbarProfileAvatarImg = '.oc-topbar-personal-avatar .avatarImg'
+const accountProfileAvatarImg = '.avatar-upload .oc-avatar .avatarImg'
+const removeAccountProfileAvatarButton = 'button:has-text("Remove")'
 
 export const getQuotaValue = async (args: { page: Page }): Promise<string> => {
   const { page } = args
@@ -108,4 +112,32 @@ export const changeLanguage = async (args: {
 export const getTitle = (args: { page: Page }): Promise<string> => {
   const { page } = args
   return page.locator(accountPageTitle).textContent()
+}
+
+export const uploadProfileImage = async (path: string, page: Page): Promise<void> => {
+  await page.locator('input[type="file"]').setInputFiles(path)
+
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.url().endsWith('/me/photo/$value') &&
+        resp.status() === 200 &&
+        resp.request().method() === 'PATCH'
+    ),
+    page.locator(confirmButton).click()
+  ])
+
+  await expect(page.locator(accountProfileAvatarImg)).toHaveAttribute('src')
+  await expect(page.locator(topbarProfileAvatarImg)).toHaveAttribute('src')
+}
+
+export const deleteProfilePicture = async (args: { page: Page }): Promise<void> => {
+  const { page } = args
+  await page.locator(removeAccountProfileAvatarButton).click()
+  await page.locator(confirmButton).click()
+}
+
+export const getProfilePicture = async (args: { page: Page }): Promise<Locator> => {
+  const { page } = args
+  return await page.locator(topbarProfileAvatarImg)
 }

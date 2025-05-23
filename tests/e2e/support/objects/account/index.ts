@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import * as po from './actions'
 
 export class Account {
@@ -34,5 +34,17 @@ export class Account {
 
   getTitle(): Promise<string> {
     return po.getTitle({ page: this.#page })
+  }
+
+  async uploadProfileImage({ path }: { path: string }): Promise<void> {
+    await po.uploadProfileImage(path, this.#page)
+  }
+
+  async deleteProfileImage(): Promise<void> {
+    await po.deleteProfilePicture({ page: this.#page })
+  }
+
+  async getProfilePicture(): Promise<Locator> {
+    return await po.getProfilePicture({ page: this.#page })
   }
 }

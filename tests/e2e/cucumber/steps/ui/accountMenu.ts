@@ -72,3 +72,37 @@ Then(
     expect(pageTitle).toEqual(title)
   }
 )
+
+When(
+  '{string} uploads/changes the profile image {string}',
+  async function (this: World, stepUser: string, profileImage: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const accountObject = new objects.account.Account({ page })
+    const profileImagePath = this.filesEnvironment.getFile({ name: profileImage }).path
+    await accountObject.uploadProfileImage({ path: profileImagePath })
+  }
+)
+
+When(
+  '{string} deletes the profile image',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const accountObject = new objects.account.Account({ page })
+    await accountObject.deleteProfileImage()
+  }
+)
+
+Then(
+  /^"([^"]+)" should( not)? have a profile picture$/,
+  async function (this: World, stepUser: string, not: string | undefined): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const accountObject = new objects.account.Account({ page })
+    const profilePicture = await accountObject.getProfilePicture()
+
+    if (not) {
+      await expect(profilePicture).toHaveCount(0)
+    } else {
+      await expect(profilePicture).toHaveAttribute('src', /.+/)
+    }
+  }
+)
