@@ -1,10 +1,10 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-22
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-23
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
 
 ### ✨ Features
 
