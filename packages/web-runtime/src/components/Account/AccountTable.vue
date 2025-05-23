@@ -1,7 +1,19 @@
 <template>
   <div class="account-table">
     <slot name="header" :title="title">
-      <h2 class="account-table-title" v-text="title" />
+      <h2 class="account-table-title oc-flex oc-flex-middle" :class="subtitle ? 'oc-mb-s' : ''">
+        {{ title }}
+        <oc-tag
+          v-if="newTag"
+          :rounded="true"
+          color="primary"
+          appearance="filled"
+          size="small"
+          class="oc-ml-s account-table-new-tag"
+          v-text="$gettext('NEW')"
+        />
+      </h2>
+      <p v-if="subtitle" class="oc-text-small oc-mt-rm oc-mb-m" v-text="subtitle" />
     </slot>
     <oc-table-simple>
       <colgroup>
@@ -50,7 +62,13 @@ export default defineComponent({
       type: Array<string | AccountTableCell>,
       required: true
     },
-    showHead: { type: Boolean, required: false, default: false }
+    showHead: { type: Boolean, required: false, default: false },
+    newTag: { type: Boolean, required: false, default: false },
+    subtitle: {
+      type: String,
+      required: false,
+      default: ''
+    }
   }
 })
 </script>
@@ -83,6 +101,11 @@ export default defineComponent({
     border-top: 0;
     border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
+  }
+
+  &-new-tag {
+    border: 0 !important;
+    color: var(--oc-role-on-chrome) !important;
   }
 
   @media (min-width: $oc-breakpoint-medium-default) {

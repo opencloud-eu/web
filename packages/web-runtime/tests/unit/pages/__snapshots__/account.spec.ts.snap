@@ -83,7 +83,10 @@ exports[`account page > public link context > should render a limited view 1`] =
     <h1 id="account-page-title" class="oc-mb-rm">My Account</h1>
     <!--v-if-->
     <div class="account-table account-page-preferences">
-      <h2 class="account-table-title">Preferences</h2>
+      <h2 class="account-table-title oc-flex oc-flex-middle">Preferences
+        <!--v-if-->
+      </h2>
+      <!--v-if-->
       <table class="oc-table-simple">
         <colgroup>
           <col style="width: 30%;">
