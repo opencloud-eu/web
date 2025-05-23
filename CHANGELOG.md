@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat: add profile pictures [[#626](https://github.com/opencloud-eu/web/pull/626)]
 - feat: Added CalDAV URL to the Accountpage [[#693](https://github.com/opencloud-eu/web/pull/693)]
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
