@@ -54,12 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../constants'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
@@ -77,8 +78,8 @@ const cropperReady = ref(false)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
-const maxFileSizeMb = 10
-const maxFileSize = maxFileSizeMb * 1024 * 1024 // 10MB
+
+const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -88,7 +89,7 @@ const onFileChange = (event: Event) => {
   if (file.size > maxFileSize) {
     showErrorMessage({
       title: $gettext('File size exceeds the limit of %{size}MB', {
-        size: maxFileSizeMb.toString()
+        size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
       })
     })
     return

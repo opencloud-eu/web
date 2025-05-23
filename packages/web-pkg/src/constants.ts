@@ -14,3 +14,5 @@ export abstract class ImageType {
   static readonly Preview: string = 'preview'
   static readonly Avatar: string = 'avatar'
 }
+
+export const AVATAR_UPLOAD_MAX_FILE_SIZE_MB = 10

@@ -26,7 +26,13 @@
         </template>
         <oc-table-tr class="account-page-info-profile-picture">
           <oc-table-td>{{ $gettext('Profile picture') }}</oc-table-td>
-          <oc-table-td>{{ $gettext('Max. 10MB, JPG, PNG') }}</oc-table-td>
+          <oc-table-td
+            >{{
+              $gettext('Max. %{size}MB, JPG, PNG', {
+                size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
+              })
+            }}
+          </oc-table-td>
           <oc-table-td>
             <avatar-upload class="oc-mb-s" />
           </oc-table-td>
@@ -299,9 +305,11 @@
 <script lang="ts">
 import { storeToRefs } from 'pinia'
 import EditPasswordModal from '../components/EditPasswordModal.vue'
-import { SettingsBundle, LanguageOption, SettingsValue } from '../helpers/settings'
-import { computed, defineComponent, onMounted, onBeforeUnmount, unref, ref } from 'vue'
+import { LanguageOption, SettingsBundle, SettingsValue } from '../helpers/settings'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import {
+  AppLoadingSpinner,
+  AvatarUpload,
   useAppsStore,
   useAuthStore,
   useCapabilityStore,
@@ -312,15 +320,15 @@ import {
   useModals,
   useResourcesStore,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  AVATAR_UPLOAD_MAX_FILE_SIZE_MB
 } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { setCurrentLanguage, loadAppTranslations } from '../helpers/language'
+import { loadAppTranslations, setCurrentLanguage } from '../helpers/language'
 import GdprExport from '../components/Account/GdprExport.vue'
 import ThemeSwitcher from '../components/Account/ThemeSwitcher.vue'
 import ExtensionPreference from '../components/Account/ExtensionPreference.vue'
-import { AppLoadingSpinner, AvatarUpload } from '@opencloud-eu/web-pkg'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
 import { supportedLanguages } from '../defaults'
 import { User } from '@opencloud-eu/web-client/graph/generated'
@@ -802,7 +810,8 @@ export default defineComponent({
       emailNotificationsValues,
       updateSingleChoiceValue,
       canConfigureSpecificNotifications,
-      preferencesPanelExtensions
+      preferencesPanelExtensions,
+      AVATAR_UPLOAD_MAX_FILE_SIZE_MB
     }
   }
 })
