@@ -1,5 +1,51 @@
 # Changelog
 
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-23
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
+
+### ✨ Features
+
+- feat: add profile pictures [[#626](https://github.com/opencloud-eu/web/pull/626)]
+- feat: Added CalDAV URL to the Accountpage [[#693](https://github.com/opencloud-eu/web/pull/693)]
+- feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
+- feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
+
+### 📈 Enhancement
+
+- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
+- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
+
+### 🐛 Bug Fixes
+
+- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
+
+### ✅ Tests
+
+- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
+- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
+
+### 📦️ Dependencies
+
+- chore(deps): update collabora/code docker tag to v25.04.2.1.1 [[#619](https://github.com/opencloud-eu/web/pull/619)]
+- fix(deps): update dependency semver to v7.7.2 [[#680](https://github.com/opencloud-eu/web/pull/680)]
+- chore(deps): update node.js to v22.16.0 [[#732](https://github.com/opencloud-eu/web/pull/732)]
+- fix(deps): update dependency zod to v3.25.20 [[#733](https://github.com/opencloud-eu/web/pull/733)]
+- fix(deps): update dependency md-editor-v3 to v5.6.0 [[#730](https://github.com/opencloud-eu/web/pull/730)]
+- fix(deps): update dependency zod to v3.25.17 [[#729](https://github.com/opencloud-eu/web/pull/729)]
+- fix(deps): update dependency zod to v3.25.13 [[#725](https://github.com/opencloud-eu/web/pull/725)]
+- fix(deps): update dependency @sentry/vue to v9.22.0 [[#723](https://github.com/opencloud-eu/web/pull/723)]
+- fix(deps): update dependency @sentry/vue to v9.20.0 [[#719](https://github.com/opencloud-eu/web/pull/719)]
+- fix(deps): update uppy monorepo [[#703](https://github.com/opencloud-eu/web/pull/703)]
+- chore(deps): update dependency commander to v14 [[#702](https://github.com/opencloud-eu/web/pull/702)]
+- [full-ci] opencloud bump v 2.3.0. run all tests [[#714](https://github.com/opencloud-eu/web/pull/714)]
+- fix(deps): update dependency @sentry/vue to v9.20.0 [[#710](https://github.com/opencloud-eu/web/pull/710)]
+- fix(deps): update dependency dompurify to v3.2.6 - autoclosed [[#716](https://github.com/opencloud-eu/web/pull/716)]
+- fix(deps): update dependency zod to v3.25.7 [[#712](https://github.com/opencloud-eu/web/pull/712)]
+- chore(deps): update devdependencies (non-major) to v3.1.4 [[#715](https://github.com/opencloud-eu/web/pull/715)]
+
 ## [2.4.0](https://github.com/opencloud-eu/web/releases/tag/v2.4.0) - 2025-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
