@@ -40,8 +40,8 @@ describe('AvatarUpload', () => {
       expect(wrapper.find(selectors.removeAvatarButton).exists()).toBeTruthy()
     })
     it('should not exist when user has no avatar', () => {
-      const { wrapper } = getWrapper({ userHasAvatar: true })
-      expect(wrapper.find(selectors.removeAvatarButton).exists()).toBeTruthy()
+      const { wrapper } = getWrapper({ userHasAvatar: false })
+      expect(wrapper.find(selectors.removeAvatarButton).exists()).toBeFalsy()
     })
     it('should show message on success', async () => {
       const { wrapper } = getWrapper()
