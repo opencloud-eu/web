@@ -8,7 +8,13 @@ import {
 } from 'oidc-client-ts'
 import { buildUrl, useAppsStore } from '@opencloud-eu/web-pkg'
 import { getAbilities } from './abilities'
-import { AuthStore, UserStore, CapabilityStore, ConfigStore } from '@opencloud-eu/web-pkg'
+import {
+  AuthStore,
+  UserStore,
+  CapabilityStore,
+  ConfigStore,
+  AvatarsStore
+} from '@opencloud-eu/web-pkg'
 import { ClientService } from '@opencloud-eu/web-pkg'
 import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
@@ -28,6 +34,7 @@ export interface UserManagerOptions {
   ability: Ability
   language: Language
   userStore: UserStore
+  avatarsStore: AvatarsStore
   authStore: AuthStore
   router: Router
   capabilityStore: CapabilityStore
@@ -41,6 +48,7 @@ export class UserManager extends OidcUserManager {
   private clientService: ClientService
   private configStore: ConfigStore
   private userStore: UserStore
+  private avatarsStore: AvatarsStore
   private authStore: AuthStore
   private webWorkersStore: WebWorkersStore
   private capabilityStore: CapabilityStore
@@ -117,6 +125,7 @@ export class UserManager extends OidcUserManager {
     this.ability = options.ability
     this.language = options.language
     this.userStore = options.userStore
+    this.avatarsStore = options.avatarsStore
     this.authStore = options.authStore
     this.capabilityStore = options.capabilityStore
     this.webWorkersStore = options.webWorkersStore
@@ -201,6 +210,15 @@ export class UserManager extends OidcUserManager {
       appRoleAssignments: role ? [role as any] : [], // FIXME
       preferredLanguage: graphUser.preferredLanguage || ''
     })
+
+    try {
+      const userPhoto = await this.clientService.graphAuthenticated.photos.getOwnUserPhoto({
+        responseType: 'blob'
+      })
+      this.avatarsStore.setUserAvatar(URL.createObjectURL(userPhoto))
+    } catch {
+      console.info('Failed to fetch user photo')
+    }
 
     if (graphUser.preferredLanguage) {
       const appsStore = useAppsStore()

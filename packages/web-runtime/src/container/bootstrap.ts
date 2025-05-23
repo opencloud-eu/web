@@ -10,6 +10,8 @@ import {
   useThemeStore,
   useUserStore,
   UserStore,
+  useAvatarsStore,
+  AvatarsStore,
   useMessages,
   useSpacesStore,
   useAuthStore,
@@ -353,6 +355,7 @@ export const announcePiniaStores = () => {
   const sharesStore = useSharesStore()
   const spacesStore = useSpacesStore()
   const userStore = useUserStore()
+  const avatarsStore = useAvatarsStore()
   const webWorkersStore = useWebWorkersStore()
 
   return {
@@ -367,6 +370,7 @@ export const announcePiniaStores = () => {
     sharesStore,
     spacesStore,
     userStore,
+    avatarsStore,
     webWorkersStore
   }
 }
@@ -528,6 +532,7 @@ export const announceAuthService = ({
   configStore,
   router,
   userStore,
+  avatarsStore,
   authStore,
   capabilityStore,
   webWorkersStore
@@ -536,6 +541,7 @@ export const announceAuthService = ({
   configStore: ConfigStore
   router: Router
   userStore: UserStore
+  avatarsStore: AvatarsStore
   authStore: AuthStore
   capabilityStore: CapabilityStore
   webWorkersStore: WebWorkersStore
@@ -550,6 +556,7 @@ export const announceAuthService = ({
     ability,
     language,
     userStore,
+    avatarsStore,
     authStore,
     capabilityStore,
     webWorkersStore

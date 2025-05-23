@@ -8,6 +8,7 @@ import { DriveItemsFactory, GraphDriveItems } from './driveItems'
 import { TagsFactory, GraphTags } from './tags'
 import { ActivitiesFactory, GraphActivities } from './activities'
 import { PermissionsFactory, GraphPermissions } from './permissions'
+import { PhotoFactory, GraphPhotos } from './photos'
 
 export interface Graph {
   activities: GraphActivities
@@ -18,6 +19,7 @@ export interface Graph {
   users: GraphUsers
   groups: GraphGroups
   permissions: GraphPermissions
+  photos: GraphPhotos
 }
 
 export const graph = (baseURI: string, axiosClient: AxiosInstance): Graph => {
@@ -35,6 +37,7 @@ export const graph = (baseURI: string, axiosClient: AxiosInstance): Graph => {
     driveItems: DriveItemsFactory({ axiosClient, config }),
     users: UsersFactory({ axiosClient, config }),
     groups: GroupsFactory({ axiosClient, config }),
-    permissions: PermissionsFactory({ axiosClient, config })
+    permissions: PermissionsFactory({ axiosClient, config }),
+    photos: PhotoFactory({ axiosClient, config })
   }
 }
