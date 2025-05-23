@@ -150,7 +150,6 @@ const createMockFile = (
   sizeInBytes: number,
   type = 'application/octet-stream'
 ): File => {
-  // Create a Uint8Array filled with zeros (sizeInBytes long)
   const buffer = new Uint8Array(sizeInBytes)
   const blob = new Blob([buffer], { type })
   return new File([blob], name, { type })
