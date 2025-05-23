@@ -1,11 +1,13 @@
 <template>
-  <div v-if="imageUrl" class="space-image-modal-image-container">
-    <img ref="imageRef" :src="imageUrl" />
+  <div class="space-image-modal">
+    <div v-if="imageUrl" class="space-image-modal-image-container">
+      <img ref="imageRef" :src="imageUrl" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, unref, ref, nextTick, useTemplateRef } from 'vue'
+import { nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import {
   Modal,
   useClientService,
@@ -132,10 +134,15 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .space-image-modal {
   &-image-container {
     max-height: 400px;
+  }
+
+  .cropper-line,
+  .cropper-point {
+    background-color: var(--oc-role-secondary-container) !important;
   }
 }
 </style>

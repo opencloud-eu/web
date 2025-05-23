@@ -208,9 +208,9 @@ const destroyCropper = () => {
     border-radius: 50%;
   }
 
-  .cropper-view-box {
-    box-shadow: 0 0 0 1px #39f;
-    outline: 0;
+  .cropper-line,
+  .cropper-point {
+    background-color: var(--oc-role-secondary-container) !important;
   }
 }
 </style>
