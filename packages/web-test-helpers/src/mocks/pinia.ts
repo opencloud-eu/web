@@ -67,6 +67,10 @@ export type PiniaMockOptions = {
     areDisabledSpacesShown?: boolean
     deleteQueue?: string[]
   }
+  avatarsStore?: {
+    userAvatar?: string
+    avatarMap?: Record<string, string>
+  }
   sharesState?: {
     collaboratorShares?: CollaboratorShare[]
     linkShares?: LinkShare[]
@@ -91,6 +95,7 @@ export function createMockStore({
   messagesState = {},
   modalsState = {},
   resourcesStore = {},
+  avatarsStore = {},
   userSettingsStore = {},
   groupSettingsStore = {},
   spaceSettingsStore = {},
@@ -140,6 +145,9 @@ export function createMockStore({
         ...themeState
       },
       resources: { resources: [], ...resourcesStore },
+      avatars: {
+        ...avatarsStore
+      },
       shares: { collaboratorShares: [], linkShares: [], ...sharesState },
       spaces: { spaces: [], ...spacesState },
       userSettings: { users: [], selectedUsers: [], ...userSettingsStore },

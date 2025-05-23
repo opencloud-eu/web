@@ -38,6 +38,7 @@ export const useAvatarsStore = defineStore('avatars', () => {
 
   return {
     userAvatar,
+    avatarMap,
     getAvatar,
     addAvatar,
     removeAvatar,

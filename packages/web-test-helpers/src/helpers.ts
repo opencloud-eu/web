@@ -78,6 +78,16 @@ export const nextTicks = async (amount: number) => {
   }
 }
 
+export const createMockFile = (
+  name: string,
+  sizeInBytes: number,
+  type = 'application/octet-stream'
+): File => {
+  const buffer = new Uint8Array(sizeInBytes)
+  const blob = new Blob([buffer], { type })
+  return new File([blob], name, { type })
+}
+
 type DefinedComponent = new (...args: any[]) => any
 export type ComponentProps<T extends DefinedComponent> = InstanceType<T>['$props']
 export type PartialComponentProps<T extends DefinedComponent> = Partial<ComponentProps<T>>

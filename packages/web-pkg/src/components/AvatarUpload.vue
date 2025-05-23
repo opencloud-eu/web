@@ -2,7 +2,7 @@
   <div class="avatar-upload">
     <input
       ref="fileInputRef"
-      class="oc-invisible"
+      class="oc-invisible avatar-file-input"
       type="file"
       accept="image/jpeg, image/png"
       @change="onFileChange"
@@ -17,10 +17,15 @@
       />
       <div>
         <div class="oc-button-group">
-          <oc-button size="small" @click="triggerFileInput">
+          <oc-button class="avatar-upload-button" size="small" @click="triggerFileInput">
             {{ $gettext('Upload') }}
           </oc-button>
-          <oc-button v-if="userAvatar" size="small" @click="showRemoveModal = true">
+          <oc-button
+            v-if="userAvatar"
+            class="avatar-upload-remove-button"
+            size="small"
+            @click="showRemoveModal = true"
+          >
             {{ $gettext('Remove') }}
           </oc-button>
         </div>

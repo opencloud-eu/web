@@ -23,10 +23,10 @@ exports[`account page > account information section > displays basic user inform
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Profile picture</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Max. 10MB, JPG, PNG</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
-          <div class="avatar-upload oc-mb-s"><input class="oc-invisible" type="file" accept="image/jpeg, image/png">
+          <div class="avatar-upload oc-mb-s"><input class="oc-invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
             <div class="oc-flex oc-flex-column oc-flex-middle"><span class="vue-avatar--wrapper oc-avatar oc-mb-m" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname" userid="some-username"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div>
-                <div class="oc-button-group"><button type="button" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+                <div class="oc-button-group"><button type="button" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline avatar-upload-button">
                     <!--v-if-->
                     <!-- @slot Content of the button --> Upload
                   </button>
