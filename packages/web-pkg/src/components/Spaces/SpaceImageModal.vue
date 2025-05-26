@@ -140,9 +140,14 @@ onMounted(async () => {
     max-height: 400px;
   }
 
+  .cropper-crop-box,
+  .cropper-view-box {
+    outline: 1px solid var(--oc-role-outline) !important;
+  }
+
   .cropper-line,
   .cropper-point {
-    background-color: var(--oc-role-secondary-container) !important;
+    background-color: var(--oc-role-outline) !important;
   }
 }
 </style>
