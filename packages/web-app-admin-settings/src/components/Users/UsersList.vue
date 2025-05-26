@@ -46,7 +46,12 @@
           />
         </template>
         <template #avatar="{ item }">
-          <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
+          <oc-avatar
+            :src="avatarMap[item.id]"
+            :width="32"
+            :userid="item.id"
+            :user-name="item.displayName"
+          />
         </template>
         <template #role="{ item }">
           <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
@@ -125,6 +130,7 @@ import {
   eventBus,
   queryItemAsString,
   SortDir,
+  useAvatarsStore,
   useIsTopBarSticky,
   useKeyboardActions,
   useRouteQuery
@@ -174,6 +180,9 @@ export default defineComponent({
 
     const userSettingsStore = useUserSettingsStore()
     const { users, selectedUsers } = storeToRefs(userSettingsStore)
+
+    const avatarsStore = useAvatarsStore()
+    const { avatarMap } = storeToRefs(avatarsStore)
 
     const isUserSelected = (user: User) => {
       return unref(selectedUsers).some((s) => s.id === user.id)
@@ -428,7 +437,8 @@ export default defineComponent({
       users,
       isSticky,
       tableRef,
-      fields
+      fields,
+      avatarMap
     }
   },
   computed: {

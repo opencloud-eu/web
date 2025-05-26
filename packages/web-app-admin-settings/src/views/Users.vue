@@ -167,6 +167,7 @@ import { storeToRefs } from 'pinia'
 
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
+import { useLoadAvatar } from '@opencloud-eu/web-pkg/src/composables/avatars'
 
 export default defineComponent({
   name: 'UsersView',
@@ -205,6 +206,8 @@ export default defineComponent({
     })
     const { actions: editLoginActions } = useUserActionsEditLogin()
     const { actions: editQuotaActions } = useUserActionsEditQuota()
+
+    const { loadAvatar } = useLoadAvatar()
 
     const groups = ref([])
     const roles = ref([])
@@ -276,6 +279,9 @@ export default defineComponent({
         { signal }
       )
       userSettingsStore.setUsers(usersResponse || [])
+      usersResponse.forEach((user) => {
+        loadAvatar({ id: user.id })
+      })
     })
 
     const isLoading = computed(() => {

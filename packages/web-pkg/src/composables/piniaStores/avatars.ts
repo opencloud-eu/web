@@ -10,7 +10,7 @@ export const useAvatarsStore = defineStore('avatars', () => {
   const { user } = storeToRefs(userStore)
 
   const addAvatar = (userId: string, avatar: string) => {
-    avatar[userId] = avatar
+    unref(avatarMap)[userId] = avatar
   }
 
   const getAvatar = (userId: string) => {

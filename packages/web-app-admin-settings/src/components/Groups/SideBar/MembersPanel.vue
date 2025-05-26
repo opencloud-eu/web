@@ -23,6 +23,7 @@ import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
+import { useLoadAvatar } from '@opencloud-eu/web-pkg/src/composables/avatars'
 
 export default defineComponent({
   name: 'GroupsMembersPanel',
@@ -32,6 +33,8 @@ export default defineComponent({
     const filterTerm = ref('')
     const markInstance = ref(null)
     const membersListRef = ref(null)
+
+    const { loadAvatar } = useLoadAvatar()
 
     const filterMembers = (collection: User[], term: string) => {
       if (!(term || '').trim()) {
@@ -52,6 +55,16 @@ export default defineComponent({
     const filteredGroupMembers = computed(() => {
       return filterMembers(unref(members), unref(filterTerm))
     })
+
+    watch(
+      members,
+      () => {
+        unref(members).forEach((member) => {
+          loadAvatar({ id: member.id })
+        })
+      },
+      { immediate: true }
+    )
 
     watch(filterTerm, () => {
       if (unref(membersListRef)) {
