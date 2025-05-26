@@ -124,7 +124,8 @@ import {
   defaultFuseOptions,
   useKeyboardActions,
   ContextMenuBtnClickEventData,
-  useIsTopBarSticky
+  useIsTopBarSticky,
+  useSharesStore
 } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,
@@ -136,7 +137,7 @@ import {
   unref,
   watch
 } from 'vue'
-import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
+import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -169,6 +170,7 @@ export default defineComponent({
     const language = useGettext()
     const { $gettext } = language
     const { isSticky } = useIsTopBarSticky()
+    const sharesStore = useSharesStore()
 
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
     const contextMenuButtonRef = ref(undefined)
@@ -356,11 +358,29 @@ export default defineComponent({
       }
     ])
 
+    const getSpaceManagers = (space: SpaceResource) => {
+      return space.root.permissions.filter((p) => {
+        let permissionActions: string[] = []
+        if (p['@libre.graph.permissions.actions']) {
+          permissionActions = p['@libre.graph.permissions.actions']
+        }
+        const role = sharesStore.graphRoles[p.roles?.[0]]
+        if (role && !permissionActions.length) {
+          const permissions = role.rolePermissions.find(
+            ({ condition }) => condition === 'exists @Resource.Root'
+          )
+          permissionActions = permissions?.allowedResourceActions || []
+        }
+
+        return permissionActions.includes(GraphSharePermission.deletePermissions)
+      })
+    }
+
     const getManagerNames = (space: SpaceResource) => {
       const allManagers = getSpaceManagers(space)
       const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
       let managerStr = managers
-        .map(({ grantedTo }) => (grantedTo.user || grantedTo.group).displayName)
+        .map(({ grantedToV2 }) => (grantedToV2.user || grantedToV2.group).displayName)
         .join(', ')
       if (allManagers.length > 2) {
         managerStr += `... +${allManagers.length - 2}`
@@ -396,7 +416,7 @@ export default defineComponent({
       return formatFileSize(space.spaceQuota.remaining, language.current)
     }
     const getMemberCount = (space: SpaceResource) => {
-      return Object.keys(space.members).length
+      return space.root.permissions.length
     }
 
     const getSelectSpaceLabel = (space: SpaceResource) => {

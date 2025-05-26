@@ -12,26 +12,29 @@ import { nextTick } from 'vue'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { OcTable } from '@opencloud-eu/design-system/components'
-import { GraphSharePermission, SpaceMember, SpaceResource } from '@opencloud-eu/web-client'
+import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
+import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const spaceMocks = [
   mock<SpaceResource>({
     id: '1',
     name: '1 Some space',
     disabled: false,
-    members: {
-      '1': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user1' } }
-      }),
-      '2': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user2' } }
-      }),
-      '3': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user3' } }
-      })
+    root: {
+      permissions: [
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user1' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user2' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user3' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        })
+      ]
     },
     spaceQuota: {
       total: 1000000000,
@@ -43,27 +46,29 @@ const spaceMocks = [
     id: '2',
     name: '2 Another space',
     disabled: true,
-    members: {
-      '1': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user1' } }
-      }),
-      '2': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user2' } }
-      }),
-      '3': mock<SpaceMember>({
-        permissions: [GraphSharePermission.deletePermissions],
-        grantedTo: { user: { displayName: 'user3' } }
-      }),
-      '4': mock<SpaceMember>({
-        permissions: [],
-        grantedTo: { user: { displayName: 'user4' } }
-      }),
-      '5': mock<SpaceMember>({
-        permissions: [],
-        grantedTo: { user: { displayName: 'user5' } }
-      })
+    root: {
+      permissions: [
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user1' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user2' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user3' } },
+          '@libre.graph.permissions.actions': [GraphSharePermission.deletePermissions]
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user4' } },
+          '@libre.graph.permissions.actions': []
+        }),
+        mock<Permission>({
+          grantedToV2: { user: { displayName: 'user5' } },
+          '@libre.graph.permissions.actions': []
+        })
+      ]
     },
     spaceQuota: {
       total: 2000000000,

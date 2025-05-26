@@ -1,45 +1,35 @@
 <template>
   <ul class="oc-list">
     <li
-      v-for="(m, index) in members"
+      v-for="(m, index) in permissions"
       :key="index"
       class="oc-flex oc-flex-middle oc-mb-s"
       data-testid="space-members-list"
     >
       <oc-avatar
-        v-if="m.grantedTo.user"
-        :user-name="m.grantedTo.user.displayName"
+        v-if="m.grantedToV2.user"
+        :user-name="getDisplayName(m)"
         :width="36"
         class="oc-mr-s"
       /><oc-avatar-item
         v-else
         :width="36"
         icon-size="medium"
-        :icon="groupIcon"
+        :icon="ShareTypes.group.icon"
         name="group"
         class="oc-mr-s"
       />
-      {{ (m.grantedTo.user || m.grantedTo.group).displayName }}
+      {{ getDisplayName(m) }}
     </li>
   </ul>
 </template>
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
-import { ShareTypes, SpaceMember } from '@opencloud-eu/web-client'
+<script setup lang="ts">
+import { ShareTypes } from '@opencloud-eu/web-client'
+import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
-export default defineComponent({
-  name: 'MembersRoleSection',
-  props: {
-    members: {
-      type: Array as PropType<SpaceMember[]>,
-      required: true
-    }
-  },
-  setup() {
-    const groupIcon = computed(() => {
-      return ShareTypes.group.icon
-    })
-    return { groupIcon }
-  }
-})
+const { permissions } = defineProps<{ permissions: Permission[] }>()
+
+const getDisplayName = (permission: Permission) => {
+  return permission.grantedToV2.user?.displayName || permission.grantedToV2.group?.displayName || ''
+}
 </script>

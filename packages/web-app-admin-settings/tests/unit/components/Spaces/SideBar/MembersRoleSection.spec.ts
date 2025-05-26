@@ -1,24 +1,26 @@
+import { Permission } from '@opencloud-eu/web-client/graph/generated'
 import MembersRoleSection from '../../../../../src/components/Spaces/SideBar/MembersRoleSection.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { SpaceMember } from '@opencloud-eu/web-client'
 
 describe('MembersRoleSection', () => {
   it('should render all members accordingly', () => {
-    const members = [
-      mock<SpaceMember>({ grantedTo: { user: { displayName: 'einstein' }, group: undefined } }),
-      mock<SpaceMember>({ grantedTo: { group: { displayName: 'physic-lovers' }, user: undefined } })
+    const permissions = [
+      mock<Permission>({ grantedToV2: { user: { displayName: 'einstein' }, group: undefined } }),
+      mock<Permission>({
+        grantedToV2: { group: { displayName: 'physic-lovers' }, user: undefined }
+      })
     ]
-    const { wrapper } = getWrapper({ members })
+    const { wrapper } = getWrapper({ permissions })
     expect(wrapper.html()).toMatchSnapshot()
   })
 })
 
-function getWrapper({ members = [] }: { members?: SpaceMember[] } = {}) {
+function getWrapper({ permissions = [] }: { permissions?: Permission[] } = {}) {
   return {
     wrapper: shallowMount(MembersRoleSection, {
       props: {
-        members
+        permissions
       },
       global: {
         plugins: [...defaultPlugins()]
