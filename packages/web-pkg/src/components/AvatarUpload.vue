@@ -211,11 +211,12 @@ const destroyCropper = () => {
   .cropper-crop-box,
   .cropper-view-box {
     border-radius: 50%;
+    outline: 1px solid var(--oc-role-outline) !important;
   }
 
-  .cropper-view-box {
-    box-shadow: 0 0 0 1px #39f;
-    outline: 0;
+  .cropper-line,
+  .cropper-point {
+    background-color: var(--oc-role-outline) !important;
   }
 }
 </style>

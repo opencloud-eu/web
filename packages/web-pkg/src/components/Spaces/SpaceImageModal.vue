@@ -1,6 +1,8 @@
 <template>
-  <div v-if="imageUrl" class="space-image-modal-image-container">
-    <img ref="imageRef" :src="imageUrl" />
+  <div class="space-image-modal">
+    <div v-if="imageUrl" class="space-image-modal-image-container">
+      <img ref="imageRef" :src="imageUrl" />
+    </div>
   </div>
 </template>
 
@@ -156,10 +158,20 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .space-image-modal {
   &-image-container {
     max-height: 400px;
+  }
+
+  .cropper-crop-box,
+  .cropper-view-box {
+    outline: 1px solid var(--oc-role-outline) !important;
+  }
+
+  .cropper-line,
+  .cropper-point {
+    background-color: var(--oc-role-outline) !important;
   }
 }
 </style>
