@@ -17,3 +17,4 @@ Feature: profile photo
     
     When "Alice" deletes the profile image
     Then "Alice" should not have a profile picture
+    And "Alice" logs out
