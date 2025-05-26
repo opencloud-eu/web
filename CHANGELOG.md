@@ -16,6 +16,7 @@
 
 ### ✅ Tests
 
+- e2e tests. user profile photo [[#742](https://github.com/opencloud-eu/web/pull/742)]
 - chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
 - check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
 - disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
