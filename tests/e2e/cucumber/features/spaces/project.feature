@@ -66,7 +66,7 @@ Feature: spaces.personal
     And "Alice" updates the space "team.2" subtitle to "management team - subtitle"
     And "Alice" updates the space "team.2" description to "management team - description"
     And "Alice" updates the space "team.2" quota to "500"
-    And "Alice" updates the space "team.2" image to "sampleGif.gif"
+    And "Alice" updates the space "team.2" image to "testavatar.png"
 
     And "Alice" creates the following resources
       | resource     | type   |
