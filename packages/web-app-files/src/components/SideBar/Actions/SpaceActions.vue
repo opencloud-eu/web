@@ -6,7 +6,7 @@
       type="file"
       name="file"
       tabindex="-1"
-      :accept="supportedSpaceImageMimeTypes"
+      accept="image/jpeg, image/png"
       @change="showModalImageSpace"
     />
     <oc-list id="oc-spaces-actions-sidebar" class-name="oc-mt-s">
@@ -28,10 +28,7 @@ import {
   ActionMenuItem,
   FileActionOptions,
   SpaceActionOptions,
-  useSpaceActionsSetIcon
-} from '@opencloud-eu/web-pkg'
-import { usePreviewService } from '@opencloud-eu/web-pkg'
-import {
+  useFileActionsDownloadArchive,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
@@ -39,16 +36,15 @@ import {
   useSpaceActionsEditQuota,
   useSpaceActionsEditReadmeContent,
   useSpaceActionsRename,
-  useSpaceActionsRestore
+  useSpaceActionsRestore,
+  useSpaceActionsSetIcon
 } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsUploadImage } from '../../../composables'
-import { useFileActionsDownloadArchive } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'SpaceActions',
   components: { ActionMenuItem },
   setup() {
-    const previewService = usePreviewService()
     const resource = inject<Ref<SpaceResource>>('resource')
     const actionOptions = computed((): SpaceActionOptions & FileActionOptions<Resource> => ({
       space: undefined,
@@ -56,9 +52,6 @@ export default defineComponent({
     }))
 
     const spaceImageInput: VNodeRef = ref(null)
-    const supportedSpaceImageMimeTypes = computed(() => {
-      return previewService.getSupportedMimeTypes('image/').join(',')
-    })
 
     const { actions: deleteActions } = useSpaceActionsDelete()
     const { actions: disableActions } = useSpaceActionsDisable()
@@ -94,7 +87,6 @@ export default defineComponent({
       actions,
       actionOptions,
       spaceImageInput,
-      supportedSpaceImageMimeTypes,
 
       uploadImageActions,
       showModalImageSpace

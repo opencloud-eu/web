@@ -114,26 +114,9 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
   }
 }
 
-const extractFirstFrameFromGif = (file: File): Promise<Blob> => {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = image.width
-      canvas.height = image.height
-      canvas.getContext('2d').drawImage(image, 0, 0)
-      canvas.toBlob((blob) => (blob ? resolve(blob) : reject()), 'image/png')
-      URL.revokeObjectURL(image.src)
-    }
-    image.onerror = reject
-    image.src = URL.createObjectURL(file)
-  })
-}
-
 onMounted(async () => {
   try {
-    const fileSource = file.type == 'image/gif' ? await extractFirstFrameFromGif(file) : file
-    imageUrl.value = URL.createObjectURL(fileSource)
+    imageUrl.value = URL.createObjectURL(file)
 
     if (unref(cropper)) {
       unref(cropper)?.destroy()
