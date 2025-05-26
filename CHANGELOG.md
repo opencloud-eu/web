@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-23
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-26
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,10 +8,17 @@
 
 ### ✨ Features
 
+- feat: extract first frame from gif, so space image cropping works fla… [[#747](https://github.com/opencloud-eu/web/pull/747)]
 - feat: add profile pictures [[#626](https://github.com/opencloud-eu/web/pull/626)]
 - feat: Added CalDAV URL to the Accountpage [[#693](https://github.com/opencloud-eu/web/pull/693)]
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
+
+### ✅ Tests
+
+- chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
+- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
+- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
 
 ### 📈 Enhancement
 
@@ -21,11 +28,6 @@
 ### 🐛 Bug Fixes
 
 - fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
-
-### ✅ Tests
-
-- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
-- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
 
 ### 📦️ Dependencies
 
