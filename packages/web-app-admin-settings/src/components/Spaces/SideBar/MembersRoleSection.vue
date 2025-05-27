@@ -27,7 +27,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { ShareTypes, SpaceMember } from '@opencloud-eu/web-client'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'MembersRoleSection',

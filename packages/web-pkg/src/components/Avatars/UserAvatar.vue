@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, unref, ref } from 'vue'
+import { computed, onMounted, unref } from 'vue'
 import { useAvatarsStore, useClientService } from '../../composables'
 import { storeToRefs } from 'pinia'
 
@@ -15,8 +15,6 @@ const { userId } = defineProps<{
 const avatarsStore = useAvatarsStore()
 const { avatarMap } = storeToRefs(avatarsStore)
 const clientService = useClientService()
-
-const loading = ref(true)
 
 const avatarSrc = computed(() => {
   return unref(avatarMap)[userId]
@@ -33,8 +31,6 @@ const loadAvatar = async () => {
     avatarsStore.addAvatar(userId, URL.createObjectURL(avatar))
   } catch {
     avatarsStore.addAvatar(userId, null)
-  } finally {
-    loading.value = false
   }
 }
 

@@ -16,7 +16,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'MembersRoleSection',

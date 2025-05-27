@@ -135,11 +135,11 @@ import {
   useRoute,
   useSpacesStore,
   useThemeStore,
-  useUserStore
+  useUserStore,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
   components: { UserAvatar, QuotaInformation },

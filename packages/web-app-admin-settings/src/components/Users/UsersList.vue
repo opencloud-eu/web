@@ -132,7 +132,8 @@ import {
   useIsTopBarSticky,
   useKeyboardActions,
   usePagination,
-  useRouteQuery
+  useRouteQuery,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
@@ -146,7 +147,6 @@ import { findIndex } from 'lodash-es'
 import Mark from 'mark.js'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
   name: 'UsersList',

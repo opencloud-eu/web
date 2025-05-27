@@ -83,7 +83,8 @@ import {
   createFileRouteOptions,
   formatDateFromISO,
   formatRelativeDateFromISO,
-  useClientService
+  useClientService,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
 import NotificationBell from './NotificationBell.vue'
 import { Notification } from '../../helpers/notifications'
@@ -92,7 +93,6 @@ import { useTask } from 'vue-concurrency'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { call } from '@opencloud-eu/web-client'
 import { AxiosHeaders } from 'axios'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 const POLLING_INTERVAL = 30000
 

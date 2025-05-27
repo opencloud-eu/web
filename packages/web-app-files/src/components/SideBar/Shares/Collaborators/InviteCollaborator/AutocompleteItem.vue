@@ -45,7 +45,7 @@
 <script lang="ts">
 import { computed, PropType } from 'vue'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default {
   name: 'AutocompleteItem',

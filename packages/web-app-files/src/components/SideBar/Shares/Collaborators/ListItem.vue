@@ -136,15 +136,12 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { Resource, extractDomSelector } from '@opencloud-eu/web-client'
 import { computed, defineComponent, inject, PropType, Ref, unref } from 'vue'
-import { formatDateFromDateTime } from '@opencloud-eu/web-pkg'
-import { useClientService } from '@opencloud-eu/web-pkg'
+import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-import { SpaceResource } from '@opencloud-eu/web-client'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
-import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
   name: 'ListItem',

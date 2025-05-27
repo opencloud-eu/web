@@ -163,7 +163,7 @@ const getWrapper = ({ userHasAvatar = true } = {}) => {
           ...defaultPlugins({
             piniaOptions: {
               avatarsStore: {
-                userAvatar: userHasAvatar ? 'https://localhost:9201/some-object-url' : null
+                avatarMap: userHasAvatar ? { '1': 'https://localhost:9201/some-object-url' } : {}
               }
             }
           })
