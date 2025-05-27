@@ -17,6 +17,7 @@
       </div>
     </form>
     <iframe
+      ref="appIframe"
       name="app-iframe"
       class="oc-width-1-1 oc-height-1-1"
       :title="iFrameTitle"
@@ -27,7 +28,7 @@
 
 <script setup lang="ts">
 import { stringify } from 'qs'
-import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef } from 'vue'
+import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef, onUnmounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -53,8 +54,10 @@ import {
   setCurrentUserShareSpacePermissions,
   useSpacesStore,
   useClientService,
-  useSharesStore
+  useSharesStore,
+  useModals
 } from '@opencloud-eu/web-pkg'
+import SaveAsModal from './components/SaveAsModal.vue'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -75,6 +78,7 @@ const { makeRequest } = useRequest()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient } = useClientService()
+const { dispatchModal } = useModals()
 
 const viewModeQuery = useRouteQuery('view_mode')
 const viewModeQueryValue = computed(() => {
@@ -188,6 +192,10 @@ const determineOpenAsPreview = (appName: string) => {
   return openAsPreview === true || (Array.isArray(openAsPreview) && openAsPreview.includes(appName))
 }
 
+const isCollabora = computed(() => {
+  return unref(appName)?.toLowerCase()?.startsWith('collabora')
+})
+
 // switch to write mode when edit is clicked
 const catchClickMicrosoftEdit = (event: MessageEvent) => {
   try {
@@ -196,13 +204,96 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
     }
   } catch {}
 }
+
+const handlePostMessagesCollabora = (event: MessageEvent) => {
+  try {
+    const message = JSON.parse(event.data || '{}')
+
+    if (message.MessageId === 'App_LoadingStatus' && message.Values?.Status === 'Frame_Ready') {
+      postMessageToCollabora('Host_PostmessageReady')
+      return
+    }
+
+    if (message.MessageId === 'UI_SaveAs') {
+      if (Object.hasOwn(message.Values, 'format')) {
+        dispatchModal({
+          title: $gettext('Export as'),
+          customComponent: SaveAsModal,
+          customComponentAttrs: () => ({
+            space,
+            resource,
+            fileExtension: message.Values.format,
+            callbackFn: (newFileName: string) => {
+              postMessageToCollabora('Action_SaveAs', {
+                Filename: newFileName,
+                Notify: true
+              })
+            }
+          })
+        })
+        return
+      }
+
+      dispatchModal({
+        title: $gettext('Save as'),
+        customComponent: SaveAsModal,
+        customComponentAttrs: () => ({
+          space,
+          resource,
+          callbackFn: (newFileName: string) => {
+            postMessageToCollabora('Action_SaveAs', {
+              Filename: newFileName,
+              Notify: true
+            })
+          }
+        })
+      })
+      return
+    }
+
+    if (message.MessageId === 'Action_Save_Resp') {
+      console.log('collabora save as response', message)
+      // TODO: show a toast message.
+      return
+    }
+  } catch (e) {
+    console.debug('Error parsing Collabora PostMessage', e)
+  }
+}
+
 onMounted(() => {
   if (determineOpenAsPreview(unref(appName))) {
     window.addEventListener('message', catchClickMicrosoftEdit)
   } else {
     window.removeEventListener('message', catchClickMicrosoftEdit)
   }
+
+  if (unref(isCollabora)) {
+    window.addEventListener('message', handlePostMessagesCollabora)
+  }
 })
+onUnmounted(() => {
+  window.removeEventListener('message', catchClickMicrosoftEdit)
+  if (unref(isCollabora)) {
+    window.removeEventListener('message', handlePostMessagesCollabora)
+  }
+})
+
+const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
+const postMessageToCollabora = (messageId: string, values?: { [key: string]: unknown }): void => {
+  if (!unref(appIframeRef)) {
+    console.error('Collabora iframe not found')
+    return
+  }
+  return unref(appIframeRef).contentWindow.postMessage(
+    JSON.stringify({
+      MessageId: messageId,
+      SendTime: Date.now(),
+      ...(values && { Values: values })
+    }),
+    '*'
+  )
+}
 
 watch(
   [resource],
