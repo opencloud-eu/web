@@ -1,8 +1,13 @@
-import { computed, markRaw, unref, VNodeRef } from 'vue'
+import { computed, unref, VNodeRef } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { useUserStore, useModals, SpaceImageModal } from '@opencloud-eu/web-pkg'
+import {
+  SpaceAction,
+  SpaceActionOptions,
+  SpaceImageModal,
+  useModals,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { SpaceAction, SpaceActionOptions } from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInput: VNodeRef }) => {
   const userStore = useUserStore()
@@ -26,7 +31,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
     dispatchModal({
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
-      customComponent: markRaw(SpaceImageModal),
+      customComponent: SpaceImageModal,
       customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
     })
   }

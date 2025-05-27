@@ -8,33 +8,35 @@
       name="file"
       multiple
       tabindex="-1"
-      :accept="supportedSpaceImageMimeTypes"
+      accept="image/jpeg, image/png"
       @change="showModalImageSpace"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { ContextActionMenu, useSpaceActionsNavigateToTrash } from '@opencloud-eu/web-pkg'
-import { useFileActionsShowDetails } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../composables'
 import {
+  ContextActionMenu,
+  FileActionOptions,
+  isLocationSpacesActive,
+  SpaceActionOptions,
+  useFileActionsDownloadArchive,
+  useFileActionsShowDetails,
+  useRouter,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsShowMembers,
-  useSpaceActionsSetIcon
+  useSpaceActionsSetIcon,
+  useSpaceActionsShowMembers
 } from '@opencloud-eu/web-pkg'
-import { isLocationSpacesActive } from '@opencloud-eu/web-pkg'
+import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
-import { useRouter, usePreviewService } from '@opencloud-eu/web-pkg'
-import { FileActionOptions, SpaceActionOptions } from '@opencloud-eu/web-pkg'
-import { useFileActionsDownloadArchive } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'SpaceContextActions',
@@ -47,13 +49,8 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter()
-    const previewService = usePreviewService()
 
     const actionOptions = toRef(props, 'actionOptions') as Ref<SpaceActionOptions>
-
-    const supportedSpaceImageMimeTypes = computed(() => {
-      return previewService.getSupportedMimeTypes('image/').join(',')
-    })
 
     const { actions: deleteActions } = useSpaceActionsDelete()
     const { actions: disableActions } = useSpaceActionsDisable()
@@ -149,9 +146,7 @@ export default defineComponent({
       menuSections,
       spaceImageInput,
       uploadImageActions,
-      showModalImageSpace,
-
-      supportedSpaceImageMimeTypes
+      showModalImageSpace
     }
   }
 })
