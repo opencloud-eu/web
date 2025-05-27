@@ -23,7 +23,7 @@ import {
   useUserStore
 } from '../../piniaStores'
 import { useAbility } from '../../ability'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
+import { useIsResourceNameValid } from '../helpers'
 
 export const useFileActionsRename = () => {
   const { showErrorMessage } = useMessages()
@@ -38,62 +38,7 @@ export const useFileActionsRename = () => {
 
   const resourcesStore = useResourcesStore()
   const { setCurrentFolder, upsertResource } = resourcesStore
-
-  const getNameErrorMsg = (
-    resource: Resource,
-    newName: string,
-    parentResources: Resource[] = undefined
-  ) => {
-    const newPath =
-      resource.path.substring(0, resource.path.length - resource.name.length) + newName
-
-    if (!newName) {
-      return $gettext('The name cannot be empty')
-    }
-
-    if (/[/]/.test(newName)) {
-      return $gettext('The name cannot contain "/"')
-    }
-
-    if (newName === '.') {
-      return $gettext('The name cannot be equal to "."')
-    }
-
-    if (newName === '..') {
-      return $gettext('The name cannot be equal to ".."')
-    }
-
-    if (/\s+$/.test(newName)) {
-      return $gettext('The name cannot end with whitespace')
-    }
-
-    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
-      return $gettext('The name cannot be longer than %{length} characters', {
-        length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
-      })
-    }
-
-    const exists = resourcesStore.resources.find(
-      (file) => file.path === newPath && resource.name !== newName
-    )
-    if (exists) {
-      const translated = $gettext('The name "%{name}" is already taken')
-      return $gettext(translated, { name: newName }, true)
-    }
-
-    if (parentResources) {
-      const exists = parentResources.find(
-        (file) => file.path === newPath && resource.name !== newName
-      )
-
-      if (exists) {
-        const translated = $gettext('The name "%{name}" is already taken')
-        return $gettext(translated, { name: newName }, true)
-      }
-    }
-
-    return null
-  }
+  const { isFileNameValid } = useIsResourceNameValid()
 
   const renameResource = async (space: SpaceResource, resource: Resource, newName: string) => {
     let currentFolder = resourcesStore.currentFolder
@@ -180,8 +125,8 @@ export const useFileActionsRename = () => {
         newName = `${newName}.${resources[0].extension}`
       }
 
-      const error = getNameErrorMsg(resources[0], newName, parentResources)
-      setError(error)
+      const { isValid, error } = isFileNameValid(resources[0], newName, parentResources)
+      setError(isValid ? null : error)
     }
     const nameWithoutExtension = extractNameWithoutExtension(resources[0])
     const modalTitle =
@@ -258,8 +203,6 @@ export const useFileActionsRename = () => {
 
   return {
     actions,
-    // HACK: exported for unit tests:
-    getNameErrorMsg,
     renameResource
   }
 }

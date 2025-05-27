@@ -4,11 +4,10 @@ import {
   useModals,
   useResourcesStore
 } from '../../../../../src/composables/piniaStores'
-import { mock, mockDeep } from 'vitest-mock-extended'
+import { mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../../../src'
 
 const currentFolder = {
   id: '1',
@@ -48,79 +47,6 @@ describe('rename', () => {
           const resources = [currentFolder]
           await unref(actions)[0].handler({ space, resources })
           expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
-    })
-  })
-
-  describe('method "getNameErrorMsg"', () => {
-    it('should not show an error if new name not taken', () => {
-      getWrapper({
-        setup: ({ getNameErrorMsg }) => {
-          const resourcesStore = useResourcesStore()
-          resourcesStore.resources = [{ name: 'file1', path: '/file1' }] as Resource[]
-          const message = getNameErrorMsg(
-            { name: 'currentName', path: '/currentName' } as Resource,
-            'newName'
-          )
-          expect(message).toEqual(null)
-        }
-      })
-    })
-
-    it('should not show an error if new name already exists but in different folder', () => {
-      getWrapper({
-        setup: ({ getNameErrorMsg }) => {
-          const resourcesStore = useResourcesStore()
-          resourcesStore.resources = [{ name: 'file1', path: '/file1' }] as Resource[]
-
-          const message = getNameErrorMsg(
-            mock<Resource>({ name: 'currentName', path: '/favorites/currentName' }),
-            'file1'
-          )
-          expect(message).toEqual(null)
-        }
-      })
-    })
-
-    it.each([
-      { currentName: 'currentName', newName: '', message: 'The name cannot be empty' },
-      { currentName: 'currentName', newName: 'new/name', message: 'The name cannot contain "/"' },
-      { currentName: 'currentName', newName: '.', message: 'The name cannot be equal to "."' },
-      { currentName: 'currentName', newName: '..', message: 'The name cannot be equal to ".."' },
-      {
-        currentName: 'currentName',
-        newName: 'newname ',
-        message: 'The name cannot end with whitespace'
-      },
-      {
-        currentName: 'currentName',
-        newName: 'file1',
-        message: 'The name "file1" is already taken'
-      },
-      {
-        currentName: 'currentName',
-        newName: 'newname',
-        parentResources: [{ name: 'newname', path: '/newname' } as Resource],
-        message: 'The name "newname" is already taken'
-      },
-      {
-        currentName: 'currentName',
-        newName: 'l'.repeat(64),
-        message: `The name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
-      }
-    ])('should detect name errors and display error messages accordingly', (inputData) => {
-      getWrapper({
-        setup: ({ getNameErrorMsg }) => {
-          const resourcesStore = useResourcesStore()
-          resourcesStore.resources = [{ name: 'file1', path: '/file1' }] as Resource[]
-
-          const message = getNameErrorMsg(
-            mock<Resource>({ name: inputData.currentName, path: `/${inputData.currentName}` }),
-            inputData.newName,
-            inputData.parentResources
-          )
-          expect(message).toEqual(inputData.message)
         }
       })
     })

@@ -1,4 +1,4 @@
-import { isShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, nextTick, Ref, unref } from 'vue'
 import { useClientService } from '../../clientService'
 import { FileAction } from '../types'
@@ -8,7 +8,7 @@ import { join } from 'path'
 import { useScrollTo } from '../../scrollTo'
 import { useMessages, useModals, useResourcesStore } from '../../../composables/piniaStores'
 import { storeToRefs } from 'pinia'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
+import { useIsResourceNameValid } from '../helpers'
 
 export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -20,40 +20,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
   const { resources, currentFolder } = storeToRefs(resourcesStore)
 
   const clientService = useClientService()
-
-  const checkNewFolderName = (folderName: string, setError: (error: string) => void) => {
-    if (folderName.trim() === '') {
-      return setError($gettext('Folder name cannot be empty'))
-    }
-
-    if (/[/]/.test(folderName)) {
-      return setError($gettext('Folder name cannot contain "/"'))
-    }
-
-    if (folderName === '.') {
-      return setError($gettext('Folder name cannot be equal to "."'))
-    }
-
-    if (folderName === '..') {
-      return setError($gettext('Folder name cannot be equal to ".."'))
-    }
-
-    if (folderName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
-      return setError(
-        $gettext('Folder name cannot be longer than %{length} characters', {
-          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
-        })
-      )
-    }
-
-    const exists = unref(resources).find((file) => file.name === folderName)
-
-    if (exists) {
-      return setError($gettext('%{name} already exists', { name: folderName }, true))
-    }
-
-    return setError(null)
-  }
+  const { isFileNameValid } = useIsResourceNameValid()
 
   const addNewFolder = async (folderName: string) => {
     folderName = folderName.trimEnd()
@@ -97,7 +64,15 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       inputLabel: $gettext('Folder name'),
       inputRequiredMark: true,
       onConfirm: addNewFolder,
-      onInput: checkNewFolderName
+      onInput: (folderName: string, setError: (error: string) => void) => {
+        const resource = {
+          path: join(unref(currentFolder).path, folderName),
+          name: folderName,
+          isFolder: true
+        } as Resource
+        const { isValid, error } = isFileNameValid(resource, folderName, unref(resources))
+        return setError(isValid ? null : error)
+      }
     })
   }
 
@@ -120,7 +95,6 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
 
   return {
     actions,
-    checkNewFolderName,
     addNewFolder
   }
 }
