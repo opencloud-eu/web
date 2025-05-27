@@ -6,12 +6,13 @@
       class="oc-flex oc-flex-middle oc-mb-s"
       data-testid="space-members-list"
     >
-      <oc-avatar
+      <user-avatar
         v-if="m.grantedTo.user"
+        :user-id="m.grantedTo.user.id"
         :user-name="m.grantedTo.user.displayName"
-        :width="36"
         class="oc-mr-s"
-      /><oc-avatar-item
+      />
+      <oc-avatar-item
         v-else
         :width="36"
         icon-size="medium"
@@ -26,9 +27,11 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { ShareTypes, SpaceMember } from '@opencloud-eu/web-client'
+import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
   name: 'MembersRoleSection',
+  components: { UserAvatar },
   props: {
     members: {
       type: Array as PropType<SpaceMember[]>,

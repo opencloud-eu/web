@@ -39,10 +39,9 @@
               class="oc-flex oc-flex-middle oc-my-xs"
               :to="el.computedLink"
             >
-              <avatar-image
+              <user-avatar
                 class="oc-mr-m"
-                :width="32"
-                :userid="el.messageRichParameters?.user?.name || el.user"
+                :user-id="el.messageRichParameters?.user?.id || el.user"
                 :user-name="el.messageRichParameters?.user?.displayname || el.user"
               />
               <div>
@@ -93,11 +92,13 @@ import { useTask } from 'vue-concurrency'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { call } from '@opencloud-eu/web-client'
 import { AxiosHeaders } from 'axios'
+import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 const POLLING_INTERVAL = 30000
 
 export default {
   components: {
+    UserAvatar,
     NotificationBell
   },
   setup() {

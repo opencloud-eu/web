@@ -9,7 +9,7 @@ import Avatar from '../../../../src/components/Avatar.vue'
 
 const selectors = {
   notificationBellStub: 'notification-bell-stub',
-  avatarImageStub: 'avatar-image-stub',
+  userAvatarStub: 'user-avatar-stub',
   noNewNotifications: '.oc-notifications-no-new',
   markAll: '.oc-notifications-mark-all',
   notificationsLoading: '.oc-notifications-loading',
@@ -68,22 +68,23 @@ describe('Notification component', () => {
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await wrapper.vm.fetchNotificationsTask.last
-      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.avatarImageStub)
+      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.userAvatarStub)
       expect(avatarImageStub.attributes('userid')).toEqual(notification.user)
-      expect(avatarImageStub.attributes('user-name')).toEqual(notification.user)
+      expect(avatarImageStub.attributes('username')).toEqual(notification.user)
     })
     it('loads based on the rich parameters', async () => {
       const displayname = 'Albert Einstein'
       const name = 'einstein'
+      const id = '12345'
       const notification = mock<Notification>({
         messageRich: undefined,
-        messageRichParameters: { user: { displayname, name } }
+        messageRichParameters: { user: { displayname, name, id } }
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await wrapper.vm.fetchNotificationsTask.last
-      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.avatarImageStub)
-      expect(avatarImageStub.attributes('userid')).toEqual(name)
-      expect(avatarImageStub.attributes('user-name')).toEqual(displayname)
+      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.userAvatarStub)
+      expect(avatarImageStub.attributes('userid')).toEqual(id)
+      expect(avatarImageStub.attributes('username')).toEqual(displayname)
     })
   })
   describe('subject', () => {
@@ -221,7 +222,7 @@ function getWrapper({
         plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
         mocks: localMocks,
         provide: localMocks,
-        stubs: { 'avatar-image': true, OcButton: false }
+        stubs: { 'user-avatar': true, OcButton: false }
       }
     })
   }

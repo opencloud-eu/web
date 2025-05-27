@@ -4,11 +4,10 @@
     class="oc-flex oc-flex-middle oc-py-xs"
     :class="collaboratorClass"
   >
-    <avatar-image
+    <user-avatar
       v-if="isAnyUserShareType"
       class="oc-mr-s"
-      :width="36"
-      :userid="item.id"
+      :user-id="item.id"
       :user-name="item.displayName"
     />
     <oc-avatar-item
@@ -46,9 +45,11 @@
 <script lang="ts">
 import { computed, PropType } from 'vue'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
+import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default {
   name: 'AutocompleteItem',
+  components: { UserAvatar },
 
   props: {
     item: {

@@ -18,11 +18,10 @@
             />
           </template>
           <template v-else>
-            <avatar-image
+            <user-avatar
               v-if="isAnyUserShareType"
-              :userid="share.sharedWith.id"
+              :user-id="share.sharedWith.id"
               :user-name="share.sharedWith.displayName"
-              :width="36"
               class="files-collaborators-collaborator-indicator"
             />
             <oc-avatar-item
@@ -145,10 +144,12 @@ import { SpaceResource } from '@opencloud-eu/web-client'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
+import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
   name: 'ListItem',
   components: {
+    UserAvatar,
     ExpirationDateIndicator,
     EditDropdown,
     RoleDropdown

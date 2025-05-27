@@ -20,7 +20,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 
 const selectors = {
-  userAvatarImage: 'avatar-image-stub.files-collaborators-collaborator-indicator',
+  userAvatarImage: 'user-avatar-stub.files-collaborators-collaborator-indicator',
   notUserAvatar: 'oc-avatar-item-stub.files-collaborators-collaborator-indicator',
   collaboratorName: '.files-collaborators-collaborator-name',
   collaboratorRole: '.files-collaborators-collaborator-role',
@@ -62,7 +62,7 @@ describe('Collaborator ListItem component', () => {
         expect(wrapper.find(selectors.userAvatarImage).attributes('userid')).toEqual(
           share.sharedWith.id
         )
-        expect(wrapper.find(selectors.userAvatarImage).attributes('user-name')).toEqual(
+        expect(wrapper.find(selectors.userAvatarImage).attributes('username')).toEqual(
           share.sharedWith.displayName
         )
       })
@@ -241,6 +241,7 @@ function createWrapper({
           'oc-avatar-item': true,
           'role-dropdown': true,
           'edit-dropdown': true,
+          'user-avatar': true,
           translate: false
         }
       }

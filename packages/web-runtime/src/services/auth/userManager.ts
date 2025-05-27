@@ -211,15 +211,6 @@ export class UserManager extends OidcUserManager {
       preferredLanguage: graphUser.preferredLanguage || ''
     })
 
-    try {
-      const userPhoto = await this.clientService.graphAuthenticated.photos.getOwnUserPhoto({
-        responseType: 'blob'
-      })
-      this.avatarsStore.setUserAvatar(URL.createObjectURL(userPhoto))
-    } catch {
-      console.info('Failed to fetch user photo')
-    }
-
     if (graphUser.preferredLanguage) {
       const appsStore = useAppsStore()
 

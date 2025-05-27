@@ -9,15 +9,13 @@
       no-hover
       :aria-label="$gettext('My Account')"
     >
-      <oc-avatar
+      <user-avatar
         v-if="onPremisesSamAccountName"
         class="oc-topbar-avatar oc-topbar-personal-avatar oc-flex-inline oc-flex-center oc-flex-middle"
-        :width="32"
-        :userid="onPremisesSamAccountName"
+        :user-id="user.id"
         :user-name="user.displayName"
         background-color="var(--oc-role-on-chrome)"
         color="var(--oc-role-chrome)"
-        :src="userAvatar"
       />
       <oc-avatar-item
         v-else
@@ -66,13 +64,11 @@
         </template>
         <template v-else>
           <li class="profile-info-wrapper oc-pl-s">
-            <oc-avatar
-              :width="32"
-              :userid="onPremisesSamAccountName"
+            <user-avatar
+              :user-id="user.id"
               :user-name="user.displayName"
               color="var(--oc-role-on-chrome)"
               background-color="var(--oc-role-chrome)"
-              :src="userAvatar"
             />
             <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
@@ -132,31 +128,29 @@
 
 <script lang="ts">
 import { storeToRefs } from 'pinia'
-import { defineComponent, ComponentPublicInstance, computed, unref } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
+  routeToContextQuery,
+  useAuthService,
   useRoute,
   useSpacesStore,
   useThemeStore,
-  useUserStore,
-  routeToContextQuery,
-  useAuthService,
-  useAvatarsStore
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
+import UserAvatar from '@opencloud-eu/web-pkg/src/components/Avatars/UserAvatar.vue'
 
 export default defineComponent({
-  components: { QuotaInformation },
+  components: { UserAvatar, QuotaInformation },
   setup() {
     const route = useRoute()
-    const avatarsStore = useAvatarsStore()
     const userStore = useUserStore()
     const themeStore = useThemeStore()
     const spacesStore = useSpacesStore()
     const authService = useAuthService()
 
     const { user } = storeToRefs(userStore)
-    const { userAvatar } = storeToRefs(avatarsStore)
 
     const accountPageRoute = computed(() => ({
       name: 'account',
@@ -187,8 +181,7 @@ export default defineComponent({
       imprintUrl,
       privacyUrl,
       quota,
-      logout,
-      userAvatar
+      logout
     }
   },
   computed: {

@@ -3,8 +3,18 @@ import Recipient from './OcRecipient.vue'
 import { Recipient as RecipientType } from '../../helpers'
 
 describe('OcRecipient', () => {
-  function getWrapper(props: Partial<RecipientType> = undefined, slot: string = undefined) {
-    const slots = slot ? { append: slot } : {}
+  function getWrapper(
+    props: Partial<RecipientType> = undefined,
+    prependSlot: string = undefined,
+    appendSlot: string = undefined
+  ) {
+    const slots: { append?: string; prepend?: string } = {}
+    if (appendSlot) {
+      slots.append = appendSlot
+    }
+    if (prependSlot) {
+      slots.prepend = prependSlot
+    }
 
     return shallowMount(Recipient, {
       props: {
@@ -12,7 +22,7 @@ describe('OcRecipient', () => {
           name: 'alice',
           avatar: 'avatar.jpg',
           hasAvatar: true,
-          isLoadingAvatar: false,
+          icon: { name: 'user', label: 'User' },
           ...props
         }
       },
@@ -30,35 +40,18 @@ describe('OcRecipient', () => {
   it('displays avatar', () => {
     const wrapper = getWrapper()
 
-    expect(wrapper.find('[data-testid="recipient-avatar"]').attributes('src')).toEqual('avatar.jpg')
+    expect(wrapper.find('oc-avatar-item-stub').attributes('icon')).toEqual('user')
   })
 
-  it('displays a spinner if avatar has not been loaded yet', () => {
-    const wrapper = getWrapper({
-      isLoadingAvatar: true
-    })
+  it('display content in the prepend slot', () => {
+    const wrapper = getWrapper({}, '<span id="prepend-slot">Hello world</span>')
 
-    expect(wrapper.find('[data-testid="recipient-avatar-spinner"]').exists()).toBeTruthy()
-  })
-
-  it('displays an icon if avatar is not enabled', () => {
-    const wrapper = getWrapper({
-      icon: {
-        name: 'person',
-        label: 'User'
-      },
-      hasAvatar: false
-    })
-
-    const icon = wrapper.find('[data-testid="recipient-icon"]')
-
-    expect(icon.exists()).toBeTruthy()
-    expect(icon.attributes().accessiblelabel).toEqual('User')
+    expect(wrapper.find('#prepend-slot').exists()).toBeTruthy()
   })
 
   it('display content in the append slot', () => {
-    const wrapper = getWrapper({}, '<span id="test-slot">Hello world</span>')
+    const wrapper = getWrapper({}, '', '<span id="append-slot"> Hello world </span>')
 
-    expect(wrapper.find('#test-slot').exists()).toBeTruthy()
+    expect(wrapper.find('#append-slot').exists()).toBeTruthy()
   })
 })

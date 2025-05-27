@@ -1,4 +1,4 @@
-import AvatarUpload from '../../../src/components/AvatarUpload.vue'
+import AvatarUpload from '../../../../src/components/Avatars/AvatarUpload.vue'
 import {
   createMockFile,
   defaultComponentMocks,
@@ -6,7 +6,7 @@ import {
   mount,
   nextTicks
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages } from '../../../src'
+import { useMessages } from '../../../../src'
 import { describe } from 'vitest'
 
 vi.mock('cropperjs', () => {

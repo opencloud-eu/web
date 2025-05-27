@@ -64,9 +64,6 @@ export type Recipient = {
     name: string
     label: string
   }
-  isLoadingAvatar?: boolean
-  hasAvatar?: boolean
-  avatar?: string
 }
 
 export interface BreadcrumbItem {
