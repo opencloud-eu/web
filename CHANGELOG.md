@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v3.25.30 [[#739](https://github.com/opencloud-eu/web/pull/739)]
 - fix(deps): update dependency @vueuse/core to v13.3.0 [[#758](https://github.com/opencloud-eu/web/pull/758)]
 - chore(deps): update dependency @babel/core to v7.27.3 [[#754](https://github.com/opencloud-eu/web/pull/754)]
 - fix(deps): update vue monorepo to v3.5.15 [[#755](https://github.com/opencloud-eu/web/pull/755)]
