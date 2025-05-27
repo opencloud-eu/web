@@ -37,6 +37,8 @@ playwright-report
 
 /.pnpm-store/
 
+packages/web-client/src/graph/generated/docs/
+
 # VitePress
 packages/design-system/docs/.vitepress/cache
 packages/design-system/docs/.vitepress/dist

@@ -43,14 +43,24 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
     async listMyDrives(options, requestOptions) {
       const {
         data: { value }
-      } = await meDrivesApi.listMyDrivesBeta(options?.orderBy, options?.filter, requestOptions)
+      } = await meDrivesApi.listMyDrivesBeta(
+        options?.orderBy,
+        options?.filter,
+        options?.expand,
+        requestOptions
+      )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))
     },
 
     async listAllDrives(options, requestOptions) {
       const {
         data: { value }
-      } = await allDrivesApi.listAllDrivesBeta(options?.orderBy, options?.filter, requestOptions)
+      } = await allDrivesApi.listAllDrivesBeta(
+        options?.orderBy,
+        options?.filter,
+        options?.expand,
+        requestOptions
+      )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))
     }
   }

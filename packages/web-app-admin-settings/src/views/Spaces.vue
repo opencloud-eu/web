@@ -136,8 +136,8 @@ export default defineComponent({
         clientService.graphAuthenticated.drives.listAllDrives(
           {
             orderBy: 'name asc',
-            filter: 'driveType eq project'
-            // TODO: add expand for permissions
+            filter: 'driveType eq project',
+            expand: 'root($expand=permissions)'
           },
           { signal }
         )
