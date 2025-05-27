@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-26
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-27
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.15 [[#755](https://github.com/opencloud-eu/web/pull/755)]
 - chore(deps): update collabora/code docker tag to v25.04.2.1.1 [[#619](https://github.com/opencloud-eu/web/pull/619)]
 - fix(deps): update dependency semver to v7.7.2 [[#680](https://github.com/opencloud-eu/web/pull/680)]
 - chore(deps): update node.js to v22.16.0 [[#732](https://github.com/opencloud-eu/web/pull/732)]
