@@ -1,28 +1,39 @@
 <template>
-  <div>
-    <oc-loader v-if="isLoading" />
-    <template v-else>
-      <p v-if="!activities.length" v-text="$gettext('No activities')" />
-      <div v-else class="oc-ml-s">
-        <oc-list class="oc-timeline">
-          <li v-for="activity in activities" :key="activity.id">
+  <oc-loader v-if="isLoading" />
+  <template v-else>
+    <p v-if="!activities.length" v-text="$gettext('No activities')" />
+    <div v-else class="oc-ml-s">
+      <oc-list class="oc-timeline">
+        <li v-for="activity in activities" :key="activity.id">
+          <div class="oc-flex">
+            <oc-avatars :items="[]" class="oc-mr-xs" stacked gap-size="medium">
+              <template #userAvatars>
+                <user-avatar
+                  v-for="avatar in getAvatarsFromActivity(activity)"
+                  :key="avatar.userId"
+                  :user-id="avatar.userId"
+                  :user-name="avatar.userName"
+                  :width="16.8"
+                />
+              </template>
+            </oc-avatars>
             <span v-html="getHtmlFromActivity(activity)" />
-            <span
-              class="oc-text-muted oc-text-small oc-mt-s"
-              v-text="getTimeFromActivity(activity)"
-            />
-          </li>
-        </oc-list>
-        <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
-      </div>
-    </template>
-  </div>
+          </div>
+          <span
+            class="oc-text-muted oc-text-small oc-mt-s"
+            v-text="getTimeFromActivity(activity)"
+          />
+        </li>
+      </oc-list>
+      <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
 import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { formatDateFromDateTime, useClientService } from '@opencloud-eu/web-pkg'
+import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { call, Resource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
@@ -67,6 +78,22 @@ const getHtmlFromActivity = (activity: Activity) => {
     message = message.replace(`{${key}}`, `<strong>${escapedValue}</strong>`)
   }
   return message
+}
+
+const getAvatarsFromActivity = (activity: Activity) => {
+  const avatars = []
+
+  for (const key of ['user', 'sharee']) {
+    const entry = activity.template.variables[key]
+    if (entry) {
+      avatars.push({
+        userName: entry.displayName,
+        userId: entry.id
+      })
+    }
+  }
+
+  return avatars
 }
 
 const getTimeFromActivity = (activity: Activity) => {
