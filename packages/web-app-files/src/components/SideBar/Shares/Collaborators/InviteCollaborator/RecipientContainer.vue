@@ -29,8 +29,7 @@
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 import { computed, defineComponent, PropType } from 'vue'
 import { Recipient } from '@opencloud-eu/design-system/helpers'
-import { useCapabilityStore, useConfigStore, UserAvatar } from '@opencloud-eu/web-pkg'
-import { storeToRefs } from 'pinia'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   components: { UserAvatar },
@@ -46,12 +45,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const capabilityStore = useCapabilityStore()
-    const capabilityRefs = storeToRefs(capabilityStore)
-
-    const configStore = useConfigStore()
-    const { serverUrl } = storeToRefs(configStore)
-
     const externalIssuer = computed(() => {
       if (props.recipient.shareType === ShareTypes.remote.value) {
         return props.recipient.identities?.[0]?.issuer
@@ -60,8 +53,6 @@ export default defineComponent({
     })
 
     return {
-      serverUrl,
-      userProfilePicture: capabilityRefs.sharingUserProfilePicture,
       externalIssuer,
       ShareTypes
     }
