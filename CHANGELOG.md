@@ -32,6 +32,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency rollup-plugin-visualizer to v6 [[#746](https://github.com/opencloud-eu/web/pull/746)]
+- fix(deps): update dependency focus-trap to v7.6.5 [[#763](https://github.com/opencloud-eu/web/pull/763)]
 - chore(deps): update traefik docker tag to v3.4.1 [[#760](https://github.com/opencloud-eu/web/pull/760)]
 - chore(deps): update dependency happy-dom to v17.5.6 [[#759](https://github.com/opencloud-eu/web/pull/759)]
 - fix(deps): update dependency zod to v3.25.32 [[#764](https://github.com/opencloud-eu/web/pull/764)]
