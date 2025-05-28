@@ -32,6 +32,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v17.5.6 [[#759](https://github.com/opencloud-eu/web/pull/759)]
+- fix(deps): update dependency zod to v3.25.32 [[#764](https://github.com/opencloud-eu/web/pull/764)]
+- fix(deps): update typescript-eslint monorepo to v8.33.0 [[#765](https://github.com/opencloud-eu/web/pull/765)]
 - fix(deps): update dependency zod to v3.25.30 [[#739](https://github.com/opencloud-eu/web/pull/739)]
 - fix(deps): update dependency @vueuse/core to v13.3.0 [[#758](https://github.com/opencloud-eu/web/pull/758)]
 - chore(deps): update dependency @babel/core to v7.27.3 [[#754](https://github.com/opencloud-eu/web/pull/754)]
