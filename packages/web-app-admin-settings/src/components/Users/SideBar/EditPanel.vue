@@ -119,8 +119,7 @@ import {
   useCapabilityStore,
   useEventBus,
   useMessages,
-  useSpacesStore,
-  useSharesStore
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import GroupSelect from '../GroupSelect.vue'
 import { cloneDeep, isEmpty, isEqual, omit } from 'lodash-es'
@@ -166,7 +165,6 @@ export default defineComponent({
     const userStore = useUserStore()
     const userSettingsStore = useUserSettingsStore()
     const spacesStore = useSpacesStore()
-    const sharesStore = useSharesStore()
     const eventBus = useEventBus()
     const { showErrorMessage } = useMessages()
     const { $gettext } = useGettext()
@@ -227,14 +225,10 @@ export default defineComponent({
 
     const onUpdateUserDrive = async (editUser: User) => {
       const client = clientService.graphAuthenticated
-      const updateSpace = await client.drives.updateDrive(
-        editUser.drive.id,
-        {
-          name: editUser.drive.name,
-          quota: { total: editUser.drive.quota.total }
-        },
-        sharesStore.graphRoles
-      )
+      const updateSpace = await client.drives.updateDrive(editUser.drive.id, {
+        name: editUser.drive.name,
+        quota: { total: editUser.drive.quota.total }
+      })
 
       if (editUser.id === userStore.user.id) {
         // Load current user quota

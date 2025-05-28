@@ -115,16 +115,13 @@ describe('restore', () => {
           )
           clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
           await duplicateSpace(spaces[0])
-          expect(clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith(
-            {
-              description: 'To the moon',
-              name: 'Moon (1)',
-              quota: {
-                total: Math.pow(10, 9)
-              }
-            },
-            expect.anything()
-          )
+          expect(clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith({
+            description: 'To the moon',
+            name: 'Moon (1)',
+            quota: {
+              total: Math.pow(10, 9)
+            }
+          })
           const spacesStore = useSpacesStore()
           expect(spacesStore.upsertSpace).toHaveBeenCalled()
           const { showMessage } = useMessages()

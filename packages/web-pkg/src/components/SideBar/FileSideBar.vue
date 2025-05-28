@@ -368,10 +368,12 @@ export default defineComponent({
       { immediate: true, deep: true }
     )
 
+    const panelItemIds = computed(() => unref(panelContext).items.map((item) => item.id))
+
     watch(
-      () => [...unref(panelContext).items, props.isOpen],
+      () => [panelItemIds, props.isOpen],
       async () => {
-        if (!props.isOpen) {
+        if (!props.isOpen || !unref(panelContext).items?.length) {
           sharesStore.pruneShares()
           loadedResource.value = null
           return
@@ -380,8 +382,17 @@ export default defineComponent({
           // don't load additional metadata for empty or multi-select contexts
           return
         }
+
         const resource = unref(panelContext).items[0]
         isMetaDataLoading.value = true
+
+        if (isProjectSpaceResource(resource)) {
+          await spacesStore.loadGraphPermissions({
+            ids: [resource.id],
+            graphClient: clientService.graphAuthenticated
+          })
+        }
+
         if (canListShares({ space: props.space, resource })) {
           try {
             if (loadSharesTask.isRunning) {

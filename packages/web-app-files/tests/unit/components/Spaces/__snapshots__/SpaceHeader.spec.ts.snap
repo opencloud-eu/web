@@ -14,12 +14,12 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
           <div class="oc-card oc-card-body oc-p-s">
-            <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
+            <space-context-actions-stub actionoptions="[object Object]" loading="false"></space-context-actions-stub>
           </div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">1 member</span>
       </button>
     </div>
     <!--v-if-->
@@ -43,12 +43,12 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
           <div class="oc-card oc-card-body oc-p-s">
-            <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
+            <space-context-actions-stub actionoptions="[object Object]" loading="false"></space-context-actions-stub>
           </div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">1 member</span>
       </button>
     </div>
     <!--v-if-->
@@ -75,12 +75,12 @@ exports[`SpaceHeader > space image > should show the default image if no other i
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
           <div class="oc-card oc-card-body oc-p-s">
-            <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
+            <space-context-actions-stub actionoptions="[object Object]" loading="false"></space-context-actions-stub>
           </div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">1 member</span>
       </button>
     </div>
     <!--v-if-->
@@ -102,12 +102,12 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
           <div class="oc-card oc-card-body oc-p-s">
-            <space-context-actions-stub actionoptions="[object Object]"></space-context-actions-stub>
+            <space-context-actions-stub actionoptions="[object Object]" loading="false"></space-context-actions-stub>
           </div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">17 members</span>
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><!----></span> <span class="space-header-people-count oc-text-small">1 member</span>
       </button>
     </div>
     <!--v-if-->

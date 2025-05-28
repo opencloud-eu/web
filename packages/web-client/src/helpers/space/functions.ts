@@ -1,4 +1,4 @@
-import { Permission, User } from '../../graph/generated'
+import { User } from '../../graph/generated'
 import {
   Ability,
   extractDomSelector,
@@ -10,7 +10,6 @@ import {
   isPersonalSpaceResource,
   PublicSpaceResource,
   ShareSpaceResource,
-  SpaceMember,
   SpaceResource
 } from './types'
 
@@ -18,7 +17,7 @@ import { DavProperty } from '../../webdav/constants'
 import { buildWebDavPublicPath, buildWebDavOcmPath } from '../publicLink'
 import { urlJoin } from '../../utils'
 import { Drive, DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { CollaboratorShare, GraphSharePermission, ShareRole } from '../share'
+import { CollaboratorShare, GraphSharePermission } from '../share'
 
 export function buildWebDavSpacesPath(storageId: string, path?: string) {
   return urlJoin('spaces', storageId, path, {
@@ -44,14 +43,6 @@ export function getRelativeSpecialFolderSpacePath(space: SpaceResource, type: 'i
     return ''
   }
   return webDavPathComponents.slice(webDavPathComponents.indexOf(idComponent) + 1).join('/')
-}
-
-// although roles are a loose concept, we can assume that there are always space managers
-export function getSpaceManagers(space: SpaceResource) {
-  return Object.values(space.members).filter(({ permissions }) =>
-    // delete permissions implies that the user/group is a manager
-    permissions.includes(GraphSharePermission.deletePermissions)
-  )
 }
 
 export function isManager(share: CollaboratorShare) {
@@ -84,15 +75,12 @@ export function buildPublicSpaceResource(
   }
 
   return Object.assign(
-    buildSpace(
-      {
-        ...data,
-        driveType: 'public',
-        driveAlias,
-        webDavPath
-      },
-      {}
-    ),
+    buildSpace({
+      ...data,
+      driveType: 'public',
+      driveAlias,
+      webDavPath
+    }),
     {
       ...(fileId && { fileId }),
       ...(publicLinkPassword && { publicLinkPassword }),
@@ -117,16 +105,13 @@ export function buildShareSpaceResource({
   shareName: string
   serverUrl: string
 }): ShareSpaceResource {
-  const space = buildSpace(
-    {
-      id,
-      driveAlias: `${driveAliasPrefix}/${shareName}`,
-      driveType: 'share',
-      name: shareName,
-      serverUrl
-    },
-    {}
-  ) as ShareSpaceResource
+  const space = buildSpace({
+    id,
+    driveAlias: `${driveAliasPrefix}/${shareName}`,
+    driveType: 'share',
+    name: shareName,
+    serverUrl
+  }) as ShareSpaceResource
   space.rename = (newName: string) => {
     space.driveAlias = `${driveAliasPrefix}/${newName}`
     space.name = newName
@@ -140,8 +125,7 @@ export function buildSpace(
     serverUrl?: string
     webDavPath?: string
     webDavTrashPath?: string
-  },
-  graphRoles: Record<string, ShareRole>
+  }
 ): SpaceResource {
   let spaceImageData: DriveItem, spaceReadmeData: DriveItem
   if (data.special) {
@@ -166,15 +150,6 @@ export function buildSpace(
     leadingSlash: true
   })
   const webDavTrashUrl = urlJoin(data.serverUrl, 'remote.php/dav', webDavTrashPath)
-
-  const members = data.root?.permissions?.reduce<Record<string, SpaceMember>>((acc, p) => {
-    acc[(p.grantedToV2.user || p.grantedToV2.group).id] = {
-      grantedTo: p.grantedToV2,
-      permissions: getPermissionsFromGraphPermission(p, graphRoles),
-      roleId: p.roles?.[0]
-    }
-    return acc
-  }, {})
 
   const s = {
     id: data.id,
@@ -204,19 +179,19 @@ export function buildSpace(
     disabled,
     root: data.root,
     spaceQuota: data.quota,
-    members: members || {},
     spaceImageData,
     spaceReadmeData,
+    graphPermissions: undefined,
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
         return true
       }
-      return getPermissionsForSpaceMember(this, user).includes(GraphSharePermission.createUpload)
+      return this.graphPermissions?.includes(GraphSharePermission.createUpload)
     },
     canDownload: function () {
       return true
     },
-    canBeDeleted: function ({ user, ability }: { user?: User; ability?: Ability } = {}) {
+    canBeDeleted: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (!this.disabled) {
         return false
       }
@@ -224,29 +199,23 @@ export function buildSpace(
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canRename: function ({ user, ability }: { user?: User; ability?: Ability } = {}) {
+    canRename: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (ability?.can('update-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canEditDescription: function ({ user, ability }: { user?: User; ability?: Ability } = {}) {
+    canEditDescription: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (ability?.can('update-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canRestore: function ({ user, ability }: { user?: User; ability?: Ability } = {}) {
+    canRestore: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (!this.disabled) {
         return false
       }
@@ -254,11 +223,9 @@ export function buildSpace(
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canDisable: function ({ user, ability }: { user?: User; ability?: Ability } = {}) {
+    canDisable: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (this.disabled) {
         return false
       }
@@ -266,47 +233,37 @@ export function buildSpace(
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canShare: function ({ user }: { user?: User } = {}) {
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.createPermissions
-      )
+    canShare: function () {
+      return this.graphPermissions?.includes(GraphSharePermission.createPermissions)
     },
-    canEditImage: function ({ user }: { user?: User } = {}) {
+    canEditImage: function () {
       if (this.disabled) {
         return false
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canEditReadme: function ({ user }: { user?: User } = {}) {
+    canEditReadme: function () {
       if (this.disabled) {
         return false
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canRestoreFromTrashbin: function ({ user }: { user?: User } = {}) {
-      return getPermissionsForSpaceMember(this, user).includes(GraphSharePermission.updateDeleted)
+    canRestoreFromTrashbin: function () {
+      return this.graphPermissions?.includes(GraphSharePermission.updateDeleted)
     },
-    canDeleteFromTrashBin: function ({ user }: { user?: User } = {}) {
+    canDeleteFromTrashBin: function () {
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return getPermissionsForSpaceMember(this, user).includes(
-        GraphSharePermission.deletePermissions
-      )
+      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canListVersions: function ({ user }: { user?: User } = {}) {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
         return true
       }
-      return getPermissionsForSpaceMember(this, user).includes(GraphSharePermission.readVersions)
+      return this.graphPermissions?.includes(GraphSharePermission.readVersions)
     },
     canCreate: function () {
       return true
@@ -360,50 +317,4 @@ export function buildSpaceImageResource(space: SpaceResource): Resource {
     webDavPath: urlJoin(space.webDavPath, '.space', space.spaceImageData.name),
     canDownload: () => true
   } as Resource
-}
-
-export function getPermissionsForSpaceMember(space: SpaceResource, user: User) {
-  const permissions: string[] = []
-
-  // FIXME: user should always be given, adjust `can...` functions in SpaceResource
-  if (!user) {
-    return permissions
-  }
-
-  // gather permissions from direct user membership
-  const member = space.members[user.id]
-  if (member) {
-    permissions.push(...member.permissions)
-  }
-
-  // gather permissions from indirect group membership(s)
-  user.memberOf?.forEach((group) => {
-    const member = space.members[group.id]
-    if (member) {
-      permissions.push(...member.permissions)
-    }
-  })
-
-  return [...new Set(permissions)]
-}
-
-/**
- * Get array of permissions from a given graph permission object. If it has '@libre.graph.permissions.actions',
- * then no role exists for this set of permissions. Otherwise, the role is found in the graphRoles array.
- */
-function getPermissionsFromGraphPermission(
-  permission: Permission,
-  graphRoles: Record<string, ShareRole>
-): string[] {
-  if (permission['@libre.graph.permissions.actions']) {
-    return permission['@libre.graph.permissions.actions']
-  }
-  const role = graphRoles[permission.roles?.[0]]
-  if (role) {
-    const permissions = role.rolePermissions.find(
-      ({ condition }) => condition === 'exists @Resource.Root'
-    )
-    return permissions?.allowedResourceActions || []
-  }
-  return []
 }

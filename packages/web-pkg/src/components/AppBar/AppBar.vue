@@ -47,11 +47,14 @@
         <div class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
-            v-if="showBatchActions"
+            v-if="showBatchActions && !batchActionsLoading"
             :actions="batchActions"
             :action-options="{ space, resources: selectedResources }"
             :limited-screen-space="limitedScreenSpace"
           />
+          <div v-else-if="showBatchActions && batchActionsLoading">
+            <oc-spinner :aria-label="$gettext('Loading actions')" />
+          </div>
         </div>
       </div>
       <slot name="content" />
@@ -143,6 +146,7 @@ export default defineComponent({
     hasPagination: { type: Boolean, default: true },
     showActionsOnSelection: { type: Boolean, default: false },
     isSideBarOpen: { type: Boolean, default: false },
+    batchActionsLoading: { type: Boolean, default: false },
     space: {
       type: Object as PropType<SpaceResource>,
       required: false,

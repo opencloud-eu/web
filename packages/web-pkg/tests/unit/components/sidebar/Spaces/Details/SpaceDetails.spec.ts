@@ -4,7 +4,6 @@ import {
   ShareRole,
   SpaceResource,
   Resource,
-  SpaceMember,
   GraphSharePermission
 } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
@@ -18,12 +17,6 @@ const spaceMock = {
   id: '1',
   driveType: 'project',
   mdate: 'Wed, 21 Oct 2015 07:28:00 GMT',
-  members: [
-    mock<SpaceMember>({
-      permissions: [GraphSharePermission.deletePermissions],
-      grantedTo: { user: { id: '1', displayName: 'alice' }, group: undefined }
-    })
-  ],
   spaceQuota: {
     used: 100,
     total: 1000

@@ -79,7 +79,6 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsEditQuota,
   AppLoadingSpinner,
-  useSharesStore,
   useAbility,
   CreateSpace
 } from '@opencloud-eu/web-pkg'
@@ -112,7 +111,6 @@ export default defineComponent({
     const clientService = useClientService()
     const { $gettext } = useGettext()
     const { isSideBarOpen, sideBarActivePanel } = useSideBar()
-    const sharesStore = useSharesStore()
     const { can } = useAbility()
 
     const loadResourcesEventToken = ref(null)
@@ -136,10 +134,10 @@ export default defineComponent({
     const loadResourcesTask = useTask(function* (signal) {
       const drives = yield* call(
         clientService.graphAuthenticated.drives.listAllDrives(
-          sharesStore.graphRoles,
           {
             orderBy: 'name asc',
-            filter: 'driveType eq project'
+            filter: 'driveType eq project',
+            expand: 'root($expand=permissions)'
           },
           { signal }
         )

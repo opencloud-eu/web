@@ -1,7 +1,6 @@
 import { getComposableWrapper, useGetMatchingSpaceMock } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import {
-  getPermissionsForSpaceMember,
   GraphSharePermission,
   IncomingShareResource,
   PersonalSpaceResource,
@@ -17,10 +16,6 @@ import { useGetMatchingSpace } from '../../../../src/composables/spaces/useGetMa
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
 
 vi.mock('../../../../src/composables/spaces/useGetMatchingSpace')
-vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  getPermissionsForSpaceMember: vi.fn()
-}))
 
 describe('useCanListShares', () => {
   describe('canListShares', () => {
@@ -137,7 +132,10 @@ describe('useCanListShares', () => {
       it('returns true with sufficient permissions', () => {
         getWrapper({
           setup: ({ canListShares }) => {
-            const space = mock<ShareSpaceResource>({ driveType: 'share' })
+            const space = mock<ShareSpaceResource>({
+              driveType: 'share',
+              graphPermissions: [GraphSharePermission.readPermissions]
+            })
             const resource = mock<Resource>()
 
             const capabilityStore = useCapabilityStore()
@@ -145,14 +143,13 @@ describe('useCanListShares', () => {
 
             const canList = canListShares({ space, resource })
             expect(canList).toBeTruthy()
-          },
-          shareSpacePermissions: [GraphSharePermission.readPermissions]
+          }
         })
       })
       it('returns false with insufficient permissions', () => {
         getWrapper({
           setup: ({ canListShares }) => {
-            const space = mock<ShareSpaceResource>({ driveType: 'share' })
+            const space = mock<ShareSpaceResource>({ driveType: 'share', graphPermissions: [] })
             const resource = mock<Resource>()
 
             const capabilityStore = useCapabilityStore()
@@ -160,8 +157,7 @@ describe('useCanListShares', () => {
 
             const canList = canListShares({ space, resource })
             expect(canList).toBeFalsy()
-          },
-          shareSpacePermissions: []
+          }
         })
       })
     })
@@ -170,20 +166,16 @@ describe('useCanListShares', () => {
 
 function getWrapper({
   setup,
-  isPersonalSpaceRoot = false,
-  shareSpacePermissions = []
+  isPersonalSpaceRoot = false
 }: {
   setup: (instance: ReturnType<typeof useCanListShares>) => void
   isPersonalSpaceRoot?: boolean
-  shareSpacePermissions?: GraphSharePermission[]
 }) {
   vi.mocked(useGetMatchingSpace).mockImplementation(() =>
     useGetMatchingSpaceMock({
       isPersonalSpaceRoot: () => isPersonalSpaceRoot
     })
   )
-
-  vi.mocked(getPermissionsForSpaceMember).mockReturnValue(shareSpacePermissions)
 
   return {
     wrapper: getComposableWrapper(() => {

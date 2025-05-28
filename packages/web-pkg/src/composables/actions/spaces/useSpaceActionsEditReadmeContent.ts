@@ -9,7 +9,7 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { useClientService } from '../../clientService'
-import { useSharesStore, useSpacesStore, useUserStore } from '../../piniaStores'
+import { useSpacesStore, useUserStore } from '../../piniaStores'
 import { useCreateSpace, useSpaceHelpers } from '../../spaces'
 
 export const useSpaceActionsEditReadmeContent = () => {
@@ -18,7 +18,6 @@ export const useSpaceActionsEditReadmeContent = () => {
   const { createDefaultMetaFolder } = useCreateSpace()
   const userStore = useUserStore()
   const spacesStore = useSpacesStore()
-  const sharesStore = useSharesStore()
   const { $gettext } = useGettext()
   const { getDefaultMetaFolder } = useSpaceHelpers()
 
@@ -30,14 +29,10 @@ export const useSpaceActionsEditReadmeContent = () => {
       fileName: 'readme.md'
     })
 
-    const updatesSpace = await clientService.graphAuthenticated.drives.updateDrive(
-      space.id,
-      {
-        name: space.name,
-        special: [{ specialFolder: { name: 'readme' }, id: markdownResource.id }]
-      },
-      sharesStore.graphRoles
-    )
+    const updatesSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
+      name: space.name,
+      special: [{ specialFolder: { name: 'readme' }, id: markdownResource.id }]
+    })
 
     spacesStore.updateSpaceField({
       id: space.id,

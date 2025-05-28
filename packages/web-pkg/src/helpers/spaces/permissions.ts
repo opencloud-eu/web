@@ -1,6 +1,6 @@
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { SharesStore, SpacesStore, UserStore } from '../../composables/piniaStores'
-import { SpaceMember, SpaceResource } from '@opencloud-eu/web-client'
+import { SharesStore, SpacesStore } from '../../composables/piniaStores'
+import { SpaceResource } from '@opencloud-eu/web-client'
 
 /**
  * Since shared spaces are only virtual, they and their permissions can't be fetched from the server.
@@ -9,13 +9,11 @@ import { SpaceMember, SpaceResource } from '@opencloud-eu/web-client'
 export const setCurrentUserShareSpacePermissions = ({
   sharesStore,
   spacesStore,
-  userStore,
   space,
   sharedDriveItem
 }: {
   sharesStore: SharesStore
   spacesStore: SpacesStore
-  userStore: UserStore
   space: SpaceResource
   sharedDriveItem: DriveItem
 }) => {
@@ -38,15 +36,9 @@ export const setCurrentUserShareSpacePermissions = ({
     allPermissions.push(...permissions)
   })
 
-  const uniquePermissions = [...new Set(allPermissions)]
-  const spaceMember: SpaceMember = {
-    grantedTo: { user: { id: userStore.user.id, displayName: userStore.user.displayName } },
-    permissions: uniquePermissions,
-    roleId: ''
-  }
   spacesStore.updateSpaceField({
     id: space.id,
-    field: 'members',
-    value: { [userStore.user.id]: spaceMember }
+    field: 'graphPermissions',
+    value: [...new Set(allPermissions)]
   })
 }
