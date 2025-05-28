@@ -5,15 +5,15 @@ import { Recipient as RecipientType } from '../../helpers'
 describe('OcRecipient', () => {
   function getWrapper(
     props: Partial<RecipientType> = undefined,
-    prependSlot: string = undefined,
+    avatarSlot: string = undefined,
     appendSlot: string = undefined
   ) {
-    const slots: { append?: string; prepend?: string } = {}
+    const slots: { append?: string; avatar?: string } = {}
     if (appendSlot) {
       slots.append = appendSlot
     }
-    if (prependSlot) {
-      slots.prepend = prependSlot
+    if (avatarSlot) {
+      slots.avatar = avatarSlot
     }
 
     return shallowMount(Recipient, {
@@ -43,10 +43,10 @@ describe('OcRecipient', () => {
     expect(wrapper.find('oc-avatar-item-stub').attributes('icon')).toEqual('user')
   })
 
-  it('display content in the prepend slot', () => {
-    const wrapper = getWrapper({}, '<span id="prepend-slot">Hello world</span>')
+  it('display content in the avatar slot', () => {
+    const wrapper = getWrapper({}, '<span id="avatar-slot">Hello world</span>')
 
-    expect(wrapper.find('#prepend-slot').exists()).toBeTruthy()
+    expect(wrapper.find('#avatar-slot').exists()).toBeTruthy()
   })
 
   it('display content in the append slot', () => {

@@ -4,7 +4,7 @@
     class="files-share-invite-recipient"
     :recipient="formattedRecipient"
   >
-    <template #prepend>
+    <template #avatar>
       <user-avatar
         v-if="recipient.shareType === ShareTypes.user.value"
         :user-id="recipient.id"

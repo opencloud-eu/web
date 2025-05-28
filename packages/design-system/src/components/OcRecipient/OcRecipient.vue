@@ -1,6 +1,6 @@
 <template>
   <span class="oc-recipient">
-    <slot name="prepend">
+    <slot name="avatar">
       <oc-avatar-item
         :width="16.8"
         :icon="recipient.icon.name"
@@ -31,7 +31,7 @@ export interface Slots {
    * @docs Append content for additional info.
    */
   append?: () => unknown
-  prepend?: () => unknown
+  avatar?: () => unknown
 }
 
 const { recipient } = defineProps<Props>()
