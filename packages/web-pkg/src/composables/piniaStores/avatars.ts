@@ -1,8 +1,18 @@
 import { defineStore } from 'pinia'
-import { ref, unref } from 'vue'
+import { markRaw, ref, unref } from 'vue'
+import PQueue from 'p-queue'
+import { useConfigStore } from './config'
 
 export const useAvatarsStore = defineStore('avatars', () => {
+  const configStore = useConfigStore()
+
   const avatarMap = ref<Record<string, string>>({})
+  const avatarsQueue = markRaw(
+    new PQueue({ concurrency: configStore.options.concurrentRequests.avatars })
+  )
+  const pendingAvatarsRequests = new Map<string, Promise<any>>()
+
+  console.log(avatarsQueue)
 
   const addAvatar = (userId: string, avatar: string) => {
     avatarMap.value[userId] = avatar
@@ -25,7 +35,9 @@ export const useAvatarsStore = defineStore('avatars', () => {
     getAvatar,
     addAvatar,
     removeAvatar,
-    reset
+    reset,
+    avatarsQueue,
+    pendingAvatarsRequests
   }
 })
 

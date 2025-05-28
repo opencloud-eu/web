@@ -10,7 +10,6 @@ import {
   useThemeStore,
   useUserStore,
   UserStore,
-  useAvatarsStore,
   useMessages,
   useSpacesStore,
   useAuthStore,
@@ -354,7 +353,6 @@ export const announcePiniaStores = () => {
   const sharesStore = useSharesStore()
   const spacesStore = useSpacesStore()
   const userStore = useUserStore()
-  const avatarsStore = useAvatarsStore()
   const webWorkersStore = useWebWorkersStore()
 
   return {
@@ -369,7 +367,6 @@ export const announcePiniaStores = () => {
     sharesStore,
     spacesStore,
     userStore,
-    avatarsStore,
     webWorkersStore
   }
 }

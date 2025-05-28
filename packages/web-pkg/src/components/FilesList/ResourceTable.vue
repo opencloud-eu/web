@@ -733,9 +733,6 @@ export default defineComponent({
     }
   },
   computed: {
-    shareType() {
-      return shareType
-    },
     fields() {
       if (this.resources.length === 0) {
         return []

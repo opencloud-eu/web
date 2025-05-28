@@ -1,13 +1,9 @@
-import PQueue from 'p-queue'
 import { useClientService } from '../clientService'
-import { useAvatarsStore, useConfigStore } from '../piniaStores'
+import { useAvatarsStore } from '../piniaStores'
 
 export const useLoadAvatars = () => {
   const clientService = useClientService()
-  const { addAvatar, getAvatar } = useAvatarsStore()
-  const configStore = useConfigStore()
-
-  const queue = new PQueue({ concurrency: configStore.options.concurrentRequests.avatars })
+  const { addAvatar, getAvatar, avatarsQueue, pendingAvatarsRequests } = useAvatarsStore()
 
   const loadAvatar = async (userId: string) => {
     try {
@@ -23,12 +19,14 @@ export const useLoadAvatars = () => {
   }
 
   const enqueueAvatar = (userId: string) => {
-    // Prevent duplicate requests for the same avatar
-    if (getAvatar(userId) !== undefined) {
+    // Prevent duplicate requests for the same user
+    if (getAvatar(userId) !== undefined || pendingAvatarsRequests.has(userId)) {
       return
     }
 
-    return queue.add(() => loadAvatar(userId))
+    const loadAvatarPromise = avatarsQueue.add(() => loadAvatar(userId))
+    pendingAvatarsRequests.set(userId, loadAvatarPromise)
+    loadAvatarPromise.finally(() => pendingAvatarsRequests.delete(userId))
   }
 
   return {
