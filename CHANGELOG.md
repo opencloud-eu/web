@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat: show avatars across the webui [[#757](https://github.com/opencloud-eu/web/pull/757)]
 - feat: extract first frame from gif, so space image cropping works fla… [[#747](https://github.com/opencloud-eu/web/pull/747)]
 - feat: add profile pictures [[#626](https://github.com/opencloud-eu/web/pull/626)]
 - feat: Added CalDAV URL to the Accountpage [[#693](https://github.com/opencloud-eu/web/pull/693)]
