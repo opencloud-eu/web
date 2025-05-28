@@ -12,8 +12,6 @@ export const useAvatarsStore = defineStore('avatars', () => {
   )
   const pendingAvatarsRequests = new Map<string, Promise<any>>()
 
-  console.log(avatarsQueue)
-
   const addAvatar = (userId: string, avatar: string) => {
     avatarMap.value[userId] = avatar
   }

@@ -207,7 +207,7 @@
             <user-avatar
               v-for="avatar in getSharedByAvatarItems(item)"
               :key="avatar.username"
-              :user-id="avatar.id"
+              :user-id="avatar.userId"
               :user-name="avatar.displayName"
               :width="30"
             />
@@ -236,7 +236,7 @@
                 (s) => s.shareType === ShareTypes.user.value
               )"
               :key="avatar.username"
-              :user-id="avatar.id"
+              :user-id="avatar.userId"
               :user-name="avatar.displayName"
               :width="30"
             />
@@ -1250,7 +1250,7 @@ export default defineComponent({
         name: s.displayName,
         shareType: ShareTypes.user.value,
         username: s.id,
-        id: s.id
+        userId: s.id
       }))
     },
     getSharedWithAvatarItems(resource: Resource) {
@@ -1267,7 +1267,7 @@ export default defineComponent({
           name: s.displayName,
           shareType: s.shareType,
           username: s.id,
-          id: s.id
+          userId: s.id
         }))
     }
   }
