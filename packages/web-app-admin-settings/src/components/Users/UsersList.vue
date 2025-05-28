@@ -46,7 +46,7 @@
           />
         </template>
         <template #avatar="{ item }">
-          <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
+          <user-avatar :user-id="item.id" :user-name="item.displayName" />
         </template>
         <template #role="{ item }">
           <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
@@ -108,11 +108,11 @@
 import { useGettext } from 'vue3-gettext'
 import {
   ComponentPublicInstance,
-  PropType,
   computed,
   defineComponent,
   nextTick,
   onMounted,
+  PropType,
   ref,
   unref,
   useTemplateRef,
@@ -121,19 +121,21 @@ import {
 import {
   AppLoadingSpinner,
   ContextMenuBtnClickEventData,
+  ContextMenuQuickAction,
   displayPositionedDropdown,
   eventBus,
+  Pagination,
   queryItemAsString,
+  SideBarEventTopics,
   SortDir,
+  useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
-  useRouteQuery
+  usePagination,
+  useRouteQuery,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
-import { ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
-import { useFileListHeaderPosition, usePagination } from '@opencloud-eu/web-pkg'
-import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
 import { storeToRefs } from 'pinia'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
@@ -148,7 +150,7 @@ import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'UsersList',
-  components: { AppLoadingSpinner, ContextMenuQuickAction, Pagination },
+  components: { UserAvatar, AppLoadingSpinner, ContextMenuQuickAction, Pagination },
   props: {
     roles: {
       type: Array as PropType<AppRole[]>,

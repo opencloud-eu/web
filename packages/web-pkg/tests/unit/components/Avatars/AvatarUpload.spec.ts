@@ -1,4 +1,4 @@
-import AvatarUpload from '../../../src/components/AvatarUpload.vue'
+import AvatarUpload from '../../../../src/components/Avatars/AvatarUpload.vue'
 import {
   createMockFile,
   defaultComponentMocks,
@@ -6,7 +6,7 @@ import {
   mount,
   nextTicks
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages } from '../../../src'
+import { useMessages } from '../../../../src'
 import { describe } from 'vitest'
 
 vi.mock('cropperjs', () => {
@@ -163,7 +163,7 @@ const getWrapper = ({ userHasAvatar = true } = {}) => {
           ...defaultPlugins({
             piniaOptions: {
               avatarsStore: {
-                userAvatar: userHasAvatar ? 'https://localhost:9201/some-object-url' : null
+                avatarMap: userHasAvatar ? { '1': 'https://localhost:9201/some-object-url' } : {}
               }
             }
           })

@@ -1,31 +1,14 @@
 <template>
   <span class="oc-recipient">
-    <template v-if="recipient.hasAvatar">
-      <oc-spinner
-        v-if="recipient.isLoadingAvatar"
-        key="recipient-avatar-spinner"
-        size="small"
-        :aria-label="$gettext('Loading avatar')"
-        data-testid="recipient-avatar-spinner"
-      />
-      <oc-avatar
-        v-else
-        :key="recipient.avatar || recipient.name"
-        data-testid="recipient-avatar"
-        class="oc-recipient-avatar"
-        :src="recipient.avatar"
-        :user-name="recipient.name"
+    <slot name="avatar">
+      <oc-avatar-item
         :width="16.8"
+        :icon="recipient.icon.name"
+        :name="recipient.icon.label"
+        :accessible-label="recipient.icon.label"
+        data-testid="recipient-icon"
       />
-    </template>
-    <oc-icon
-      v-else-if="recipient.icon && recipient.icon.name"
-      class="oc-recipient-icon"
-      size="small"
-      :name="recipient.icon.name"
-      :accessible-label="recipient.icon.label"
-      data-testid="recipient-icon"
-    />
+    </slot>
     <p class="oc-recipient-name" data-testid="recipient-name" v-text="recipient.name" />
     <!-- @slot Append content (actions, additional info, etc.)  -->
     <slot name="append" />
@@ -33,10 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import OcAvatar from '../OcAvatar/OcAvatar.vue'
-import OcIcon from '../OcIcon/OcIcon.vue'
-import OcSpinner from '../OcSpinner/OcSpinner.vue'
 import { Recipient } from '../../helpers'
+import OcAvatarItem from '../OcAvatarItem/OcAvatarItem.vue'
 
 export interface Props {
   /**
@@ -50,6 +31,7 @@ export interface Slots {
    * @docs Append content for additional info.
    */
   append?: () => unknown
+  avatar?: () => unknown
 }
 
 const { recipient } = defineProps<Props>()

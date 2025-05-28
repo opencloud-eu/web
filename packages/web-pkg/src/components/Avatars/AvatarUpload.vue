@@ -8,20 +8,14 @@
       @change="onFileChange"
     />
     <div class="oc-flex oc-flex-column oc-flex-middle">
-      <oc-avatar
-        class="oc-mb-m"
-        :width="128"
-        :userid="user.onPremisesSamAccountName"
-        :user-name="user.displayName"
-        :src="userAvatar"
-      />
+      <user-avatar class="oc-mb-m" :width="128" :user-id="user.id" :user-name="user.displayName" />
       <div>
         <div class="oc-button-group">
           <oc-button class="avatar-upload-button" size="small" @click="triggerFileInput">
             {{ $gettext('Upload') }}
           </oc-button>
           <oc-button
-            v-if="userAvatar"
+            v-if="hasAvatar"
             class="avatar-upload-remove-button"
             size="small"
             @click="showRemoveModal = true"
@@ -59,18 +53,19 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, unref, watch } from 'vue'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
-import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../composables'
+import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../constants'
+import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
+import UserAvatar from './UserAvatar.vue'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
+const { avatarMap } = storeToRefs(avatarsStore)
 const { user } = storeToRefs(userStore)
-const { userAvatar } = storeToRefs(avatarsStore)
 
 const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
@@ -85,6 +80,10 @@ const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
+
+const hasAvatar = computed(() => {
+  return !!unref(avatarMap)[unref(user).id]
+})
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -162,7 +161,7 @@ const onCropModalConfirm = async () => {
 
   try {
     await graphAuthenticated.photos.updateOwnUserPhotoPatch(file)
-    avatarsStore.setUserAvatar(objectUrl)
+    avatarsStore.addAvatar(unref(user).id, objectUrl)
     showMessage({ title: $gettext('Profile picture was set successfully') })
   } catch (error) {
     showErrorMessage({
@@ -178,7 +177,7 @@ const onCropModalConfirm = async () => {
 const onRemoveModalConfirm = async () => {
   try {
     await graphAuthenticated.photos.deleteOwnUserPhoto()
-    avatarsStore.removeUserAvatar()
+    avatarsStore.removeAvatar(unref(user).id)
     showMessage({ title: $gettext('Profile picture was removed successfully') })
   } catch (error) {
     showErrorMessage({

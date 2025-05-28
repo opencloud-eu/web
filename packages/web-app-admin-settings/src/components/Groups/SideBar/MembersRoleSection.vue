@@ -6,7 +6,7 @@
       class="oc-flex oc-flex-middle oc-mb-s"
       data-testid="group-members-list"
     >
-      <oc-avatar :user-name="member.displayName" :width="36" class="oc-mr-s" />
+      <user-avatar :user-id="member.id" :user-name="member.displayName" class="oc-mr-s" />
       <span class="oc-text-truncate" :title="member.displayName">
         {{ member.displayName }}
       </span>
@@ -16,9 +16,11 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'MembersRoleSection',
+  components: { UserAvatar },
   props: {
     groupMembers: {
       type: Array as PropType<User[]>,

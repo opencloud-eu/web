@@ -4,6 +4,14 @@
     class="files-share-invite-recipient"
     :recipient="formattedRecipient"
   >
+    <template #avatar>
+      <user-avatar
+        v-if="recipient.shareType === ShareTypes.user.value"
+        :user-id="recipient.id"
+        :user-name="recipient.displayName"
+        width="16.8"
+      />
+    </template>
     <template #append>
       <oc-button
         class="files-share-invite-recipient-btn-remove raw-hover-surface"
@@ -18,14 +26,13 @@
 </template>
 
 <script lang="ts">
-import { avatarUrl } from '../../../../../helpers/user'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 import { computed, defineComponent, PropType } from 'vue'
 import { Recipient } from '@opencloud-eu/design-system/helpers'
-import { useCapabilityStore, useConfigStore } from '@opencloud-eu/web-pkg'
-import { storeToRefs } from 'pinia'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
+  components: { UserAvatar },
   props: {
     recipient: {
       type: Object as PropType<CollaboratorAutoCompleteItem>,
@@ -38,12 +45,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const capabilityStore = useCapabilityStore()
-    const capabilityRefs = storeToRefs(capabilityStore)
-
-    const configStore = useConfigStore()
-    const { serverUrl } = storeToRefs(configStore)
-
     const externalIssuer = computed(() => {
       if (props.recipient.shareType === ShareTypes.remote.value) {
         return props.recipient.identities?.[0]?.issuer
@@ -52,9 +53,8 @@ export default defineComponent({
     })
 
     return {
-      serverUrl,
-      userProfilePicture: capabilityRefs.sharingUserProfilePicture,
-      externalIssuer
+      externalIssuer,
+      ShareTypes
     }
   },
   data(): { formattedRecipient: Recipient } {
@@ -66,9 +66,7 @@ export default defineComponent({
     return {
       formattedRecipient: {
         name,
-        icon: this.getRecipientIcon(),
-        hasAvatar: this.recipient.shareType === ShareTypes.user.value,
-        isLoadingAvatar: true
+        icon: this.getRecipientIcon()
       }
     }
   },
@@ -77,22 +75,6 @@ export default defineComponent({
     btnDeselectRecipientLabel() {
       return this.$gettext('Deselect %{name}', { name: this.recipient.displayName })
     }
-  },
-
-  async created() {
-    if (this.userProfilePicture && this.formattedRecipient.hasAvatar) {
-      try {
-        this.formattedRecipient.avatar = await avatarUrl({
-          clientService: this.$clientService,
-          server: this.serverUrl,
-          username: this.recipient.displayName
-        })
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    this.formattedRecipient.isLoadingAvatar = false
   },
 
   methods: {

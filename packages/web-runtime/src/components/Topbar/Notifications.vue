@@ -39,10 +39,9 @@
               class="oc-flex oc-flex-middle oc-my-xs"
               :to="el.computedLink"
             >
-              <avatar-image
+              <user-avatar
                 class="oc-mr-m"
-                :width="32"
-                :userid="el.messageRichParameters?.user?.name || el.user"
+                :user-id="el.messageRichParameters?.user?.id || el.user"
                 :user-name="el.messageRichParameters?.user?.displayname || el.user"
               />
               <div>
@@ -84,7 +83,8 @@ import {
   createFileRouteOptions,
   formatDateFromISO,
   formatRelativeDateFromISO,
-  useClientService
+  useClientService,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
 import NotificationBell from './NotificationBell.vue'
 import { Notification } from '../../helpers/notifications'
@@ -98,6 +98,7 @@ const POLLING_INTERVAL = 30000
 
 export default {
   components: {
+    UserAvatar,
     NotificationBell
   },
   setup() {

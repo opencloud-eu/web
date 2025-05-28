@@ -1,0 +1,47 @@
+<template>
+  <oc-avatar :user-name="userName" :src="avatarSrc" :width="36" />
+</template>
+
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, unref } from 'vue'
+import { useAvatarsStore, useClientService } from '../../composables'
+import { storeToRefs } from 'pinia'
+
+const { userId } = defineProps<{
+  userId: string
+  userName: string
+}>()
+
+const avatarsStore = useAvatarsStore()
+const { avatarMap } = storeToRefs(avatarsStore)
+const clientService = useClientService()
+
+const controller = new AbortController()
+
+const avatarSrc = computed(() => {
+  return unref(avatarMap)[userId]
+})
+
+const loadAvatar = async () => {
+  if (unref(avatarMap).hasOwnProperty(userId)) {
+    return false
+  }
+  try {
+    const avatar = await clientService.graphAuthenticated.photos.getUserPhoto(userId, {
+      responseType: 'blob',
+      signal: controller.signal
+    })
+    avatarsStore.addAvatar(userId, URL.createObjectURL(avatar))
+  } catch {
+    avatarsStore.addAvatar(userId, null)
+  }
+}
+
+onMounted(() => {
+  loadAvatar()
+})
+
+onBeforeUnmount(() => {
+  controller.abort()
+})
+</script>
