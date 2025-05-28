@@ -198,11 +198,21 @@
         @click="openSharingSidebar(item)"
       >
         <oc-avatars
-          class="resource-table-people"
-          :items="getSharedByAvatarItems(item)"
+          class="resource-table-people oc-flex"
           :is-tooltip-displayed="true"
+          :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
-        />
+        >
+          <template #userAvatars>
+            <user-avatar
+              v-for="avatar in getSharedByAvatarItems(item)"
+              :key="avatar.username"
+              :user-id="avatar.id"
+              :user-name="avatar.displayName"
+              :width="30"
+            />
+          </template>
+        </oc-avatars>
       </oc-button>
     </template>
     <template #sharedWith="{ item }">
@@ -213,13 +223,25 @@
         @click="openSharingSidebar(item)"
       >
         <oc-avatars
-          class="resource-table-people"
+          class="resource-table-people oc-flex"
           :items="getSharedWithAvatarItems(item)"
           :stacked="true"
           :max-displayed="3"
           :is-tooltip-displayed="true"
           :accessible-description="getSharedWithAvatarDescription(item)"
-        />
+        >
+          <template #userAvatars>
+            <user-avatar
+              v-for="avatar in getSharedWithAvatarItems(item).filter(
+                (s) => s.shareType === ShareTypes.user.value
+              )"
+              :key="avatar.username"
+              :user-id="avatar.id"
+              :user-name="avatar.displayName"
+              :width="30"
+            />
+          </template>
+        </oc-avatars>
       </oc-button>
     </template>
     <template #actions="{ item }">
@@ -251,47 +273,49 @@
 
 <script lang="ts">
 import {
+  ComponentPublicInstance,
+  computed,
+  ComputedRef,
   defineComponent,
   PropType,
-  computed,
-  unref,
   ref,
-  ComputedRef,
-  ComponentPublicInstance
+  unref
 } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
+  extractDomSelector,
   IncomingShareResource,
   isProjectSpaceResource,
+  isShareResource,
   Resource,
+  ShareTypes,
+  SpaceResource,
   TrashResource
 } from '@opencloud-eu/web-client'
-import { extractDomSelector, SpaceResource } from '@opencloud-eu/web-client'
-import { ShareTypes, isShareResource } from '@opencloud-eu/web-client'
 
 import {
-  SortDir,
+  embedModeFilePickMessageData,
   FolderViewModeConstants,
-  useGetMatchingSpace,
-  useFolderLink,
-  useEmbedMode,
+  routeToContextQuery,
+  SortDir,
   useAuthStore,
+  useCanBeOpenedWithSecureView,
   useCapabilityStore,
-  useConfigStore,
   useClipboardStore,
+  useConfigStore,
+  useEmbedMode,
+  useFileActions,
+  useFolderLink,
+  useGetMatchingSpace,
+  useIsTopBarSticky,
   useResourcesStore,
   useRouter,
-  useCanBeOpenedWithSecureView,
-  useFileActions,
-  useIsTopBarSticky,
-  embedModeFilePickMessageData,
-  routeToContextQuery,
   useSpaceActionsRename
 } from '../../composables'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
-import { EVENT_TROW_MOUNTED, EVENT_FILE_DROPPED, ImageDimension } from '../../constants'
+import { EVENT_FILE_DROPPED, EVENT_TROW_MOUNTED, ImageDimension } from '../../constants'
 import { eventBus } from '../../services'
 import {
   ContextMenuBtnClickEventData,
@@ -310,16 +334,17 @@ import { useFileActionsRename } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
-import { OcButton, OcTable } from '@opencloud-eu/design-system/components'
+import { OcButton, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import { OcSpinner } from '@opencloud-eu/design-system/components'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
+import { UserAvatar } from '../Avatars'
 
 const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
 export default defineComponent({
   components: {
+    UserAvatar,
     ContextMenuQuickAction,
     ResourceGhostElement,
     ResourceListItem,
@@ -695,7 +720,8 @@ export default defineComponent({
       isResourceClickable,
       getResourceLink,
       isSticky,
-      isResourceInDeleteQueue
+      isResourceInDeleteQueue,
+      ShareTypes
     }
   },
   data() {
@@ -707,6 +733,9 @@ export default defineComponent({
     }
   },
   computed: {
+    shareType() {
+      return shareType
+    },
     fields() {
       if (this.resources.length === 0) {
         return []
@@ -1223,7 +1252,8 @@ export default defineComponent({
         displayName: s.displayName,
         name: s.displayName,
         shareType: ShareTypes.user.value,
-        username: s.id
+        username: s.id,
+        id: s.id
       }))
     },
     getSharedWithAvatarItems(resource: Resource) {
@@ -1239,7 +1269,8 @@ export default defineComponent({
           displayName: s.displayName,
           name: s.displayName,
           shareType: s.shareType,
-          username: s.id
+          username: s.id,
+          id: s.id
         }))
     }
   }

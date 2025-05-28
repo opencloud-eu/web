@@ -6,15 +6,17 @@
       :class="{ 'oc-avatars-stacked': stacked }"
       aria-hidden="true"
     >
-      <template v-if="avatars.length > 0">
-        <oc-avatar
-          v-for="avatar in avatars"
-          :key="avatar.username"
-          :src="avatar.avatar"
-          :user-name="avatar.displayName"
-          :width="30"
-        />
-      </template>
+      <slot name="userAvatars">
+        <template v-if="avatars.length > 0">
+          <oc-avatar
+            v-for="avatar in avatars"
+            :key="avatar.username"
+            :src="avatar.avatar"
+            :user-name="avatar.displayName"
+            :width="30"
+          />
+        </template>
+      </slot>
       <template v-if="otherItems.length > 0">
         <component
           :is="getAvatarComponentForItem(item)"

@@ -61,7 +61,8 @@ const OptionsConfigSchema = z.object({
           create: z.number().optional(),
           list: z.number().optional()
         })
-        .optional()
+        .optional(),
+      avatars: z.number().optional()
     })
     .optional(),
   contextHelpers: z.boolean().optional(),

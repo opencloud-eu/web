@@ -13,7 +13,8 @@ const defaultOptions = {
       create: 4,
       list: 2
     },
-    sse: 4
+    sse: 4,
+    avatars: 4
   },
   contextHelpers: true,
   contextHelpersReadMore: true,
