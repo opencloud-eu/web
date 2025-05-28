@@ -103,11 +103,6 @@ export default defineComponent({
     height: var(--oc-size-height-table-row);
   }
 
-  &-new-tag {
-    border: 0 !important;
-    color: var(--oc-role-on-chrome) !important;
-  }
-
   @media (min-width: $oc-breakpoint-medium-default) {
     td > .checkbox-cell-wrapper {
       display: flex;
