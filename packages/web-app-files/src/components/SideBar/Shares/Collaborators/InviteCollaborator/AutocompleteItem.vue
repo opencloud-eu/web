@@ -15,9 +15,7 @@
       :width="36"
       :name="shareTypeKey"
       :icon="shareTypeIcon"
-      icon-size="large"
-      icon-color="var(--oc-role-on-surface)"
-      background="transparent"
+      icon-size="medium"
       class="oc-mr-s"
     />
     <div class="files-collaborators-autocomplete-user-text oc-text-truncate">
