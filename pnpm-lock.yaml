@@ -122,8 +122,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(rollup@4.40.1)
       rollup-plugin-visualizer:
-        specifier: 5.14.0
-        version: 5.14.0(rollup@4.40.1)
+        specifier: 6.0.1
+        version: 6.0.1(rollup@4.40.1)
       simple-git:
         specifier: 3.27.0
         version: 3.27.0
@@ -192,10 +192,10 @@ importers:
         version: 5.6.0
       focus-trap:
         specifier: ^7.6.0
-        version: 7.6.4
+        version: 7.6.5
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.0.3(focus-trap@7.6.4)(vue@3.5.15(typescript@5.8.3))
+        version: 4.0.3(focus-trap@7.6.5)(vue@3.5.15(typescript@5.8.3))
       fuse.js:
         specifier: ^7.0.0
         version: 7.1.0
@@ -984,11 +984,11 @@ importers:
         specifier: 2.0.4
         version: 2.0.4
       focus-trap:
-        specifier: 7.6.4
-        version: 7.6.4
+        specifier: 7.6.5
+        version: 7.6.5
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.0.3(focus-trap@7.6.4)(vue@3.5.15(typescript@5.8.3))
+        version: 4.0.3(focus-trap@7.6.5)(vue@3.5.15(typescript@5.8.3))
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -4172,8 +4172,8 @@ packages:
       focus-trap: ^7.0.0
       vue: ^3.0.0
 
-  focus-trap@7.6.4:
-    resolution: {integrity: sha512-xx560wGBk7seZ6y933idtjJQc1l+ck+pI3sKvhKozdBV1dRZoKhkW5xoCaFv9tQiX5RH1xfSxjuNu6g+lmN/gw==}
+  focus-trap@7.6.5:
+    resolution: {integrity: sha512-7Ke1jyybbbPZyZXFxEftUtxFGLMpE2n6A+z//m4CRDlj0hW+o3iYSmh8nFlYMurOiJVDmJRilUQtJr08KfIxlg==}
 
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
@@ -5624,8 +5624,8 @@ packages:
   rollup-plugin-serve@3.0.0:
     resolution: {integrity: sha512-DjVRhbwC0OgP1Q1sj8Lvx12ee60UTZM767kkjT61sYKHw/wLpANAw3VZN5ZMa5NlvO8bYpfTaqiUrW+icAjXFg==}
 
-  rollup-plugin-visualizer@5.14.0:
-    resolution: {integrity: sha512-VlDXneTDaKsHIw8yzJAFWtrzguoJ/LnQ+lMpoVfYJ3jJF4Ihe5oYLAqLklIK/35lgUY+1yEzCkHyZ1j4A5w5fA==}
+  rollup-plugin-visualizer@6.0.1:
+    resolution: {integrity: sha512-NjlGElvLXCSZSAi3gNRZbfX3qlQbQcJ9TW97c5JpqfVwMhttj9YwEdPwcvbKj91RnMX2PWAjonvSEv6UEYtnRQ==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -9045,7 +9045,7 @@ snapshots:
       '@unhead/vue': 1.11.20(vue@3.5.15(typescript@5.8.3))
       vue: 3.5.15(typescript@5.8.3)
 
-  '@vueuse/integrations@12.8.2(axios@1.9.0)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.3)':
+  '@vueuse/integrations@12.8.2(axios@1.9.0)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.3)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@5.8.3)
       '@vueuse/shared': 12.8.2(typescript@5.8.3)
@@ -9053,7 +9053,7 @@ snapshots:
     optionalDependencies:
       axios: 1.9.0
       change-case: 5.4.4
-      focus-trap: 7.6.4
+      focus-trap: 7.6.5
       fuse.js: 7.1.0
       jwt-decode: 4.0.0
     transitivePeerDependencies:
@@ -10176,12 +10176,12 @@ snapshots:
 
   flush-promises@1.0.2: {}
 
-  focus-trap-vue@4.0.3(focus-trap@7.6.4)(vue@3.5.15(typescript@5.8.3)):
+  focus-trap-vue@4.0.3(focus-trap@7.6.5)(vue@3.5.15(typescript@5.8.3)):
     dependencies:
-      focus-trap: 7.6.4
+      focus-trap: 7.6.5
       vue: 3.5.15(typescript@5.8.3)
 
-  focus-trap@7.6.4:
+  focus-trap@7.6.5:
     dependencies:
       tabbable: 6.2.0
 
@@ -11683,7 +11683,7 @@ snapshots:
       mime: 4.0.7
       opener: 1.5.2
 
-  rollup-plugin-visualizer@5.14.0(rollup@4.40.1):
+  rollup-plugin-visualizer@6.0.1(rollup@4.40.1):
     dependencies:
       open: 8.4.2
       picomatch: 4.0.2
@@ -12407,8 +12407,8 @@ snapshots:
       '@vue/devtools-api': 7.7.6
       '@vue/shared': 3.5.15
       '@vueuse/core': 12.8.2(typescript@5.8.3)
-      '@vueuse/integrations': 12.8.2(axios@1.9.0)(change-case@5.4.4)(focus-trap@7.6.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.3)
-      focus-trap: 7.6.4
+      '@vueuse/integrations': 12.8.2(axios@1.9.0)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.8.3)
+      focus-trap: 7.6.5
       mark.js: 8.11.1
       minisearch: 7.1.2
       shiki: 2.5.0
