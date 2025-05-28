@@ -1,23 +1,21 @@
 <template>
-  <div class="oc-mt-xl">
-    <div v-if="noGroups" class="oc-flex group-info oc-text-center">
-      <oc-icon name="group-2" size="xxlarge" />
-      <p v-translate>Select a group to view details</p>
-    </div>
-    <div v-if="multipleGroups" class="oc-flex group-info">
-      <oc-icon name="group-2" size="xxlarge" />
-      <p>{{ multipleGroupsSelectedText }}</p>
-    </div>
-    <div v-if="group">
-      <GroupInfoBox :group="group" />
-      <p
-        class="selected-group-details"
-        :aria-label="$gettext('Overview of the information about the selected group')"
-      >
-        <span class="oc-pr-s oc-font-semibold" v-text="$gettext('Group name')" />
-        <span v-text="group.displayName" />
-      </p>
-    </div>
+  <div v-if="noGroups" class="oc-flex group-info oc-text-center oc-mt-xl">
+    <oc-icon name="group-2" size="xxlarge" />
+    <p v-translate>Select a group to view details</p>
+  </div>
+  <div v-if="multipleGroups" id="oc-groups-details-multiple-sidebar" class="oc-flex group-info">
+    <oc-icon name="group-2" size="xxlarge" />
+    <p>{{ multipleGroupsSelectedText }}</p>
+  </div>
+  <div v-if="group" id="oc-group-details-sidebar">
+    <GroupInfoBox :group="group" />
+    <p
+      class="selected-group-details"
+      :aria-label="$gettext('Overview of the information about the selected group')"
+    >
+      <span class="oc-pr-s oc-font-semibold" v-text="$gettext('Group name')" />
+      <span v-text="group.displayName" />
+    </p>
   </div>
 </template>
 <script lang="ts">
@@ -53,6 +51,13 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
+#oc-group-details-sidebar,
+#oc-groups-details-multiple-sidebar {
+  background-color: var(--oc-role-surface-container);
+  border-radius: 5px;
+  padding: var(--oc-space-medium);
+}
+
 .group-info {
   align-items: center;
   flex-direction: column;
