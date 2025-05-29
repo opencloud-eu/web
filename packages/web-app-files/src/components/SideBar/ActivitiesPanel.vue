@@ -6,7 +6,13 @@
       <oc-list class="oc-timeline">
         <li v-for="activity in activities" :key="activity.id">
           <div class="oc-flex">
-            <oc-avatars :items="[]" class="oc-mr-xs" stacked gap-size="medium">
+            <oc-avatars
+              :items="getAvatarsFromActivity(activity)"
+              class="oc-mr-xs"
+              stacked
+              gap-size="medium"
+              :width="16.8"
+            >
               <template #userAvatars>
                 <user-avatar
                   v-for="avatar in getAvatarsFromActivity(activity)"
@@ -35,7 +41,7 @@ import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
-import { call, Resource } from '@opencloud-eu/web-client'
+import { call, Resource, ShareTypes } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
 import escape from 'lodash-es/escape'
@@ -88,6 +94,8 @@ const getAvatarsFromActivity = (activity: Activity) => {
     if (entry) {
       avatars.push({
         userName: entry.displayName,
+        displayName: entry.displayName,
+        shareType: ShareTypes.user.value,
         userId: entry.id
       })
     }

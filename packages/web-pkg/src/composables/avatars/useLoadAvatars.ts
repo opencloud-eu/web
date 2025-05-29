@@ -11,8 +11,11 @@ export const useLoadAvatars = () => {
         responseType: 'blob'
       })
       addAvatar(userId, URL.createObjectURL(avatar))
-    } catch {
-      addAvatar(userId, null)
+    } catch (error) {
+      if (error.response?.status === 404) {
+        // If the avatar is not found, we can set it to null, otherwise it will be fetched again
+        addAvatar(userId, null)
+      }
     }
 
     return getAvatar(userId)
