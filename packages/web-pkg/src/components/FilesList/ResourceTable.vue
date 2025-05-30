@@ -198,7 +198,7 @@
         @click="openSharingSidebar(item)"
       >
         <oc-avatars
-          class="resource-table-people oc-flex"
+          class="resource-table-people"
           :is-tooltip-displayed="true"
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
@@ -223,7 +223,7 @@
         @click="openSharingSidebar(item)"
       >
         <oc-avatars
-          class="resource-table-people oc-flex"
+          class="resource-table-people"
           :items="getSharedWithAvatarItems(item)"
           :stacked="true"
           :max-displayed="3"
