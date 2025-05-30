@@ -1,7 +1,7 @@
 <template>
   <span>
     <span v-oc-tooltip="tooltip" class="oc-avatars" aria-hidden="true" :class="avatarsClasses">
-      <slot name="userAvatars">
+      <slot name="userAvatars" :avatars="avatars" :width="width">
         <template v-if="avatars.length > 0">
           <oc-avatar
             v-for="avatar in avatars"

@@ -13,13 +13,13 @@
               gap-size="medium"
               :width="16.8"
             >
-              <template #userAvatars>
+              <template #userAvatars="{ avatars, width }">
                 <user-avatar
-                  v-for="avatar in getAvatarsFromActivity(activity)"
+                  v-for="avatar in avatars"
                   :key="avatar.userId"
                   :user-id="avatar.userId"
                   :user-name="avatar.userName"
-                  :width="16.8"
+                  :width="width"
                 />
               </template>
             </oc-avatars>
