@@ -9,6 +9,7 @@
             :src="avatar.avatar"
             :user-name="avatar.displayName"
             :width="width"
+            class="a"
           />
         </template>
       </slot>
@@ -158,14 +159,8 @@ const avatarsClasses = computed(() => {
   flex-flow: row nowrap;
   width: fit-content;
 
-  &-stacked {
-    .oc-avatar + .oc-avatar,
-    .oc-avatar-count,
-    .oc-avatar + .oc-avatar-item,
-    .oc-avatar-item + .oc-avatar-item {
-      border: 1px solid var(--oc-role-outline);
-      margin-left: -25px;
-    }
+  &-stacked > * + * {
+    margin-left: -25px;
   }
 
   &-gap {
