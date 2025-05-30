@@ -203,13 +203,12 @@
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
         >
-          <template #userAvatars>
+          <template #userAvatars="{ avatars }">
             <user-avatar
-              v-for="avatar in getSharedByAvatarItems(item)"
-              :key="avatar.username"
+              v-for="avatar in avatars"
+              :key="avatar.userId"
               :user-id="avatar.userId"
-              :user-name="avatar.displayName"
-              :width="30"
+              :user-name="avatar.userName"
             />
           </template>
         </oc-avatars>
@@ -230,15 +229,12 @@
           :is-tooltip-displayed="true"
           :accessible-description="getSharedWithAvatarDescription(item)"
         >
-          <template #userAvatars>
+          <template #userAvatars="{ avatars }">
             <user-avatar
-              v-for="avatar in getSharedWithAvatarItems(item).filter(
-                (s) => s.shareType === ShareTypes.user.value
-              )"
-              :key="avatar.username"
+              v-for="avatar in avatars"
+              :key="avatar.userId"
               :user-id="avatar.userId"
-              :user-name="avatar.displayName"
-              :width="30"
+              :user-name="avatar.userName"
             />
           </template>
         </oc-avatars>
