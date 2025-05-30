@@ -9,7 +9,7 @@
             :src="avatar.avatar"
             :user-name="avatar.displayName"
             :width="width"
-            class="a"
+            :icon-size="iconSize"
           />
         </template>
       </slot>
@@ -20,6 +20,7 @@
           :key="item.name + index"
           :name="item.name"
           :width="width"
+          :icon-size="iconSize"
         />
       </template>
       <oc-avatar-count v-if="isOverlapping" :count="items.length - maxDisplayed" />
@@ -77,6 +78,12 @@ export interface Props {
   gapSize?: SizeType | 'none'
 
   /**
+   * @docs The icon size of the individual avatars.
+   * @default small
+   */
+  iconSize?: SizeType
+
+  /**
    * @docs The width of the individual avatars.
    * @default 30
    */
@@ -90,6 +97,7 @@ const {
   maxDisplayed,
   stacked = false,
   gapSize = 'xsmall',
+  iconSize = 'small',
   width = 30
 } = defineProps<Props>()
 

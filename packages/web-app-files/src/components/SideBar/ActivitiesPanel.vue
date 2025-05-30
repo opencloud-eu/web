@@ -12,6 +12,7 @@
               stacked
               gap-size="medium"
               :width="16.8"
+              icon-size="xsmall"
             >
               <template #userAvatars="{ avatars, width }">
                 <user-avatar
@@ -95,7 +96,7 @@ const getAvatarsFromActivity = (activity: Activity) => {
       avatars.push({
         userName: entry.displayName,
         displayName: entry.displayName,
-        shareType: ShareTypes.user.value,
+        shareType: ShareTypes[entry.shareType || 'user']?.value,
         userId: entry.id
       })
     }
