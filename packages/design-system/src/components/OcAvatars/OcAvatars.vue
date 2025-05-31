@@ -52,7 +52,7 @@ export interface Props {
   /**
    * @docs List of items to display. Please refer to the component source for the `Item` type definition.
    */
-  items?: Item[]
+  items: Item[]
   /**
    * @docs Accessible description for the component.
    */
