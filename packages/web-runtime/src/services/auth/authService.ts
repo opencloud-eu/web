@@ -4,7 +4,6 @@ import {
   AuthStore,
   ClientService,
   UserStore,
-  AvatarsStore,
   CapabilityStore,
   ConfigStore,
   useTokenTimerWorker,
@@ -34,7 +33,6 @@ export class AuthService implements AuthServiceInterface {
   private ability: Ability
   private language: Language
   private userStore: UserStore
-  private avatarsStore: AvatarsStore
   private authStore: AuthStore
   private capabilityStore: CapabilityStore
   private webWorkersStore: WebWorkersStore

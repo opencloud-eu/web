@@ -1,26 +1,26 @@
 <template>
   <span>
-    <span
-      v-oc-tooltip="tooltip"
-      class="oc-avatars"
-      :class="{ 'oc-avatars-stacked': stacked }"
-      aria-hidden="true"
-    >
-      <template v-if="avatars.length > 0">
-        <oc-avatar
-          v-for="avatar in avatars"
-          :key="avatar.username"
-          :src="avatar.avatar"
-          :user-name="avatar.displayName"
-          :width="30"
-        />
-      </template>
+    <span v-oc-tooltip="tooltip" class="oc-avatars" aria-hidden="true" :class="avatarsClasses">
+      <slot name="userAvatars" :avatars="avatars" :width="width">
+        <template v-if="avatars.length > 0">
+          <oc-avatar
+            v-for="avatar in avatars"
+            :key="avatar.username"
+            :src="avatar.avatar"
+            :user-name="avatar.displayName"
+            :width="width"
+            :icon-size="iconSize"
+          />
+        </template>
+      </slot>
       <template v-if="otherItems.length > 0">
         <component
           :is="getAvatarComponentForItem(item)"
           v-for="(item, index) in otherItems"
           :key="item.name + index"
           :name="item.name"
+          :width="width"
+          :icon-size="iconSize"
         />
       </template>
       <oc-avatar-count v-if="isOverlapping" :count="items.length - maxDisplayed" />
@@ -38,6 +38,7 @@ import OcAvatarLink from '../OcAvatarLink/OcAvatarLink.vue'
 import OcAvatarGroup from '../OcAvatarGroup/OcAvatarGroup.vue'
 import OcAvatarFederated from '../OcAvatarFederated/OcAvatarFederated.vue'
 import OcAvatarGuest from '../OcAvatarGuest/OcAvatarGuest.vue'
+import { getSizeClass, SizeType } from '../../helpers'
 
 type Item = {
   displayName?: string
@@ -70,6 +71,23 @@ export interface Props {
    * @default false
    */
   stacked?: boolean
+  /**
+   * @docs The gap size between the avatars.
+   * @default xsmall
+   */
+  gapSize?: SizeType | 'none'
+
+  /**
+   * @docs The icon size of the individual avatars.
+   * @default small
+   */
+  iconSize?: SizeType
+
+  /**
+   * @docs The width of the individual avatars.
+   * @default 30
+   */
+  width?: number
 }
 
 const {
@@ -77,7 +95,10 @@ const {
   accessibleDescription,
   isTooltipDisplayed = false,
   maxDisplayed,
-  stacked = false
+  stacked = false,
+  gapSize = 'xsmall',
+  iconSize = 'small',
+  width = 30
 } = defineProps<Props>()
 
 const isOverlapping = computed(() => maxDisplayed && maxDisplayed < items.length)
@@ -133,6 +154,10 @@ const getAvatarComponentForItem = (item: Item) => {
       return OcAvatarGuest
   }
 }
+
+const avatarsClasses = computed(() => {
+  return [`oc-avatars-gap-${getSizeClass(gapSize)}`, ...(stacked ? ['oc-avatars-stacked'] : [])]
+})
 </script>
 
 <style lang="scss">
@@ -140,16 +165,31 @@ const getAvatarComponentForItem = (item: Item) => {
   display: inline-flex;
   box-sizing: border-box;
   flex-flow: row nowrap;
-  gap: var(--oc-space-xsmall);
   width: fit-content;
 
-  &-stacked {
-    .oc-avatar + .oc-avatar,
-    .oc-avatar-count,
-    .oc-avatar + .oc-avatar-item,
-    .oc-avatar-item + .oc-avatar-item {
-      border: 1px solid var(--oc-role-outline);
-      margin-left: -25px;
+  &-stacked > * + * {
+    margin-left: -25px;
+  }
+
+  &-gap {
+    &-xs {
+      gap: var(--oc-space-xsmall);
+    }
+
+    &-s {
+      gap: var(--oc-space-small);
+    }
+
+    &-m {
+      gap: var(--oc-space-medium);
+    }
+
+    &-l {
+      gap: var(--oc-space-large);
+    }
+
+    &-xl {
+      gap: var(--oc-space-xlarge);
     }
   }
 }
