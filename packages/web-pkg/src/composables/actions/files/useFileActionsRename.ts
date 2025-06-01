@@ -23,6 +23,7 @@ import {
   useUserStore
 } from '../../piniaStores'
 import { useAbility } from '../../ability'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
 
 export const useFileActionsRename = () => {
   const { showErrorMessage } = useMessages()
@@ -66,9 +67,9 @@ export const useFileActionsRename = () => {
       return $gettext('The name cannot end with whitespace')
     }
 
-    if (newName.length > 63) {
+    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
       return $gettext('The name cannot be longer than %{length} characters', {
-        length: '63'
+        length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
       })
     }
 

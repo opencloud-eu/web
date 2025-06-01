@@ -58,7 +58,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
       return $gettext('File name cannot end with whitespace')
     }
 
-    if (fileName.length > 63) {
+    if (fileName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
       return $gettext('File name cannot be longer than %{length} characters', {
         length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
       })

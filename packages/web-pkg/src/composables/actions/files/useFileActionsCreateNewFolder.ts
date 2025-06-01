@@ -38,7 +38,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       return setError($gettext('Folder name cannot be equal to ".."'))
     }
 
-    if (folderName.length > 63) {
+    if (folderName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
       return setError(
         $gettext('Folder name cannot be longer than %{length} characters', {
           length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
