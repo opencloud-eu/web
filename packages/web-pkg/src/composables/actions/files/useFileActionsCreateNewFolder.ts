@@ -1,4 +1,4 @@
-import { SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, nextTick, Ref, unref } from 'vue'
 import { useClientService } from '../../clientService'
 import { FileAction } from '../types'
@@ -8,6 +8,7 @@ import { join } from 'path'
 import { useScrollTo } from '../../scrollTo'
 import { useMessages, useModals, useResourcesStore } from '../../../composables/piniaStores'
 import { storeToRefs } from 'pinia'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
 
 export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -35,6 +36,14 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
 
     if (folderName === '..') {
       return setError($gettext('Folder name cannot be equal to ".."'))
+    }
+
+    if (folderName.length > 63) {
+      return setError(
+        $gettext('Folder name cannot be longer than %{length} characters', {
+          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+        })
+      )
     }
 
     const exists = unref(resources).find((file) => file.name === folderName)

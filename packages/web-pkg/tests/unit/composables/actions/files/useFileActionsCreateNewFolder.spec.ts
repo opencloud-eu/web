@@ -6,15 +6,20 @@ import {
   useModals,
   useResourcesStore
 } from '../../../../../src/composables/piniaStores'
-import { ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { FolderResource, Resource } from '@opencloud-eu/web-client'
 import {
-  RouteLocation,
+  FolderResource,
+  Resource,
+  ShareSpaceResource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
+import {
   defaultComponentMocks,
-  getComposableWrapper
+  getComposableWrapper,
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { useScrollToMock } from '../../../../mocks/useScrollToMock'
 import { useScrollTo } from '../../../../../src/composables/scrollTo'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../../../src'
 
 vi.mock('../../../../../src/composables/scrollTo')
 
@@ -25,6 +30,10 @@ describe('useFileActionsCreateNewFolder', () => {
       { input: '/', output: 'Folder name cannot contain "/"' },
       { input: '.', output: 'Folder name cannot be equal to "."' },
       { input: '..', output: 'Folder name cannot be equal to ".."' },
+      {
+        input: 'l'.repeat(64),
+        output: `Folder name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
+      },
       { input: 'myfolder', output: null }
     ])('should validate folder name %s', (data) => {
       const space = mock<SpaceResource>({ id: '1' })
