@@ -6,10 +6,11 @@ import NotFoundPage from '../pages/notFound.vue'
 import OidcCallbackPage from '../pages/oidcCallback.vue'
 import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
+import { setupRouter } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
 import { routeNames } from './names'
-import { createWebHashHistory, createWebHistory, createRouter } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 // @ts-ignore
 import qs from 'qs'
@@ -108,4 +109,5 @@ export const router = patchRouter(
   })
 )
 
+setupRouter(router)
 setupAuthGuard(router)
