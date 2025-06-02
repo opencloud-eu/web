@@ -208,7 +208,7 @@
               v-for="avatar in avatars"
               :key="avatar.userId"
               :user-id="avatar.userId"
-              :user-name="avatar.userName"
+              :user-name="avatar.displayName"
               :width="width"
             />
           </template>
@@ -235,7 +235,7 @@
               v-for="avatar in avatars"
               :key="avatar.userId"
               :user-id="avatar.userId"
-              :user-name="avatar.userName"
+              :user-name="avatar.displayName"
               :width="width"
             />
           </template>
