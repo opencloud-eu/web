@@ -24,10 +24,10 @@ describe('useSpaceHelpers', () => {
         }
       })
     })
-    it('should show an error with an name longer than 255 characters', () => {
+    it('should show an error with an name longer than 63 characters', () => {
       getWrapper({
         setup: ({ checkSpaceNameModalInput }) => {
-          checkSpaceNameModalInput('n'.repeat(256), (value) => {
+          checkSpaceNameModalInput('n'.repeat(64), (value) => {
             expect(value).not.toEqual(null)
           })
         }
