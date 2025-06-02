@@ -19,6 +19,12 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 📈 Enhancement
+
+- feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
+- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
+- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
+
 ### 🐛 Bug Fixes
 
 - fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
@@ -31,11 +37,6 @@
 - chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
 - check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
 - disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
-
-### 📈 Enhancement
-
-- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
-- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
 
 ### 📦️ Dependencies
 
