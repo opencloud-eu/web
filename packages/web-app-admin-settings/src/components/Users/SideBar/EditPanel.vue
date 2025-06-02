@@ -230,7 +230,6 @@ export default defineComponent({
       const updateSpace = await client.drives.updateDrive(
         editUser.drive.id,
         {
-          name: editUser.drive.name,
           quota: { total: editUser.drive.quota.total }
         },
         sharesStore.graphRoles
