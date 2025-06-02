@@ -21,7 +21,7 @@ const spaceMock = mock<Drive>({
 describe('SpaceContextActions', () => {
   describe('action handlers', () => {
     it('renders actions that are always available: "Members", "Edit Quota", "Details"', () => {
-      const { wrapper } = getWrapper(buildSpace(spaceMock, {}))
+      const { wrapper } = getWrapper(buildSpace(spaceMock))
 
       expect(
         wrapper.findAll('[data-testid="action-label"]').some((el) => el.text() === 'Members')

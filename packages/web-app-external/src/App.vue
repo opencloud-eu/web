@@ -30,9 +30,7 @@ import { stringify } from 'qs'
 import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import isEmpty from 'lodash-es/isEmpty'
 import {
-  getPermissionsForSpaceMember,
   GraphSharePermission,
   Resource,
   SpaceResource,
@@ -51,7 +49,6 @@ import {
   useRoute,
   queryItemAsString,
   useRouteQuery,
-  useUserStore,
   getSharedDriveItem,
   setCurrentUserShareSpacePermissions,
   useSpacesStore,
@@ -75,7 +72,6 @@ const configStore = useConfigStore()
 const route = useRoute()
 const appProviderService = useAppProviderService()
 const { makeRequest } = useRequest()
-const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient } = useClientService()
@@ -218,20 +214,18 @@ watch(
     let viewMode = 'read'
 
     if (isShareSpaceResource(space)) {
-      // add current user as space member if not already loaded by the space loader
-      if (isEmpty(space.members)) {
+      // load graph permissions if not already loaded
+      if (space.graphPermissions === undefined) {
         const sharedDriveItem = await getSharedDriveItemTask.perform()
         setCurrentUserShareSpacePermissions({
           sharesStore,
           spacesStore,
-          userStore,
           space,
           sharedDriveItem
         })
       }
 
-      const permissions = getPermissionsForSpaceMember(space, userStore.user)
-      if (!permissions.includes(GraphSharePermission.readContent)) {
+      if (!space.graphPermissions?.includes(GraphSharePermission.readContent)) {
         // secure view
         viewMode = 'view'
       }

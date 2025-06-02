@@ -1,11 +1,11 @@
 import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
 import { Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
-import isEmpty from 'lodash-es/isEmpty'
 import {
   buildIncomingShareResource,
   call,
   isPersonalSpaceResource,
+  isProjectSpaceResource,
   isPublicSpaceResource,
   isShareSpaceResource,
   SpaceResource
@@ -38,7 +38,6 @@ export class FolderLoaderSpace implements FolderLoader {
       router,
       clientService,
       resourcesStore,
-      userStore,
       authService,
       spacesStore,
       sharesStore,
@@ -94,12 +93,16 @@ export class FolderLoaderSpace implements FolderLoader {
           signal: signal1
         })
 
+        if (isProjectSpaceResource(space)) {
+          yield spacesStore.loadGraphPermissions({ ids: [space.id], graphClient })
+        }
+
         if (isShareSpaceResource(space)) {
           // TODO: remove when server returns share id for federated shares in propfind response
           resources.forEach((r) => (r.remoteItemId = space.id))
 
-          // add current user as space member if not already loaded
-          if (isEmpty(space.members)) {
+          // load graph permissions if not already loaded
+          if (space.graphPermissions === undefined) {
             if (!sharedDriveItem) {
               sharedDriveItem = yield* call(
                 getSharedDriveItem({ graphClient, spacesStore, space, signal: signal1 })
@@ -108,7 +111,6 @@ export class FolderLoaderSpace implements FolderLoader {
             setCurrentUserShareSpacePermissions({
               sharesStore,
               spacesStore,
-              userStore,
               space,
               sharedDriveItem
             })

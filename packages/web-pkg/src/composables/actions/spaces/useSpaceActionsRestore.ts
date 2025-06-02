@@ -7,13 +7,7 @@ import { useClientService } from '../../clientService'
 import { useLoadingService } from '../../loadingService'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import {
-  useMessages,
-  useModals,
-  useSharesStore,
-  useSpacesStore,
-  useUserStore
-} from '../../piniaStores'
+import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
 
 export const useSpaceActionsRestore = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -25,7 +19,6 @@ export const useSpaceActionsRestore = () => {
   const route = useRoute()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
-  const sharesStore = useSharesStore()
 
   const filterResourcesToRestore = (resources: SpaceResource[]): SpaceResource[] => {
     return resources.filter(
@@ -37,9 +30,7 @@ export const useSpaceActionsRestore = () => {
     const client = clientService.graphAuthenticated
     const promises = spaces.map((space) =>
       client.drives
-        .updateDrive(space.id, { name: space.name }, sharesStore.graphRoles, {
-          headers: { Restore: 'true' }
-        })
+        .updateDrive(space.id, { name: space.name }, { headers: { Restore: 'true' } })
         .then((updatedSpace) => {
           if (unref(route).name === 'admin-settings-spaces') {
             space.disabled = false
@@ -52,6 +43,8 @@ export const useSpaceActionsRestore = () => {
     const results = await loadingService.addTask(() => {
       return Promise.allSettled(promises)
     })
+    await spacesStore.loadGraphPermissions({ ids: spaces.map((s) => s.id), graphClient: client })
+
     const succeeded = results.filter((r) => r.status === 'fulfilled')
     if (succeeded.length) {
       const title =

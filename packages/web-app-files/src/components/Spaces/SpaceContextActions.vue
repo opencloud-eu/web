@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div v-if="loading" class="oc-flex oc-flex-center oc-my-m">
+    <oc-spinner :aria-label="$gettext('Loading actions')" />
+  </div>
+  <div v-else>
     <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
     <input
       id="space-image-upload-input"
@@ -45,6 +48,10 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<SpaceActionOptions>,
       required: true
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {

@@ -1,5 +1,4 @@
 import {
-  getPermissionsForSpaceMember,
   GraphSharePermission,
   isIncomingShareResource,
   isPublicSpaceResource,
@@ -7,14 +6,13 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { useCapabilityStore, useUserStore } from '../piniaStores'
+import { useCapabilityStore } from '../piniaStores'
 import { isShareSpaceResource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '../spaces'
 
 export const useCanListShares = () => {
   const capabilityStore = useCapabilityStore()
   const { isPersonalSpaceRoot } = useGetMatchingSpace()
-  const userStore = useUserStore()
 
   const canListShares = ({ space, resource }: { space: SpaceResource; resource: Resource }) => {
     if (!capabilityStore.sharingApiEnabled) {
@@ -33,8 +31,7 @@ export const useCanListShares = () => {
       return resource.sharePermissions.includes(GraphSharePermission.readPermissions)
     }
     if (isShareSpaceResource(space)) {
-      const permissions = getPermissionsForSpaceMember(space, userStore.user)
-      return permissions.includes(GraphSharePermission.readPermissions)
+      return space.graphPermissions?.includes(GraphSharePermission.readPermissions)
     }
     return true
   }

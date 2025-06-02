@@ -3,6 +3,7 @@ import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from '../../../../../src/components/Spaces/SideBar/MembersRoleSection.vue'
+import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const graphRoles = {
   '1': mock<ShareRole>({ id: '1', displayName: 'Managers', rolePermissions: [] }),
@@ -11,10 +12,12 @@ const graphRoles = {
 }
 
 const spaceMock = {
-  members: {
-    '1': { roleId: '1', grantedTo: { user: { displayName: 'admin' } } },
-    '2': { roleId: '2', grantedTo: { user: { displayName: 'marie' } } },
-    '3': { roleId: '3', grantedTo: { user: { displayName: 'einstein' } } }
+  root: {
+    permissions: [
+      mock<Permission>({ grantedToV2: { user: { displayName: 'admin' } }, roles: ['1'] }),
+      mock<Permission>({ grantedToV2: { user: { displayName: 'marie' } }, roles: ['2'] }),
+      mock<Permission>({ grantedToV2: { user: { displayName: 'einstein' } }, roles: ['3'] })
+    ]
   }
 } as undefined as SpaceResource
 
@@ -29,7 +32,7 @@ describe('MembersPanel', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
   it('should filter members accordingly to the entered search term', async () => {
-    const userToFilterFor = spaceMock.members['3']
+    const userToFilterFor = spaceMock.root.permissions[2]
     const { wrapper } = getWrapper()
     const input = wrapper.find('input')
     await input.setValue('ein')
@@ -37,8 +40,8 @@ describe('MembersPanel', () => {
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(1)
     expect(
       wrapper.findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub).props()
-        .members[0].grantedTo.user.displayName
-    ).toEqual(userToFilterFor.grantedTo.user.displayName)
+        .permissions[0].grantedToV2.user.displayName
+    ).toEqual(userToFilterFor.grantedToV2.user.displayName)
   })
   it('should display an empty result if no matching members found', async () => {
     const { wrapper } = getWrapper()
@@ -50,8 +53,8 @@ describe('MembersPanel', () => {
   })
   it('should display members without role under the custom section', () => {
     const spaceResource = {
-      members: {
-        '1': { grantedTo: { user: { displayName: 'admin' } } }
+      root: {
+        permissions: [mock<Permission>({ grantedToV2: { user: { displayName: 'admin' } } })]
       }
     } as undefined as SpaceResource
     const { wrapper } = getWrapper({ spaceResource })

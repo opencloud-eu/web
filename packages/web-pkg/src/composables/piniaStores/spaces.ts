@@ -12,14 +12,11 @@ import {
   isPersonalSpaceResource,
   isProjectSpaceResource
 } from '@opencloud-eu/web-client'
-import type {
-  CollaboratorShare,
-  MountPointSpaceResource,
-  ShareRole
-} from '@opencloud-eu/web-client'
+import type { CollaboratorShare, MountPointSpaceResource } from '@opencloud-eu/web-client'
 import { useUserStore } from './user'
 import { ConfigStore, useConfigStore } from './config'
 import { useSharesStore } from './shares'
+import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 
 // sort space members with higher permissions (managers) at the top
 export const sortSpaceMembers = (shares: CollaboratorShare[]) => {
@@ -30,17 +27,14 @@ export const getSpacesByType = async ({
   graphClient,
   driveType,
   configStore,
-  graphRoles,
   signal
 }: {
   graphClient: Graph
   driveType: string
   configStore: ConfigStore
-  graphRoles: Record<string, ShareRole>
   signal?: AbortSignal
 }) => {
   const mountpoints = await graphClient.drives.listMyDrives(
-    graphRoles,
     {
       orderBy: 'name asc',
       filter: `driveType eq ${driveType}`
@@ -63,17 +57,14 @@ export const getSpacesByType = async ({
 
   const rootSpaces = Object.entries(rootSpaceDriveAliasMapping).map(([id, driveAlias]) =>
     // FIXME: create proper buildRootSpace (or whatever function)
-    buildSpace(
-      {
-        id: extractStorageId(id),
-        name: driveAlias, // FIXME: set a proper name
-        driveType: driveAlias.split('/')[0], // FIXME: can we retrieve this from api?
-        driveAlias,
-        path: '/',
-        serverUrl: configStore.serverUrl
-      },
-      graphRoles
-    )
+    buildSpace({
+      id: extractStorageId(id),
+      name: driveAlias, // FIXME: set a proper name
+      driveType: driveAlias.split('/')[0], // FIXME: can we retrieve this from api?
+      driveAlias,
+      path: '/',
+      serverUrl: configStore.serverUrl
+    })
   )
 
   return [...mountpoints, ...rootSpaces]
@@ -214,14 +205,12 @@ export const useSpacesStore = defineStore('spaces', () => {
         getSpacesByType({
           graphClient,
           driveType: 'personal',
-          configStore,
-          graphRoles: sharesStore.graphRoles
+          configStore
         }),
         getSpacesByType({
           graphClient,
           driveType: 'project',
-          configStore,
-          graphRoles: sharesStore.graphRoles
+          configStore
         })
       ])
 
@@ -248,7 +237,6 @@ export const useSpacesStore = defineStore('spaces', () => {
         graphClient,
         driveType: 'mountpoint',
         configStore,
-        graphRoles: sharesStore.graphRoles,
         signal
       })
       addSpaces(mountPointSpaces)
@@ -268,7 +256,6 @@ export const useSpacesStore = defineStore('spaces', () => {
       graphClient,
       driveType: 'project',
       configStore,
-      graphRoles: sharesStore.graphRoles,
       signal
     })
     spaces.value = unref(spaces).filter((s) => !isProjectSpaceResource(s))
@@ -301,6 +288,54 @@ export const useSpacesStore = defineStore('spaces', () => {
 
   const purgeReadmesLoading = () => {
     readmesLoading.value = []
+  }
+
+  const spacePermissionsLoading = ref<Record<string, Promise<void>>>({})
+
+  /**
+   * Loads permissions for the current user for given space ids and updates
+   * the `graphPermissions` field of the space in the store.
+   */
+  const loadGraphPermissions = async ({
+    ids,
+    graphClient,
+    useCache = true
+  }: {
+    ids: string[]
+    graphClient: Graph
+    useCache?: boolean
+  }) => {
+    const spacesToLoad = unref(spaces).filter(
+      (s) => ids.includes(s.id) && (s.graphPermissions === undefined || !useCache)
+    )
+
+    if (!spacesToLoad.length) {
+      return
+    }
+
+    for (const { id, disabled } of spacesToLoad) {
+      if (disabled) {
+        // can't load permissions for disabled spaces
+        updateSpaceField({ id, field: 'graphPermissions', value: [] })
+        continue
+      }
+
+      if (unref(spacePermissionsLoading)[id]) {
+        // permissions are already being loaded for this space, we just need to await it
+        continue
+      }
+
+      spacePermissionsLoading.value[id] = graphClient.permissions
+        .listPermissions(id, id, sharesStore.graphRoles, {
+          select: [ListPermissionsSpaceRootSelectEnum.LibreGraphPermissionsActionsAllowedValues]
+        })
+        .then(({ allowedActions }) => {
+          updateSpaceField({ id, field: 'graphPermissions', value: allowedActions })
+          delete spacePermissionsLoading.value[id]
+        })
+    }
+
+    await Promise.all(Object.values(unref(spacePermissionsLoading)))
   }
 
   return {
@@ -337,7 +372,9 @@ export const useSpacesStore = defineStore('spaces', () => {
     purgeImagesLoading,
     addToReadmesLoading,
     removeFromReadmesLoading,
-    purgeReadmesLoading
+    purgeReadmesLoading,
+
+    loadGraphPermissions
   }
 })
 

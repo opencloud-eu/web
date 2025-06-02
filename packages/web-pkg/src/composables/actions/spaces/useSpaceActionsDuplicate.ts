@@ -38,14 +38,11 @@ export const useSpaceActionsDuplicate = () => {
     const duplicatedSpaceName = resolveFileNameDuplicate(existingSpace.name, '', projectSpaces)
 
     try {
-      let duplicatedSpace = await clientService.graphAuthenticated.drives.createDrive(
-        {
-          name: duplicatedSpaceName,
-          description: existingSpace.description,
-          quota: { total: existingSpace.spaceQuota.total }
-        },
-        sharesStore.graphRoles
-      )
+      let duplicatedSpace = await clientService.graphAuthenticated.drives.createDrive({
+        name: duplicatedSpaceName,
+        description: existingSpace.description,
+        quota: { total: existingSpace.spaceQuota.total }
+      })
 
       const existingSpaceFiles = await clientService.webdav.listFiles(existingSpace)
 

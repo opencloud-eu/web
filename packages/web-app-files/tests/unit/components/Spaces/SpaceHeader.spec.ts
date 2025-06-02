@@ -10,6 +10,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -32,18 +33,21 @@ const getSpaceMock = (spaceImageData: DriveItem = undefined) =>
     name: '',
     description: '',
     spaceReadmeData: undefined,
-    spaceImageData
+    spaceImageData,
+    root: { permissions: [{}] }
   })
 
 describe('SpaceHeader', () => {
-  it('should add the "squashed"-class when the sidebar is opened', () => {
+  it('should add the "squashed"-class when the sidebar is opened', async () => {
     const wrapper = getWrapper({ space: getSpaceMock(), isSideBarOpen: true })
+    await flushPromises()
     expect(wrapper.find('.space-header-squashed').exists()).toBeTruthy()
     expect(wrapper.html()).toMatchSnapshot()
   })
   describe('space image', () => {
-    it('should show the default image if no other image is set', () => {
+    it('should show the default image if no other image is set', async () => {
       const wrapper = getWrapper({ space: getSpaceMock() })
+      await flushPromises()
       expect(wrapper.find('.space-header-image-default').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -103,6 +107,7 @@ function getWrapper({
     mock<GetFileContentsResponse>({ body: 'body' })
   )
   mocks.$clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
+  mocks.$clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(getSpaceMock())
 
   return mount(SpaceHeader, {
     props: {

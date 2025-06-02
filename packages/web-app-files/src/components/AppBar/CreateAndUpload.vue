@@ -185,7 +185,6 @@ import {
   useMessages,
   useResourcesStore,
   useRoute,
-  useSharesStore,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -233,7 +232,6 @@ const clientService = useClientService()
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const messageStore = useMessages()
-const sharesStore = useSharesStore()
 const route = useRoute()
 const language = useGettext()
 const { $gettext } = language
@@ -350,7 +348,7 @@ const onUploadComplete = async (result: UploadResult) => {
 
       if (driveType === 'project' || isOwnSpace) {
         const client = clientService.graphAuthenticated
-        const updatedSpace = await client.drives.getDrive(spaceId, sharesStore.graphRoles)
+        const updatedSpace = await client.drives.getDrive(spaceId)
         spacesStore.updateSpaceField({
           id: updatedSpace.id,
           field: 'spaceQuota',

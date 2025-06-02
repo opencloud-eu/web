@@ -199,9 +199,8 @@ export default defineComponent({
     const { dispatchModal } = useModals()
 
     const sharesStore = useSharesStore()
-    const { graphRoles } = storeToRefs(sharesStore)
     const { updateShare } = sharesStore
-    const { upsertSpace } = useSpacesStore()
+    const { upsertSpace, loadGraphPermissions } = useSpacesStore()
 
     const { user } = storeToRefs(userStore)
 
@@ -245,7 +244,6 @@ export default defineComponent({
       clientService,
       sharedParentDir,
       shareDate,
-      graphRoles,
       setDenyShare,
       showNotifyShareModal,
       showMessage,
@@ -253,7 +251,8 @@ export default defineComponent({
       upsertSpace,
       isExternalShare,
       sharedViaTooltip,
-      DateTime
+      DateTime,
+      loadGraphPermissions
     }
   },
   computed: {
@@ -396,9 +395,17 @@ export default defineComponent({
 
         if (isProjectSpaceResource(this.resource)) {
           const client = this.clientService.graphAuthenticated
-          const space = await client.drives.getDrive(this.resource.id, this.graphRoles)
+          const space = await client.drives.getDrive(this.resource.id)
+          this.upsertSpace({ ...space, graphPermissions: this.resource.graphPermissions })
 
-          this.upsertSpace(space)
+          if (this.share.sharedWith.id === this.user.id) {
+            // re-fetch current user permissions because they might have changed
+            await this.loadGraphPermissions({
+              ids: [this.resource.id],
+              graphClient: this.clientService.graphAuthenticated,
+              useCache: false
+            })
+          }
         }
 
         this.showMessage({ title: this.$gettext('Share successfully changed') })

@@ -112,7 +112,6 @@ const { canShare } = useCanShare()
 const { dispatchModal } = useModals()
 const sharesStore = useSharesStore()
 const { deleteShare } = sharesStore
-const { graphRoles } = storeToRefs(sharesStore)
 const spacesStore = useSpacesStore()
 const { upsertSpace, getSpaceMembers } = spacesStore
 const { showMessage, showErrorMessage } = useMessages()
@@ -198,8 +197,8 @@ const deleteMemberConfirm = (share: CollaboratorShare) => {
 
         if (!currentUserRemoved) {
           const client = clientService.graphAuthenticated
-          const space = await client.drives.getDrive(share.resourceId, unref(graphRoles))
-          upsertSpace(space)
+          const space = await client.drives.getDrive(share.resourceId)
+          upsertSpace({ ...space, graphPermissions: unref(resource).graphPermissions })
         }
 
         showMessage({

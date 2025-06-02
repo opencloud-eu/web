@@ -6,13 +6,7 @@ import { useAbility } from '../../ability'
 import { useRoute } from '../../router'
 import { SpaceAction, SpaceActionOptions } from '../types'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import {
-  useMessages,
-  useModals,
-  useSharesStore,
-  useSpacesStore,
-  useUserStore
-} from '../../piniaStores'
+import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
 
 export const useSpaceActionsRename = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -24,12 +18,11 @@ export const useSpaceActionsRename = () => {
   const { checkSpaceNameModalInput } = useSpaceHelpers()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
-  const sharesStore = useSharesStore()
 
   const renameSpace = (space: SpaceResource, name: string) => {
     const graphClient = clientService.graphAuthenticated
     return graphClient.drives
-      .updateDrive(space.id, { name }, sharesStore.graphRoles)
+      .updateDrive(space.id, { name })
       .then(() => {
         if (unref(route).name === 'admin-settings-spaces') {
           space.name = name

@@ -8,6 +8,7 @@
         :has-hidden-files="false"
         :has-file-extensions="false"
         :has-pagination="false"
+        :batch-actions-loading="batchActionsLoading"
         :is-side-bar-open="isSideBarOpen"
         :view-modes="viewModes"
         :view-mode-default="FolderViewModeConstants.name.tiles"
@@ -108,6 +109,7 @@
             </template>
             <template #contextMenu="{ resource }">
               <space-context-actions
+                :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
             </template>
@@ -306,6 +308,11 @@ const {
   perPageStoragePrefix: 'spaces-list'
 })
 
+const batchActionsLoading = computed(() => {
+  const selectedSpaces = unref(selectedResources) as SpaceResource[]
+  return selectedSpaces.some(({ graphPermissions }) => graphPermissions === undefined)
+})
+
 watch(filterTerm, async () => {
   const instance = unref(markInstance)
   if (!instance) {
@@ -317,6 +324,17 @@ watch(filterTerm, async () => {
     element: 'span',
     className: 'mark-highlight',
     exclude: ['th *', 'tfoot *']
+  })
+})
+
+watch(selectedResourcesIds, async (ids) => {
+  if (!ids.length) {
+    return
+  }
+
+  await spacesStore.loadGraphPermissions({
+    ids,
+    graphClient: clientService.graphAuthenticated
   })
 })
 

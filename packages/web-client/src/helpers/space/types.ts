@@ -6,23 +6,12 @@
 // ```
 // because in the else block resource gets the type never. If this is changed in a later TypeScript version
 // or all types get different members, the underscored props can be removed.
-import {
-  DriveItem,
-  Quota,
-  SharePointIdentitySet,
-  User
-} from '@opencloud-eu/web-client/graph/generated'
+import { DriveItem, Quota, User } from '@opencloud-eu/web-client/graph/generated'
 import { Ability, Resource } from '../resource'
 import { PublicLinkType } from './functions'
 
 export const SHARE_JAIL_ID = 'a0ca6a90-a365-4782-871e-d44447bbc668'
 export const OCM_PROVIDER_ID = '89f37a33-858b-45fa-8890-a1f2b27d90e1'
-
-export type SpaceMember = {
-  grantedTo: SharePointIdentitySet
-  permissions: string[]
-  roleId: string
-}
 
 export interface SpaceResource extends Resource {
   description: string
@@ -30,11 +19,13 @@ export interface SpaceResource extends Resource {
   driveAlias: string
   driveType: 'mountpoint' | 'personal' | 'project' | 'share' | 'public' | (string & unknown)
   root: DriveItem
-  members: Record<string, SpaceMember>
   spaceQuota: Quota
   spaceImageData: DriveItem
   spaceReadmeData: DriveItem
   webDavTrashPath: string
+
+  // permissions for the current user. need to be loaded manually at some point via the space store.
+  graphPermissions?: string[]
 
   canDisable(args?: { user?: User; ability?: Ability }): boolean
   canEditDescription(args?: { user?: User; ability?: Ability }): boolean

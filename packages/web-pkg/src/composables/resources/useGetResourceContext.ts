@@ -7,13 +7,12 @@ import {
 import { computed, unref } from 'vue'
 import { useClientService } from '../clientService'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useSpacesStore, useSharesStore } from '../piniaStores'
+import { useSpacesStore } from '../piniaStores'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export const useGetResourceContext = () => {
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
-  const shareStore = useSharesStore()
 
   const spaces = computed(() => spacesStore.spaces)
 
@@ -34,7 +33,7 @@ export const useGetResourceContext = () => {
       DavProperty.ResourceType
     ]
 
-    const tmpSpace = buildSpace({ id: fileId, name: '' }, shareStore.graphRoles)
+    const tmpSpace = buildSpace({ id: fileId, name: '' })
     return clientService.webdav.getFileInfo(tmpSpace, { fileId }, { davProperties })
   }
 

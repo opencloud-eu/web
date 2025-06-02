@@ -184,7 +184,6 @@ describe('spaces', () => {
           expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(2)
           expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
             1,
-            {},
             {
               orderBy: 'name asc',
               filter: 'driveType eq personal'
@@ -193,7 +192,6 @@ describe('spaces', () => {
           )
           expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
             2,
-            {},
             {
               orderBy: 'name asc',
               filter: 'driveType eq project'
@@ -218,7 +216,6 @@ describe('spaces', () => {
 
           expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
           expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
-            {},
             {
               orderBy: 'name asc',
               filter: 'driveType eq mountpoint'
@@ -242,7 +239,6 @@ describe('spaces', () => {
 
           expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
           expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
-            {},
             {
               orderBy: 'name asc',
               filter: 'driveType eq project'

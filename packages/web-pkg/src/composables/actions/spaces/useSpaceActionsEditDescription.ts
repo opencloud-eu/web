@@ -5,13 +5,7 @@ import { useAbility } from '../../ability'
 import { useClientService } from '../../clientService'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import {
-  useMessages,
-  useModals,
-  useSharesStore,
-  useSpacesStore,
-  useUserStore
-} from '../../piniaStores'
+import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
 
 export const useSpaceActionsEditDescription = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -22,12 +16,11 @@ export const useSpaceActionsEditDescription = () => {
   const route = useRoute()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
-  const sharesStore = useSharesStore()
 
   const editDescriptionSpace = (space: SpaceResource, description: string) => {
     const graphClient = clientService.graphAuthenticated
     return graphClient.drives
-      .updateDrive(space.id, { name: space.name, description }, sharesStore.graphRoles)
+      .updateDrive(space.id, { name: space.name, description })
       .then(() => {
         spacesStore.updateSpaceField({ id: space.id, field: 'description', value: description })
         if (unref(route).name === 'admin-settings-spaces') {

@@ -57,7 +57,12 @@
           @click="openSideBarSharePanel"
         >
           <oc-icon name="group" fill-type="line" size="small" />
-          <span class="space-header-people-count oc-text-small" v-text="memberCountString"></span>
+          <span
+            v-if="memberCount"
+            class="space-header-people-count oc-text-small"
+            v-text="memberCountString"
+          />
+          <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
         </oc-button>
       </div>
       <p v-if="space.description" class="oc-mt-rm oc-text-bold">{{ space.description }}</p>
@@ -104,6 +109,7 @@
 
 <script setup lang="ts">
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, Ref, ref, unref, watch } from 'vue'
+import { isEmpty } from 'lodash-es'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   useClientService,
@@ -112,7 +118,8 @@ import {
   TextEditor,
   useFileActions,
   useLoadPreview,
-  useSpacesStore
+  useSpacesStore,
+  useSharesStore
 } from '@opencloud-eu/web-pkg'
 import { ImageDimension } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
@@ -137,6 +144,7 @@ const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
+const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
@@ -184,6 +192,30 @@ const unobserveMarkdownContainerResize = () => {
   }
   markdownResizeObserver.unobserve(unref(markdownContainerRef))
 }
+
+const memberCount = ref<number>()
+watch(
+  () => sharesStore.collaboratorShares,
+  async (shares) => {
+    // set space member count
+    if (!isEmpty(shares)) {
+      memberCount.value = shares.length
+      return
+    }
+
+    if (!unref(memberCount)) {
+      try {
+        // FIXME: get member count without fetching the whole drive?
+        const { root } = await clientService.graphAuthenticated.drives.getDrive(space.id)
+        memberCount.value = root?.permissions?.length || 1
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  },
+  { immediate: true }
+)
+
 onMounted(observeMarkdownContainerResize)
 onBeforeUnmount(() => {
   unobserveMarkdownContainerResize()
@@ -270,9 +302,6 @@ watch(
   { immediate: true }
 )
 
-const memberCount = computed(() => {
-  return Object.keys(space.members).length
-})
 const memberCountString = computed(() => {
   return $ngettext('%{count} member', '%{count} members', unref(memberCount), {
     count: unref(memberCount).toString()

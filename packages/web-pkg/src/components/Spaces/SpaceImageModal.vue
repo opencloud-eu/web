@@ -13,7 +13,6 @@ import {
   useClientService,
   useCreateSpace,
   useMessages,
-  useSharesStore,
   useSpaceHelpers,
   useSpacesStore
 } from '../../composables'
@@ -33,7 +32,6 @@ const { showMessage, showErrorMessage } = useMessages()
 const { $gettext } = useGettext()
 const clientService = useClientService()
 const spacesStore = useSpacesStore()
-const sharesStore = useSharesStore()
 const { createDefaultMetaFolder } = useCreateSpace()
 const { getDefaultMetaFolder } = useSpaceHelpers()
 
@@ -83,14 +81,10 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
       overwrite: true
     })
 
-    const updatedSpace = await graphClient.drives.updateDrive(
-      space.id,
-      {
-        name: space.name,
-        special: [{ specialFolder: { name: 'image' }, id: fileId }]
-      },
-      sharesStore.graphRoles
-    )
+    const updatedSpace = await graphClient.drives.updateDrive(space.id, {
+      name: space.name,
+      special: [{ specialFolder: { name: 'image' }, id: fileId }]
+    })
 
     if (!processing) {
       spacesStore.removeFromImagesLoading(space.id)

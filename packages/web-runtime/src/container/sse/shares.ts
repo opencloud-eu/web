@@ -11,7 +11,6 @@ export const onSSESpaceMemberAddedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  sharesStore,
   clientService,
   router
 }: SSEEventOptions) => {
@@ -20,11 +19,13 @@ export const onSSESpaceMemberAddedEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(
-    sseData.itemid,
-    sharesStore.graphRoles
-  )
+  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
   spacesStore.upsertSpace(space)
+  await spacesStore.loadGraphPermissions({
+    ids: [space.id],
+    graphClient: clientService.graphAuthenticated,
+    useCache: false
+  })
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
     return
@@ -37,7 +38,6 @@ export const onSSESpaceMemberRemovedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  sharesStore,
   messageStore,
   clientService,
   language,
@@ -50,11 +50,14 @@ export const onSSESpaceMemberRemovedEvent = async ({
   }
 
   if (!sseData.affecteduserids?.includes(userStore.user.id)) {
-    const space = await clientService.graphAuthenticated.drives.getDrive(
-      sseData.itemid,
-      sharesStore.graphRoles
-    )
-    return spacesStore.upsertSpace(space)
+    const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
+    spacesStore.upsertSpace(space)
+    await spacesStore.loadGraphPermissions({
+      ids: [space.id],
+      graphClient: clientService.graphAuthenticated,
+      useCache: false
+    })
+    return
   }
 
   const removedSpace = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
@@ -87,7 +90,6 @@ export const onSSESpaceShareUpdatedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  sharesStore,
   clientService,
   userStore,
   router
@@ -97,11 +99,13 @@ export const onSSESpaceShareUpdatedEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(
-    sseData.itemid,
-    sharesStore.graphRoles
-  )
+  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
   spacesStore.upsertSpace(space)
+  await spacesStore.loadGraphPermissions({
+    ids: [space.id],
+    graphClient: clientService.graphAuthenticated,
+    useCache: false
+  })
 
   if (
     isLocationSpacesActive(router, 'files-spaces-generic') &&
