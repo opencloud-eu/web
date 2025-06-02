@@ -1,4 +1,4 @@
-import { Resource, SpaceResource, extractNameWithoutExtension } from '@opencloud-eu/web-client'
+import { extractNameWithoutExtension, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, Ref, unref } from 'vue'
 import { useClientService } from '../../clientService'
 import { FileAction, FileActionOptions } from '../types'
@@ -8,15 +8,16 @@ import { join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useFileActions } from './useFileActions'
 import {
+  useAppsStore,
   useMessages,
   useModals,
-  useUserStore,
-  useAppsStore,
-  useResourcesStore
+  useResourcesStore,
+  useUserStore
 } from '../../piniaStores'
 import { ApplicationFileExtension } from '../../../apps'
 import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
 
 export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -55,6 +56,12 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
     if (/\s+$/.test(fileName)) {
       return $gettext('File name cannot end with whitespace')
+    }
+
+    if (fileName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+      return $gettext('File name cannot be longer than %{length} characters', {
+        length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+      })
     }
 
     const exists = unref(resources).find((file) => file.name === fileName)

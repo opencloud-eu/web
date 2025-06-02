@@ -1,29 +1,29 @@
-import { isSameResource } from '../../../helpers/resource'
-import { isLocationTrashActive, isLocationSharesActive } from '../../../router'
-import { Resource } from '@opencloud-eu/web-client'
+import { isSameResource, renameResource as _renameResource } from '../../../helpers/resource'
+import { isLocationSharesActive, isLocationTrashActive } from '../../../router'
+import {
+  extractNameWithoutExtension,
+  isShareSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { dirname, join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import {
-  SpaceResource,
-  isShareSpaceResource,
-  extractNameWithoutExtension
-} from '@opencloud-eu/web-client'
 import { createFileRouteOptions } from '../../../helpers/router'
-import { renameResource as _renameResource } from '../../../helpers/resource'
 import { computed } from 'vue'
 import { useClientService } from '../../clientService'
 import { useRouter } from '../../router'
 import { useGettext } from 'vue3-gettext'
 import { FileAction, FileActionOptions } from '../types'
 import {
-  useMessages,
-  useModals,
   useCapabilityStore,
   useConfigStore,
+  useMessages,
+  useModals,
   useResourcesStore,
   useUserStore
 } from '../../piniaStores'
 import { useAbility } from '../../ability'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
 
 export const useFileActionsRename = () => {
   const { showErrorMessage } = useMessages()
@@ -65,6 +65,12 @@ export const useFileActionsRename = () => {
 
     if (/\s+$/.test(newName)) {
       return $gettext('The name cannot end with whitespace')
+    }
+
+    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+      return $gettext('The name cannot be longer than %{length} characters', {
+        length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+      })
     }
 
     const exists = resourcesStore.resources.find(

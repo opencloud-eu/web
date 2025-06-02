@@ -8,6 +8,7 @@ import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../../../src'
 
 const currentFolder = {
   id: '1',
@@ -102,6 +103,11 @@ describe('rename', () => {
         newName: 'newname',
         parentResources: [{ name: 'newname', path: '/newname' } as Resource],
         message: 'The name "newname" is already taken'
+      },
+      {
+        currentName: 'currentName',
+        newName: 'l'.repeat(64),
+        message: `The name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
       }
     ])('should detect name errors and display error messages accordingly', (inputData) => {
       getWrapper({

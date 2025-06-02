@@ -1,6 +1,7 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useClientService } from '../clientService'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../constants'
 
 export const useSpaceHelpers = () => {
   const { $gettext } = useGettext()
@@ -10,9 +11,15 @@ export const useSpaceHelpers = () => {
     if (name.trim() === '') {
       return setError($gettext('Space name cannot be empty'))
     }
-    if (name.length > 255) {
-      return setError($gettext('Space name cannot exceed 255 characters'))
+
+    if (name.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+      return setError(
+        $gettext('Space name cannot be longer than %{length} characters', {
+          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+        })
+      )
     }
+
     if (/[/\\.:?*"><|]/.test(name)) {
       return setError(
         $gettext('Space name cannot contain the following characters: / \\\\ . : ? * " > < |\'')
