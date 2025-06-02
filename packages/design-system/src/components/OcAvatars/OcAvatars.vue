@@ -42,7 +42,7 @@ import { getSizeClass, SizeType } from '../../helpers'
 type Item = {
   displayName?: string
   name?: string
-  avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest'
+  avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest' | string
   username?: string
   avatar?: string
 }
