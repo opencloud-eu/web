@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @fschade, @kulmann, @tammi-23
 
 ### ✨ Features
 
@@ -17,6 +17,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
 - fix: add resource name length check [[#776](https://github.com/opencloud-eu/web/pull/776)]
 - fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
 
