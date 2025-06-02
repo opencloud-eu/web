@@ -42,7 +42,7 @@ import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
-import { call, Resource, ShareTypes } from '@opencloud-eu/web-client'
+import { call, Resource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
 import escape from 'lodash-es/escape'
@@ -96,8 +96,8 @@ const getAvatarsFromActivity = (activity: Activity) => {
       avatars.push({
         userName: entry.displayName,
         displayName: entry.displayName,
-        shareType: ShareTypes[entry.shareType || 'user']?.value,
-        userId: entry.id
+        userId: entry.id,
+        avatarType: entry.shareType || 'user'
       })
     }
   }

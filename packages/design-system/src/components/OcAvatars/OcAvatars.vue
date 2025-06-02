@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { shareType } from '../../utils/shareType'
 import OcAvatar from '../OcAvatar/OcAvatar.vue'
 import OcAvatarCount from '../OcAvatarCount/OcAvatarCount.vue'
 import OcAvatarLink from '../OcAvatarLink/OcAvatarLink.vue'
@@ -43,7 +42,7 @@ import { getSizeClass, SizeType } from '../../helpers'
 type Item = {
   displayName?: string
   name?: string
-  shareType?: number
+  avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest'
   username?: string
   avatar?: string
 }
@@ -104,7 +103,7 @@ const {
 const isOverlapping = computed(() => maxDisplayed && maxDisplayed < items.length)
 
 const avatars = computed(() => {
-  const a = items.filter((u) => u.shareType === shareType.user)
+  const a = items.filter((u) => u.avatarType === 'user')
   if (!isOverlapping.value) {
     return a
   }
@@ -112,7 +111,7 @@ const avatars = computed(() => {
 })
 
 const otherItems = computed(() => {
-  const a = items.filter((u) => u.shareType !== shareType.user)
+  const a = items.filter((u) => u.avatarType !== 'user')
   if (!isOverlapping.value) {
     return a
   }
@@ -143,14 +142,14 @@ const tooltip = computed(() => {
 })
 
 const getAvatarComponentForItem = (item: Item) => {
-  switch (item.shareType) {
-    case shareType.link:
+  switch (item.avatarType) {
+    case 'link':
       return OcAvatarLink
-    case shareType.remote:
+    case 'remote':
       return OcAvatarFederated
-    case shareType.group:
+    case 'group':
       return OcAvatarGroup
-    case shareType.guest:
+    case 'guest':
       return OcAvatarGuest
   }
 }

@@ -1246,7 +1246,7 @@ export default defineComponent({
       return resource.sharedBy.map((s) => ({
         displayName: s.displayName,
         name: s.displayName,
-        shareType: ShareTypes.user.value,
+        avatarType: ShareTypes.user.key,
         username: s.id,
         userId: s.id
       }))
@@ -1263,7 +1263,7 @@ export default defineComponent({
         .map((s) => ({
           displayName: s.displayName,
           name: s.displayName,
-          shareType: s.shareType,
+          avatarType: ShareTypes.getByValue(s.shareType).key,
           username: s.id,
           userId: s.id
         }))
