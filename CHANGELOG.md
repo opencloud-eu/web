@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-05-28
+## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-06-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -15,6 +15,11 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 🐛 Bug Fixes
+
+- fix: add resource name length check [[#776](https://github.com/opencloud-eu/web/pull/776)]
+- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
+
 ### ✅ Tests
 
 - e2e tests. user profile photo [[#742](https://github.com/opencloud-eu/web/pull/742)]
@@ -26,10 +31,6 @@
 
 - feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
 - feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
-
-### 🐛 Bug Fixes
-
-- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
 
 ### 📦️ Dependencies
 
