@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.5.0](https://github.com/opencloud-eu/web/releases/tag/v2.5.0) - 2025-06-02
+## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @fschade, @kulmann, @tammi-23
+
+### 💥 Breaking changes
+
+- perf!: space permission loading [[#752](https://github.com/opencloud-eu/web/pull/752)]
 
 ### ✨ Features
 
