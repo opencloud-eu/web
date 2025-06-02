@@ -8,13 +8,13 @@ const items = [
     displayName: 'Bob',
     avatar:
       'https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    shareType: 0
+    avatarType: 'user'
   },
   {
     id: 'link0',
     link: 'fake url content',
     name: 'link 0',
-    shareType: 3
+    avatarType: 'link'
   },
   {
     id: 'marie',
@@ -22,19 +22,19 @@ const items = [
     displayName: 'Marie',
     avatar:
       'https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    shareType: 0
+    avatarType: 'user'
   },
   {
     id: 'john',
     username: 'john',
     displayName: 'John Richards Emperor of long names',
-    shareType: 0
+    avatarType: 'user'
   },
   {
     id: 'link1',
     link: 'fake url content',
     name: 'link 1',
-    shareType: 3
+    avatarType: 'link'
   }
 ]
 

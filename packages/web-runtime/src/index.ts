@@ -62,7 +62,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     extensionRegistry,
     spacesStore,
     userStore,
-    avatarsStore,
     resourcesStore,
     messagesStore,
     sharesStore,

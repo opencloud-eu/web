@@ -6,6 +6,7 @@
         :icon="recipient.icon.name"
         :name="recipient.icon.label"
         :accessible-label="recipient.icon.label"
+        icon-size="xsmall"
         data-testid="recipient-icon"
       />
     </slot>
