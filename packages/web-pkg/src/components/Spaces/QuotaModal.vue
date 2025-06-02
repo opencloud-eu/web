@@ -177,9 +177,7 @@ export default defineComponent({
 
     expose({ onConfirm })
 
-    onMounted(() => {
-      selectedOption.value = props.spaces[0]?.spaceQuota?.total || 0
-    })
+    selectedOption.value = props.spaces[0]?.spaceQuota?.total || 0
 
     return {
       selectedOption,
