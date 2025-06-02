@@ -33,5 +33,26 @@
     "description": "Determines if the avatars are displayed in a stacked layout.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "gapSize",
+    "required": false,
+    "description": "The gap size between the avatars.",
+    "default": "xsmall",
+    "type": "SizeType | 'none'"
+  },
+  {
+    "name": "iconSize",
+    "required": false,
+    "description": "The icon size of the individual avatars.",
+    "default": "small",
+    "type": "SizeType"
+  },
+  {
+    "name": "width",
+    "required": false,
+    "description": "The width of the individual avatars.",
+    "default": "30",
+    "type": "number"
   }
 ]

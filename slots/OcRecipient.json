@@ -3,5 +3,10 @@
     "name": "append",
     "description": "Append content for additional info.",
     "type": "() => unknown"
+  },
+  {
+    "name": "avatar",
+    "description": "",
+    "type": "() => unknown"
   }
 ]
