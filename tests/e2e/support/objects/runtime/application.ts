@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import util from 'util'
 import { config } from '../../../config'
 
@@ -11,6 +11,7 @@ const markNotificationsAsReadButton = `#oc-notifications-drop .oc-notifications-
 const notificationItemsMessages = `#oc-notifications-drop .oc-notifications-item .oc-notifications-message`
 const closeSidebarRootPanelBtn = `#app-sidebar .is-active-root-panel .header__close`
 const closeSidebarSubPanelBtn = `#app-sidebar .is-active-sub-panel .header__close`
+const notificationAvatarSelector = '#oc-notifications-drop .oc-notifications-item .oc-avatar'
 
 export class Application {
   #page: Page
@@ -144,5 +145,24 @@ export class Application {
       ),
       waitForIframe
     ])
+  }
+
+  async getSharerAvatarFromNotification(): Promise<Locator> {
+    await Promise.all([
+      this.#page.waitForResponse(
+        (resp) =>
+          resp.url().endsWith('notifications') &&
+          resp.status() === 200 &&
+          resp.request().method() === 'GET'
+      ),
+      this.#page.reload()
+    ])
+
+    const dropIsOpen = await this.#page.locator(notificationsDrop).isVisible()
+    if (!dropIsOpen) {
+      await this.#page.locator(notificationsBell).click()
+    }
+    await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
+    return this.#page.locator(notificationAvatarSelector).locator('img')
   }
 }

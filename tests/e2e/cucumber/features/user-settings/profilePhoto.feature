@@ -1,7 +1,7 @@
 Feature: profile photo
   As a user, I want to provide my avatar to make my actions more visible
 
-  Scenario: profile photo
+  Scenario: set profile photo
     Given "Admin" creates following user using API
       | id    |
       | Alice |
@@ -18,3 +18,40 @@ Feature: profile photo
     When "Alice" deletes the profile image
     Then "Alice" should not have a profile picture
     And "Alice" logs out
+
+
+  Scenario: profile photo
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+      | Brian |
+      | Carol |
+    And "Alice" has uploads the profile image "testavatar.jpeg" using API
+    And "Brian" has uploads the profile image "user-avatar.png" using API
+    And "Alice" creates the following folder in personal space using API
+      | name          |
+      | sharedFolder |
+    And "Alice" shares the following resource using API
+      | resource       | recipient | type | role     |
+      | sharedFolder   | Brian     | user | Can edit |
+      | sharedFolder   | Carol     | user | Can edit |
+    
+    When "Alice" logs in
+    Then "Alice" should see the following recipients
+      | resource     | recipient | hasAvatar |
+      | sharedFolder | Brian     | true     |
+      | sharedFolder | Carol     | false    |
+    And "Alice" navigates to the shared with others page
+    And "Alice" should see "recipient" avatar for the resource "sharedFolder"
+    And "Alice" should see the following recipients
+      | resource     | recipient | hasAvatar |
+      | sharedFolder | Brian     | true     |
+      | sharedFolder | Carol     | false    |
+    And "Alice" logs out
+    
+    When "Brian" logs in
+    Then "Brian" should see sharer avatar in the notification
+    And "Brian" navigates to the shared with me page
+    And "Brian" should see "sharer" avatar for the resource "sharedFolder"
+    And "Brian" should see "recipient" avatar for the resource "sharedFolder"
+    And "Brian" logs out

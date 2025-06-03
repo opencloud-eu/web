@@ -6,6 +6,7 @@ import { getApplicationEntity } from './utils'
 import { userRoleStore } from '../../store'
 import { UsersEnvironment } from '../../environment'
 import { setAccessAndRefreshToken } from '../token'
+import { readFile } from 'fs/promises'
 
 interface GroupResponse {
   value: Group[]
@@ -170,4 +171,23 @@ export const getGroups = async (adminUser: User): Promise<Group[]> => {
   })
   const data = (await response.json()) as GroupResponse
   return data.value
+}
+
+export const uploadProfileImage = async ({
+  user,
+  profileImage
+}: {
+  user: User
+  profileImage: string
+}): Promise<void> => {
+  const imageBuffer = await readFile(profileImage)
+
+  const response = await request({
+    method: 'PATCH',
+    path: join('graph', 'v1.0', 'me', 'photo', '$value'),
+    body: imageBuffer,
+    user
+  })
+
+  checkResponseStatus(response, 'Failed while uploading user profile image')
 }

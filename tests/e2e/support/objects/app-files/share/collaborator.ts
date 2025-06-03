@@ -1,5 +1,4 @@
-import { Page } from '@playwright/test'
-import { startCase } from 'lodash-es'
+import { Page, expect } from '@playwright/test'
 import util from 'util'
 import { Group, User } from '../../../types'
 import { getActualExpiryDate } from '../../../utils/datePicker'
@@ -12,6 +11,7 @@ export interface ICollaborator {
   resourceType?: string
   expirationDate?: string
   shareType?: string
+  hasAvatar?: boolean
 }
 
 export interface InviteCollaboratorsArgs {
@@ -22,6 +22,7 @@ export interface InviteCollaboratorsArgs {
 export interface CollaboratorArgs {
   page: Page
   collaborator: ICollaborator
+  hasAvatar?: boolean
 }
 
 export interface RemoveCollaboratorArgs extends Omit<CollaboratorArgs, 'collaborator'> {
@@ -83,6 +84,8 @@ export default class Collaborator {
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"remove-expiration-date")]'
   private static readonly showAccessDetailsButton =
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"show-access-details")]'
+  private static readonly collaboratorIndication =
+    '%s//span[contains(@class,"files-collaborators-collaborator-indicator")]'
   private static readonly removeCollaboratorConfirmationButton = '.oc-modal-body-actions-confirm'
   private static readonly collaboratorExpirationDatepicker = '.oc-modal-body .oc-date-picker input'
   private static readonly collaboratorExpirationDatepickerConfirmButton =
@@ -212,23 +215,25 @@ export default class Collaborator {
   static async checkCollaborator(args: CollaboratorArgs): Promise<void> {
     const {
       page,
-      collaborator: { collaborator, type, role }
+      collaborator: { collaborator, type, hasAvatar }
     } = args
     const collaboratorRow = Collaborator.getCollaboratorUserOrGroupSelector(collaborator, type)
 
     await page.locator(collaboratorRow).waitFor()
 
-    if (role) {
-      const parts = role.split(' ')
-      const collaboratorRole = `${startCase(parts[0].toLowerCase())} ${
-        parts[1] ? `${parts[1].toLowerCase()}` : ''
-      }`
-      const roleSelector = util.format(
-        Collaborator.collaboratorRoleSelector,
-        collaboratorRow,
-        collaboratorRole
-      )
-      await page.locator(roleSelector).waitFor()
+    if (hasAvatar) {
+      const avatarImgLocator = page
+        .locator(util.format(Collaborator.collaboratorIndication, collaboratorRow))
+        .locator('img')
+
+      await expect(avatarImgLocator).toBeVisible()
+      await expect(avatarImgLocator).toHaveAttribute('src', /^blob:/)
+    } else {
+      const avatarInitialsLocator = page
+        .locator(util.format(Collaborator.collaboratorIndication, collaboratorRow))
+        .locator('.avatar-initials')
+
+      await expect(avatarInitialsLocator).toBeVisible()
     }
   }
 

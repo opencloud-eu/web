@@ -398,4 +398,8 @@ export class Resource {
   async deleteResourceViaAppTopbar(): Promise<void> {
     await po.deleteResourceViaAppTopbar({ page: this.#page })
   }
+
+  getAvatarLocator(args: { resource: string; avatarType: 'sharer' | 'recipient' }): Locator {
+    return po.getAvatarLocator({ page: this.#page, ...args })
+  }
 }

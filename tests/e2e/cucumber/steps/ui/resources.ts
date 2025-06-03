@@ -1056,3 +1056,18 @@ Then(
     expect(downloadButton).toBe(tooltip)
   }
 )
+
+Then(
+  '{string} should see {string} avatar for the resource {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    avatarType: 'sharer' | 'recipient',
+    resource: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const avatarLocator = await resourceObject.getAvatarLocator({ resource, avatarType })
+    await expect(avatarLocator).toBeVisible()
+  }
+)

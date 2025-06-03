@@ -119,6 +119,10 @@ const sideBarActions =
   '//ul[@id="oc-files-actions-sidebar"]//span[contains(@class,"oc-files-context-action-label")]/span'
 const selectAllCheckbox = '#resource-table-select-all'
 const filesTable = '#files-space-table .oc-table-data-cell-select'
+const sharerAvatarSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
+const recipientAvatarSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
 
 // online office locators
 // Collabora
@@ -2220,4 +2224,18 @@ export const deleteResourceViaAppTopbar = async ({ page }: { page: Page }): Prom
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'DELETE'),
     page.locator(deleteButtonBatchAction).click()
   ])
+}
+
+const AVATAR_SELECTORS = {
+  sharer: sharerAvatarSelector,
+  recipient: recipientAvatarSelector
+} as const
+
+export const getAvatarLocator = (args: {
+  page: Page
+  resource: string
+  avatarType: keyof typeof AVATAR_SELECTORS
+}): Locator => {
+  const { page, resource, avatarType } = args
+  return page.locator(util.format(AVATAR_SELECTORS[avatarType], resource))
 }
