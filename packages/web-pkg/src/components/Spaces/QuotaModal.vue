@@ -26,9 +26,9 @@ import {
   useMessages,
   useSpacesStore,
   useCapabilityStore,
-  useResourcesStore
+  useResourcesStore,
+  useRouter
 } from '../../composables'
-import { useRouter } from '../../composables/router'
 import { eventBus } from '../../services'
 import { ContextualHelperData } from '@opencloud-eu/design-system/helpers'
 import { storeToRefs } from 'pinia'
@@ -118,10 +118,10 @@ const changeSelectedQuotaOption = (option: { value: number }) => {
 const onConfirm = async () => {
   const client = clientService.graphAuthenticated
   const requests = spaces.map(async (space): Promise<void> => {
-    const updatedSpace = await client.drives.updateDrive(
-      space.id,
-      { name: space.name, quota: { total: unref(selectedOption) } }
-    )
+    const updatedSpace = await client.drives.updateDrive(space.id, {
+      name: space.name,
+      quota: { total: unref(selectedOption) }
+    })
     if (unref(router.currentRoute).name === 'admin-settings-spaces') {
       eventBus.publish('app.admin-settings.spaces.space.quota.updated', {
         spaceId: space.id,
