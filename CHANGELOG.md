@@ -21,6 +21,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: modal window doesn't close on browser navigation [[#783](https://github.com/opencloud-eu/web/pull/783)]
 - fix: space quota not initial set [[#779](https://github.com/opencloud-eu/web/pull/779)]
 - fix: avatar initials not shown in shares table [[#784](https://github.com/opencloud-eu/web/pull/784)]
 - fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
