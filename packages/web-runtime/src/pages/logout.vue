@@ -25,8 +25,8 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, unref } from 'vue'
-import { useConfigStore, useModals, useThemeStore } from '@opencloud-eu/web-pkg'
+import { computed, defineComponent, unref } from 'vue'
+import { useConfigStore, useThemeStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
@@ -37,7 +37,6 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const { currentTheme } = storeToRefs(themeStore)
     const configStore = useConfigStore()
-    const { removeAllModals } = useModals()
 
     const cardTitle = computed(() => {
       return $gettext('Logged out')
@@ -66,10 +65,6 @@ export default defineComponent({
 
     const footerSlogan = computed(() => unref(currentTheme).slogan)
     const logoImg = computed(() => unref(currentTheme).logo)
-
-    onMounted(() => {
-      removeAllModals()
-    })
 
     return {
       logoImg,
