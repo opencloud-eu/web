@@ -1,6 +1,12 @@
 <template>
   <span>
-    <span v-oc-tooltip="tooltip" class="oc-avatars" aria-hidden="true" :class="avatarsClasses">
+    <span
+      ref="avatarsRef"
+      v-oc-tooltip="tooltip"
+      class="oc-avatars"
+      aria-hidden="true"
+      :class="avatarsClasses"
+    >
       <slot name="userAvatars" :avatars="avatars" :width="width">
         <template v-if="avatars.length > 0">
           <oc-avatar
@@ -30,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, unref, useTemplateRef } from 'vue'
 import OcAvatar from '../OcAvatar/OcAvatar.vue'
 import OcAvatarCount from '../OcAvatarCount/OcAvatarCount.vue'
 import OcAvatarLink from '../OcAvatarLink/OcAvatarLink.vue'
@@ -71,6 +77,11 @@ export interface Props {
    */
   stacked?: boolean
   /**
+   * @docs Determines if the stacked avatars show a hover effect.
+   * @default false
+   */
+  hoverEffect?: boolean
+  /**
    * @docs The gap size between the avatars.
    * @default xsmall
    */
@@ -97,11 +108,13 @@ const {
   stacked = false,
   gapSize = 'xsmall',
   iconSize = 'small',
-  width = 30
+  width = 30,
+  hoverEffect = false
 } = defineProps<Props>()
 
-const isOverlapping = computed(() => maxDisplayed && maxDisplayed < items.length)
+const avatarsRef = useTemplateRef('avatarsRef')
 
+const isOverlapping = computed(() => maxDisplayed && maxDisplayed < items.length)
 const avatars = computed(() => {
   const a = items.filter((u) => u.avatarType === 'user')
   if (!isOverlapping.value) {
@@ -155,7 +168,23 @@ const getAvatarComponentForItem = (item: Item) => {
 }
 
 const avatarsClasses = computed(() => {
-  return [`oc-avatars-gap-${getSizeClass(gapSize)}`, ...(stacked ? ['oc-avatars-stacked'] : [])]
+  return [
+    `oc-avatars-gap-${getSizeClass(gapSize)}`,
+    ...(stacked ? ['oc-avatars-stacked'] : []),
+    ...(stacked && hoverEffect ? ['oc-avatars-hover-effect'] : [])
+  ]
+})
+
+onMounted(() => {
+  if (!unref(avatarsRef) || !stacked) {
+    return
+  }
+
+  const avatarElements = Array.from(unref(avatarsRef).children)
+
+  avatarElements.forEach((child, index) => {
+    ;(child as HTMLElement).style.zIndex = `${900 + index}`
+  })
 })
 </script>
 
@@ -166,8 +195,14 @@ const avatarsClasses = computed(() => {
   flex-flow: row nowrap;
   width: fit-content;
 
+  &-hover-effect {
+    *:hover {
+      z-index: 1000 !important;
+    }
+  }
+
   &-stacked > * + * {
-    margin-left: -25px;
+    margin-left: -15px;
   }
 
   &-gap {

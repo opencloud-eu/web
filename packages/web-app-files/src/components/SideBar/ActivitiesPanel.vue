@@ -10,7 +10,7 @@
               :items="getAvatarsFromActivity(activity)"
               class="oc-mr-xs"
               stacked
-              gap-size="medium"
+              gap-size="small"
               :width="16.8"
               icon-size="xsmall"
             >

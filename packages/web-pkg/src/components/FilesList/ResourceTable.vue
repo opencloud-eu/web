@@ -202,6 +202,7 @@
           :is-tooltip-displayed="true"
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
+          hover-effect
         >
           <template #userAvatars="{ avatars, width }">
             <user-avatar
@@ -229,6 +230,7 @@
           :max-displayed="3"
           :is-tooltip-displayed="true"
           :accessible-description="getSharedWithAvatarDescription(item)"
+          hover-effect
         >
           <template #userAvatars="{ avatars, width }">
             <user-avatar
