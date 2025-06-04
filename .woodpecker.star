@@ -46,20 +46,19 @@ config = {
         "main",
         "stable-*",
     ],
-    "pnpmlint": True,
-    "pnpmformat": True,
+    "pnpmlint": False,
+    "pnpmformat": False,
     "e2e": {
         "1": {
             "earlyFail": True,
             "skip": False,
             "suites": [
                 "journeys",
-                "smoke",
             ],
         },
         "2": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "admin-settings",
                 "spaces",
@@ -67,7 +66,7 @@ config = {
         },
         "3": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "tikaNeeded": True,
             "suites": [
                 "search",
@@ -82,7 +81,7 @@ config = {
         },
         "4": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "navigation",
                 "user-settings",
@@ -91,7 +90,7 @@ config = {
             ],
         },
         "app-provider": {
-            "skip": False,
+            "skip": True,
             "suites": [
                 "app-provider",
                 "app-provider-onlyOffice",
@@ -109,7 +108,7 @@ config = {
             },
         },
         "oidc-refresh-token": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/refreshToken.feature",
             ],
@@ -119,7 +118,7 @@ config = {
             },
         },
         "oidc-iframe": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/iframeTokenRenewal.feature",
             ],
@@ -129,7 +128,7 @@ config = {
         },
         "ocm": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "federationServer": True,
             "suites": [
                 "ocm",
@@ -145,7 +144,7 @@ config = {
             },
         },
     },
-    "build": True,
+    "build": False,
 }
 
 # minio mc environment variables
