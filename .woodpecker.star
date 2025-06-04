@@ -162,6 +162,7 @@ minio_mc_environment = {
     "AWS_SECRET_ACCESS_KEY": {
         "from_secret": "cache_s3_secret_key",
     },
+    "PUBLIC_BUCKET": "public"
 }
 
 web_workspace = {
@@ -519,8 +520,8 @@ def e2eTests(ctx):
                 "cd tests/e2e",
                 command,
             ],
-        }]  # + \
-        #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
+        }]  + \
+        uploadTracingResult(ctx) # + \
         #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
 
         pipelines.append({
@@ -1284,28 +1285,13 @@ def uploadTracingResult(ctx):
 
     return [{
         "name": "upload-tracing-result",
-        "image": PLUGINS_S3,
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": {
-                "from_secret": "cache_public_s3_bucket",
-            },
-            "endpoint": {
-                "from_secret": "cache_public_s3_server",
-            },
-            "path_style": True,
-            "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
-            "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
-            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_public_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_public_s3_secret_key",
-            },
-        },
+        "image": MINIO_MC,
+        "environment": minio_mc_environment,
+        "commands": [
+            "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+            "mc cp -r -a %s/reports/e2e/playwright/tracing/**/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
+            "mc ls --recursive s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/",
+        ],
         "when": {
             "status": status,
         },
