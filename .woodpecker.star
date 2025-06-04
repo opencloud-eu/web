@@ -174,6 +174,7 @@ minio_mc_environment = {
     "AWS_SECRET_ACCESS_KEY": {
         "from_secret": "cache_s3_secret_key",
     },
+    "PUBLIC_BUCKET": "public",
 }
 
 web_workspace = {
@@ -529,16 +530,15 @@ def e2eTests(ctx):
             return []
 
         steps += [{
-            "name": "e2e-tests",
-            "image": OC_CI_NODEJS,
-            "environment": environment,
-            "commands": [
-                "cd tests/e2e",
-                command,
-            ],
-        }]  # + \
-        #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
-        #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
+                     "name": "e2e-tests",
+                     "image": OC_CI_NODEJS,
+                     "environment": environment,
+                     "commands": [
+                         "cd tests/e2e",
+                         command,
+                     ],
+                 }] + \
+                 uploadTracingResult(ctx)
 
         pipelines.append({
             "name": "e2e-tests-%s" % suite,
@@ -1192,7 +1192,7 @@ def genericCachePurge(flush_path):
                     },
                     "endpoint": CACHE_S3_SERVER,
                     "flush": True,
-                    "flush_age": 1,
+                    "flush_age": 1,  # TODO make variable
                     "flush_path": flush_path,
                 },
             },
@@ -1297,44 +1297,14 @@ def uploadTracingResult(ctx):
 
     return [{
         "name": "upload-tracing-result",
-        "image": PLUGINS_S3,
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": {
-                "from_secret": "cache_public_s3_bucket",
-            },
-            "endpoint": CACHE_S3_SERVER,
-            "path_style": True,
-            "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
-            "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
-            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_public_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_public_s3_secret_key",
-            },
-        },
-        "when": {
-            "status": status,
-        },
-    }]
-
-def logTracingResult(ctx):
-    status = ["failure"]
-
-    if "with-tracing" in ctx.build.title.lower():
-        status = ["failure", "success"]
-
-    return [{
-        "name": "log-tracing-result",
-        "image": OC_UBUNTU,
+        "image": MINIO_MC,
+        "environment": minio_mc_environment,
         "commands": [
+            "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+            "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing/$f \n"; done',
+            'for f in *.zip; do echo "npx playwright show-trace https://s3.ci.opencloud.eu/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/$f \n"; done',
         ],
         "when": {
             "status": status,
@@ -1531,7 +1501,7 @@ def e2eTestsOnKeycloak(ctx):
                          "OC_BASE_URL": "opencloud:9200",
                          "HEADLESS": True,
                          "RETRY": "1",
-                         "REPORT_TRACING": True,
+                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
                          "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
                          "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
@@ -1542,9 +1512,8 @@ def e2eTestsOnKeycloak(ctx):
                          "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
                      ],
                  },
-             ]  #  + \
-    #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
-    #  logTracingResult(ctx, "e2e-tests keycloack-journey-suite") # ToDo to be added when a public S3 bucket is available
+             ] + \
+             uploadTracingResult(ctx)
 
     return [{
         "name": "e2e-test-on-keycloak",

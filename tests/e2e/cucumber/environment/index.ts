@@ -183,8 +183,8 @@ function filterTracingReports(status: string) {
     reports.forEach((report) => {
       fs.renameSync(`${traceDir}/${report}`, `${failedDir}/${report}`)
     })
-  } else {
-    // clean up the tracing directory
+  } else if (!defaults.reportTracing) {
+    // clean up the tracing directory if the report tracing was not set explicitly
     fs.rmSync(traceDir, { recursive: true })
   }
 }
