@@ -1287,6 +1287,8 @@ def uploadTracingResult(ctx):
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
+            "ls %s" % dir["web"],
+            "find %s/reports/" % dir["web"],
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "mc cp -r -a %s/reports/e2e/playwright/tracing/**/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
             "mc ls --recursive s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/",
@@ -1516,8 +1518,8 @@ def e2eTestsOnKeycloak(ctx):
                          "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
                      ],
                  },
-             ]  #  + \
-    #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
+             ] + \
+             uploadTracingResult(ctx)  # + \
     #  logTracingResult(ctx, "e2e-tests keycloack-journey-suite") # ToDo to be added when a public S3 bucket is available
 
     return [{
