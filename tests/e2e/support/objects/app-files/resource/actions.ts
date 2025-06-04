@@ -123,6 +123,7 @@ const sharerAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
 const recipientAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
+const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 
 // online office locators
 // Collabora
@@ -2238,4 +2239,32 @@ export const getAvatarLocator = (args: {
 }): Locator => {
   const { page, resource, avatarType } = args
   return page.locator(util.format(AVATAR_SELECTORS[avatarType], resource))
+}
+
+export const getAvatarLocatorFromActivityPanel = async (args: {
+  page: Page
+  resource: string
+  avatarUser: string
+}): Promise<Locator> => {
+  const { page, resource, avatarUser } = args
+  const paths = resource.split('/')
+  const finalResource = paths.pop()
+  for (const path of paths) {
+    await clickResource({ page, path })
+  }
+  await sidebar.open({ page: page, resource: finalResource })
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 200 &&
+        resp.request().method() === 'GET' &&
+        resp.request().url().includes('/extensions/org.libregraph/activities')
+    ),
+    sidebar.openPanel({ page: page, name: 'activities' })
+  ])
+  const user = new environment.UsersEnvironment().getCreatedUser({ key: avatarUser })
+
+  return await page
+    .locator(util.format(userAvatarInActivitypanelSelector, user.username))
+    .locator('img')
 }

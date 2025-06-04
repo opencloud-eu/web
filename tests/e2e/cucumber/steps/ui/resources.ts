@@ -1071,3 +1071,21 @@ Then(
     await expect(avatarLocator).toBeVisible()
   }
 )
+
+Then(
+  '{string} should see {string} avatar for the resource {string} in the activity panel',
+  async function (
+    this: World,
+    stepUser: string,
+    avatarUser: string,
+    resource: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const avatarLocator = await resourceObject.getAvatarLocatorFromActivityPanel({
+      resource,
+      avatarUser
+    })
+    await expect(avatarLocator).toBeVisible()
+  }
+)

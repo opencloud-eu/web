@@ -402,4 +402,11 @@ export class Resource {
   getAvatarLocator(args: { resource: string; avatarType: 'sharer' | 'recipient' }): Locator {
     return po.getAvatarLocator({ page: this.#page, ...args })
   }
+
+  async getAvatarLocatorFromActivityPanel(args: {
+    resource: string
+    avatarUser: string
+  }): Promise<Locator> {
+    return await po.getAvatarLocatorFromActivityPanel({ page: this.#page, ...args })
+  }
 }

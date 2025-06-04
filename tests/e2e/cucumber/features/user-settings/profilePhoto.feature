@@ -29,7 +29,7 @@ Feature: profile photo
     And "Alice" has uploads the profile image "testavatar.jpeg" using API
     And "Brian" has uploads the profile image "user-avatar.png" using API
     And "Alice" creates the following folder in personal space using API
-      | name          |
+      | name         |
       | sharedFolder |
     And "Alice" shares the following resource using API
       | resource       | recipient | type | role     |
@@ -41,6 +41,7 @@ Feature: profile photo
       | resource     | recipient | hasAvatar |
       | sharedFolder | Brian     | true     |
       | sharedFolder | Carol     | false    |
+    And "Alice" should see "Brian" avatar for the resource "sharedFolder" in the activity panel
     And "Alice" navigates to the shared with others page
     And "Alice" should see "recipient" avatar for the resource "sharedFolder"
     And "Alice" should see the following recipients
