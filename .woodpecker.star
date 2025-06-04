@@ -502,7 +502,7 @@ def e2eTests(ctx):
             steps += (tikaService() if params["tikaNeeded"] else []) + \
                      openCloudService(params["extraServerEnvironment"])
 
-        command = "bash run-e2e.sh "
+        command = "echo $REPORT_TRACING; bash run-e2e.sh "
         if "suites" in matrix:
             command += "--suites %s" % ",".join(params["suites"])
         elif "features" in matrix:
