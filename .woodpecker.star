@@ -161,7 +161,7 @@ minio_mc_environment = {
     "AWS_SECRET_ACCESS_KEY": {
         "from_secret": "cache_s3_secret_key",
     },
-    "PUBLIC_BUCKET": "public"
+    "PUBLIC_BUCKET": "public",
 }
 
 web_workspace = {
@@ -512,15 +512,15 @@ def e2eTests(ctx):
             return []
 
         steps += [{
-            "name": "e2e-tests",
-            "image": OC_CI_NODEJS,
-            "environment": environment,
-            "commands": [
-                "cd tests/e2e",
-                command,
-            ],
-        }]  + \
-        uploadTracingResult(ctx) # + \
+                     "name": "e2e-tests",
+                     "image": OC_CI_NODEJS,
+                     "environment": environment,
+                     "commands": [
+                         "cd tests/e2e",
+                         command,
+                     ],
+                 }] + \
+                 uploadTracingResult(ctx)  # + \
         #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
 
         pipelines.append({
