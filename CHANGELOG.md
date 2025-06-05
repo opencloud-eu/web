@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.11.1 [[#786](https://github.com/opencloud-eu/web/pull/786)]
 - chore(deps): update dependency rollup-plugin-visualizer to v6 [[#746](https://github.com/opencloud-eu/web/pull/746)]
 - fix(deps): update dependency focus-trap to v7.6.5 [[#763](https://github.com/opencloud-eu/web/pull/763)]
 - chore(deps): update traefik docker tag to v3.4.1 [[#760](https://github.com/opencloud-eu/web/pull/760)]
