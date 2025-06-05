@@ -196,8 +196,12 @@ onMounted(() => {
   width: fit-content;
 
   &-hover-effect {
+    * {
+      transition: transform 0.2s ease-out;
+    }
     *:hover {
       z-index: 1000 !important;
+      transform: scale(1.1);
     }
   }
 
