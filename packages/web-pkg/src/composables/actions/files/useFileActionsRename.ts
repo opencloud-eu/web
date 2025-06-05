@@ -206,6 +206,7 @@ export const useFileActionsRename = () => {
       inputValue,
       inputSelectionRange,
       inputLabel: resources[0].isFolder ? $gettext('Folder name') : $gettext('File name'),
+      inputRequiredMark: true,
       onConfirm,
       onInput: checkName
     })

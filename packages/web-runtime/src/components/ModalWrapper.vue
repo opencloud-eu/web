@@ -12,6 +12,7 @@
     :input-selection-range="modal.inputSelectionRange"
     :input-type="modal.inputType"
     :input-value="modal.inputValue"
+    :input-required-mark="modal.inputRequiredMark"
     :hide-actions="modal.hideActions"
     :hide-confirm-button="modal.hideConfirmButton"
     :button-cancel-text="modal.cancelText"

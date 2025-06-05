@@ -4,6 +4,7 @@
     :label="$gettext('Current password')"
     type="password"
     :fix-message-line="true"
+    required-mark
   />
   <oc-text-input
     v-model="newPassword"
@@ -11,6 +12,7 @@
     type="password"
     :fix-message-line="true"
     :error-message="newPasswordErrorMessage"
+    required-mark
     @change="validatePasswordConfirm"
   />
   <oc-text-input
@@ -19,6 +21,7 @@
     type="password"
     :fix-message-line="true"
     :error-message="passwordConfirmErrorMessage"
+    required-mark
     @change="validatePasswordConfirm"
   />
 </template>

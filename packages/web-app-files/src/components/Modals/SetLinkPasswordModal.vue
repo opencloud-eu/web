@@ -8,6 +8,7 @@
     :placeholder="link.hasPassword ? '●●●●●●●●' : null"
     :error-message="errorMessage"
     class="oc-modal-body-input"
+    required-mark
     @password-challenge-completed="$emit('update:confirmDisabled', false)"
     @password-challenge-failed="$emit('update:confirmDisabled', true)"
     @keydown.enter.prevent="$emit('confirm')"

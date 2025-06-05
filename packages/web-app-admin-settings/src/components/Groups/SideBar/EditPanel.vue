@@ -9,6 +9,7 @@
         :label="$gettext('Group name')"
         :error-message="formData.displayName.errorMessage"
         :fix-message-line="true"
+        required-mark
         @update:model-value="validateDisplayName"
       />
       <compare-save-dialog

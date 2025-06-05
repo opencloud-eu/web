@@ -1,6 +1,9 @@
 <template>
   <div>
-    <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="oc-label" v-text="label" />
+    <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="oc-label">
+      {{ label }}
+      <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+    </label>
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
       v-bind="contextualHelper?.data"
@@ -189,6 +192,11 @@ export interface Props {
    * @default false
    */
   positionFixed?: boolean
+  /**
+   * @docs Determines if a required mark (*) should be displayed next to the label.
+   * @default false
+   */
+  requiredMark?: boolean
 }
 
 export interface Emits {
@@ -247,7 +255,8 @@ const {
   descriptionMessage,
   multiple = false,
   readOnly = false,
-  positionFixed = false
+  positionFixed = false,
+  requiredMark = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
