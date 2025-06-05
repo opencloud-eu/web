@@ -35,6 +35,13 @@
     "type": "boolean"
   },
   {
+    "name": "hoverEffect",
+    "required": false,
+    "description": "Determines if the stacked avatars show a hover effect.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
     "name": "gapSize",
     "required": false,
     "description": "The gap size between the avatars.",
