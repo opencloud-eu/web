@@ -57,7 +57,6 @@ export class UsersEnvironment {
       throw new Error(`user '${key}' not found`)
     }
     this.removeCreatedUser({ key })
-    // createdUserStore.delete(key)
     createdUserStore.set(user.id, user)
 
     return user
