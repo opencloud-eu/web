@@ -9,7 +9,7 @@
       :label="$gettext('Groups')"
       :fix-message-line="true"
       v-bind="$attrs"
-      required-mark="requiredMark"
+      :required-mark="requiredMark"
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayName, id }">
