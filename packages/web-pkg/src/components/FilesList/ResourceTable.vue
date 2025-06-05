@@ -1314,11 +1314,8 @@ export default defineComponent({
     margin-left: var(--oc-space-xsmall);
   }
 
+  &-actions,
   &-people {
-    margin-right: -5px;
-  }
-
-  &-actions {
     align-items: center;
     display: flex;
     flex-flow: row nowrap;
