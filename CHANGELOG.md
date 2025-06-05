@@ -21,6 +21,7 @@
 
 ### ✅ Tests
 
+- [full-ci] delete unused files for upload [[#795](https://github.com/opencloud-eu/web/pull/795)]
 - e2e-tests. Check avatar tests in shares view [[#792](https://github.com/opencloud-eu/web/pull/792)]
 - e2e tests. user profile photo [[#742](https://github.com/opencloud-eu/web/pull/742)]
 - chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
