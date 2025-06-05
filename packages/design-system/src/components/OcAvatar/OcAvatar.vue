@@ -133,6 +133,7 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
   display: flex;
   flex-shrink: 0;
   border-radius: 50%;
+  border: 1px solid var(--oc-role-outline-variant);
 
   .avatarImg {
     width: 100%;

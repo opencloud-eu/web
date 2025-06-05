@@ -36,5 +36,6 @@ const fontSize = computed(() => {
   color: var(--oc-role-on-secondary);
   display: flex;
   justify-content: center;
+  border: 1px solid var(--oc-role-outline-variant);
 }
 </style>

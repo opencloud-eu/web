@@ -111,6 +111,7 @@ const pickBackgroundColor = () => {
   height: var(--width);
   justify-content: center;
   width: var(--width);
+  border: 1px solid var(--oc-role-outline-variant);
 
   .oc-icon > svg {
     fill: var(--icon-color) !important;

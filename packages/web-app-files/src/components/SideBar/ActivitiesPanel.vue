@@ -5,12 +5,12 @@
     <div v-else class="oc-ml-s">
       <oc-list class="oc-timeline">
         <li v-for="activity in activities" :key="activity.id">
-          <div class="oc-flex">
+          <div class="oc-flex oc-flex-middle">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
               class="oc-mr-xs"
               stacked
-              gap-size="medium"
+              gap-size="small"
               :width="16.8"
               icon-size="xsmall"
             >
