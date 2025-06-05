@@ -19,6 +19,13 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 📈 Enhancement
+
+- feat: change visual representation of stacked avatars [[#793](https://github.com/opencloud-eu/web/pull/793)]
+- feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
+- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
+- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
+
 ### ✅ Tests
 
 - [full-ci] delete unused files for upload [[#795](https://github.com/opencloud-eu/web/pull/795)]
@@ -36,12 +43,6 @@
 - fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
 - fix: add resource name length check [[#776](https://github.com/opencloud-eu/web/pull/776)]
 - fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
-
-### 📈 Enhancement
-
-- feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
-- feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
-- feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
 
 ### 📦️ Dependencies
 
