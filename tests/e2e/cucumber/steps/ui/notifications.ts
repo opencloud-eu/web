@@ -33,3 +33,13 @@ When(
     await application.markNotificationsAsRead()
   }
 )
+
+Then(
+  '{string} should see sharer avatar in the notification',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const application = new objects.runtime.Application({ page })
+    const avatarLocator = await application.getSharerAvatarFromNotification()
+    await expect(avatarLocator).toBeVisible()
+  }
+)

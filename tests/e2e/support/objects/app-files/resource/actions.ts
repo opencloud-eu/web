@@ -119,6 +119,11 @@ const sideBarActions =
   '//ul[@id="oc-files-actions-sidebar"]//span[contains(@class,"oc-files-context-action-label")]/span'
 const selectAllCheckbox = '#resource-table-select-all'
 const filesTable = '#files-space-table .oc-table-data-cell-select'
+const sharerAvatarSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
+const recipientAvatarSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
+const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 
 // online office locators
 // Collabora
@@ -2220,4 +2225,46 @@ export const deleteResourceViaAppTopbar = async ({ page }: { page: Page }): Prom
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'DELETE'),
     page.locator(deleteButtonBatchAction).click()
   ])
+}
+
+const AVATAR_SELECTORS = {
+  sharer: sharerAvatarSelector,
+  recipient: recipientAvatarSelector
+} as const
+
+export const getAvatarLocator = (args: {
+  page: Page
+  resource: string
+  avatarType: keyof typeof AVATAR_SELECTORS
+}): Locator => {
+  const { page, resource, avatarType } = args
+  return page.locator(util.format(AVATAR_SELECTORS[avatarType], resource))
+}
+
+export const getAvatarLocatorFromActivityPanel = async (args: {
+  page: Page
+  resource: string
+  avatarUser: string
+}): Promise<Locator> => {
+  const { page, resource, avatarUser } = args
+  const paths = resource.split('/')
+  const finalResource = paths.pop()
+  for (const path of paths) {
+    await clickResource({ page, path })
+  }
+  await sidebar.open({ page: page, resource: finalResource })
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 200 &&
+        resp.request().method() === 'GET' &&
+        resp.request().url().includes('/extensions/org.libregraph/activities')
+    ),
+    sidebar.openPanel({ page: page, name: 'activities' })
+  ])
+  const user = new environment.UsersEnvironment().getCreatedUser({ key: avatarUser })
+
+  return await page
+    .locator(util.format(userAvatarInActivitypanelSelector, user.username))
+    .locator('img')
 }

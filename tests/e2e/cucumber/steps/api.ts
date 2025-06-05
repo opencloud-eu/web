@@ -339,3 +339,15 @@ Given(
     }
   }
 )
+
+Given(
+  '{string} has uploads the profile image {string} using API',
+  async function (this: World, stepUser: string, profileImage: string): Promise<void> {
+    const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
+    const profileImagePath = this.filesEnvironment.getFile({ name: profileImage }).path
+    await api.graph.uploadProfileImage({
+      user,
+      profileImage: profileImagePath
+    })
+  }
+)
