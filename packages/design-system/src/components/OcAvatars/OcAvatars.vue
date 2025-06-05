@@ -167,16 +167,20 @@ const getAvatarComponentForItem = (item: Item) => {
   }
 }
 
+const hasHoverEffect = computed(() => {
+  return stacked && hoverEffect && unref(items).length > 1
+})
+
 const avatarsClasses = computed(() => {
   return [
     `oc-avatars-gap-${getSizeClass(gapSize)}`,
     ...(stacked ? ['oc-avatars-stacked'] : []),
-    ...(stacked && hoverEffect ? ['oc-avatars-hover-effect'] : [])
+    ...(unref(hasHoverEffect) ? ['oc-avatars-hover-effect'] : [])
   ]
 })
 
 onMounted(() => {
-  if (!unref(avatarsRef) || !stacked) {
+  if (!unref(avatarsRef) || !unref(hasHoverEffect)) {
     return
   }
 
@@ -196,10 +200,11 @@ onMounted(() => {
   width: fit-content;
 
   &-hover-effect {
-    * {
+    > * {
       transition: transform 0.2s ease-out;
     }
-    *:hover {
+
+    > *:hover {
       z-index: 1000 !important;
       transform: scale(1.1);
     }
