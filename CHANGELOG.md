@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-03
+## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-05
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -19,6 +19,14 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### ✅ Tests
+
+- e2e-tests. Check avatar tests in shares view [[#792](https://github.com/opencloud-eu/web/pull/792)]
+- e2e tests. user profile photo [[#742](https://github.com/opencloud-eu/web/pull/742)]
+- chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
+- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
+- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
+
 ### 🐛 Bug Fixes
 
 - fix: modal window doesn't close on browser navigation [[#783](https://github.com/opencloud-eu/web/pull/783)]
@@ -33,13 +41,6 @@
 - feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
 - feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
 - feat: remove space membership info in file list [[#721](https://github.com/opencloud-eu/web/pull/721)]
-
-### ✅ Tests
-
-- e2e tests. user profile photo [[#742](https://github.com/opencloud-eu/web/pull/742)]
-- chore: add avatar upload tests [[#743](https://github.com/opencloud-eu/web/pull/743)]
-- check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
-- disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
 
 ### 📦️ Dependencies
 
