@@ -104,6 +104,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
       hasInput: true,
       inputValue: defaultName,
       inputLabel: $gettext('File name'),
+      inputRequiredMark: true,
       inputSelectionRange,
       onConfirm: async (fileName: string) => {
         if (!areFileExtensionsShown.value) {
