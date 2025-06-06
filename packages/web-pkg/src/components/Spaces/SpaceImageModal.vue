@@ -130,6 +130,7 @@ onMounted(async () => {
       responsive: true,
       background: false
     })
+    setCropperInstance(cropper)
   } catch (error) {
     showErrorMessage({
       title: $gettext('Failed to load space image'),

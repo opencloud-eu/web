@@ -86,8 +86,6 @@ const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-setCropperInstance(cropper)
-
 const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
 
 const hasAvatar = computed(() => {
@@ -133,6 +131,7 @@ watch(imageUrl, async (newVal) => {
         cropperReady.value = true
       }
     })
+    setCropperInstance(cropper)
   }
 })
 
