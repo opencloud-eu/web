@@ -11,6 +11,7 @@
           :error-message="formData.userName.errorMessage"
           :fix-message-line="true"
           :read-only="isInputFieldReadOnly('user.onPremisesSamAccountName')"
+          required-mark
           @update:model-value="validateUserName"
         />
         <oc-text-input
@@ -21,6 +22,7 @@
           :error-message="formData.displayName.errorMessage"
           :fix-message-line="true"
           :read-only="isInputFieldReadOnly('user.displayName')"
+          required-mark
           @update:model-value="validateDisplayName"
         />
         <oc-text-input
@@ -32,6 +34,7 @@
           type="email"
           :fix-message-line="true"
           :read-only="isInputFieldReadOnly('user.mail')"
+          required-mark
           @change="validateEmail"
         />
         <oc-text-input
@@ -54,6 +57,7 @@
             :options="translatedRoleOptions"
             :clearable="false"
             :read-only="isInputFieldReadOnly('user.appRoleAssignments')"
+            required-mark
             @update:model-value="onUpdateRole"
           />
           <div class="oc-text-input-message"></div>
@@ -67,6 +71,7 @@
             :options="loginOptions"
             :clearable="false"
             :read-only="isInputFieldReadOnly('user.accountEnabled')"
+            required-mark
             @update:model-value="onUpdateLogin"
           />
 
@@ -87,6 +92,7 @@
               : ''
           "
           :read-only="isInputFieldReadOnly('drive.quota')"
+          required-mark
           @selected-option-change="changeSelectedQuotaOption"
         />
         <group-select

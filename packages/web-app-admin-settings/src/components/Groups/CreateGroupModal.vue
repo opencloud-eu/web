@@ -4,9 +4,10 @@
       id="create-group-input-display-name"
       v-model="group.displayName"
       class="oc-mb-s"
-      :label="$gettext('Group name') + '*'"
+      :label="$gettext('Group name')"
       :error-message="formData.displayName.errorMessage"
       :fix-message-line="true"
+      required-mark
       @update:model-value="validateDisplayName"
     />
     <input type="submit" class="oc-hidden" />

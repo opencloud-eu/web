@@ -99,6 +99,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
       confirmText: $gettext('Create'),
       hasInput: true,
       inputLabel: $gettext('Space name'),
+      inputRequiredMark: true,
       onInput: checkSpaceNameModalInput,
       onConfirm: (spaceName: string) => confirmAction({ spaceName, space, resources })
     })

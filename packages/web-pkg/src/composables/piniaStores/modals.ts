@@ -39,6 +39,7 @@ export type Modal = {
   inputLabel?: string
   inputError?: string
   inputDescription?: string
+  inputRequiredMark?: boolean
   focusTrapInitial?: string | false
   contextualHelperLabel?: string
   contextualHelperData?: ContextualHelperData

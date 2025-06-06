@@ -3,6 +3,7 @@
     :selected-groups="selectedOptions"
     :group-options="groups"
     :position-fixed="true"
+    required-mark
     @selected-option-change="changeSelectedGroupOption"
   />
 </template>

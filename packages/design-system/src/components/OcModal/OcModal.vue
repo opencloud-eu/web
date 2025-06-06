@@ -44,6 +44,7 @@
               :label="inputLabel"
               :type="inputType"
               :description-message="inputDescription"
+              :required-mark="inputRequiredMark"
               :fix-message-line="true"
               :selection-range="inputSelectionRange"
               @update:model-value="inputOnInput"
@@ -77,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, unref, useTemplateRef } from 'vue'
+import { computed, ref, unref, useTemplateRef, watch } from 'vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
@@ -144,6 +145,10 @@ export interface Props {
    */
   inputDescription?: string
   /**
+   * @docs Determines if a required mark should be displayed next to the input label.
+   */
+  inputRequiredMark?: boolean
+  /**
    * @docs Error message to be displayed below the input field.
    */
   inputError?: string
@@ -180,10 +185,12 @@ export interface Emits {
    * @docs Emitted when the cancel button has been clicked.
    */
   (e: 'cancel'): void
+
   /**
    * @docs Emitted when the confirm button has been clicked.
    */
   (e: 'confirm', value: string): void
+
   /**
    * @docs Emitted when the user has typed something in the input field.
    */
@@ -211,6 +218,7 @@ const {
   hideActions = false,
   hideConfirmButton = false,
   inputDescription,
+  inputRequiredMark = false,
   inputError,
   inputLabel,
   inputSelectionRange,

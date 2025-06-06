@@ -13,7 +13,10 @@
   >
     <template #label>
       <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
-        <label for="create-shortcut-modal-url-input" v-text="$gettext('Webpage or file')"></label>
+        <label for="create-shortcut-modal-url-input">
+          {{ $gettext('Webpage or file') }}
+          <span class="oc-text-error" aria-hidden="true">*</span>
+        </label>
         <oc-contextual-helper
           :text="
             $gettext(
@@ -92,10 +95,10 @@
     >
       <template #label>
         <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
-          <label
-            for="create-shortcut-modal-filename-input"
-            v-text="$gettext('Shortcut name')"
-          ></label>
+          <label for="create-shortcut-modal-filename-input">
+            {{ $gettext('Shortcut name') }}
+            <span class="oc-text-error" aria-hidden="true">*</span>
+          </label>
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
             :title="$gettext('Shortcut name')"
@@ -109,17 +112,17 @@
 
 <script lang="ts">
 import {
+  computed,
   defineComponent,
+  nextTick,
+  onMounted,
   PropType,
+  Ref,
   ref,
   unref,
-  computed,
-  nextTick,
-  Ref,
-  watch,
-  onMounted
+  watch
 } from 'vue'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import {
   Modal,
   useClientService,
@@ -129,7 +132,6 @@ import {
   useRouter,
   useSearch
 } from '../composables'
-import { urlJoin } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import DOMPurify from 'dompurify'
 import Mark from 'mark.js'

@@ -50,6 +50,7 @@ export const useSpaceActionsRename = () => {
       hasInput: true,
       inputLabel: $gettext('Space name'),
       inputValue: resources[0].name,
+      inputRequiredMark: true,
       onConfirm: (name: string) => renameSpace(resources[0], name),
       onInput: checkSpaceNameModalInput
     })

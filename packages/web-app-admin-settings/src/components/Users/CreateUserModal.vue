@@ -4,28 +4,31 @@
       id="create-user-input-user-name"
       v-model="user.onPremisesSamAccountName"
       class="oc-mb-s"
-      :label="$gettext('User name') + '*'"
+      :label="$gettext('User name')"
       :error-message="formData.userName.errorMessage"
       :fix-message-line="true"
+      required-mark
       @update:model-value="validateUserName"
     />
     <oc-text-input
       id="create-user-input-display-name"
       v-model="user.displayName"
       class="oc-mb-s"
-      :label="$gettext('First and last name') + '*'"
+      :label="$gettext('First and last name')"
       :error-message="formData.displayName.errorMessage"
       :fix-message-line="true"
+      required-mark
       @update:model-value="validateDisplayName"
     />
     <oc-text-input
       id="create-user-input-email"
       v-model="user.mail"
       class="oc-mb-s"
-      :label="$gettext('Email') + '*'"
+      :label="$gettext('Email')"
       :error-message="formData.email.errorMessage"
       type="email"
       :fix-message-line="true"
+      required-mark
       @update:model-value="onInputEmail"
       @change="validateEmail"
     />
@@ -34,10 +37,11 @@
       v-model="user.passwordProfile.password"
       autocomplete="new-password"
       class="oc-mb-s"
-      :label="$gettext('Password') + '*'"
+      :label="$gettext('Password')"
       :error-message="formData.password.errorMessage"
       type="password"
       :fix-message-line="true"
+      required-mark
       @update:model-value="validatePassword"
     />
     <input type="submit" class="oc-hidden" />

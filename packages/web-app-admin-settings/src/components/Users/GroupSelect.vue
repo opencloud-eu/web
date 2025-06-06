@@ -9,6 +9,7 @@
       :label="$gettext('Groups')"
       :fix-message-line="true"
       v-bind="$attrs"
+      :required-mark="requiredMark"
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayName, id }">
@@ -52,6 +53,11 @@ export default defineComponent({
     groupOptions: {
       type: Array as PropType<Group[]>,
       required: true
+    },
+    requiredMark: {
+      type: Boolean,
+      default: false,
+      required: false
     }
   },
   emits: ['selectedOptionChange'],

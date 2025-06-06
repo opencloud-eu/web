@@ -174,7 +174,11 @@ export default defineComponent({
         hasInput: true,
         inputValue: props.linkShare.displayName,
         inputLabel: $gettext('Link name'),
+        inputRequiredMark: true,
         onInput: (name, setError) => {
+          if (!name.length) {
+            return setError($gettext('Link name cannot be empty'))
+          }
           if (name.length > 255) {
             return setError($gettext('Link name cannot exceed 255 characters'))
           }

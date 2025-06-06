@@ -36,7 +36,8 @@
       :password-policy="passwordPolicy"
       :generate-password-method="generatePasswordMethod"
       :error-message="password.error"
-      :label="passwordEnforced ? `${$gettext('Password')}*` : $gettext('Password')"
+      :label="$gettext('Password')"
+      :required-mark="passwordEnforced"
       class="link-modal-password-input"
       @update:model-value="updatePassword"
     />

@@ -64,6 +64,7 @@ export default defineComponent({
         hasInput: true,
         inputLabel: $gettext('Space name'),
         inputValue: $gettext('New space'),
+        inputRequiredMark: true,
         onConfirm: (name: string) => addNewSpace(name),
         onInput: checkSpaceNameModalInput
       })
