@@ -41,7 +41,6 @@ const cropper = ref<Cropper | null>(null)
 const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
 const imageUrl = ref<string | null>(null)
 
-setCropperInstance(cropper)
 
 const onConfirm = async () => {
   const canvas = unref(cropper)?.getCroppedCanvas({
