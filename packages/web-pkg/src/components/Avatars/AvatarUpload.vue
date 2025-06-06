@@ -57,10 +57,9 @@ import { computed, nextTick, ref, unref, watch } from 'vue'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import {
-  Key,
   useAvatarsStore,
   useClientService,
-  useKeyboardActions,
+  useCropperKeyboardActions,
   useMessages,
   useUserStore
 } from '../../composables'
@@ -71,13 +70,13 @@ import UserAvatar from './UserAvatar.vue'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
-const keyboardActions = useKeyboardActions()
 const { avatarMap } = storeToRefs(avatarsStore)
 const { user } = storeToRefs(userStore)
 
 const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
 const { graphAuthenticated } = useClientService()
+const { setCropperInstance } = useCropperKeyboardActions()
 
 const imageUrl = ref<string | null>(null)
 const imageRef = ref<HTMLImageElement | null>(null)
@@ -86,6 +85,8 @@ const cropperReady = ref(false)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+setCropperInstance(cropper)
 
 const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
 
@@ -207,15 +208,6 @@ const destroyCropper = () => {
 
   imageUrl.value = null
 }
-
-const moveStep = 10
-const zoomStep = 0.1
-keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => unref(cropper).move(-moveStep, 0))
-keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => unref(cropper).move(moveStep, 0))
-keyboardActions.bindKeyAction({ primary: Key.ArrowUp }, () => unref(cropper).move(0, -moveStep))
-keyboardActions.bindKeyAction({ primary: Key.ArrowDown }, () => unref(cropper).move(0, moveStep))
-keyboardActions.bindKeyAction({ primary: Key.Plus }, () => unref(cropper).zoom(zoomStep))
-keyboardActions.bindKeyAction({ primary: Key.Minus }, () => unref(cropper).zoom(-zoomStep))
 </script>
 
 <style lang="scss">
