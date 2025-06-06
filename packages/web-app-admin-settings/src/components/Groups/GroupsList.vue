@@ -45,7 +45,12 @@
         />
       </template>
       <template #avatar="rowData">
-        <avatar-image :width="32" :userid="rowData.item.id" :user-name="rowData.item.displayName" />
+        <OcAvatar
+          :width="32"
+          :userid="rowData.item.id"
+          :user-name="rowData.item.displayName"
+          background-color="var(--oc-role-secondary)"
+        />
       </template>
       <template #displayName="rowData">
         <div class="oc-flex oc-flex-middle">
@@ -111,31 +116,32 @@ import {
   ComponentPublicInstance,
   computed,
   defineComponent,
+  nextTick,
+  onMounted,
   ref,
   unref,
-  watch,
-  onMounted,
-  nextTick
+  watch
 } from 'vue'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 import {
   ContextMenuBtnClickEventData,
+  ContextMenuQuickAction,
+  defaultFuseOptions,
   displayPositionedDropdown,
   eventBus,
+  Pagination,
+  SideBarEventTopics,
   SortDir,
+  useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
+  usePagination,
   useRoute,
   useRouter
 } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
-import { useFileListHeaderPosition, usePagination } from '@opencloud-eu/web-pkg'
-import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
 import {
   useKeyboardTableMouseActions,
