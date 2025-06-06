@@ -502,7 +502,7 @@ def e2eTests(ctx):
             steps += (tikaService() if params["tikaNeeded"] else []) + \
                      openCloudService(params["extraServerEnvironment"])
 
-        command = "echo $REPORT_TRACING; bash run-e2e.sh "
+        command = "bash run-e2e.sh "
         if "suites" in matrix:
             command += "--suites %s" % ",".join(params["suites"])
         elif "features" in matrix:
@@ -520,8 +520,7 @@ def e2eTests(ctx):
                          command,
                      ],
                  }] + \
-                 uploadTracingResult(ctx)  # + \
-        #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
+                 uploadTracingResult(ctx)
 
         pipelines.append({
             "name": "e2e-tests-%s" % suite,
@@ -1298,25 +1297,6 @@ def uploadTracingResult(ctx):
         },
     }]
 
-def logTracingResult(ctx):
-    status = ["failure"]
-
-    if "with-tracing" in ctx.build.title.lower():
-        status = ["failure", "success"]
-
-    return [{
-        "name": "log-tracing-result",
-        "image": OC_UBUNTU,
-        "commands": [
-            "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
-            'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing/$f \n"; done',
-        ],
-        "when": {
-            "status": status,
-        },
-    }]
-
 def waitForServices(name, services = []):
     services = ",".join(services)
     return [{
@@ -1519,8 +1499,7 @@ def e2eTestsOnKeycloak(ctx):
                      ],
                  },
              ] + \
-             uploadTracingResult(ctx)  # + \
-    #  logTracingResult(ctx, "e2e-tests keycloack-journey-suite") # ToDo to be added when a public S3 bucket is available
+             uploadTracingResult(ctx)
 
     return [{
         "name": "e2e-test-on-keycloak",
