@@ -69,6 +69,7 @@
               :header-position="fileListHeaderY /* table */"
               :sort-fields="sortFields /* tiles */"
               :view-size="viewSize /* tiles */"
+              :fields-displayed="['name', 'size', 'indicators', 'tags', 'mdate']"
               :style="folderViewStyle"
               v-bind="folderView.componentAttrs?.()"
               @file-dropped="fileDropped"

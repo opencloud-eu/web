@@ -897,10 +897,6 @@ export default defineComponent({
               return false
             }
 
-            if (field.name === 'indicators') {
-              return true
-            }
-
             let hasField: boolean
             if (field.prop) {
               hasField = get(firstResource, field.prop) !== undefined
@@ -911,7 +907,7 @@ export default defineComponent({
               return hasField
             }
 
-            return hasField && this.fieldsDisplayed.includes(field.name)
+            return this.fieldsDisplayed.includes(field.name)
           })
           .map((field) => {
             const sortField = sortFields.find((f) => f.name === field.name)
