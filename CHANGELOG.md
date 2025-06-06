@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-05
+## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-06
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -21,6 +21,7 @@
 
 ### 📈 Enhancement
 
+- feat: adjust appreance of the group avatars in the admin settings [[#799](https://github.com/opencloud-eu/web/pull/799)]
 - feat: change visual representation of stacked avatars [[#793](https://github.com/opencloud-eu/web/pull/793)]
 - feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
 - feat: polish account page followup [[#738](https://github.com/opencloud-eu/web/pull/738)]
