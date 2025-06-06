@@ -9,9 +9,11 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import {
+  Key,
   Modal,
   useClientService,
   useCreateSpace,
+  useKeyboardActions,
   useMessages,
   useSpaceHelpers,
   useSpacesStore
@@ -34,6 +36,7 @@ const clientService = useClientService()
 const spacesStore = useSpacesStore()
 const { createDefaultMetaFolder } = useCreateSpace()
 const { getDefaultMetaFolder } = useSpaceHelpers()
+const keyboardActions = useKeyboardActions()
 
 const cropper = ref<Cropper | null>(null)
 const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
@@ -107,6 +110,15 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
     })
   }
 }
+
+const moveStep = 10
+const zoomStep = 0.1
+keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => unref(cropper).move(-moveStep, 0))
+keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => unref(cropper).move(moveStep, 0))
+keyboardActions.bindKeyAction({ primary: Key.ArrowUp }, () => unref(cropper).move(0, -moveStep))
+keyboardActions.bindKeyAction({ primary: Key.ArrowDown }, () => unref(cropper).move(0, moveStep))
+keyboardActions.bindKeyAction({ primary: Key.Plus }, () => unref(cropper).zoom(zoomStep))
+keyboardActions.bindKeyAction({ primary: Key.Minus }, () => unref(cropper).zoom(-zoomStep))
 
 onMounted(async () => {
   try {
