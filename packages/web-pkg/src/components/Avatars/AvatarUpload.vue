@@ -38,7 +38,7 @@
       <template #content>
         <div v-if="imageUrl">
           <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
-          <div class="oc-text-small oc-flex oc-flex-middle oc-mt-xs">
+          <div class="oc-text-small oc-text-muted oc-flex oc-flex-middle oc-mt-xs">
             <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
             <span
               v-text="
