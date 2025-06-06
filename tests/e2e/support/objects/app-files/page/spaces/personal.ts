@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 
-const personalSpaceNavSelector = '//a[@data-nav-name="files-spaces-generic"]/doesnotexist'
+const personalSpaceNavSelector = '//a[@data-nav-name="files-spaces-generic"]'
 
 export class Personal {
   #page: Page
