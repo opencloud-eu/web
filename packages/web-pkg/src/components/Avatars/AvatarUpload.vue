@@ -31,12 +31,24 @@
       :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!cropperReady"
+      :focus-trap-initial="false"
       @cancel="onCropModalCancel"
       @confirm="onCropModalConfirm"
     >
       <template #content>
         <div v-if="imageUrl">
           <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
+          <div class="oc-text-small oc-flex oc-flex-middle oc-mt-xs">
+            <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
+            <span
+              v-text="
+                $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
+                  zoomKeys: $gettext('+/-'),
+                  panKeys: $gettext('↑↓←→')
+                })
+              "
+            />
+          </div>
         </div>
       </template>
     </oc-modal>

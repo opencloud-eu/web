@@ -2,6 +2,17 @@
   <div class="space-image-modal">
     <div v-if="imageUrl" class="space-image-modal-image-container">
       <img ref="imageRef" :src="imageUrl" />
+      <div class="oc-text-small oc-flex oc-flex-middle oc-mt-xs">
+        <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
+        <span
+          v-text="
+            $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
+              zoomKeys: $gettext('+/-'),
+              panKeys: $gettext('↑↓←→')
+            })
+          "
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -40,7 +51,6 @@ const { setCropperInstance } = useCropperKeyboardActions()
 const cropper = ref<Cropper | null>(null)
 const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
 const imageUrl = ref<string | null>(null)
-
 
 const onConfirm = async () => {
   const canvas = unref(cropper)?.getCroppedCanvas({

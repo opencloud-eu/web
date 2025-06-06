@@ -32,6 +32,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
+      focusTrapInitial: false,
       customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
     })
   }
