@@ -21,6 +21,7 @@
 
 ### 📈 Enhancement
 
+- feat: add keyboard support for space image and user avatar cropping [[#805](https://github.com/opencloud-eu/web/pull/805)]
 - feat: adjust appreance of the group avatars in the admin settings [[#799](https://github.com/opencloud-eu/web/pull/799)]
 - feat: change visual representation of stacked avatars [[#793](https://github.com/opencloud-eu/web/pull/793)]
 - feat: show avatars in shares view [[#767](https://github.com/opencloud-eu/web/pull/767)]
