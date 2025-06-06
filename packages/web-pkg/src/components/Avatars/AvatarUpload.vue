@@ -31,12 +31,24 @@
       :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!cropperReady"
+      :focus-trap-initial="false"
       @cancel="onCropModalCancel"
       @confirm="onCropModalConfirm"
     >
       <template #content>
         <div v-if="imageUrl">
           <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
+          <div class="oc-text-small oc-text-muted oc-flex oc-flex-middle oc-mt-xs">
+            <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
+            <span
+              v-text="
+                $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
+                  zoomKeys: $gettext('+/-'),
+                  panKeys: $gettext('↑↓←→')
+                })
+              "
+            />
+          </div>
         </div>
       </template>
     </oc-modal>
@@ -56,7 +68,13 @@
 import { computed, nextTick, ref, unref, watch } from 'vue'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
-import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../../composables'
+import {
+  useAvatarsStore,
+  useClientService,
+  useCropperKeyboardActions,
+  useMessages,
+  useUserStore
+} from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
@@ -70,6 +88,7 @@ const { user } = storeToRefs(userStore)
 const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
 const { graphAuthenticated } = useClientService()
+const { setCropperInstance } = useCropperKeyboardActions()
 
 const imageUrl = ref<string | null>(null)
 const imageRef = ref<HTMLImageElement | null>(null)
@@ -124,6 +143,7 @@ watch(imageUrl, async (newVal) => {
         cropperReady.value = true
       }
     })
+    setCropperInstance(cropper)
   }
 })
 

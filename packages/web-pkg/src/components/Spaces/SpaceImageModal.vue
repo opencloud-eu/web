@@ -2,6 +2,17 @@
   <div class="space-image-modal">
     <div v-if="imageUrl" class="space-image-modal-image-container">
       <img ref="imageRef" :src="imageUrl" />
+      <div class="oc-text-small oc-text-muted oc-flex oc-flex-middle oc-mt-xs">
+        <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
+        <span
+          v-text="
+            $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
+              zoomKeys: $gettext('+/-'),
+              panKeys: $gettext('↑↓←→')
+            })
+          "
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +23,7 @@ import {
   Modal,
   useClientService,
   useCreateSpace,
+  useCropperKeyboardActions,
   useMessages,
   useSpaceHelpers,
   useSpacesStore
@@ -34,6 +46,7 @@ const clientService = useClientService()
 const spacesStore = useSpacesStore()
 const { createDefaultMetaFolder } = useCreateSpace()
 const { getDefaultMetaFolder } = useSpaceHelpers()
+const { setCropperInstance } = useCropperKeyboardActions()
 
 const cropper = ref<Cropper | null>(null)
 const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
@@ -126,6 +139,7 @@ onMounted(async () => {
       responsive: true,
       background: false
     })
+    setCropperInstance(cropper)
   } catch (error) {
     showErrorMessage({
       title: $gettext('Failed to load space image'),
