@@ -121,18 +121,6 @@
               </div>
             </template>
             <!--- table -->
-            <template #status="{ resource }">
-              <span v-if="resource.disabled" class="oc-flex oc-flex-middle">
-                <oc-icon name="stop-circle" fill-type="line" class="oc-mr-s" /><span
-                  v-text="$gettext('Disabled')"
-                />
-              </span>
-              <span v-else class="oc-flex oc-flex-middle">
-                <oc-icon name="play-circle" fill-type="line" class="oc-mr-s" /><span
-                  v-text="$gettext('Enabled')"
-                />
-              </span>
-            </template>
             <template #totalQuota="{ resource }">
               {{ getTotalQuota(resource) }}
             </template>
@@ -259,7 +247,7 @@ const tableDisplayFields = [
   'totalQuota',
   'usedQuota',
   'remainingQuota',
-  'status',
+  'indicators',
   'mdate'
 ]
 

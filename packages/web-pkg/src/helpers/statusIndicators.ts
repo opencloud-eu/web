@@ -1,13 +1,13 @@
-import { ShareTypes } from '@opencloud-eu/web-client'
+import {
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
+  Resource,
+  ShareTypes,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { eventBus } from '../services'
 import { SideBarEventTopics } from '../composables/sideBar'
-import { Resource } from '@opencloud-eu/web-client'
 import { AncestorMetaData } from '../types'
-import {
-  SpaceResource,
-  isPersonalSpaceResource,
-  isProjectSpaceResource
-} from '@opencloud-eu/web-client'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { IconFillType } from './resource'
 
@@ -115,6 +115,30 @@ const getProcessingIndicator = ({ resource }: { resource: Resource }): ResourceI
   }
 }
 
+const getSpaceEnabledIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+  return {
+    id: `resource-space-enabled-${resource.getDomSelector()}`,
+    accessibleDescription: $gettext('Space is enabled'),
+    label: $gettext('This space is enabled'),
+    icon: 'play-circle',
+    category: 'system',
+    type: 'resource-space-enabled',
+    fillType: 'line'
+  }
+}
+
+const getSpaceDisabledIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+  return {
+    id: `resource-space-disabled-${resource.getDomSelector()}`,
+    accessibleDescription: $gettext('Space is disabled'),
+    label: $gettext('This space is disabled'),
+    icon: 'stop-circle',
+    category: 'system',
+    type: 'resource-space-enabled',
+    fillType: 'line'
+  }
+}
+
 export const getIndicators = ({
   space,
   resource,
@@ -134,6 +158,14 @@ export const getIndicators = ({
 
   if (resource.processing) {
     indicators.push(getProcessingIndicator({ resource }))
+  }
+
+  if (isProjectSpaceResource(resource) && !resource.disabled) {
+    indicators.push(getSpaceEnabledIndicator({ resource }))
+  }
+
+  if (isProjectSpaceResource(resource) && resource.disabled) {
+    indicators.push(getSpaceDisabledIndicator({ resource }))
   }
 
   const shareIndicatorsAllowed =
