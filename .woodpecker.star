@@ -1172,7 +1172,7 @@ def genericCachePurge(flush_path):
                     },
                     "endpoint": minio_mc_environment["MC_HOST"],
                     "flush": True,
-                    "flush_age": 1, # TODO make variable
+                    "flush_age": 1,  # TODO make variable
                     "flush_path": flush_path,
                 },
             },
