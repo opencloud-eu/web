@@ -230,7 +230,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx)] + [genericCachePurge("%s/web/" % (minio_mc_environment["PUBLIC_BUCKET"]))]
+    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx)]
 
     # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
 
