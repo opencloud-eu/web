@@ -1138,9 +1138,7 @@ def genericCache(name, action, mounts, cache_path):
         "name": "%s_%s" % (action, name),
         "image": PLUGINS_S3_CACHE,
         "settings": {
-            "endpoint": {
-                "from_secret": "cache_s3_server",
-            },
+            "endpoint": minio_mc_environment["MC_HOST"],
             "rebuild": rebuild,
             "restore": restore,
             "mount": mounts,
@@ -1172,11 +1170,9 @@ def genericCachePurge(flush_path):
                     "secret_key": {
                         "from_secret": "cache_s3_secret_key",
                     },
-                    "endpoint": {
-                        "from_secret": "cache_s3_server",
-                    },
+                    "endpoint": minio_mc_environment["MC_HOST"],
                     "flush": True,
-                    "flush_age": 1,
+                    "flush_age": 1, # TODO make variable
                     "flush_path": flush_path,
                 },
             },
