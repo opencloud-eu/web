@@ -1284,7 +1284,7 @@ def uploadTracingResult(ctx):
             "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/$f \n"; done',
+            'for f in *.zip; do echo "npx playwright show-trace https://s3.ci.opencloud.eu/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/$f \n"; done',
         ],
         "when": {
             "status": status,
