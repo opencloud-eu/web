@@ -19,6 +19,16 @@
 - feat: add cropping to space images [[#722](https://github.com/opencloud-eu/web/pull/722)]
 - feat: polish account page design [[#707](https://github.com/opencloud-eu/web/pull/707)]
 
+### 🐛 Bug Fixes
+
+- fix: status column appears multiple times [[#806](https://github.com/opencloud-eu/web/pull/806)]
+- fix: modal window doesn't close on browser navigation [[#783](https://github.com/opencloud-eu/web/pull/783)]
+- fix: space quota not initial set [[#779](https://github.com/opencloud-eu/web/pull/779)]
+- fix: avatar initials not shown in shares table [[#784](https://github.com/opencloud-eu/web/pull/784)]
+- fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
+- fix: add resource name length check [[#776](https://github.com/opencloud-eu/web/pull/776)]
+- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
+
 ### 📈 Enhancement
 
 - feat: add keyboard support for space image and user avatar cropping [[#805](https://github.com/opencloud-eu/web/pull/805)]
@@ -37,17 +47,9 @@
 - check ratio after cropping space image [[#731](https://github.com/opencloud-eu/web/pull/731)]
 - disable write buffer for activity tests [[#727](https://github.com/opencloud-eu/web/pull/727)]
 
-### 🐛 Bug Fixes
-
-- fix: modal window doesn't close on browser navigation [[#783](https://github.com/opencloud-eu/web/pull/783)]
-- fix: space quota not initial set [[#779](https://github.com/opencloud-eu/web/pull/779)]
-- fix: avatar initials not shown in shares table [[#784](https://github.com/opencloud-eu/web/pull/784)]
-- fix(admin-settings): broken update user space quota for users with sp… [[#774](https://github.com/opencloud-eu/web/pull/774)]
-- fix: add resource name length check [[#776](https://github.com/opencloud-eu/web/pull/776)]
-- fix: SpaceImageModal import [[#734](https://github.com/opencloud-eu/web/pull/734)]
-
 ### 📦️ Dependencies
 
+- chore(deps): update apache/tika docker tag to v3.2.0.0 [[#780](https://github.com/opencloud-eu/web/pull/780)]
 - fix(deps): update dependency eslint-plugin-n to v17.19.0 [[#781](https://github.com/opencloud-eu/web/pull/781)]
 - chore(deps): update pnpm to v10.11.1 [[#786](https://github.com/opencloud-eu/web/pull/786)]
 - chore(deps): update dependency rollup-plugin-visualizer to v6 [[#746](https://github.com/opencloud-eu/web/pull/746)]
