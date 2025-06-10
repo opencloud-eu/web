@@ -167,14 +167,6 @@
         :disable-handler="isResourceDisabled(item)"
       />
     </template>
-    <template #status="{ item }">
-      <oc-icon
-        v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
-        :name="item.disabled ? 'stop-circle' : 'play-circle'"
-        size="small"
-        fill-type="line"
-      />
-    </template>
     <template #sdate="{ item }">
       <span
         v-oc-tooltip="formatDate(item.sdate)"
