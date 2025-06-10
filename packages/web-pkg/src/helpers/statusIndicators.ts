@@ -134,7 +134,7 @@ const getSpaceDisabledIndicator = ({ resource }: { resource: Resource }): Resour
     label: $gettext('This space is disabled'),
     icon: 'stop-circle',
     category: 'system',
-    type: 'resource-space-enabled',
+    type: 'resource-space-disabled',
     fillType: 'line'
   }
 }
