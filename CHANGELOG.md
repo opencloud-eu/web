@@ -1,14 +1,22 @@
 # Changelog
 
-## [3.0.1](https://github.com/opencloud-eu/web/releases/tag/v3.0.1) - 2025-06-10
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-10
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### 📈 Enhancement
+
+- feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
 
 ### 🐛 Bug Fixes
 
 - fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
+### 📦️ Dependencies
+
+- [full-ci]bump-opencloud-3.0.0 [[#814](https://github.com/opencloud-eu/web/pull/814)]
 
 ## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-10
 
