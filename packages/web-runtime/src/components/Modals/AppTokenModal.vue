@@ -4,6 +4,7 @@
       v-model="tokenLabel"
       :label="$gettext('Note')"
       :error-message="tokenLabelErrorMessage"
+      required-mark
     />
     <oc-datepicker
       :label="$gettext('Expiration date')"

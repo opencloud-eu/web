@@ -5,6 +5,7 @@
     :min-date="minDate"
     :current-date="currentDate"
     :is-clearable="isClearable"
+    required-mark
     @date-changed="onDateChanged"
   />
 

@@ -95,6 +95,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       hasInput: true,
       inputValue: defaultName,
       inputLabel: $gettext('Folder name'),
+      inputRequiredMark: true,
       onConfirm: addNewFolder,
       onInput: checkNewFolderName
     })
