@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-06
+## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-10
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -48,6 +48,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency eslint-plugin-n to v17.19.0 [[#781](https://github.com/opencloud-eu/web/pull/781)]
 - chore(deps): update pnpm to v10.11.1 [[#786](https://github.com/opencloud-eu/web/pull/786)]
 - chore(deps): update dependency rollup-plugin-visualizer to v6 [[#746](https://github.com/opencloud-eu/web/pull/746)]
 - fix(deps): update dependency focus-trap to v7.6.5 [[#763](https://github.com/opencloud-eu/web/pull/763)]
