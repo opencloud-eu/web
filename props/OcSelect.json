@@ -110,5 +110,12 @@
     "description": "Determines if the dropdown menu should be fixed to the viewport.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "requiredMark",
+    "required": false,
+    "description": "Determines if a required mark (*) should be displayed next to the label.",
+    "default": "false",
+    "type": "boolean"
   }
 ]

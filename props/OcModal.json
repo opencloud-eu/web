@@ -91,6 +91,13 @@
     "type": "string"
   },
   {
+    "name": "inputRequiredMark",
+    "required": false,
+    "description": "Determines if a required mark should be displayed next to the input label.",
+    "default": "",
+    "type": "boolean"
+  },
+  {
     "name": "inputError",
     "required": false,
     "description": "Error message to be displayed below the input field.",
