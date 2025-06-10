@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.1](https://github.com/opencloud-eu/web/releases/tag/v3.0.1) - 2025-06-10
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 🐛 Bug Fixes
+
+- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
 ## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-10
 
 ### ❤️ Thanks to all contributors! ❤️
