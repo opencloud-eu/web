@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- Revert "fix(deps): update dependency eslint-plugin-n to v17.19.0" [[#810](https://github.com/opencloud-eu/web/pull/810)]
 - chore(deps): update apache/tika docker tag to v3.2.0.0 [[#780](https://github.com/opencloud-eu/web/pull/780)]
 - fix(deps): update dependency eslint-plugin-n to v17.19.0 [[#781](https://github.com/opencloud-eu/web/pull/781)]
 - chore(deps): update pnpm to v10.11.1 [[#786](https://github.com/opencloud-eu/web/pull/786)]
