@@ -119,7 +119,7 @@ When(
   }
 )
 
-Given('using {string} server', async function (this: World, server: string): Promise<void> {
+Given('using {string} server', function (this: World, server: string): void {
   switch (server) {
     case 'LOCAL':
       config.federatedServer = false
