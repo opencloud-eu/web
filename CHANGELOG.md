@@ -17,7 +17,8 @@
 
 ### 📦️ Dependencies
 
-- fix(deps): update dependency zod to v3.25.58 [[#769](https://github.com/opencloud-eu/web/pull/769)]
+- fix(deps): update dependency pinia to v3.0.3 [[#797](https://github.com/opencloud-eu/web/pull/797)]
+- fix(deps): update dependency zod to v3.25.59 [[#769](https://github.com/opencloud-eu/web/pull/769)]
 - chore(deps): update dependency happy-dom to v18 [[#816](https://github.com/opencloud-eu/web/pull/816)]
 - fix(deps): update vue monorepo to v3.5.16 [[#770](https://github.com/opencloud-eu/web/pull/770)]
 - [full-ci]bump-opencloud-3.0.0 [[#814](https://github.com/opencloud-eu/web/pull/814)]
