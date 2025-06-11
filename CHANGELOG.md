@@ -17,6 +17,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.28.0 [[#766](https://github.com/opencloud-eu/web/pull/766)]
 - chore(deps): update pnpm to v10.12.1 [[#809](https://github.com/opencloud-eu/web/pull/809)]
 - fix(deps): update dependency pinia to v3.0.3 [[#797](https://github.com/opencloud-eu/web/pull/797)]
 - fix(deps): update dependency zod to v3.25.59 [[#769](https://github.com/opencloud-eu/web/pull/769)]
