@@ -1,18 +1,19 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-10
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
+### 🐛 Bug Fixes
+
+- fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
+- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
 ### 📈 Enhancement
 
 - feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
-
-### 🐛 Bug Fixes
-
-- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
 
 ### 📦️ Dependencies
 
