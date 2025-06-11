@@ -202,7 +202,7 @@ watch(
         space.id,
         space.id,
         sharesStore.graphRoles,
-        { count: true }
+        { count: true, filter: "grantedToV2 ne ''" }
       )
       memberCount.value = count || 1
     } catch (e) {
