@@ -7,13 +7,21 @@
       class="oc-files-context-actions"
       :class="getSectionClasses(sectionIndex)"
     >
-      <action-menu-item
-        v-for="(action, actionIndex) in section.items"
-        :key="`section-${section.name}-action-${actionIndex}`"
-        :action="action"
+      <template v-if="section.items">
+        <action-menu-item
+          v-for="(action, actionIndex) in section.items"
+          :key="`section-${section.name}-action-${actionIndex}`"
+          :action="action"
+          :appearance="appearance"
+          :action-options="actionOptions"
+          class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
+        />
+      </template>
+      <action-menu-drop-item
+        v-if="section.drop && (section.drop.items?.length || section.drop.renderOnEmpty)"
+        :menu-section="section"
         :appearance="appearance"
         :action-options="actionOptions"
-        class="context-menu oc-files-context-action oc-px-s oc-rounded oc-menu-item-hover"
       />
     </oc-list>
   </div>
@@ -24,15 +32,25 @@ import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
 import { Action, ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
+import ActionMenuDropItem from './ActionMenuDropItem.vue'
+
+export type MenuSectionDrop = {
+  label: string
+  icon: string
+  items?: Action[]
+  renderOnEmpty?: boolean
+  emptyMessage?: string
+}
 
 export type MenuSection = {
   name: string
-  items: Action[]
+  items?: Action[]
+  drop?: MenuSectionDrop
 }
 
 export default defineComponent({
   name: 'ContextActionMenu',
-  components: { ActionMenuItem },
+  components: { ActionMenuDropItem, ActionMenuItem },
   props: {
     menuSections: {
       type: Array as PropType<MenuSection[]>,
@@ -76,6 +94,7 @@ export default defineComponent({
   > li {
     padding-left: 0 !important;
     padding-right: 0 !important;
+
     a,
     button,
     span {

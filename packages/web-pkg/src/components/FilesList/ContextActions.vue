@@ -9,28 +9,29 @@ import {
   ActionExtension,
   FileActionOptions,
   useExtensionRegistry,
-  useFileActionsToggleHideShare,
+  useFileActions,
+  useFileActionsCopy,
   useFileActionsCopyPermanentLink,
+  useFileActionsCreateSpaceFromResource,
+  useFileActionsDelete,
+  useFileActionsDisableSync,
+  useFileActionsDownloadArchive,
+  useFileActionsDownloadFile,
+  useFileActionsEmptyTrashBin,
+  useFileActionsEnableSync,
+  useFileActionsFavorite,
+  useFileActionsMove,
+  useFileActionsNavigate,
   useFileActionsPaste,
+  useFileActionsRename,
+  useFileActionsRestore,
+  useFileActionsSetImage,
   useFileActionsShowDetails,
   useFileActionsShowShares,
-  useFileActionsEnableSync,
-  useFileActionsCopy,
-  useFileActionsDisableSync,
-  useFileActionsDelete,
-  useFileActionsDownloadArchive,
-  useFileActionsEmptyTrashBin,
-  useFileActionsMove,
-  useFileActionsRestore,
-  useFileActionsDownloadFile,
-  useFileActionsRename,
-  useFileActionsSetImage,
-  useFileActionsNavigate,
-  useFileActionsFavorite,
-  useFileActionsCreateSpaceFromResource,
-  useFileActions
+  useFileActionsToggleHideShare
 } from '../../composables'
 import { isNil } from 'lodash-es'
+import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -42,7 +43,8 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { editorActions } = useFileActions()
+    const { editorActions, defaultEditorActions } = useFileActions()
+    const { $gettext } = useGettext()
 
     const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -108,15 +110,6 @@ export default defineComponent({
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
 
-    const menuItemsContext = computed(() => {
-      return [
-        ...unref(editorActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'context')
-      ]
-        .filter((item) => item.isVisible(unref(actionOptions)))
-        .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
-    })
-
     const menuItemsShare = computed(() => {
       return [
         ...unref(showSharesActions),
@@ -152,7 +145,6 @@ export default defineComponent({
           action.keepOpen = true
           return action
         }),
-        ...unref(navigateActions),
         ...unref(showDetailsActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
       ].filter((item) => item.isVisible(unref(actionOptions)))
@@ -174,12 +166,25 @@ export default defineComponent({
         return sections
       }
 
-      if (unref(menuItemsContext).length) {
-        sections.push({
-          name: 'context',
-          items: unref(menuItemsContext)
-        })
-      }
+      sections.push({
+        name: 'context',
+        drop: {
+          label: $gettext('Open with...'),
+          icon: 'apps',
+          renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
+          emptyMessage: $gettext('No applications available'),
+          items: [
+            ...unref(editorActions),
+            ...unref(extensionsContextActions).filter((a) => a.category === 'context')
+          ]
+            .filter((item) => item.isVisible(unref(actionOptions)))
+            .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+        },
+        items: [...unref(navigateActions), ...unref(defaultEditorActions)]
+          .filter((item) => item.isVisible(unref(actionOptions)))
+          .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+      })
+
       if (unref(menuItemsShare).length) {
         sections.push({
           name: 'share',

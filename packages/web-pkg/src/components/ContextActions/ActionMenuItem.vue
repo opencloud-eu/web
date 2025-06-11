@@ -45,11 +45,6 @@
         data-testid="action-label"
       >
         <span v-text="action.label(actionOptions)" />
-        <span
-          v-if="action.showOpenInNewTabHint"
-          class="oc-text-muted oc-text-xsmall"
-          v-text="openInNewTabHint"
-        />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
@@ -66,7 +61,6 @@ import { Action, ActionOptions, useConfigStore } from '../../composables'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
-import { isMacOs } from '../../helpers'
 
 export default defineComponent({
   name: 'ActionMenuItem',
@@ -148,18 +142,9 @@ export default defineComponent({
       }
     })
 
-    const openInNewTabHint = computed(() => {
-      return $gettext(
-        'Hold %{key} and click to open in new tab',
-        { key: isMacOs() ? '⌘' : $gettext('ctrl') },
-        true
-      )
-    })
-
     return {
       componentType,
-      componentProps,
-      openInNewTabHint
+      componentProps
     }
   },
   computed: {

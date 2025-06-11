@@ -17,11 +17,10 @@
       :ref="`context-menu-drop-ref-${resourceDomSelector(item)}`"
       :drop-id="`context-menu-drop-${resourceDomSelector(item)}`"
       :toggle="`#context-menu-trigger-${resourceDomSelector(item)}`"
-      class="oc-overflow-hidden"
       position="bottom-end"
-      mode="click"
-      close-on-click
+      mode="hover-click"
       padding-size="small"
+      close-on-click
     >
       <slot name="contextMenu" :item="item" />
     </oc-drop>
@@ -30,7 +29,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { Resource, extractDomSelector } from '@opencloud-eu/web-client'
+import { extractDomSelector, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
@@ -50,7 +49,10 @@ export default defineComponent({
   setup() {
     const { $gettext } = useGettext()
     const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    return { contextMenuLabel }
+
+    return {
+      contextMenuLabel
+    }
   }
 })
 </script>

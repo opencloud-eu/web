@@ -1,6 +1,6 @@
 import kebabCase from 'lodash-es/kebabCase'
 import isNil from 'lodash-es/isNil'
-import { isShareSpaceResource } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
@@ -16,19 +16,19 @@ import {
 } from '../../actions'
 
 import {
-  useFileActionsEnableSync,
-  useFileActionsToggleHideShare,
   useFileActionsCopy,
-  useFileActionsDisableSync,
+  useFileActionsCreateSpaceFromResource,
   useFileActionsDelete,
+  useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
+  useFileActionsEnableSync,
   useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsNavigate,
   useFileActionsRename,
   useFileActionsRestore,
-  useFileActionsCreateSpaceFromResource
+  useFileActionsToggleHideShare
 } from './index'
 import {
   ActionExtension,
@@ -37,7 +37,6 @@ import {
   useExtensionRegistry
 } from '../../piniaStores'
 import { ApplicationFileExtension } from '../../../apps'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
 import { RouteRecordName } from 'vue-router'
@@ -108,6 +107,33 @@ export const useFileActions = () => {
     }).map((e) => e.action)
   })
 
+  const defaultEditorActions = computed((): FileAction[] => [
+    {
+      name: 'open',
+      icon: 'eye',
+      label: () => {
+        return $gettext('Open')
+      },
+      handler: ({ space, resources }) => {
+        const defaultEditorAction = getDefaultAction({ space, resources, omitSystemActions: true })
+        if (!defaultEditorAction) {
+          return
+        }
+
+        defaultEditorAction.handler({ space, resources })
+      },
+      isVisible: (options) => {
+        const defaultEditorAction = getDefaultAction({ ...options, omitSystemActions: true })
+        if (!defaultEditorAction) {
+          return false
+        }
+
+        return defaultEditorAction.isVisible(options)
+      },
+      class: 'oc-files-actions-default-editor-trigger'
+    }
+  ])
+
   const editorActions = computed(() => {
     if (unref(isEmbedModeEnabled)) {
       return []
@@ -126,9 +152,8 @@ export const useFileActions = () => {
               }
               return fileExtension.label
             }
-            return $gettext('Open in %{app}', { app: appInfo.name }, true)
+            return appInfo.name
           },
-          showOpenInNewTabHint: true,
           icon: fileExtension.icon || appInfo.icon,
           ...(appInfo.iconFillType && {
             iconFillType: appInfo.iconFillType
@@ -281,6 +306,7 @@ export const useFileActions = () => {
 
   return {
     editorActions,
+    defaultEditorActions,
     systemActions,
     getDefaultAction,
     getAllAvailableActions,
