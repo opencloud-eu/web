@@ -8,7 +8,7 @@
       appearance="raw"
       class="oc-ml-xs quick-action-button oc-p-xs"
       :class="`files-quick-action-${action.name}`"
-      @click="action.handler({ space, resources: [item] })"
+      @click="(e: any) => action.handler({ space, resources: [item], event: e })"
     >
       <oc-icon :name="action.icon" fill-type="line" />
     </oc-button>

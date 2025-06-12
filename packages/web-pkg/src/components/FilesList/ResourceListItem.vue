@@ -9,7 +9,7 @@
       :link="link"
       :is-resource-clickable="isResourceClickable"
       class="oc-resource-icon-link"
-      @click="emitClick"
+      @click="handleClick"
     >
       <oc-image
         v-if="hasThumbnail"
@@ -34,7 +34,7 @@
         :is-resource-clickable="isResourceClickable"
         :link="link"
         class="oc-text-overflow"
-        @click="emitClick"
+        @click="handleClick"
       >
         <resource-name
           :key="resource.name"
@@ -165,7 +165,7 @@ export default defineComponent({
       default: true
     }
   },
-  emits: ['click'],
+  emits: ['click', 'shift-click'],
   computed: {
     parentFolderComponentType() {
       return this.parentFolderLink ? 'router-link' : 'span'
@@ -206,11 +206,17 @@ export default defineComponent({
   },
 
   methods: {
-    emitClick() {
-      /**
-       * Triggered when the resource is a file and the name is clicked
-       */
-      this.$emit('click')
+    handleClick(e: MouseEvent) {
+      if (e.shiftKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation?.()
+
+        this.$emit('shift-click', this.resource)
+        return
+      }
+
+      this.$emit('click', this.resource)
     }
   }
 })

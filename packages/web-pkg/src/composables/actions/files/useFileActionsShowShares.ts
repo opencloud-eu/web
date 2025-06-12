@@ -15,7 +15,19 @@ export const useFileActionsShowShares = () => {
   const { canShare } = useCanShare()
   const resourcesStore = useResourcesStore()
 
-  const handler = ({ resources }: FileActionOptions) => {
+  const handler = ({ resources, event }: FileActionOptions & { event?: MouseEvent }) => {
+    if (event?.shiftKey) {
+      event.preventDefault?.()
+      event.stopPropagation?.()
+      event.stopImmediatePropagation?.()
+
+      eventBus.publish('app.files.list.clicked.shift', {
+        resource: resources[0],
+        skipTargetSelection: false
+      })
+
+      return
+    }
     resourcesStore.setSelection(resources.map(({ id }) => id))
     eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
   }
