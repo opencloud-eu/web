@@ -1,7 +1,7 @@
 import { eventBus } from '../../services'
 import type { Resource } from '@opencloud-eu/web-client'
 
-export function useuseInterceptShiftClick(event: MouseEvent, resource: Resource): boolean {
+export function useInterceptShiftClick(event: MouseEvent, resource: Resource): boolean {
   if (!event?.shiftKey) {
     return false
   }
