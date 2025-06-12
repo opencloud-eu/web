@@ -19,7 +19,7 @@
       </template>
       <action-menu-drop-item
         v-if="section.drop && (section.drop.items?.length || section.drop.renderOnEmpty)"
-        :menu-section="section"
+        :menu-section-drop="section.drop"
         :appearance="appearance"
         :action-options="actionOptions"
       />
@@ -36,6 +36,7 @@ import ActionMenuDropItem from './ActionMenuDropItem.vue'
 
 export type MenuSectionDrop = {
   label: string
+  name: string
   icon: string
   items?: Action[]
   renderOnEmpty?: boolean

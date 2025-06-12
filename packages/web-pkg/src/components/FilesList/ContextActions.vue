@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import ContextActionMenu from '../ContextActions/ContextActionMenu.vue'
+import ContextActionMenu, { MenuSection } from '../ContextActions/ContextActionMenu.vue'
 import { computed, defineComponent, PropType, Ref, toRef, unref } from 'vue'
 import {
   ActionExtension,
@@ -166,7 +166,7 @@ export default defineComponent({
     })
 
     const menuSections = computed(() => {
-      const sections = []
+      const sections: MenuSection[] = []
       if (unref(actionOptions).resources.length > 1) {
         if (unref(menuItemsBatchActions).length) {
           sections.push({
@@ -186,6 +186,7 @@ export default defineComponent({
         items: [...unref(menuItemsContext)],
         drop: {
           label: $gettext('Open with...'),
+          name: 'open-with',
           icon: 'apps',
           renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
           emptyMessage: $gettext('No applications available'),
