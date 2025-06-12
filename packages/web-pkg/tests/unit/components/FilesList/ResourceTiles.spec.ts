@@ -8,6 +8,7 @@ import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resour
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
+import { ResourceTile } from '../../../../src/components'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => ({
@@ -122,7 +123,9 @@ describe('ResourceTiles component', () => {
   describe('file click', () => {
     it('emits fileClick event upon click on tile', async () => {
       const { wrapper } = getWrapper({ props: { resources } })
-      await wrapper.find('.oc-tiles-item .oc-resource-name').trigger('click')
+      await wrapper.findComponent(ResourceTile).trigger('click', {
+        shiftKey: false
+      })
       expect(
         wrapper.emitted<{ resources: Resource[] }[]>('fileClick')[0][0].resources[0].name
       ).toMatch('forest.jpg')
