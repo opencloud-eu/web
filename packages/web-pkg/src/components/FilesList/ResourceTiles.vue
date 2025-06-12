@@ -63,7 +63,7 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="emitTileClick(resource)"
+          @click="(e: MouseEvent) => emitTileClick(resource, e)"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -180,6 +180,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
+import { useInterceptShiftClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
@@ -291,7 +292,11 @@ const getRoute = (resource: Resource) => {
 
   return action.route({ space: s, resources: [resource] })
 }
-const emitTileClick = (resource: Resource) => {
+const emitTileClick = (resource: Resource, event?: MouseEvent) => {
+  if (event && useInterceptShiftClick(event, resource)) {
+    return
+  }
+
   if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
     return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
       resource: JSON.parse(JSON.stringify(resource)),
@@ -401,6 +406,10 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
+  if (event instanceof MouseEvent && useInterceptShiftClick(event, item)) {
+    return
+  }
+
   event.preventDefault()
   const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
     'resource-tiles-btn-action-dropdown'
