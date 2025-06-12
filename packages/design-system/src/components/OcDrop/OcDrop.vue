@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import tippy, { ReferenceElement, hideAll, Props as TippyProps } from 'tippy.js'
-import { Modifier, detectOverflow } from '@popperjs/core'
+import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
+import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getSizeClass, SizeType, uniqueId } from '../../helpers'
-import { ref, onBeforeUnmount, onMounted, computed, watch, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 
 export interface Props {
   /**
@@ -77,6 +77,7 @@ export interface Emits {
    * @docs Emitted when the drop has been hidden.
    */
   (e: 'hideDrop'): void
+
   /**
    * @docs Emitted when the drop has been displayed.
    */
@@ -122,8 +123,10 @@ const hide = (duration?: number) => {
 
 defineExpose({ show, hide, tippy: tippyInstance })
 
-const onClick = () => {
-  if (closeOnClick) {
+const onClick = (event) => {
+  const isNestedToggle = event.target.closest('.oc-drop-nested-toggle')
+
+  if (closeOnClick && !isNestedToggle) {
     hide()
   }
 }
@@ -144,12 +147,15 @@ onBeforeUnmount(() => {
   drop.value?.removeEventListener('focusout', onFocusOut)
 })
 
+const isTouchDevice = () => {
+  return window.matchMedia('(hover: none) and (pointer: coarse)').matches
+}
+
 const triggerMapping = computed(() => {
-  return (
-    {
-      hover: 'mouseenter focus'
-    }[mode] || mode
-  )
+  if (mode === 'hover') {
+    return isTouchDevice() ? 'click' : 'mouseenter focus'
+  }
+  return mode
 })
 
 const paddingClass = computed(() => {
