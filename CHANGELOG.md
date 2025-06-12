@@ -1,10 +1,14 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-11
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor
+
+### ✨ Features
+
+- feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
 
 ### 🐛 Bug Fixes
 
@@ -17,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v3.25.61 [[#817](https://github.com/opencloud-eu/web/pull/817)]
 - fix(deps): update dependency @sentry/vue to v9.28.0 [[#766](https://github.com/opencloud-eu/web/pull/766)]
 - chore(deps): update pnpm to v10.12.1 [[#809](https://github.com/opencloud-eu/web/pull/809)]
 - fix(deps): update dependency pinia to v3.0.3 [[#797](https://github.com/opencloud-eu/web/pull/797)]
