@@ -110,6 +110,21 @@ export default defineComponent({
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
 
+    const menuItemsContext = computed(() => {
+      return [...unref(navigateActions), ...unref(defaultEditorActions)]
+        .filter((item) => item.isVisible(unref(actionOptions)))
+        .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+    })
+
+    const menuItemsContextDrop = computed(() => {
+      return [
+        ...unref(editorActions),
+        ...unref(extensionsContextActions).filter((a) => a.category === 'context')
+      ]
+        .filter((item) => item.isVisible(unref(actionOptions)))
+        .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+    })
+
     const menuItemsShare = computed(() => {
       return [
         ...unref(showSharesActions),
@@ -168,21 +183,16 @@ export default defineComponent({
 
       sections.push({
         name: 'context',
+        items: [...unref(menuItemsContext)],
         drop: {
           label: $gettext('Open with...'),
           icon: 'apps',
           renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
           emptyMessage: $gettext('No applications available'),
-          items: [
-            ...unref(editorActions),
-            ...unref(extensionsContextActions).filter((a) => a.category === 'context')
-          ]
+          items: [...unref(menuItemsContextDrop)]
             .filter((item) => item.isVisible(unref(actionOptions)))
             .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
-        },
-        items: [...unref(navigateActions), ...unref(defaultEditorActions)]
-          .filter((item) => item.isVisible(unref(actionOptions)))
-          .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+        }
       })
 
       if (unref(menuItemsShare).length) {
