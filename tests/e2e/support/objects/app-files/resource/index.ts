@@ -215,6 +215,10 @@ export class Resource {
     await po.clickViewModeToggle({ page: this.#page, target: 'resource-tiles' })
   }
 
+  async switchViewMode(viewMode): Promise<void> {
+    await po.clickViewModeToggle({ page: this.#page, target: viewMode })
+  }
+
   async expectThatResourcesAreTiles(): Promise<void> {
     await po.expectThatResourcesAreTiles({ page: this.#page })
   }

@@ -23,7 +23,7 @@ async function LogInUser(this: World, stepUser: string): Promise<void> {
       : this.usersEnvironment.getCreatedUser({ key: stepUser })
 
   await page.goto(config.baseUrl)
-  await sessionObject.login(user)
+  await sessionObject.login(user, this.a11yEnabled)
 
   if (this.feature.tags.length > 0) {
     const tags: string[] = []

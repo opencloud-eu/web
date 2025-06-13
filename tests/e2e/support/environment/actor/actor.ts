@@ -3,7 +3,6 @@ import path from 'path'
 import EventEmitter from 'events'
 import { Actor } from '../../types'
 import { ActorOptions, buildBrowserContextOptions } from './shared'
-import { patchPageForA11y } from '../../utils/accessibility'
 
 export class ActorEnvironment extends EventEmitter implements Actor {
   private readonly options: ActorOptions
@@ -25,10 +24,6 @@ export class ActorEnvironment extends EventEmitter implements Actor {
 
     this.page = await this.context.newPage()
     this.tabs.push(this.page)
-
-    if (process.env.A11Y_TEST === 'true') {
-      patchPageForA11y(this.page)
-    }
 
     this.page.on('pageerror', (exception) => {
       console.log(`[UNCAUGHT EXCEPTION] "${exception}"`)

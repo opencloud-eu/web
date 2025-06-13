@@ -1641,7 +1641,7 @@ export const getDisplayedResourcesFromTrashbin = async (page: Page): Promise<str
 
 export interface switchViewModeArgs {
   page: Page
-  target: 'resource-table' | 'resource-tiles'
+  target: 'resource-table' | 'resource-tiles' | 'resource-table-condensed'
 }
 
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {

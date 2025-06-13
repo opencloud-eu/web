@@ -79,6 +79,7 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     }
   }
   this.uniquePrefix = uuidv4().substring(0, 3)
+  this.a11yEnabled = pickle.tags.some((tag) => tag.name === '@a11y')
 })
 
 BeforeAll(async (): Promise<void> => {
