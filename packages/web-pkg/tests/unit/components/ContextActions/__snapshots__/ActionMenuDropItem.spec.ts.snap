@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
+"<li class="context-menu oc-files-context-action oc-px-s oc-rounded oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-py-s oc-px-m oc-width-1-1 oc-flex-justify-between oc-width-1-1" id="oc-files-context-actions-actions-toggle-2">
+    <!--v-if-->
+    <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span> <span class="oc-flex oc-files-context-action-label"><span>Actions</span></span> <span class="oc-icon oc-icon-s"><!----></span>
+  </button>
+  <div id="oc-files-context-actions-actions-drop-1" class="oc-drop oc-box-shadow-medium oc-rounded oc-width-auto oc-files-context-action-drop">
+    <div class="oc-card oc-card-body oc-p-s">
+<li class="oc-files-context-action oc-rounded oc-menu-item-hover"><button type="button" aria-label="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline action-menu-item oc-py-s oc-px-m oc-width-1-1" data-testid="action-handler">
+    <!--v-if-->
+    <!-- @slot Content of the button -->
+    <!--v-if--> <span class="oc-files-context-action-label oc-flex" data-testid="action-label"><span>Copy</span></span>
+    <!--v-if-->
+  </button></li>
+<li class="oc-files-context-action oc-rounded oc-menu-item-hover"><button type="button" aria-label="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline action-menu-item oc-py-s oc-px-m oc-width-1-1" data-testid="action-handler">
+    <!--v-if-->
+    <!-- @slot Content of the button -->
+    <!--v-if--> <span class="oc-files-context-action-label oc-flex" data-testid="action-label"><span>Paste</span></span>
+    <!--v-if-->
+  </button></li>
+</div>
+</div>
+</li>"
+`;

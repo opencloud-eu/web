@@ -58,7 +58,6 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { Action, ActionOptions, useConfigStore } from '../../composables'
-import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
@@ -98,7 +97,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { $gettext } = useGettext()
     const configStore = useConfigStore()
     const { options } = storeToRefs(configStore)
 
