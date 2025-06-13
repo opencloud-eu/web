@@ -39,7 +39,7 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsSetIcon
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../../composables'
+import { useSpaceActionsDeleteImage, useSpaceActionsUploadImage } from '../../../composables'
 
 export default defineComponent({
   name: 'SpaceActions',
@@ -65,6 +65,7 @@ export default defineComponent({
       spaceImageInput
     })
     const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
+    const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
 
     const actions = computed(() =>
@@ -75,6 +76,7 @@ export default defineComponent({
         ...unref(editDescriptionActions),
         ...unref(uploadImageActions),
         ...unref(setSpaceIconActions),
+        ...unref(deleteSpaceImageActions),
         ...unref(editReadmeContentActions),
         ...unref(editQuotaActions),
         ...unref(restoreActions),

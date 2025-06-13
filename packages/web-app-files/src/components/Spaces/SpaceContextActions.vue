@@ -38,8 +38,10 @@ import {
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../composables'
+import { useSpaceActionsDeleteImage, useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
+import { MenuSection } from '@opencloud-eu/web-pkg/src/components/ContextActions/ContextActionMenu.vue'
+import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'SpaceContextActions',
@@ -56,6 +58,7 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter()
+    const { $gettext } = useGettext()
 
     const actionOptions = toRef(props, 'actionOptions') as Ref<SpaceActionOptions>
 
@@ -66,6 +69,7 @@ export default defineComponent({
     const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
     const { actions: editDescriptionActions } = useSpaceActionsEditDescription()
     const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
+    const { actions: deleteImageActions } = useSpaceActionsDeleteImage()
     const { actions: renameActions } = useSpaceActionsRename()
     const { actions: restoreActions } = useSpaceActionsRestore()
     const { actions: showDetailsActions } = useFileActionsShowDetails()
@@ -88,14 +92,21 @@ export default defineComponent({
       const fileHandlers = [
         ...unref(renameActions),
         ...unref(duplicateActions),
-        ...unref(editDescriptionActions),
-        ...unref(uploadImageActions),
-        ...unref(setSpaceIconActions)
+        ...unref(editDescriptionActions)
       ]
 
       if (isLocationSpacesActive(router, 'files-spaces-generic')) {
         fileHandlers.splice(2, 0, ...unref(editReadmeContentActions))
       }
+      return [...fileHandlers].filter((item) => item.isVisible(unref(actionOptions)))
+    })
+
+    const menuItemsPrimaryDropActions = computed(() => {
+      const fileHandlers = [
+        ...unref(uploadImageActions),
+        ...unref(setSpaceIconActions),
+        ...unref(deleteImageActions)
+      ]
       return [...fileHandlers].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
@@ -120,17 +131,23 @@ export default defineComponent({
     })
 
     const menuSections = computed(() => {
-      const sections = []
+      const sections: MenuSection[] = []
       if (unref(menuItemsMembers).length) {
         sections.push({
           name: 'members',
           items: unref(menuItemsMembers)
         })
       }
-      if (unref(menuItemsPrimaryActions).length) {
+      if ([...unref(menuItemsPrimaryActions), ...unref(menuItemsPrimaryDropActions)].length) {
         sections.push({
           name: 'primaryActions',
-          items: unref(menuItemsPrimaryActions)
+          items: unref(menuItemsPrimaryActions),
+          drop: {
+            name: 'space-image',
+            label: $gettext('Space image'),
+            icon: 'image',
+            items: unref(menuItemsPrimaryDropActions)
+          }
         })
       }
       if (unref(menuItemsSecondaryActions).length) {
