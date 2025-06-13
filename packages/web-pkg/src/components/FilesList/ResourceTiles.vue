@@ -80,7 +80,7 @@
               class="oc-flex-inline oc-p-s"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
-              @click.stop.prevent="toggleTile([resource, $event])"
+              @click.stop.prevent="toggleTile([resource, $event], $event)"
             />
           </template>
           <template #imageField>
@@ -293,7 +293,8 @@ const getRoute = (resource: Resource) => {
   return action.route({ space: s, resources: [resource] })
 }
 const emitTileClick = (resource: Resource, event?: MouseEvent) => {
-  if (event && useInterceptShiftClick(event, resource)) {
+  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+    console.log('Shift-click intercepted, no action taken.')
     return
   }
 
@@ -315,6 +316,12 @@ const showContextMenuOnBtnClick = (
   index: string
 ) => {
   const { dropdown, event } = data
+
+  if (event && useInterceptShiftClick(event as MouseEvent, item)) {
+    console.log('Shift-click intercepted, no action taken.')
+    return
+  }
+
   if (dropdown?.tippy === undefined) {
     return
   }
@@ -424,9 +431,14 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
+const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
   const resource = data[0]
   const eventData = data[1]
+
+  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+    console.log('Shift-click intercepted, no action taken.')
+    return
+  }
 
   if (eventData && eventData.metaKey) {
     return eventBus.publish('app.files.list.clicked.meta', resource)

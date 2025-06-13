@@ -53,7 +53,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s">
+      <div class="oc-card-body oc-p-s" @click="markResource($event)">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item
@@ -62,7 +62,7 @@
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click="$emit('click')"
+              @click="handleClick"
             />
           </div>
           <div class="oc-flex oc-flex-middle">
@@ -93,6 +93,8 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { useInterceptShiftClick } from '../../composables/keyboardActions'
+import { useToggleTile } from '../../composables/selection'
 
 const {
   resource,
@@ -120,6 +122,7 @@ const emit = defineEmits<{
   (e: 'click'): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
+  (e: 'shift-select', resource: Resource): void
 }>()
 
 defineSlots<{
@@ -129,6 +132,18 @@ defineSlots<{
   indicators?: (props: { item: Resource }) => unknown
   selection?: (props: { item: Resource }) => unknown
 }>()
+
+function handleClick(this: any, event: MouseEvent) {
+  if (useInterceptShiftClick(event, this.resource)) {
+    return
+  }
+
+  emit('click')
+}
+
+function markResource(event: MouseEvent) {
+  useToggleTile([resource, event], event)
+}
 
 const { $gettext } = useGettext()
 
