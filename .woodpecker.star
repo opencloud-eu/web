@@ -30,6 +30,7 @@ READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
+CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
 
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
@@ -162,9 +163,7 @@ minio_mc_environment = {
     "CACHE_BUCKET": {
         "from_secret": "cache_s3_bucket",
     },
-    "MC_HOST": {
-        "from_secret": "cache_s3_server",
-    },
+    "MC_HOST": CACHE_S3_SERVER,
     "AWS_ACCESS_KEY_ID": {
         "from_secret": "cache_s3_access_key",
     },
@@ -1254,9 +1253,7 @@ def genericCache(name, action, mounts, cache_path):
         "name": "%s_%s" % (action, name),
         "image": PLUGINS_S3_CACHE,
         "settings": {
-            "endpoint": {
-                "from_secret": "cache_s3_server",
-            },
+            "endpoint": CACHE_S3_SERVER,
             "rebuild": rebuild,
             "restore": restore,
             "mount": mounts,
@@ -1288,9 +1285,7 @@ def genericCachePurge(flush_path):
                     "secret_key": {
                         "from_secret": "cache_s3_secret_key",
                     },
-                    "endpoint": {
-                        "from_secret": "cache_s3_server",
-                    },
+                    "endpoint": CACHE_S3_SERVER,
                     "flush": True,
                     "flush_age": 1,
                     "flush_path": flush_path,
