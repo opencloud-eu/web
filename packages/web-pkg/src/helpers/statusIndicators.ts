@@ -16,7 +16,7 @@ const $gettext = (str: string): string => {
   return str
 }
 
-export type ResourceIndicatorCategory = 'system' | 'sharing'
+export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
 
 export interface ResourceIndicator {
   id: string
@@ -121,7 +121,7 @@ const getSpaceEnabledIndicator = ({ resource }: { resource: Resource }): Resourc
     accessibleDescription: $gettext('Space is enabled'),
     label: $gettext('This space is enabled'),
     icon: 'play-circle',
-    category: 'system',
+    category: 'space',
     type: 'resource-space-enabled',
     fillType: 'line'
   }
@@ -133,7 +133,7 @@ const getSpaceDisabledIndicator = ({ resource }: { resource: Resource }): Resour
     accessibleDescription: $gettext('Space is disabled'),
     label: $gettext('This space is disabled'),
     icon: 'stop-circle',
-    category: 'system',
+    category: 'space',
     type: 'resource-space-disabled',
     fillType: 'line'
   }
