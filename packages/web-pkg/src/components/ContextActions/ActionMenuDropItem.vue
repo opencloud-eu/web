@@ -4,7 +4,7 @@
       :id="toggleId"
       appearance="raw"
       gap-size="medium"
-      class="oc-drop-nested-toggle oc-py-s oc-px-m oc-width-1-1 oc-flex-justify-between oc-width-1-1"
+      class="oc-py-s oc-px-m oc-width-1-1 oc-flex-justify-between oc-width-1-1"
     >
       <oc-icon :name="menuSectionDrop.icon" size="medium" fill-type="line" />
       <span class="oc-flex oc-files-context-action-label">

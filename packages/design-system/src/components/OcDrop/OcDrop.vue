@@ -123,10 +123,12 @@ const hide = (duration?: number) => {
 
 defineExpose({ show, hide, tippy: tippyInstance })
 
-const onClick = (event) => {
-  const isNestedToggle = event.target.closest('.oc-drop-nested-toggle')
+const onClick = (event: Event) => {
+  const isNestedDropToggle = (event.target as HTMLElement)
+    .closest('.oc-button')
+    ?.hasAttribute('aria-expanded')
 
-  if (closeOnClick && !isNestedToggle) {
+  if (closeOnClick && !isNestedDropToggle) {
     hide()
   }
 }
