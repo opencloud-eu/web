@@ -30,6 +30,7 @@ import {
   SpaceActionOptions,
   useFileActionsDownloadArchive,
   useSpaceActionsDelete,
+  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
@@ -39,7 +40,7 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsSetIcon
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsDeleteImage, useSpaceActionsUploadImage } from '../../../composables'
+import { useSpaceActionsUploadImage } from '../../../composables'
 
 export default defineComponent({
   name: 'SpaceActions',

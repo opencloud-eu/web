@@ -1,15 +1,9 @@
 import { computed } from 'vue'
-import {
-  SpaceAction,
-  SpaceActionOptions,
-  useClientService,
-  useMessages,
-  useModals,
-  useSpacesStore,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource } from '@opencloud-eu/web-client'
+import { SpaceAction, SpaceActionOptions } from '../types'
+import { useClientService } from '../../clientService'
+import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
 
 export const useSpaceActionsDeleteImage = () => {
   const userStore = useUserStore()
@@ -19,7 +13,7 @@ export const useSpaceActionsDeleteImage = () => {
   const spacesStore = useSpacesStore()
   const { showMessage, showErrorMessage } = useMessages()
 
-  const removeSpaceImage = async ({ space }: { space: SpaceResource }) => {
+  const deleteSpaceImage = async ({ space }: { space: SpaceResource }) => {
     try {
       await webdav.deleteFile(space, {
         path: '.space/image.png'
@@ -53,14 +47,10 @@ export const useSpaceActionsDeleteImage = () => {
   }
 
   const handler = ({ resources }: SpaceActionOptions) => {
-    if (resources.length !== 1) {
-      return
-    }
-
     dispatchModal({
       title: $gettext('Delete %{ space } image', { space: resources[0].name }),
       confirmText: $gettext('Delete'),
-      onConfirm: () => removeSpaceImage({ space: resources[0] }),
+      onConfirm: () => deleteSpaceImage({ space: resources[0] }),
       message: $gettext('Are you sure you want to delete the image of %{ space }?', {
         space: resources[0].name
       })
@@ -91,6 +81,8 @@ export const useSpaceActionsDeleteImage = () => {
   ])
 
   return {
-    actions
+    actions,
+
+    deleteSpaceImage
   }
 }

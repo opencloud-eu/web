@@ -27,6 +27,7 @@ import {
   useFileActionsShowDetails,
   useRouter,
   useSpaceActionsDelete,
+  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
@@ -38,7 +39,7 @@ import {
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsDeleteImage, useSpaceActionsUploadImage } from '../../composables'
+import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg/src/components/ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
