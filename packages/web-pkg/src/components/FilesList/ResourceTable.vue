@@ -67,7 +67,13 @@
         :disabled="isResourceDisabled(item)"
         :model-value="isResourceSelected(item)"
         :outline="isLatestSelectedItem(item)"
-        @click.stop="toggleSelection(item.id)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (!useInterceptShiftClick(e, item)) {
+              toggleSelection(item.id)
+            }
+          }
+        "
       />
     </template>
     <template #name="{ item }">
