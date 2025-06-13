@@ -150,14 +150,19 @@ onBeforeUnmount(() => {
 })
 
 const isTouchDevice = () => {
-  return window.matchMedia('(hover: none) and (pointer: coarse)').matches
+  return window.matchMedia?.('(hover: none) and (pointer: coarse)')?.matches
 }
 
 const triggerMapping = computed(() => {
-  if (mode === 'hover') {
-    return isTouchDevice() ? 'click' : 'mouseenter focus'
-  }
-  return mode
+  return (
+    {
+      hover: 'mouseenter focus'
+    }[unref(dropMode)] || unref(dropMode)
+  )
+})
+
+const dropMode = computed(() => {
+  return isTouchDevice() ? 'click' : mode
 })
 
 const paddingClass = computed(() => {
@@ -171,12 +176,9 @@ watch(
   }
 )
 
-watch(
-  () => mode,
-  () => {
-    unref(tippyInstance)?.setProps({ trigger: triggerMapping.value })
-  }
-)
+watch(dropMode, () => {
+  unref(tippyInstance)?.setProps({ trigger: triggerMapping.value })
+})
 
 onBeforeUnmount(() => {
   destroy(unref(tippyInstance))
@@ -198,7 +200,7 @@ onMounted(() => {
     trigger: triggerMapping.value,
     placement: position,
     arrow: false,
-    hideOnClick: true,
+    hideOnClick: !(isNested && unref(dropMode) === 'hover'),
     interactive: true,
     plugins: [hideOnEsc],
     theme: 'none',
