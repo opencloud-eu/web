@@ -145,7 +145,7 @@ export default defineComponent({
           items: unref(menuItemsPrimaryActions),
           drop: {
             name: 'space-image',
-            label: $gettext('Space image'),
+            label: $gettext('Edit image'),
             icon: 'image',
             items: unref(menuItemsPrimaryDropActions)
           }

@@ -7,7 +7,7 @@
         <span
           v-text="
             $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
-              zoomKeys: $gettext('+/-'),
+              zoomKeys: $gettext('+-'),
               panKeys: $gettext('↑↓←→')
             })
           "

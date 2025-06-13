@@ -43,7 +43,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       icon: 'image-add',
       handler,
       label: () => {
-        return $gettext('Upload image')
+        return $gettext('Set image')
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {
