@@ -143,12 +143,14 @@ export default defineComponent({
         sections.push({
           name: 'primaryActions',
           items: unref(menuItemsPrimaryActions),
-          drop: {
-            name: 'space-image',
-            label: $gettext('Edit image'),
-            icon: 'image',
-            items: unref(menuItemsPrimaryDropActions)
-          }
+          dropItems: [
+            {
+              name: 'space-image',
+              label: $gettext('Edit image'),
+              icon: 'image',
+              items: unref(menuItemsPrimaryDropActions)
+            }
+          ]
         })
       }
       if (unref(menuItemsSecondaryActions).length) {

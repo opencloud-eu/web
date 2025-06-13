@@ -184,16 +184,18 @@ export default defineComponent({
       sections.push({
         name: 'context',
         items: [...unref(menuItemsContext)],
-        drop: {
-          label: $gettext('Open with...'),
-          name: 'open-with',
-          icon: 'apps',
-          renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
-          emptyMessage: $gettext('No applications available'),
-          items: [...unref(menuItemsContextDrop)]
-            .filter((item) => item.isVisible(unref(actionOptions)))
-            .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
-        }
+        dropItems: [
+          {
+            label: $gettext('Open with...'),
+            name: 'open-with',
+            icon: 'apps',
+            renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
+            emptyMessage: $gettext('No applications available'),
+            items: [...unref(menuItemsContextDrop)]
+              .filter((item) => item.isVisible(unref(actionOptions)))
+              .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+          }
+        ]
       })
 
       if (unref(menuItemsShare).length) {
