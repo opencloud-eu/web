@@ -65,7 +65,7 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="emitTileClick(resource)"
+          @click="(e: MouseEvent) => emitTileClick(resource, e)"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -82,7 +82,7 @@
               class="oc-flex-inline oc-p-s"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
-              @click.stop.prevent="toggleTile([resource, $event])"
+              @click.stop.prevent="toggleTile([resource, $event], $event)"
             />
           </template>
           <template #imageField>
@@ -176,6 +176,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
+import { useInterceptShiftClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
@@ -287,7 +288,12 @@ const getRoute = (resource: Resource) => {
 
   return action.route({ space: s, resources: [resource] })
 }
-const emitTileClick = (resource: Resource) => {
+const emitTileClick = (resource: Resource, event?: MouseEvent) => {
+  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+    console.log('Shift-click intercepted, no action taken.')
+    return
+  }
+
   if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
     return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
       resource: JSON.parse(JSON.stringify(resource)),
@@ -306,6 +312,12 @@ const showContextMenuOnBtnClick = (
   index: string
 ) => {
   const { dropdown, event } = data
+
+  if (event && useInterceptShiftClick(event as MouseEvent, item)) {
+    console.log('Shift-click intercepted, no action taken.')
+    return
+  }
+
   if (dropdown?.tippy === undefined) {
     return
   }
@@ -397,6 +409,10 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
+  if (event instanceof MouseEvent && useInterceptShiftClick(event, item)) {
+    return
+  }
+
   event.preventDefault()
   const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
     'resource-tiles-btn-action-dropdown'
@@ -411,9 +427,14 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
+const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
   const resource = data[0]
   const eventData = data[1]
+
+  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+    console.log('Shift-click intercepted, no action taken.')
+    return
+  }
 
   if (eventData && eventData.metaKey) {
     return eventBus.publish('app.files.list.clicked.meta', resource)

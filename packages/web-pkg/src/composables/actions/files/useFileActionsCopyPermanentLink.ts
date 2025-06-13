@@ -4,6 +4,9 @@ import { FileAction } from '../types'
 import { useClipboard } from '../../clipboard'
 import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
+import { eventBus } from '../../../services'
+import type { FileActionOptions } from '../types'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -22,15 +25,31 @@ export const useFileActionsCopyPermanentLink = () => {
       })
     }
   }
-
+  interface FileActionOptionsWithEvent extends FileActionOptions<Resource> {
+    event?: MouseEvent
+  }
   const actions = computed((): FileAction[] => [
     {
       name: 'copy-permanent-link',
       icon: 'link',
       label: () => $gettext('Copy permanent link'),
-      handler: ({ resources }) => {
+      handler: (options: FileActionOptionsWithEvent) => {
+        const { resources, event } = options
+
+        if (event?.shiftKey) {
+          event.preventDefault?.()
+          event.stopPropagation?.()
+          event.stopImmediatePropagation?.()
+
+          eventBus.publish('app.files.list.clicked.shift', {
+            resource: resources[0],
+            skipTargetSelection: false
+          })
+          return
+        }
+
         const [resource] = resources
-        const permalink = resource.privateLink
+        const permalink = (resource as any).privateLink
         return copyLinkToClipboard(permalink)
       },
       isVisible: ({ space, resources }) => {
