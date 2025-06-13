@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test'
 import { User } from '../../types'
 import { config } from '../../../config'
+import { checkAccessibility } from '../../utils/accessibility'
 
 export class Session {
   #page: Page
@@ -9,16 +10,19 @@ export class Session {
     this.#page = page
   }
 
-  signIn(username: string, password: string): Promise<void> {
+  signIn(username: string, password: string, a11y = false): Promise<void> {
     if (config.keycloak) {
       return this.keycloakSignIn(username, password)
     }
-    return this.idpSignIn(username, password)
+    return this.idpSignIn(username, password, a11y)
   }
 
-  async idpSignIn(username: string, password: string): Promise<void> {
+  async idpSignIn(username: string, password: string, a11y: boolean): Promise<void> {
     await this.#page.locator('#oc-login-username').fill(username)
     await this.#page.locator('#oc-login-password').fill(password)
+    if (a11y) {
+      await checkAccessibility(this.#page, 'before clicking login submit')
+    }
     await this.#page.locator('button[type="submit"]').click()
   }
 
@@ -28,7 +32,7 @@ export class Session {
     await this.#page.locator('#kc-login').click()
   }
 
-  async login(user: User): Promise<void> {
+  async login(user: User, a11y?: boolean): Promise<void> {
     const { username, password } = user
 
     await Promise.all([
@@ -38,7 +42,7 @@ export class Session {
           resp.status() === 200 &&
           resp.request().method() === 'POST'
       ),
-      this.signIn(username, password)
+      this.signIn(username, password, a11y)
     ])
   }
 
