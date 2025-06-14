@@ -19,20 +19,32 @@ describe('ContextActionMenu component', () => {
       {
         name: 'apps',
         items: [],
-        drop: {
-          label: 'Apps',
-          name: 'apps',
-          items: [{ label: () => 'Preview' } as Action, { label: () => 'PDF Viewer' } as Action]
-        }
+        dropItems: [
+          {
+            label: 'Apps',
+            name: 'apps',
+            items: [{ label: () => 'Preview' } as Action, { label: () => 'PDF Viewer' } as Action]
+          }
+        ]
       },
       {
         name: 'actions',
         items: [{ label: () => 'Download' } as Action],
-        drop: {
-          label: 'Actions',
-          name: 'actions',
-          items: [{ label: () => 'Copy' } as Action, { label: () => 'Paste' } as Action]
-        }
+        dropItems: [
+          {
+            label: 'Actions',
+            name: 'actions',
+            items: [{ label: () => 'Copy' } as Action, { label: () => 'Paste' } as Action]
+          },
+          {
+            label: 'Delete',
+            name: 'delete',
+            items: [
+              { label: () => 'Delete' } as Action,
+              { label: () => 'Delete permanently' } as Action
+            ]
+          }
+        ]
       },
       {
         name: 'sidebar',
@@ -43,9 +55,7 @@ describe('ContextActionMenu component', () => {
     expect(wrapper.html()).toMatchSnapshot()
 
     expect(wrapper.findAll('.oc-files-context-actions').length).toEqual(menuSections.length)
-    expect(wrapper.findAll('.oc-files-context-action-drop').length).toEqual(
-      menuSections.filter((m) => m.drop).length
-    )
+    expect(wrapper.findAll('.oc-files-context-action-drop').length).toEqual(3)
   })
 })
 
