@@ -36,6 +36,7 @@ import {
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon
@@ -68,6 +69,7 @@ export default defineComponent({
     const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
     const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
+    const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
 
     const actions = computed(() =>
       [
@@ -82,7 +84,8 @@ export default defineComponent({
         ...unref(editQuotaActions),
         ...unref(restoreActions),
         ...unref(deleteActions),
-        ...unref(disableActions)
+        ...unref(disableActions),
+        ...unref(navigateToTrashActions)
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
 
