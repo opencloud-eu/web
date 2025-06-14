@@ -20,9 +20,6 @@
         :src="imageContent"
         @click="toggleImageExpanded"
       />
-      <div v-else class="space-header-image-default oc-flex oc-flex-middle oc-flex-center">
-        <oc-icon name="layout-grid" size="xxlarge" class="oc-px-m oc-py-m" />
-      </div>
     </div>
     <div class="space-header-infos">
       <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
@@ -281,15 +278,10 @@ const toggleImageExpanded = () => {
 
 watch(
   computed(() => space.spaceImageData),
-  async (data) => {
-    if (!data) {
-      imageContent.value = null
-      return
-    }
-    const resource = buildSpaceImageResource(space)
+  async () => {
     imageContent.value = await loadPreview({
       space,
-      resource,
+      resource: space.spaceImageData ? buildSpaceImageResource(space) : space,
       dimensions: ImageDimension.Tile,
       processor: ProcessorType.enum.fit,
       cancelRunning: true,

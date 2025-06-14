@@ -39,16 +39,9 @@ describe('SpaceHeader', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
   describe('space image', () => {
-    it('should show the default image if no other image is set', async () => {
-      const wrapper = getWrapper({ space: getSpaceMock() })
-      await flushPromises()
-      expect(wrapper.find('.space-header-image-default').exists()).toBeTruthy()
-      expect(wrapper.html()).toMatchSnapshot()
-    })
     it('should show the set image', async () => {
       const wrapper = getWrapper({ space: getSpaceMock({ webDavUrl: '/' }) })
       await flushPromises()
-      expect(wrapper.find('.space-header-image-default').exists()).toBeFalsy()
       expect(wrapper.find('.space-header-image img').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
