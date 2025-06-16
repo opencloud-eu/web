@@ -420,6 +420,15 @@ When(
 )
 
 When(
+  '{string} switches to the {string} view mode',
+  async function (this: World, stepUser: string, viewMode: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.switchViewMode(viewMode)
+  }
+)
+
+When(
   '{string} sees the resources displayed as tiles',
   async function (this: World, stepUser: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })

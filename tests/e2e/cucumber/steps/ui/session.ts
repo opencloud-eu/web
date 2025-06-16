@@ -23,7 +23,7 @@ async function LogInUser(this: World, stepUser: string): Promise<void> {
       : this.usersEnvironment.getCreatedUser({ key: stepUser })
 
   await page.goto(config.baseUrl)
-  await sessionObject.login(user)
+  await sessionObject.login(user, this.a11yEnabled)
 
   if (this.feature.tags.length > 0) {
     const tags: string[] = []
@@ -119,7 +119,7 @@ When(
   }
 )
 
-Given('using {string} server', async function (this: World, server: string): Promise<void> {
+Given('using {string} server', function (this: World, server: string): void {
   switch (server) {
     case 'LOCAL':
       config.federatedServer = false
