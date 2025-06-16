@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-13
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-16
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -10,15 +10,16 @@
 
 - feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
 
+### ✅ Tests
+
+- A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
+- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
+
 ### 🐛 Bug Fixes
 
 - fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
 - fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
 - fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
-
-### ✅ Tests
-
-- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
 
 ### 📈 Enhancement
 
