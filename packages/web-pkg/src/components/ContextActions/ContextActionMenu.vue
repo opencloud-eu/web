@@ -17,10 +17,9 @@
           class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
         />
       </template>
-      <template v-for="(drop, dropIndex) in section.dropItems">
+      <template v-for="drop in section.dropItems">
         <action-menu-drop-item
-          v-if="drop.items?.length || drop.renderOnEmpty"
-          :key="dropIndex"
+          v-if="drop.items.length"
           :menu-section-drop="drop"
           :appearance="appearance"
           :action-options="actionOptions"
@@ -42,7 +41,6 @@ export type MenuSectionDrop = {
   name: string
   icon: string
   items?: Action[]
-  renderOnEmpty?: boolean
   emptyMessage?: string
 }
 
