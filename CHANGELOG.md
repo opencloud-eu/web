@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-16
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,6 +12,7 @@
 
 ### ✅ Tests
 
+- open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
 - A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
 - test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
 
