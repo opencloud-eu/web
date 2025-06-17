@@ -144,3 +144,13 @@ Feature: Integration with Collabora online office
       | resource          |
       | Template (1).docx |
     And "Alice" logs out
+
+
+  Scenario: open the file using the context menu
+    When "Alice" logs in
+    And "Alice" opens file "new.txt" via "collabora" using the context menu
+    Then "Alice" should see the content "test content" in editor "Collabora"
+    And "Alice" closes the file viewer
+    When "Alice" opens file "new.txt" via "text-editor" using the context menu
+    And "Alice" closes the file viewer
+    And "Alice" logs out

@@ -146,6 +146,7 @@ const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
+const openWithAction = '.oc-files-actions-%s-trigger'
 
 export const clickResource = async ({
   page,
@@ -2267,4 +2268,22 @@ export const getAvatarLocatorFromActivityPanel = async (args: {
   return await page
     .locator(util.format(userAvatarInActivitypanelSelector, user.username))
     .locator('img')
+}
+
+export const openFileViaContextMenu = async ({
+  page,
+  resource,
+  fileViewer
+}: {
+  page: Page
+  resource: string
+  fileViewer: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+  const openWith = page.locator(util.format(contextMenuAction, 'Open with...'))
+  await openWith.hover()
+
+  const editorItem = page.locator(util.format(openWithAction, fileViewer))
+  await expect(editorItem).toBeVisible()
+  await editorItem.click()
 }
