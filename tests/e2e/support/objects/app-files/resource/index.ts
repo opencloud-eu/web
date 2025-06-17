@@ -413,4 +413,8 @@ export class Resource {
   }): Promise<Locator> {
     return await po.getAvatarLocatorFromActivityPanel({ page: this.#page, ...args })
   }
+
+  async openFileViaContextMenu(resource: string, fileViewer: string): Promise<void> {
+    await po.openFileViaContextMenu({ page: this.#page, resource, fileViewer })
+  }
 }

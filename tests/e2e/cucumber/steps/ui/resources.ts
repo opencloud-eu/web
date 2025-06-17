@@ -1098,3 +1098,18 @@ Then(
     await expect(avatarLocator).toBeVisible()
   }
 )
+
+When(
+  '{string} opens file {string} via {string} using the context menu',
+  async function (this: World, stepUser: string, file: string, fileViewer: string): Promise<void> {
+    const allowedViewers = ['collabora', 'text-editor', 'preview'] as const
+
+    if (!allowedViewers.includes(fileViewer as any)) {
+      throw new Error(`Unsupported file viewer: ${fileViewer}`)
+    }
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await resourceObject.openFileViaContextMenu(file, fileViewer as (typeof allowedViewers)[number])
+  }
+)
