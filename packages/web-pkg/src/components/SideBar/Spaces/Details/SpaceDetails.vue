@@ -81,22 +81,22 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { inject, ref, Ref, computed, unref, watch } from 'vue'
+import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { buildSpaceImageResource, isManager, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  useUserStore,
-  useSharesStore,
-  useResourcesStore,
-  useResourceContents,
-  useRouter,
+  SideBarEventTopics,
   useLoadPreview,
-  useSpacesStore
+  useResourceContents,
+  useResourcesStore,
+  useRouter,
+  useSharesStore,
+  useSpacesStore,
+  useUserStore
 } from '../../../../composables'
 import SpaceQuota from '../../../SpaceQuota.vue'
 import WebDavDetails from '../../WebDavDetails.vue'
 import { formatDateFromISO, formatFileSize } from '../../../../helpers'
 import { eventBus } from '../../../../services/eventBus'
-import { SideBarEventTopics } from '../../../../composables'
 import { ImageDimension } from '../../../../constants'
 import { ProcessorType } from '../../../../services'
 import { isLocationSpacesActive } from '../../../../router'
@@ -138,15 +138,11 @@ const size = computed(() => {
 watch(
   () => unref(resource).spaceImageData,
   async () => {
-    if (!unref(resource).spaceImageData) {
-      spaceImage.value = ''
-      return
-    }
-
-    const imageResource = buildSpaceImageResource(unref(resource))
     spaceImage.value = await loadPreview({
       space: unref(resource),
-      resource: imageResource,
+      resource: unref(resource).spaceImageData
+        ? buildSpaceImageResource(unref(resource))
+        : unref(resource),
       dimensions: ImageDimension.Tile,
       processor: ProcessorType.enum.fit,
       cancelRunning: true,

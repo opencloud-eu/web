@@ -174,6 +174,7 @@ export default defineComponent({
             items: [...unref(menuItemsBatchActions)]
           })
         }
+
         sections.push({
           name: 'batch-details',
           items: [...unref(menuItemsBatchSideBar)]
@@ -181,20 +182,20 @@ export default defineComponent({
         return sections
       }
 
-      sections.push({
-        name: 'context',
-        items: [...unref(menuItemsContext)],
-        drop: {
-          label: $gettext('Open with...'),
-          name: 'open-with',
-          icon: 'apps',
-          renderOnEmpty: !unref(actionOptions).resources[0]?.isFolder,
-          emptyMessage: $gettext('No applications available'),
-          items: [...unref(menuItemsContextDrop)]
-            .filter((item) => item.isVisible(unref(actionOptions)))
-            .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
-        }
-      })
+      if ([...unref(menuItemsContext), ...unref(menuItemsContextDrop)].length) {
+        sections.push({
+          name: 'context',
+          items: [...unref(menuItemsContext)],
+          dropItems: [
+            {
+              label: $gettext('Open with...'),
+              name: 'open-with',
+              icon: 'apps',
+              items: [...unref(menuItemsContextDrop)]
+            }
+          ]
+        })
+      }
 
       if (unref(menuItemsShare).length) {
         sections.push({

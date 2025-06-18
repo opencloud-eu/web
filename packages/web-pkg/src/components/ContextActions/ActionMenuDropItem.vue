@@ -32,11 +32,6 @@
           class="oc-files-context-action oc-rounded oc-menu-item-hover"
         />
       </template>
-      <span
-        v-else
-        class="oc-files-context-action-drop-empty-message oc-py-s oc-px-m oc-text-muted"
-        v-text="menuSectionDrop.emptyMessage || $gettext('No items available')"
-      />
     </oc-drop>
   </li>
 </template>

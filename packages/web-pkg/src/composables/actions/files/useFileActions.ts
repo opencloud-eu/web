@@ -77,6 +77,7 @@ export const useFileActions = () => {
   const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
 
   const systemActions = computed((): Action[] => [
+    ...unref(navigateActions),
     ...unref(downloadArchiveActions),
     ...unref(downloadFileActions),
     ...unref(deleteActions),
@@ -88,8 +89,7 @@ export const useFileActions = () => {
     ...unref(enableSyncActions),
     ...unref(hideShareActions),
     ...unref(disableSyncActions),
-    ...unref(favoriteActions),
-    ...unref(navigateActions)
+    ...unref(favoriteActions)
   ])
 
   const defaultActions = computed<FileAction[]>(() => {

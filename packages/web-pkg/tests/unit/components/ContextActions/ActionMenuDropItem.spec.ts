@@ -17,17 +17,6 @@ describe('ActionMenuDropItem component', () => {
       wrapper.find('.oc-files-context-action-drop').findAll('.oc-files-context-action').length
     ).toEqual(menuSectionDrop.items.length)
   })
-  it('renders drop menu with empty message', () => {
-    const menuSectionDrop = {
-      label: 'Actions',
-      name: 'actions',
-      icon: 'eye',
-      renderOnEmpty: true,
-      items: []
-    }
-    const { wrapper } = getWrapper(menuSectionDrop)
-    expect(wrapper.find('.oc-files-context-action-drop-empty-message').exists()).toBeTruthy()
-  })
 })
 
 function getWrapper(menuSectionDrop: MenuSectionDrop) {
