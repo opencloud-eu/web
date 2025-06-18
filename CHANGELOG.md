@@ -1,5 +1,43 @@
 # Changelog
 
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-18
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### ✨ Features
+
+- feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
+
+### ✅ Tests
+
+- delete logo steps [[#834](https://github.com/opencloud-eu/web/pull/834)]
+- open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
+- A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
+- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
+
+### 🐛 Bug Fixes
+
+- fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
+- fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
+- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
+### 📈 Enhancement
+
+- feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency zod to v3.25.61 [[#817](https://github.com/opencloud-eu/web/pull/817)]
+- fix(deps): update dependency @sentry/vue to v9.28.0 [[#766](https://github.com/opencloud-eu/web/pull/766)]
+- chore(deps): update pnpm to v10.12.1 [[#809](https://github.com/opencloud-eu/web/pull/809)]
+- fix(deps): update dependency pinia to v3.0.3 [[#797](https://github.com/opencloud-eu/web/pull/797)]
+- fix(deps): update dependency zod to v3.25.59 [[#769](https://github.com/opencloud-eu/web/pull/769)]
+- chore(deps): update dependency happy-dom to v18 [[#816](https://github.com/opencloud-eu/web/pull/816)]
+- fix(deps): update vue monorepo to v3.5.16 [[#770](https://github.com/opencloud-eu/web/pull/770)]
+- [full-ci]bump-opencloud-3.0.0 [[#814](https://github.com/opencloud-eu/web/pull/814)]
+
 ## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-10
 
 ### ❤️ Thanks to all contributors! ❤️
