@@ -90,7 +90,6 @@ const tagInInputForm =
   '//span[contains(@class, "tags-select-tag")]//span[text()="%s"]//ancestor::span//button[contains(@class, "vs__deselect")]'
 const tagFormInput = '//*[@data-testid="tags"]//input'
 const resourcesAsTiles = '#files-view .oc-tiles'
-const fileVersionSidebar = '#oc-file-versions-sidebar'
 const versionsPanelSelect = '//*[@data-testid="sidebar-panel-versions-select"]'
 const noLinkMessage = '#web .oc-link-resolve-error-message'
 const listItemPageSelector = '//*[contains(@class,"oc-pagination-list-item-page") and text()="%s"]'
@@ -1869,27 +1868,6 @@ export const previewMediaFromSidebarPanel = async ({
   await page.locator(util.format(sideBarActionButton, 'Preview')).first().click()
 }
 
-export const checkThatFileVersionIsNotAvailable = async (
-  args: resourceVersionArgs
-): Promise<void> => {
-  const { page, files, folder } = args
-  const fileName = files.map((file) => path.basename(file.name))
-  await clickResource({ page, path: folder })
-
-  await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes('dav/meta') &&
-        resp.status() === 403 &&
-        resp.request().method() === 'PROPFIND'
-    ),
-    sidebar.open({ page, resource: fileName[0] })
-  ])
-
-  await sidebar.openPanel({ page, name: 'versions' })
-  await expect(page.locator(fileVersionSidebar)).toHaveText('No versions available for this file')
-}
-
 export const checkThatFileVersionPanelIsNotAvailable = async (
   args: resourceVersionArgs
 ): Promise<void> => {
@@ -1967,21 +1945,6 @@ export const countNumberOfResourcesInThePage = async ({
 
 export const expectPageNumberNotToBeVisible = async ({ page }: { page: Page }): Promise<void> => {
   await expect(page.locator(filesPaginationNavSelector)).not.toBeVisible()
-}
-
-export interface expectFileToBeSelectedArgs {
-  page: Page
-  fileName: string
-}
-
-export const expectFileToBeSelected = async ({
-  page,
-  fileName
-}: {
-  page: Page
-  fileName: string
-}): Promise<void> => {
-  await expect(page.locator(util.format(checkBox, fileName))).toBeChecked()
 }
 
 export const createShotcut = async (args: shortcutArgs): Promise<void> => {
