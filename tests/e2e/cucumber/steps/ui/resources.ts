@@ -732,29 +732,6 @@ When(
 )
 
 Then(
-  '{string} should not see the version of the file(s)',
-  async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const fileInfo = stepTable.hashes().reduce<Record<string, File[]>>((acc, stepRow) => {
-      const { to, resource } = stepRow
-
-      if (!acc[to]) {
-        acc[to] = []
-      }
-
-      acc[to].push(this.filesEnvironment.getFile({ name: resource }))
-
-      return acc
-    }, {})
-
-    for (const folder of Object.keys(fileInfo)) {
-      await resourceObject.checkThatFileVersionIsNotAvailable({ folder, files: fileInfo[folder] })
-    }
-  }
-)
-
-Then(
   '{string} should not see the version panel for the file(s)',
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
