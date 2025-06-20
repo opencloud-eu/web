@@ -1,4 +1,5 @@
 repo_slug = "opencloud-eu/web"
+repo_slug1 = "opencloud-build"
 docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
@@ -197,7 +198,7 @@ def main(ctx):
         print("Errors detected. Review messages above.")
         return []
 
-    after = pipelinesDependsOn(afterPipelines(ctx), pnpmCache(ctx))
+    after = pipelinesDependsOn(afterPipelines(ctx), cacheOpenCloudPipeline(ctx))
 
     pipelines = release + before + stages + after
 
@@ -1198,7 +1199,7 @@ def genericBuildArtifactCache(ctx, name, action, path):
         return genericCache(name, action, [path], cache_path)
 
     if action == "purge":
-        flush_path = "%s/%s" % ("cache", repo_slug)
+        flush_path = "%s/%s" % ("cache", repo_slug1)
         return genericCachePurge(flush_path)
     return []
 
