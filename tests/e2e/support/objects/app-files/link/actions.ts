@@ -69,7 +69,6 @@ const publicLinkEditRoleButton = `//span[contains(@class, "files-links-name") an
 const addPublicLinkButton = '#files-file-link-add'
 const publicLinkNameList =
   '//div[@id="oc-files-file-link"]//ul//span[contains(@class, "files-links-name")]'
-const publicLink = `//ul//h4[text()='%s']/following-sibling::div//p`
 const publicLinkCurrentRole =
   '//button[contains(@class,"link-role-dropdown-toggle")]//span[contains(@class,"link-current-role")]'
 const linkUpdateDialog = '//div[contains(@class,"oc-notification-message-title")]'
@@ -304,25 +303,6 @@ export const deleteLink = async (args: deleteLinkArgs): Promise<void> => {
   await page.locator(confirmDeleteButton).click()
   const message = await page.locator(linkUpdateDialog).textContent()
   expect(message.trim()).toBe('Link was deleted successfully')
-}
-
-export const getPublicLinkVisibility = async (
-  args: publicLinkAndItsEditButtonVisibilityArgs
-): Promise<string> => {
-  const { page, linkName, resource, space } = args
-  let shareType = 'space-share'
-  let resourceName = null
-  if (!space) {
-    shareType = 'sharing'
-    const resourcePaths = resource.split('/')
-    resourceName = resourcePaths.pop()
-    if (resourcePaths.length) {
-      await clickResource({ page: page, path: resourcePaths.join('/') })
-    }
-  }
-  await sidebar.open({ page: page, resource: resourceName })
-  await sidebar.openPanel({ page: page, name: shareType })
-  return await page.locator(util.format(publicLink, linkName)).textContent()
 }
 
 export const getLinkEditButtonVisibility = async (

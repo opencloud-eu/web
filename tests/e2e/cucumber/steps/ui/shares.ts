@@ -196,15 +196,6 @@ When(
 )
 
 When(
-  '{string} should not be able to open the folder/file {string}',
-  async function (this: World, stepUser: string, resource: string): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
-    expect(await shareObject.resourceIsNotOpenable(resource)).toBe(true)
-  }
-)
-
-When(
   /"([^"]*)" (should|should not) see a sync status for the (?:folder|file) "([^"]*)"?$/,
   async function (
     this: World,

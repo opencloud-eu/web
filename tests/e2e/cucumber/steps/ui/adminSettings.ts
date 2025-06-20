@@ -156,15 +156,6 @@ When(
 )
 
 When(
-  '{string} navigates to the general management page',
-  async function (this: World, stepUser: string): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationAdminSettings.page.General({ page })
-    await pageObject.navigate()
-  }
-)
-
-When(
   '{string} changes the quota of the user {string} to {string} using the sidebar panel',
   async function (this: World, stepUser: string, key: string, value: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
