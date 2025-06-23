@@ -12,6 +12,7 @@
 
 ### ✅ Tests
 
+- [full-ci] detect and delete unused steps [[#840](https://github.com/opencloud-eu/web/pull/840)]
 - [full-ci] fix app-provider tests [[#843](https://github.com/opencloud-eu/web/pull/843)]
 - delete logo steps [[#834](https://github.com/opencloud-eu/web/pull/834)]
 - open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
