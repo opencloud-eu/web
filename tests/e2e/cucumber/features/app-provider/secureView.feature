@@ -84,13 +84,13 @@ Feature: Secure view
 
     # .odt file
     Then "Brian" should see following actions for file "secureDocument.odt"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secureDocument.odt"
-      | action             |
-      | Download           |
-      | Copy               |
-      | Open in OnlyOffice |
+      | action     |
+      | Download   |
+      | Copy       |
+      | OnlyOffice |
     And "Brian" should not see preview for file "secureDocument.odt"
 
     # folder
@@ -102,19 +102,19 @@ Feature: Secure view
 
     # .pdf file
     Then "Brian" should see following actions for file "secure.pdf"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secure.pdf"
-      | action             |
-      | Download           |
-      | Copy               |
-      | Open in PDF Viewer |
+      | action     |
+      | Download   |
+      | Copy       |
+      | PDF Viewer |
     And "Brian" should not see thumbnail and preview for file "secure.pdf"
 
     # .jpeg file
     Then "Brian" should see following actions for file "securePhoto.jpeg"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "securePhoto.jpeg"
       | action   |
       | Download |
@@ -124,14 +124,14 @@ Feature: Secure view
 
     # .txt file
     Then "Brian" should see following actions for file "secureFile.txt"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secureFile.txt"
-      | action              |
-      | Download            |
-      | Copy                |
-      | Open in Text Editor |
-      | Open in OnlyOffice  |
+      | action      |
+      | Download    |
+      | Copy        |
+      | Text Editor |
+      | OnlyOffice  |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
 
     # check available actions and files preview in the seach result page
@@ -145,20 +145,20 @@ Feature: Secure view
 
     # .txt file
     Then "Brian" should see following actions for file "secureFile.txt"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secureFile.txt"
-      | action              |
-      | Download            |
-      | Copy                |
-      | Open in Text Editor |
-      | Open in OnlyOffice  |
+      | action      |
+      | Download    |
+      | Copy        |
+      | Text Editor |
+      | OnlyOffice  |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
 
     # .jpeg file
     Then "Brian" should see following actions for file "securePhoto.jpeg"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "securePhoto.jpeg"
       | action   |
       | Download |
@@ -168,23 +168,23 @@ Feature: Secure view
 
     # .pdf file
     Then "Brian" should see following actions for file "secure.pdf"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secure.pdf"
-      | action             |
-      | Download           |
-      | Copy               |
-      | Open in PDF Viewer |
+      | action     |
+      | Download   |
+      | Copy       |
+      | PDF Viewer |
     And "Brian" should not see preview for file "secure.pdf"
 
     # .odt file
     Then "Brian" should see following actions for file "secureDocument.odt"
-      | action            |
-      | Open in Collabora |
+      | action    |
+      | Collabora |
     But "Brian" should not see following actions for file "secureDocument.odt"
-      | action             |
-      | Download           |
-      | Copy               |
-      | Open in OnlyOffice |
+      | action     |
+      | Download   |
+      | Copy       |
+      | OnlyOffice |
     And "Brian" should not see preview for file "secureDocument.odt"
     And "Brian" logs out

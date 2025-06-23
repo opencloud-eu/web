@@ -147,8 +147,10 @@ Feature: Integration with Collabora online office
 
 
   Scenario: open the file using the context menu
-    When "Alice" logs in
-    And "Alice" opens file "new.txt" via "collabora" using the context menu
+    Given "Alice" creates the following files into personal space using API
+      | pathToFile | content      |
+      | new.txt    | test content |
+    When "Alice" opens file "new.txt" via "collabora" using the context menu
     Then "Alice" should see the content "test content" in editor "Collabora"
     And "Alice" closes the file viewer
     When "Alice" opens file "new.txt" via "text-editor" using the context menu

@@ -245,7 +245,9 @@ export const openTemplateFile = async ({
   webOffice: string
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-  await page.locator(util.format(contextMenuAction, `Open in ${webOffice}`)).click()
+  const openWith = page.locator(util.format(contextMenuAction, 'Open with...'))
+  await openWith.hover()
+  await page.locator(util.format(contextMenuAction, webOffice)).click()
 }
 
 export const createFileFromTemplate = async ({
@@ -267,6 +269,8 @@ export const createFileFromTemplate = async ({
     return
   } else if (via.startsWith('context')) {
     await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+    const openWith = page.locator(util.format(contextMenuAction, 'Open with...'))
+    await openWith.hover()
     await page.locator(util.format(contextMenuAction, menuItem)).click()
     return
   }
