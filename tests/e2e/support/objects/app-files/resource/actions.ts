@@ -147,6 +147,7 @@ const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
+const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 
 export const clickResource = async ({
   page,
@@ -245,7 +246,8 @@ export const openTemplateFile = async ({
   webOffice: string
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-  await page.locator(util.format(contextMenuAction, `Open in ${webOffice}`)).click()
+  await page.locator(openWithButton).hover()
+  await page.locator(util.format(contextMenuAction, webOffice)).click()
 }
 
 export const createFileFromTemplate = async ({
@@ -267,6 +269,7 @@ export const createFileFromTemplate = async ({
     return
   } else if (via.startsWith('context')) {
     await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+    await page.locator(openWithButton).hover()
     await page.locator(util.format(contextMenuAction, menuItem)).click()
     return
   }
@@ -2280,9 +2283,7 @@ export const openFileViaContextMenu = async ({
   fileViewer: string
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-  const openWith = page.locator(util.format(contextMenuAction, 'Open with...'))
-  await openWith.hover()
-
+  await page.locator(openWithButton).hover()
   const editorItem = page.locator(util.format(openWithAction, fileViewer))
   await expect(editorItem).toBeVisible()
   await editorItem.click()
