@@ -20,6 +20,7 @@
       <template v-for="drop in section.dropItems">
         <action-menu-drop-item
           v-if="drop.items.length"
+          :key="drop.name"
           :menu-section-drop="drop"
           :appearance="appearance"
           :action-options="actionOptions"
