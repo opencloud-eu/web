@@ -247,8 +247,8 @@
           class="resource-table-btn-action-dropdown"
           @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
         >
-          <template #contextMenu>
-            <slot name="contextMenu" :resource="item" />
+          <template #contextMenu="{ isOpen }">
+            <slot name="contextMenu" :resource="item" :is-open="isOpen" />
           </template>
         </context-menu-quick-action>
       </div>
