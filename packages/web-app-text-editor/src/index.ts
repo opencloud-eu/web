@@ -2,10 +2,10 @@ import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
 import TextEditor from './App.vue'
 import {
-  AppMenuItemExtension,
-  AppWrapperRoute,
   ApplicationFileExtension,
   ApplicationInformation,
+  AppMenuItemExtension,
+  AppWrapperRoute,
   defineWebApplication,
   useOpenEmptyEditor,
   useUserStore
@@ -25,40 +25,34 @@ export default defineWebApplication({
       const extensions: ApplicationFileExtension[] = [
         {
           extension: 'txt',
+          mimeType: 'text/plain',
           label: () => $gettext('Plain text file')
         },
+        { extension: 'html', mimeType: 'text/html' },
+        { extension: 'css', mimeType: 'text/css' },
+        { extension: 'js', mimeType: 'text/javascript' },
+        { extension: 'xml', mimeType: 'text/xml' },
+        { extension: 'csv', mimeType: 'text/csv' },
         {
           extension: 'md',
+          mimeType: 'text/markdown',
           label: () => $gettext('Markdown file')
         },
-        {
-          extension: 'markdown',
-          label: () => $gettext('Markdown file')
-        },
-        {
-          extension: 'js',
-          label: () => $gettext('JavaScript file')
-        },
-        {
-          extension: 'json',
-          label: () => $gettext('JSON file')
-        },
-        {
-          extension: 'xml',
-          label: () => $gettext('XML file')
-        },
-        {
-          extension: 'py',
-          label: () => $gettext('Python file')
-        },
-        {
-          extension: 'php',
-          label: () => $gettext('PHP file')
-        },
-        {
-          extension: 'yaml',
-          label: () => $gettext('YAML file')
-        }
+        { extension: 'py', mimeType: 'text/x-python' },
+        { extension: 'c', mimeType: 'text/x-c' },
+        { extension: 'cpp', mimeType: 'text/x-c++' },
+        { extension: 'java', mimeType: 'text/x-java-source' },
+        { extension: 'sh', mimeType: 'text/x-shellscript' },
+        { extension: 'asm', mimeType: 'text/x-asm' },
+        { extension: 'scss', mimeType: 'text/x-scss' },
+        { extension: 'yaml', mimeType: 'text/x-yaml' },
+        { extension: 'json', mimeType: 'text/x-json' },
+        { extension: 'log', mimeType: 'text/x-log' },
+        { extension: 'ics', mimeType: 'text/calendar' },
+        { extension: 'rtf', mimeType: 'text/richtext' },
+        { extension: 'tsv', mimeType: 'text/tab-separated-values' },
+        { extension: 'ts', mimeType: 'text/vnd.trolltech.linguist' },
+        { extension: 'php', mimeType: 'application/x-httpd-php' }
       ]
 
       const config = applicationConfig || {}
@@ -113,6 +107,7 @@ export default defineWebApplication({
       },
       extensions: fileExtensions().map((extensionItem) => {
         return {
+          mimeType: extensionItem.mimeType,
           extension: extensionItem.extension,
           ...(Object.prototype.hasOwnProperty.call(extensionItem, 'newFileMenu') && {
             newFileMenu: extensionItem.newFileMenu

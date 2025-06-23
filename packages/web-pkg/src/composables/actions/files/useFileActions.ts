@@ -184,16 +184,16 @@ export const useFileActions = () => {
               return false
             }
 
-            if (resources[0].extension && fileExtension.extension) {
-              return resources[0].extension.toLowerCase() === fileExtension.extension.toLowerCase()
+            if (resources[0].extension?.toLowerCase() === fileExtension.extension?.toLowerCase()) {
+              return true
             }
 
-            if (resources[0].mimeType && fileExtension.mimeType) {
-              return (
-                resources[0].mimeType.toLowerCase() === fileExtension.mimeType.toLowerCase() ||
-                resources[0].mimeType.split('/')[0].toLowerCase() ===
-                  fileExtension.mimeType.toLowerCase()
-              )
+            if (
+              resources[0].mimeType?.toLowerCase() === fileExtension.mimeType?.toLowerCase() ||
+              resources[0].mimeType?.split('/')[0].toLowerCase() ===
+                fileExtension.mimeType?.toLowerCase()
+            ) {
+              return true
             }
 
             return false
