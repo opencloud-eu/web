@@ -40,8 +40,6 @@ async function LogInUser(this: World, stepUser: string): Promise<void> {
   await page.locator('#web-content').waitFor()
 }
 
-Given('{string} has logged in', LogInUser)
-
 When('{string} logs in', LogInUser)
 
 async function LogOutUser(this: World, stepUser: string): Promise<void> {
@@ -52,8 +50,6 @@ async function LogOutUser(this: World, stepUser: string): Promise<void> {
   canLogout && (await sessionObject.logout())
   await actor.close()
 }
-
-Given('{string} has logged out', LogOutUser)
 
 When('{string} logs out', LogOutUser)
 
