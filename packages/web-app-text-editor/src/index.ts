@@ -57,7 +57,6 @@ export default defineWebApplication({
         { extension: 'log', label: () => $gettext('Log file') },
         { extension: 'ics', label: () => $gettext('Calendar file') },
         { extension: 'rtf', label: () => $gettext('Rich Text Format file') },
-        { extension: 'ts', label: () => $gettext('TypeScript file') },
         { extension: 'dockerfile', label: () => $gettext('Dockerfile') },
         { extension: 'makefile', label: () => $gettext('Makefile') }
       ]
