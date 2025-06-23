@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-18
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-23
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -29,6 +29,10 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v3.25.67 [[#823](https://github.com/opencloud-eu/web/pull/823)]
+- fix(deps): update dependency @vueuse/core to v13.4.0 [[#837](https://github.com/opencloud-eu/web/pull/837)]
+- chore(deps): update pnpm to v10.12.2 [[#842](https://github.com/opencloud-eu/web/pull/842)]
+- fix(deps): update dependency axios to v1.10.0 [[#831](https://github.com/opencloud-eu/web/pull/831)]
 - fix(deps): update dependency zod to v3.25.61 [[#817](https://github.com/opencloud-eu/web/pull/817)]
 - fix(deps): update dependency @sentry/vue to v9.28.0 [[#766](https://github.com/opencloud-eu/web/pull/766)]
 - chore(deps): update pnpm to v10.12.1 [[#809](https://github.com/opencloud-eu/web/pull/809)]
