@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#768](https://github.com/opencloud-eu/web/pull/768)]
 - fix(deps): update vue monorepo to v3.5.17 [[#836](https://github.com/opencloud-eu/web/pull/836)]
 - fix(deps): update dependency @sentry/vue to v9.30.0 [[#818](https://github.com/opencloud-eu/web/pull/818)]
 - fix(deps): update dependency zod to v3.25.67 [[#823](https://github.com/opencloud-eu/web/pull/823)]
