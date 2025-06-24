@@ -94,7 +94,6 @@ config = {
             "skip": False,
             "suites": [
                 "app-provider",
-                "app-provider-onlyOffice",
             ],
             "extraServerEnvironment": {
                 "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
@@ -103,8 +102,22 @@ config = {
                 "NATS_NATS_HOST": "0.0.0.0",
                 "NATS_NATS_PORT": 9233,
                 "COLLABORA_DOMAIN": "collabora:9980",
-                "ONLYOFFICE_DOMAIN": "onlyoffice:443",
                 "FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR": "eu.opencloud.api.collaboration.Collabora",
+                "WEB_UI_CONFIG_FILE": None,
+            },
+        },
+        "app-provider-onlyOffice": {
+            "skip": False,
+            "suites": [
+                "app-provider-onlyOffice",
+            ],
+            "extraServerEnvironment": {
+                "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
+                "MICRO_REGISTRY": "nats-js-kv",
+                "MICRO_REGISTRY_ADDRESS": "0.0.0.0:9233",
+                "NATS_NATS_HOST": "0.0.0.0",
+                "NATS_NATS_PORT": 9233,
+                "ONLYOFFICE_DOMAIN": "onlyoffice:443",
                 "WEB_UI_CONFIG_FILE": None,
             },
         },
@@ -450,7 +463,7 @@ def e2eTests(ctx):
         for item in default:
             params[item] = matrix[item] if item in matrix else default[item]
 
-        if "app-provider" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
+        if "app-provider-onlyOffice" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
             continue
 
         if "ocm" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
@@ -483,17 +496,22 @@ def e2eTests(ctx):
         else:
             steps += restoreOpenCloudCache()
 
-        if "app-provider" in suite:
+        if "app-provider-onlyOffice" in suite:
             environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+            steps += onlyofficeService() + \
+                     waitForServices("onlyOffice", ["onlyoffice:443"]) + \
+                     openCloudService(params["extraServerEnvironment"]) + \
+                     wopiCollaborationService("onlyoffice") + \
+                     waitForServices("wopi", ["wopi-onlyoffice:9300"])
 
-            # app-provider specific steps
+        elif "app-provider" in suite:
+            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
             steps += collaboraService() + \
-                     onlyofficeService() + \
-                     waitForServices("online-offices", ["collabora:9980", "onlyoffice:443"]) + \
+                     waitForServices("collabora", ["collabora:9980"]) + \
                      openCloudService(params["extraServerEnvironment"]) + \
                      wopiCollaborationService("collabora") + \
-                     wopiCollaborationService("onlyoffice") + \
-                     waitForServices("wopi", ["wopi-collabora:9300", "wopi-onlyoffice:9300"])
+                     waitForServices("wopi", ["wopi-collabora:9300"])
+
         elif "ocm" in suite:
             steps += openCloudService(params["extraServerEnvironment"]) + \
                      (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
