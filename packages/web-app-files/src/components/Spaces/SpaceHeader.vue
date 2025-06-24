@@ -20,9 +20,6 @@
         :src="imageContent"
         @click="toggleImageExpanded"
       />
-      <div v-else class="space-header-image-default oc-flex oc-flex-middle oc-flex-center">
-        <oc-icon name="layout-grid" size="xxlarge" class="oc-px-m oc-py-m" />
-      </div>
     </div>
     <div class="space-header-infos">
       <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
@@ -111,19 +108,19 @@
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, Ref, ref, unref, watch } from 'vue'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  useClientService,
+  eventBus,
+  ImageDimension,
   ProcessorType,
-  useResourcesStore,
+  SideBarEventTopics,
   TextEditor,
+  useClientService,
   useFileActions,
   useLoadPreview,
-  useSpacesStore,
-  useSharesStore
+  useResourcesStore,
+  useSharesStore,
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { ImageDimension } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
-import { eventBus } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { storeToRefs } from 'pinia'
@@ -281,14 +278,10 @@ const toggleImageExpanded = () => {
 
 watch(
   computed(() => space.spaceImageData),
-  async (data) => {
-    if (!data) {
-      return
-    }
-    const resource = buildSpaceImageResource(space)
+  async () => {
     imageContent.value = await loadPreview({
       space,
-      resource,
+      resource: space.spaceImageData ? buildSpaceImageResource(space) : space,
       dimensions: ImageDimension.Tile,
       processor: ProcessorType.enum.fit,
       cancelRunning: true,

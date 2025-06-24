@@ -17,12 +17,15 @@
           class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
         />
       </template>
-      <action-menu-drop-item
-        v-if="section.drop && (section.drop.items?.length || section.drop.renderOnEmpty)"
-        :menu-section-drop="section.drop"
-        :appearance="appearance"
-        :action-options="actionOptions"
-      />
+      <template v-for="drop in section.dropItems">
+        <action-menu-drop-item
+          v-if="drop.items.length"
+          :key="drop.name"
+          :menu-section-drop="drop"
+          :appearance="appearance"
+          :action-options="actionOptions"
+        />
+      </template>
     </oc-list>
   </div>
 </template>
@@ -39,14 +42,13 @@ export type MenuSectionDrop = {
   name: string
   icon: string
   items?: Action[]
-  renderOnEmpty?: boolean
   emptyMessage?: string
 }
 
 export type MenuSection = {
   name: string
   items?: Action[]
-  drop?: MenuSectionDrop
+  dropItems?: MenuSectionDrop[]
 }
 
 export default defineComponent({

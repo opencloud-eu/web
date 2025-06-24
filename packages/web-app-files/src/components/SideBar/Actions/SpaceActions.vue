@@ -30,11 +30,13 @@ import {
   SpaceActionOptions,
   useFileActionsDownloadArchive,
   useSpaceActionsDelete,
+  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon
@@ -65,21 +67,25 @@ export default defineComponent({
       spaceImageInput
     })
     const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
+    const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
+    const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
 
     const actions = computed(() =>
       [
         ...unref(downloadArchiveActions),
         ...unref(renameActions),
         ...unref(duplicateActions),
+        ...unref(editReadmeContentActions),
         ...unref(editDescriptionActions),
         ...unref(uploadImageActions),
         ...unref(setSpaceIconActions),
-        ...unref(editReadmeContentActions),
+        ...unref(deleteSpaceImageActions),
         ...unref(editQuotaActions),
         ...unref(restoreActions),
         ...unref(deleteActions),
-        ...unref(disableActions)
+        ...unref(disableActions),
+        ...unref(navigateToTrashActions)
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
 
