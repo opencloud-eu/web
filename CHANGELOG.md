@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: brand color default space image [[#849](https://github.com/opencloud-eu/web/pull/849)]
 - feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
 - feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
 
