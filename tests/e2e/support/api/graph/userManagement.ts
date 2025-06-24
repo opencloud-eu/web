@@ -66,11 +66,9 @@ export const getUserId = async ({ user, admin }: { user: User; admin: User }): P
     path: join('graph', 'v1.0', 'users', user.username),
     user: admin
   })
-  if (response.ok) {
-    const resBody = (await response.json()) as User
-    userId = resBody.id
-  }
-  return userId
+
+  const resBody = (await response.json()) as User
+  return resBody.id
 }
 
 export const createGroup = async ({

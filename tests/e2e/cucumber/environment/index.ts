@@ -250,12 +250,12 @@ const isOcm = (pickle): boolean => {
   store group created from keycloak on store
  */
 const storeKeycloakGroups = async (adminUser: User, usersEnvironment) => {
-  const groups = await api.graph.getGroups(adminUser)
+  // const groups = await api.graph.getGroups(adminUser)
 
-  store.dummyKeycloakGroupStore.forEach((dummyGroup) => {
-    const matchingGroup = groups.find((group) => group.displayName === dummyGroup.displayName)
-    if (matchingGroup) {
-      usersEnvironment.storeCreatedGroup({ group: { ...dummyGroup, uuid: matchingGroup.id } })
-    }
-  })
+  // store.dummyKeycloakGroupStore.forEach((dummyGroup) => {
+  //   const matchingGroup = groups.find((group) => group.displayName === dummyGroup.displayName)
+  //   if (matchingGroup) {
+  //     usersEnvironment.storeCreatedGroup({ group: { ...dummyGroup, uuid: matchingGroup.id } })
+  //   }
+  // })
 }
