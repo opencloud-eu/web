@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-23
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -9,6 +9,11 @@
 ### ✨ Features
 
 - feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
+
+### 📈 Enhancement
+
+- feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
+- feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
 
 ### ✅ Tests
 
@@ -25,10 +30,6 @@
 - fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
 - fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
 - fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
-
-### 📈 Enhancement
-
-- feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
 
 ### 📦️ Dependencies
 
