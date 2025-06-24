@@ -41,7 +41,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
-import { MenuSection } from '@opencloud-eu/web-pkg/src/components/ContextActions/ContextActionMenu.vue'
+import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
