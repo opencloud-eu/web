@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it
 
 ### ✨ Features
 
