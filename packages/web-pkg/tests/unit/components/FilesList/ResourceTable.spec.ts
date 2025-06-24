@@ -46,6 +46,17 @@ vi.mock('../../../../src/composables/actions/files', async (importOriginal) => (
   })
 }))
 
+let spyBus: ReturnType<typeof vi.fn>
+
+vi.mock('@/composables/useEventBus', () => {
+  spyBus = vi.fn()
+  return {
+    useEventBus: () => ({
+      publish: spyBus
+    })
+  }
+})
+
 const router = {
   push: vi.fn(),
   afterEach: vi.fn(),
@@ -443,8 +454,8 @@ describe('ResourceTable', () => {
   describe('resource activation', () => {
     it('emits fileClick upon clicking on a resource name', async () => {
       const { wrapper } = getMountedWrapper()
-      const tr = await wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
-      await tr.trigger('click')
+      const tr = wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
+      await tr.trigger('click', { shiftKey: false })
 
       expect(
         wrapper.emitted<{ resources: Resource[] }[]>('fileClick')[0][0].resources[0].name
@@ -453,8 +464,8 @@ describe('ResourceTable', () => {
 
     it('does not emit fileClick upon clicking on a disabled resource name', async () => {
       const { wrapper } = getMountedWrapper({ addProcessingResources: true })
-      const tr = await wrapper.find('.oc-tbody-tr-rainforest .oc-resource-name')
-      await tr.trigger('click')
+      const tr = wrapper.find('.oc-tbody-tr-rainforest .oc-resource-name')
+      await tr.trigger('click', { shiftKey: false })
 
       expect(wrapper.emitted().fileClick).toBeUndefined()
     })
@@ -464,8 +475,8 @@ describe('ResourceTable', () => {
         isEnabled: computed(() => true)
       })
       const { wrapper } = getMountedWrapper()
-      const tr = await wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
-      await tr.trigger('click')
+      const tr = wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
+      await tr.trigger('click', { shiftKey: false })
       expect(wrapper.emitted().fileClick).toBeUndefined()
     })
 
@@ -480,8 +491,8 @@ describe('ResourceTable', () => {
           }
         ]
       })
-      const tr = await wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
-      await tr.trigger('click')
+      const tr = wrapper.find('.oc-tbody-tr-forest .oc-resource-name')
+      await tr.trigger('click', { shiftKey: false })
       expect(wrapper.emitted().fileClick).toBeUndefined()
     })
   })
@@ -629,7 +640,11 @@ describe('ResourceTable', () => {
         const resource = mock<Resource>({ id: '1', tags: ['1', '2', '3'] })
         const { wrapper } = getMountedWrapper({ props: { resources: [resource] } })
         const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
-        await resourceRow.find('.resource-table-tag-more').trigger('click')
+        await resourceRow.find('.resource-table-tag-more').trigger('click', {
+          shiftKey: false,
+          ctrlKey: false,
+          metaKey: false
+        })
         expect(spyBus).toHaveBeenCalledWith(SideBarEventTopics.open)
       })
     })
