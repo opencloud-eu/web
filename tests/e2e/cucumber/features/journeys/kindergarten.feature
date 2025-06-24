@@ -41,7 +41,7 @@ Feature: Kindergarten can use web to organize a day
     # since we switched to bulk creating of shares with a single dropdown
     And "Alice" shares the following resources using the sidebar panel
       | resource                                           | recipient | type  | role     | resourceType |
-      | groups/Pre-Schools Pirates/meal plan               | Brian     | user  | Can edit | folder       |
+      | groups/non existing               | Brian     | user  | Can edit | folder       |
       | groups/Pre-Schools Pirates/meal plan               | Carol     | user  | Can edit | folder       |
       | groups/Pre-Schools Pirates/meal plan/lorem-big.txt | sales     | group | Can view | file         |
       | groups/Pre-Schools Pirates/meal plan/lorem-big.txt | Carol     | user  | Can view | file         |
