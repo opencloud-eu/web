@@ -8,7 +8,7 @@
     class="oc-resource-link"
     no-hover
     @dragstart.prevent.stop
-    @click="emitClick"
+    @click="(e: MouseEvent) => emitClick(e)"
   >
     <slot />
   </component>
@@ -70,6 +70,9 @@ export default {
   },
   computed: {
     isNavigatable() {
+      if (!this.resource) {
+        return false
+      }
       return (this.resource.isFolder || this.link) && !this.resource.disabled
     },
     componentType() {
@@ -90,15 +93,18 @@ export default {
     }
   },
   methods: {
-    emitClick() {
+    emitClick(e: unknown) {
+      if (!e || typeof (e as MouseEvent).stopPropagation !== 'function') {
+        console.warn('emitClick: Ungültiges Event', e)
+        return
+      }
       if (this.isNavigatable) {
         return
       }
-
       /**
        * Triggered when the resource is a file and the name is clicked
        */
-      this.$emit('click')
+      this.$emit('click', e)
     }
   }
 }

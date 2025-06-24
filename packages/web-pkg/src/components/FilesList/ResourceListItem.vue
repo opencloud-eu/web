@@ -9,7 +9,7 @@
       :link="link"
       :is-resource-clickable="isResourceClickable"
       class="oc-resource-icon-link"
-      @click="handleClick"
+      @click.stop="(e: unknown) => handleClick(e, resource)"
     >
       <oc-image
         v-if="hasThumbnail"
@@ -34,7 +34,7 @@
         :is-resource-clickable="isResourceClickable"
         :link="link"
         class="oc-text-overflow"
-        @click="handleClick"
+        @click.stop="(e: unknown) => handleClick(e, resource)"
       >
         <resource-name
           :key="resource.name"
@@ -206,17 +206,29 @@ export default defineComponent({
   },
 
   methods: {
-    handleClick(e: MouseEvent) {
-      if (e.shiftKey) {
-        e.preventDefault()
-        e.stopPropagation()
-        e.stopImmediatePropagation?.()
+    handleClick(e: unknown, resource: Resource) {
+      //if (!e || typeof e !== 'object' || typeof (e as MouseEvent).stopPropagation !== 'function') {
+      //  return
+      //}
+
+      const event = e as MouseEvent
+
+      if (event.shiftKey) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation?.()
 
         this.$emit('shift-click', this.resource)
         return
       }
 
       this.$emit('click', this.resource)
+    },
+    emitClick() {
+      /**
+       * Triggered when the resource is a file and the name is clicked
+       */
+      this.$emit('click')
     }
   }
 })
