@@ -99,7 +99,7 @@
           </li>
         </template>
       </oc-list>
-      <div v-if="imprintUrl || privacyUrl" class="imprint-footer oc-py-s oc-mt-m oc-text-center">
+      <div v-if="showFooter" class="imprint-footer oc-py-s oc-mt-m oc-text-center">
         <oc-button
           v-if="imprintUrl"
           type="a"
@@ -110,17 +110,18 @@
         >
           <span v-text="$gettext('Imprint')" />
         </oc-button>
-        <span v-if="privacyUrl">·</span>
-        <oc-button
-          v-if="privacyUrl"
-          type="a"
-          appearance="raw"
-          :href="privacyUrl"
-          target="_blank"
-          no-hover
-        >
-          <span v-text="$gettext('Privacy')" />
-        </oc-button>
+        <template v-if="privacyUrl">
+          <span>·</span>
+          <oc-button type="a" appearance="raw" :href="privacyUrl" target="_blank" no-hover>
+            <span v-text="$gettext('Privacy')" />
+          </oc-button>
+        </template>
+        <template v-if="accessibilityUrl">
+          <span>·</span>
+          <oc-button type="a" appearance="raw" :href="accessibilityUrl" target="_blank" no-hover>
+            <span v-text="$gettext('Accessibility')" />
+          </oc-button>
+        </template>
       </div>
     </oc-drop>
   </nav>
@@ -132,11 +133,11 @@ import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
   routeToContextQuery,
   useAuthService,
+  UserAvatar,
   useRoute,
   useSpacesStore,
   useThemeStore,
-  useUserStore,
-  UserAvatar
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
@@ -169,6 +170,11 @@ export default defineComponent({
 
     const imprintUrl = computed(() => themeStore.currentTheme.urls.imprint)
     const privacyUrl = computed(() => themeStore.currentTheme.urls.privacy)
+    const accessibilityUrl = computed(() => themeStore.currentTheme.urls.accessibility)
+
+    const showFooter = computed(() => {
+      return !!(unref(imprintUrl) || unref(privacyUrl) || unref(accessibilityUrl))
+    })
 
     const quota = computed(() => {
       return spacesStore.personalSpace?.spaceQuota
@@ -180,6 +186,8 @@ export default defineComponent({
       loginLink,
       imprintUrl,
       privacyUrl,
+      accessibilityUrl,
+      showFooter,
       quota,
       logout
     }
