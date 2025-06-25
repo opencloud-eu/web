@@ -110,28 +110,18 @@
         >
           <span v-text="$gettext('Imprint')" />
         </oc-button>
-        <span v-if="privacyUrl">·</span>
-        <oc-button
-          v-if="privacyUrl"
-          type="a"
-          appearance="raw"
-          :href="privacyUrl"
-          target="_blank"
-          no-hover
-        >
-          <span v-text="$gettext('Privacy')" />
-        </oc-button>
-        <span v-if="accessibilityUrl">·</span>
-        <oc-button
-          v-if="accessibilityUrl"
-          type="a"
-          appearance="raw"
-          :href="accessibilityUrl"
-          target="_blank"
-          no-hover
-        >
-          <span v-text="$gettext('Accessibility')" />
-        </oc-button>
+        <template v-if="privacyUrl">
+          <span>·</span>
+          <oc-button type="a" appearance="raw" :href="privacyUrl" target="_blank" no-hover>
+            <span v-text="$gettext('Privacy')" />
+          </oc-button>
+        </template>
+        <template v-if="accessibilityUrl">
+          <span>·</span>
+          <oc-button type="a" appearance="raw" :href="accessibilityUrl" target="_blank" no-hover>
+            <span v-text="$gettext('Accessibility')" />
+          </oc-button>
+        </template>
       </div>
     </oc-drop>
   </nav>
