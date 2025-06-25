@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.32.0 [[#860](https://github.com/opencloud-eu/web/pull/860)]
 - fix(deps): update dependency @vitejs/plugin-vue to v6 [[#854](https://github.com/opencloud-eu/web/pull/854)]
 - chore(deps): update dependency vite-plugin-static-copy to v3.1.0 [[#862](https://github.com/opencloud-eu/web/pull/862)]
 - chore(deps): update node.js to v22.17.0 [[#857](https://github.com/opencloud-eu/web/pull/857)]
