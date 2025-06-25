@@ -13,10 +13,10 @@ const CommonSection = z.object({
   logo: z.string().optional(),
   urls: z
     .object({
-      accessDeniedHelp: z.string(),
-      imprint: z.string(),
-      privacy: z.string(),
-      accessibility: z.string()
+      accessDeniedHelp: z.string().optional(),
+      imprint: z.string().optional(),
+      privacy: z.string().optional(),
+      accessibility: z.string().optional()
     })
     .optional(),
   shareRoles: z
