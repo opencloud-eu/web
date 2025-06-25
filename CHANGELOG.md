@@ -36,6 +36,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.17.0 [[#857](https://github.com/opencloud-eu/web/pull/857)]
+- chore(deps): update pnpm to v10.12.3 [[#855](https://github.com/opencloud-eu/web/pull/855)]
 - fix(deps): update dependency @sentry/vue to v9.31.0 [[#850](https://github.com/opencloud-eu/web/pull/850)]
 - fix(deps): update uppy monorepo [[#720](https://github.com/opencloud-eu/web/pull/720)]
 - chore(deps): update devdependencies (non-major) [[#768](https://github.com/opencloud-eu/web/pull/768)]
