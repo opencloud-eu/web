@@ -40,7 +40,7 @@
 import ActionMenuItem from './ActionMenuItem.vue'
 import { AppearanceType, uniqueId } from '@opencloud-eu/design-system/helpers'
 import type { ActionOptions } from '../../composables'
-import type { MenuSectionDrop } from './ContextActionMenu.vue'
+import { MenuSectionDrop } from './types'
 
 const { menuSectionDrop, appearance, actionOptions } = defineProps<{
   menuSectionDrop: MenuSectionDrop

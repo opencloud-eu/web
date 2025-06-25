@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import ContextActionMenu, { MenuSection } from '../ContextActions/ContextActionMenu.vue'
+import ContextActionMenu from '../ContextActions/ContextActionMenu.vue'
 import { computed, defineComponent, PropType, Ref, toRef, unref } from 'vue'
 import {
   ActionExtension,
@@ -32,6 +32,7 @@ import {
 } from '../../composables'
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
+import { MenuSection } from '../ContextActions'
 
 export default defineComponent({
   name: 'ContextActions',

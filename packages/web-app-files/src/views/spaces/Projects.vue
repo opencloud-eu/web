@@ -107,8 +107,9 @@
                 <oc-icon name="group" fill-type="line" />
               </oc-button>
             </template>
-            <template #contextMenu="{ resource }">
+            <template #contextMenu="{ resource, isOpen }">
               <space-context-actions
+                v-if="isOpen && isResourceInSelection(resource)"
                 :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
@@ -223,7 +224,8 @@ const {
   scrollToResourceFromRoute,
   areResourcesLoading,
   selectedResourcesIds,
-  selectedResources
+  selectedResources,
+  isResourceInSelection
 } = useResourcesViewDefaults({ loadResourcesTask })
 
 let loadPreviewToken: string = null

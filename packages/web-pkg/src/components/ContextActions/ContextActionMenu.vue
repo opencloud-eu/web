@@ -33,23 +33,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
-import { Action, ActionOptions } from '../../composables'
+import { ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
-
-export type MenuSectionDrop = {
-  label: string
-  name: string
-  icon: string
-  items?: Action[]
-  emptyMessage?: string
-}
-
-export type MenuSection = {
-  name: string
-  items?: Action[]
-  dropItems?: MenuSectionDrop[]
-}
+import { MenuSection } from './types'
 
 export default defineComponent({
   name: 'ContextActionMenu',

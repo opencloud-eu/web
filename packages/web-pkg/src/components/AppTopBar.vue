@@ -94,7 +94,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, unref } from 'vue'
-import ContextActionMenu, { MenuSection } from './ContextActions/ContextActionMenu.vue'
+import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
 import {
   Action,
@@ -107,6 +107,7 @@ import {
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { Duration } from 'luxon'
+import { MenuSection } from './ContextActions'
 
 export default defineComponent({
   name: 'AppTopBar',
@@ -218,12 +219,14 @@ export default defineComponent({
 
 .app-topbar-action {
   color: var(--oc-role-on-chrome) !important;
+
   svg {
     fill: var(--oc-role-on-chrome) !important;
   }
 
   &:hover:not(:disabled) {
     color: var(--oc-role-on-surface) !important;
+
     svg {
       fill: var(--oc-role-on-surface) !important;
     }

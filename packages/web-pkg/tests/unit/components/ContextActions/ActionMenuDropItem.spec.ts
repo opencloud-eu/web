@@ -1,7 +1,7 @@
 import ActionMenuDropItem from '../../../../src/components/ContextActions/ActionMenuDropItem.vue'
 import { Action } from '../../../../src/composables/actions'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import { MenuSectionDrop } from '../../../../src/components/ContextActions/ContextActionMenu.vue'
+import { MenuSectionDrop } from '../../../../src/components/ContextActions'
 
 describe('ActionMenuDropItem component', () => {
   it('renders drop menu with actions', () => {
