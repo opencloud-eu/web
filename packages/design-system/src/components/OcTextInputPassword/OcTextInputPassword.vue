@@ -147,7 +147,11 @@ const focus = () => {
   unref(passwordInput).focus()
 }
 
-defineExpose({ focus })
+const select = () => {
+  unref(passwordInput).select()
+}
+
+defineExpose({ focus, select })
 
 watch(password, (value) => {
   if (!Object.keys(passwordPolicy).length) {
