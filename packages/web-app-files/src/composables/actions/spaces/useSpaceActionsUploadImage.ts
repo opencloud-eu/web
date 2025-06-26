@@ -26,7 +26,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
 
   const showModalImageSpace = (event: InputEvent) => {
     const file = (event.currentTarget as HTMLInputElement).files[0]
-    unref(spaceImageInput).value = ''
+    ;(event.currentTarget as HTMLInputElement).value = ''
 
     dispatchModal({
       title: $gettext('Crop your Space image'),
