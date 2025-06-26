@@ -165,7 +165,11 @@ AfterAll(async () => {
   // move failed tracing reports
   const failedDir = path.dirname(config.tracingReportDir) + '/failed'
   if (fs.existsSync(failedDir)) {
-    fs.renameSync(failedDir, config.tracingReportDir)
+    fs.mkdirSync(config.tracingReportDir, { recursive: true })
+    fs.readdirSync(failedDir).forEach((file) => {
+      fs.renameSync(failedDir + '/' + file, config.tracingReportDir + '/' + file)
+    })
+    fs.rmSync(failedDir, { recursive: true })
   }
 })
 
