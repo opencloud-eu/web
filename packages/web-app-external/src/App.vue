@@ -28,7 +28,16 @@
 
 <script setup lang="ts">
 import { stringify } from 'qs'
-import { computed, unref, nextTick, ref, watch, onMounted, useTemplateRef, onUnmounted } from 'vue'
+import {
+  computed,
+  unref,
+  nextTick,
+  ref,
+  watch,
+  onMounted,
+  useTemplateRef,
+  onBeforeUnmount
+} from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -195,9 +204,7 @@ const determineOpenAsPreview = (appName: string) => {
   return openAsPreview === true || (Array.isArray(openAsPreview) && openAsPreview.includes(appName))
 }
 
-const isCollabora = computed(() => {
-  return unref(appName)?.toLowerCase()?.startsWith('collabora')
-})
+const isCollabora = unref(appName)?.toLowerCase()?.startsWith('collabora')
 
 // switch to write mode when edit is clicked
 const catchClickMicrosoftEdit = (event: MessageEvent) => {
@@ -297,13 +304,13 @@ onMounted(() => {
     window.removeEventListener('message', catchClickMicrosoftEdit)
   }
 
-  if (unref(isCollabora)) {
+  if (isCollabora) {
     window.addEventListener('message', handlePostMessagesCollabora)
   }
 })
-onUnmounted(() => {
+onBeforeUnmount(() => {
   window.removeEventListener('message', catchClickMicrosoftEdit)
-  if (unref(isCollabora)) {
+  if (isCollabora) {
     window.removeEventListener('message', handlePostMessagesCollabora)
   }
 })
@@ -320,7 +327,7 @@ const postMessageToCollabora = (messageId: string, values?: { [key: string]: unk
       SendTime: Date.now(),
       ...(values && { Values: values })
     }),
-    configStore.serverUrl
+    '*'
   )
 }
 
