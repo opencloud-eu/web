@@ -7,7 +7,6 @@ export function useToggleTile(data: [Resource, MouseEvent | KeyboardEvent], even
   const eventData = data[1]
 
   if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
-    console.log('Shift-click intercepted, no action taken.')
     return
   }
 

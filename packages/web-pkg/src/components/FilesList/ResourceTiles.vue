@@ -290,7 +290,6 @@ const getRoute = (resource: Resource) => {
 }
 const emitTileClick = (resource: Resource, event?: MouseEvent) => {
   if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
-    console.log('Shift-click intercepted, no action taken.')
     return
   }
 
@@ -314,7 +313,6 @@ const showContextMenuOnBtnClick = (
   const { dropdown, event } = data
 
   if (event && useInterceptShiftClick(event as MouseEvent, item)) {
-    console.log('Shift-click intercepted, no action taken.')
     return
   }
 
@@ -432,7 +430,6 @@ const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseE
   const eventData = data[1]
 
   if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
-    console.log('Shift-click intercepted, no action taken.')
     return
   }
 
