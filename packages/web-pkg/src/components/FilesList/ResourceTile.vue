@@ -62,7 +62,7 @@
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click="handleClick"
+              @click="$emit('click')"
             />
           </div>
           <div class="oc-flex oc-flex-middle">
