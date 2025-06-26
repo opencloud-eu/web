@@ -10,6 +10,15 @@
 
 - feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
 
+### 🐛 Bug Fixes
+
+- fix: upload space image broken [[#866](https://github.com/opencloud-eu/web/pull/866)]
+- fix: context actions types [[#856](https://github.com/opencloud-eu/web/pull/856)]
+- fix: open with context menu initial state [[#844](https://github.com/opencloud-eu/web/pull/844)]
+- fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
+- fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
+- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
 ### 📈 Enhancement
 
 - feat: add accessibility config ling to user menu footer section [[#861](https://github.com/opencloud-eu/web/pull/861)]
@@ -17,14 +26,6 @@
 - feat: brand color default space image [[#849](https://github.com/opencloud-eu/web/pull/849)]
 - feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
 - feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
-
-### 🐛 Bug Fixes
-
-- fix: context actions types [[#856](https://github.com/opencloud-eu/web/pull/856)]
-- fix: open with context menu initial state [[#844](https://github.com/opencloud-eu/web/pull/844)]
-- fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
-- fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
-- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
 
 ### ✅ Tests
 
