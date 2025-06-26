@@ -95,7 +95,6 @@ export default {
   methods: {
     emitClick(e: unknown) {
       if (!e || typeof (e as MouseEvent).stopPropagation !== 'function') {
-        console.warn('emitClick: Ungültiges Event', e)
         return
       }
       if (this.isNavigatable) {
