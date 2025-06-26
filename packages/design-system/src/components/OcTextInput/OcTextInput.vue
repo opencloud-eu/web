@@ -295,6 +295,9 @@ const onFocus = async (target: HTMLInputElement) => {
   emit('focus', target.value)
 }
 const setSelection = () => {
+  if (!unref(inputRef)) {
+    return
+  }
   if (selectionRange && selectionRange.length > 1) {
     unref(inputRef).setSelectionRange(selectionRange[0], selectionRange[1])
   } else {
@@ -304,9 +307,6 @@ const setSelection = () => {
 watch(
   [() => selectionRange, inputRef],
   async () => {
-    if (!unref(inputRef)) {
-      return
-    }
     await nextTick()
     setSelection()
   },
