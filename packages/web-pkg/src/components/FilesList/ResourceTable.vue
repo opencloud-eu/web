@@ -146,14 +146,7 @@
         v-if="item.tags.length > 2"
         size="small"
         class="resource-table-tag-more"
-        @click.stop="
-          (e: MouseEvent) => {
-            if (useInterceptShiftClick(e, item)) {
-              return
-            }
-            openTagsSidebar
-          }
-        "
+        @click="openTagsSidebar()"
       >
         + {{ item.tags.length - 2 }}
       </oc-tag>
