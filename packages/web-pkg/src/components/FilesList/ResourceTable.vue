@@ -97,8 +97,7 @@
             getParentFolderLinkIconAdditionalAttributes(item)
           "
           :class="{ 'resource-table-resource-cut': isResourceCut(item) }"
-          @click.stop="(e: MouseEvent) => emitFileClick(item, e)"
-          @shift-click="(r: Resource) => emitFileClick(r)"
+          @click="emitFileClick(item)"
         />
         <oc-button
           v-if="hasRenameAction(item)"
