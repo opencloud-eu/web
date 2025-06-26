@@ -51,7 +51,7 @@ export const useIsResourceNameValid = () => {
       return { isValid: false, error: $gettext(translated, { name: newName }, true) }
     }
 
-    return { isValid: true }
+    return { isValid: true, error: undefined }
   }
 
   return {

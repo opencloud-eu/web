@@ -58,7 +58,7 @@ import {
   useModals,
   useRouter
 } from '@opencloud-eu/web-pkg'
-import SaveAsModal from './components/SaveAsModal.vue'
+import FileNameModal from './components/FileNameModal.vue'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -220,8 +220,11 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
     if (message.MessageId === 'UI_SaveAs') {
       if (Object.hasOwn(message.Values, 'format')) {
         dispatchModal({
-          title: $gettext('Export as'),
-          customComponent: SaveAsModal,
+          title: $gettext('Export %{name} as %{format}', {
+            name: resource.name,
+            format: message.Values.format
+          }),
+          customComponent: FileNameModal,
           customComponentAttrs: () => ({
             space,
             resource,
@@ -238,8 +241,8 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
       }
 
       dispatchModal({
-        title: $gettext('Save as'),
-        customComponent: SaveAsModal,
+        title: $gettext('Save %{name} with new name', { name: resource.name }),
+        customComponent: FileNameModal,
         customComponentAttrs: () => ({
           space,
           resource,
@@ -317,7 +320,7 @@ const postMessageToCollabora = (messageId: string, values?: { [key: string]: unk
       SendTime: Date.now(),
       ...(values && { Values: values })
     }),
-    '*'
+    configStore.serverUrl
   )
 }
 

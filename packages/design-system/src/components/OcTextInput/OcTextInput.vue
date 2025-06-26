@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, useAttrs, useTemplateRef, unref } from 'vue'
+import { computed, nextTick, useAttrs, useTemplateRef, unref, watch } from 'vue'
 import { uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -291,12 +291,27 @@ const onInput = (value: string) => {
 
 const onFocus = async (target: HTMLInputElement) => {
   await nextTick()
-  target.select()
-  if (selectionRange && selectionRange.length > 1) {
-    target.setSelectionRange(selectionRange[0], selectionRange[1])
-  }
+  setSelection()
   emit('focus', target.value)
 }
+const setSelection = () => {
+  if (selectionRange && selectionRange.length > 1) {
+    unref(inputRef).setSelectionRange(selectionRange[0], selectionRange[1])
+  } else {
+    unref(inputRef).select()
+  }
+}
+watch(
+  [() => selectionRange, inputRef],
+  async () => {
+    if (!unref(inputRef)) {
+      return
+    }
+    await nextTick()
+    setSelection()
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="scss">
