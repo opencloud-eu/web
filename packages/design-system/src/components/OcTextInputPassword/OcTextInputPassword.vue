@@ -151,7 +151,11 @@ const select = () => {
   unref(passwordInput).select()
 }
 
-defineExpose({ focus, select })
+const setSelectionRange = (start: number, end: number) => {
+  unref(passwordInput).setSelectionRange(start, end)
+}
+
+defineExpose({ focus, select, setSelectionRange })
 
 watch(password, (value) => {
   if (!Object.keys(passwordPolicy).length) {

@@ -77,12 +77,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, useAttrs, useTemplateRef, unref, watch } from 'vue'
-import { uniqueId } from '../../helpers'
+import { computed, nextTick, unref, useAttrs, useTemplateRef, watch } from 'vue'
+import { PasswordPolicy, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInputPassword from '../OcTextInputPassword/OcTextInputPassword.vue'
-import { PasswordPolicy } from '../../helpers'
 import { PortalTarget } from 'portal-vue'
 
 defineOptions({
@@ -167,18 +166,22 @@ export interface Emits {
    * @docs Emitted when the value of the input has changed after the user confirms or leaves the focus.
    */
   (e: 'change', value: string): void
+
   /**
    * @docs Emitted when the value of the input has updated.
    */
   (e: 'update:modelValue', value: string): void
+
   /**
    * @docs Emitted when the input has been focused.
    */
   (e: 'focus', value: string): void
+
   /**
    * @docs Emitted when the password challenge has been completed successfully.
    */
   (e: 'passwordChallengeCompleted'): void
+
   /**
    * @docs Emitted when the password challenge has failed.
    */
@@ -291,24 +294,23 @@ const onInput = (value: string) => {
 
 const onFocus = async (target: HTMLInputElement) => {
   await nextTick()
-  setSelection()
+  unref(inputRef).select()
+  setSelectionRange()
   emit('focus', target.value)
 }
-const setSelection = () => {
-  if (!unref(inputRef)) {
-    return
-  }
+const setSelectionRange = () => {
   if (selectionRange && selectionRange.length > 1) {
     unref(inputRef).setSelectionRange(selectionRange[0], selectionRange[1])
-  } else {
-    unref(inputRef).select()
   }
 }
 watch(
   [() => selectionRange, inputRef],
   async () => {
+    if (!unref(inputRef)) {
+      return
+    }
     await nextTick()
-    setSelection()
+    setSelectionRange()
   },
   { immediate: true }
 )
