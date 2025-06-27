@@ -22,7 +22,7 @@
 
 ### 📈 Enhancement
 
-- feat: add accessibility config ling to user menu footer section [[#861](https://github.com/opencloud-eu/web/pull/861)]
+- feat: add accessibility config link to user menu footer section [[#861](https://github.com/opencloud-eu/web/pull/861)]
 - feat: add context menu action to remove space image [[#829](https://github.com/opencloud-eu/web/pull/829)]
 - feat: brand color default space image [[#849](https://github.com/opencloud-eu/web/pull/849)]
 - feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
