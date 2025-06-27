@@ -1,0 +1,60 @@
+import { Resource } from '@opencloud-eu/web-client'
+import { useGettext } from 'vue3-gettext'
+import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
+import { useResourcesStore } from '../../piniaStores'
+
+export const useIsResourceNameValid = () => {
+  const { $gettext } = useGettext()
+  const resourcesStore = useResourcesStore()
+
+  const isFileNameValid = (
+    resource: Resource,
+    newName: string,
+    parentResources: Resource[] = undefined
+  ): { isValid: boolean; error?: string } => {
+    if (!newName) {
+      return { isValid: false, error: $gettext('The name cannot be empty') }
+    }
+
+    if (/[/]/.test(newName)) {
+      return { isValid: false, error: $gettext('The name cannot contain "/"') }
+    }
+
+    if (newName === '.') {
+      return { isValid: false, error: $gettext('The name cannot be equal to "."') }
+    }
+
+    if (newName === '..') {
+      return { isValid: false, error: $gettext('The name cannot be equal to ".."') }
+    }
+
+    if (newName.trim() !== newName) {
+      return { isValid: false, error: $gettext('The name cannot start or end with whitespace') }
+    }
+
+    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+      return {
+        isValid: false,
+        error: $gettext('The name cannot be longer than %{length} characters', {
+          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+        })
+      }
+    }
+
+    const newPath =
+      resource.path.substring(0, resource.path.length - resource.name.length) + newName
+    const exists = (parentResources || resourcesStore.resources).some(
+      (file) => file.path === newPath && file.name === newName
+    )
+    if (exists) {
+      const translated = $gettext('The name "%{name}" is already taken')
+      return { isValid: false, error: $gettext(translated, { name: newName }, true) }
+    }
+
+    return { isValid: true, error: undefined }
+  }
+
+  return {
+    isFileNameValid
+  }
+}

@@ -17,7 +17,7 @@ import {
 import { ApplicationFileExtension } from '../../../apps'
 import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
+import { useIsResourceNameValid } from '../helpers'
 
 export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -33,45 +33,11 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
   const resourcesStore = useResourcesStore()
   const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(resourcesStore)
 
+  const { isFileNameValid } = useIsResourceNameValid()
+
   const appNewFileMenuExtensions = computed(() =>
     appsStore.fileExtensions.filter(({ newFileMenu }) => !!newFileMenu)
   )
-
-  const getNameErrorMsg = (fileName: string) => {
-    if (fileName === '') {
-      return $gettext('File name cannot be empty')
-    }
-
-    if (/[/]/.test(fileName)) {
-      return $gettext('File name cannot contain "/"')
-    }
-
-    if (fileName === '.') {
-      return $gettext('File name cannot be equal to "."')
-    }
-
-    if (fileName === '..') {
-      return $gettext('File name cannot be equal to ".."')
-    }
-
-    if (/\s+$/.test(fileName)) {
-      return $gettext('File name cannot end with whitespace')
-    }
-
-    if (fileName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
-      return $gettext('File name cannot be longer than %{length} characters', {
-        length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
-      })
-    }
-
-    const exists = unref(resources).find((file) => file.name === fileName)
-
-    if (exists) {
-      return $gettext('%{name} already exists', { name: fileName }, true)
-    }
-
-    return null
-  }
 
   const openFile = (resource: Resource, appFileExtension: ApplicationFileExtension) => {
     resourcesStore.upsertResource(resource)
@@ -145,8 +111,16 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
           })
         }
       },
-      onInput: (name, setError) =>
-        setError(getNameErrorMsg(areFileExtensionsShown.value ? name : `${name}.${extension}`))
+      onInput: (name: string, setError: (error: string) => void) => {
+        const newFileName = areFileExtensionsShown.value ? name : `${name}.${extension}`
+        const resource = {
+          path: join(unref(currentFolder).path, newFileName),
+          name: newFileName,
+          extension
+        } as Resource
+        const { isValid, error } = isFileNameValid(resource, newFileName)
+        setError(isValid ? null : error)
+      }
     })
   }
 
@@ -188,7 +162,6 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
   return {
     actions,
-    getNameErrorMsg,
     openFile
   }
 }
