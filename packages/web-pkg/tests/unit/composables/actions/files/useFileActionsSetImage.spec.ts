@@ -25,33 +25,6 @@ describe('setImage', () => {
         }
       })
     })
-    it('should be false when mimeType is not image', () => {
-      const space = mock<SpaceResource>({ canEditImage: () => true })
-      getWrapper({
-        setup: ({ actions }) => {
-          expect(
-            unref(actions)[0].isVisible({
-              space,
-              resources: [{ id: '1', mimeType: 'text/plain' }] as Resource[]
-            })
-          ).toBe(false)
-        },
-        isMimetypeSupported: false
-      })
-    })
-    it('should be true when the mimeType is image', () => {
-      const space = mock<SpaceResource>({ canEditImage: () => true })
-      getWrapper({
-        setup: ({ actions }) => {
-          expect(
-            unref(actions)[0].isVisible({
-              space,
-              resources: [{ id: '1', mimeType: 'image/png' }] as Resource[]
-            })
-          ).toBe(true)
-        }
-      })
-    })
     it('should be false when canEditImage is false', () => {
       const space = mock<SpaceResource>({ canEditImage: () => false })
       getWrapper({
@@ -92,8 +65,7 @@ describe('setImage', () => {
 })
 
 function getWrapper({
-  setup,
-  isMimetypeSupported = true
+  setup
 }: {
   setup: (
     instance: ReturnType<typeof useFileActionsSetImage>,
@@ -101,7 +73,6 @@ function getWrapper({
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-  isMimetypeSupported?: boolean
 }) {
   vi.mocked(useSpaceHelpers).mockReturnValue({
     getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
