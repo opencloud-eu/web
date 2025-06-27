@@ -315,6 +315,7 @@ export function buildSpaceImageResource(space: SpaceResource): Resource {
     mimeType: space.spaceImageData.file.mimeType,
     type: 'file',
     webDavPath: urlJoin(space.webDavPath, '.space', space.spaceImageData.name),
+    hasPreview: () => true,
     canDownload: () => true
   } as Resource
 }

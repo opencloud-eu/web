@@ -41,6 +41,7 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string | undefined> {
     const { space, resource } = options
+    console.log(resource)
     const resourceSupportsPreview =
       resource.type !== 'folder' &&
       resource.extension &&
