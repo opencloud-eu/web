@@ -1422,15 +1422,6 @@ def postgresService():
 def ldapService():
     return [
         {
-            "name": "generate-ldap-certs",
-            "image": OC_CI_NODEJS,
-            "commands": [
-                "mkdir -p ldap-certs",
-                "openssl req -x509 -newkey rsa:2048 -keyout ldap-certs/openldap.key -out ldap-certs/openldap.crt -nodes -days 365 -subj '/CN=ldap-server'",
-                "chmod -R 777 ldap-certs",
-            ],
-        },
-        {
             "name": "ldap-server",
             "image": OPENLDAP,
             "detach": True,
@@ -1448,8 +1439,6 @@ def ldapService():
                 "mkdir -p /opt/bitnami/openldap/share",
                 "mkdir -p /tmp/custom-scripts",
                 "mkdir -p /tmp/ldif-files",
-                "cp ldap-certs/openldap.crt /opt/bitnami/openldap/share/",
-                "cp ldap-certs/openldap.key /opt/bitnami/openldap/share/",
                 "cp tests/woodpecker/ldap/*.ldif /tmp/ldif-files/",
                 "cp tests/woodpecker/ldap/docker-entrypoint-override.sh /tmp/custom-scripts/",
                 "chmod +x /tmp/custom-scripts/docker-entrypoint-override.sh",
@@ -1470,7 +1459,7 @@ def keycloakService():
                "commands": [
                    "mkdir -p keycloak-certs",
                    "openssl req -x509 -newkey rsa:2048 -keyout keycloak-certs/keycloakkey.pem -out keycloak-certs/keycloakcrt.pem -nodes -days 365 -subj '/CN=keycloak'",
-                   "chmod -R 777 keycloak-certs",
+                   "chmod -R 755 keycloak-certs",
                ],
            }] + waitForServices("postgres", ["postgres:5432"]) + \
            [{
