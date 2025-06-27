@@ -11,6 +11,16 @@
 - feat: Collabora Save As and Export [[#859](https://github.com/opencloud-eu/web/pull/859)]
 - feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
 
+### ✅ Tests
+
+- setup opencloud-keycloak-ldap setup. fix test after changing space template image [[#851](https://github.com/opencloud-eu/web/pull/851)]
+- [full-ci] detect and delete unused steps [[#840](https://github.com/opencloud-eu/web/pull/840)]
+- [full-ci] fix app-provider tests [[#843](https://github.com/opencloud-eu/web/pull/843)]
+- delete logo steps [[#834](https://github.com/opencloud-eu/web/pull/834)]
+- open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
+- A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
+- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
+
 ### 🐛 Bug Fixes
 
 - fix: upload space image broken [[#866](https://github.com/opencloud-eu/web/pull/866)]
@@ -27,15 +37,6 @@
 - feat: brand color default space image [[#849](https://github.com/opencloud-eu/web/pull/849)]
 - feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
 - feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
-
-### ✅ Tests
-
-- [full-ci] detect and delete unused steps [[#840](https://github.com/opencloud-eu/web/pull/840)]
-- [full-ci] fix app-provider tests [[#843](https://github.com/opencloud-eu/web/pull/843)]
-- delete logo steps [[#834](https://github.com/opencloud-eu/web/pull/834)]
-- open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
-- A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
-- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
 
 ### 📦️ Dependencies
 
