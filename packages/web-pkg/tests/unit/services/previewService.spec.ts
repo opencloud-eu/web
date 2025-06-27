@@ -5,9 +5,9 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { AxiosResponse } from 'axios'
 import {
   useAuthStore,
-  useUserStore,
   useCapabilityStore,
-  useConfigStore
+  useConfigStore,
+  useUserStore
 } from '../../../src/composables/piniaStores'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
@@ -59,6 +59,26 @@ describe('PreviewService', () => {
       })
       expect(preview).toEqual(undefined)
     })
+    it('does not load preview if "hasPreview" is false', async () => {
+      const objectUrl = 'objectUrl'
+      const supportedMimeTypes = ['image/png']
+      const { previewService } = getWrapper({
+        supportedMimeTypes,
+        version: '1'
+      })
+      window.URL.createObjectURL = vi.fn().mockImplementation(() => objectUrl)
+      const preview = await previewService.loadPreview({
+        space: mock<SpaceResource>(),
+        resource: mock<Resource>({
+          mimeType: supportedMimeTypes[0],
+          webDavPath: '/',
+          etag: '',
+          canDownload: () => true,
+          hasPreview: () => false
+        })
+      })
+      expect(preview).toEqual(undefined)
+    })
     it.each([425, 429])('retries when the server returns a %s status code', async (status) => {
       const supportedMimeTypes = ['image/png']
       const { previewService, clientService } = getWrapper({
@@ -78,6 +98,7 @@ describe('PreviewService', () => {
           mimeType: supportedMimeTypes[0],
           webDavPath: '/',
           etag: '',
+          hasPreview: () => true,
           canDownload: () => true
         })
       })
@@ -98,6 +119,7 @@ describe('PreviewService', () => {
             mimeType: supportedMimeTypes[0],
             webDavPath: '/',
             etag: '',
+            hasPreview: () => true,
             canDownload: () => true
           })
         })
@@ -115,6 +137,7 @@ describe('PreviewService', () => {
           mimeType: supportedMimeTypes[0],
           webDavPath: '/',
           etag: '',
+          hasPreview: () => true,
           canDownload: () => true
         })
         window.URL.createObjectURL = vi.fn().mockImplementation(() => objectUrl)
@@ -146,6 +169,7 @@ describe('PreviewService', () => {
             mimeType: supportedMimeTypes[0],
             downloadURL,
             etag: '',
+            hasPreview: () => true,
             canDownload: () => true
           })
         })
