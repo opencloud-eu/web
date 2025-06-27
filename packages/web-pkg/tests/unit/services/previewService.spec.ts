@@ -208,8 +208,7 @@ const getWrapper = ({
       configStore,
       clientService,
       userStore,
-      authStore,
-      capabilityStore
+      authStore
     }),
     clientService
   }

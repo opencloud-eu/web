@@ -70,6 +70,7 @@ export interface Resource {
   remoteItemId?: string
   remoteItemPath?: string
 
+  hasPreview?(): boolean
   canCreate?(): boolean
   canUpload?({ user }: { user?: User }): boolean
   canDownload?(): boolean
