@@ -91,6 +91,7 @@ const DavPropertyMapping = {
   Highlights: defString('highlights' as const),
   MetaPathForUser: defString('meta-path-for-user' as const),
   RemoteItemId: defString('remote-item-id' as const),
+  HasPreview: defString('has-preview' as const),
 
   ShareId: defString('shareid' as const),
   ShareRoot: defString('shareroot' as const),
@@ -148,7 +149,8 @@ export abstract class DavProperties {
     DavProperty.Audio,
     DavProperty.Location,
     DavProperty.Image,
-    DavProperty.Photo
+    DavProperty.Photo,
+    DavProperty.HasPreview
   ]
 
   static readonly PublicLink: DavPropertyValue[] = DavProperties.Default.concat([

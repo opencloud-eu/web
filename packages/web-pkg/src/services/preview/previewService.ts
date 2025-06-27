@@ -4,9 +4,7 @@ import { ClientService } from '../client'
 import { encodePath } from '../../utils'
 import { isPublicSpaceResource } from '@opencloud-eu/web-client'
 import { BuildQueryStringOptions, LoadPreviewOptions } from '.'
-import { AuthStore, CapabilityStore, ConfigStore, UserStore } from '../../composables'
-
-// @ts-ignore
+import { AuthStore, ConfigStore, UserStore } from '../../composables' // @ts-ignore
 import { stringify } from 'qs'
 
 export class PreviewService {
@@ -14,69 +12,26 @@ export class PreviewService {
   configStore: ConfigStore
   userStore: UserStore
   authStore: AuthStore
-  capabilityStore: CapabilityStore
-
-  capability?: CapabilityStore['capabilities']['files']['thumbnail']
 
   constructor({
     clientService,
     userStore,
     authStore,
-    capabilityStore,
     configStore
   }: {
     clientService: ClientService
     userStore: UserStore
     authStore: AuthStore
-    capabilityStore: CapabilityStore
     configStore: ConfigStore
   }) {
     this.clientService = clientService
     this.userStore = userStore
     this.authStore = authStore
     this.configStore = configStore
-
-    this.capability = capabilityStore.filesThumbnail || {
-      enabled: true,
-      version: 'v0.1',
-      supportedMimeTypes: [
-        'image/gif',
-        'image/png',
-        'image/jpeg',
-        'image/tiff',
-        'image/bmp',
-        'image/x-ms-bmp',
-        'application/vnd.geogebra.slides',
-        'application/vnd.geogebra.pinboard'
-      ]
-    }
-  }
-
-  private get available(): boolean {
-    return !!this.capability?.version
-  }
-
-  private get supportedMimeTypes() {
-    return this.capability?.supportedMimeTypes || []
   }
 
   private get user() {
     return this.userStore.user
-  }
-
-  public isMimetypeSupported(mimeType: string, onlyImages = false) {
-    if (!this.supportedMimeTypes.length) {
-      return true
-    }
-    const mimeTypes = this.getSupportedMimeTypes(onlyImages ? 'image/' : null)
-    return mimeTypes.includes(mimeType)
-  }
-
-  public getSupportedMimeTypes(filter?: string) {
-    if (!filter) {
-      return this.supportedMimeTypes
-    }
-    return this.supportedMimeTypes.filter((mimeType) => mimeType.startsWith(filter))
   }
 
   public async loadPreview(
@@ -86,10 +41,12 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string | undefined> {
     const { space, resource } = options
-    const serverSupportsPreview = this.available && this.isMimetypeSupported(resource.mimeType)
     const resourceSupportsPreview =
-      resource.type !== 'folder' && resource.extension && resource.canDownload()
-    if (!serverSupportsPreview || !resourceSupportsPreview) {
+      resource.type !== 'folder' &&
+      resource.extension &&
+      resource.canDownload() &&
+      resource.hasPreview()
+    if (!resourceSupportsPreview) {
       return undefined
     }
 
