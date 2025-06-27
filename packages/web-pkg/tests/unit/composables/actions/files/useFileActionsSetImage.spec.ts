@@ -112,7 +112,6 @@ function getWrapper({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
     })
   }
-  mocks.$previewService.isMimetypeSupported.mockReturnValue(isMimetypeSupported)
   mocks.$clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
 
   return {

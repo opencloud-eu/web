@@ -95,7 +95,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
 
   const filesAppProviders = computed(() => unref(capabilities).files.app_providers)
   const filesFavorites = computed(() => unref(capabilities).files.favorites)
-  const filesThumbnail = computed(() => unref(capabilities).files.thumbnail)
   const filesArchivers = computed(() => unref(capabilities).files.archivers)
   const filesPrivateLinks = computed(() => unref(capabilities).files.privateLinks)
   const filesPermanentDeletion = computed(() => unref(capabilities).files.permanent_deletion)
@@ -159,7 +158,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     graphUsersReadOnlyAttributes,
     filesAppProviders,
     filesFavorites,
-    filesThumbnail,
     filesArchivers,
     filesPrivateLinks,
     filesPermanentDeletion,
