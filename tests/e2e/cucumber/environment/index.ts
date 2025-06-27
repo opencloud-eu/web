@@ -67,7 +67,6 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     if (config.keycloak) {
       await api.keycloak.setAccessTokenForKeycloakOpenCloudUser(user)
       await api.keycloak.setAccessTokenForKeycloakUser(user)
-      await storeKeycloakGroups(user, this.usersEnvironment)
     } else {
       await api.token.setAccessAndRefreshToken(user)
       if (isOcm(pickle)) {
@@ -244,18 +243,4 @@ const isOcm = (pickle): boolean => {
     return true
   }
   return false
-}
-
-/*
-  store group created from keycloak on store
- */
-const storeKeycloakGroups = async (adminUser: User, usersEnvironment) => {
-  const groups = await api.graph.getGroups(adminUser)
-
-  store.dummyKeycloakGroupStore.forEach((dummyGroup) => {
-    const matchingGroup = groups.find((group) => group.displayName === dummyGroup.displayName)
-    if (matchingGroup) {
-      usersEnvironment.storeCreatedGroup({ group: { ...dummyGroup, uuid: matchingGroup.id } })
-    }
-  })
 }

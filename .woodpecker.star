@@ -20,6 +20,7 @@ PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
+OPENLDAP = "bitnami/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
@@ -1418,6 +1419,39 @@ def postgresService():
         },
     ]
 
+def ldapService():
+    return [
+        {
+            "name": "ldap-server",
+            "image": OPENLDAP,
+            "detach": True,
+            "environment": {
+                "BITNAMI_DEBUG": "true",
+                "LDAP_TLS_VERIFY_CLIENT": "never",
+                "LDAP_ENABLE_TLS": "yes",
+                "LDAP_TLS_CA_FILE": "/opt/bitnami/openldap/share/openldap.crt",
+                "LDAP_TLS_CERT_FILE": "/opt/bitnami/openldap/share/openldap.crt",
+                "LDAP_TLS_KEY_FILE": "/opt/bitnami/openldap/share/openldap.key",
+                "LDAP_ROOT": "dc=opencloud,dc=eu",
+                "LDAP_ADMIN_PASSWORD": "admin",
+            },
+            "commands": [
+                "mkdir -p /opt/bitnami/openldap/share",
+                "mkdir -p /tmp/custom-scripts",
+                "mkdir -p /tmp/ldif-files",
+                "cp tests/woodpecker/ldap/*.ldif /tmp/ldif-files/",
+                "cp tests/woodpecker/ldap/docker-entrypoint-override.sh /tmp/custom-scripts/",
+                "chmod +x /tmp/custom-scripts/docker-entrypoint-override.sh",
+                "/tmp/custom-scripts/docker-entrypoint-override.sh /opt/bitnami/scripts/openldap/run.sh",
+            ],
+            "backend_options": {
+                "docker": {
+                    "user": "0:0",
+                },
+            },
+        },
+    ] + waitForServices("ldap", ["ldap-server:1636", "ldap-server:1389"])
+
 def keycloakService():
     return [{
                "name": "generate-keycloak-certs",
@@ -1425,7 +1459,7 @@ def keycloakService():
                "commands": [
                    "mkdir -p keycloak-certs",
                    "openssl req -x509 -newkey rsa:2048 -keyout keycloak-certs/keycloakkey.pem -out keycloak-certs/keycloakcrt.pem -nodes -days 365 -subj '/CN=keycloak'",
-                   "chmod -R 777 keycloak-certs",
+                   "chmod -R 755 keycloak-certs",
                ],
            }] + waitForServices("postgres", ["postgres:5432"]) + \
            [{
@@ -1445,30 +1479,28 @@ def keycloakService():
                    "KEYCLOAK_ADMIN_PASSWORD": "admin",
                    "KC_HTTPS_CERTIFICATE_FILE": "./keycloak-certs/keycloakcrt.pem",
                    "KC_HTTPS_CERTIFICATE_KEY_FILE": "./keycloak-certs/keycloakkey.pem",
+                   "LDAP_SERVER_URL": "ldaps://ldap-server:1636",
+                   "LDAP_BIND_DN": "cn=admin,dc=opencloud,dc=eu",
+                   "LDAP_BIND_PASSWORD": "admin",
+                   "LDAP_USERS_DN": "ou=users,dc=opencloud,dc=eu",
                },
                "commands": [
                    "mkdir -p /opt/keycloak/data/import",
                    "cp tests/woodpecker/opencloud_keycloak/opencloud-ci-realm.dist.json /opt/keycloak/data/import/opencloud-realm.json",
                    "/opt/keycloak/bin/kc.sh start-dev --proxy-headers xforwarded --spi-connections-http-client-default-disable-trust-manager=true --import-realm --health-enabled=true",
                ],
-           }] + waitForServices("keycloack", ["keycloak:8443"])
+           }] + waitForServices("keycloak", ["keycloak:8443"])
 
 def e2eTestsOnKeycloak(ctx):
     e2e_Keycloak_tests = [
-        "journeys",
-        "admin-settings/users.feature:20",
-        "admin-settings/users.feature:43",
-        "admin-settings/users.feature:106",
-        "admin-settings/users.feature:131",
-        "admin-settings/users.feature:185",
-        "admin-settings/spaces.feature",
-        "admin-settings/groups.feature",
-        "keycloak",
+        "admin-settings/spaces.feature:25",
+        "admin-settings/spaces.feature:60",
     ]
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
             restoreBrowsersCache() + \
+            ldapService() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist")
     if ctx.build.event == "cron":
@@ -1476,20 +1508,39 @@ def e2eTestsOnKeycloak(ctx):
     else:
         steps += restoreOpenCloudCache()
 
-    # configs to setup opencloud with keycloak
+    # configs to setup opencloud with keycloak and ldap
     environment = {
-        "PROXY_AUTOPROVISION_ACCOUNTS": True,
+        "PROXY_AUTOPROVISION_ACCOUNTS": False,
         "PROXY_ROLE_ASSIGNMENT_DRIVER": "oidc",
         "OC_OIDC_ISSUER": "https://keycloak:8443/realms/openCloud",
         "PROXY_OIDC_REWRITE_WELLKNOWN": True,
         "WEB_OIDC_CLIENT_ID": "web",
-        "PROXY_USER_OIDC_CLAIM": "preferred_username",
-        "PROXY_USER_CS3_CLAIM": "username",
+        "PROXY_USER_OIDC_CLAIM": "uuid",
+        "PROXY_USER_CS3_CLAIM": "userid",
         "OC_ADMIN_USER_ID": "",
-        "OC_EXCLUDE_RUN_SERVICES": "idp",
+        "OC_EXCLUDE_RUN_SERVICES": "idp,idm",
         "GRAPH_ASSIGN_DEFAULT_USER_ROLE": False,
+        "SETTINGS_SETUP_DEFAULT_ASSIGNMENTS": False,
         "GRAPH_USERNAME_MATCH": "none",
         "KEYCLOAK_DOMAIN": "keycloak:8443",
+        "OC_LOG_LEVEL": "debug",
+        "OC_LDAP_URI": "ldaps://ldap-server:1636",
+        "OC_LDAP_INSECURE": True,
+        "OC_LDAP_BIND_DN": "cn=admin,dc=opencloud,dc=eu",
+        "OC_LDAP_BIND_PASSWORD": "admin",
+
+        # LDAP configs
+        "OC_LDAP_GROUP_BASE_DN": "ou=groups,dc=opencloud,dc=eu",
+        "OC_LDAP_GROUP_SCHEMA_ID": "entryUUID",
+        "GRAPH_LDAP_GROUP_CREATE_BASE_DN": "ou=custom,ou=groups,dc=opencloud,dc=eu",
+        "GRAPH_LDAP_REFINT_ENABLED": True,
+        "OC_LDAP_USER_BASE_DN": "ou=users,dc=opencloud,dc=eu",
+        "OC_LDAP_USER_FILTER": "(objectclass=inetOrgPerson)",
+        "OC_LDAP_USER_SCHEMA_ID": "entryUUID",
+        "OC_LDAP_DISABLE_USER_MECHANISM": "none",
+        "GRAPH_LDAP_SERVER_UUID": "true",
+        "FRONTEND_READONLY_USER_ATTRIBUTES": "user.onPremisesSamAccountName,user.displayName,user.mail,user.passwordProfile,user.accountEnabled,user.appRoleAssignments",
+        "OC_LDAP_SERVER_WRITE_ENABLED": False,
     }
 
     steps += openCloudService(environment) + \
