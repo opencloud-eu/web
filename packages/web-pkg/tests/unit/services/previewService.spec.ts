@@ -12,34 +12,6 @@ import {
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 describe('PreviewService', () => {
-  describe('method "isMimetypeSupported"', () => {
-    it('should return true if mimeType is supported', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.isMimetypeSupported(supportedMimeTypes[0])).toBe(true)
-    })
-    it('should return true if no specific supported mimeTypes given', () => {
-      const { previewService } = getWrapper()
-      expect(previewService.isMimetypeSupported('image/png')).toBe(true)
-    })
-    it('should return false if mimeType is not supported', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.isMimetypeSupported('image/jpeg')).toBe(false)
-    })
-  })
-  describe('method "getSupportedMimeTypes"', () => {
-    it('reads the supported mime types from the capabilities', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.getSupportedMimeTypes()).toEqual(supportedMimeTypes)
-    })
-    it('filters the supported mime types from the capabilities', () => {
-      const supportedMimeTypes = ['image/png', 'text/plain']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.getSupportedMimeTypes('image')).toEqual([supportedMimeTypes[0]])
-    })
-  })
   describe('method "loadPreview"', () => {
     it('does not load preview if no version specified', async () => {
       const supportedMimeTypes = ['image/png']
