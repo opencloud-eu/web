@@ -1,13 +1,14 @@
 # Changelog
 
-## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-26
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-27
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann
 
 ### ✨ Features
 
+- feat: Collabora Save As and Export [[#859](https://github.com/opencloud-eu/web/pull/859)]
 - feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
 
 ### 🐛 Bug Fixes
