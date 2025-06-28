@@ -42,12 +42,8 @@ export class PreviewService {
   ): Promise<string | undefined> {
     const { space, resource } = options
     console.log(resource)
-    const resourceSupportsPreview =
-      resource.type !== 'folder' &&
-      resource.extension &&
-      resource.canDownload() &&
-      resource.hasPreview()
-    if (!resourceSupportsPreview) {
+
+    if (!resource.canDownload() || !resource.hasPreview()) {
       return undefined
     }
 
