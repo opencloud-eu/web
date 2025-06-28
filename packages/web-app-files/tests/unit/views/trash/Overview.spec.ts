@@ -9,8 +9,7 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { SortDir } from '@opencloud-eu/web-pkg'
-import { OcTable } from '@opencloud-eu/design-system/components'
+import { ResourceTable, SortDir } from '@opencloud-eu/web-pkg'
 
 const spaceMocks = [
   {
@@ -72,8 +71,8 @@ describe('TrashOverview', () => {
 
       wrapper.vm.sortBy = 'name'
       await nextTick()
-      sortedSpaces = wrapper.findComponent<typeof OcTable>({ name: 'oc-table' }).props()
-        .data as SpaceResource[]
+      sortedSpaces = wrapper.findComponent<typeof ResourceTable>({ name: 'resource-table' }).props()
+        .resources as SpaceResource[]
       expect(sortedSpaces.map((s) => s.id)).toEqual([
         spaceMocks[0].id,
         spaceMocks[1].id,
@@ -82,8 +81,8 @@ describe('TrashOverview', () => {
 
       wrapper.vm.sortDir = SortDir.Desc
       await nextTick()
-      sortedSpaces = wrapper.findComponent<typeof OcTable>({ name: 'oc-table' }).props()
-        .data as SpaceResource[]
+      sortedSpaces = wrapper.findComponent<typeof ResourceTable>({ name: 'resource-table' }).props()
+        .resources as SpaceResource[]
       expect(sortedSpaces.map((s) => s.id)).toEqual([
         spaceMocks[0].id,
         spaceMocks[2].id,
