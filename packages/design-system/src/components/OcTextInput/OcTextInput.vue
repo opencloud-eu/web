@@ -21,7 +21,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-danger': !!errorMessage && debouncedErrorVisible,
+          'oc-text-input-danger': !!debouncedErrorVisible,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
         }"
@@ -51,11 +51,11 @@
       class="oc-text-input-message oc-text-small"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-danger': !!errorMessage
+        'oc-text-input-danger': !!debouncedErrorVisible
       }"
     >
       <oc-icon
-        v-if="!!errorMessage"
+        v-if="!!debouncedErrorVisible"
         name="error-warning"
         size="small"
         fill-type="line"
@@ -64,12 +64,16 @@
       />
 
       <span
+        v-if="descriptionMessage"
         :id="messageId"
-        :class="{
-          'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-danger': !!errorMessage
-        }"
-        v-text="messageText"
+        class="'oc-text-input-description'"
+        v-text="descriptionMessage"
+      />
+      <span
+        v-if="!!debouncedErrorVisible"
+        :id="messageId"
+        class="'oc-text-input-danger'"
+        v-text="errorMessage"
       />
     </div>
     <portal-target v-if="type === 'password'" name="app.design-system.password-policy" />
@@ -226,15 +230,7 @@ defineSlots<Slots>()
 
 const debouncedErrorVisible = ref(false)
 
-const onStopTyping = debounce(() => {
-  debouncedErrorVisible.value = !!errorMessage
-}, errorMessageDebouncedTime)
-
 const showMessageLine = computed(() => {
-  if (!!errorMessage && !unref(debouncedErrorVisible)) {
-    return false
-  }
-
   return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
@@ -259,7 +255,7 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-error'] = !!errorMessage && unref(debouncedErrorVisible)
+    additionalAttrs['has-error'] = !!unref(debouncedErrorVisible)
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs
@@ -268,13 +264,6 @@ const additionalAttributes = computed(() => {
 
 const ariaInvalid = computed(() => {
   return (!!errorMessage).toString()
-})
-
-const messageText = computed(() => {
-  if (errorMessage) {
-    return errorMessage
-  }
-  return descriptionMessage
 })
 
 const showClearButton = computed(() => {
@@ -332,6 +321,10 @@ watch(
   },
   { immediate: true }
 )
+
+const onStopTyping = debounce(() => {
+  debouncedErrorVisible.value = !!errorMessage
+}, errorMessageDebouncedTime)
 
 watch(
   () => modelValue,
