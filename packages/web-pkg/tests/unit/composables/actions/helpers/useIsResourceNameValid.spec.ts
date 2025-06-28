@@ -123,6 +123,64 @@ describe('useIsResourceNameValid', () => {
       })
     })
   })
+  describe('method "isSpaceNameValid"', () => {
+    it('should not show an error if new name is valid', () => {
+      getWrapper({
+        setup: ({ isSpaceNameValid }) => {
+          const { isValid, error } = isSpaceNameValid('space')
+          expect(isValid).toBe(true)
+          expect(error).toBeUndefined()
+        }
+      })
+    })
+
+    it.each([
+      { newName: '', message: 'The Space name cannot be empty' },
+
+      {
+        newName: 'newname ',
+        message: 'The Space name cannot start or end with whitespace'
+      },
+      {
+        newName: ' newname',
+        message: 'The Space name cannot start or end with whitespace'
+      },
+      {
+        newName: ' newname ',
+        message: 'The Space name cannot start or end with whitespace'
+      },
+      {
+        newName: 'l'.repeat(64),
+        message: `The Space name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
+      }
+    ])('should detect name errors and display error messages accordingly %$', (inputData) => {
+      getWrapper({
+        setup: ({ isSpaceNameValid }) => {
+          const resourcesStore = useResourcesStore()
+          resourcesStore.resources = [{ name: 'file1', path: '/file1' }] as Resource[]
+
+          const { isValid, error } = isSpaceNameValid(inputData.newName)
+          expect(isValid).toBe(false)
+          expect(error).toEqual(inputData.message)
+        }
+      })
+    })
+
+    it.each(['/', '\\', '.', ':', '?', '*', '"', '>', '<', '|'])(
+      'should show an error if name contains special character: %s',
+      (specialChar) => {
+        getWrapper({
+          setup: ({ isSpaceNameValid }) => {
+            const { isValid, error } = isSpaceNameValid(specialChar)
+            expect(isValid).toBe(false)
+            expect(error).toEqual(
+              'The Space name cannot contain the following characters: / \\\\ . : ? * " > < |\''
+            )
+          }
+        })
+      }
+    )
+  })
 })
 
 function getWrapper({

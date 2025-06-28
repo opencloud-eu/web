@@ -21,7 +21,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-danger': !!errorMessage,
+          'oc-text-input-danger': !!displayedErrorMessage,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
         }"
@@ -51,11 +51,11 @@
       class="oc-text-input-message oc-text-small"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-danger': !!errorMessage
+        'oc-text-input-danger': !!displayedErrorMessage
       }"
     >
       <oc-icon
-        v-if="!!errorMessage"
+        v-if="!!displayedErrorMessage"
         name="error-warning"
         size="small"
         fill-type="line"
@@ -67,7 +67,7 @@
         :id="messageId"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-danger': !!errorMessage
+          'oc-text-input-danger': !!displayedErrorMessage
         }"
         v-text="messageText"
       />
@@ -77,12 +77,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, unref, useAttrs, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, unref, useAttrs, useTemplateRef, watch } from 'vue'
 import { PasswordPolicy, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInputPassword from '../OcTextInputPassword/OcTextInputPassword.vue'
 import { PortalTarget } from 'portal-vue'
+import { debounce } from 'lodash-es'
 
 defineOptions({
   inheritAttrs: false
@@ -230,6 +231,12 @@ const additionalListeners = computed(() => {
   return {}
 })
 
+const displayedErrorMessage = ref<string | undefined>(errorMessage)
+
+const updateDisplayedErrorMessage = debounce((val?: string) => {
+  displayedErrorMessage.value = val
+}, 800)
+
 const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
@@ -242,7 +249,7 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-error'] = !!errorMessage
+    additionalAttrs['has-error'] = !!unref(displayedErrorMessage)
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs
@@ -254,8 +261,8 @@ const ariaInvalid = computed(() => {
 })
 
 const messageText = computed(() => {
-  if (errorMessage) {
-    return errorMessage
+  if (unref(displayedErrorMessage)) {
+    return unref(displayedErrorMessage)
   }
   return descriptionMessage
 })
@@ -311,6 +318,19 @@ watch(
     }
     await nextTick()
     setSelectionRange()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => errorMessage,
+  (val) => {
+    if (!val) {
+      updateDisplayedErrorMessage.cancel?.()
+      displayedErrorMessage.value = undefined
+    } else {
+      updateDisplayedErrorMessage(val)
+    }
   },
   { immediate: true }
 )

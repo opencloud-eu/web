@@ -104,7 +104,6 @@ function getWrapper({
   isMimetypeSupported?: boolean
 }) {
   vi.mocked(useSpaceHelpers).mockReturnValue({
-    checkSpaceNameModalInput: vi.fn(),
     getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
   })
 
