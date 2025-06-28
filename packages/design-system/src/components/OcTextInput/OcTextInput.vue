@@ -21,7 +21,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-danger': !!debouncedErrorVisible,
+          'oc-text-input-danger': !!showErrorMessage,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
         }"
@@ -50,30 +50,31 @@
       v-if="showMessageLine"
       class="oc-text-input-message oc-text-small"
       :class="{
-        'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-danger': !!debouncedErrorVisible
+        'oc-text-input-description': showDescriptionMessage,
+        'oc-text-input-danger': showErrorMessage
       }"
     >
-      <oc-icon
-        v-if="!!debouncedErrorVisible"
-        name="error-warning"
-        size="small"
-        fill-type="line"
-        aria-hidden="true"
-        class="oc-mr-xs"
-      />
-
+      <template v-if="showErrorMessage">
+        <oc-icon
+          v-if="showErrorMessage"
+          name="error-warning"
+          size="small"
+          fill-type="line"
+          aria-hidden="true"
+          class="oc-mr-xs"
+        />
+        <span
+          v-if="showErrorMessage"
+          :id="messageId"
+          class="oc-text-input-danger"
+          v-text="errorMessage"
+        />
+      </template>
       <span
-        v-if="descriptionMessage"
+        v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="'oc-text-input-description'"
+        class="oc-text-input-description"
         v-text="descriptionMessage"
-      />
-      <span
-        v-if="!!debouncedErrorVisible"
-        :id="messageId"
-        class="'oc-text-input-danger'"
-        v-text="errorMessage"
       />
     </div>
     <portal-target v-if="type === 'password'" name="app.design-system.password-policy" />
@@ -228,10 +229,15 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
-const debouncedErrorVisible = ref(false)
-
+const showErrorMessage = ref(false)
+const showDescriptionMessage = computed(() => {
+  return !!descriptionMessage
+})
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || unref(showErrorMessage) || unref(showDescriptionMessage)
+})
+const ariaInvalid = computed(() => {
+  return unref(showErrorMessage).toString()
 })
 
 const messageId = computed(() => `${id}-message`)
@@ -246,7 +252,7 @@ const additionalListeners = computed(() => {
 const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
-  if (!!errorMessage || !!descriptionMessage) {
+  if (unref(showErrorMessage) || unref(showDescriptionMessage)) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
   if (defaultValue) {
@@ -255,15 +261,11 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-error'] = !!unref(debouncedErrorVisible)
+    additionalAttrs['has-error'] = unref(showErrorMessage)
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs
   return { ...attrs, ...additionalAttrs }
-})
-
-const ariaInvalid = computed(() => {
-  return (!!errorMessage).toString()
 })
 
 const showClearButton = computed(() => {
@@ -323,7 +325,7 @@ watch(
 )
 
 const onStopTyping = debounce(() => {
-  debouncedErrorVisible.value = !!errorMessage
+  showErrorMessage.value = !!errorMessage
 }, errorMessageDebouncedTime)
 
 watch(
@@ -337,7 +339,7 @@ watch(
   () => errorMessage,
   () => {
     if (!errorMessage) {
-      debouncedErrorVisible.value = false
+      showErrorMessage.value = false
       onStopTyping.cancel?.()
     } else {
       onStopTyping()
