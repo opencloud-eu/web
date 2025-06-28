@@ -29,8 +29,7 @@
       type="email"
       :fix-message-line="true"
       required-mark
-      @update:model-value="onInputEmail"
-      @change="validateEmail"
+      @update:model-value="validateEmail"
     />
     <oc-text-input
       id="create-user-input-password"
@@ -140,14 +139,6 @@ export default defineComponent({
     }
   },
   methods: {
-    onInputEmail() {
-      if (!EmailValidator.validate(this.user.mail)) {
-        return
-      }
-
-      this.formData.email.errorMessage = ''
-      this.formData.email.valid = true
-    },
     async validateUserName() {
       if (this.user.onPremisesSamAccountName.trim() === '') {
         this.formData.userName.errorMessage = this.$gettext('User name cannot be empty')

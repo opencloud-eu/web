@@ -35,7 +35,7 @@
           :fix-message-line="true"
           :read-only="isInputFieldReadOnly('user.mail')"
           required-mark
-          @change="validateEmail"
+          @update:model-value="validateEmail"
         />
         <oc-text-input
           id="password-input"

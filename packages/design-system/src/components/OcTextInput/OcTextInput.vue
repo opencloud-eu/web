@@ -21,7 +21,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-danger': !!displayedErrorMessage,
+          'oc-text-input-danger': !!errorMessage && debouncedErrorVisible,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
         }"
@@ -51,11 +51,11 @@
       class="oc-text-input-message oc-text-small"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-danger': !!displayedErrorMessage
+        'oc-text-input-danger': !!errorMessage
       }"
     >
       <oc-icon
-        v-if="!!displayedErrorMessage"
+        v-if="!!errorMessage"
         name="error-warning"
         size="small"
         fill-type="line"
@@ -67,7 +67,7 @@
         :id="messageId"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-danger': !!displayedErrorMessage
+          'oc-text-input-danger': !!errorMessage
         }"
         v-text="messageText"
       />
@@ -218,7 +218,17 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
+const debouncedErrorVisible = ref(false)
+
+const onStopTyping = debounce(() => {
+  debouncedErrorVisible.value = !!errorMessage
+}, 800)
+
 const showMessageLine = computed(() => {
+  if (!!errorMessage && !unref(debouncedErrorVisible)) {
+    return false
+  }
+
   return fixMessageLine || !!errorMessage || !!descriptionMessage
 })
 
@@ -230,12 +240,6 @@ const additionalListeners = computed(() => {
   }
   return {}
 })
-
-const displayedErrorMessage = ref<string | undefined>(errorMessage)
-
-const updateDisplayedErrorMessage = debounce((val?: string) => {
-  displayedErrorMessage.value = val
-}, 800)
 
 const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
@@ -249,7 +253,7 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-error'] = !!unref(displayedErrorMessage)
+    additionalAttrs['has-error'] = !!errorMessage && unref(debouncedErrorVisible)
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs
@@ -261,8 +265,8 @@ const ariaInvalid = computed(() => {
 })
 
 const messageText = computed(() => {
-  if (unref(displayedErrorMessage)) {
-    return unref(displayedErrorMessage)
+  if (errorMessage) {
+    return errorMessage
   }
   return descriptionMessage
 })
@@ -310,6 +314,7 @@ const setSelectionRange = () => {
     unref(inputRef).setSelectionRange(selectionRange[0], selectionRange[1])
   }
 }
+
 watch(
   [() => selectionRange, inputRef],
   async () => {
@@ -323,16 +328,22 @@ watch(
 )
 
 watch(
+  () => modelValue,
+  () => {
+    onStopTyping()
+  }
+)
+
+watch(
   () => errorMessage,
-  (val) => {
-    if (!val) {
-      updateDisplayedErrorMessage.cancel?.()
-      displayedErrorMessage.value = undefined
+  () => {
+    if (!errorMessage) {
+      debouncedErrorVisible.value = false
+      onStopTyping.cancel?.()
     } else {
-      updateDisplayedErrorMessage(val)
+      onStopTyping()
     }
-  },
-  { immediate: true }
+  }
 )
 </script>
 
