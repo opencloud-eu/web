@@ -14,11 +14,7 @@ vi.mock('portal-vue', () => ({
 }))
 
 vi.mock('lodash-es', () => ({
-  debounce: (fn: (...args: any[]) => any) => {
-    return (...args: any[]) => {
-      return fn(...args)
-    }
-  },
+  debounce: (fn: any) => fn,
   kebabCase: (str: string) => str
 }))
 
