@@ -29,6 +29,11 @@ const defaultFolderIcon: IconType = {
   color: 'var(--oc-color-icon-folder)'
 }
 
+const defaultPersonalSpaceIcon: IconType = {
+  name: 'resource-type-folder',
+  color: 'var(--oc-role-secondary)'
+}
+
 const defaultSpaceIcon: IconType = {
   name: 'layout-grid',
   color: 'var(--oc-role-secondary)'
@@ -98,7 +103,7 @@ export default defineComponent({
 
     const icon = computed((): IconType => {
       if (unref(isPersonalSpace)) {
-        return defaultFolderIcon
+        return defaultPersonalSpaceIcon
       }
       if (unref(isDisabledSpace)) {
         return defaultSpaceIconDisabled
