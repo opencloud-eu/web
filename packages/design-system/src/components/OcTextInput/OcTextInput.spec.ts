@@ -31,10 +31,6 @@ Object.assign(navigator, {
 
 // @vitest-environment jsdom
 describe('OcTextInput', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   function getShallowWrapper(props: PartialComponentProps<typeof OcTextInput> = {}) {
     return shallowMount(OcTextInput, {
       props: {
