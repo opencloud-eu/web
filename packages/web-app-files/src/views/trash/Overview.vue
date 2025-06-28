@@ -27,8 +27,7 @@
             />
           </div>
           <resource-table
-            ref="tableRef"
-            class="spaces-table"
+            class="trash-table"
             :resources="displaySpaces"
             :fields-displayed="['name']"
             :sort-by="sortBy"
@@ -113,7 +112,6 @@ export default defineComponent({
     const sortDir = ref<SortDir>(SortDir.Asc)
     const filterTerm = ref('')
     const markInstance = ref(undefined)
-    const tableRef = ref(undefined)
 
     const spaces = computed(() =>
       spacesStore.spaces.filter(
@@ -214,7 +212,7 @@ export default defineComponent({
 
       await loadResourcesTask.perform()
       await nextTick()
-      markInstance.value = new Mark(unref(tableRef)?.$el)
+      markInstance.value = new Mark('.trash-table')
     })
 
     watch(filterTerm, () => {
@@ -237,7 +235,6 @@ export default defineComponent({
       footerTextTotal,
       footerTextFilter,
       fields,
-      tableRef,
       spaces,
       filter,
       handleSort,

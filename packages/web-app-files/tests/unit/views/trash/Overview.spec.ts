@@ -57,7 +57,7 @@ describe('TrashOverview', () => {
       const { wrapper } = getWrapper()
       expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
     })
-    it('should render spaces list', async () => {
+    it('should render trash list', async () => {
       const { wrapper } = getWrapper()
       await wrapper.vm.loadResourcesTask.last
       expect(wrapper.html()).toMatchSnapshot()
@@ -71,8 +71,7 @@ describe('TrashOverview', () => {
 
       wrapper.vm.sortBy = 'name'
       await nextTick()
-      sortedSpaces = wrapper.findComponent<typeof ResourceTable>({ name: 'resource-table' }).props()
-        .resources as SpaceResource[]
+      sortedSpaces = wrapper.findComponent(ResourceTable).props().resources as SpaceResource[]
       expect(sortedSpaces.map((s) => s.id)).toEqual([
         spaceMocks[0].id,
         spaceMocks[1].id,
@@ -81,8 +80,7 @@ describe('TrashOverview', () => {
 
       wrapper.vm.sortDir = SortDir.Desc
       await nextTick()
-      sortedSpaces = wrapper.findComponent<typeof ResourceTable>({ name: 'resource-table' }).props()
-        .resources as SpaceResource[]
+      sortedSpaces = wrapper.findComponent(ResourceTable).props().resources as SpaceResource[]
       expect(sortedSpaces.map((s) => s.id)).toEqual([
         spaceMocks[0].id,
         spaceMocks[2].id,
@@ -120,7 +118,7 @@ function getWrapper({ spaces = spaceMocks }: { spaces?: SpaceResource[] } = {}) 
     mocks,
     wrapper: mount(TrashOverview, {
       global: {
-        stubs: { ...defaultStubs, NoContentMessage: true },
+        stubs: { ...defaultStubs, NoContentMessage: true, 'resource-table': false },
         mocks,
         provide: mocks,
         plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
