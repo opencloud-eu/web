@@ -49,9 +49,6 @@ export const useFileActionsSetImage = () => {
         if (!resources[0].mimeType) {
           return false
         }
-        if (!previewService.isMimetypeSupported(resources[0].mimeType, true)) {
-          return false
-        }
 
         if (!isLocationSpacesActive(router, 'files-spaces-generic')) {
           return false

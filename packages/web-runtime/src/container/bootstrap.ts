@@ -508,7 +508,6 @@ export const announcePreviewService = ({
     clientService,
     userStore,
     authStore,
-    capabilityStore,
     configStore
   })
   app.config.globalProperties.$previewService = previewService
