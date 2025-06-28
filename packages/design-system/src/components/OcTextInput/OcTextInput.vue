@@ -137,6 +137,11 @@ export interface Props {
    * @docs Determines if the message line should be fixed.
    * @default false
    */
+  errorMessageDebouncedTime?: number
+  /**
+   * @docs The time in milliseconds to debounce the error message visibility.
+   * @default 500
+   */
   fixMessageLine?: boolean
   /**
    * @docs The description message to be displayed below the input.
@@ -207,6 +212,7 @@ const {
   disabled = false,
   label,
   errorMessage,
+  errorMessageDebouncedTime = 500,
   fixMessageLine = false,
   descriptionMessage,
   readOnly = false,
@@ -222,7 +228,7 @@ const debouncedErrorVisible = ref(false)
 
 const onStopTyping = debounce(() => {
   debouncedErrorVisible.value = !!errorMessage
-}, 800)
+}, errorMessageDebouncedTime)
 
 const showMessageLine = computed(() => {
   if (!!errorMessage && !unref(debouncedErrorVisible)) {

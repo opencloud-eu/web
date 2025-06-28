@@ -31,6 +31,7 @@
           class="oc-mb-s"
           :label="$gettext('Email')"
           :error-message="formData.email.errorMessage"
+          :error-message-debounced-time="1000"
           type="email"
           :fix-message-line="true"
           :read-only="isInputFieldReadOnly('user.mail')"

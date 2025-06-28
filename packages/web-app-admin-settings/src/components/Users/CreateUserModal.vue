@@ -26,6 +26,7 @@
       class="oc-mb-s"
       :label="$gettext('Email')"
       :error-message="formData.email.errorMessage"
+      :error-message-debounced-time="1000"
       type="email"
       :fix-message-line="true"
       required-mark
@@ -49,7 +50,7 @@
 
 <script lang="ts">
 import { useGettext } from 'vue3-gettext'
-import { computed, defineComponent, ref, unref, PropType, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, unref, watch } from 'vue'
 import * as EmailValidator from 'email-validator'
 import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
