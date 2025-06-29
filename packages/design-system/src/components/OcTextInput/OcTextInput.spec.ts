@@ -7,7 +7,6 @@ import {
 import OcTextInput from './OcTextInput.vue'
 import { PasswordPolicy } from '../../helpers'
 import { mock } from 'vitest-mock-extended'
-import { beforeEach, describe } from 'vitest'
 
 vi.mock('portal-vue', () => ({
   PortalTarget: undefined
