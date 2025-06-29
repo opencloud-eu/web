@@ -1,8 +1,8 @@
 import {
-  shallowMount,
-  mount,
   defaultPlugins,
-  PartialComponentProps
+  mount,
+  PartialComponentProps,
+  shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import OcTextInput from './OcTextInput.vue'
 import { PasswordPolicy } from '../../helpers'
@@ -10,6 +10,11 @@ import { mock } from 'vitest-mock-extended'
 
 vi.mock('portal-vue', () => ({
   PortalTarget: undefined
+}))
+
+vi.mock('lodash-es', () => ({
+  debounce: (fn: any) => fn,
+  kebabCase: (str: string) => str
 }))
 
 const defaultProps = {
@@ -238,19 +243,28 @@ describe('OcTextInput', () => {
   })
 
   describe('when an error message is provided', () => {
-    const wrapper = getShallowWrapper({ errorMessage: 'You shall not pass.' })
-    it('should add the error class to the input', () => {
+    it('should add the error class to the input', async () => {
+      const wrapper = getShallowWrapper()
+      await wrapper.setProps({ modelValue: 'invalid input' })
+      await wrapper.setProps({ errorMessage: 'You shall not pass.' })
       expect(wrapper.find('input').attributes().class).toContain('oc-text-input-danger')
     })
-    it('should add the error class to the input message', () => {
-      expect(wrapper.find(selectors.textInputMessage).attributes().class).toContain(
-        'oc-text-input-danger'
-      )
+    it('should add the error class to the input message', async () => {
+      const wrapper = getShallowWrapper()
+      await wrapper.setProps({ modelValue: 'invalid input' })
+      await wrapper.setProps({ errorMessage: 'You shall not pass.' })
+      expect(wrapper.find(selectors.textInputMessage).classes()).toContain('oc-text-input-danger')
     })
-    it('should show the error message as the input message text', () => {
+    it('should show the error message as the input message text', async () => {
+      const wrapper = getShallowWrapper()
+      await wrapper.setProps({ modelValue: 'invalid input' })
+      await wrapper.setProps({ errorMessage: 'You shall not pass.' })
       expect(wrapper.find(selectors.textInputMessage).text()).toBe('You shall not pass.')
     })
-    it('should set the input aria-invalid attribute to true', () => {
+    it('should set the input aria-invalid attribute to true', async () => {
+      const wrapper = getShallowWrapper()
+      await wrapper.setProps({ modelValue: 'invalid input' })
+      await wrapper.setProps({ errorMessage: 'You shall not pass.' })
       expect(wrapper.find('input').attributes('aria-invalid')).toBe('true')
     })
   })

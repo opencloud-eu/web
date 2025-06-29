@@ -26,11 +26,11 @@
       class="oc-mb-s"
       :label="$gettext('Email')"
       :error-message="formData.email.errorMessage"
+      :error-message-debounced-time="1000"
       type="email"
       :fix-message-line="true"
       required-mark
-      @update:model-value="onInputEmail"
-      @change="validateEmail"
+      @update:model-value="validateEmail"
     />
     <oc-text-input
       id="create-user-input-password"
@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import { useGettext } from 'vue3-gettext'
-import { computed, defineComponent, ref, unref, PropType, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, unref, watch } from 'vue'
 import * as EmailValidator from 'email-validator'
 import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
@@ -140,14 +140,6 @@ export default defineComponent({
     }
   },
   methods: {
-    onInputEmail() {
-      if (!EmailValidator.validate(this.user.mail)) {
-        return
-      }
-
-      this.formData.email.errorMessage = ''
-      this.formData.email.valid = true
-    },
     async validateUserName() {
       if (this.user.onPremisesSamAccountName.trim() === '') {
         this.formData.userName.errorMessage = this.$gettext('User name cannot be empty')
