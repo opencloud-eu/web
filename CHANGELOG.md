@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.1](https://github.com/opencloud-eu/web/releases/tag/v3.1.1) - 2025-06-30
+
+### ❤️ Thanks to all contributors! ❤️
+
+@ScharfViktor
+
+### 📦️ Dependencies
+
+- [full-ci] bump-opencloud-3.1.0. run all tests [[#877](https://github.com/opencloud-eu/web/pull/877)]
+
 ## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-27
 
 ### ❤️ Thanks to all contributors! ❤️
