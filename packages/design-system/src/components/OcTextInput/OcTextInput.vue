@@ -21,7 +21,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-text-input oc-input oc-rounded"
         :class="{
-          'oc-text-input-danger': !!errorMessage,
+          'oc-text-input-danger': !!showErrorMessage,
           'oc-pl-l': !!readOnly,
           'clear-action-visible': showClearButton
         }"
@@ -50,26 +50,31 @@
       v-if="showMessageLine"
       class="oc-text-input-message oc-text-small"
       :class="{
-        'oc-text-input-description': !!descriptionMessage,
-        'oc-text-input-danger': !!errorMessage
+        'oc-text-input-description': showDescriptionMessage,
+        'oc-text-input-danger': showErrorMessage
       }"
     >
-      <oc-icon
-        v-if="!!errorMessage"
-        name="error-warning"
-        size="small"
-        fill-type="line"
-        aria-hidden="true"
-        class="oc-mr-xs"
-      />
-
+      <template v-if="showErrorMessage">
+        <oc-icon
+          v-if="showErrorMessage"
+          name="error-warning"
+          size="small"
+          fill-type="line"
+          aria-hidden="true"
+          class="oc-mr-xs"
+        />
+        <span
+          v-if="showErrorMessage"
+          :id="messageId"
+          class="oc-text-input-danger"
+          v-text="errorMessage"
+        />
+      </template>
       <span
+        v-else-if="showDescriptionMessage"
         :id="messageId"
-        :class="{
-          'oc-text-input-description': !!descriptionMessage,
-          'oc-text-input-danger': !!errorMessage
-        }"
-        v-text="messageText"
+        class="oc-text-input-description"
+        v-text="descriptionMessage"
       />
     </div>
     <portal-target v-if="type === 'password'" name="app.design-system.password-policy" />
@@ -77,12 +82,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, unref, useAttrs, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, unref, useAttrs, useTemplateRef, watch } from 'vue'
 import { PasswordPolicy, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInputPassword from '../OcTextInputPassword/OcTextInputPassword.vue'
 import { PortalTarget } from 'portal-vue'
+import { debounce } from 'lodash-es'
 
 defineOptions({
   inheritAttrs: false
@@ -135,6 +141,11 @@ export interface Props {
   /**
    * @docs Determines if the message line should be fixed.
    * @default false
+   */
+  errorMessageDebouncedTime?: number
+  /**
+   * @docs The time in milliseconds to debounce the error message visibility.
+   * @default 500
    */
   fixMessageLine?: boolean
   /**
@@ -206,6 +217,7 @@ const {
   disabled = false,
   label,
   errorMessage,
+  errorMessageDebouncedTime = 500,
   fixMessageLine = false,
   descriptionMessage,
   readOnly = false,
@@ -217,8 +229,15 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
+const showErrorMessage = ref(false)
+const showDescriptionMessage = computed(() => {
+  return !!descriptionMessage
+})
 const showMessageLine = computed(() => {
-  return fixMessageLine || !!errorMessage || !!descriptionMessage
+  return fixMessageLine || unref(showErrorMessage) || unref(showDescriptionMessage)
+})
+const ariaInvalid = computed(() => {
+  return unref(showErrorMessage).toString()
 })
 
 const messageId = computed(() => `${id}-message`)
@@ -233,7 +252,7 @@ const additionalListeners = computed(() => {
 const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
-  if (!!errorMessage || !!descriptionMessage) {
+  if (unref(showErrorMessage) || unref(showDescriptionMessage)) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
   if (defaultValue) {
@@ -242,22 +261,11 @@ const additionalAttributes = computed(() => {
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod
-    additionalAttrs['has-error'] = !!errorMessage
+    additionalAttrs['has-error'] = unref(showErrorMessage)
   }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs
   return { ...attrs, ...additionalAttrs }
-})
-
-const ariaInvalid = computed(() => {
-  return (!!errorMessage).toString()
-})
-
-const messageText = computed(() => {
-  if (errorMessage) {
-    return errorMessage
-  }
-  return descriptionMessage
 })
 
 const showClearButton = computed(() => {
@@ -303,6 +311,7 @@ const setSelectionRange = () => {
     unref(inputRef).setSelectionRange(selectionRange[0], selectionRange[1])
   }
 }
+
 watch(
   [() => selectionRange, inputRef],
   async () => {
@@ -313,6 +322,29 @@ watch(
     setSelectionRange()
   },
   { immediate: true }
+)
+
+const onStopTyping = debounce(() => {
+  showErrorMessage.value = !!errorMessage
+}, errorMessageDebouncedTime)
+
+watch(
+  () => modelValue,
+  () => {
+    onStopTyping()
+  }
+)
+
+watch(
+  () => errorMessage,
+  () => {
+    if (!errorMessage) {
+      showErrorMessage.value = false
+      onStopTyping.cancel?.()
+    } else {
+      onStopTyping()
+    }
+  }
 )
 </script>
 

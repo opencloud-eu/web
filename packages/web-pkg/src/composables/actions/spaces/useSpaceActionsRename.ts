@@ -1,12 +1,12 @@
-import { unref, computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useSpaceHelpers } from '../../spaces'
 import { useClientService } from '../../clientService'
 import { useAbility } from '../../ability'
 import { useRoute } from '../../router'
 import { SpaceAction, SpaceActionOptions } from '../types'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
+import { useIsResourceNameValid } from '../helpers'
 
 export const useSpaceActionsRename = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -15,7 +15,7 @@ export const useSpaceActionsRename = () => {
   const ability = useAbility()
   const clientService = useClientService()
   const route = useRoute()
-  const { checkSpaceNameModalInput } = useSpaceHelpers()
+  const { isSpaceNameValid } = useIsResourceNameValid()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
 
@@ -52,7 +52,10 @@ export const useSpaceActionsRename = () => {
       inputValue: resources[0].name,
       inputRequiredMark: true,
       onConfirm: (name: string) => renameSpace(resources[0], name),
-      onInput: checkSpaceNameModalInput
+      onInput: (name: string, setError: (error: string) => void) => {
+        const { isValid, error } = isSpaceNameValid(name)
+        setError(isValid ? null : error)
+      }
     })
   }
 

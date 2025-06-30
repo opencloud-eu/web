@@ -17,10 +17,10 @@ import { useGettext } from 'vue3-gettext'
 import {
   useModals,
   useCreateSpace,
-  useSpaceHelpers,
   useMessages,
   useSpacesStore,
-  useResourcesStore
+  useResourcesStore,
+  useIsResourceNameValid
 } from '../../composables'
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
     const { showMessage, showErrorMessage } = useMessages()
     const { $gettext } = useGettext()
     const { createSpace } = useCreateSpace()
-    const { checkSpaceNameModalInput } = useSpaceHelpers()
+    const { isSpaceNameValid } = useIsResourceNameValid()
     const { dispatchModal } = useModals()
     const spacesStore = useSpacesStore()
     const { upsertResource } = useResourcesStore()
@@ -66,7 +66,10 @@ export default defineComponent({
         inputValue: $gettext('New space'),
         inputRequiredMark: true,
         onConfirm: (name: string) => addNewSpace(name),
-        onInput: checkSpaceNameModalInput
+        onInput: (name: string, setError: (error: string) => void) => {
+          const { isValid, error } = isSpaceNameValid(name)
+          setError(isValid ? null : error)
+        }
       })
     }
 

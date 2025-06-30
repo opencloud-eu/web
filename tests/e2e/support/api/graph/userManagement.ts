@@ -60,7 +60,6 @@ export const deleteUser = async ({ user, admin }: { user: User; admin: User }): 
 }
 
 export const getUserId = async ({ user, admin }: { user: User; admin: User }): Promise<string> => {
-  let userId = ''
   const response = await request({
     method: 'GET',
     path: join('graph', 'v1.0', 'users', user.username),

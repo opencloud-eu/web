@@ -9,7 +9,7 @@ exports[`OcDatePicker > renders 1`] = `
     <!--v-if-->
   </div>
   <div class="oc-text-input-message oc-text-small">
-    <!--v-if--> <span id="oc-textinput-1-message" class=""></span>
+    <!--v-if-->
   </div>
   <!--v-if-->
 </div>"

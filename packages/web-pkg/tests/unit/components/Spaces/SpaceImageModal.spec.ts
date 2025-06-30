@@ -65,7 +65,6 @@ describe('SpaceImageModal', () => {
 
 function getWrapper() {
   vi.mocked(useSpaceHelpers).mockReturnValue({
-    checkSpaceNameModalInput: vi.fn(),
     getDefaultMetaFolder: () => Promise.resolve(mock<Resource>())
   })
 

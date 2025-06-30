@@ -54,7 +54,44 @@ export const useIsResourceNameValid = () => {
     return { isValid: true, error: undefined }
   }
 
+  const isSpaceNameValid = (newName: string): { isValid: boolean; error?: string } => {
+    if (newName.trim() === '') {
+      return {
+        isValid: false,
+        error: $gettext('The Space name cannot be empty')
+      }
+    }
+
+    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+      return {
+        isValid: false,
+        error: $gettext('The Space name cannot be longer than %{length} characters', {
+          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
+        })
+      }
+    }
+
+    if (newName.trim() !== newName) {
+      return {
+        isValid: false,
+        error: $gettext('The Space name cannot start or end with whitespace')
+      }
+    }
+
+    if (/[/\\.:?*"><|]/.test(newName)) {
+      return {
+        isValid: false,
+        error: $gettext(
+          'The Space name cannot contain the following characters: / \\\\ . : ? * " > < |\''
+        )
+      }
+    }
+
+    return { isValid: true, error: undefined }
+  }
+
   return {
+    isSpaceNameValid,
     isFileNameValid
   }
 }
