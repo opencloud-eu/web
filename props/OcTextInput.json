@@ -70,10 +70,17 @@
     "type": "string"
   },
   {
-    "name": "fixMessageLine",
+    "name": "errorMessageDebouncedTime",
     "required": false,
     "description": "Determines if the message line should be fixed.",
     "default": "false",
+    "type": "number"
+  },
+  {
+    "name": "fixMessageLine",
+    "required": false,
+    "description": "The time in milliseconds to debounce the error message visibility.",
+    "default": "500",
     "type": "boolean"
   },
   {
