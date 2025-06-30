@@ -1,10 +1,14 @@
 # Changelog
 
-## [3.1.1](https://github.com/opencloud-eu/web/releases/tag/v3.1.1) - 2025-06-30
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-06-30
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor
+@AlexAndBear, @ScharfViktor
+
+### 📈 Enhancement
+
+- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
 
 ### 📦️ Dependencies
 
