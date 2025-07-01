@@ -6,7 +6,6 @@ export function useInterceptShiftClick(event: MouseEvent, resource: Resource): b
     return false
   }
 
-  event.preventDefault?.()
   event.stopPropagation?.()
   event.stopImmediatePropagation?.()
 

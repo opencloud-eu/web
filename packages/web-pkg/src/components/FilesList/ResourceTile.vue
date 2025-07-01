@@ -39,7 +39,12 @@
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
-            <oc-image v-if="resource.thumbnail" class="tile-preview" :src="resource.thumbnail" />
+            <oc-image
+              v-if="resource.thumbnail"
+              class="tile-preview"
+              :src="resource.thumbnail"
+              @click="toggleTile([resource, $event], $event)"
+            />
             <resource-icon
               v-else
               :resource="resource"
@@ -53,7 +58,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s" @click="markResource($event)">
+      <div class="oc-card-body oc-p-s" @click.passive="toggleTile([resource, $event], $event)">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item
@@ -62,7 +67,7 @@
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click="$emit('click')"
+              @click.stop="$emit('click')"
             />
           </div>
           <div class="oc-flex oc-flex-middle">
@@ -133,16 +138,9 @@ defineSlots<{
   selection?: (props: { item: Resource }) => unknown
 }>()
 
-function handleClick(this: any, event: MouseEvent) {
-  if (useInterceptShiftClick(event, this.resource)) {
-    return
-  }
-
-  emit('click')
-}
-
-function markResource(event: MouseEvent) {
-  useToggleTile([resource, event], event)
+function toggleTile(data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) {
+  console.log('toggleTile', data, event)
+  useToggleTile(data, event)
 }
 
 const { $gettext } = useGettext()
