@@ -12,6 +12,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @uppy/core to v4.4.7 [[#880](https://github.com/opencloud-eu/web/pull/880)]
 - fix(deps): update dependency @sentry/vue to v9.33.0 [[#872](https://github.com/opencloud-eu/web/pull/872)]
 - chore(deps): update pnpm to v10.12.4 [[#868](https://github.com/opencloud-eu/web/pull/868)]
 - chore(deps): update traefik docker tag to v3.4.3 [[#869](https://github.com/opencloud-eu/web/pull/869)]
