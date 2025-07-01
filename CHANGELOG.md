@@ -12,6 +12,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency style-dictionary to v5 [[#701](https://github.com/opencloud-eu/web/pull/701)]
 - chore(deps): update collabora/code docker tag to v25.04.3.1.1 [[#775](https://github.com/opencloud-eu/web/pull/775)]
 - fix(deps): update dependency @uppy/core to v4.4.7 [[#880](https://github.com/opencloud-eu/web/pull/880)]
 - fix(deps): update dependency @sentry/vue to v9.33.0 [[#872](https://github.com/opencloud-eu/web/pull/872)]
