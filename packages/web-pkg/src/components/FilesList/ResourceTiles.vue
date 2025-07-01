@@ -63,7 +63,16 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="(e: MouseEvent) => emitTileClick(resource, e)"
+          @click="
+            (e: MouseEvent) => {
+              if (e.shiftKey) {
+                emitTileClick(resource, e)
+              } else {
+                //toggleSelection(resource)
+                emitSelect([(resource as Resource).id])
+              }
+            }
+          "
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -80,7 +89,7 @@
               class="oc-flex-inline oc-p-s"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
-              @click.stop.prevent="toggleTile([resource, $event], $event)"
+              @click="toggleTile([resource, $event], $event)"
             />
           </template>
           <template #imageField>
@@ -304,8 +313,13 @@ const emitTileClick = (resource: Resource, event?: MouseEvent) => {
     })
   }
 
+  if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+    //toggleTile([resource, event], event)
+    toggleSelection(resource)
+  }
+
   if (resource.type !== 'space' && resource.type !== 'folder') {
-    resourceRouteResolver.createFileAction(resource)
+    resourceRouteResolver.createFileAction(resource as Resource)
   }
 }
 
@@ -617,6 +631,16 @@ onMounted(() => {
   window.addEventListener('resize', updateViewWidth)
   updateViewWidth()
 })
+
+eventBus.subscribe('app.files.list.clicked.default', (resource) => {
+  console.log('app.files.list.clicked.default', resource)
+
+  if (isResourceClickable(resource as Resource)) {
+    console.log('Ja ist klickbar')
+    emitSelect([(resource as Resource).id])
+  }
+})
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })
