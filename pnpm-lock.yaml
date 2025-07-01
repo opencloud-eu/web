@@ -539,8 +539,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       '@uppy/core':
-        specifier: 4.4.6
-        version: 4.4.6
+        specifier: 4.4.7
+        version: 4.4.7
       '@vueuse/core':
         specifier: ^13.0.0
         version: 13.4.0(vue@3.5.17(typescript@5.8.3))
@@ -812,19 +812,19 @@ importers:
         version: 9.33.0(pinia@3.0.3(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3)))(vue@3.5.17(typescript@5.8.3))
       '@uppy/core':
         specifier: ^4.3.1
-        version: 4.4.6
+        version: 4.4.7
       '@uppy/drop-target':
         specifier: ^3.0.2
-        version: 3.1.1(@uppy/core@4.4.6)
+        version: 3.1.1(@uppy/core@4.4.7)
       '@uppy/tus':
         specifier: ^4.1.5
-        version: 4.2.2(@uppy/core@4.4.6)
+        version: 4.2.2(@uppy/core@4.4.7)
       '@uppy/utils':
         specifier: ^6.0.6
         version: 6.1.5
       '@uppy/xhr-upload':
         specifier: ^4.2.3
-        version: 4.3.3(@uppy/core@4.4.6)
+        version: 4.3.3(@uppy/core@4.4.7)
       '@vavt/cm-extension':
         specifier: ^1.6.0
         version: 1.9.1
@@ -957,20 +957,20 @@ importers:
         specifier: 9.33.0
         version: 9.33.0(pinia@3.0.3(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3)))(vue@3.5.17(typescript@5.8.3))
       '@uppy/core':
-        specifier: 4.4.6
-        version: 4.4.6
+        specifier: 4.4.7
+        version: 4.4.7
       '@uppy/drop-target':
         specifier: 3.1.1
-        version: 3.1.1(@uppy/core@4.4.6)
+        version: 3.1.1(@uppy/core@4.4.7)
       '@uppy/tus':
         specifier: 4.2.2
-        version: 4.2.2(@uppy/core@4.4.6)
+        version: 4.2.2(@uppy/core@4.4.7)
       '@uppy/utils':
         specifier: 6.1.5
         version: 6.1.5
       '@uppy/xhr-upload':
         specifier: 4.3.3
-        version: 4.3.3(@uppy/core@4.4.6)
+        version: 4.3.3(@uppy/core@4.4.7)
       '@vueuse/core':
         specifier: 13.4.0
         version: 13.4.0(vue@3.5.17(typescript@5.8.3))
@@ -2983,8 +2983,8 @@ packages:
     peerDependencies:
       '@uppy/core': ^4.4.1
 
-  '@uppy/core@4.4.6':
-    resolution: {integrity: sha512-EH5C5TSwY3tXp/gl4SPTpcxzEjBz8Ntt1o1s/v03bw8AUTl7X0lGUWRepbCh/XIUJyBTMJ1O+4Uv4/164WQSLg==}
+  '@uppy/core@4.4.7':
+    resolution: {integrity: sha512-ZEdRiVnkHVITS7afBCWxQGNKOZ22DFXoDb4ZcLK2Srp5iBnxUbg1rV3sntHDNjZq7QHQAtZqHKAF8RxE6ZSNeg==}
 
   '@uppy/drop-target@3.1.1':
     resolution: {integrity: sha512-/2jnQ3DqfcWGjgoasLBLvwJ3fozavwSXFVULenDmPUI8YPjuxmEtOu61XnZ/OLhRnZo6Qm+kltSd+YUS0P/LNA==}
@@ -8856,14 +8856,14 @@ snapshots:
       unhead: 1.11.20
       vue: 3.5.17(typescript@5.8.3)
 
-  '@uppy/companion-client@4.4.1(@uppy/core@4.4.6)':
+  '@uppy/companion-client@4.4.1(@uppy/core@4.4.7)':
     dependencies:
-      '@uppy/core': 4.4.6
+      '@uppy/core': 4.4.7
       '@uppy/utils': 6.1.5
       namespace-emitter: 2.0.1
       p-retry: 6.2.1
 
-  '@uppy/core@4.4.6':
+  '@uppy/core@4.4.7':
     dependencies:
       '@transloadit/prettier-bytes': 0.3.5
       '@uppy/store-default': 4.2.0
@@ -8874,17 +8874,17 @@ snapshots:
       nanoid: 5.1.5
       preact: 10.26.5
 
-  '@uppy/drop-target@3.1.1(@uppy/core@4.4.6)':
+  '@uppy/drop-target@3.1.1(@uppy/core@4.4.7)':
     dependencies:
-      '@uppy/core': 4.4.6
+      '@uppy/core': 4.4.7
       '@uppy/utils': 6.1.5
 
   '@uppy/store-default@4.2.0': {}
 
-  '@uppy/tus@4.2.2(@uppy/core@4.4.6)':
+  '@uppy/tus@4.2.2(@uppy/core@4.4.7)':
     dependencies:
-      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.6)
-      '@uppy/core': 4.4.6
+      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.7)
+      '@uppy/core': 4.4.7
       '@uppy/utils': 6.1.5
       tus-js-client: 4.3.1
 
@@ -8893,10 +8893,10 @@ snapshots:
       lodash: 4.17.21
       preact: 10.26.5
 
-  '@uppy/xhr-upload@4.3.3(@uppy/core@4.4.6)':
+  '@uppy/xhr-upload@4.3.3(@uppy/core@4.4.7)':
     dependencies:
-      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.6)
-      '@uppy/core': 4.4.6
+      '@uppy/companion-client': 4.4.1(@uppy/core@4.4.7)
+      '@uppy/core': 4.4.7
       '@uppy/utils': 6.1.5
 
   '@vavt/cm-extension@1.9.1': {}
