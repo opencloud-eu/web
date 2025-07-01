@@ -124,7 +124,7 @@
     "sass": "1.89.2",
     "sass-loader": "16.0.5",
     "sass-resources-loader": "^2.2.5",
-    "style-dictionary": "^4.0.0",
+    "style-dictionary": "^5.0.0",
     "style-value-types": "^5.0.0",
     "tinycolor2": "^1.6.0",
     "url": "^0.11.3",
