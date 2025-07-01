@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     emitClick(e: unknown) {
-      if (!e || typeof (e as MouseEvent).stopPropagation !== 'function') {
+      if (!e || typeof (e as Event).stopPropagation !== 'function') {
         return
       }
       if (this.isNavigatable) {
