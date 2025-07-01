@@ -10,11 +10,16 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, PropType, unref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import {
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { AVAILABLE_SIZES, SizeType } from '@opencloud-eu/design-system/helpers'
 import {
-  IconType,
   createDefaultFileIconMapping,
+  IconType,
   ResourceIconMapping,
   resourceIconMappingInjectionKey
 } from '../../helpers/resource/icon'
@@ -24,10 +29,21 @@ const defaultFolderIcon: IconType = {
   color: 'var(--oc-color-icon-folder)'
 }
 
+const defaultPersonalSpaceIcon: IconType = {
+  name: 'resource-type-folder',
+  color: 'var(--oc-role-secondary)'
+}
+
 const defaultSpaceIcon: IconType = {
   name: 'layout-grid',
   color: 'var(--oc-role-secondary)'
 }
+
+const defaultSpaceIconDisabled: IconType = {
+  name: 'layout-grid',
+  color: 'var(--oc-role-secondary)'
+}
+
 const defaultFallbackIcon: IconType = {
   name: 'resource-type-file',
   color: 'var(--oc-role-on-surface)'
@@ -42,7 +58,7 @@ export default defineComponent({
      * The resource to be displayed
      */
     resource: {
-      type: Object as PropType<Resource>,
+      type: Object as PropType<Resource | SpaceResource>,
       required: true
     },
     /**
@@ -70,6 +86,14 @@ export default defineComponent({
     const isSpace = computed(() => {
       return props.resource.type === 'space'
     })
+
+    const isDisabledSpace = computed(() => {
+      return isProjectSpaceResource(props.resource) && props.resource.disabled === true
+    })
+
+    const isPersonalSpace = computed(() => {
+      return isPersonalSpaceResource(props.resource)
+    })
     const extension = computed(() => {
       return props.resource.extension?.toLowerCase()
     })
@@ -78,6 +102,12 @@ export default defineComponent({
     })
 
     const icon = computed((): IconType => {
+      if (unref(isPersonalSpace)) {
+        return defaultPersonalSpaceIcon
+      }
+      if (unref(isDisabledSpace)) {
+        return defaultSpaceIconDisabled
+      }
       if (unref(isSpace)) {
         return defaultSpaceIcon
       }
@@ -97,6 +127,9 @@ export default defineComponent({
     })
 
     const iconTypeClass = computed(() => {
+      if (unref(isDisabledSpace)) {
+        return 'oc-resource-icon-space-disabled'
+      }
       if (unref(isSpace)) {
         return 'oc-resource-icon-space'
       }
@@ -123,5 +156,10 @@ span.oc-resource-icon {
   &-file svg {
     height: 70%;
   }
+}
+
+span.oc-resource-icon-space-disabled {
+  filter: grayscale(100%);
+  opacity: 80%;
 }
 </style>

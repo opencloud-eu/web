@@ -26,39 +26,28 @@
               autocomplete="off"
             />
           </div>
-          <oc-table
-            ref="tableRef"
-            class="spaces-table"
+          <resource-table
+            class="trash-table"
+            :resources="displaySpaces"
+            :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
-            :fields="fields"
-            :data="displaySpaces"
+            :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
-            :sticky="true"
-            :hover="true"
+            :has-actions="false"
+            :are-thumbnails-displayed="false"
+            :are-paths-displayed="false"
+            :is-selectable="false"
+            :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
-            <template #icon="{ item }">
-              <oc-icon v-if="isPersonalSpaceResource(item)" class="oc-pl-m" name="folder" />
-              <oc-icon v-else class="oc-pl-m" name="layout-grid" />
-            </template>
-            <template #name="{ item }">
-              <oc-button
-                class="oc-display-block trash-bin-route"
-                appearance="raw"
-                no-hover
-                v-bind="getSpaceAttributes(item)"
-              >
-                {{ getSpaceName(item) }}
-              </oc-button>
-            </template>
             <template #footer>
               <div class="oc-text-center oc-width-1-1 oc-my-s">
                 <p class="oc-text-muted">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
               </div>
             </template>
-          </oc-table>
+          </resource-table>
         </template>
       </template>
     </files-view-wrapper>
@@ -73,33 +62,43 @@ import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
 import { useTask } from 'vue-concurrency'
 import {
+  AppBar,
+  AppLoadingSpinner,
+  createFileRouteOptions,
+  createLocationTrash,
+  CreateTargetRouteOptions,
   defaultFuseOptions,
   FileSideBar,
+  NoContentMessage,
   SortDir,
   useClientService,
+  useFileListHeaderPosition,
   useResourcesStore,
   useRouter,
   useSideBar,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { createLocationTrash } from '@opencloud-eu/web-pkg'
-import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
-import { AppBar } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import { useFileListHeaderPosition } from '@opencloud-eu/web-pkg'
+import { ResourceTable } from '@opencloud-eu/web-pkg/src'
+import { RouteLocationNamedRaw } from 'vue-router'
 
 export default defineComponent({
   name: 'TrashOverview',
-  components: { FileSideBar, FilesViewWrapper, AppBar, AppLoadingSpinner, NoContentMessage },
+  components: {
+    ResourceTable,
+    FileSideBar,
+    FilesViewWrapper,
+    AppBar,
+    AppLoadingSpinner,
+    NoContentMessage
+  },
   setup() {
     const userStore = useUserStore()
     const spacesStore = useSpacesStore()
@@ -113,7 +112,6 @@ export default defineComponent({
     const sortDir = ref<SortDir>(SortDir.Asc)
     const filterTerm = ref('')
     const markInstance = ref(undefined)
-    const tableRef = ref(undefined)
 
     const spaces = computed(() =>
       spacesStore.spaces.filter(
@@ -195,44 +193,26 @@ export default defineComponent({
       }
     ])
 
-    const getSpaceName = (space: SpaceResource) => {
-      if (isPersonalSpaceResource(space)) {
-        return $gettext('Personal')
-      }
-      if (space.disabled === true) {
-        return $gettext('%{spaceName} (disabled)', { spaceName: space.name })
-      }
-
-      return space.name
-    }
-
-    const getSpaceAttributes = (space: SpaceResource) => {
-      if (isProjectSpaceResource(space) && space.disabled === true) {
-        return {
-          disabled: true
-        }
-      }
-
-      return {
-        type: 'router-link' as const,
-        to: getTrashLink(space)
-      }
+    const resourceTargetRouteCallback = ({
+      resource
+    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
+      return getTrashLink(resource as SpaceResource)
     }
 
     const getTrashLink = (space: SpaceResource) => {
       return createLocationTrash('files-trash-generic', {
-        ...createFileRouteOptions(space, { fileId: space.fileId })
+        ...createFileRouteOptions(space)
       })
     }
 
     onMounted(async () => {
       if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
-        return router.push(getTrashLink(unref(spaces).pop()))
+        return router.push(getTrashLink(unref(spaces)[0]))
       }
 
       await loadResourcesTask.perform()
       await nextTick()
-      markInstance.value = new Mark(unref(tableRef)?.$el)
+      markInstance.value = new Mark('.trash-table')
     })
 
     watch(filterTerm, () => {
@@ -255,15 +235,12 @@ export default defineComponent({
       footerTextTotal,
       footerTextFilter,
       fields,
-      tableRef,
       spaces,
       filter,
       handleSort,
       displaySpaces,
       breadcrumbs,
-      getSpaceName,
-      getTrashLink,
-      getSpaceAttributes,
+      resourceTargetRouteCallback,
       loadResourcesTask,
       areResourcesLoading,
       isPersonalSpaceResource,
@@ -277,11 +254,5 @@ export default defineComponent({
 <style lang="scss">
 #spaces-filter {
   width: 16rem;
-}
-
-.trash-bin {
-  &-route {
-    color: var(--oc-role-on-surface);
-  }
 }
 </style>
