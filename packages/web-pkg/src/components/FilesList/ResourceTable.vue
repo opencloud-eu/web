@@ -67,7 +67,13 @@
         :disabled="isResourceDisabled(item)"
         :model-value="isResourceSelected(item)"
         :outline="isLatestSelectedItem(item)"
-        @click.stop="toggleSelection(item.id)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (!useInterceptShiftClick(e, item)) {
+              toggleSelection(item.id)
+            }
+          }
+        "
       />
     </template>
     <template #name="{ item }">
@@ -97,7 +103,14 @@
           v-if="hasRenameAction(item)"
           class="resource-table-edit-name raw-hover-surface oc-p-xs"
           appearance="raw"
-          @click="openRenameDialog(item)"
+          @click.stop="
+            (e: MouseEvent) => {
+              if (useInterceptShiftClick(e, item)) {
+                return
+              }
+              openRenameDialog(item)
+            }
+          "
         >
           <oc-icon name="edit-2" fill-type="line" size="small" />
         </oc-button>
@@ -133,7 +146,7 @@
         v-if="item.tags.length > 2"
         size="small"
         class="resource-table-tag-more"
-        @click="openTagsSidebar"
+        @click="openTagsSidebar()"
       >
         + {{ item.tags.length - 2 }}
       </oc-tag>
@@ -187,7 +200,14 @@
         appearance="raw-inverse"
         class="resource-table-shared-by"
         no-hover
-        @click="openSharingSidebar(item)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (useInterceptShiftClick(e, item)) {
+              return
+            }
+            openSharingSidebar(item, e)
+          }
+        "
       >
         <oc-avatars
           class="resource-table-people"
@@ -213,7 +233,14 @@
         appearance="raw-inverse"
         class="resource-table-shared-with"
         no-hover
-        @click="openSharingSidebar(item)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (useInterceptShiftClick(e, item)) {
+              return
+            }
+            openSharingSidebar(item, e)
+          }
+        "
       >
         <oc-avatars
           class="resource-table-people"
@@ -318,6 +345,7 @@ import {
 } from '../../helpers'
 import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
+import { useInterceptShiftClick } from '../../composables/keyboardActions'
 
 import { useResourceRouteResolver } from '../../composables/filesList/useResourceRouteResolver'
 import { ClipboardActions } from '../../helpers/clipboardActions'
@@ -707,6 +735,8 @@ export default defineComponent({
       isEmbedModeEnabled,
       emitSelect,
       toggleSelection,
+      eventBus,
+      useInterceptShiftClick,
       areFileExtensionsShown,
       latestSelectedId,
       isResourceClickable,
@@ -1009,8 +1039,11 @@ export default defineComponent({
     openTagsSidebar() {
       eventBus.publish(SideBarEventTopics.open)
     },
-    openSharingSidebar(file: Resource) {
-      let panelToOpen
+    openSharingSidebar(file: Resource, event?: MouseEvent) {
+      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, file)) {
+        return
+      }
+      let panelToOpen: unknown
       if (file.type === 'space') {
         panelToOpen = 'space-share'
       } else {
@@ -1077,11 +1110,16 @@ export default defineComponent({
       this.toggleSelection(file.id)
     },
     showContextMenuOnBtnClick(data: ContextMenuBtnClickEventData, item: Resource) {
+      const { dropdown, event } = data
+
+      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, item)) {
+        return
+      }
+
       if (this.isResourceDisabled(item)) {
         return false
       }
 
-      const { dropdown, event } = data
       if (dropdown?.tippy === undefined) {
         return
       }
@@ -1091,8 +1129,10 @@ export default defineComponent({
       displayPositionedDropdown(dropdown.tippy, event, this.contextMenuButton)
     },
     showContextMenu(row: ComponentPublicInstance<unknown>, event: MouseEvent, item: Resource) {
+      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, item)) {
+        return
+      }
       event.preventDefault()
-
       if (this.isResourceDisabled(item)) {
         return false
       }
@@ -1180,9 +1220,11 @@ export default defineComponent({
           .map((resource) => resource.id)
       )
     },
-    emitFileClick(resource: Resource) {
+    emitFileClick(resource: Resource, event?: MouseEvent) {
+      if (useInterceptShiftClick(event, resource)) {
+        return
+      }
       const space = this.getMatchingSpace(resource)
-
       /**
        * Triggered when a default action is triggered on a file
        * @property {object} resource resource for which the event is triggered
