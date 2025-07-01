@@ -139,7 +139,6 @@ defineSlots<{
 }>()
 
 function toggleTile(data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) {
-  console.log('toggleTile', data, event)
   useToggleTile(data, event)
 }
 
