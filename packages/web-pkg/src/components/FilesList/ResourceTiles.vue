@@ -68,7 +68,6 @@
               if (e.shiftKey) {
                 emitTileClick(resource, e)
               } else {
-                //toggleSelection(resource)
                 emitSelect([(resource as Resource).id])
               }
             }
@@ -89,7 +88,7 @@
               class="oc-flex-inline oc-p-s"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
-              @click="toggleTile([resource, $event], $event)"
+              @click.stop.prevent="toggleTile([resource, $event], $event)"
             />
           </template>
           <template #imageField>
@@ -314,7 +313,6 @@ const emitTileClick = (resource: Resource, event?: MouseEvent) => {
   }
 
   if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-    //toggleTile([resource, event], event)
     toggleSelection(resource)
   }
 
@@ -633,10 +631,7 @@ onMounted(() => {
 })
 
 eventBus.subscribe('app.files.list.clicked.default', (resource) => {
-  console.log('app.files.list.clicked.default', resource)
-
   if (isResourceClickable(resource as Resource)) {
-    console.log('Ja ist klickbar')
     emitSelect([(resource as Resource).id])
   }
 })
