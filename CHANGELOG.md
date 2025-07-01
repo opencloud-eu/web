@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-06-30
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-01
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,6 +12,10 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.33.0 [[#872](https://github.com/opencloud-eu/web/pull/872)]
+- chore(deps): update pnpm to v10.12.4 [[#868](https://github.com/opencloud-eu/web/pull/868)]
+- chore(deps): update traefik docker tag to v3.4.3 [[#869](https://github.com/opencloud-eu/web/pull/869)]
+- chore(deps): update devdependencies (non-major) [[#867](https://github.com/opencloud-eu/web/pull/867)]
 - [full-ci] bump-opencloud-3.1.0. run all tests [[#877](https://github.com/opencloud-eu/web/pull/877)]
 
 ## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-27
