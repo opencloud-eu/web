@@ -24,7 +24,7 @@ export const useSpaceActionsNavigateToTrash = () => {
     {
       name: 'navigateToTrash',
       icon: 'delete-bin',
-      label: () => $gettext('Show deleted files'),
+      label: () => $gettext('Open Deleted files'),
       handler: ({ resources }) => {
         router.push(getTrashLink(resources[0]))
       },
