@@ -41,29 +41,29 @@ Feature: Accessibility checks
     ## check files-view-wrapper
     # personal space
     And "Alice" opens the "files" app
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
     And "Alice" switches to the tiles-view
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
     And "Alice" switches to the "resource-table-condensed" view mode
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
 
     # shares
     And "Alice" navigates to the shared with me page
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "shares"
     And "Alice" navigates to the shared with others page
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "shares"
     And "Alice" navigates to the shared via link page
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "shares"
 
     # project spaces
     And "Alice" navigates to the projects space page
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
     And "Alice" switches to the tiles-view
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
     And "Alice" navigates to the project space "my_space"
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
     And "Alice" switches to the "resource-table" view mode
-    And "Alice" check accessibility of the ".files-view-wrapper" page
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
 
     # deleted files
     # search results
