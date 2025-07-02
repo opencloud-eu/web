@@ -94,7 +94,6 @@ import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
-import { useResourcesViewDefaults } from '../../composables'
 
 export default defineComponent({
   name: 'TrashOverview',
@@ -115,7 +114,6 @@ export default defineComponent({
     const clientService = useClientService()
     const { y: fileListHeaderY } = useFileListHeaderPosition()
     const resourcesStore = useResourcesStore()
-    const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any[]>()
 
     const sortBy = ref<keyof SpaceResource>('name')
     const sortDir = ref<SortDir>(SortDir.Asc)
