@@ -2,11 +2,11 @@ import { useSpaceActionsNavigateToTrash } from '../../../../../src'
 import { mock } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,
-  RouteLocation,
-  getComposableWrapper
+  getComposableWrapper,
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 describe('navigateToSpace', () => {
   describe('isVisible property', () => {
@@ -14,6 +14,17 @@ describe('navigateToSpace', () => {
       getWrapper({
         setup: ({ actions }) => {
           expect(unref(actions)[0].isVisible({ resources: [] })).toBe(false)
+        }
+      })
+    })
+    it('should be false when the resource is not a space resource', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [mock<Resource>() as any]
+            })
+          ).toBe(false)
         }
       })
     })
@@ -33,7 +44,7 @@ describe('navigateToSpace', () => {
         }
       })
     })
-    it('should be false when the space is no project space', () => {
+    it('should be true when the space is personal space', () => {
       getWrapper({
         setup: ({ actions }) => {
           expect(
@@ -45,7 +56,23 @@ describe('navigateToSpace', () => {
                 })
               ]
             })
-          ).toBe(false)
+          ).toBe(true)
+        }
+      })
+    })
+    it('should be true when the space is project space', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [
+                mock<SpaceResource>({
+                  disabled: false,
+                  driveType: 'project'
+                })
+              ]
+            })
+          ).toBe(true)
         }
       })
     })
