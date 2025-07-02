@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { SpaceAction } from '../types'
 import { useGettext } from 'vue3-gettext'
 import { useRouter } from '../../router'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { isPersonalSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { createLocationTrash } from '../../../router'
 import { createFileRouteOptions } from '../../../helpers'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
@@ -30,7 +30,7 @@ export const useSpaceActionsNavigateToTrash = () => {
           return false
         }
 
-        if (!isProjectSpaceResource(resources[0])) {
+        if (!isProjectSpaceResource(resources[0]) && !isPersonalSpaceResource(resources[0])) {
           return false
         }
 

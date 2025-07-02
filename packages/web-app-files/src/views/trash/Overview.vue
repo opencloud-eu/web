@@ -34,13 +34,18 @@
             :sort-dir="sortDir"
             :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
-            :has-actions="false"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
             :is-selectable="false"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
+            <template #contextMenu="{ resource, isOpen }">
+              <trash-context-actions
+                v-if="isOpen"
+                :action-options="{ resources: [resource] as SpaceResource[] }"
+              />
+            </template>
             <template #footer>
               <div class="oc-text-center oc-width-1-1 oc-my-s">
                 <p class="oc-text-muted">{{ footerTextTotal }}</p>
@@ -88,10 +93,13 @@ import {
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
+import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
+import { useResourcesViewDefaults } from '../../composables'
 
 export default defineComponent({
   name: 'TrashOverview',
   components: {
+    TrashContextActions,
     ResourceTable,
     FileSideBar,
     FilesViewWrapper,
@@ -107,6 +115,7 @@ export default defineComponent({
     const clientService = useClientService()
     const { y: fileListHeaderY } = useFileListHeaderPosition()
     const resourcesStore = useResourcesStore()
+    const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any[]>()
 
     const sortBy = ref<keyof SpaceResource>('name')
     const sortDir = ref<SortDir>(SortDir.Asc)
