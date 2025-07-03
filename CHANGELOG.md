@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-02
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-03
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
 - [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
 
 ### 📈 Enhancement
