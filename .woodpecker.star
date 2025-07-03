@@ -92,6 +92,13 @@ config = {
                 "app-store",
             ],
         },
+        "a11y": {
+            "earlyFail": True,
+            "skip": False,
+            "suites": [
+                "a11y",
+            ],
+        },
         "app-provider": {
             "skip": False,
             "suites": [
