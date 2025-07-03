@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-03
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @ScharfViktor, @kulmann, @prashant-gurung899
+
+### 📈 Enhancement
+
+- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
+- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
+
+### ✅ Tests
+
+- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
+- [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#884](https://github.com/opencloud-eu/web/pull/884)]
+- fix(deps): update dependency @vueuse/core to v13.5.0 [[#885](https://github.com/opencloud-eu/web/pull/885)]
+- fix(deps): update dependency @sentry/vue to v9.34.0 [[#882](https://github.com/opencloud-eu/web/pull/882)]
+- chore(deps): update dependency style-dictionary to v5 [[#701](https://github.com/opencloud-eu/web/pull/701)]
+- chore(deps): update collabora/code docker tag to v25.04.3.1.1 [[#775](https://github.com/opencloud-eu/web/pull/775)]
+- fix(deps): update dependency @uppy/core to v4.4.7 [[#880](https://github.com/opencloud-eu/web/pull/880)]
+- fix(deps): update dependency @sentry/vue to v9.33.0 [[#872](https://github.com/opencloud-eu/web/pull/872)]
+- chore(deps): update pnpm to v10.12.4 [[#868](https://github.com/opencloud-eu/web/pull/868)]
+- chore(deps): update traefik docker tag to v3.4.3 [[#869](https://github.com/opencloud-eu/web/pull/869)]
+- chore(deps): update devdependencies (non-major) [[#867](https://github.com/opencloud-eu/web/pull/867)]
+- [full-ci] bump-opencloud-3.1.0. run all tests [[#877](https://github.com/opencloud-eu/web/pull/877)]
+
 ## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-27
 
 ### ❤️ Thanks to all contributors! ❤️
