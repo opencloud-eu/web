@@ -237,7 +237,7 @@
       </oc-button>
     </template>
     <template #actions="{ item }">
-      <div v-if="!isResourceDisabled(item)" class="resource-table-actions">
+      <div v-if="showContextDrop(item)" class="resource-table-actions">
         <!-- @slot Add quick actions before the `context-menu / three dot` button in the actions column -->
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
@@ -290,6 +290,7 @@ import {
   FolderViewModeConstants,
   routeToContextQuery,
   SortDir,
+  useActiveLocation,
   useAuthStore,
   useCanBeOpenedWithSecureView,
   useCapabilityStore,
@@ -323,7 +324,7 @@ import { useResourceRouteResolver } from '../../composables/filesList/useResourc
 import { ClipboardActions } from '../../helpers/clipboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
 import { useFileActionsRename } from '../../composables/actions'
-import { createLocationCommon } from '../../router'
+import { createLocationCommon, isLocationTrashActive } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
 import { OcButton, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
@@ -593,6 +594,8 @@ export default defineComponent({
       () => capabilityStore.filesTags && width.value >= TAGS_MINIMUM_SCREEN_WIDTH
     )
 
+    const isTrashOverviewRoute = useActiveLocation(isLocationTrashActive, 'files-trash-overview')
+
     const { actions: renameActions } = useFileActionsRename()
     const { actions: renameActionsSpace } = useSpaceActionsRename()
     const renameHandler = computed(() => unref(renameActions)[0].handler)
@@ -674,6 +677,14 @@ export default defineComponent({
       return unref(deleteQueue).includes(id)
     }
 
+    const showContextDrop = (item: Resource | SpaceResource) => {
+      if (unref(isTrashOverviewRoute) && isProjectSpaceResource(item) && item.disabled) {
+        return false
+      }
+
+      return !isResourceDisabled(item)
+    }
+
     return {
       router,
       configOptions,
@@ -713,7 +724,8 @@ export default defineComponent({
       getResourceLink,
       isSticky,
       isResourceInDeleteQueue,
-      ShareTypes
+      ShareTypes,
+      showContextDrop
     }
   },
   data() {

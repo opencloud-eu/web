@@ -2,10 +2,13 @@ import { computed } from 'vue'
 import { SpaceAction } from '../types'
 import { useGettext } from 'vue3-gettext'
 import { useRouter } from '../../router'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import {
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { createLocationTrash } from '../../../router'
 import { createFileRouteOptions } from '../../../helpers'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 
 export const useSpaceActionsNavigateToTrash = () => {
   const router = useRouter()
@@ -21,7 +24,7 @@ export const useSpaceActionsNavigateToTrash = () => {
     {
       name: 'navigateToTrash',
       icon: 'delete-bin',
-      label: () => $gettext('Show deleted files'),
+      label: () => $gettext('Open Deleted files'),
       handler: ({ resources }) => {
         router.push(getTrashLink(resources[0]))
       },
@@ -30,7 +33,7 @@ export const useSpaceActionsNavigateToTrash = () => {
           return false
         }
 
-        if (!isProjectSpaceResource(resources[0])) {
+        if (!isProjectSpaceResource(resources[0]) && !isPersonalSpaceResource(resources[0])) {
           return false
         }
 
