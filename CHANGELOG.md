@@ -6,14 +6,15 @@
 
 @AlexAndBear, @ScharfViktor, @kulmann, @prashant-gurung899
 
+### 📈 Enhancement
+
+- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
+- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
+
 ### ✅ Tests
 
 - enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
 - [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
-
-### 📈 Enhancement
-
-- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
 
 ### 📦️ Dependencies
 
