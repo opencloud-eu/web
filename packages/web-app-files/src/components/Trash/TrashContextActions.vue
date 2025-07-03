@@ -2,50 +2,38 @@
   <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   ContextActionMenu,
   MenuSection,
   SpaceActionOptions,
   useSpaceActionsNavigateToTrash
 } from '@opencloud-eu/web-pkg'
-import { computed, defineComponent, PropType, Ref, toRef, unref } from 'vue'
+import { computed, toRef, unref } from 'vue'
 
-export default defineComponent({
-  name: 'TrashContextActions',
-  components: { ContextActionMenu },
-  props: {
-    actionOptions: {
-      type: Object as PropType<SpaceActionOptions>,
-      required: true
-    }
-  },
-  setup(props) {
-    const actionOptions = toRef(props, 'actionOptions') as Ref<SpaceActionOptions>
+const props = defineProps<{
+  actionOptions: SpaceActionOptions
+}>()
 
-    const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
+const actionOptions = toRef(props, 'actionOptions')
 
-    const menuItemsPrimaryActions = computed(() => {
-      const fileHandlers = [...unref(navigateToTrashActions)]
-      return [...fileHandlers].filter((item) => item.isVisible(unref(actionOptions)))
+const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
+
+const menuItemsPrimaryActions = computed(() => {
+  const fileHandlers = [...unref(navigateToTrashActions)]
+  return fileHandlers.filter((item) => item.isVisible(unref(actionOptions)))
+})
+
+const menuSections = computed<MenuSection[]>(() => {
+  const sections: MenuSection[] = []
+
+  if (unref(menuItemsPrimaryActions)) {
+    sections.push({
+      name: 'primaryActions',
+      items: unref(menuItemsPrimaryActions)
     })
-
-    const menuSections = computed(() => {
-      const sections: MenuSection[] = []
-
-      if (unref(menuItemsPrimaryActions)) {
-        sections.push({
-          name: 'primaryActions',
-          items: unref(menuItemsPrimaryActions)
-        })
-      }
-
-      return sections
-    })
-
-    return {
-      menuSections
-    }
   }
+
+  return sections
 })
 </script>
