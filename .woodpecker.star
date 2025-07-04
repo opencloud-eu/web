@@ -1555,7 +1555,7 @@ def e2eTestsOnKeycloak(ctx):
                      },
                      "commands": [
                          "cd tests/e2e",
-                         "bash run-e2e.sh cucumber/features/keycloak,
+                         "bash run-e2e.sh cucumber/features/keycloak",
                      ],
                  },
              ] + \
