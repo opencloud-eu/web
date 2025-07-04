@@ -196,7 +196,7 @@ const cleanUpUser = async (createdUserStore, adminUser: User) => {
   const requests: Promise<User>[] = []
   createdUserStore.forEach((user) => {
     if (config.keycloak) {
-      requests.push(api.keycloak.deleteUser({ user, admin: adminUser }))
+      requests.push(api.keycloak.deleteUser({ user }))
     } else {
       requests.push(api.graph.deleteUser({ user, admin: adminUser }))
     }

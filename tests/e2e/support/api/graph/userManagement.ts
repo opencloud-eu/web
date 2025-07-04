@@ -22,7 +22,7 @@ export const me = async ({ user }: { user: User }): Promise<Me> => {
   return (await response.json()) as Me
 }
 
-export const createUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
+export const createUser = async ({ user, admin }: { user: User, admin: User }): Promise<User> => {
   const body = {
     displayName: user.displayName,
     mail: user.email,
@@ -46,7 +46,7 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
   return user
 }
 
-export const deleteUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
+export const deleteUser = async ({ user, admin }: { user: User, admin: User }): Promise<User> => {
   await request({
     method: 'DELETE',
     path: join('graph', 'v1.0', 'users', user.username),
@@ -59,7 +59,7 @@ export const deleteUser = async ({ user, admin }: { user: User; admin: User }): 
   return user
 }
 
-export const getUserId = async ({ user, admin }: { user: User; admin: User }): Promise<string> => {
+export const getUserId = async ({ user, admin }: { user: User, admin: User }): Promise<string> => {
   const response = await request({
     method: 'GET',
     path: join('graph', 'v1.0', 'users', user.username),
