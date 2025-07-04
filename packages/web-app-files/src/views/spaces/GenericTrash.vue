@@ -6,7 +6,23 @@
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
         :space="space"
-      />
+      >
+        <template #actions>
+          <oc-button
+            v-if="emptyTrashBinAction.isVisible({ resources: [space] })"
+            :disabled="paginatedResources.length === 0"
+            :action-options="{ resources: [space] }"
+            :class="emptyTrashBinAction.class"
+            size="medium"
+            appearance="filled"
+            class="oc-mr-s"
+            @click="emptyTrashBinAction.handler({ resources: [space] })"
+          >
+            <oc-icon :name="emptyTrashBinAction.icon" size="medium" />
+            {{ emptyTrashBinAction.label() }}
+          </oc-button>
+        </template>
+      </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message
@@ -56,21 +72,25 @@
 <script lang="ts">
 import { storeToRefs } from 'pinia'
 
-import { AppBar, ContextActions, FileSideBar, useUserStore } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  AppLoadingSpinner,
+  ContextActions,
+  createLocationTrash,
+  eventBus,
+  FileSideBar,
+  NoContentMessage,
+  Pagination,
+  ResourceTable,
+  useDocumentTitle,
+  useFileActionsEmptyTrashBin,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { Pagination } from '@opencloud-eu/web-pkg'
-
-import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
-import { computed, defineComponent, PropType, onMounted, onBeforeUnmount, unref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
-import { createLocationTrash } from '@opencloud-eu/web-pkg'
-import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { useDocumentTitle } from '@opencloud-eu/web-pkg'
+import { computed, defineComponent, onBeforeUnmount, onMounted, PropType, unref } from 'vue'
+import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
@@ -103,8 +123,12 @@ export default defineComponent({
 
   setup(props) {
     const { $gettext } = useGettext()
+
     const userStore = useUserStore()
     const { user } = storeToRefs(userStore)
+
+    const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
+    const emptyTrashBinAction = computed(() => unref(emptyTrashBinActions)[0])
 
     let loadResourcesEventToken: string
     const noContentMessage = computed(() => {
@@ -145,7 +169,8 @@ export default defineComponent({
     return {
       ...resourcesViewDefaults,
       user,
-      noContentMessage
+      noContentMessage,
+      emptyTrashBinAction
     }
   },
 

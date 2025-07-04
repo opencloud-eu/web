@@ -161,11 +161,14 @@
       />
     </template>
     <template #indicators="{ item }">
-      <resource-status-indicators
-        :space="space"
-        :resource="item"
-        :disable-handler="isResourceDisabled(item)"
-      />
+      <slot name="indicators" :resource="item">
+        <resource-status-indicators
+          :space="space"
+          :resource="item"
+          :filter="(indicator) => !indicator.category.includes('trash')"
+          :disable-handler="isResourceDisabled(item)"
+        />
+      </slot>
     </template>
     <template #sdate="{ item }">
       <span
@@ -400,6 +403,14 @@ export default defineComponent({
      * Asserts whether actions are available
      */
     hasActions: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    /**
+     * Asserts whether rename quick action is available
+     */
+    hasRenameQuickAction: {
       type: Boolean,
       required: false,
       default: true
@@ -997,7 +1008,7 @@ export default defineComponent({
       return item.id === this.latestSelectedId
     },
     hasRenameAction(item: Resource) {
-      if (isProjectSpaceResource(item)) {
+      if (this.hasRenameQuickAction && isProjectSpaceResource(item)) {
         return this.renameActionsSpace.filter((menuItem) =>
           menuItem.isVisible({ resources: [item] })
         ).length

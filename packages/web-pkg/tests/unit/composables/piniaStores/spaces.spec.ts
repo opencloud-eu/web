@@ -1,12 +1,17 @@
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import {
-  useSpacesStore,
   sortSpaceMembers,
-  useSharesStore
+  useSharesStore,
+  useSpacesStore
 } from '../../../../src/composables/piniaStores'
 import { createPinia, setActivePinia } from 'pinia'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { CollaboratorShare, GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  CollaboratorShare,
+  GraphSharePermission,
+  PersonalSpaceResource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 
 describe('spaces', () => {
@@ -242,6 +247,28 @@ describe('spaces', () => {
             {
               orderBy: 'name asc',
               filter: 'driveType eq project'
+            },
+            expect.anything()
+          )
+          expect(instance.spaces.length).toBe(1)
+        }
+      })
+    })
+  })
+  describe('method "reloadPersonalSpace"', () => {
+    it('correctly reloads the personal space', () => {
+      getWrapper({
+        setup: async (instance) => {
+          const spaces = [mock<PersonalSpaceResource>({ id: '1' })]
+          const graphClient = mockDeep<Graph>()
+          graphClient.drives.listMyDrives.mockResolvedValue(spaces)
+          await instance.reloadPersonalSpace({ graphClient })
+
+          expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
+          expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
+            {
+              orderBy: 'name asc',
+              filter: 'driveType eq personal'
             },
             expect.anything()
           )

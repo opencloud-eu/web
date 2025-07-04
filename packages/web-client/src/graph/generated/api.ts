@@ -729,6 +729,12 @@ export interface Drive {
      * @memberof Drive
      */
     'special'?: Array<DriveItem>;
+    /**
+     * Indicates whether the drive has items in the trash. Read-only.
+     * @type {boolean}
+     * @memberof Drive
+     */
+    '@libre.graph.hasTrashedItems'?: boolean;
 }
 /**
  * Represents a resource inside a drive. Read-only.
@@ -1126,6 +1132,12 @@ export interface DriveUpdate {
      * @memberof DriveUpdate
      */
     'special'?: Array<DriveItem>;
+    /**
+     * Indicates whether the drive has items in the trash. Read-only.
+     * @type {boolean}
+     * @memberof DriveUpdate
+     */
+    '@libre.graph.hasTrashedItems'?: boolean;
 }
 /**
  * And extension of group representing a class or course

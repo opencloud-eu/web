@@ -1,6 +1,7 @@
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
+  isSpaceResource,
   Resource,
   ShareTypes,
   SpaceResource
@@ -16,7 +17,7 @@ const $gettext = (str: string): string => {
   return str
 }
 
-export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
+export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space' | 'trash'
 
 export interface ResourceIndicator {
   id: string
@@ -139,6 +140,30 @@ const getSpaceDisabledIndicator = ({ resource }: { resource: Resource }): Resour
   }
 }
 
+const getTrashFilledIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+  return {
+    id: `resource-trash-filled-${resource.getDomSelector()}`,
+    accessibleDescription: $gettext('Trash contains items'),
+    label: $gettext('This trash contains items'),
+    icon: 'delete-bin-5',
+    category: 'trash',
+    type: 'resource-trash-filled',
+    fillType: 'line'
+  }
+}
+
+const getTrashEmptyIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+  return {
+    id: `resource-trash-empty-${resource.getDomSelector()}`,
+    accessibleDescription: $gettext('Trash is empty'),
+    label: $gettext('This trash is empty'),
+    icon: 'delete-bin-7',
+    category: 'trash',
+    type: 'resource-trash-empty',
+    fillType: 'line'
+  }
+}
+
 export const getIndicators = ({
   space,
   resource,
@@ -160,6 +185,13 @@ export const getIndicators = ({
     indicators.push(getProcessingIndicator({ resource }))
   }
 
+  if (isSpaceResource(resource)) {
+    indicators.push(
+      resource.hasTrashedItems
+        ? getTrashFilledIndicator({ resource })
+        : getTrashEmptyIndicator({ resource })
+    )
+  }
   if (isProjectSpaceResource(resource) && !resource.disabled) {
     indicators.push(getSpaceEnabledIndicator({ resource }))
   }

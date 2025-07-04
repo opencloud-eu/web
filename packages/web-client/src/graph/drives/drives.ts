@@ -47,6 +47,7 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
         options?.orderBy,
         options?.filter,
         options?.expand,
+        options?.select,
         requestOptions
       )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))
@@ -59,6 +60,7 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
         options?.orderBy,
         options?.filter,
         options?.expand,
+        options?.select,
         requestOptions
       )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))

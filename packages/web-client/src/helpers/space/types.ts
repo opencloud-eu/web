@@ -23,6 +23,7 @@ export interface SpaceResource extends Resource {
   spaceImageData: DriveItem
   spaceReadmeData: DriveItem
   webDavTrashPath: string
+  hasTrashedItems: boolean
 
   // permissions for the current user. need to be loaded manually at some point via the space store.
   graphPermissions?: string[]
