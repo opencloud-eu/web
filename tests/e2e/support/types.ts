@@ -32,6 +32,7 @@ export interface User {
   password: string
   email: string
   role?: string
+  keycloakUuid?: string
 }
 
 export interface File {
@@ -48,6 +49,7 @@ export interface Group {
   id: string
   displayName: string
   groupTypes?: string[]
+  keycloakUuid?: string
 }
 
 export interface Token {
