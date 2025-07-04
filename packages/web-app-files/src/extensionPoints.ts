@@ -16,6 +16,11 @@ export const quickActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   extensionType: 'action',
   multiple: true
 }
+export const trashQuickActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
+  id: 'app.files.trash-quick-actions',
+  extensionType: 'action',
+  multiple: true
+}
 export const batchActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   id: 'global.files.batch-actions',
   extensionType: 'action',
@@ -54,6 +59,7 @@ export const extensionPoints = () => {
     return [
       uploadMenuExtensionPoint,
       quickActionsExtensionPoint,
+      trashQuickActionsExtensionPoint,
       batchActionsExtensionPoint,
       contextActionsExtensionPoint,
       defaultActionsExtensionPoint,

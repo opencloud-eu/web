@@ -405,6 +405,14 @@ export default defineComponent({
       default: true
     },
     /**
+     * Asserts whether rename quick action is available
+     */
+    showRenameQuickAction: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    /**
      * Accepts a `path` and a `resource` param and returns a corresponding route object.
      */
     targetRouteCallback: {
@@ -997,6 +1005,10 @@ export default defineComponent({
       return item.id === this.latestSelectedId
     },
     hasRenameAction(item: Resource) {
+      if (!this.showRenameQuickAction) {
+        return false
+      }
+
       if (isProjectSpaceResource(item)) {
         return this.renameActionsSpace.filter((menuItem) =>
           menuItem.isVisible({ resources: [item] })

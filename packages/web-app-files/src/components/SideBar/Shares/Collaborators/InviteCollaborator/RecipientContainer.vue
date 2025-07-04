@@ -9,7 +9,7 @@
         v-if="recipient.shareType === ShareTypes.user.value"
         :user-id="recipient.id"
         :user-name="recipient.displayName"
-        width="16.8"
+        :width="16.8"
       />
     </template>
     <template #append>

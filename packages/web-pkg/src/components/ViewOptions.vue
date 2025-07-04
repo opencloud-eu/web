@@ -72,6 +72,14 @@
             @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
+        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item">
+          <oc-switch
+            v-model:checked="emptyTrashesShownModel"
+            data-testid="files-switch-projects-show-disabled"
+            :label="$gettext('Show empty trash bins')"
+            @update:checked="updateEmptyTrashesShownModel"
+          />
+        </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
           class="files-view-options-list-item oc-flex oc-flex-between oc-flex-middle"
@@ -96,21 +104,21 @@
 import { computed, defineComponent, PropType, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  FolderViewModeConstants,
+  PaginationConstants,
   queryItemAsString,
+  useActiveLocation,
+  useResourcesStore,
   useRoute,
+  useRouteName,
   useRouteQuery,
   useRouteQueryPersisted,
   useRouter,
-  PaginationConstants,
-  FolderViewModeConstants,
-  useRouteName,
-  useResourcesStore,
-  useViewSizeMax,
-  useActiveLocation
+  useViewSizeMax
 } from '../composables'
 import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
-import { isLocationSpacesActive } from '../router'
+import { isLocationSpacesActive, isLocationTrashActive } from '../router'
 
 export default defineComponent({
   props: {
@@ -149,10 +157,18 @@ export default defineComponent({
     const { $gettext } = useGettext()
 
     const resourcesStore = useResourcesStore()
-    const { setAreHiddenFilesShown, setAreFileExtensionsShown, setAreDisabledSpacesShown } =
-      resourcesStore
-    const { areHiddenFilesShown, areFileExtensionsShown, areDisabledSpacesShown } =
-      storeToRefs(resourcesStore)
+    const {
+      setAreHiddenFilesShown,
+      setAreFileExtensionsShown,
+      setAreDisabledSpacesShown,
+      setAreEmptyTrashesShown
+    } = resourcesStore
+    const {
+      areHiddenFilesShown,
+      areFileExtensionsShown,
+      areDisabledSpacesShown,
+      areEmptyTrashesShown
+    } = storeToRefs(resourcesStore)
 
     const queryParamsLoading = ref(false)
 
@@ -217,11 +233,14 @@ export default defineComponent({
       areHiddenFilesShown,
       areFileExtensionsShown,
       areDisabledSpacesShown,
+      areEmptyTrashesShown,
       setAreHiddenFilesShown,
       setAreFileExtensionsShown,
       setAreDisabledSpacesShown,
+      setAreEmptyTrashesShown,
       viewOptionsButtonLabel: $gettext('Display customization options of the files list'),
-      isProjectsLocation: useActiveLocation(isLocationSpacesActive, 'files-spaces-projects')
+      isProjectsLocation: useActiveLocation(isLocationSpacesActive, 'files-spaces-projects'),
+      isTrashOverViewLocation: useActiveLocation(isLocationTrashActive, 'files-trash-overview')
     }
   },
   computed: {
@@ -251,6 +270,15 @@ export default defineComponent({
       set(value: boolean) {
         this.setAreDisabledSpacesShown(value)
       }
+    },
+    emptyTrashesShownModel: {
+      get() {
+        return this.areEmptyTrashesShown
+      },
+
+      set(value: boolean) {
+        this.setAreEmptyTrashesShown(value)
+      }
     }
   },
   methods: {
@@ -262,6 +290,9 @@ export default defineComponent({
     },
     updateDisabledSpacesShownModel(event: boolean) {
       this.disabledSpacesShownModel = event
+    },
+    updateEmptyTrashesShownModel(event: boolean) {
+      this.emptyTrashesShownModel = event
     }
   }
 })
@@ -275,6 +306,7 @@ export default defineComponent({
 #files-view-options-btn {
   vertical-align: middle;
   border: 3px solid transparent;
+
   &:hover {
     border-radius: 3px;
   }

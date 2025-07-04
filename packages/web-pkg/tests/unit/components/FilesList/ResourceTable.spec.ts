@@ -657,6 +657,10 @@ describe('ResourceTable', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('.resource-table-edit-name').exists()).toBeTruthy()
     })
+    it('does not show if "showRenameQuickAction" ist set to false', () => {
+      const { wrapper } = getMountedWrapper({ props: { showRenameQuickAction: false } })
+      expect(wrapper.find('.resource-table-edit-name').exists()).toBeFalsy()
+    })
     it('does not show if not available', () => {
       const { wrapper } = getMountedWrapper({ hasRenameAction: false })
       expect(wrapper.find('.resource-table-edit-name').exists()).toBeFalsy()
