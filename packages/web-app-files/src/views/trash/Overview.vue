@@ -36,13 +36,18 @@
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
+            :has-rename-quick-action="false"
             :is-selectable="false"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
+            <template #indicators="{ resource }">
+              <resource-status-indicators :space="resource" :resource="resource" />
+            </template>
             <template #contextMenu="{ resource, isOpen }">
               <trash-context-actions
                 v-if="isOpen"
+                :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
             </template>
@@ -94,10 +99,12 @@ import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
+import ResourceStatusIndicators from '@opencloud-eu/web-pkg/src/components/FilesList/ResourceStatusIndicators.vue'
 
 export default defineComponent({
   name: 'TrashOverview',
   components: {
+    ResourceStatusIndicators,
     TrashContextActions,
     ResourceTable,
     FileSideBar,
@@ -132,6 +139,14 @@ export default defineComponent({
       yield spacesStore.reloadProjectSpaces({
         graphClient: clientService.graphAuthenticated,
         signal
+      })
+      yield spacesStore.reloadPersonalSpace({
+        graphClient: clientService.graphAuthenticated,
+        signal
+      })
+      yield spacesStore.loadGraphPermissions({
+        ids: unref(spaces).map((space) => space.id),
+        graphClient: clientService.graphAuthenticated
       })
       resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
     })

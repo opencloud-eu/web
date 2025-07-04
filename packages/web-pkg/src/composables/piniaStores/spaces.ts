@@ -1,18 +1,16 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
+import type { CollaboratorShare, MountPointSpaceResource } from '@opencloud-eu/web-client'
 import {
   buildShareSpaceResource,
+  buildSpace,
+  extractStorageId,
   isMountPointSpaceResource,
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import {
-  buildSpace,
-  extractStorageId,
-  isPersonalSpaceResource,
-  isProjectSpaceResource
-} from '@opencloud-eu/web-client'
-import type { CollaboratorShare, MountPointSpaceResource } from '@opencloud-eu/web-client'
 import { useUserStore } from './user'
 import { ConfigStore, useConfigStore } from './config'
 import { useSharesStore } from './shares'
@@ -37,7 +35,8 @@ export const getSpacesByType = async ({
   const mountpoints = await graphClient.drives.listMyDrives(
     {
       orderBy: 'name asc',
-      filter: `driveType eq ${driveType}`
+      filter: `driveType eq ${driveType}`,
+      select: `@libre.graph.hasTrashedItems`
     },
     { signal }
   )
@@ -245,6 +244,23 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
   }
 
+  const reloadPersonalSpace = async ({
+    graphClient,
+    signal
+  }: {
+    graphClient: Graph
+    signal?: AbortSignal
+  }) => {
+    const projectSpaces = await getSpacesByType({
+      graphClient,
+      driveType: 'personal',
+      configStore,
+      signal
+    })
+    spaces.value = unref(spaces).filter((s) => !isPersonalSpaceResource(s))
+    addSpaces(projectSpaces)
+  }
+
   const reloadProjectSpaces = async ({
     graphClient,
     signal
@@ -365,6 +381,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     updateSpaceField,
     loadSpaces,
     loadMountPoints,
+    reloadPersonalSpace,
     reloadProjectSpaces,
 
     addToImagesLoading,

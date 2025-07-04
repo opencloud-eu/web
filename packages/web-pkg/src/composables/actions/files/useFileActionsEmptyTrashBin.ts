@@ -1,17 +1,15 @@
-import { isLocationTrashActive } from '../../../router'
-import { SpaceResource } from '@opencloud-eu/web-client'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { isSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
+import { SpaceAction, SpaceActionOptions } from '../types'
 import {
+  useCapabilityStore,
   useMessages,
   useModals,
-  useUserStore,
-  useCapabilityStore,
-  useResourcesStore
+  useResourcesStore,
+  useSpacesStore,
+  useUserStore
 } from '../../piniaStores'
 import { useLoadingService } from '../../loadingService'
 
@@ -19,70 +17,70 @@ export const useFileActionsEmptyTrashBin = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const userStore = useUserStore()
   const capabilityStore = useCapabilityStore()
-  const router = useRouter()
   const { $gettext } = useGettext()
   const clientService = useClientService()
   const { dispatchModal } = useModals()
   const resourcesStore = useResourcesStore()
+  const spacesStore = useSpacesStore()
+
   const loadingService = useLoadingService()
 
-  const emptyTrashBin = ({ space }: { space: SpaceResource }) => {
-    return clientService.webdav
-      .clearTrashBin(space)
-      .then(() => {
-        showMessage({ title: $gettext('All deleted files were removed') })
-        resourcesStore.clearResources()
-        resourcesStore.resetSelection()
+  const emptyTrashBin = async ({ space }: { space: SpaceResource }) => {
+    try {
+      await clientService.webdav.clearTrashBin(space)
+      showMessage({ title: $gettext('All deleted files were removed') })
+      resourcesStore.clearResources()
+      resourcesStore.resetSelection()
+      spacesStore.updateSpaceField({ id: space.id, field: 'hasTrashedItems', value: false })
+    } catch (error) {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to empty trash bin'),
+        errors: [error]
       })
-      .catch((error) => {
-        console.error(error)
-        showErrorMessage({
-          title: $gettext('Failed to empty trash bin'),
-          errors: [error]
-        })
-      })
+    }
   }
 
-  const handler = ({ space }: FileActionOptions) => {
+  const handler = ({ resources }: SpaceActionOptions) => {
     dispatchModal({
-      title: $gettext('Empty trash bin'),
+      title: $gettext('Empty trash bin for "%{name}"', { name: resources[0].name }),
       confirmText: $gettext('Delete'),
       message: $gettext(
-        'Are you sure you want to permanently delete the listed items? You can’t undo this action.'
+        'Are you sure you want to permanently delete the items in "%{name}"? You can’t undo this action.',
+        {
+          name: resources[0].name
+        }
       ),
       hasInput: false,
-      onConfirm: () => loadingService.addTask(() => emptyTrashBin({ space }))
+      onConfirm: () => loadingService.addTask(() => emptyTrashBin({ space: resources[0] }))
     })
   }
 
-  const actions = computed((): FileAction[] => [
+  const actions = computed((): SpaceAction[] => [
     {
       name: 'empty-trash-bin',
-      icon: 'delete-bin-5',
+      icon: 'delete-bin-2',
       label: () => $gettext('Empty trash bin'),
       handler,
-      isVisible: ({ space }) => {
-        if (!isLocationTrashActive(router, 'files-trash-generic')) {
+      isVisible: ({ resources }) => {
+        if (resources.length !== 1) {
           return false
         }
+
         if (!capabilityStore.filesPermanentDeletion) {
           return false
         }
 
-        if (
-          isProjectSpaceResource(space) &&
-          !space.canDeleteFromTrashBin({ user: userStore.user })
-        ) {
+        if (!isSpaceResource(resources[0])) {
           return false
         }
 
-        return true
+        return resources[0].canDeleteFromTrashBin({ user: userStore.user })
       },
-      isDisabled: () => {
-        return resourcesStore.activeResources.length === 0
+      isDisabled: ({ resources }) => {
+        return !resources[0].hasTrashedItems
       },
-      class: 'oc-files-actions-empty-trash-bin-trigger',
-      appearance: 'filled'
+      class: 'oc-files-actions-empty-trash-bin-trigger'
     }
   ])
 

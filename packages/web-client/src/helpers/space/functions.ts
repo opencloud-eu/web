@@ -14,7 +14,7 @@ import {
 } from './types'
 
 import { DavProperty } from '../../webdav/constants'
-import { buildWebDavPublicPath, buildWebDavOcmPath } from '../publicLink'
+import { buildWebDavOcmPath, buildWebDavPublicPath } from '../publicLink'
 import { urlJoin } from '../../utils'
 import { Drive, DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { CollaboratorShare, GraphSharePermission } from '../share'
@@ -51,6 +51,7 @@ export function isManager(share: CollaboratorShare) {
 }
 
 export type PublicLinkType = 'ocm' | 'public-link'
+
 export function buildPublicSpaceResource(
   data: any & { publicLinkType: PublicLinkType }
 ): PublicSpaceResource {
@@ -181,6 +182,7 @@ export function buildSpace(
     spaceQuota: data.quota,
     spaceImageData,
     spaceReadmeData,
+    hasTrashedItems: data['@libre.graph.hasTrashedItems'],
     graphPermissions: undefined,
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
@@ -255,7 +257,10 @@ export function buildSpace(
     canRestoreFromTrashbin: function () {
       return this.graphPermissions?.includes(GraphSharePermission.updateDeleted)
     },
-    canDeleteFromTrashBin: function () {
+    canDeleteFromTrashBin: function ({ user }: { user?: User } = {}) {
+      if (isPersonalSpaceResource(this) && this.isOwner(user)) {
+        return true
+      }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },

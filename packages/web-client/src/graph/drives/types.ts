@@ -21,6 +21,7 @@ export interface GraphDrives {
       orderBy?: string
       filter?: string
       expand?: string
+      select?: string
     },
     requestOptions?: GraphRequestOptions
   ) => Promise<SpaceResource[]>
@@ -29,6 +30,7 @@ export interface GraphDrives {
       orderBy?: string
       filter?: string
       expand?: string
+      select?: string
     },
     requestOptions?: GraphRequestOptions
   ) => Promise<SpaceResource[]>

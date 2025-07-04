@@ -42,6 +42,7 @@ const spacesResources = [
     type: 'space',
     isFolder: true,
     indicators: [],
+    getDomSelector: vi.fn(),
     getDriveAliasAndItem: () => '1'
   },
   {
@@ -51,6 +52,7 @@ const spacesResources = [
     type: 'space',
     isFolder: true,
     indicators: [],
+    getDomSelector: vi.fn(),
     getDriveAliasAndItem: () => '2'
   }
 ] as unknown as SpaceResource[]

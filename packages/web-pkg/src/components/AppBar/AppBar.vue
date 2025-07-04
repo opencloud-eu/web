@@ -65,11 +65,11 @@
 <script lang="ts">
 import last from 'lodash-es/last'
 import { computed, defineComponent, inject, PropType, ref, Ref, unref, useSlots } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
   isShareSpaceResource,
+  Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
 import BatchActions from '../BatchActions.vue'
@@ -78,39 +78,36 @@ import ViewOptions from '../ViewOptions.vue'
 import { isLocationCommonActive, isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
 import {
-  useFileActionsEnableSync,
   useFileActionsCopy,
-  useFileActionsDisableSync,
   useFileActionsDelete,
+  useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsEmptyTrashBin,
+  useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsRestore,
   useSpaceActionsDuplicate
 } from '../../composables/actions'
 import {
+  ActionExtension,
+  FileAction,
+  FolderViewModeConstants,
   useAbility,
+  useActiveLocation,
+  useExtensionRegistry,
   useFileActionsToggleHideShare,
+  useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
-  useSpacesStore,
   useRouter,
-  FolderViewModeConstants,
-  useExtensionRegistry,
-  ActionExtension,
-  useIsTopBarSticky
-} from '../../composables'
-import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/helpers'
-import { useActiveLocation } from '../../composables'
-import { useGettext } from 'vue3-gettext'
-import {
-  FileAction,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsEditQuota,
-  useSpaceActionsRestore
+  useSpaceActionsRestore,
+  useSpacesStore
 } from '../../composables'
+import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/helpers'
+import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
 
@@ -174,7 +171,6 @@ export default defineComponent({
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
     const { actions: deleteSpaceActions } = useSpaceActionsDelete()
@@ -198,7 +194,6 @@ export default defineComponent({
         ...unref(downloadFileActions),
         ...unref(moveActions),
         ...unref(copyActions),
-        ...unref(emptyTrashBinActions),
         ...unref(deleteActions),
         ...unref(restoreActions)
       ]
