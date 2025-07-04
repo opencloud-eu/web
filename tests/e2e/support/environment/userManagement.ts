@@ -4,9 +4,7 @@ import {
   dummyGroupStore,
   createdUserStore,
   createdGroupStore,
-  keycloakCreatedUser,
-  federatedUserStore,
-  dummyKeycloakGroupStore
+  federatedUserStore
 } from '../store'
 import { config } from '../../config'
 
@@ -74,7 +72,7 @@ export class UsersEnvironment {
 
   getGroup({ key }: { key: string }): Group {
     const groupKey = key.toLowerCase()
-    const store = groupKey.startsWith('keycloak') ? dummyKeycloakGroupStore : dummyGroupStore
+    const store = dummyGroupStore
 
     if (!store.has(groupKey)) {
       throw new Error(`group with key '${groupKey}' not found`)
@@ -106,29 +104,5 @@ export class UsersEnvironment {
     createdGroupStore.set(group.id, group)
 
     return group
-  }
-
-  storeCreatedKeycloakUser({ user }: { user: User }): User {
-    if (keycloakCreatedUser.has(user.id)) {
-      throw new Error(`Keycloak user '${user.id}' already exists`)
-    }
-    keycloakCreatedUser.set(user.id, user)
-    return user
-  }
-
-  getCreatedKeycloakUser({ key }: { key: string }): User {
-    if (!keycloakCreatedUser.has(key)) {
-      throw new Error(`Keycloak user with key '${key}' not found`)
-    }
-
-    return keycloakCreatedUser.get(key)
-  }
-
-  removeCreatedKeycloakUser({ key }: { key: string }): boolean {
-    if (!keycloakCreatedUser.has(key)) {
-      throw new Error(`Keycloak user with key '${key}' not found`)
-    }
-
-    return keycloakCreatedUser.delete(key)
   }
 }

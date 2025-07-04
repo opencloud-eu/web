@@ -133,7 +133,7 @@ export const addUserToGroup = async ({
     body: body,
     user: admin
   })
-  checkResponseStatus(response, 'Failed while adding an user to the group')
+  checkResponseStatus(response, 'Failed while adding a user to the group')
 }
 
 export const assignRole = async (admin: User, id: string, role: string): Promise<void> => {

@@ -195,11 +195,14 @@ function filterTracingReports(status: string) {
 const cleanUpUser = async (createdUserStore, adminUser: User) => {
   const requests: Promise<User>[] = []
   createdUserStore.forEach((user) => {
-    requests.push(api.provision.deleteUser({ user, admin: adminUser }))
+    if (config.keycloak) {
+      requests.push(api.keycloak.deleteUser({ user }))
+    } else {
+      requests.push(api.graph.deleteUser({ user, admin: adminUser }))
+    }
   })
   await Promise.all(requests)
   createdUserStore.clear()
-  store.keycloakCreatedUser.clear()
 }
 
 const cleanUpSpaces = async (adminUser: User) => {
@@ -228,7 +231,9 @@ const cleanUpSpaces = async (adminUser: User) => {
 const cleanUpGroup = async (adminUser: User) => {
   const requests: Promise<Group>[] = []
   store.createdGroupStore.forEach((group) => {
-    if (!group.id.startsWith('keycloak')) {
+    if (config.keycloak) {
+      requests.push(api.keycloak.deleteGroup({ group }))
+    } else {
       requests.push(api.graph.deleteGroup({ group, admin: adminUser }))
     }
   })

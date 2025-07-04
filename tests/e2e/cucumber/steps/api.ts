@@ -19,7 +19,25 @@ Given(
         email: `${uniqueId}@example.org`
       }
 
-      await api.provision.createUser({ user, admin })
+      await api.graph.createUser({ user, admin })
+    }
+  }
+)
+
+Given(
+  'admin creates following user(s) using keycloak API',
+  async function (this: World, stepTable: DataTable): Promise<void> {
+    for (const info of stepTable.hashes()) {
+      const uniqueId = `${info.id}-${this.uniquePrefix}`
+      // use a unique user name
+      const user = {
+        ...this.usersEnvironment.getUser({ key: info.id }),
+        id: info.id,
+        username: uniqueId,
+        email: `${uniqueId}@example.org`
+      }
+
+      await api.keycloak.createUser({ user })
     }
   }
 )
@@ -30,16 +48,17 @@ Given(
     const admin = this.usersEnvironment.getUser({ key: stepUser })
     for await (const info of stepTable.hashes()) {
       const user = this.usersEnvironment.getCreatedUser({ key: info.id })
-      /**
-         The OpenCloud API request for assigning roles allows only one role per user,
-         whereas the Keycloak API request can assign multiple roles to a user.
-         If multiple roles are assigned to a user in Keycloak,
-         OpenCloud map the highest priority role among Keycloak assigned roles.
-         Therefore, we need to unassign the previous role before
-         assigning a new one when using the Keycloak API.
-      */
-      await api.provision.unAssignRole({ admin, user })
-      await api.provision.assignRole({ admin, user, role: info.role })
+      await api.graph.assignRole(admin, user.uuid, info.role)
+    }
+  }
+)
+
+Given(
+  'admin assigns following roles to the user(s) using keycloak API',
+  async function (this: World, stepTable: DataTable): Promise<void> {
+    for await (const info of stepTable.hashes()) {
+      const user = this.usersEnvironment.getCreatedUser({ key: info.id })
+      await api.keycloak.assignRole({ uuid: user.keycloakUuid, role: info.role })
     }
   }
 )
@@ -62,6 +81,21 @@ Given(
 )
 
 Given(
+  'admin creates following group(s) using keycloak API',
+  async function (this: World, stepTable: DataTable): Promise<void> {
+    for (const info of stepTable.hashes()) {
+      const uniqueId = `${info.id}-${this.uniquePrefix}`
+      const group = {
+        ...this.usersEnvironment.getGroup({ key: info.id }),
+        id: info.id,
+        displayName: uniqueId
+      }
+      await api.keycloak.createGroup({ group, role: info.role })
+    }
+  }
+)
+
+Given(
   '{string} adds user(s) to the group(s) using API',
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const admin = this.usersEnvironment.getUser({ key: stepUser })
@@ -70,6 +104,17 @@ Given(
       const userId = this.usersEnvironment.getCreatedUser({ key: info.user }).uuid
       const groupId = this.usersEnvironment.getCreatedGroup({ key: info.group }).uuid
       await api.graph.addUserToGroup({ userId, groupId, admin })
+    }
+  }
+)
+
+Given(
+  'admin adds user(s) to the group(s) using keycloak API',
+  async function (this: World, stepTable: DataTable): Promise<void> {
+    for (const info of stepTable.hashes()) {
+      const user = this.usersEnvironment.getCreatedUser({ key: info.user })
+      const group = this.usersEnvironment.getCreatedGroup({ key: info.group })
+      await api.keycloak.addUserToGroup({ user, group })
     }
   }
 )

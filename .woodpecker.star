@@ -1492,11 +1492,6 @@ def keycloakService():
            }] + waitForServices("keycloak", ["keycloak:8443"])
 
 def e2eTestsOnKeycloak(ctx):
-    e2e_Keycloak_tests = [
-        "admin-settings/spaces.feature:25",
-        "admin-settings/spaces.feature:60",
-    ]
-
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
             restoreBrowsersCache() + \
@@ -1560,7 +1555,7 @@ def e2eTestsOnKeycloak(ctx):
                      },
                      "commands": [
                          "cd tests/e2e",
-                         "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
+                         "bash run-e2e.sh cucumber/features/keycloak",
                      ],
                  },
              ] + \
