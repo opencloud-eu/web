@@ -20,7 +20,7 @@ class IdpTokenEnvironment {
     return store.get(user.username)
   }
 
-  setToken({ user, token }: { user: User, token: Token }): Token {
+  setToken({ user, token }: { user: User; token: Token }): Token {
     const store = config.federatedServer ? federatedTokenStore : createdTokenStore
     store.set(user.username, token)
     return token
@@ -36,7 +36,7 @@ class KeycloakTokenEnvironment {
     return keycloakTokenStore.get(user.id)
   }
 
-  setToken({ user, token }: { user: User, token: Token }): Token {
+  setToken({ user, token }: { user: User; token: Token }): Token {
     keycloakTokenStore.set(user.id, token)
     return token
   }
