@@ -18,6 +18,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @pinia/testing to v1.0.2 [[#893](https://github.com/opencloud-eu/web/pull/893)]
 - chore(deps): update dependency vue-tsc to v3 [[#883](https://github.com/opencloud-eu/web/pull/883)]
 - chore(deps): update devdependencies (non-major) [[#884](https://github.com/opencloud-eu/web/pull/884)]
 - fix(deps): update dependency @vueuse/core to v13.5.0 [[#885](https://github.com/opencloud-eu/web/pull/885)]
