@@ -6,6 +6,12 @@
 
 @AlexAndBear, @ScharfViktor, @kulmann, @prashant-gurung899
 
+### ✅ Tests
+
+- update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
+- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
+- [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
+
 ### 🐛 Bug Fixes
 
 - fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
@@ -14,11 +20,6 @@
 
 - feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
 - feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
-
-### ✅ Tests
-
-- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
-- [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
 
 ### 📦️ Dependencies
 
