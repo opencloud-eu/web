@@ -6,6 +6,10 @@
 
 @AlexAndBear, @ScharfViktor, @kulmann, @prashant-gurung899
 
+### 🐛 Bug Fixes
+
+- fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
+
 ### 📈 Enhancement
 
 - feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
