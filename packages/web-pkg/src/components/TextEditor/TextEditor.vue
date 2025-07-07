@@ -47,13 +47,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, unref, PropType } from 'vue'
+import { computed, defineComponent, PropType, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 
 import { config, MdEditor, MdPreview, XSSPlugin } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-
-import { languageUserDefined, languages } from './l18n'
+import { languages, languageUserDefined } from './l18n'
 
 import { useGettext } from 'vue3-gettext'
 import { useThemeStore } from '../../composables'
@@ -63,6 +62,7 @@ import screenfull from 'screenfull'
 
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
+import { RenderPlugin } from './plugins'
 
 export default defineComponent({
   name: 'TextEditor',
@@ -114,6 +114,11 @@ export default defineComponent({
       markdownItPlugins(plugins) {
         return [
           ...plugins,
+          {
+            type: 'render',
+            plugin: RenderPlugin,
+            options: {}
+          },
           {
             type: 'xss',
             plugin: XSSPlugin,
