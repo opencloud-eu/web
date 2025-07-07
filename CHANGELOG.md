@@ -22,6 +22,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.7.1 [[#900](https://github.com/opencloud-eu/web/pull/900)]
+- fix(deps): update dependency @vavt/cm-extension to v1.10.1 [[#896](https://github.com/opencloud-eu/web/pull/896)]
 - fix(deps): update dependency eslint-plugin-n to v17.21.0 [[#897](https://github.com/opencloud-eu/web/pull/897)]
 - fix(deps): update dependency eslint-plugin-vue to v10.3.0 [[#898](https://github.com/opencloud-eu/web/pull/898)]
 - fix(deps): update dependency zod to v3.25.75 [[#895](https://github.com/opencloud-eu/web/pull/895)]
