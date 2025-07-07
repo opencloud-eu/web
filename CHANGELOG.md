@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency oidc-client-ts to v3.3.0 [[#901](https://github.com/opencloud-eu/web/pull/901)]
 - chore(deps): update devdependencies (non-major) [[#888](https://github.com/opencloud-eu/web/pull/888)]
 - fix(deps): update dependency @babel/eslint-parser to v7.28.0 [[#894](https://github.com/opencloud-eu/web/pull/894)]
 - fix(deps): update dependency md-editor-v3 to v5.7.1 [[#900](https://github.com/opencloud-eu/web/pull/900)]
