@@ -22,6 +22,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency eslint-plugin-n to v17.21.0 [[#897](https://github.com/opencloud-eu/web/pull/897)]
+- fix(deps): update dependency eslint-plugin-vue to v10.3.0 [[#898](https://github.com/opencloud-eu/web/pull/898)]
 - fix(deps): update dependency zod to v3.25.75 [[#895](https://github.com/opencloud-eu/web/pull/895)]
 - fix(deps): update dependency @sentry/vue to v9.35.0 [[#910](https://github.com/opencloud-eu/web/pull/910)]
 - fix(deps): update dependency globals to v16.3.0 [[#899](https://github.com/opencloud-eu/web/pull/899)]
