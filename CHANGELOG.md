@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-03
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-07
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -18,6 +18,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-tsc to v3 [[#883](https://github.com/opencloud-eu/web/pull/883)]
 - chore(deps): update devdependencies (non-major) [[#884](https://github.com/opencloud-eu/web/pull/884)]
 - fix(deps): update dependency @vueuse/core to v13.5.0 [[#885](https://github.com/opencloud-eu/web/pull/885)]
 - fix(deps): update dependency @sentry/vue to v9.34.0 [[#882](https://github.com/opencloud-eu/web/pull/882)]
