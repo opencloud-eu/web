@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @babel/eslint-parser to v7.28.0 [[#894](https://github.com/opencloud-eu/web/pull/894)]
 - fix(deps): update dependency md-editor-v3 to v5.7.1 [[#900](https://github.com/opencloud-eu/web/pull/900)]
 - fix(deps): update dependency @vavt/cm-extension to v1.10.1 [[#896](https://github.com/opencloud-eu/web/pull/896)]
 - fix(deps): update dependency eslint-plugin-n to v17.21.0 [[#897](https://github.com/opencloud-eu/web/pull/897)]
