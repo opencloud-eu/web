@@ -95,7 +95,7 @@ export const useFileActionsRename = () => {
       )
       if (error.statusCode === 423) {
         title = $gettext(
-          'Failed to rename "%{file}" to »%{newName}« - the file is locked',
+          'Failed to rename »%{file}« to »%{newName}« - the file is locked',
           { file: resource.name, newName },
           true
         )
