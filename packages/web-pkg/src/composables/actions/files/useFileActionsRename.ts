@@ -134,7 +134,7 @@ export const useFileActionsRename = () => {
 
     const title = resources[0].isFolder
       ? $gettext('Rename folder »%{name}«', { name: modalTitle })
-      : $gettext('Rename file %{name}«', { name: modalTitle })
+      : $gettext('Rename file »%{name}«', { name: modalTitle })
 
     const inputValue =
       !resources[0].isFolder && !areFileExtensionsShown ? nameWithoutExtension : resources[0].name
