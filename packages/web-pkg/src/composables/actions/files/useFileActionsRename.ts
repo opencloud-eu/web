@@ -89,13 +89,13 @@ export const useFileActionsRename = () => {
     } catch (error) {
       console.error(error)
       let title = $gettext(
-        'Failed to rename "%{file}" to "%{newName}"',
+        'Failed to rename "%{file}" to »%{newName}«',
         { file: resource.name, newName },
         true
       )
       if (error.statusCode === 423) {
         title = $gettext(
-          'Failed to rename "%{file}" to "%{newName}" - the file is locked',
+          'Failed to rename "%{file}" to »%{newName}« - the file is locked',
           { file: resource.name, newName },
           true
         )
@@ -133,8 +133,8 @@ export const useFileActionsRename = () => {
       !resources[0].isFolder && !areFileExtensionsShown ? nameWithoutExtension : resources[0].name
 
     const title = resources[0].isFolder
-      ? $gettext('Rename folder %{name}', { name: modalTitle })
-      : $gettext('Rename file %{name}', { name: modalTitle })
+      ? $gettext('Rename folder »%{name}«', { name: modalTitle })
+      : $gettext('Rename file %{name}«', { name: modalTitle })
 
     const inputValue =
       !resources[0].isFolder && !areFileExtensionsShown ? nameWithoutExtension : resources[0].name

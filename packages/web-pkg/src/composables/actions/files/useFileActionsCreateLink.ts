@@ -89,7 +89,7 @@ export const useFileActionsCreateLink = ({
     if (enforceModal || passwordEnforced) {
       dispatchModal({
         title: $ngettext(
-          'Copy link for "%{resourceName}"',
+          'Copy link for »%{resourceName}«',
           'Copy links for the selected items',
           resources.length,
           { resourceName: resources[0].name }

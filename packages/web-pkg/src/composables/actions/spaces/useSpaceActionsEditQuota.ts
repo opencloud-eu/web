@@ -13,7 +13,7 @@ export const useSpaceActionsEditQuota = () => {
 
   const getModalTitle = ({ resources }: { resources: SpaceResource[] }) => {
     if (resources.length === 1) {
-      return $gettext('Change quota for Space "%{name}"', {
+      return $gettext('Change quota for Space »%{name}«', {
         name: resources[0].name
       })
     }

@@ -49,7 +49,7 @@ export const useGroupActionsDelete = () => {
 
       const title =
         failed.length === 1 && groups.length === 1
-          ? $gettext('Failed to delete group "%{group}"', { group: groups[0].displayName })
+          ? $gettext('Failed to delete group »%{group}«', { group: groups[0].displayName })
           : $ngettext(
               'Failed to delete %{groupCount} group',
               'Failed to delete %{groupCount} groups',
@@ -80,7 +80,7 @@ export const useGroupActionsDelete = () => {
 
     dispatchModal({
       title: $ngettext(
-        'Delete group "%{group}"?',
+        'Delete group »%{group}«?',
         'Delete %{groupCount} groups?',
         resources.length,
         {

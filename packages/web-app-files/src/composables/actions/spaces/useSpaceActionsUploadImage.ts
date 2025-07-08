@@ -29,7 +29,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
     ;(event.currentTarget as HTMLInputElement).value = ''
 
     dispatchModal({
-      title: $gettext('Crop your Space image'),
+      title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
       focusTrapInitial: false,
