@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-07
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-08
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -23,6 +23,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v28 [[#913](https://github.com/opencloud-eu/web/pull/913)]
+- chore(deps): update collabora/code docker tag to v25.04.3.2.1 [[#909](https://github.com/opencloud-eu/web/pull/909)]
 - fix(deps): update dependency oidc-client-ts to v3.3.0 [[#901](https://github.com/opencloud-eu/web/pull/901)]
 - chore(deps): update devdependencies (non-major) [[#888](https://github.com/opencloud-eu/web/pull/888)]
 - fix(deps): update dependency @babel/eslint-parser to v7.28.0 [[#894](https://github.com/opencloud-eu/web/pull/894)]
