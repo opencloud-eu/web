@@ -164,6 +164,7 @@ export const useResourcesStore = defineStore('resources', () => {
   const areFileExtensionsShown = ref(true)
   const areWebDavDetailsShown = ref(false)
   const areDisabledSpacesShown = ref(true)
+  const areEmptyTrashesShown = ref(true)
 
   const setAreHiddenFilesShown = (value: boolean) => {
     areHiddenFilesShown.value = value
@@ -180,6 +181,10 @@ export const useResourcesStore = defineStore('resources', () => {
   const setAreDisabledSpacesShown = (value: boolean) => {
     areDisabledSpacesShown.value = value
     window.localStorage.setItem('oc_disabledSpacesShown', value.toString())
+  }
+  const setAreEmptyTrashesShown = (value: boolean) => {
+    areEmptyTrashesShown.value = value
+    window.localStorage.setItem('oc_emptyTrashesShown', value.toString())
   }
 
   const setAncestorMetaData = (value: AncestorMetaData) => {
@@ -345,10 +350,12 @@ export const useResourcesStore = defineStore('resources', () => {
     areFileExtensionsShown,
     areWebDavDetailsShown,
     areDisabledSpacesShown,
+    areEmptyTrashesShown,
     setAreHiddenFilesShown,
     setAreFileExtensionsShown,
     setAreWebDavDetailsShown,
     setAreDisabledSpacesShown,
+    setAreEmptyTrashesShown,
 
     ancestorMetaData,
     setAncestorMetaData,

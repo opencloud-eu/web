@@ -23,8 +23,8 @@ export const useSpaceActionsNavigateToTrash = () => {
   const actions = computed((): SpaceAction[] => [
     {
       name: 'navigateToTrash',
-      icon: 'delete-bin',
-      label: () => $gettext('Open Deleted files'),
+      icon: 'delete-bin-5',
+      label: () => $gettext('Open trash bin'),
       handler: ({ resources }) => {
         router.push(getTrashLink(resources[0]))
       },

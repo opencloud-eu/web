@@ -12,6 +12,7 @@ import { SDKSearch } from './search'
 import { useSideBarPanels } from './composables/extensions/useFileSideBars'
 import { useFolderViews } from './composables/extensions/useFolderViews'
 import { useFileActions } from './composables/extensions/useFileActions'
+import { useTrashActions } from './composables/extensions/useTrashActions'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 export const extensions = (appInfo: ApplicationInformation) => {
@@ -22,11 +23,13 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const { search: searchFunction } = useSearch()
 
   const fileActionExtensions = useFileActions()
+  const trashActionExtensions = useTrashActions()
   const folderViewExtensions = useFolderViews()
   const sideBarPanelExtensions = useSideBarPanels()
 
   return computed<Extension[]>(() => [
     ...fileActionExtensions,
+    ...trashActionExtensions,
     ...folderViewExtensions,
     ...sideBarPanelExtensions,
     {
