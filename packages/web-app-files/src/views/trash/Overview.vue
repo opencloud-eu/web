@@ -91,6 +91,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
+  call,
   isPersonalSpaceResource,
   isProjectSpaceResource,
   SpaceResource
@@ -129,26 +130,26 @@ const spaces = computed(() =>
 const loadResourcesTask = useTask(function* (signal) {
   resourcesStore.clearResourceList()
 
-  const fetchedSpaces = yield clientService.graphAuthenticated.drives.listMyDrives(
-    {
-      select: ['@libre.graph.hasTrashedItems']
-    },
-    { signal }
+  const fetchedSpaces = yield* call(
+    clientService.graphAuthenticated.drives.listMyDrives(
+      {
+        select: ['@libre.graph.hasTrashedItems']
+      },
+      { signal }
+    )
   )
 
   const reloadedSpaces = fetchedSpaces
     .filter(
-      (fetchedSpace: SpaceResource) =>
+      (fetchedSpace) =>
         isPersonalSpaceResource(fetchedSpace) || isProjectSpaceResource(fetchedSpace)
     )
-    .map((fetchedSpace: SpaceResource) => {
+    .map((fetchedSpace) => {
       if (isPersonalSpaceResource(fetchedSpace)) {
         fetchedSpace.name = $gettext('Personal')
       }
       return fetchedSpace
     })
-
-  console.log(reloadedSpaces)
 
   reloadedSpaces.forEach((reloadedSpace) => {
     spacesStore.upsertSpace(reloadedSpace)
