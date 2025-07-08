@@ -138,7 +138,8 @@ const loadResourcesTask = useTask(function* (signal) {
   const reloadedSpaces = fetchedSpaces
     .filter(
       (fetchedSpace: SpaceResource) =>
-        isPersonalSpaceResource(fetchedSpace) || isProjectSpaceResource(fetchedSpace)
+        isPersonalSpaceResource(fetchedSpace) ||
+        (isProjectSpaceResource(fetchedSpace) && !fetchedSpace.disabled)
     )
     .map((fetchedSpace: SpaceResource) => {
       if (isPersonalSpaceResource(fetchedSpace)) {

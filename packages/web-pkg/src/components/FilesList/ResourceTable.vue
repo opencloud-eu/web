@@ -831,15 +831,6 @@ export default defineComponent({
               width: 'shrink'
             },
             {
-              name: 'status',
-              prop: 'disabled',
-              title: this.$gettext('Status'),
-              type: 'slot',
-              alignH: 'right',
-              wrap: 'nowrap',
-              width: 'shrink'
-            },
-            {
               name: 'tags',
               title: this.$gettext('Tags'),
               type: 'slot',
