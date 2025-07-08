@@ -3,7 +3,7 @@
     <oc-button
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
-      :color-role="active ? 'surface' : 'secondaryContainer'"
+      color-role="secondaryContainer"
       :class="['oc-sidebar-nav-item-link', 'oc-oc-width-1-1', { active: active }]"
       :data-nav-id="index"
       :data-nav-name="navName"
@@ -124,7 +124,7 @@ export default defineComponent({
 
   &:focus:not(.active),
   &:hover:not(.active) {
-    background: var(--oc-role-secondary-container) !important;
+    background: var(--oc-role-surface-container-highest) !important;
   }
 
   .oc-icon svg {
