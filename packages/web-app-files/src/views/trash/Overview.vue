@@ -121,7 +121,8 @@ const markInstance = ref<Mark>()
 const spaces = computed(() =>
   spacesStore.spaces.filter(
     (s: SpaceResource) =>
-      (isPersonalSpaceResource(s) && s.isOwner(userStore.user)) || isProjectSpaceResource(s)
+      (isPersonalSpaceResource(s) && s.isOwner(userStore.user)) ||
+      (isProjectSpaceResource(s) && !s.disabled)
   )
 )
 
@@ -138,8 +139,7 @@ const loadResourcesTask = useTask(function* (signal) {
   const reloadedSpaces = fetchedSpaces
     .filter(
       (fetchedSpace: SpaceResource) =>
-        isPersonalSpaceResource(fetchedSpace) ||
-        (isProjectSpaceResource(fetchedSpace) && !fetchedSpace.disabled)
+        isPersonalSpaceResource(fetchedSpace) || isProjectSpaceResource(fetchedSpace)
     )
     .map((fetchedSpace: SpaceResource) => {
       if (isPersonalSpaceResource(fetchedSpace)) {
@@ -147,6 +147,8 @@ const loadResourcesTask = useTask(function* (signal) {
       }
       return fetchedSpace
     })
+
+  console.log(reloadedSpaces)
 
   reloadedSpaces.forEach((reloadedSpace) => {
     spacesStore.upsertSpace(reloadedSpace)
