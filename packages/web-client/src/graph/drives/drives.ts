@@ -11,8 +11,12 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
   const allDrivesApi = new DrivesGetDrivesApi(config, config.basePath, axiosClient)
 
   return {
-    async getDrive(id, requestOptions) {
-      const { data: drive } = await drivesApiFactory.getDrive(id, requestOptions)
+    async getDrive(id, options, requestOptions) {
+      const { data: drive } = await drivesApiFactory.getDrive(
+        id,
+        options?.select ? new Set([...options.select]) : null,
+        requestOptions
+      )
       return buildSpace({ ...drive, serverUrl: getServerUrlFromDrive(drive) })
     },
 
@@ -47,6 +51,7 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
         options?.orderBy,
         options?.filter,
         options?.expand,
+        options?.select ? new Set([...options.select]) : null,
         requestOptions
       )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))
@@ -59,6 +64,7 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
         options?.orderBy,
         options?.filter,
         options?.expand,
+        options?.select ? new Set([...options.select]) : null,
         requestOptions
       )
       return value.map((d) => buildSpace({ ...d, serverUrl: getServerUrlFromDrive(d) }))

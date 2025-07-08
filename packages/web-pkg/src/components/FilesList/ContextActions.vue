@@ -17,7 +17,6 @@ import {
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsEmptyTrashBin,
   useFileActionsEnableSync,
   useFileActionsFavorite,
   useFileActionsMove,
@@ -56,7 +55,6 @@ export default defineComponent({
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: favoriteActions } = useFileActionsFavorite()
-    const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: navigateActions } = useFileActionsNavigate()
     const { actions: pasteActions } = useFileActionsPaste()
@@ -95,7 +93,6 @@ export default defineComponent({
         ...unref(downloadArchiveActions),
         ...unref(moveActions),
         ...unref(copyActions),
-        ...unref(emptyTrashBinActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
         ...unref(createSpaceFromResourceActions),

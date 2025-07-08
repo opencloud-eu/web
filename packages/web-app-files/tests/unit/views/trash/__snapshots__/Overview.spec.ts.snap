@@ -4,13 +4,13 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
 "<div class="oc-flex">
   <div data-v-39c970be="" class="files-view-wrapper oc-width-expand">
     <div data-v-39c970be="" id="files-view">
-      <app-bar-stub viewmodedefault="resource-table" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="false" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
+      <app-bar-stub viewmodedefault="resource-table" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
-        <div class=""><label class="oc-label" for="spaces-filter">Search
+        <div class=""><label class="oc-label" for="trash-filter">Search
             <!--v-if-->
           </label>
           <div class="oc-position-relative">
-            <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
             <!--v-if-->
           </div>
           <!--v-if-->
@@ -49,7 +49,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
               <div class="oc-text-center oc-width-1-1 oc-my-s">
-                <p class="oc-text-muted">3 trashes in total</p>
+                <p class="oc-text-muted">3 trash bins in total</p>
                 <!--v-if-->
               </div>
             </td>

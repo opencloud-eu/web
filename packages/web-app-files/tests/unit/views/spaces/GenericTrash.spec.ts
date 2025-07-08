@@ -3,18 +3,17 @@ import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { ref } from 'vue'
 import { mock } from 'vitest-mock-extended'
-import { Resource } from '@opencloud-eu/web-client'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  defaultPlugins,
-  mount,
+  ComponentProps,
   defaultComponentMocks,
+  defaultPlugins,
   defaultStubs,
-  RouteLocation,
+  mount,
   PartialComponentProps,
-  ComponentProps
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { AppBar } from '@opencloud-eu/web-pkg'
+import { AppBar, NoContentMessage, ResourceTable } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 
@@ -48,12 +47,18 @@ describe('GenericTrash view', () => {
     it('shows the no-content-message after loading', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
-      expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
+      expect(
+        wrapper.findComponent<typeof NoContentMessage>({ name: 'no-content-message' }).exists()
+      ).toBeTruthy()
     })
     it('shows the files table when files are available', () => {
-      const { wrapper } = getMountedWrapper({ files: [mock<Resource>()] })
-      expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
-      expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
+      const { wrapper } = getMountedWrapper({
+        files: [mock<Resource>({ id: '1', getDomSelector: vi.fn(() => '') })]
+      })
+      expect(
+        wrapper.findComponent<typeof NoContentMessage>({ name: 'no-content-message' }).exists()
+      ).toBeFalsy()
+      expect(wrapper.findComponent<typeof ResourceTable>('.oc-table').exists()).toBeTruthy()
     })
   })
 })
@@ -92,6 +97,7 @@ function getMountedWrapper({
       global: {
         plugins: [...defaultPlugins()],
         mocks: defaultMocks,
+        provide: defaultMocks,
         stubs: { ...defaultStubs, portal: true }
       }
     })

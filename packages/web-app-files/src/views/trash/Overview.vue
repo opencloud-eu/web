@@ -1,9 +1,9 @@
 <template>
-  <div class="oc-flex">
+  <div v-if="ready" class="oc-flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
-        :has-view-options="false"
+        :has-view-options="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
         :has-pagination="false"
@@ -20,7 +20,7 @@
             class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
           >
             <oc-text-input
-              id="spaces-filter"
+              id="trash-filter"
               v-model="filterTerm"
               :label="$gettext('Search')"
               autocomplete="off"
@@ -37,14 +37,19 @@
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
             :is-selectable="false"
+            :show-rename-quick-action="false"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
             <template #contextMenu="{ resource, isOpen }">
               <trash-context-actions
                 v-if="isOpen"
+                :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
+            </template>
+            <template #quickActions="{ resource }">
+              <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
               <div class="oc-text-center oc-width-1-1 oc-my-s">
@@ -60,8 +65,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, nextTick, onMounted, ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -86,180 +91,166 @@ import {
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
+  call,
   isPersonalSpaceResource,
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
+import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
+import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  name: 'TrashOverview',
-  components: {
-    TrashContextActions,
-    ResourceTable,
-    FileSideBar,
-    FilesViewWrapper,
-    AppBar,
-    AppLoadingSpinner,
-    NoContentMessage
-  },
-  setup() {
-    const userStore = useUserStore()
-    const spacesStore = useSpacesStore()
-    const router = useRouter()
-    const { $gettext } = useGettext()
-    const clientService = useClientService()
-    const { y: fileListHeaderY } = useFileListHeaderPosition()
-    const resourcesStore = useResourcesStore()
+const userStore = useUserStore()
+const spacesStore = useSpacesStore()
+const router = useRouter()
+const { $gettext, $ngettext } = useGettext()
+const clientService = useClientService()
+const { y: fileListHeaderY } = useFileListHeaderPosition()
+const { isSideBarOpen, sideBarActivePanel } = useSideBar()
+const resourcesStore = useResourcesStore()
 
-    const sortBy = ref<keyof SpaceResource>('name')
-    const sortDir = ref<SortDir>(SortDir.Asc)
-    const filterTerm = ref('')
-    const markInstance = ref(undefined)
+const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
 
-    const spaces = computed(() =>
-      spacesStore.spaces.filter(
-        (s: SpaceResource) =>
-          (isPersonalSpaceResource(s) && s.isOwner(userStore.user)) || isProjectSpaceResource(s)
-      )
-    )
+const ready = ref(false)
+const sortBy = ref<keyof SpaceResource>('name')
+const sortDir = ref<SortDir>(SortDir.Asc)
+const filterTerm = ref('')
+const markInstance = ref<Mark>()
 
-    const loadResourcesTask = useTask(function* (signal) {
-      resourcesStore.clearResourceList()
-      yield spacesStore.reloadProjectSpaces({
-        graphClient: clientService.graphAuthenticated,
-        signal
-      })
-      resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
-    })
+const spaces = computed(() =>
+  spacesStore.spaces.filter(
+    (s: SpaceResource) =>
+      (isPersonalSpaceResource(s) && s.isOwner(userStore.user)) ||
+      (isProjectSpaceResource(s) && !s.disabled)
+  )
+)
 
-    const areResourcesLoading = computed(() => {
-      return loadResourcesTask.isRunning || !loadResourcesTask.last
-    })
+const loadResourcesTask = useTask(function* (signal) {
+  resourcesStore.clearResourceList()
 
-    const footerTextTotal = computed(() => {
-      return $gettext('%{spaceCount} trashes in total', {
-        spaceCount: unref(spaces).length.toString()
-      })
-    })
-    const footerTextFilter = computed(() => {
-      return $gettext('%{spaceCount} matching trashes', {
-        spaceCount: unref(displaySpaces).length.toString()
-      })
-    })
-
-    const breadcrumbs = computed(() => [
-      { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }
-    ])
-
-    const sort = (list: SpaceResource[], propName: keyof SpaceResource, desc: boolean) => {
-      return [...list].sort((s1, s2) => {
-        if (isPersonalSpaceResource(s1)) {
-          return -1
-        }
-        if (isPersonalSpaceResource(s2)) {
-          return +1
-        }
-
-        const a = s1[propName].toString()
-        const b = s2[propName].toString()
-
-        return desc ? b.localeCompare(a) : a.localeCompare(b)
-      })
-    }
-    const displaySpaces = computed(() =>
-      sort(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === 'desc')
-    )
-    const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) => {
-      sortBy.value = event.sortBy
-      sortDir.value = event.sortDir
-    }
-    const filter = (spaces: SpaceResource[], filterTerm: string) => {
-      if (!(filterTerm || '').trim()) {
-        return spaces
-      }
-      const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-      return searchEngine.search(filterTerm).map((r) => r.item)
-    }
-
-    const fields = computed((): FieldType[] => [
+  const fetchedSpaces = yield* call(
+    clientService.graphAuthenticated.drives.listMyDrives(
       {
-        name: 'icon',
-        title: '',
-        type: 'slot',
-        width: 'shrink'
+        select: ['@libre.graph.hasTrashedItems']
       },
-      {
-        name: 'name',
-        title: $gettext('Name'),
-        type: 'slot',
-        sortable: true
+      { signal }
+    )
+  )
+
+  const reloadedSpaces = fetchedSpaces
+    .filter(
+      (fetchedSpace) =>
+        isPersonalSpaceResource(fetchedSpace) || isProjectSpaceResource(fetchedSpace)
+    )
+    .map((fetchedSpace) => {
+      if (isPersonalSpaceResource(fetchedSpace)) {
+        fetchedSpace.name = $gettext('Personal')
       }
-    ])
-
-    const resourceTargetRouteCallback = ({
-      resource
-    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
-      return getTrashLink(resource as SpaceResource)
-    }
-
-    const getTrashLink = (space: SpaceResource) => {
-      return createLocationTrash('files-trash-generic', {
-        ...createFileRouteOptions(space)
-      })
-    }
-
-    onMounted(async () => {
-      if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
-        return router.push(getTrashLink(unref(spaces)[0]))
-      }
-
-      await loadResourcesTask.perform()
-      await nextTick()
-      markInstance.value = new Mark('.trash-table')
+      return fetchedSpace
     })
 
-    watch(filterTerm, () => {
-      const instance = unref(markInstance)
-      if (!instance) {
-        return
-      }
-      instance.unmark()
-      instance.mark(unref(filterTerm), {
-        element: 'span',
-        className: 'mark-highlight',
-        exclude: ['th *', 'tfoot *']
-      })
-    })
+  reloadedSpaces.forEach((reloadedSpace) => {
+    spacesStore.upsertSpace(reloadedSpace)
+  })
 
-    return {
-      sortBy,
-      sortDir,
-      filterTerm,
-      footerTextTotal,
-      footerTextFilter,
-      fields,
-      spaces,
-      filter,
-      handleSort,
-      displaySpaces,
-      breadcrumbs,
-      resourceTargetRouteCallback,
-      loadResourcesTask,
-      areResourcesLoading,
-      isPersonalSpaceResource,
-      fileListHeaderY,
-      ...useSideBar()
+  yield spacesStore.loadGraphPermissions({
+    ids: unref(spaces).map((space) => space.id),
+    graphClient: clientService.graphAuthenticated
+  })
+  resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
+})
+
+const areResourcesLoading = computed(() => loadResourcesTask.isRunning || !loadResourcesTask.last)
+
+const footerTextTotal = computed(() =>
+  $ngettext(
+    '%{spaceCount} trash bin in total',
+    '%{spaceCount} trash bins in total',
+    unref(spaces).length,
+    {
+      spaceCount: unref(spaces).length.toString()
     }
+  )
+)
+
+const footerTextFilter = computed(() =>
+  $ngettext(
+    '%{spaceCount} matching trash bin',
+    '%{spaceCount} matching trash bins',
+    unref(displaySpaces).length,
+    {
+      spaceCount: unref(displaySpaces).length.toString()
+    }
+  )
+)
+
+const breadcrumbs = computed(() => [
+  { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }
+])
+
+const sort = (list: SpaceResource[], propName: keyof SpaceResource, desc: boolean) => {
+  return [...list].sort((s1, s2) => {
+    if (isPersonalSpaceResource(s1)) return -1
+    if (isPersonalSpaceResource(s2)) return 1
+    const a = s1[propName].toString()
+    const b = s2[propName].toString()
+    return desc ? b.localeCompare(a) : a.localeCompare(b)
+  })
+}
+
+const filter = (spaces: SpaceResource[], filterTerm: string) => {
+  if (!unref(areEmptyTrashesShown)) {
+    spaces = spaces.filter((space) => space.hasTrashedItems !== false)
   }
+  if (!(filterTerm || '').trim()) return spaces
+  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(filterTerm).map((r) => r.item)
+}
+
+const displaySpaces = computed(() =>
+  sort(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === 'desc')
+)
+
+const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) => {
+  sortBy.value = event.sortBy
+  sortDir.value = event.sortDir
+}
+
+const getTrashLink = (space: SpaceResource) =>
+  createLocationTrash('files-trash-generic', {
+    ...createFileRouteOptions(space)
+  })
+
+const resourceTargetRouteCallback = ({
+  resource
+}: CreateTargetRouteOptions): RouteLocationNamedRaw => getTrashLink(resource as SpaceResource)
+
+onMounted(async () => {
+  if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
+    return router.push(getTrashLink(unref(spaces)[0]))
+  }
+  ready.value = true
+  await loadResourcesTask.perform()
+  await nextTick()
+  markInstance.value = new Mark('.trash-table')
+})
+
+watch(filterTerm, () => {
+  const instance = unref(markInstance)
+  if (!instance) return
+  instance.unmark()
+  instance.mark(unref(filterTerm), {
+    element: 'span',
+    className: 'mark-highlight',
+    exclude: ['th *', 'tfoot *']
+  })
 })
 </script>
 
 <style lang="scss">
-#spaces-filter {
+#trash-filter {
   width: 16rem;
 }
 </style>
