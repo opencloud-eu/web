@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Improve Trashbin  [[#905](https://github.com/opencloud-eu/web/pull/905)]
 - feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
 - feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
 - feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
