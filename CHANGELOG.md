@@ -6,6 +6,12 @@
 
 @AlexAndBear, @ScharfViktor, @kulmann, @prashant-gurung899
 
+### 📈 Enhancement
+
+- feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
+- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
+- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
+
 ### ✅ Tests
 
 - update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
@@ -16,14 +22,9 @@
 
 - fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
 
-### 📈 Enhancement
-
-- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
-- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
-
 ### 📦️ Dependencies
 
-- chore(deps): update dependency @cucumber/messages to v28 [[#913](https://github.com/opencloud-eu/web/pull/913)]
+- chore(deps): update dependency @cucumber/messages to v28 - autoclosed [[#913](https://github.com/opencloud-eu/web/pull/913)]
 - chore(deps): update collabora/code docker tag to v25.04.3.2.1 [[#909](https://github.com/opencloud-eu/web/pull/909)]
 - fix(deps): update dependency oidc-client-ts to v3.3.0 [[#901](https://github.com/opencloud-eu/web/pull/901)]
 - chore(deps): update devdependencies (non-major) [[#888](https://github.com/opencloud-eu/web/pull/888)]
