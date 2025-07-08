@@ -1352,6 +1352,9 @@ def collaboraService():
                 "coolconfig generate-proof-key",
                 "bash /start-collabora-online.sh",
             ],
+            "volumes": [
+                "tests/woodpecker/collabora/no_welcome:/usr/share/coolwsd/browser/dist/welcome:ro",
+            ],
         },
     ]
 

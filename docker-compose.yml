@@ -206,6 +206,8 @@ services:
       traefik.http.routers.collabora.rule: PathPrefix(`/`)
       traefik.http.routers.collabora.entrypoints: collabora
       traefik.http.services.collabora.loadbalancer.server.port: 9980
+    volumes:
+      - ./tests/woodpecker/collabora/no_welcome:/usr/share/coolwsd/browser/dist/welcome:ro
     restart: unless-stopped
     depends_on:
       - traefik
