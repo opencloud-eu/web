@@ -47,7 +47,7 @@ export const useIsResourceNameValid = () => {
       (file) => file.path === newPath && file.name === newName
     )
     if (exists) {
-      const translated = $gettext('The name "%{name}" is already taken')
+      const translated = $gettext('The name »%{name}« is already taken')
       return { isValid: false, error: $gettext(translated, { name: newName }, true) }
     }
 

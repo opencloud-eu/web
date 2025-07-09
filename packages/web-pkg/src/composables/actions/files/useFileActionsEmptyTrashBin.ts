@@ -43,10 +43,10 @@ export const useFileActionsEmptyTrashBin = () => {
 
   const handler = ({ resources }: SpaceActionOptions) => {
     dispatchModal({
-      title: $gettext('Empty trash bin for "%{name}"', { name: resources[0].name }),
+      title: $gettext('Empty trash bin for »%{name}«', { name: resources[0].name }),
       confirmText: $gettext('Delete'),
       message: $gettext(
-        'Are you sure you want to permanently delete the items in "%{name}"? You can’t undo this action.',
+        'Are you sure you want to permanently delete the items in »%{name}«? You can’t undo this action.',
         {
           name: resources[0].name
         }

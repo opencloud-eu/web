@@ -49,7 +49,7 @@ export const useSpaceActionsRestore = () => {
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && spaces.length === 1
-          ? $gettext('Space "%{space}" was enabled successfully', { space: spaces[0].name })
+          ? $gettext('Space »%{space}« was enabled successfully', { space: spaces[0].name })
           : $ngettext(
               '%{spaceCount} space was enabled successfully',
               '%{spaceCount} spaces were enabled successfully',
@@ -66,7 +66,7 @@ export const useSpaceActionsRestore = () => {
 
       const title =
         failed.length === 1 && spaces.length === 1
-          ? $gettext('Failed to enabled space "%{space}"', { space: spaces[0].name })
+          ? $gettext('Failed to enabled space »%{space}«', { space: spaces[0].name })
           : $ngettext(
               'Failed to enable %{spaceCount} space',
               'Failed to enable %{spaceCount} spaces',
@@ -96,7 +96,7 @@ export const useSpaceActionsRestore = () => {
 
     dispatchModal({
       title: $ngettext(
-        'Enable Space "%{space}"?',
+        'Enable Space »%{space}«?',
         'Enable %{spaceCount} Spaces?',
         allowedResources.length,
         {

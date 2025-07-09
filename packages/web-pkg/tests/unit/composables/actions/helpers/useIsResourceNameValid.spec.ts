@@ -53,7 +53,7 @@ describe('useIsResourceNameValid', () => {
             parentResources
           )
           expect(isValid).toBe(false)
-          expect(error).toEqual('The name "otherName" is already taken')
+          expect(error).toEqual('The name »otherName« is already taken')
         }
       })
     })
@@ -93,13 +93,13 @@ describe('useIsResourceNameValid', () => {
       {
         currentName: 'currentName',
         newName: 'file1',
-        message: 'The name "file1" is already taken'
+        message: 'The name »file1« is already taken'
       },
       {
         currentName: 'currentName',
         newName: 'newname',
         parentResources: [{ name: 'newname', path: '/newname' } as Resource],
-        message: 'The name "newname" is already taken'
+        message: 'The name »newname« is already taken'
       },
       {
         currentName: 'currentName',

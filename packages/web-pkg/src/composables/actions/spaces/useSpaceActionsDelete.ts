@@ -47,7 +47,7 @@ export const useSpaceActionsDelete = () => {
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && spaces.length === 1
-          ? $gettext('Space "%{space}" was deleted successfully', { space: spaces[0].name })
+          ? $gettext('Space »%{space}« was deleted successfully', { space: spaces[0].name })
           : $ngettext(
               '%{spaceCount} space was deleted successfully',
               '%{spaceCount} spaces were deleted successfully',
@@ -64,7 +64,7 @@ export const useSpaceActionsDelete = () => {
 
       const title =
         failed.length === 1 && spaces.length === 1
-          ? $gettext('Failed to delete space "%{space}"', { space: spaces[0].name })
+          ? $gettext('Failed to delete space »%{space}«', { space: spaces[0].name })
           : $ngettext(
               'Failed to delete %{spaceCount} space',
               'Failed to delete %{spaceCount} spaces',
@@ -97,7 +97,7 @@ export const useSpaceActionsDelete = () => {
 
     dispatchModal({
       title: $ngettext(
-        'Delete Space "%{space}"?',
+        'Delete Space »%{space}«?',
         'Delete %{spaceCount} Spaces?',
         allowedResources.length,
         {

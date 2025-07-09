@@ -227,7 +227,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
     if (message.MessageId === 'UI_SaveAs') {
       if (Object.hasOwn(message.Values, 'format')) {
         dispatchModal({
-          title: $gettext('Export %{name} as %{format}', {
+          title: $gettext('Export »%{name}« as %{format}', {
             name: resource.name,
             format: message.Values.format
           }),
@@ -248,7 +248,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
       }
 
       dispatchModal({
-        title: $gettext('Save %{name} with new name', { name: resource.name }),
+        title: $gettext('Save »%{name}« with new name', { name: resource.name }),
         customComponent: FileNameModal,
         customComponentAttrs: () => ({
           space,
