@@ -882,7 +882,7 @@ def buildOpenCloud(enableVips = False):
                 ". ./.woodpecker.env",
                 "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
                 "cd repo_opencloud",
-                "retry -t 3 'make node-generate-prod'",  # ToDo Get rid of 'retry' dependency as in https://github.com/opencloud-eu/opencloud/commit/c897ec321fcd6af40c3dcfc56b2b6cd195a6054f
+                "for i in $(seq 3); do make node-generate-prod && break || sleep 1; done",
             ],
         },
         {
