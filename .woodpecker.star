@@ -1346,14 +1346,11 @@ def collaboraService():
             "detach": True,
             "environment": {
                 "DONT_GEN_SSL_CERT": "set",
-                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:welcome.enable=false --o:net.frame_ancestors=https://opencloud:9200",
+                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
             },
             "commands": [
                 "coolconfig generate-proof-key",
                 "bash /start-collabora-online.sh",
-            ],
-            "volumes": [
-                "tests/woodpecker/collabora/no_welcome:/usr/share/coolwsd/browser/dist/welcome:ro",
             ],
         },
     ]
