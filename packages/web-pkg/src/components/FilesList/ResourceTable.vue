@@ -69,7 +69,7 @@
         :outline="isLatestSelectedItem(item)"
         @click.stop="
           (e: MouseEvent) => {
-            if (!useInterceptShiftClick(e, item)) {
+            if (!useInterceptModifierClick(e, item)) {
               toggleSelection(item.id)
             }
           }
@@ -105,7 +105,7 @@
           appearance="raw"
           @click.stop="
             (e: MouseEvent) => {
-              if (useInterceptShiftClick(e, item)) {
+              if (useInterceptModifierClick(e, item)) {
                 return
               }
               openRenameDialog(item)
@@ -202,7 +202,7 @@
         no-hover
         @click.stop="
           (e: MouseEvent) => {
-            if (useInterceptShiftClick(e, item)) {
+            if (useInterceptModifierClick(e, item)) {
               return
             }
             openSharingSidebar(item, e)
@@ -235,7 +235,7 @@
         no-hover
         @click.stop="
           (e: MouseEvent) => {
-            if (useInterceptShiftClick(e, item)) {
+            if (useInterceptModifierClick(e, item)) {
               return
             }
             openSharingSidebar(item, e)
@@ -347,7 +347,7 @@ import {
 } from '../../helpers'
 import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
-import { useInterceptShiftClick } from '../../composables/keyboardActions'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 
 import { useResourceRouteResolver } from '../../composables/filesList/useResourceRouteResolver'
 import { ClipboardActions } from '../../helpers/clipboardActions'
@@ -758,7 +758,7 @@ export default defineComponent({
       emitSelect,
       toggleSelection,
       eventBus,
-      useInterceptShiftClick,
+      useInterceptModifierClick,
       areFileExtensionsShown,
       latestSelectedId,
       isResourceClickable,
@@ -1059,7 +1059,7 @@ export default defineComponent({
       eventBus.publish(SideBarEventTopics.open)
     },
     openSharingSidebar(file: Resource, event?: MouseEvent) {
-      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, file)) {
+      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, file)) {
         return
       }
       let panelToOpen: unknown
@@ -1131,7 +1131,7 @@ export default defineComponent({
     showContextMenuOnBtnClick(data: ContextMenuBtnClickEventData, item: Resource) {
       const { dropdown, event } = data
 
-      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, item)) {
+      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, item)) {
         return
       }
 
@@ -1148,7 +1148,7 @@ export default defineComponent({
       displayPositionedDropdown(dropdown.tippy, event, this.contextMenuButton)
     },
     showContextMenu(row: ComponentPublicInstance<unknown>, event: MouseEvent, item: Resource) {
-      if (event instanceof MouseEvent && this.useInterceptShiftClick(event, item)) {
+      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, item)) {
         return
       }
       event.preventDefault()
@@ -1249,7 +1249,7 @@ export default defineComponent({
       )
     },
     emitFileClick(resource: Resource, event?: MouseEvent) {
-      if (useInterceptShiftClick(event, resource)) {
+      if (useInterceptModifierClick(event, resource)) {
         return
       }
       const space = this.getMatchingSpace(resource)

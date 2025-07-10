@@ -10,6 +10,7 @@ import { SideBarEventTopics } from '../composables/sideBar'
 import { AncestorMetaData } from '../types'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { IconFillType } from './resource'
+import { useInterceptModifierClick } from '../composables'
 
 // dummy to trick gettext string extraction into recognizing strings
 const $gettext = (str: string): string => {
@@ -64,8 +65,10 @@ const getUserIndicator = ({
     category: 'sharing',
     type: isDirect ? 'user-direct' : 'user-indirect',
     fillType: 'line',
-    handler: () => {
-      eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
+    handler: (resource: Resource, event?: MouseEvent) => {
+      if (event && useInterceptModifierClick(event, resource)) {
+        return
+      }
     }
   }
 }

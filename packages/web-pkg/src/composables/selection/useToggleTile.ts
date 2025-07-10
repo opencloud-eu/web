@@ -1,12 +1,12 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { eventBus } from '../../services'
-import { useInterceptShiftClick } from '../../composables/keyboardActions'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 
 export function useToggleTile(data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) {
   const resource = data[0]
   const eventData = data[1]
 
-  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 
