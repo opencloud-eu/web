@@ -7,6 +7,7 @@ import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client
 import { Resource } from '@opencloud-eu/web-client'
 import { eventBus } from '../../../services'
 import type { FileActionOptions } from '../types'
+import { useInterceptModifierClick } from '../../keyboardActions'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -18,7 +19,6 @@ export const useFileActionsCopyPermanentLink = () => {
       await copyToClipboard(url)
       showMessage({ title: $gettext('The link has been copied to your clipboard.') })
     } catch (e) {
-      console.error(e)
       showErrorMessage({
         title: $gettext('Copy link failed'),
         errors: [e]
@@ -35,22 +35,13 @@ export const useFileActionsCopyPermanentLink = () => {
       label: () => $gettext('Copy permanent link'),
       handler: (options: FileActionOptionsWithEvent) => {
         const { resources, event } = options
+        const resource = resources[0]
 
-        if (event?.shiftKey) {
-          event.preventDefault?.()
-          event.stopPropagation?.()
-          event.stopImmediatePropagation?.()
-
-          eventBus.publish('app.files.list.clicked.shift', {
-            resource: resources[0],
-            skipTargetSelection: false
-          })
+        if (useInterceptModifierClick(event, resource)) {
           return
         }
 
-        const [resource] = resources
-        const permalink = (resource as any).privateLink
-        return copyLinkToClipboard(permalink)
+        return copyLinkToClipboard(resource.privateLink)
       },
       isVisible: ({ space, resources }) => {
         if (resources.length !== 1) {

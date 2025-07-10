@@ -184,7 +184,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
-import { useInterceptShiftClick } from '../../composables/keyboardActions'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
@@ -297,7 +297,7 @@ const getRoute = (resource: Resource) => {
   return action.route({ space: s, resources: [resource] })
 }
 const emitTileClick = (resource: Resource, event?: MouseEvent) => {
-  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 
@@ -324,7 +324,7 @@ const showContextMenuOnBtnClick = (
 ) => {
   const { dropdown, event } = data
 
-  if (event && useInterceptShiftClick(event as MouseEvent, item)) {
+  if (event && useInterceptModifierClick(event as MouseEvent, item)) {
     return
   }
 
@@ -419,7 +419,7 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
-  if (event instanceof MouseEvent && useInterceptShiftClick(event, item)) {
+  if (event instanceof MouseEvent && useInterceptModifierClick(event, item)) {
     return
   }
 
@@ -441,7 +441,7 @@ const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseE
   const resource = data[0]
   const eventData = data[1]
 
-  if (event && useInterceptShiftClick(event as MouseEvent, resource)) {
+  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 

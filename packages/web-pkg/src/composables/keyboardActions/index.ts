@@ -1,3 +1,3 @@
 export * from './useKeyboardActions'
-export * from './useInterceptShiftClick'
+export * from './useInterceptModifierClick'
 export * from './useCropperKeyboardActions'

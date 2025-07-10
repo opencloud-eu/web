@@ -1,5 +1,10 @@
 <template>
-  <oc-status-indicators v-if="indicators.length > 0" v-bind="attrs" :indicators="indicators" />
+  <oc-status-indicators
+    v-if="indicators.length > 0"
+    v-bind="attrs"
+    :indicators="indicators"
+    :resource="resource"
+  />
 </template>
 
 <script setup lang="ts">
