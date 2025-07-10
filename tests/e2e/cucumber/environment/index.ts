@@ -165,7 +165,11 @@ AfterAll(async () => {
   // move failed tracing reports
   const failedDir = path.dirname(config.tracingReportDir) + '/failed'
   if (fs.existsSync(failedDir)) {
-    fs.renameSync(failedDir, config.tracingReportDir)
+    fs.mkdirSync(config.tracingReportDir, { recursive: true })
+    fs.readdirSync(failedDir).forEach((file) => {
+      fs.renameSync(failedDir + '/' + file, config.tracingReportDir + '/' + file)
+    })
+    fs.rmSync(failedDir, { recursive: true })
   }
 })
 
@@ -182,8 +186,8 @@ function filterTracingReports(status: string) {
     reports.forEach((report) => {
       fs.renameSync(`${traceDir}/${report}`, `${failedDir}/${report}`)
     })
-  } else {
-    // clean up the tracing directory
+  } else if (!defaults.reportTracing) {
+    // clean up the tracing directory if the report tracing was not set explicitly
     fs.rmSync(traceDir, { recursive: true })
   }
 }
