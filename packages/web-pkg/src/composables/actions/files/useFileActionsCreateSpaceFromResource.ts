@@ -75,7 +75,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const handler = ({ resources, space }: FileActionOptions) => {
     dispatchModal({
       title: $ngettext(
-        'Create Space from "%{resourceName}"',
+        'Create Space from »%{resourceName}«',
         'Create Space from selection',
         resources.length,
         {
@@ -83,7 +83,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
         }
       ),
       message: $ngettext(
-        'Create Space with the content of "%{resourceName}".',
+        'Create Space with the content of »%{resourceName}«.',
         'Create Space with the selected files.',
         resources.length,
         {

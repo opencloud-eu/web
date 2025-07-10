@@ -37,7 +37,9 @@ Feature: spaces.personal
     And "Alice" updates the space "team.1" description to "developer team - description"
     And "Alice" updates the space "team.1" quota to "50"
     And "Alice" updates the space "team.1" image to "testavatar.png"
-    Then space image should match 16/9 ratio for user "Alice"
+    And space image should match 16/9 ratio for user "Alice"
+    And "Alice" deletes the space "team.1" image
+    And "Alice" changes the space "team.1" icon to "😍"
 
     # shared examples
     And "Alice" creates the following resources
@@ -60,13 +62,15 @@ Feature: spaces.personal
       | resource         | recipient | type | role     | resourceType |
       | folder_to_shared | Brian     | user | Can edit | folder       |
 
-    # team.2
+    # team.2: do the same thing, but using the context menu
     And "Alice" navigates to the project space "team.2"
-    And "Alice" updates the space "team.2" name to "management team"
-    And "Alice" updates the space "team.2" subtitle to "management team - subtitle"
-    And "Alice" updates the space "team.2" description to "management team - description"
-    And "Alice" updates the space "team.2" quota to "500"
-    And "Alice" updates the space "team.2" image to "testavatar.png"
+    And "Alice" changes the space "team.2" name to "management team" using context menu
+    And "Alice" changes the space "team.2" subtitle to "management team - subtitle" using context menu
+    And "Alice" changes the space "team.2" description to "management team - description" using context menu
+    And "Alice" changes the space "team.2" quota to "500" using context menu
+    And "Alice" changes the space "team.2" image to "testavatar.png" using context menu
+    And "Alice" deletes the space "team.2" image using context menu
+    And "Alice" changes the space "team.2" icon to "😜" using context menu
 
     And "Alice" creates the following resources
       | resource     | type   |

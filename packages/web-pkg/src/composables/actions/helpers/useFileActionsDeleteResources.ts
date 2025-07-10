@@ -65,7 +65,7 @@ export const useFileActionsDeleteResources = () => {
     if (currentResources.length === 1) {
       if (isFolder) {
         title = $gettext(
-          'Permanently delete folder "%{name}"',
+          'Permanently delete folder »%{name}«',
           {
             name: currentResources[0].name
           },
@@ -73,7 +73,7 @@ export const useFileActionsDeleteResources = () => {
         )
       } else {
         title = $gettext(
-          'Permanently delete file "%{name}"',
+          'Permanently delete file »%{name}«',
           {
             name: currentResources[0].name
           },

@@ -7,13 +7,16 @@ import { createLink } from '../link/actions'
 import { File } from '../../../types'
 
 const newSpaceMenuButton = '#new-space-menu-btn'
+const spaceContextMenuButton = '#space-context-btn'
 const spaceNameInputField = '.oc-modal input'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const spaceIdSelector = `[data-item-id="%s"] .oc-resource-basename`
 const spacesRenameOptionSelector = '.oc-files-actions-rename-trigger:visible'
 const editSpacesSubtitleOptionSelector = '.oc-files-actions-edit-description-trigger:visible'
 const editQuotaOptionSelector = '.oc-files-actions-edit-quota-trigger:visible'
-const editImageOptionSelector = '.oc-files-actions-upload-space-image-trigger:visible'
+const editImageOptionSelector = '.oc-files-actions-upload-space-image-trigger'
+const deleteImageButton = '.oc-files-actions-delete-space-image-trigger'
+const setIconButton = '.oc-files-actions-set-space-icon-trigger'
 const downloadSpaceSelector = '.oc-files-actions-download-archive-trigger:visible'
 const spacesQuotaSearchField = '.oc-modal .vs__search'
 const selectedQuotaValueField = '.vs--open'
@@ -24,6 +27,8 @@ const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
+const editImageInContextMenuButton =
+  '//button[contains(@id, "oc-files-context-actions-space-image")]'
 
 export const openActionsPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
@@ -87,9 +92,10 @@ export const changeSpaceName = async (args: {
   page: Page
   id: string
   value: string
+  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value, id } = args
-  await openActionsPanel(page)
+  const { page, value, id, contextMenu = false } = args
+  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
 
   await page.locator(spacesRenameOptionSelector).click()
   await page.locator(spaceNameInputField).fill(value)
@@ -103,7 +109,7 @@ export const changeSpaceName = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  await sidebar.close({ page: page })
+  !contextMenu && (await sidebar.close({ page }))
 }
 
 /**/
@@ -112,9 +118,10 @@ export const changeSpaceSubtitle = async (args: {
   page: Page
   id: string
   value: string
+  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value, id } = args
-  await openActionsPanel(page)
+  const { page, value, id, contextMenu = false } = args
+  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
 
   await page.locator(editSpacesSubtitleOptionSelector).click()
   await page.locator(spaceNameInputField).fill(value)
@@ -128,7 +135,7 @@ export const changeSpaceSubtitle = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  await sidebar.close({ page: page })
+  !contextMenu && (await sidebar.close({ page }))
 }
 
 /**/
@@ -136,9 +143,11 @@ export const changeSpaceSubtitle = async (args: {
 export const changeSpaceDescription = async (args: {
   page: Page
   value: string
+  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value } = args
-  await openActionsPanel(page)
+  const { page, value, contextMenu = false } = args
+  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
+
   const waitForUpdate = () =>
     page.waitForResponse(
       (resp) =>
@@ -163,9 +172,10 @@ export const changeQuota = async (args: {
   id: string
   page: Page
   value: string
+  contextMenu?: boolean
 }): Promise<void> => {
-  const { id, page, value } = args
-  await openActionsPanel(page)
+  const { id, page, value, contextMenu = false } = args
+  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
 
   await page.locator(editQuotaOptionSelector).click()
   const searchLocator = page.locator(spacesQuotaSearchField)
@@ -183,7 +193,7 @@ export const changeQuota = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  await sidebar.close({ page: page })
+  !contextMenu && (await sidebar.close({ page }))
 }
 
 export interface SpaceMembersArgs {
@@ -203,15 +213,19 @@ export const changeSpaceImage = async (args: {
   id: string
   page: Page
   resource: File
+  contextMenu?: boolean
 }): Promise<void> => {
-  const { id, page, resource } = args
-  await openActionsPanel(page)
+  const { id, page, resource, contextMenu = false } = args
+  if (contextMenu) {
+    await page.locator(spaceContextMenuButton).click()
+    await page.locator(editImageInContextMenuButton).hover()
+  } else {
+    await openActionsPanel(page)
+  }
+  const uploadTrigger = page.locator(editImageOptionSelector)
+  await expect(uploadTrigger).toBeVisible()
 
-  const [fileChooser] = await Promise.all([
-    page.waitForEvent('filechooser'),
-    page.locator(editImageOptionSelector).click()
-  ])
-
+  const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), uploadTrigger.click()])
   await Promise.all([
     page.waitForResponse(
       (resp) =>
@@ -229,7 +243,76 @@ export const changeSpaceImage = async (args: {
     fileChooser.setFiles(resource.path)
   ])
 
-  await sidebar.close({ page: page })
+  !contextMenu && (await sidebar.close({ page }))
+}
+
+export const changeSpaceIcon = async (args: {
+  id: string
+  page: Page
+  icon: string
+  contextMenu?: boolean
+}): Promise<void> => {
+  const { id, page, icon, contextMenu = false } = args
+  if (contextMenu) {
+    await page.locator(spaceContextMenuButton).click()
+    await page.locator(editImageInContextMenuButton).hover()
+  } else {
+    await openActionsPanel(page)
+  }
+  const setIcon = page.locator(setIconButton)
+  await expect(setIcon).toBeVisible()
+  await setIcon.click()
+
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.url().endsWith(encodeURIComponent(id)) &&
+        resp.status() === 200 &&
+        resp.request().method() === 'PATCH'
+    ),
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes('image.png') &&
+        resp.status() === 201 &&
+        resp.request().method() === 'PUT'
+    ),
+    page.locator(`button[aria-label="${icon}"]`).first().click()
+  ])
+  !contextMenu && (await sidebar.close({ page }))
+}
+
+export const deleteSpaceImage = async (args: {
+  id: string
+  page: Page
+  contextMenu?: boolean
+}): Promise<void> => {
+  const { id, page, contextMenu = false } = args
+  if (contextMenu) {
+    await page.locator(spaceContextMenuButton).click()
+    await page.locator(editImageInContextMenuButton).hover()
+  } else {
+    await openActionsPanel(page)
+  }
+  const deleteTrigger = page.locator(deleteImageButton)
+  await expect(deleteTrigger).toBeVisible()
+
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes('image.png') &&
+        resp.status() === 204 &&
+        resp.request().method() === 'DELETE'
+    ),
+    page.waitForResponse(
+      (resp) =>
+        resp.url().endsWith(encodeURIComponent(id)) &&
+        resp.status() === 200 &&
+        resp.request().method() === 'PATCH'
+    ),
+    page.locator(actionConfirmButton).click(),
+    deleteTrigger.click()
+  ])
+  !contextMenu && (await sidebar.close({ page }))
 }
 
 export interface removeAccessMembersArgs extends Omit<SpaceMembersArgs, 'users'> {

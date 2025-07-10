@@ -20,7 +20,7 @@ export const useUserActionsEditQuota = () => {
 
   const getModalTitle = ({ resources }: { resources: User[] }) => {
     if (resources.length === 1) {
-      return $gettext('Change quota for user "%{name}"', {
+      return $gettext('Change quota for user »%{name}«', {
         name: resources[0].displayName
       })
     }

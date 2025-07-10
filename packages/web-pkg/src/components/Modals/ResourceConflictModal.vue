@@ -82,11 +82,11 @@ export default defineComponent({
     const message = computed(() =>
       props.resource.isFolder
         ? $gettext(
-            'Folder with name "%{name}" already exists.',
+            'Folder with name »%{name}« already exists.',
             { name: props.resource.name },
             true
           )
-        : $gettext('File with name "%{name}" already exists.', { name: props.resource.name }, true)
+        : $gettext('File with name »%{name}« already exists.', { name: props.resource.name }, true)
     )
 
     const confirmSecondaryText = computed(() => {
