@@ -948,6 +948,7 @@ def buildOpenCloud():
             "commands": [
                 ". ./.woodpecker.env",
                 "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
+                "apt-get update; apt-get install libvips-dev -y",
                 "cd repo_opencloud",
                 "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done",
                 "cp opencloud/bin/opencloud %s/" % dir["base"],
