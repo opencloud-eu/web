@@ -6,3 +6,4 @@ tests/woodpecker/csp.yaml
 pnpm-lock.yaml
 
 **/translations.json
+CHANGELOG.md
