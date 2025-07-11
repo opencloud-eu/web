@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency luxon to v3.7.1 [[#925](https://github.com/opencloud-eu/web/pull/925)]
 - fix(deps): update typescript-eslint monorepo to v8.36.0 [[#914](https://github.com/opencloud-eu/web/pull/914)]
 - chore(deps): update dependency @cucumber/messages to v28 - autoclosed [[#913](https://github.com/opencloud-eu/web/pull/913)]
 - chore(deps): update collabora/code docker tag to v25.04.3.2.1 [[#909](https://github.com/opencloud-eu/web/pull/909)]
