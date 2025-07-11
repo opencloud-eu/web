@@ -3,7 +3,7 @@ docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
-COLLABORA_CODE = "collabora/code:24.04.13.2.1"
+COLLABORA_CODE = "collabora/code:25.04.3.2.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
@@ -1346,7 +1346,7 @@ def collaboraService():
             "detach": True,
             "environment": {
                 "DONT_GEN_SSL_CERT": "set",
-                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:welcome.enable=false --o:net.frame_ancestors=https://opencloud:9200",
+                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
             },
             "commands": [
                 "coolconfig generate-proof-key",
