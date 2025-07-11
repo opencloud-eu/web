@@ -21,7 +21,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.2
-        version: 4.10.2(playwright-core@1.53.2)
+        version: 4.10.2(playwright-core@1.54.0)
       '@babel/core':
         specifier: 7.28.0
         version: 7.28.0
@@ -59,8 +59,8 @@ importers:
         specifier: workspace:*
         version: link:packages/tsconfig
       '@playwright/test':
-        specifier: 1.53.2
-        version: 1.53.2
+        specifier: 1.54.0
+        version: 1.54.0
       '@vitejs/plugin-vue':
         specifier: 6.0.0
         version: 6.0.0(vite@6.3.5(@types/node@22.16.0)(sass@1.89.2)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3))
@@ -2576,8 +2576,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@playwright/test@1.53.2':
-    resolution: {integrity: sha512-tEB2U5z74ebBeyfGNZ3Jfg29AnW+5HlWhvHtb/Mqco9pFdZU1ZLNdVb2UtB5CvmiilNr2ZfVH/qMmAROG/XTzw==}
+  '@playwright/test@1.54.0':
+    resolution: {integrity: sha512-6Mnd5daQmLivaLu5kxUg6FxPtXY4sXsS5SUwKjWNy4ISe4pKraNHoFxcsaTFiNUULbjy0Vlb5HT86QuM0Jy1pQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -5421,13 +5421,13 @@ packages:
   pkg-types@2.1.0:
     resolution: {integrity: sha512-wmJwA+8ihJixSoHKxZJRBQG1oY8Yr9pGLzRmSsNms0iNWyHHAlZCa7mmKiFR10YPZuz/2k169JiS/inOjBCZ2A==}
 
-  playwright-core@1.53.2:
-    resolution: {integrity: sha512-ox/OytMy+2w1jcYEYlOo1Hhp8hZkLCximMTUTMBXjGUA1KoFfiSZ+DU+3a739jsPY0yoKH2TFy9S2fsJas8yAw==}
+  playwright-core@1.54.0:
+    resolution: {integrity: sha512-uiWpWaJh3R3etpJ0QrpligEMl62Dk1iSAB6NUXylvmQz+e3eipXHDHvOvydDAssb5Oqo0E818qdn0L9GcJSTyA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.53.2:
-    resolution: {integrity: sha512-6K/qQxVFuVQhRQhFsVZ9fGeatxirtrpPgxzBYWyZLEXJzqYwuL4fuNmfOfD5et1tJE4GScKyPNeLhZeRwuTU3A==}
+  playwright@1.54.0:
+    resolution: {integrity: sha512-y9yzHmXRwEUOpghM7XGcA38GjWuTOUMaTIcm/5rHcYVjh5MSp9qQMRRMc/+p1cx+csoPnX4wkxAF61v5VKirxg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -6834,10 +6834,10 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.3
       lru-cache: 10.4.3
 
-  '@axe-core/playwright@4.10.2(playwright-core@1.53.2)':
+  '@axe-core/playwright@4.10.2(playwright-core@1.54.0)':
     dependencies:
       axe-core: 4.10.3
-      playwright-core: 1.53.2
+      playwright-core: 1.54.0
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -8467,9 +8467,9 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@playwright/test@1.53.2':
+  '@playwright/test@1.54.0':
     dependencies:
-      playwright: 1.53.2
+      playwright: 1.54.0
 
   '@popperjs/core@2.11.8': {}
 
@@ -11575,11 +11575,11 @@ snapshots:
       exsolve: 1.0.5
       pathe: 2.0.3
 
-  playwright-core@1.53.2: {}
+  playwright-core@1.54.0: {}
 
-  playwright@1.53.2:
+  playwright@1.54.0:
     dependencies:
-      playwright-core: 1.53.2
+      playwright-core: 1.54.0
     optionalDependencies:
       fsevents: 2.3.2
 
