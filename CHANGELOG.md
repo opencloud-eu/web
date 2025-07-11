@@ -4,7 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor, @individual-it, @kulmann, @prashant-gurung899
+@AlexAndBear, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
+
+### 📈 Enhancement
+
+- enhancement(ci): sync translations [[#940](https://github.com/opencloud-eu/web/pull/940)]
+- feat: consistent entity names in continuous text [[#919](https://github.com/opencloud-eu/web/pull/919)]
+- Improve Trashbin  [[#905](https://github.com/opencloud-eu/web/pull/905)]
+- feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
+- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
+- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
 
 ### ✅ Tests
 
@@ -13,14 +22,6 @@
 - update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
 - enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
 - [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
-
-### 📈 Enhancement
-
-- feat: consistent entity names in continuous text [[#919](https://github.com/opencloud-eu/web/pull/919)]
-- Improve Trashbin  [[#905](https://github.com/opencloud-eu/web/pull/905)]
-- feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
-- feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
-- feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
 
 ### 🐛 Bug Fixes
 
