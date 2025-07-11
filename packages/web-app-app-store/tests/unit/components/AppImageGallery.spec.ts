@@ -8,6 +8,7 @@ const coverImageWithUrl: AppImage = {
   caption: 'Cover image'
 }
 const coverImageWithoutUrl: AppImage = {
+  url: '',
   caption: 'Trololo'
 }
 const screenshot1: AppImage = {
