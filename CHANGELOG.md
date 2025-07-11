@@ -28,6 +28,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.13.1 [[#921](https://github.com/opencloud-eu/web/pull/921)]
+- fix(deps): update dependency @sentry/vue to v9.37.0 [[#922](https://github.com/opencloud-eu/web/pull/922)]
+- chore(deps): update dependency @playwright/test to v1.54.0 [[#932](https://github.com/opencloud-eu/web/pull/932)]
+- fix(deps): update dependency zod to v4 [[#926](https://github.com/opencloud-eu/web/pull/926)]
 - fix(deps): update dependency luxon to v3.7.1 [[#925](https://github.com/opencloud-eu/web/pull/925)]
 - fix(deps): update typescript-eslint monorepo to v8.36.0 [[#914](https://github.com/opencloud-eu/web/pull/914)]
 - chore(deps): update dependency @cucumber/messages to v28 - autoclosed [[#913](https://github.com/opencloud-eu/web/pull/913)]
