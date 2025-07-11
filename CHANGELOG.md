@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-10
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- [full-ci] e2e tests. fix app-provider flaky test. Disable welcome popup [[#917](https://github.com/opencloud-eu/web/pull/917)]
 - e2e tests. set space image using context menu [[#916](https://github.com/opencloud-eu/web/pull/916)]
 - update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
 - enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
@@ -27,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update typescript-eslint monorepo to v8.36.0 [[#914](https://github.com/opencloud-eu/web/pull/914)]
 - chore(deps): update dependency @cucumber/messages to v28 - autoclosed [[#913](https://github.com/opencloud-eu/web/pull/913)]
 - chore(deps): update collabora/code docker tag to v25.04.3.2.1 [[#909](https://github.com/opencloud-eu/web/pull/909)]
 - fix(deps): update dependency oidc-client-ts to v3.3.0 [[#901](https://github.com/opencloud-eu/web/pull/901)]
