@@ -6,6 +6,11 @@
 
 @AlexAndBear, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
 
+### 🐛 Bug Fixes
+
+- chore(ci): use corepack for translation sync [[#945](https://github.com/opencloud-eu/web/pull/945)]
+- fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
+
 ### 📈 Enhancement
 
 - enhancement(ci): sync translations [[#940](https://github.com/opencloud-eu/web/pull/940)]
@@ -22,10 +27,6 @@
 - update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
 - enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
 - [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
-
-### 🐛 Bug Fixes
-
-- fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
 
 ### 📦️ Dependencies
 
