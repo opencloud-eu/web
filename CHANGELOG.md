@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-07-10
+## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-07-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -11,6 +11,10 @@
 - [stable-2.1] fix: add missing icon for otp [[#670](https://github.com/opencloud-eu/web/pull/670)]
 - fix: bring back the left top rounded corner in the app bar [[#651](https://github.com/opencloud-eu/web/pull/651)]
 - fix: chrome oh snap errors [[#642](https://github.com/opencloud-eu/web/pull/642)]
+
+### 📦️ Dependencies
+
+- [full-ci] bump-opencloud-2.0.3 [[#933](https://github.com/opencloud-eu/web/pull/933)]
 
 ## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-04-09
 
