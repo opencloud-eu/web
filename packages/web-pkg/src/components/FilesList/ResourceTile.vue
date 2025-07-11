@@ -39,7 +39,12 @@
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
-            <oc-image v-if="resource.thumbnail" class="tile-preview" :src="resource.thumbnail" />
+            <oc-image
+              v-if="resource.thumbnail"
+              class="tile-preview"
+              :src="resource.thumbnail"
+              @click="toggleTile([resource, $event], $event)"
+            />
             <resource-icon
               v-else
               :resource="resource"
@@ -53,7 +58,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s">
+      <div class="oc-card-body oc-p-s" @click.passive="toggleTile([resource, $event], $event)">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item
@@ -62,7 +67,7 @@
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click="$emit('click')"
+              @click.stop="$emit('click')"
             />
           </div>
           <div class="oc-flex oc-flex-middle">
@@ -93,6 +98,8 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
+import { useToggleTile } from '../../composables/selection'
 
 const {
   resource,
@@ -120,6 +127,7 @@ const emit = defineEmits<{
   (e: 'click'): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
+  (e: 'shift-select', resource: Resource): void
 }>()
 
 defineSlots<{
@@ -129,6 +137,10 @@ defineSlots<{
   indicators?: (props: { item: Resource }) => unknown
   selection?: (props: { item: Resource }) => unknown
 }>()
+
+function toggleTile(data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) {
+  useToggleTile(data, event)
+}
 
 const { $gettext } = useGettext()
 

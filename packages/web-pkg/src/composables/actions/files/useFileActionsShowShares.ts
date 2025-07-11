@@ -8,6 +8,7 @@ import { useRouter } from '../../router'
 import { FileAction, FileActionOptions } from '../types'
 import { useCanShare } from '../../shares'
 import { useResourcesStore } from '../../piniaStores'
+import { useInterceptModifierClick } from '../../keyboardActions'
 
 export const useFileActionsShowShares = () => {
   const router = useRouter()
@@ -15,7 +16,12 @@ export const useFileActionsShowShares = () => {
   const { canShare } = useCanShare()
   const resourcesStore = useResourcesStore()
 
-  const handler = ({ resources }: FileActionOptions) => {
+  const handler = ({ resources, event }: FileActionOptions & { event?: MouseEvent }) => {
+    const resource = resources[0]
+
+    if (useInterceptModifierClick(event, resource)) {
+      return
+    }
     resourcesStore.setSelection(resources.map(({ id }) => id))
     eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
   }
