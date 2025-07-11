@@ -30,13 +30,13 @@ const CommonSection = z.object({
 })
 
 const DesignTokens = z.object({
-  breakpoints: z.record(z.string()).optional(),
-  roles: z.record(z.string()).optional(),
-  colorPalette: z.record(z.string()).optional(),
+  breakpoints: z.record(z.string(), z.string()).optional(),
+  roles: z.record(z.string(), z.string()).optional(),
+  colorPalette: z.record(z.string(), z.string()).optional(),
   fontFamily: z.string().optional(),
-  fontSizes: z.record(z.string()).optional(),
-  sizes: z.record(z.string()).optional(),
-  spacing: z.record(z.string()).optional()
+  fontSizes: z.record(z.string(), z.string()).optional(),
+  sizes: z.record(z.string(), z.string()).optional(),
+  spacing: z.record(z.string(), z.string()).optional()
 })
 
 const WebDefaults = CommonSection.extend({
@@ -77,7 +77,9 @@ export const useThemeStore = defineStore('theme', () => {
   const availableThemes = ref<WebThemeType[]>([])
 
   const initializeThemes = (themeConfig: ThemeConfigType) => {
-    const baseTheme = merge(themeConfig.common, themeConfig.clients.web.defaults)
+    const commonThemeConfig = themeConfig.common as WebThemeType
+    const webThemeConfig = themeConfig.clients.web.defaults as WebThemeType
+    const baseTheme = merge(commonThemeConfig, webThemeConfig)
     availableThemes.value = themeConfig.clients.web.themes.map((theme) => {
       return merge(baseTheme, theme)
     })
