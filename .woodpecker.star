@@ -16,6 +16,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
+PLUGINS_GIT_ACTION = "quay.io/thegeeklab/wp-git-action:2"
 PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
@@ -208,6 +209,9 @@ event = {
 }
 
 def main(ctx):
+    if ctx.build.event == "cron" and ctx.build.sender == "translation-sync":
+        return translation_sync(ctx)
+
     release = readyReleaseGo()
 
     before = beforePipelines(ctx)
@@ -256,6 +260,57 @@ def afterPipelines(ctx):
     return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)]
 
     # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
+
+def translation_sync(ctx):
+    return [{
+        "name": "translation-sync",
+        "steps": [
+            {
+                "name": "translation-update",
+                "image": OC_CI_NODEJS,
+                "commands": [
+                    "make l10n-read",
+                    "curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash",
+                    ". ~/.profile",
+                    "make l10n-push",
+                    "make l10n-pull",
+                    "rm tx",
+                    "make l10n-write",
+                    "make l10n-clean",
+                    "git checkout pnpm-lock.yaml",  # ignore possible changes in package.lock
+                ],
+                "environment": {
+                    "TX_TOKEN": {
+                        "from_secret": "tx_token",
+                    },
+                },
+            },
+            {
+                "name": "translation-push",
+                "image": PLUGINS_GIT_ACTION,
+                "settings": {
+                    "action": ["commit", "push"],
+                    "branch": ctx.build.branch,
+                    "message": "[tx] updated from transifex",
+                    "author_name": "opencloudeu",
+                    "author_email": "devops@opencloud.eu",
+                    "netrc_username": {
+                        "from_secret": "github_username",
+                    },
+                    "netrc_password": {
+                        "from_secret": "github_token",
+                    },
+                    "empty_commit": False,
+                },
+            },
+        ],
+        "when": [
+            {
+                "event": "cron",
+                "cron": "translation-sync",
+            },
+        ],
+    }]
 
 def pnpmCache(ctx):
     return [{
