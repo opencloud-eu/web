@@ -9,6 +9,7 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
+import { WebThemeType } from '@opencloud-eu/web-pkg'
 
 const totalQuota = 1000
 const basicQuota = 300
@@ -150,7 +151,7 @@ const getMountedWrapper = (
                   imprint: areThemeUrlsSet ? 'https://imprint.url.theme' : '',
                   accessibility: areThemeUrlsSet ? 'https://accessibility.url.theme' : ''
                 }
-              }
+              } as WebThemeType
             },
             userState: {
               user: noUser

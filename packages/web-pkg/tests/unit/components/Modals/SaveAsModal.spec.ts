@@ -8,7 +8,12 @@ import {
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
-import { Modal, useMessages, useModals } from '../../../../src/composables/piniaStores'
+import {
+  Modal,
+  useMessages,
+  useModals,
+  WebThemeType
+} from '../../../../src/composables/piniaStores'
 import { ClientService } from '../../../../src'
 
 window.open = vi.fn()
@@ -114,7 +119,7 @@ function getWrapper() {
           ...defaultPlugins({
             piniaOptions: {
               spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
-              themeState: { currentTheme: { name: 'OpenCloud' } }
+              themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
             }
           })
         ],
