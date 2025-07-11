@@ -269,6 +269,13 @@ def translation_sync(ctx):
                 "name": "translation-update",
                 "image": OC_CI_NODEJS,
                 "commands": [
+                    # FIXME: remove node install as soon as we have our own node 22 image
+                    "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash",
+                    'export NVM_DIR="$HOME/.nvm"',
+                    "[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"",
+                    "nvm install 22",
+                    "nvm use 22",
+                    "corepack enable pnpm",
                     "make l10n-read",
                     "curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash",
                     ". ~/.profile",
