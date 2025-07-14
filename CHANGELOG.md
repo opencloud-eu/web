@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show more details in trash overview filter when filtering is active [[#949](https://github.com/opencloud-eu/web/pull/949)]
 - test: get rid of unit test warnings [Vue warn]: Component is missing … [[#950](https://github.com/opencloud-eu/web/pull/950)]
 - fix: release branch fails due to prettier incompatible with auto gene… [[#946](https://github.com/opencloud-eu/web/pull/946)]
 - chore(ci): use corepack for translation sync [[#945](https://github.com/opencloud-eu/web/pull/945)]
@@ -32,6 +33,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency filesize to v11 [[#939](https://github.com/opencloud-eu/web/pull/939)]
 - chore(deps): update apache/tika docker tag to v3.2.1.0 [[#927](https://github.com/opencloud-eu/web/pull/927)]
 - chore(deps): update traefik docker tag to v3.4.4 [[#947](https://github.com/opencloud-eu/web/pull/947)]
 - fix(deps): update dependency md-editor-v3 to v5.8.0 [[#952](https://github.com/opencloud-eu/web/pull/952)]
