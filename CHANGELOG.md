@@ -32,6 +32,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.4.4 [[#947](https://github.com/opencloud-eu/web/pull/947)]
+- fix(deps): update dependency md-editor-v3 to v5.8.0 [[#952](https://github.com/opencloud-eu/web/pull/952)]
 - chore(deps): update devdependencies (non-major) [[#941](https://github.com/opencloud-eu/web/pull/941)]
 - chore(deps): update dependency @cucumber/cucumber to v12 [[#951](https://github.com/opencloud-eu/web/pull/951)]
 - fix(deps): update dependency @sentry/vue to v9.38.0 [[#938](https://github.com/opencloud-eu/web/pull/938)]
