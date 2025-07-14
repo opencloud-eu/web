@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#941](https://github.com/opencloud-eu/web/pull/941)]
 - chore(deps): update dependency @cucumber/cucumber to v12 [[#951](https://github.com/opencloud-eu/web/pull/951)]
 - fix(deps): update dependency @sentry/vue to v9.38.0 [[#938](https://github.com/opencloud-eu/web/pull/938)]
 - chore(deps): update pnpm to v10.13.1 [[#921](https://github.com/opencloud-eu/web/pull/921)]
