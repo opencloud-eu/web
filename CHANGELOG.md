@@ -6,6 +6,15 @@
 
 @AlexAndBear, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
 
+### ✅ Tests
+
+- e2e test. Empty trashbin using quick action [[#953](https://github.com/opencloud-eu/web/pull/953)]
+- [full-ci] e2e tests. fix app-provider flaky test. Disable welcome popup [[#917](https://github.com/opencloud-eu/web/pull/917)]
+- e2e tests. set space image using context menu [[#916](https://github.com/opencloud-eu/web/pull/916)]
+- update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
+- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
+- [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
+
 ### 🐛 Bug Fixes
 
 - fix: show more details in trash overview filter when filtering is active [[#949](https://github.com/opencloud-eu/web/pull/949)]
@@ -22,14 +31,6 @@
 - feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
 - feat: add context actions to trash [[#887](https://github.com/opencloud-eu/web/pull/887)]
 - feat: improve visual representation on file name input errors [[#876](https://github.com/opencloud-eu/web/pull/876)]
-
-### ✅ Tests
-
-- [full-ci] e2e tests. fix app-provider flaky test. Disable welcome popup [[#917](https://github.com/opencloud-eu/web/pull/917)]
-- e2e tests. set space image using context menu [[#916](https://github.com/opencloud-eu/web/pull/916)]
-- update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
-- enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
-- [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
 
 ### 📦️ Dependencies
 
