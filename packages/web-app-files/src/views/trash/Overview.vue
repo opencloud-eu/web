@@ -164,16 +164,30 @@ const loadResourcesTask = useTask(function* (signal) {
 
 const areResourcesLoading = computed(() => loadResourcesTask.isRunning || !loadResourcesTask.last)
 
-const footerTextTotal = computed(() =>
-  $ngettext(
-    '%{spaceCount} trash bin in total',
-    '%{spaceCount} trash bins in total',
+const footerTextTotal = computed(() => {
+  const emptyTrashSpaces = unref(spaces).filter((s) => s.hasTrashedItems === false)
+
+  if (!emptyTrashSpaces.length) {
+    return $ngettext(
+      '%{spaceCount} trash bin in total',
+      '%{spaceCount} trash bins in total',
+      unref(spaces).length,
+      {
+        spaceCount: unref(spaces).length.toString()
+      }
+    )
+  }
+
+  return $ngettext(
+    '%{spaceCount} trash bin in total (including %{emptyTrashCount} empty)',
+    '%{spaceCount} trash bins in total (including %{emptyTrashCount} empty)',
     unref(spaces).length,
     {
-      spaceCount: unref(spaces).length.toString()
+      spaceCount: unref(spaces).length.toString(),
+      emptyTrashCount: emptyTrashSpaces.length.toString()
     }
   )
-)
+})
 
 const footerTextFilter = computed(() =>
   $ngettext(
