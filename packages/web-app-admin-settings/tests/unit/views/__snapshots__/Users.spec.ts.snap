@@ -23,7 +23,15 @@ exports[`Users view > list view > renders initially warning if filters are manda
         <div data-v-32efd9c6="" id="user-list" class="">
           <div class="user-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
             <div data-v-32efd9c6="" class="oc-flex oc-flex-middle">
-              <div data-v-32efd9c6="" class="oc-mr-m oc-flex oc-flex-middle"><span data-v-32efd9c6="" class="oc-icon oc-icon-m oc-mr-xs"><!----></span> <span data-v-32efd9c6="">Filter:</span></div>
+              <div data-v-32efd9c6="" class="oc-mr-m oc-flex oc-flex-middle"><span data-v-32efd9c6="" class="oc-icon oc-icon-m oc-mr-xs"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false"></svg></span> <span data-v-32efd9c6="">Filter:</span></div>
               <item-filter-stub data-v-32efd9c6="" filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="oc-mr-s"></item-filter-stub>
               <item-filter-stub data-v-32efd9c6="" filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
             </div>
@@ -75,7 +83,15 @@ exports[`Users view > list view > renders list initially 1`] = `
         <div data-v-32efd9c6="" id="user-list" class="">
           <div class="user-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
             <div data-v-32efd9c6="" class="oc-flex oc-flex-middle">
-              <div data-v-32efd9c6="" class="oc-mr-m oc-flex oc-flex-middle"><span data-v-32efd9c6="" class="oc-icon oc-icon-m oc-mr-xs"><!----></span> <span data-v-32efd9c6="">Filter:</span></div>
+              <div data-v-32efd9c6="" class="oc-mr-m oc-flex oc-flex-middle"><span data-v-32efd9c6="" class="oc-icon oc-icon-m oc-mr-xs"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false"></svg></span> <span data-v-32efd9c6="">Filter:</span></div>
               <item-filter-stub data-v-32efd9c6="" filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="oc-mr-s"></item-filter-stub>
               <item-filter-stub data-v-32efd9c6="" filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
             </div>
@@ -131,7 +147,15 @@ exports[`Users view > list view > renders list initially 1`] = `
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-displayName mark-element">Admin</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mail">admin@example.org</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-role">Admin</td>
-                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="oc-flex oc-flex-middle"><span class="oc-icon oc-icon-m oc-mr-s"><!----></span><span>Allowed</span></span></td>
+                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="oc-flex oc-flex-middle"><span class="oc-icon oc-icon-m oc-mr-s"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false"></svg></span><span>Allowed</span></span></td>
                   <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions oc-pr-m">
                     <oc-button-stub arialabel="Show details" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-details"></oc-button-stub>
                     <oc-button-stub arialabel="Edit" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-edit"></oc-button-stub>
