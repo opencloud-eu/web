@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update apache/tika docker tag to v3.2.1.0 [[#927](https://github.com/opencloud-eu/web/pull/927)]
 - chore(deps): update traefik docker tag to v3.4.4 [[#947](https://github.com/opencloud-eu/web/pull/947)]
 - fix(deps): update dependency md-editor-v3 to v5.8.0 [[#952](https://github.com/opencloud-eu/web/pull/952)]
 - chore(deps): update devdependencies (non-major) [[#941](https://github.com/opencloud-eu/web/pull/941)]
