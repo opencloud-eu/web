@@ -32,6 +32,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/cucumber to v12 [[#951](https://github.com/opencloud-eu/web/pull/951)]
+- fix(deps): update dependency @sentry/vue to v9.38.0 [[#938](https://github.com/opencloud-eu/web/pull/938)]
 - chore(deps): update pnpm to v10.13.1 [[#921](https://github.com/opencloud-eu/web/pull/921)]
 - fix(deps): update dependency @sentry/vue to v9.37.0 [[#922](https://github.com/opencloud-eu/web/pull/922)]
 - chore(deps): update dependency @playwright/test to v1.54.0 [[#932](https://github.com/opencloud-eu/web/pull/932)]
