@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-12
+## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-14
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- test: get rid of unit test warnings [Vue warn]: Component is missing … [[#950](https://github.com/opencloud-eu/web/pull/950)]
 - fix: release branch fails due to prettier incompatible with auto gene… [[#946](https://github.com/opencloud-eu/web/pull/946)]
 - chore(ci): use corepack for translation sync [[#945](https://github.com/opencloud-eu/web/pull/945)]
 - fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
