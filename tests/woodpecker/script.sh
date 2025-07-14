@@ -48,6 +48,11 @@ get_playwright_version() {
 
 # Function to check if the cache exists for the given commit ID
 check_browsers_cache() {
+    
+    echo "✅ force browsers install"
+    ENV="BROWSER_CACHE_FOUND=false\n"
+    return
+
     get_playwright_version
 
     playwright_cache=$(mc find s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz 2>&1 | grep 'Object does not exist')
