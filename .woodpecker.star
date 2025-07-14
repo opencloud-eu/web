@@ -10,7 +10,7 @@ OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
 OC_CI_GOLANG = "docker.io/golang:1.24"
-OC_CI_NODEJS = "owncloudci/nodejs:20"
+OC_CI_NODEJS = "owncloudci/nodejs:22"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
@@ -60,6 +60,11 @@ config = {
                 "journeys",
                 "smoke",
             ],
+            "browsers": [
+                "chromium",
+                "firefox",
+                "webkit",
+            ],
         },
         "2": {
             "earlyFail": True,
@@ -99,6 +104,11 @@ config = {
             "skip": False,
             "suites": [
                 "a11y",
+            ],
+            "browsers": [
+                "chromium",
+                "firefox",
+                "webkit",
             ],
         },
         "app-provider": {
@@ -515,6 +525,7 @@ def e2eTests(ctx):
         "federationServer": False,
         "failOnUncaughtConsoleError": False,
         "extraServerEnvironment": {},
+        "browsers": ["chromium"],
     }
 
     e2e_trigger = [
@@ -546,78 +557,91 @@ def e2eTests(ctx):
         if "with-tracing" in ctx.build.title.lower():
             params["reportTracing"] = True
 
-        environment = {
-            "HEADLESS": True,
-            "RETRY": "1",
-            "REPORT_TRACING": params["reportTracing"],
-            "OC_BASE_URL": "opencloud:9200",
-            "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
-            "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
-            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-            "BROWSER": "chromium",
-        }
+        browsers_for_suite = params["browsers"]
 
-        steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-                installPnpm() + \
-                restoreBrowsersCache() + \
-                restoreBuildArtifactCache(ctx, "web-dist", "dist")
+        for browser_name in browsers_for_suite:
+            environment = {
+                "HEADLESS": True,
+                "RETRY": "1",
+                "REPORT_TRACING": params["reportTracing"],
+                "OC_BASE_URL": "opencloud:9200",
+                "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
+                "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
+                "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+                "BROWSER": browser_name,
+            }
 
-        if ctx.build.event == "cron":
-            steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-        else:
-            steps += restoreOpenCloudCache()
+            steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+                    installPnpm() + \
+                    restoreBrowsersCache() + \
+                    restoreBuildArtifactCache(ctx, "web-dist", "dist")
 
-        if "app-provider-onlyOffice" in suite:
-            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-            steps += onlyofficeService() + \
-                     waitForServices("onlyOffice", ["onlyoffice:443"]) + \
-                     openCloudService(params["extraServerEnvironment"]) + \
-                     wopiCollaborationService("onlyoffice") + \
-                     waitForServices("wopi", ["wopi-onlyoffice:9300"])
+            if ctx.build.event == "cron":
+                steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
+            else:
+                steps += restoreOpenCloudCache()
 
-        elif "app-provider" in suite:
-            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-            steps += collaboraService() + \
-                     waitForServices("collabora", ["collabora:9980"]) + \
-                     openCloudService(params["extraServerEnvironment"]) + \
-                     wopiCollaborationService("collabora") + \
-                     waitForServices("wopi", ["wopi-collabora:9300"])
+            if "app-provider-onlyOffice" in suite:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+                steps += onlyofficeService() + \
+                         waitForServices("onlyOffice", ["onlyoffice:443"]) + \
+                         openCloudService(params["extraServerEnvironment"]) + \
+                         wopiCollaborationService("onlyoffice") + \
+                         waitForServices("wopi", ["wopi-onlyoffice:9300"])
 
-        elif "ocm" in suite:
-            steps += openCloudService(params["extraServerEnvironment"]) + \
-                     (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
-        else:
-            # OpenCloud specific steps
-            steps += (tikaService() if params["tikaNeeded"] else []) + \
-                     openCloudService(params["extraServerEnvironment"])
+            elif "app-provider" in suite:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+                steps += collaboraService() + \
+                         waitForServices("collabora", ["collabora:9980"]) + \
+                         openCloudService(params["extraServerEnvironment"]) + \
+                         wopiCollaborationService("collabora") + \
+                         waitForServices("wopi", ["wopi-collabora:9300"])
 
-        command = "bash run-e2e.sh "
-        if "suites" in matrix:
-            command += "--suites %s" % ",".join(params["suites"])
-        elif "features" in matrix:
-            command += "%s" % " ".join(params["features"])
-        else:
-            print("Error: No suites or features defined for e2e test suite '%s'" % suite)
-            return []
+            elif "ocm" in suite:
+                steps += openCloudService(params["extraServerEnvironment"]) + \
+                         (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
+            else:
+                # OpenCloud specific steps
+                steps += (tikaService() if params["tikaNeeded"] else []) + \
+                         openCloudService(params["extraServerEnvironment"])
 
-        steps += [{
-                     "name": "e2e-tests",
-                     "image": OC_CI_NODEJS,
-                     "environment": environment,
-                     "commands": [
-                         "cd tests/e2e",
-                         command,
-                     ],
-                 }] + \
-                 uploadTracingResult(ctx)
+            if browser_name == "webkit":
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
+                command = "pnpm exec playwright install webkit --with-deps && cd tests/e2e && bash run-e2e.sh "
+            else:
+                command = "cd tests/e2e && bash run-e2e.sh "
 
-        pipelines.append({
-            "name": "e2e-tests-%s" % suite,
-            "workspace": web_workspace,
-            "steps": steps,
-            "depends_on": ["cache-opencloud"],
-            "when": e2e_trigger,
-        })
+            if browser_name == "firefox":
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
+
+            if "suites" in matrix:
+                command += "--suites %s" % ",".join(params["suites"])
+            elif "features" in matrix:
+                command += "%s" % " ".join(params["features"])
+            else:
+                print("Error: No suites or features defined for e2e test suite '%s'" % suite)
+                return []
+
+            steps += [{
+                         "name": "e2e-tests",
+                         "image": OC_CI_NODEJS,
+                         "environment": environment,
+                         "commands": [
+                             command,
+                         ],
+                     }] + \
+                     uploadTracingResult(ctx)
+
+            pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
+
+            pipelines.append({
+                "name": pipeline_name,
+                "workspace": web_workspace,
+                "steps": steps,
+                "depends_on": ["cache-opencloud"],
+                "when": e2e_trigger,
+            })
+
     return pipelines
 
 def notify():
@@ -673,7 +697,8 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install chromium --with-deps",
+            "pnpm exec playwright install chromium firefox --with-deps",
+            "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
     }]

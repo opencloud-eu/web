@@ -20,9 +20,21 @@ export interface ActorOptions extends ActorsOptions {
 }
 
 export const buildBrowserContextOptions = (options: ActorOptions): BrowserContextOptions => {
+  const getPermissions = (browserName: string): string[] => {
+    const basePermissions: string[] = []
+
+    // Clipboard permissions supports only in Chromium-based browsers
+    if (browserName === 'chromium' || browserName === 'chrome' || browserName === 'msedge') {
+      return [...basePermissions, 'clipboard-read', 'clipboard-write']
+    }
+    return basePermissions
+  }
+
   const contextOptions: BrowserContextOptions = {
     acceptDownloads: options.context.acceptDownloads,
-    permissions: ['clipboard-read', 'clipboard-write'],
+    permissions: getPermissions(
+      options.browser ? options.browser.browserType().name() : 'chromium'
+    ),
     ignoreHTTPSErrors: true,
     locale: 'en-US'
   }

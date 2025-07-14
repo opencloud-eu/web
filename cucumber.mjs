@@ -11,6 +11,7 @@ const e2e = `
   --import ./tests/e2e/**/*.ts
   --retry ${config.retry}
   --format @cucumber/pretty-formatter
+  --format pretty
   --format json:${path.join(config.reportDir, 'cucumber', 'report.json')}
   --format message:${path.join(config.reportDir, 'cucumber', 'report.ndjson')}
   --format html:${path.join(config.reportDir, 'cucumber', 'report.html')}

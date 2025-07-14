@@ -6,7 +6,21 @@ FEATURES_DIR="${SCRIPT_PATH}/cucumber/features"
 PROJECT_ROOT=$(cd "$SCRIPT_PATH/../../" && pwd)
 SCRIPT_PATH_REL=${SCRIPT_PATH//"$PROJECT_ROOT/"/}
 
-E2E_COMMAND="pnpm test:e2e:cucumber" # run command defined in package.json
+BROWSER=${BROWSER:-"chromium"}
+case $BROWSER in
+    chromium)
+        E2E_COMMAND="pnpm test:e2e:cucumber:chromium"
+        ;;
+    firefox)
+        E2E_COMMAND="pnpm test:e2e:cucumber:firefox"
+        ;;
+    webkit)
+        E2E_COMMAND="pnpm test:e2e:cucumber:webkit"
+        ;;
+    *)
+        E2E_COMMAND="pnpm test:e2e:cucumber" # fallback to default
+        ;;
+esac
 
 ALL_SUITES=$(find "${FEATURES_DIR}"/ -type d | sort | rev | cut -d"/" -f1 | rev | grep -v '^[[:space:]]*$')
 FILTER_SUITES=""
@@ -31,7 +45,13 @@ Available options:
                       e.g.: --run-part 2 (runs part 2 out of 4)
     --total-parts   - total number of groups to divide into
                       e.g.: --total-parts 4 (suites will be divided into 4 groups)
+    --browser       - browser to use (chrome, firefox, webkit)
+                      e.g.: --browser firefox
     --help, -h      - show cli options
+
+Environment variables:
+    BROWSER         - browser to use (chrome, firefox, webkit)
+    PARALLEL        - number of parallel workers (default: 1)
 "
 
 function log() {
@@ -43,7 +63,7 @@ function log() {
         echo -e "\e[31mERR: $2\e[0m"
         ;;
     warn)
-        echo -e "\e[93mWRN: $2\e[0m"USAGE:
+        echo -e "\e[93mWRN: $2\e[0m"
         ;;
     cmd)
         echo -e "\e[96mUSAGE: $2\e[0m"
@@ -73,6 +93,26 @@ while [[ $# -gt 0 ]]; do
     --total-parts)
         SKIP_RUN_PARTS=false
         TOTAL_PARTS=$2
+        shift 2
+        ;;
+    --browser)
+        BROWSER=$2
+        case $BROWSER in
+            chrome)
+                E2E_COMMAND="pnpm test:e2e:cucumber:chromium"
+                ;;
+            firefox)
+                E2E_COMMAND="pnpm test:e2e:cucumber:firefox"
+                ;;
+            webkit|safari)
+                E2E_COMMAND="pnpm test:e2e:cucumber:webkit"
+                ;;
+            *)
+                log error "Unsupported browser: $BROWSER"
+                log info "Supported browsers: chrome, firefox, webkit"
+                exit 1
+                ;;
+        esac
         shift 2
         ;;
     --help | -h)
@@ -111,6 +151,10 @@ function runE2E() {
     if [[ ! -d "$PROJECT_ROOT" ]]; then
         log error "Project root doesn't exist: '$PROJECT_ROOT'"
     fi
+    
+    echo info "Running E2E tests with browser: $BROWSER"
+    echo info "Parallel workers: ${PARALLEL:-1}"
+    
     cd "$PROJECT_ROOT" || exit 1
     if [[ -n $GLOB_FEATURE_PATHS ]]; then
         $E2E_COMMAND "$GLOB_FEATURE_PATHS" # run without expanding glob pattern

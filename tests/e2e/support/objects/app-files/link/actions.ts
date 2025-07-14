@@ -3,6 +3,7 @@ import util from 'util'
 import { sidebar } from '../utils'
 import { getActualExpiryDate } from '../../../utils/datePicker'
 import { clickResource } from '../resource/actions'
+import { config } from '../../../../config'
 
 export interface createLinkArgs {
   page: Page
@@ -100,9 +101,15 @@ const copyLinkButton =
   '//span[contains(@class, "files-links-name") and text()="%s"]//ancestor::li//button[contains(@class, "oc-files-public-link-copy-url")]'
 
 const getRecentLinkUrl = async (page: Page, name: string): Promise<string> => {
-  await page.locator(util.format(copyLinkButton, name)).click()
-  const handle = await page.evaluateHandle(() => navigator.clipboard.readText())
-  return handle.jsonValue()
+  const linkElement = page.locator(util.format(copyLinkButton, name))
+
+  if (config.browser === 'webkit') {
+    return await linkElement.getAttribute('data-clipboard-text')
+  } else {
+    await linkElement.click()
+    const handle = await page.evaluateHandle(() => navigator.clipboard.readText())
+    return handle.jsonValue()
+  }
 }
 
 const getRecentLinkName = async (page: Page): Promise<string> => {
