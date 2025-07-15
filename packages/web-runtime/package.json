@@ -11,7 +11,7 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "@sentry/vue": "9.38.0",
+    "@sentry/vue": "9.39.0",
     "@uppy/core": "4.4.7",
     "@uppy/drop-target": "3.1.1",
     "@uppy/tus": "4.2.2",
