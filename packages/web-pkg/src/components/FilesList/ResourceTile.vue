@@ -98,7 +98,6 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
-import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { useToggleTile } from '../../composables/selection'
 
 const {

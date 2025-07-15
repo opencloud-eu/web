@@ -5,7 +5,6 @@ import { useClipboard } from '../../clipboard'
 import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
-import { eventBus } from '../../../services'
 import type { FileActionOptions } from '../types'
 import { useInterceptModifierClick } from '../../keyboardActions'
 
