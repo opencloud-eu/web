@@ -34,6 +34,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.8.1 [[#957](https://github.com/opencloud-eu/web/pull/957)]
+- chore(deps): update node.js to v22.17.1 [[#959](https://github.com/opencloud-eu/web/pull/959)]
+- fix(deps): update dependency @sentry/vue to v9.39.0 [[#958](https://github.com/opencloud-eu/web/pull/958)]
 - fix(deps): update typescript-eslint monorepo to v8.37.0 [[#955](https://github.com/opencloud-eu/web/pull/955)]
 - fix(deps): update dependency filesize to v11 [[#939](https://github.com/opencloud-eu/web/pull/939)]
 - chore(deps): update apache/tika docker tag to v3.2.1.0 [[#927](https://github.com/opencloud-eu/web/pull/927)]
