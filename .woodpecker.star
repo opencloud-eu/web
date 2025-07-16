@@ -258,9 +258,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)]
-
-    # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
+    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrix(), stagePipelines(ctx))
 
 def translation_sync(ctx):
     return [{
@@ -620,36 +618,57 @@ def e2eTests(ctx):
         })
     return pipelines
 
-def notify():
+def notifyMatrix():
     pipelines = []
 
     result = {
         "name": "chat-notifications",
         "skip_clone": True,
+        "runs_on": ["success", "failure"],
         "steps": [
             {
-                "name": "notify-rocketchat",
-                "image": PLUGINS_SLACK,
-                "settings": {
-                    "webhook": {
-                        "from_secret": config["rocketchat"]["from_secret"],
+                "name": "notify-matrix",
+                "image": OC_CI_GOLANG,
+                "environment": {
+                    "HTTP_PROXY": {
+                        "from_secret": "ci_http_proxy",
                     },
-                    "channel": config["rocketchat"]["channel"],
+                    "HTTPS_PROXY": {
+                        "from_secret": "ci_http_proxy",
+                    },
+                    "MATRIX_HOME_SERVER": "matrix.org",
+                    "MATRIX_ROOM_ALIAS": {
+                        "from_secret": "opencloud-notifications-channel",
+                    },
+                    "MATRIX_USER": {
+                        "from_secret": "opencloud-notifications-user",
+                    },
+                    "MATRIX_PASSWORD": {
+                        "from_secret": "opencloud-notifications-user-password",
+                    },
+                    "QA_REPO": "https://github.com/opencloud-eu/qa.git",
+                    "QA_REPO_BRANCH": "main",
+                    "CI_WOODPECKER_URL": "https://ci.opencloud.eu/",
+                    "CI_REPO_ID": "6",
+                    "CI_WOODPECKER_TOKEN": "no-auth-needed-on-this-repo",
                 },
+                "commands": [
+                    "git clone --single-branch --branch $QA_REPO_BRANCH $QA_REPO /tmp/qa",
+                    "cd /tmp/qa/scripts/matrix-notification/",
+                    "go run matrix-notification.go",
+                ],
             },
         ],
         "when": [
             event["pull_request"],
-            event["tag"],
             {
                 "event": ["push", "manual"],
-                "branch": config["branches"],
+                "branch": "${CI_REPO_DEFAULT_BRANCH}",
             },
         ],
     }
 
     pipelines.append(result)
-
     return pipelines
 
 def installPnpm():
