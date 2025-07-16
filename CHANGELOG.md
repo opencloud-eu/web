@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency filesize to v11.0.2 [[#961](https://github.com/opencloud-eu/web/pull/961)]
 - fix(deps): update dependency md-editor-v3 to v5.8.1 [[#957](https://github.com/opencloud-eu/web/pull/957)]
 - chore(deps): update node.js to v22.17.1 [[#959](https://github.com/opencloud-eu/web/pull/959)]
 - fix(deps): update dependency @sentry/vue to v9.39.0 [[#958](https://github.com/opencloud-eu/web/pull/958)]
