@@ -91,3 +91,43 @@ Feature: Trashbin delete
       | lorem.txt |
     And "Brian" logs out
     And "Alice" logs out
+
+  
+  Scenario: empty trashbin using quick action
+    Given "Admin" assigns following roles to the users using API
+      | id    | role        |
+      | Brian | Space Admin |
+    And "Brian" creates the following project space using API
+      | name     | id    |
+      | sales    | sales |
+      | hr       | hr    |
+    And "Brian" creates the following folder in space "sales" using API
+      | name |
+      | f1   |
+    And "Brian" logs in
+
+    When "Brian" navigates to the project space "sales"
+    And "Brian" deletes the following resources using the sidebar panel
+      | resource |
+      | f1       |
+
+    And "Brian" navigates to the trashbin
+    Then following resources should be displayed in the trashbin for user "Brian"
+      | resource |
+      | Personal |
+      | sales    |
+      | hr       |
+    And "Brian" should see disabled empty trashbin button for space "Personal"
+    
+    When "Brian" disables the option to show empty trashbins
+    Then following resources should not be displayed in the trashbin for user "Brian"
+      | resource |
+      | Personal |
+      | hr       |
+    And "Brian" should see the text "3 trash bins in total (including 2 empty)" at the footer of the trashbin page
+    When "Brian" empties the trashbin for space "sales" using quick action
+    Then following resources should not be displayed in the trashbin for user "Brian"
+      | resource |
+      | sales    |    
+    And "Brian" logs out
+    

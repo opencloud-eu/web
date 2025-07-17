@@ -67,7 +67,6 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     if (config.keycloak) {
       await api.keycloak.setAccessTokenForKeycloakOpenCloudUser(user)
       await api.keycloak.setAccessTokenForKeycloakUser(user)
-      await storeKeycloakGroups(user, this.usersEnvironment)
     } else {
       await api.token.setAccessAndRefreshToken(user)
       if (isOcm(pickle)) {
@@ -79,6 +78,7 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     }
   }
   this.uniquePrefix = uuidv4().substring(0, 3)
+  this.a11yEnabled = pickle.tags.some((tag) => tag.name === '@a11y')
 })
 
 BeforeAll(async (): Promise<void> => {
@@ -165,7 +165,11 @@ AfterAll(async () => {
   // move failed tracing reports
   const failedDir = path.dirname(config.tracingReportDir) + '/failed'
   if (fs.existsSync(failedDir)) {
-    fs.renameSync(failedDir, config.tracingReportDir)
+    fs.mkdirSync(config.tracingReportDir, { recursive: true })
+    fs.readdirSync(failedDir).forEach((file) => {
+      fs.renameSync(failedDir + '/' + file, config.tracingReportDir + '/' + file)
+    })
+    fs.rmSync(failedDir, { recursive: true })
   }
 })
 
@@ -182,8 +186,8 @@ function filterTracingReports(status: string) {
     reports.forEach((report) => {
       fs.renameSync(`${traceDir}/${report}`, `${failedDir}/${report}`)
     })
-  } else {
-    // clean up the tracing directory
+  } else if (!defaults.reportTracing) {
+    // clean up the tracing directory if the report tracing was not set explicitly
     fs.rmSync(traceDir, { recursive: true })
   }
 }
@@ -191,11 +195,14 @@ function filterTracingReports(status: string) {
 const cleanUpUser = async (createdUserStore, adminUser: User) => {
   const requests: Promise<User>[] = []
   createdUserStore.forEach((user) => {
-    requests.push(api.provision.deleteUser({ user, admin: adminUser }))
+    if (config.keycloak) {
+      requests.push(api.keycloak.deleteUser({ user }))
+    } else {
+      requests.push(api.graph.deleteUser({ user, admin: adminUser }))
+    }
   })
   await Promise.all(requests)
   createdUserStore.clear()
-  store.keycloakCreatedUser.clear()
 }
 
 const cleanUpSpaces = async (adminUser: User) => {
@@ -224,7 +231,9 @@ const cleanUpSpaces = async (adminUser: User) => {
 const cleanUpGroup = async (adminUser: User) => {
   const requests: Promise<Group>[] = []
   store.createdGroupStore.forEach((group) => {
-    if (!group.id.startsWith('keycloak')) {
+    if (config.keycloak) {
+      requests.push(api.keycloak.deleteGroup({ group }))
+    } else {
       requests.push(api.graph.deleteGroup({ group, admin: adminUser }))
     }
   })
@@ -239,18 +248,4 @@ const isOcm = (pickle): boolean => {
     return true
   }
   return false
-}
-
-/*
-  store group created from keycloak on store
- */
-const storeKeycloakGroups = async (adminUser: User, usersEnvironment) => {
-  const groups = await api.graph.getGroups(adminUser)
-
-  store.dummyKeycloakGroupStore.forEach((dummyGroup) => {
-    const matchingGroup = groups.find((group) => group.displayName === dummyGroup.displayName)
-    if (matchingGroup) {
-      usersEnvironment.storeCreatedGroup({ group: { ...dummyGroup, uuid: matchingGroup.id } })
-    }
-  })
 }

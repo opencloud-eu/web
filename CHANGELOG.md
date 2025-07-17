@@ -1,5 +1,68 @@
 # Changelog
 
+## [3.1.0](https://github.com/opencloud-eu/web/releases/tag/v3.1.0) - 2025-06-27
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann
+
+### ✨ Features
+
+- feat: Collabora Save As and Export [[#859](https://github.com/opencloud-eu/web/pull/859)]
+- feat: add open with context menu item [[#820](https://github.com/opencloud-eu/web/pull/820)]
+
+### ✅ Tests
+
+- setup opencloud-keycloak-ldap setup. fix test after changing space template image [[#851](https://github.com/opencloud-eu/web/pull/851)]
+- [full-ci] detect and delete unused steps [[#840](https://github.com/opencloud-eu/web/pull/840)]
+- [full-ci] fix app-provider tests [[#843](https://github.com/opencloud-eu/web/pull/843)]
+- delete logo steps [[#834](https://github.com/opencloud-eu/web/pull/834)]
+- open file using context menu [[#835](https://github.com/opencloud-eu/web/pull/835)]
+- A11y tests [[#819](https://github.com/opencloud-eu/web/pull/819)]
+- test: add unit tests for context menu drop [[#826](https://github.com/opencloud-eu/web/pull/826)]
+
+### 🐛 Bug Fixes
+
+- fix: upload space image broken [[#866](https://github.com/opencloud-eu/web/pull/866)]
+- fix: context actions types [[#856](https://github.com/opencloud-eu/web/pull/856)]
+- fix: open with context menu initial state [[#844](https://github.com/opencloud-eu/web/pull/844)]
+- fix: tiles view accidentatly show space status indicators [[#828](https://github.com/opencloud-eu/web/pull/828)]
+- fix: exclude public links from space member count [[#815](https://github.com/opencloud-eu/web/pull/815)]
+- fix: space member count in space header component [[#812](https://github.com/opencloud-eu/web/pull/812)]
+
+### 📈 Enhancement
+
+- feat: add accessibility config link to user menu footer section [[#861](https://github.com/opencloud-eu/web/pull/861)]
+- feat: add context menu action to remove space image [[#829](https://github.com/opencloud-eu/web/pull/829)]
+- feat: brand color default space image [[#849](https://github.com/opencloud-eu/web/pull/849)]
+- feat: add more supported formats to text editor [[#848](https://github.com/opencloud-eu/web/pull/848)]
+- feat: add required mark to input fields that require a value to be set [[#798](https://github.com/opencloud-eu/web/pull/798)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v9.32.0 [[#860](https://github.com/opencloud-eu/web/pull/860)]
+- fix(deps): update dependency @vitejs/plugin-vue to v6 [[#854](https://github.com/opencloud-eu/web/pull/854)]
+- chore(deps): update dependency vite-plugin-static-copy to v3.1.0 [[#862](https://github.com/opencloud-eu/web/pull/862)]
+- chore(deps): update node.js to v22.17.0 [[#857](https://github.com/opencloud-eu/web/pull/857)]
+- chore(deps): update pnpm to v10.12.3 [[#855](https://github.com/opencloud-eu/web/pull/855)]
+- fix(deps): update dependency @sentry/vue to v9.31.0 [[#850](https://github.com/opencloud-eu/web/pull/850)]
+- fix(deps): update uppy monorepo [[#720](https://github.com/opencloud-eu/web/pull/720)]
+- chore(deps): update devdependencies (non-major) [[#768](https://github.com/opencloud-eu/web/pull/768)]
+- fix(deps): update vue monorepo to v3.5.17 [[#836](https://github.com/opencloud-eu/web/pull/836)]
+- fix(deps): update dependency @sentry/vue to v9.30.0 [[#818](https://github.com/opencloud-eu/web/pull/818)]
+- fix(deps): update dependency zod to v3.25.67 [[#823](https://github.com/opencloud-eu/web/pull/823)]
+- fix(deps): update dependency @vueuse/core to v13.4.0 [[#837](https://github.com/opencloud-eu/web/pull/837)]
+- chore(deps): update pnpm to v10.12.2 - autoclosed [[#842](https://github.com/opencloud-eu/web/pull/842)]
+- fix(deps): update dependency axios to v1.10.0 [[#831](https://github.com/opencloud-eu/web/pull/831)]
+- fix(deps): update dependency zod to v3.25.61 [[#817](https://github.com/opencloud-eu/web/pull/817)]
+- fix(deps): update dependency @sentry/vue to v9.28.0 [[#766](https://github.com/opencloud-eu/web/pull/766)]
+- chore(deps): update pnpm to v10.12.1 [[#809](https://github.com/opencloud-eu/web/pull/809)]
+- fix(deps): update dependency pinia to v3.0.3 [[#797](https://github.com/opencloud-eu/web/pull/797)]
+- fix(deps): update dependency zod to v3.25.59 [[#769](https://github.com/opencloud-eu/web/pull/769)]
+- chore(deps): update dependency happy-dom to v18 [[#816](https://github.com/opencloud-eu/web/pull/816)]
+- fix(deps): update vue monorepo to v3.5.16 [[#770](https://github.com/opencloud-eu/web/pull/770)]
+- [full-ci]bump-opencloud-3.0.0 [[#814](https://github.com/opencloud-eu/web/pull/814)]
+
 ## [3.0.0](https://github.com/opencloud-eu/web/releases/tag/v3.0.0) - 2025-06-10
 
 ### ❤️ Thanks to all contributors! ❤️

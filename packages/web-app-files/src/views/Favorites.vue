@@ -33,9 +33,9 @@
           <template #quickActions="props">
             <quick-actions class="oc-visible@s" :item="props.resource" />
           </template>
-          <template #contextMenu="{ resource }">
+          <template #contextMenu="{ resource, isOpen }">
             <context-actions
-              v-if="isResourceInSelection(resource)"
+              v-if="isOpen && isResourceInSelection(resource)"
               :action-options="{ space: getMatchingSpace(resource), resources: selectedResources }"
             />
           </template>

@@ -109,7 +109,11 @@ export function createMockStore({
       ...defaultTheme.clients.web.defaults,
       common: {
         ...defaultTheme.common,
-        urls: ['https://imprint.url.theme', 'https://privacy.url.theme']
+        urls: {
+          imprint: 'https://imprint.url.theme',
+          privacy: 'https://privacy.url.theme',
+          accessibility: 'https://accessibility.url.theme'
+        }
       }
     },
     themes: defaultTheme.clients.web.themes

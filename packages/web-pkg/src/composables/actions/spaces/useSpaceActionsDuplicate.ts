@@ -106,14 +106,14 @@ export const useSpaceActionsDuplicate = () => {
       }
 
       showMessage({
-        title: $gettext('Space "%{space}" was duplicated successfully', {
+        title: $gettext('Space »%{space}« was duplicated successfully', {
           space: existingSpace.name
         })
       })
     } catch (error) {
       console.error(error)
       showErrorMessage({
-        title: $gettext('Failed to duplicate space "%{space}"', { space: existingSpace.name }),
+        title: $gettext('Failed to duplicate space »%{space}«', { space: existingSpace.name }),
         errors: [error]
       })
     }

@@ -46,7 +46,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" (?:changes|updates) the space "([^"]*)" (name|subtitle|description|quota|image) to "([^"]*)"$/,
+  /^"([^"]*)" (?:changes|updates) the space "([^"]*)" (name|subtitle|description|quota|image|icon) to "([^"]*)"$/,
   async function (
     this: World,
     stepUser: string,
@@ -76,9 +76,71 @@ When(
           resource: this.filesEnvironment.getFile({ name: value })
         })
         break
+      case 'icon':
+        await spacesObject.changeSpaceIcon({ key, icon: value })
+        break
       default:
         throw new Error(`${attribute} not implemented`)
     }
+  }
+)
+
+When(
+  /^"([^"]*)" changes the space "([^"]*)" (name|subtitle|description|quota|image|icon) to "([^"]*)" using context menu$/,
+  async function (
+    this: World,
+    stepUser: string,
+    key: string,
+    attribute: string,
+    value: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+
+    switch (attribute) {
+      case 'name':
+        await spacesObject.changeName({ key, value, contextMenu: true })
+        break
+      case 'subtitle':
+        await spacesObject.changeSubtitle({ key, value, contextMenu: true })
+        break
+      case 'description':
+        await spacesObject.changeDescription({ value, contextMenu: true })
+        break
+      case 'quota':
+        await spacesObject.changeQuota({ key, value, contextMenu: true })
+        break
+      case 'image':
+        await spacesObject.changeSpaceImage({
+          key,
+          resource: this.filesEnvironment.getFile({ name: value }),
+          contextMenu: true
+        })
+        break
+      case 'icon':
+        await spacesObject.changeSpaceIcon({ key, icon: value, contextMenu: true })
+        break
+      default:
+        throw new Error(`${attribute} not implemented`)
+    }
+  }
+)
+
+When(
+  '{string} deletes the space {string} image using context menu',
+  async function (this: World, stepUser: string, space: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    await spacesObject.deleteSpaceImage({ space, contextMenu: true })
+  }
+)
+
+When(
+  '{string} deletes the space {string} image',
+  async function (this: World, stepUser: string, space: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    await spacesObject.deleteSpaceImage({ space })
   }
 )
 

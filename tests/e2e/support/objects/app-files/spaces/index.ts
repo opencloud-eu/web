@@ -37,23 +37,53 @@ export class Spaces {
     await po.openSpace({ page: this.#page, id })
   }
 
-  async changeName({ key, value }: { key: string; value: string }): Promise<void> {
+  async changeName({
+    key,
+    value,
+    contextMenu = false
+  }: {
+    key: string
+    value: string
+    contextMenu?: boolean
+  }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
-    await po.changeSpaceName({ id, value, page: this.#page })
+    await po.changeSpaceName({ id, value, contextMenu, page: this.#page })
   }
 
-  async changeSubtitle({ key, value }: { key: string; value: string }): Promise<void> {
+  async changeSubtitle({
+    key,
+    value,
+    contextMenu = false
+  }: {
+    key: string
+    value: string
+    contextMenu?: boolean
+  }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
-    await po.changeSpaceSubtitle({ id, value, page: this.#page })
+    await po.changeSpaceSubtitle({ id, value, contextMenu, page: this.#page })
   }
 
-  async changeDescription({ value }: { value: string }): Promise<void> {
-    await po.changeSpaceDescription({ value, page: this.#page })
+  async changeDescription({
+    value,
+    contextMenu = false
+  }: {
+    value: string
+    contextMenu?: boolean
+  }): Promise<void> {
+    await po.changeSpaceDescription({ value, contextMenu, page: this.#page })
   }
 
-  async changeQuota({ key, value }: { key: string; value: string }): Promise<void> {
+  async changeQuota({
+    key,
+    value,
+    contextMenu = false
+  }: {
+    key: string
+    value: string
+    contextMenu?: boolean
+  }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
-    await po.changeQuota({ id, value, page: this.#page })
+    await po.changeQuota({ id, value, contextMenu, page: this.#page })
   }
 
   async addMembers(args: Omit<po.SpaceMembersArgs, 'page'>): Promise<void> {
@@ -73,9 +103,30 @@ export class Spaces {
     await po.changeSpaceRole({ ...args, page: this.#page })
   }
 
-  async changeSpaceImage({ key, resource }: { key: string; resource: File }): Promise<void> {
+  async changeSpaceImage({
+    key,
+    resource,
+    contextMenu = false
+  }: {
+    key: string
+    resource: File
+    contextMenu?: boolean
+  }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
-    await po.changeSpaceImage({ id, resource, page: this.#page })
+    await po.changeSpaceImage({ id, resource, contextMenu, page: this.#page })
+  }
+
+  async changeSpaceIcon({
+    key,
+    icon,
+    contextMenu = false
+  }: {
+    key: string
+    icon: string
+    contextMenu?: boolean
+  }): Promise<void> {
+    const { id } = this.#spacesEnvironment.getSpace({ key })
+    await po.changeSpaceIcon({ id, icon, contextMenu, page: this.#page })
   }
 
   async createPublicLink({ password }: { password: string }): Promise<void> {
@@ -110,5 +161,16 @@ export class Spaces {
 
   async getSpaceImageRatio(): Promise<{ width: number; height: number }> {
     return await po.getSpaceImageRatio(this.#page)
+  }
+
+  async deleteSpaceImage({
+    space,
+    contextMenu = false
+  }: {
+    space: string
+    contextMenu?: boolean
+  }): Promise<void> {
+    const { id } = this.#spacesEnvironment.getSpace({ key: space })
+    await po.deleteSpaceImage({ id, contextMenu, page: this.#page })
   }
 }

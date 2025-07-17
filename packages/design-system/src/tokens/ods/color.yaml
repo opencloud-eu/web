@@ -2,9 +2,9 @@
 color:
   icon:
     folder:
-      value: rgb(44, 101, 255)
+      value: rgb(77, 126, 175)
     archive:
-      value: rgb(255, 207, 1)
+      value: rgb(251, 190, 84)
     graphic:
       value: rgb(235, 201, 74)
     drawio:
@@ -14,7 +14,7 @@ color:
     ifc:
       value: rgb(208, 67, 236)
     image:
-      value: rgb(255, 111, 0)
+      value: rgb(238, 107, 59)
     jupyter:
       value: rgb(243, 119, 38)
     code:
@@ -22,21 +22,21 @@ color:
     text:
       value: '{role.onSurface}'
     spreadsheet:
-      value: rgb(0, 182, 87)
+      value: rgb(21, 194, 134)
     document:
-      value: rgb(44, 101, 255)
+      value: rgb(59, 68, 166)
     form:
       value: rgb(102, 166, 163)
     markdown:
       value: rgb(75, 100, 137)
     video:
-      value: rgb(0, 187, 219)
+      value: rgb(4, 84, 89)
     audio:
-      value: rgb(208, 67, 236)
+      value: rgb(112, 4, 96)
     presentation:
-      value: rgb(255, 64, 6)
+      value: rgb(238, 107, 59)
     pdf:
-      value: rgb(225, 5, 14)
+      value: rgb(236, 13, 71)
     root:
       value: rgb(0, 187, 219)
     medical:

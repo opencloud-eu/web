@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test'
 import * as po from './actions'
-import { resourceIsNotOpenable, isAcceptedSharePresent, resourceIsSynced } from './utils'
+import { isAcceptedSharePresent, resourceIsSynced } from './utils'
 import { ICollaborator, IAccessDetails } from './collaborator'
 import { User } from '../../../types'
 export class Share {
@@ -49,10 +49,6 @@ export class Share {
   async isAcceptedSharePresent(resource: string, owner: string): Promise<boolean> {
     await this.#page.reload()
     return await isAcceptedSharePresent({ page: this.#page, resource, owner })
-  }
-
-  async resourceIsNotOpenable(resource: string): Promise<boolean> {
-    return await resourceIsNotOpenable({ page: this.#page, resource })
   }
 
   async resourceIsSynced(resource: string): Promise<boolean> {

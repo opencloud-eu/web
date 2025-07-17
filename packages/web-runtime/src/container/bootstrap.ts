@@ -964,4 +964,11 @@ export const setViewOptions = ({ resourcesStore }: { resourcesStore: ResourcesSt
   if (areDisabledSpaceShownBoolean !== resourcesStore.areDisabledSpacesShown) {
     resourcesStore.setAreDisabledSpacesShown(areDisabledSpaceShownBoolean)
   }
+
+  const areEmptyTrashesShown = window.localStorage.getItem('oc_emptyTrashesShown') || 'true'
+  const areEmptyTrashesShownBoolean = areEmptyTrashesShown === 'true'
+
+  if (areEmptyTrashesShownBoolean !== resourcesStore.areEmptyTrashesShown) {
+    resourcesStore.setAreEmptyTrashesShown(areEmptyTrashesShownBoolean)
+  }
 }

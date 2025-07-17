@@ -213,7 +213,7 @@ export default defineComponent({
 
     const inputFileNameErrorMessage = computed(() => {
       if (unref(fileAlreadyExists)) {
-        return $gettext('%{name} already exists', { name: `${unref(inputFilename)}.url` })
+        return $gettext('»%{name}« already exists', { name: `${unref(inputFilename)}.url` })
       }
 
       if (/[/]/.test(unref(inputFilename))) {

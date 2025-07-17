@@ -88,8 +88,8 @@ export class ResourceTransfer extends ConflictDialog {
     if (errors.length === 1) {
       title =
         transferType === TransferType.COPY
-          ? this.$gettext('Failed to copy "%{name}"', { name: errors[0]?.resourceName }, true)
-          : this.$gettext('Failed to move "%{name}"', { name: errors[0]?.resourceName }, true)
+          ? this.$gettext('Failed to copy »%{name}«', { name: errors[0]?.resourceName }, true)
+          : this.$gettext('Failed to move »%{name}«', { name: errors[0]?.resourceName }, true)
     }
     let description = ''
     if (errors.some(({ error }) => error instanceof HttpError && error.statusCode === 507)) {

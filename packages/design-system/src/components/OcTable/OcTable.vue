@@ -506,15 +506,15 @@ const handleSort = (field: FieldType) => {
   }
 
   &-hover tr:not(&-footer-row, &-header-row):hover {
-    background-color: var(--oc-role-secondary-container);
+    background-color: var(--oc-role-surface-container);
   }
 
   &-highlighted {
-    background-color: var(--oc-role-surface-container) !important;
+    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &-accentuated {
-    background-color: var(--oc-role-surface-container);
+    background-color: var(--oc-role-secondary-container);
   }
 
   &-disabled {

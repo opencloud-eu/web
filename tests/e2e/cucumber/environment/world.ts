@@ -16,6 +16,7 @@ export class World extends CucumberWorld {
   spacesEnvironment: environment.SpacesEnvironment
   usersEnvironment: environment.UsersEnvironment
   uniquePrefix: string
+  a11yEnabled: boolean = false
 
   constructor(options: WorldOptions) {
     super(options)

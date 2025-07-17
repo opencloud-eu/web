@@ -17,20 +17,21 @@
       :ref="`context-menu-drop-ref-${resourceDomSelector(item)}`"
       :drop-id="`context-menu-drop-${resourceDomSelector(item)}`"
       :toggle="`#context-menu-trigger-${resourceDomSelector(item)}`"
-      class="oc-overflow-hidden"
       position="bottom-end"
       mode="click"
-      close-on-click
       padding-size="small"
+      close-on-click
+      @show-drop="isOpen = true"
+      @hide-drop="isOpen = false"
     >
-      <slot name="contextMenu" :item="item" />
+      <slot name="contextMenu" :item="item" :is-open="isOpen" />
     </oc-drop>
   </oc-button>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { Resource, extractDomSelector } from '@opencloud-eu/web-client'
+import { computed, defineComponent, ref } from 'vue'
+import { extractDomSelector, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
@@ -50,7 +51,12 @@ export default defineComponent({
   setup() {
     const { $gettext } = useGettext()
     const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    return { contextMenuLabel }
+    const isOpen = ref(false)
+
+    return {
+      contextMenuLabel,
+      isOpen
+    }
   }
 })
 </script>

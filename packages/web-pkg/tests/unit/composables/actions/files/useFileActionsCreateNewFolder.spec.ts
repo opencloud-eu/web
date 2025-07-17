@@ -19,34 +19,10 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { useScrollToMock } from '../../../../mocks/useScrollToMock'
 import { useScrollTo } from '../../../../../src/composables/scrollTo'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../../../src'
 
 vi.mock('../../../../../src/composables/scrollTo')
 
 describe('useFileActionsCreateNewFolder', () => {
-  describe('checkFolderName', () => {
-    it.each([
-      { input: '', output: 'Folder name cannot be empty' },
-      { input: '/', output: 'Folder name cannot contain "/"' },
-      { input: '.', output: 'Folder name cannot be equal to "."' },
-      { input: '..', output: 'Folder name cannot be equal to ".."' },
-      {
-        input: 'l'.repeat(64),
-        output: `Folder name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
-      },
-      { input: 'myfolder', output: null }
-    ])('should validate folder name %s', (data) => {
-      const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        setup: ({ checkNewFolderName }) => {
-          checkNewFolderName(data.input, (str: string) => {
-            expect(str).toBe(data.output)
-          })
-        }
-      })
-    })
-  })
   describe('addNewFolder', () => {
     it('create new folder', () => {
       const space = mock<SpaceResource>({ id: '1' })

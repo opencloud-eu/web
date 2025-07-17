@@ -7,14 +7,25 @@
       class="oc-files-context-actions"
       :class="getSectionClasses(sectionIndex)"
     >
-      <action-menu-item
-        v-for="(action, actionIndex) in section.items"
-        :key="`section-${section.name}-action-${actionIndex}`"
-        :action="action"
-        :appearance="appearance"
-        :action-options="actionOptions"
-        class="context-menu oc-files-context-action oc-px-s oc-rounded oc-menu-item-hover"
-      />
+      <template v-if="section.items">
+        <action-menu-item
+          v-for="(action, actionIndex) in section.items"
+          :key="`section-${section.name}-action-${actionIndex}`"
+          :action="action"
+          :appearance="appearance"
+          :action-options="actionOptions"
+          class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
+        />
+      </template>
+      <template v-for="drop in section.dropItems">
+        <action-menu-drop-item
+          v-if="drop.items.length"
+          :key="drop.name"
+          :menu-section-drop="drop"
+          :appearance="appearance"
+          :action-options="actionOptions"
+        />
+      </template>
     </oc-list>
   </div>
 </template>
@@ -22,17 +33,14 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
-import { Action, ActionOptions } from '../../composables'
+import { ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
-
-export type MenuSection = {
-  name: string
-  items: Action[]
-}
+import ActionMenuDropItem from './ActionMenuDropItem.vue'
+import { MenuSection } from './types'
 
 export default defineComponent({
   name: 'ContextActionMenu',
-  components: { ActionMenuItem },
+  components: { ActionMenuDropItem, ActionMenuItem },
   props: {
     menuSections: {
       type: Array as PropType<MenuSection[]>,
@@ -76,6 +84,7 @@ export default defineComponent({
   > li {
     padding-left: 0 !important;
     padding-right: 0 !important;
+
     a,
     button,
     span {

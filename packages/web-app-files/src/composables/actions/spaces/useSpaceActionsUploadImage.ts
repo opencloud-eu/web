@@ -26,10 +26,10 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
 
   const showModalImageSpace = (event: InputEvent) => {
     const file = (event.currentTarget as HTMLInputElement).files[0]
-    unref(spaceImageInput).value = ''
+    ;(event.currentTarget as HTMLInputElement).value = ''
 
     dispatchModal({
-      title: $gettext('Crop your Space image'),
+      title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
       focusTrapInitial: false,
@@ -43,7 +43,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       icon: 'image-add',
       handler,
       label: () => {
-        return $gettext('Edit image')
+        return $gettext('Set image')
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {

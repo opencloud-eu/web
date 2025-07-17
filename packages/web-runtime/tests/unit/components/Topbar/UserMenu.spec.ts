@@ -1,14 +1,15 @@
 import UserMenu from '../../../../src/components/Topbar/UserMenu.vue'
 import {
+  defaultComponentMocks,
   defaultPlugins,
   defaultStubs,
   mount,
-  defaultComponentMocks,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
+import { WebThemeType } from '@opencloud-eu/web-pkg'
 
 const totalQuota = 1000
 const basicQuota = 300
@@ -103,8 +104,8 @@ describe('User Menu component', () => {
       expect(wrapper.html()).toMatchSnapshot()
     })
   })
-  describe('imprint and privacy urls', () => {
-    it('should renders imprint and privacy section if urls are defined', () => {
+  describe('footer urls', () => {
+    it('should renders footer section if urls are defined', () => {
       const wrapper = getMountedWrapper(
         {
           used: dangerQuota,
@@ -119,6 +120,7 @@ describe('User Menu component', () => {
       const output = element.html()
       expect(output).toContain('https://imprint.url')
       expect(output).toContain('https://privacy.url')
+      expect(output).toContain('https://accessibility.url')
     })
   })
 })
@@ -146,9 +148,10 @@ const getMountedWrapper = (
               currentTheme: {
                 urls: {
                   privacy: areThemeUrlsSet ? 'https://privacy.url.theme' : '',
-                  imprint: areThemeUrlsSet ? 'https://imprint.url.theme' : ''
+                  imprint: areThemeUrlsSet ? 'https://imprint.url.theme' : '',
+                  accessibility: areThemeUrlsSet ? 'https://accessibility.url.theme' : ''
                 }
-              }
+              } as WebThemeType
             },
             userState: {
               user: noUser

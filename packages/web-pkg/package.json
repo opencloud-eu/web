@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-pkg",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "OpenCloud web pkg",
   "license": "AGPL-3.0",
   "main": "src/index.ts",
@@ -52,7 +52,7 @@
     "cropperjs": "^1.6.2",
     "deepmerge": "^4.2.2",
     "dompurify": "^3.2.3",
-    "filesize": "^10.1.0",
+    "filesize": "^11.0.0",
     "fuse.js": "^7.0.0",
     "js-generate-password": "^1.0.0",
     "lodash-es": "^4.17.21",
@@ -72,15 +72,15 @@
     "vue-concurrency": "^5.0.1",
     "vue-router": "^4.2.5",
     "vue3-gettext": "^2.4.0",
-    "zod": "^3.23.8"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
     "@types/dompurify": "3.2.0",
     "@types/lodash-es": "4.17.12",
     "@vitest/web-worker": "^3.0.5",
-    "clean-publish": "5.2.0",
+    "clean-publish": "5.2.2",
     "vite-plugin-dts": "4.5.4",
-    "vite-plugin-node-polyfills": "0.23.0"
+    "vite-plugin-node-polyfills": "0.24.0"
   }
 }

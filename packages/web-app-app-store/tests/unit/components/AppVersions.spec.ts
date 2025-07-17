@@ -22,6 +22,7 @@ const version4: AppVersion = {
   version: '1.2.0'
 }
 const version5: AppVersion = {
+  version: '',
   url: 'https://wololo.com/download-1.3.0.zip',
   minOpenCloud: '6.5.0'
 }

@@ -51,7 +51,7 @@ Feature: check files pagination in personal and project spaces
     And following resources should not be displayed in the files list for user "Alice"
       | resource      |
       | testfile1.txt |
-    And "Alice" should see the text "112 items with 48 kB in total (56 files, 56 folders)" at the footer of the page
+    And "Alice" should see the text "112 items with 12 kB in total (56 files, 56 folders)" at the footer of the page
     And "Alice" should see 12 resources in the project space files view
     When "Alice" disables the option to display the hidden file
     Then "Alice" should see 10 resources in the project space files view

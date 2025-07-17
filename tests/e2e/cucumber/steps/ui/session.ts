@@ -23,7 +23,7 @@ async function LogInUser(this: World, stepUser: string): Promise<void> {
       : this.usersEnvironment.getCreatedUser({ key: stepUser })
 
   await page.goto(config.baseUrl)
-  await sessionObject.login(user)
+  await sessionObject.login(user, this.a11yEnabled)
 
   if (this.feature.tags.length > 0) {
     const tags: string[] = []
@@ -40,8 +40,6 @@ async function LogInUser(this: World, stepUser: string): Promise<void> {
   await page.locator('#web-content').waitFor()
 }
 
-Given('{string} has logged in', LogInUser)
-
 When('{string} logs in', LogInUser)
 
 async function LogOutUser(this: World, stepUser: string): Promise<void> {
@@ -52,8 +50,6 @@ async function LogOutUser(this: World, stepUser: string): Promise<void> {
   canLogout && (await sessionObject.logout())
   await actor.close()
 }
-
-Given('{string} has logged out', LogOutUser)
 
 When('{string} logs out', LogOutUser)
 
@@ -119,7 +115,7 @@ When(
   }
 )
 
-Given('using {string} server', async function (this: World, server: string): Promise<void> {
+Given('using {string} server', function (this: World, server: string): void {
   switch (server) {
     case 'LOCAL':
       config.federatedServer = false

@@ -18,7 +18,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul class="oc-list oc-my-rm oc-mx-rm oc-tiles">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card oc-card-default" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body oc-p-s">
           <div class="oc-flex oc-flex-between oc-flex-middle">
             <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
@@ -37,8 +37,16 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <!-- Slot for individual actions -->
               <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button oc-ml-xs oc-p-xs resource-tiles-btn-action-dropdown" id="context-menu-trigger-1">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
-                <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium oc-rounded oc-overflow-hidden">
+                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false"></svg></span>
+                <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium oc-rounded">
                   <div class="oc-card oc-card-body oc-p-s"></div>
                 </div>
               </button>
@@ -49,7 +57,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card oc-card-default" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body oc-p-s">
           <div class="oc-flex oc-flex-between oc-flex-middle">
             <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
@@ -68,8 +76,16 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <!-- Slot for individual actions -->
               <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button oc-ml-xs oc-p-xs resource-tiles-btn-action-dropdown" id="context-menu-trigger-2">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><!----></span>
-                <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded oc-overflow-hidden">
+                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false"></svg></span>
+                <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded">
                   <div class="oc-card oc-card-body oc-p-s"></div>
                 </div>
               </button>

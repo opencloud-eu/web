@@ -12,7 +12,6 @@ import {
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
 import { ApplicationFileExtension } from '../../../../../types'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../../../src/constants'
 import { useResourcesStore } from '../../../../../src/composables/piniaStores'
 
 vi.mock('../../../../../src/composables/actions/files/useFileActions', async (importOriginal) => ({
@@ -21,29 +20,6 @@ vi.mock('../../../../../src/composables/actions/files/useFileActions', async (im
 }))
 
 describe('useFileActionsCreateNewFile', () => {
-  describe('checkFileName', () => {
-    it.each([
-      { input: '', output: 'File name cannot be empty' },
-      { input: '/', output: 'File name cannot contain "/"' },
-      { input: '.', output: 'File name cannot be equal to "."' },
-      { input: '..', output: 'File name cannot be equal to ".."' },
-      {
-        input: 'l'.repeat(64),
-        output: `File name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
-      },
-      { input: 'myfile.txt', output: null }
-    ])('should validate file name %s', (data) => {
-      const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        setup: ({ getNameErrorMsg }) => {
-          const result = getNameErrorMsg(data.input)
-          expect(result).toBe(data.output)
-        }
-      })
-    })
-  })
-
   describe('openFile', () => {
     it('upserts the resource before opening', () => {
       const space = mock<SpaceResource>({ id: '1' })

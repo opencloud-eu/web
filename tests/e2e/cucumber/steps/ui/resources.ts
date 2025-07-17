@@ -420,6 +420,15 @@ When(
 )
 
 When(
+  '{string} switches to the {string} view mode',
+  async function (this: World, stepUser: string, viewMode: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.switchViewMode(viewMode)
+  }
+)
+
+When(
   '{string} sees the resources displayed as tiles',
   async function (this: World, stepUser: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
@@ -719,29 +728,6 @@ When(
       key: space.name,
       space: { name: space.name, id: space.id }
     })
-  }
-)
-
-Then(
-  '{string} should not see the version of the file(s)',
-  async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const fileInfo = stepTable.hashes().reduce<Record<string, File[]>>((acc, stepRow) => {
-      const { to, resource } = stepRow
-
-      if (!acc[to]) {
-        acc[to] = []
-      }
-
-      acc[to].push(this.filesEnvironment.getFile({ name: resource }))
-
-      return acc
-    }, {})
-
-    for (const folder of Object.keys(fileInfo)) {
-      await resourceObject.checkThatFileVersionIsNotAvailable({ folder, files: fileInfo[folder] })
-    }
   }
 )
 
@@ -1087,5 +1073,20 @@ Then(
       avatarUser
     })
     await expect(avatarLocator).toBeVisible()
+  }
+)
+
+When(
+  '{string} opens file {string} via {string} using the context menu',
+  async function (this: World, stepUser: string, file: string, fileViewer: string): Promise<void> {
+    const allowedViewers = ['collabora', 'text-editor', 'preview'] as const
+
+    if (!allowedViewers.includes(fileViewer as any)) {
+      throw new Error(`Unsupported file viewer: ${fileViewer}`)
+    }
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await resourceObject.openFileViaContextMenu(file, fileViewer as (typeof allowedViewers)[number])
   }
 )

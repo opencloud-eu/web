@@ -66,7 +66,6 @@ function getWrapper({
   ) => void
 }) {
   vi.mocked(useSpaceHelpers).mockReturnValue({
-    checkSpaceNameModalInput: vi.fn(),
     getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
   })
 

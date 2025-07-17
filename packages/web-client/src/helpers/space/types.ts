@@ -22,6 +22,7 @@ export interface SpaceResource extends Resource {
   spaceQuota: Quota
   spaceImageData: DriveItem
   spaceReadmeData: DriveItem
+  hasTrashedItems: boolean
   webDavTrashPath: string
 
   // permissions for the current user. need to be loaded manually at some point via the space store.

@@ -1,9 +1,19 @@
 import type { SpaceResource } from '../../helpers'
 import type { Drive, DriveUpdate } from '../generated'
+import { ListMyDrivesBetaSelectEnum } from '../generated'
 import type { GraphRequestOptions } from '../types'
 
 export interface GraphDrives {
-  getDrive: (id: string, requestOptions?: GraphRequestOptions) => Promise<SpaceResource>
+  getDrive: (
+    id: string,
+    options?: {
+      orderBy?: string
+      filter?: string
+      expand?: string
+      select?: Array<ListMyDrivesBetaSelectEnum>
+    },
+    requestOptions?: GraphRequestOptions
+  ) => Promise<SpaceResource>
   createDrive: (data: Drive, requestOptions?: GraphRequestOptions) => Promise<SpaceResource>
   updateDrive: (
     id: string,
@@ -21,6 +31,7 @@ export interface GraphDrives {
       orderBy?: string
       filter?: string
       expand?: string
+      select?: Array<ListMyDrivesBetaSelectEnum>
     },
     requestOptions?: GraphRequestOptions
   ) => Promise<SpaceResource[]>
@@ -29,6 +40,7 @@ export interface GraphDrives {
       orderBy?: string
       filter?: string
       expand?: string
+      select?: Array<ListMyDrivesBetaSelectEnum>
     },
     requestOptions?: GraphRequestOptions
   ) => Promise<SpaceResource[]>

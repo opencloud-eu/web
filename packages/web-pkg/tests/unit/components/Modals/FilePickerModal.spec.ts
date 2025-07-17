@@ -2,7 +2,7 @@ import FilePickerModal from '../../../../src/components/Modals/FilePickerModal.v
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { Modal, useModals } from '../../../../src/composables/piniaStores'
+import { Modal, useModals, WebThemeType } from '../../../../src/composables/piniaStores'
 import { RouteLocation } from 'vue-router'
 
 window.open = vi.fn()
@@ -75,7 +75,7 @@ function getWrapper() {
           ...defaultPlugins({
             piniaOptions: {
               spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
-              themeState: { currentTheme: { name: 'OpenCloud' } }
+              themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
             }
           })
         ],

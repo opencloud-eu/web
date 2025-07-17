@@ -181,6 +181,7 @@ export function buildSpace(
     spaceQuota: data.quota,
     spaceImageData,
     spaceReadmeData,
+    hasTrashedItems: data['@libre.graph.hasTrashedItems'] || false,
     graphPermissions: undefined,
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
@@ -255,7 +256,10 @@ export function buildSpace(
     canRestoreFromTrashbin: function () {
       return this.graphPermissions?.includes(GraphSharePermission.updateDeleted)
     },
-    canDeleteFromTrashBin: function () {
+    canDeleteFromTrashBin: function ({ user }: { user?: User } = {}) {
+      if (isPersonalSpaceResource(this) && this.isOwner(user)) {
+        return true
+      }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },

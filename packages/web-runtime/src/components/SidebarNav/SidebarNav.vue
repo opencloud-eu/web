@@ -175,7 +175,7 @@ export default defineComponent({
 #nav-highlighter {
   position: absolute;
   border-radius: 5px;
-  background: var(--oc-role-surface);
+  background: var(--oc-role-secondary-container);
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
   color: var(--oc-role-on-surface);
   svg {

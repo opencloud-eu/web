@@ -3,7 +3,7 @@ docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
-COLLABORA_CODE = "collabora/code:24.04.13.2.1"
+COLLABORA_CODE = "collabora/code:25.04.3.2.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
@@ -16,14 +16,18 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
+PLUGINS_GIT_ACTION = "quay.io/thegeeklab/wp-git-action:2"
 PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
+OPENLDAP = "bitnami/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
+CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
+INSTALL_LIBVIPS_COMMAND = "apt-get update; apt-get install libvips42 -y"
 
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
@@ -90,11 +94,17 @@ config = {
                 "app-store",
             ],
         },
+        "a11y": {
+            "earlyFail": True,
+            "skip": False,
+            "suites": [
+                "a11y",
+            ],
+        },
         "app-provider": {
             "skip": False,
             "suites": [
                 "app-provider",
-                "app-provider-onlyOffice",
             ],
             "extraServerEnvironment": {
                 "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
@@ -103,8 +113,22 @@ config = {
                 "NATS_NATS_HOST": "0.0.0.0",
                 "NATS_NATS_PORT": 9233,
                 "COLLABORA_DOMAIN": "collabora:9980",
-                "ONLYOFFICE_DOMAIN": "onlyoffice:443",
                 "FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR": "eu.opencloud.api.collaboration.Collabora",
+                "WEB_UI_CONFIG_FILE": None,
+            },
+        },
+        "app-provider-onlyOffice": {
+            "skip": False,
+            "suites": [
+                "app-provider-onlyOffice",
+            ],
+            "extraServerEnvironment": {
+                "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
+                "MICRO_REGISTRY": "nats-js-kv",
+                "MICRO_REGISTRY_ADDRESS": "0.0.0.0:9233",
+                "NATS_NATS_HOST": "0.0.0.0",
+                "NATS_NATS_PORT": 9233,
+                "ONLYOFFICE_DOMAIN": "onlyoffice:443",
                 "WEB_UI_CONFIG_FILE": None,
             },
         },
@@ -153,15 +177,14 @@ minio_mc_environment = {
     "CACHE_BUCKET": {
         "from_secret": "cache_s3_bucket",
     },
-    "MC_HOST": {
-        "from_secret": "cache_s3_server",
-    },
+    "MC_HOST": CACHE_S3_SERVER,
     "AWS_ACCESS_KEY_ID": {
         "from_secret": "cache_s3_access_key",
     },
     "AWS_SECRET_ACCESS_KEY": {
         "from_secret": "cache_s3_secret_key",
     },
+    "PUBLIC_BUCKET": "public",
 }
 
 web_workspace = {
@@ -187,6 +210,9 @@ event = {
 }
 
 def main(ctx):
+    if ctx.build.event == "cron" and ctx.build.sender == "translation-sync":
+        return translation_sync(ctx)
+
     release = readyReleaseGo()
 
     before = beforePipelines(ctx)
@@ -232,9 +258,67 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx)]
+    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)]
 
     # pipelinesDependsOn(notify(), build(ctx))  # ToDo build should depend on notify, but that does not work yet
+
+def translation_sync(ctx):
+    return [{
+        "name": "translation-sync",
+        "steps": [
+            {
+                "name": "translation-update",
+                "image": OC_CI_NODEJS,
+                "commands": [
+                    # FIXME: remove node install as soon as we have our own node 22 image
+                    "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash",
+                    'export NVM_DIR="$HOME/.nvm"',
+                    "[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"",
+                    "nvm install 22",
+                    "nvm use 22",
+                    "corepack enable pnpm",
+                    "make l10n-read",
+                    "curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash",
+                    ". ~/.profile",
+                    "make l10n-push",
+                    "make l10n-pull",
+                    "rm tx",
+                    "make l10n-write",
+                    "make l10n-clean",
+                    "git checkout pnpm-lock.yaml",  # ignore possible changes in package.lock
+                ],
+                "environment": {
+                    "TX_TOKEN": {
+                        "from_secret": "tx_token",
+                    },
+                },
+            },
+            {
+                "name": "translation-push",
+                "image": PLUGINS_GIT_ACTION,
+                "settings": {
+                    "action": ["commit", "push"],
+                    "branch": ctx.build.branch,
+                    "message": "[tx] updated from transifex",
+                    "author_name": "opencloudeu",
+                    "author_email": "devops@opencloud.eu",
+                    "netrc_username": {
+                        "from_secret": "github_username",
+                    },
+                    "netrc_password": {
+                        "from_secret": "github_token",
+                    },
+                    "empty_commit": False,
+                },
+            },
+        ],
+        "when": [
+            {
+                "event": "cron",
+                "cron": "translation-sync",
+            },
+        ],
+    }]
 
 def pnpmCache(ctx):
     return [{
@@ -450,7 +534,7 @@ def e2eTests(ctx):
         for item in default:
             params[item] = matrix[item] if item in matrix else default[item]
 
-        if "app-provider" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
+        if "app-provider-onlyOffice" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
             continue
 
         if "ocm" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
@@ -483,17 +567,22 @@ def e2eTests(ctx):
         else:
             steps += restoreOpenCloudCache()
 
-        if "app-provider" in suite:
+        if "app-provider-onlyOffice" in suite:
             environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+            steps += onlyofficeService() + \
+                     waitForServices("onlyOffice", ["onlyoffice:443"]) + \
+                     openCloudService(params["extraServerEnvironment"]) + \
+                     wopiCollaborationService("onlyoffice") + \
+                     waitForServices("wopi", ["wopi-onlyoffice:9300"])
 
-            # app-provider specific steps
+        elif "app-provider" in suite:
+            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
             steps += collaboraService() + \
-                     onlyofficeService() + \
-                     waitForServices("online-offices", ["collabora:9980", "onlyoffice:443"]) + \
+                     waitForServices("collabora", ["collabora:9980"]) + \
                      openCloudService(params["extraServerEnvironment"]) + \
                      wopiCollaborationService("collabora") + \
-                     wopiCollaborationService("onlyoffice") + \
-                     waitForServices("wopi", ["wopi-collabora:9300", "wopi-onlyoffice:9300"])
+                     waitForServices("wopi", ["wopi-collabora:9300"])
+
         elif "ocm" in suite:
             steps += openCloudService(params["extraServerEnvironment"]) + \
                      (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
@@ -512,16 +601,15 @@ def e2eTests(ctx):
             return []
 
         steps += [{
-            "name": "e2e-tests",
-            "image": OC_CI_NODEJS,
-            "environment": environment,
-            "commands": [
-                "cd tests/e2e",
-                command,
-            ],
-        }]  # + \
-        #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
-        #  logTracingResult(ctx, "e2e-tests %s" % suite) # ToDo to be added when a public S3 bucket is available
+                     "name": "e2e-tests",
+                     "image": OC_CI_NODEJS,
+                     "environment": environment,
+                     "commands": [
+                         "cd tests/e2e",
+                         command,
+                     ],
+                 }] + \
+                 uploadTracingResult(ctx)
 
         pipelines.append({
             "name": "e2e-tests-%s" % suite,
@@ -766,6 +854,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
             "detach": True,
             "environment": environment,
             "commands": [
+                INSTALL_LIBVIPS_COMMAND,
                 "mkdir -p %s" % dir["openCloudRevaDataRoot"],
                 "mkdir -p /srv/app/tmp/opencloud/storage/users/",
                 "./opencloud init",
@@ -799,9 +888,8 @@ def cacheOpenCloudPipeline(ctx):
                 buildOpenCloud() + \
                 rebuildBuildArtifactCache(ctx, "opencloud", "opencloud")
     else:
-        # Todo what is ENABLE_VIPS in buildOpenCloud for? Is it needed?
         steps = checkForExistingOpenCloudCache(ctx) + \
-                buildOpenCloud(False) + \
+                buildOpenCloud() + \
                 cacheOpenCloud()
     return [{
         "name": "cache-opencloud",
@@ -826,13 +914,9 @@ def restoreOpenCloudCache():
         ],
     }]
 
-def buildOpenCloud(enableVips = False):
+def buildOpenCloud():
     opencloud_repo_url = "https://github.com/opencloud-eu/opencloud.git"
-    if enableVips:
-        # Todo what is ENABLE_VIPS for? Is it needed?
-        build_command = "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done"
-    else:
-        build_command = "for i in $(seq 3); do make -C opencloud build && break || sleep 1; done"
+
     return [
         {
             "name": "clone-opencloud",
@@ -857,7 +941,7 @@ def buildOpenCloud(enableVips = False):
                 ". ./.woodpecker.env",
                 "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
                 "cd repo_opencloud",
-                "retry -t 3 'make node-generate-prod'",  # ToDo Get rid of 'retry' dependency as in https://github.com/opencloud-eu/opencloud/commit/c897ec321fcd6af40c3dcfc56b2b6cd195a6054f
+                "for i in $(seq 3); do make node-generate-prod && break || sleep 1; done",
             ],
         },
         {
@@ -866,8 +950,9 @@ def buildOpenCloud(enableVips = False):
             "commands": [
                 ". ./.woodpecker.env",
                 "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
+                "apt-get update; apt-get install libvips-dev -y",
                 "cd repo_opencloud",
-                build_command,
+                "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done",
                 "cp opencloud/bin/opencloud %s/" % dir["base"],
             ],
         },
@@ -1141,9 +1226,7 @@ def genericCache(name, action, mounts, cache_path):
         "name": "%s_%s" % (action, name),
         "image": PLUGINS_S3_CACHE,
         "settings": {
-            "endpoint": {
-                "from_secret": "cache_s3_server",
-            },
+            "endpoint": CACHE_S3_SERVER,
             "rebuild": rebuild,
             "restore": restore,
             "mount": mounts,
@@ -1160,35 +1243,27 @@ def genericCache(name, action, mounts, cache_path):
     }
     return step
 
-def genericCachePurge(flush_path):
+def purgeCache(name, flush_path, flush_age):
     return {
-        "name": "purge_build_artifact_cache",
+        "name": name,
         "skip_clone": True,
-        "steps": [
-            {
-                "name": "purge-cache",
-                "image": PLUGINS_S3_CACHE,
-                "settings": {
-                    "access_key": {
-                        "from_secret": "cache_s3_access_key",
-                    },
-                    "secret_key": {
-                        "from_secret": "cache_s3_secret_key",
-                    },
-                    "endpoint": {
-                        "from_secret": "cache_s3_server",
-                    },
-                    "flush": True,
-                    "flush_age": 1,
-                    "flush_path": flush_path,
-                },
-            },
-        ],
         "when": [
             event["pull_request"],
             event["main_branch"],
         ],
         "runs_on": ["success", "failure"],
+        "steps": {
+            "purge": {
+                "image": MINIO_MC,
+                "environment": minio_mc_environment,
+                "commands": [
+                    "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+                    "to_delete=$(mc find s3/%s/ --older-than %sd)" % (flush_path, flush_age),
+                    'if [ -z "$to_delete" ]; then exit 0; fi',
+                    "mc rm $to_delete",
+                ],
+            },
+        },
     }
 
 def genericBuildArtifactCache(ctx, name, action, path):
@@ -1198,8 +1273,7 @@ def genericBuildArtifactCache(ctx, name, action, path):
         return genericCache(name, action, [path], cache_path)
 
     if action == "purge":
-        flush_path = "%s/%s" % ("cache", repo_slug)
-        return genericCachePurge(flush_path)
+        return purgeCache("purge_build_artifact_cache", "cache/opencloud-eu/web", 1)
     return []
 
 def restoreBuildArtifactCache(ctx, name, path):
@@ -1210,6 +1284,15 @@ def rebuildBuildArtifactCache(ctx, name, path):
 
 def purgeBuildArtifactCache(ctx):
     return genericBuildArtifactCache(ctx, "", "purge", [])
+
+def purgeOpencloudBuildCache(ctx):
+    return purgeCache("purge-opencloud-build-cache", "dev/opencloud-build", 21)
+
+def purgeBrowserCache(ctx):
+    return purgeCache("purge-browser-build-cache", "dev/web", 14)
+
+def purgeTracingCache(ctx):
+    return purgeCache("purge-playwright-tracing-cache", "public/web/tracing", 14)
 
 def pipelineSanityChecks(pipelines):
     """pipelineSanityChecks helps the CI developers to find errors before running it
@@ -1284,46 +1367,14 @@ def uploadTracingResult(ctx):
 
     return [{
         "name": "upload-tracing-result",
-        "image": PLUGINS_S3,
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": {
-                "from_secret": "cache_public_s3_bucket",
-            },
-            "endpoint": {
-                "from_secret": "cache_public_s3_server",
-            },
-            "path_style": True,
-            "source": "%s/reports/e2e/playwright/tracing/**/*" % dir["web"],
-            "strip_prefix": "%s/reports/e2e/playwright/tracing" % dir["web"],
-            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_public_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_public_s3_secret_key",
-            },
-        },
-        "when": {
-            "status": status,
-        },
-    }]
-
-def logTracingResult(ctx):
-    status = ["failure"]
-
-    if "with-tracing" in ctx.build.title.lower():
-        status = ["failure", "success"]
-
-    return [{
-        "name": "log-tracing-result",
-        "image": OC_UBUNTU,
+        "image": MINIO_MC,
+        "environment": minio_mc_environment,
         "commands": [
+            "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+            "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace https://cache.opencloud.eu/public/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/tracing/$f \n"; done',
+            'for f in *.zip; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/$f \n"; done',
         ],
         "when": {
             "status": status,
@@ -1355,7 +1406,7 @@ def collaboraService():
             "detach": True,
             "environment": {
                 "DONT_GEN_SSL_CERT": "set",
-                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:welcome.enable=false --o:net.frame_ancestors=https://opencloud:9200",
+                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
             },
             "commands": [
                 "coolconfig generate-proof-key",
@@ -1419,6 +1470,7 @@ def wopiCollaborationService(name):
             "detach": True,
             "environment": environment,
             "commands": [
+                INSTALL_LIBVIPS_COMMAND,
                 "./opencloud collaboration server",
             ],
         },
@@ -1437,6 +1489,39 @@ def postgresService():
         },
     ]
 
+def ldapService():
+    return [
+        {
+            "name": "ldap-server",
+            "image": OPENLDAP,
+            "detach": True,
+            "environment": {
+                "BITNAMI_DEBUG": "true",
+                "LDAP_TLS_VERIFY_CLIENT": "never",
+                "LDAP_ENABLE_TLS": "yes",
+                "LDAP_TLS_CA_FILE": "/opt/bitnami/openldap/share/openldap.crt",
+                "LDAP_TLS_CERT_FILE": "/opt/bitnami/openldap/share/openldap.crt",
+                "LDAP_TLS_KEY_FILE": "/opt/bitnami/openldap/share/openldap.key",
+                "LDAP_ROOT": "dc=opencloud,dc=eu",
+                "LDAP_ADMIN_PASSWORD": "admin",
+            },
+            "commands": [
+                "mkdir -p /opt/bitnami/openldap/share",
+                "mkdir -p /tmp/custom-scripts",
+                "mkdir -p /tmp/ldif-files",
+                "cp tests/woodpecker/ldap/*.ldif /tmp/ldif-files/",
+                "cp tests/woodpecker/ldap/docker-entrypoint-override.sh /tmp/custom-scripts/",
+                "chmod +x /tmp/custom-scripts/docker-entrypoint-override.sh",
+                "/tmp/custom-scripts/docker-entrypoint-override.sh /opt/bitnami/scripts/openldap/run.sh",
+            ],
+            "backend_options": {
+                "docker": {
+                    "user": "0:0",
+                },
+            },
+        },
+    ] + waitForServices("ldap", ["ldap-server:1636", "ldap-server:1389"])
+
 def keycloakService():
     return [{
                "name": "generate-keycloak-certs",
@@ -1444,7 +1529,7 @@ def keycloakService():
                "commands": [
                    "mkdir -p keycloak-certs",
                    "openssl req -x509 -newkey rsa:2048 -keyout keycloak-certs/keycloakkey.pem -out keycloak-certs/keycloakcrt.pem -nodes -days 365 -subj '/CN=keycloak'",
-                   "chmod -R 777 keycloak-certs",
+                   "chmod -R 755 keycloak-certs",
                ],
            }] + waitForServices("postgres", ["postgres:5432"]) + \
            [{
@@ -1464,30 +1549,23 @@ def keycloakService():
                    "KEYCLOAK_ADMIN_PASSWORD": "admin",
                    "KC_HTTPS_CERTIFICATE_FILE": "./keycloak-certs/keycloakcrt.pem",
                    "KC_HTTPS_CERTIFICATE_KEY_FILE": "./keycloak-certs/keycloakkey.pem",
+                   "LDAP_SERVER_URL": "ldaps://ldap-server:1636",
+                   "LDAP_BIND_DN": "cn=admin,dc=opencloud,dc=eu",
+                   "LDAP_BIND_PASSWORD": "admin",
+                   "LDAP_USERS_DN": "ou=users,dc=opencloud,dc=eu",
                },
                "commands": [
                    "mkdir -p /opt/keycloak/data/import",
                    "cp tests/woodpecker/opencloud_keycloak/opencloud-ci-realm.dist.json /opt/keycloak/data/import/opencloud-realm.json",
                    "/opt/keycloak/bin/kc.sh start-dev --proxy-headers xforwarded --spi-connections-http-client-default-disable-trust-manager=true --import-realm --health-enabled=true",
                ],
-           }] + waitForServices("keycloack", ["keycloak:8443"])
+           }] + waitForServices("keycloak", ["keycloak:8443"])
 
 def e2eTestsOnKeycloak(ctx):
-    e2e_Keycloak_tests = [
-        "journeys",
-        "admin-settings/users.feature:20",
-        "admin-settings/users.feature:43",
-        "admin-settings/users.feature:106",
-        "admin-settings/users.feature:131",
-        "admin-settings/users.feature:185",
-        "admin-settings/spaces.feature",
-        "admin-settings/groups.feature",
-        "keycloak",
-    ]
-
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
             restoreBrowsersCache() + \
+            ldapService() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist")
     if ctx.build.event == "cron":
@@ -1495,20 +1573,39 @@ def e2eTestsOnKeycloak(ctx):
     else:
         steps += restoreOpenCloudCache()
 
-    # configs to setup opencloud with keycloak
+    # configs to setup opencloud with keycloak and ldap
     environment = {
-        "PROXY_AUTOPROVISION_ACCOUNTS": True,
+        "PROXY_AUTOPROVISION_ACCOUNTS": False,
         "PROXY_ROLE_ASSIGNMENT_DRIVER": "oidc",
         "OC_OIDC_ISSUER": "https://keycloak:8443/realms/openCloud",
         "PROXY_OIDC_REWRITE_WELLKNOWN": True,
         "WEB_OIDC_CLIENT_ID": "web",
-        "PROXY_USER_OIDC_CLAIM": "preferred_username",
-        "PROXY_USER_CS3_CLAIM": "username",
+        "PROXY_USER_OIDC_CLAIM": "uuid",
+        "PROXY_USER_CS3_CLAIM": "userid",
         "OC_ADMIN_USER_ID": "",
-        "OC_EXCLUDE_RUN_SERVICES": "idp",
+        "OC_EXCLUDE_RUN_SERVICES": "idp,idm",
         "GRAPH_ASSIGN_DEFAULT_USER_ROLE": False,
+        "SETTINGS_SETUP_DEFAULT_ASSIGNMENTS": False,
         "GRAPH_USERNAME_MATCH": "none",
         "KEYCLOAK_DOMAIN": "keycloak:8443",
+        "OC_LOG_LEVEL": "debug",
+        "OC_LDAP_URI": "ldaps://ldap-server:1636",
+        "OC_LDAP_INSECURE": True,
+        "OC_LDAP_BIND_DN": "cn=admin,dc=opencloud,dc=eu",
+        "OC_LDAP_BIND_PASSWORD": "admin",
+
+        # LDAP configs
+        "OC_LDAP_GROUP_BASE_DN": "ou=groups,dc=opencloud,dc=eu",
+        "OC_LDAP_GROUP_SCHEMA_ID": "entryUUID",
+        "GRAPH_LDAP_GROUP_CREATE_BASE_DN": "ou=custom,ou=groups,dc=opencloud,dc=eu",
+        "GRAPH_LDAP_REFINT_ENABLED": True,
+        "OC_LDAP_USER_BASE_DN": "ou=users,dc=opencloud,dc=eu",
+        "OC_LDAP_USER_FILTER": "(objectclass=inetOrgPerson)",
+        "OC_LDAP_USER_SCHEMA_ID": "entryUUID",
+        "OC_LDAP_DISABLE_USER_MECHANISM": "none",
+        "GRAPH_LDAP_SERVER_UUID": "true",
+        "FRONTEND_READONLY_USER_ATTRIBUTES": "user.onPremisesSamAccountName,user.displayName,user.mail,user.passwordProfile,user.accountEnabled,user.appRoleAssignments",
+        "OC_LDAP_SERVER_WRITE_ENABLED": False,
     }
 
     steps += openCloudService(environment) + \
@@ -1520,7 +1617,7 @@ def e2eTestsOnKeycloak(ctx):
                          "OC_BASE_URL": "opencloud:9200",
                          "HEADLESS": True,
                          "RETRY": "1",
-                         "REPORT_TRACING": True,
+                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
                          "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
                          "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
@@ -1528,12 +1625,11 @@ def e2eTestsOnKeycloak(ctx):
                      },
                      "commands": [
                          "cd tests/e2e",
-                         "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
+                         "bash run-e2e.sh cucumber/features/keycloak",
                      ],
                  },
-             ]  #  + \
-    #  uploadTracingResult(ctx) + \ # ToDo to be added when a public S3 bucket is available
-    #  logTracingResult(ctx, "e2e-tests keycloack-journey-suite") # ToDo to be added when a public S3 bucket is available
+             ] + \
+             uploadTracingResult(ctx)
 
     return [{
         "name": "e2e-test-on-keycloak",

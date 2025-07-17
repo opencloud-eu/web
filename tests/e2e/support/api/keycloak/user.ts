@@ -9,15 +9,21 @@ import { state } from '../../../cucumber/environment/shared'
 import { initializeUser } from '../../utils/tokenHelper'
 import { setAccessTokenForKeycloakOpenCloudUser } from './openCloudUserToken'
 
-const openCloudKeycloakUserRoles: Record<string, string> = {
+export const openCloudKeycloakUserRoles: Record<string, string> = {
   Admin: 'opencloudAdmin',
   'Space Admin': 'opencloudSpaceAdmin',
   User: 'opencloudUser',
   'User Light': 'opencloudGuest'
 }
 
-export const createUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
+export const getAdminUser = (): User => {
+  const usersEnvironment = new UsersEnvironment()
+  return usersEnvironment.getUser({ key: 'admin' })
+}
+
+export const createUser = async ({ user }: { user: User }): Promise<User> => {
   const fullName = user.displayName.split(' ')
+
   const body = {
     username: user.username,
     credentials: [{ value: user.password, type: 'password' }],
@@ -25,11 +31,6 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
     lastName: fullName[1] ?? '',
     email: user.email,
     emailVerified: true,
-    // NOTE: setting realmRoles doesn't work while creating user.
-    // Issue in Keycloak:
-    //  - https://github.com/keycloak/keycloak/issues/9354
-    //  - https://github.com/keycloak/keycloak/issues/16449
-    // realmRoles: ['openCloudUser', 'offline_access'],
     enabled: true
   }
 
@@ -38,24 +39,13 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
     method: 'POST',
     path: join(realmBasePath, 'users'),
     body,
-    user: admin,
+    user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(creationRes, 'Failed while creating user')
 
   // created user id
   const keycloakUUID = getUserIdFromResponse(creationRes)
-
-  // assign realmRoles to user
-  const defaultNewUserRole = 'User'
-  const roleRes = await assignRole({ admin, uuid: keycloakUUID, role: defaultNewUserRole })
-  checkResponseStatus(roleRes, 'Failed while assigning roles to user')
-
-  const usersEnvironment = new UsersEnvironment()
-  // stored keycloak user information on storage
-  usersEnvironment.storeCreatedKeycloakUser({
-    user: { ...user, uuid: keycloakUUID, role: defaultNewUserRole }
-  })
 
   // login to initialize the user in OpenCloud Web
   await initializeUser({
@@ -64,74 +54,65 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
     waitForSelector: '#web-content'
   })
 
-  // store OpenCloud user information
+  const usersEnvironment = new UsersEnvironment()
   usersEnvironment.storeCreatedUser({
-    user: { ...user, uuid: await getUserId({ user, admin }), role: defaultNewUserRole }
+    user: {
+      ...user,
+      uuid: await getUserId({ user, admin: getAdminUser() }),
+      keycloakUuid: keycloakUUID
+    }
   })
+
   await setAccessTokenForKeycloakOpenCloudUser(user)
   return user
 }
 
-export const assignRole = async ({
-  admin,
-  uuid,
-  role
-}: {
-  admin: User
-  uuid: string
-  role: string
-}) => {
-  // can assign multiple realm role at once
+export const assignRole = async ({ uuid, role }: { uuid: string; role: string }) => {
   return request({
     method: 'POST',
     path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
     body: [
-      await getRealmRole(openCloudKeycloakUserRoles[role], admin),
-      await getRealmRole('offline_access', admin)
+      await getRealmRole(openCloudKeycloakUserRoles[role]),
+      await getRealmRole('offline_access')
     ],
-    user: admin,
+    user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
 }
 
-export const unAssignRole = async ({
-  admin,
-  uuid,
-  role
-}: {
-  admin: User
-  uuid: string
-  role: string
-}) => {
+export const unAssignRole = async ({ uuid, role }: { uuid: string; role: string }) => {
   // can't unassign multiple realm roles at once
   const response = await request({
     method: 'DELETE',
     path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
-    body: [await getRealmRole(openCloudKeycloakUserRoles[role], admin)],
-    user: admin,
+    body: [await getRealmRole(openCloudKeycloakUserRoles[role])],
+    user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(response, 'Can not delete existing role ')
   return response
 }
 
-export const deleteUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
+export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
   // first delete OpenCloud user
   // deletes the user data
-  await graphDeleteUser({ user, admin })
+  await graphDeleteUser({ user, admin: getAdminUser() })
 
   const usersEnvironment = new UsersEnvironment()
-  const keyclockUser = usersEnvironment.getCreatedKeycloakUser({ key: user.id })
   const response = await request({
     method: 'DELETE',
-    path: join(realmBasePath, 'users', keyclockUser.uuid),
-    user: admin
+    path: join(
+      realmBasePath,
+      'users',
+      usersEnvironment.getCreatedUser({ key: user.id }).keycloakUuid
+    ),
+    user: getAdminUser()
   })
   checkResponseStatus(response, 'Failed to delete keycloak user: ' + user.id)
   if (response.ok) {
     try {
       const usersEnvironment = new UsersEnvironment()
-      usersEnvironment.removeCreatedKeycloakUser({ key: user.id })
+      usersEnvironment.removeCreatedUser({ key: user.id })
     } catch (e) {
       console.error('Error removing Keycloak user:', e)
     }
@@ -139,7 +120,7 @@ export const deleteUser = async ({ user, admin }: { user: User; admin: User }): 
   return user
 }
 
-export const getRealmRole = async (role: string, admin: User): Promise<KeycloakRealmRole> => {
+export const getRealmRole = async (role: string): Promise<KeycloakRealmRole> => {
   if (keycloakRealmRoles.get(role)) {
     return keycloakRealmRoles.get(role)
   }
@@ -147,7 +128,7 @@ export const getRealmRole = async (role: string, admin: User): Promise<KeycloakR
   const response = await request({
     method: 'GET',
     path: join(realmBasePath, 'roles'),
-    user: admin
+    user: getAdminUser()
   })
   checkResponseStatus(response, 'Failed while fetching realm roles')
   const roles = (await response.json()) as KeycloakRealmRole[]

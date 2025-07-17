@@ -215,6 +215,10 @@ export class Resource {
     await po.clickViewModeToggle({ page: this.#page, target: 'resource-tiles' })
   }
 
+  async switchViewMode(viewMode): Promise<void> {
+    await po.clickViewModeToggle({ page: this.#page, target: viewMode })
+  }
+
   async expectThatResourcesAreTiles(): Promise<void> {
     await po.expectThatResourcesAreTiles({ page: this.#page })
   }
@@ -269,14 +273,6 @@ export class Resource {
     return po.createSpaceFromAll({ page: this.#page, spaceName })
   }
 
-  async checkThatFileVersionIsNotAvailable(
-    args: Omit<po.resourceVersionArgs, 'page'>
-  ): Promise<void> {
-    const startUrl = this.#page.url()
-    await po.checkThatFileVersionIsNotAvailable({ ...args, page: this.#page })
-    await this.#page.goto(startUrl)
-  }
-
   async checkThatFileVersionPanelIsNotAvailable(
     args: Omit<po.resourceVersionArgs, 'page'>
   ): Promise<void> {
@@ -303,10 +299,6 @@ export class Resource {
 
   async expectPageNumberNotToBeVisible(): Promise<void> {
     await po.expectPageNumberNotToBeVisible({ page: this.#page })
-  }
-
-  async expectFileToBeSelected(args: Omit<po.expectFileToBeSelectedArgs, 'page'>): Promise<void> {
-    await po.expectFileToBeSelected({ ...args, page: this.#page })
   }
 
   async createShotcut(args: Omit<po.shortcutArgs, 'page'>): Promise<void> {
@@ -408,5 +400,9 @@ export class Resource {
     avatarUser: string
   }): Promise<Locator> {
     return await po.getAvatarLocatorFromActivityPanel({ page: this.#page, ...args })
+  }
+
+  async openFileViaContextMenu(resource: string, fileViewer: string): Promise<void> {
+    await po.openFileViaContextMenu({ page: this.#page, resource, fileViewer })
   }
 }

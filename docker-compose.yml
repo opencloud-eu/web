@@ -180,12 +180,12 @@ services:
     restart: unless-stopped
 
   collabora:
-    image: collabora/code:25.04.2.1.1
+    image: collabora/code:25.04.3.2.1
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
       DONT_GEN_SSL_CERT: YES
-      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:ssl.termination=true --o:welcome.enable=false --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200}
+      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200}
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
@@ -211,7 +211,7 @@ services:
       - traefik
 
   traefik:
-    image: traefik:v3.4.1
+    image: traefik:v3.4.4
     restart: unless-stopped
     entrypoint:
       [
@@ -276,7 +276,7 @@ services:
       - 'wait-for -it tika:9998 -t 300'
 
   tika:
-    image: apache/tika:3.2.0.0
+    image: apache/tika:3.2.1.0
     container_name: web_tika
     ports:
       - 9998:9998

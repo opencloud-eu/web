@@ -9,28 +9,29 @@ import {
   ActionExtension,
   FileActionOptions,
   useExtensionRegistry,
-  useFileActionsToggleHideShare,
+  useFileActions,
+  useFileActionsCopy,
   useFileActionsCopyPermanentLink,
+  useFileActionsCreateSpaceFromResource,
+  useFileActionsDelete,
+  useFileActionsDisableSync,
+  useFileActionsDownloadArchive,
+  useFileActionsDownloadFile,
+  useFileActionsEnableSync,
+  useFileActionsFavorite,
+  useFileActionsMove,
+  useFileActionsNavigate,
   useFileActionsPaste,
+  useFileActionsRename,
+  useFileActionsRestore,
+  useFileActionsSetImage,
   useFileActionsShowDetails,
   useFileActionsShowShares,
-  useFileActionsEnableSync,
-  useFileActionsCopy,
-  useFileActionsDisableSync,
-  useFileActionsDelete,
-  useFileActionsDownloadArchive,
-  useFileActionsEmptyTrashBin,
-  useFileActionsMove,
-  useFileActionsRestore,
-  useFileActionsDownloadFile,
-  useFileActionsRename,
-  useFileActionsSetImage,
-  useFileActionsNavigate,
-  useFileActionsFavorite,
-  useFileActionsCreateSpaceFromResource,
-  useFileActions
+  useFileActionsToggleHideShare
 } from '../../composables'
 import { isNil } from 'lodash-es'
+import { useGettext } from 'vue3-gettext'
+import { MenuSection } from '../ContextActions'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -42,7 +43,8 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { editorActions } = useFileActions()
+    const { editorActions, defaultEditorActions } = useFileActions()
+    const { $gettext } = useGettext()
 
     const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -53,7 +55,6 @@ export default defineComponent({
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: favoriteActions } = useFileActionsFavorite()
-    const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: navigateActions } = useFileActionsNavigate()
     const { actions: pasteActions } = useFileActionsPaste()
@@ -92,7 +93,6 @@ export default defineComponent({
         ...unref(downloadArchiveActions),
         ...unref(moveActions),
         ...unref(copyActions),
-        ...unref(emptyTrashBinActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
         ...unref(createSpaceFromResourceActions),
@@ -109,6 +109,12 @@ export default defineComponent({
     )
 
     const menuItemsContext = computed(() => {
+      return [...unref(navigateActions), ...unref(defaultEditorActions)]
+        .filter((item) => item.isVisible(unref(actionOptions)))
+        .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
+    })
+
+    const menuItemsContextDrop = computed(() => {
       return [
         ...unref(editorActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'context')
@@ -152,14 +158,13 @@ export default defineComponent({
           action.keepOpen = true
           return action
         }),
-        ...unref(navigateActions),
         ...unref(showDetailsActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
     const menuSections = computed(() => {
-      const sections = []
+      const sections: MenuSection[] = []
       if (unref(actionOptions).resources.length > 1) {
         if (unref(menuItemsBatchActions).length) {
           sections.push({
@@ -167,6 +172,7 @@ export default defineComponent({
             items: [...unref(menuItemsBatchActions)]
           })
         }
+
         sections.push({
           name: 'batch-details',
           items: [...unref(menuItemsBatchSideBar)]
@@ -174,12 +180,21 @@ export default defineComponent({
         return sections
       }
 
-      if (unref(menuItemsContext).length) {
+      if ([...unref(menuItemsContext), ...unref(menuItemsContextDrop)].length) {
         sections.push({
           name: 'context',
-          items: unref(menuItemsContext)
+          items: [...unref(menuItemsContext)],
+          dropItems: [
+            {
+              label: $gettext('Open with...'),
+              name: 'open-with',
+              icon: 'apps',
+              items: [...unref(menuItemsContextDrop)]
+            }
+          ]
         })
       }
+
       if (unref(menuItemsShare).length) {
         sections.push({
           name: 'share',

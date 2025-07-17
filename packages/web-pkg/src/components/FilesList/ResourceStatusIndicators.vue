@@ -9,15 +9,19 @@
 
 <script setup lang="ts">
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceIndicator, getIndicators } from '../../helpers'
+import { getIndicators, ResourceIndicator } from '../../helpers'
 import { computed, useAttrs } from 'vue'
 import { useResourcesStore, useUserStore } from '../../composables/piniaStores'
 import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 
 const attrs = useAttrs() as (typeof OcStatusIndicators)['props']
-const { space, resource, filter } = defineProps<{
-  space: SpaceResource
+const {
+  resource,
+  space = undefined,
+  filter = undefined
+} = defineProps<{
   resource: Resource
+  space?: SpaceResource
   filter?: (indicator: ResourceIndicator) => boolean
 }>()
 

@@ -1,0 +1,13 @@
+dn: cn=admins,ou=groups,dc=opencloud,dc=eu
+objectClass: groupOfNames
+objectClass: top
+cn: admins
+description: System Administrators
+member: uid=admin,ou=users,dc=opencloud,dc=eu
+
+dn: cn=users,ou=groups,dc=opencloud,dc=eu
+objectClass: groupOfNames
+objectClass: top
+cn: users
+description: All Users
+member: uid=admin,ou=users,dc=opencloud,dc=eu

@@ -20,7 +20,6 @@ export interface Action<T = ActionOptions> {
   hideLabel?: boolean
   shortcut?: string
   keepOpen?: boolean
-  showOpenInNewTabHint?: boolean
   isExternal?: boolean
   ext?: string
 

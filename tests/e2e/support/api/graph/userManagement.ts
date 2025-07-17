@@ -60,17 +60,14 @@ export const deleteUser = async ({ user, admin }: { user: User; admin: User }): 
 }
 
 export const getUserId = async ({ user, admin }: { user: User; admin: User }): Promise<string> => {
-  let userId = ''
   const response = await request({
     method: 'GET',
     path: join('graph', 'v1.0', 'users', user.username),
     user: admin
   })
-  if (response.ok) {
-    const resBody = (await response.json()) as User
-    userId = resBody.id
-  }
-  return userId
+
+  const resBody = (await response.json()) as User
+  return resBody.id
 }
 
 export const createGroup = async ({
@@ -136,7 +133,7 @@ export const addUserToGroup = async ({
     body: body,
     user: admin
   })
-  checkResponseStatus(response, 'Failed while adding an user to the group')
+  checkResponseStatus(response, 'Failed while adding a user to the group')
 }
 
 export const assignRole = async (admin: User, id: string, role: string): Promise<void> => {

@@ -729,6 +729,12 @@ export interface Drive {
      * @memberof Drive
      */
     'special'?: Array<DriveItem>;
+    /**
+     * Indicates whether the drive has items in the trash. Read-only.
+     * @type {boolean}
+     * @memberof Drive
+     */
+    '@libre.graph.hasTrashedItems'?: boolean;
 }
 /**
  * Represents a resource inside a drive. Read-only.
@@ -1126,6 +1132,12 @@ export interface DriveUpdate {
      * @memberof DriveUpdate
      */
     'special'?: Array<DriveItem>;
+    /**
+     * Indicates whether the drive has items in the trash. Read-only.
+     * @type {boolean}
+     * @memberof DriveUpdate
+     */
+    '@libre.graph.hasTrashedItems'?: boolean;
 }
 /**
  * And extension of group representing a class or course
@@ -3357,10 +3369,11 @@ export const DrivesApiAxiosParamCreator = function (configuration?: Configuratio
          * 
          * @summary Get drive by id
          * @param {string} driveId key: id of drive
+         * @param {Set<GetDriveSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDrive: async (driveId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDrive: async (driveId: string, $select?: Set<GetDriveSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getDrive', 'driveId', driveId)
             const localVarPath = `/v1.0/drives/{drive-id}`
@@ -3381,6 +3394,10 @@ export const DrivesApiAxiosParamCreator = function (configuration?: Configuratio
             // authentication basicAuth required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            if ($select) {
+                localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
 
 
     
@@ -3480,11 +3497,12 @@ export const DrivesApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get drive by id
          * @param {string} driveId key: id of drive
+         * @param {Set<GetDriveSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDrive(driveId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Drive>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDrive(driveId, options);
+        async getDrive(driveId: string, $select?: Set<GetDriveSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Drive>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDrive(driveId, $select, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DrivesApi.getDrive']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -3538,11 +3556,12 @@ export const DrivesApiFactory = function (configuration?: Configuration, basePat
          * 
          * @summary Get drive by id
          * @param {string} driveId key: id of drive
+         * @param {Set<GetDriveSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDrive(driveId: string, options?: RawAxiosRequestConfig): AxiosPromise<Drive> {
-            return localVarFp.getDrive(driveId, options).then((request) => request(axios, basePath));
+        getDrive(driveId: string, $select?: Set<GetDriveSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<Drive> {
+            return localVarFp.getDrive(driveId, $select, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3594,12 +3613,13 @@ export class DrivesApi extends BaseAPI {
      * 
      * @summary Get drive by id
      * @param {string} driveId key: id of drive
+     * @param {Set<GetDriveSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DrivesApi
      */
-    public getDrive(driveId: string, options?: RawAxiosRequestConfig) {
-        return DrivesApiFp(this.configuration).getDrive(driveId, options).then((request) => request(this.axios, this.basePath));
+    public getDrive(driveId: string, $select?: Set<GetDriveSelectEnum>, options?: RawAxiosRequestConfig) {
+        return DrivesApiFp(this.configuration).getDrive(driveId, $select, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3616,6 +3636,13 @@ export class DrivesApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const GetDriveSelectEnum = {
+    LibreGraphHasTrashedItems: '@libre.graph.hasTrashedItems'
+} as const;
+export type GetDriveSelectEnum = typeof GetDriveSelectEnum[keyof typeof GetDriveSelectEnum];
 
 
 /**
@@ -3676,10 +3703,11 @@ export const DrivesGetDrivesApiAxiosParamCreator = function (configuration?: Con
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListAllDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllDrivesBeta: async ($orderby?: string, $filter?: string, $expand?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listAllDrivesBeta: async ($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListAllDrivesBetaSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1beta1/drives`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3708,6 +3736,10 @@ export const DrivesGetDrivesApiAxiosParamCreator = function (configuration?: Con
 
             if ($expand !== undefined) {
                 localVarQueryParameter['$expand'] = $expand;
+            }
+
+            if ($select) {
+                localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
             }
 
 
@@ -3751,11 +3783,12 @@ export const DrivesGetDrivesApiFp = function(configuration?: Configuration) {
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListAllDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDrives1>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllDrivesBeta($orderby, $filter, $expand, options);
+        async listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListAllDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDrives1>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllDrivesBeta($orderby, $filter, $expand, $select, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DrivesGetDrivesApi.listAllDrivesBeta']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -3787,11 +3820,12 @@ export const DrivesGetDrivesApiFactory = function (configuration?: Configuration
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListAllDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDrives1> {
-            return localVarFp.listAllDrivesBeta($orderby, $filter, $expand, options).then((request) => request(axios, basePath));
+        listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListAllDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDrives1> {
+            return localVarFp.listAllDrivesBeta($orderby, $filter, $expand, $select, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -3822,15 +3856,23 @@ export class DrivesGetDrivesApi extends BaseAPI {
      * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
      * @param {string} [$filter] Filter items by property values
      * @param {string} [$expand] Expand related entities
+     * @param {Set<ListAllDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DrivesGetDrivesApi
      */
-    public listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig) {
-        return DrivesGetDrivesApiFp(this.configuration).listAllDrivesBeta($orderby, $filter, $expand, options).then((request) => request(this.axios, this.basePath));
+    public listAllDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListAllDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig) {
+        return DrivesGetDrivesApiFp(this.configuration).listAllDrivesBeta($orderby, $filter, $expand, $select, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+/**
+ * @export
+ */
+export const ListAllDrivesBetaSelectEnum = {
+    LibreGraphHasTrashedItems: '@libre.graph.hasTrashedItems'
+} as const;
+export type ListAllDrivesBetaSelectEnum = typeof ListAllDrivesBetaSelectEnum[keyof typeof ListAllDrivesBetaSelectEnum];
 
 
 /**
@@ -9056,10 +9098,11 @@ export const MeDrivesApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListMyDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMyDrivesBeta: async ($orderby?: string, $filter?: string, $expand?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listMyDrivesBeta: async ($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListMyDrivesBetaSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1beta1/me/drives`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9088,6 +9131,10 @@ export const MeDrivesApiAxiosParamCreator = function (configuration?: Configurat
 
             if ($expand !== undefined) {
                 localVarQueryParameter['$expand'] = $expand;
+            }
+
+            if ($select) {
+                localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
             }
 
 
@@ -9131,11 +9178,12 @@ export const MeDrivesApiFp = function(configuration?: Configuration) {
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListMyDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDrives>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listMyDrivesBeta($orderby, $filter, $expand, options);
+        async listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListMyDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDrives>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listMyDrivesBeta($orderby, $filter, $expand, $select, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['MeDrivesApi.listMyDrivesBeta']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -9167,11 +9215,12 @@ export const MeDrivesApiFactory = function (configuration?: Configuration, baseP
          * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
          * @param {string} [$filter] Filter items by property values
          * @param {string} [$expand] Expand related entities
+         * @param {Set<ListMyDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDrives> {
-            return localVarFp.listMyDrivesBeta($orderby, $filter, $expand, options).then((request) => request(axios, basePath));
+        listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListMyDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDrives> {
+            return localVarFp.listMyDrivesBeta($orderby, $filter, $expand, $select, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -9202,15 +9251,23 @@ export class MeDrivesApi extends BaseAPI {
      * @param {string} [$orderby] The $orderby system query option allows clients to request resources in either ascending order using asc or descending order using desc.
      * @param {string} [$filter] Filter items by property values
      * @param {string} [$expand] Expand related entities
+     * @param {Set<ListMyDrivesBetaSelectEnum>} [$select] Select properties to be returned. By default all properties are returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MeDrivesApi
      */
-    public listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, options?: RawAxiosRequestConfig) {
-        return MeDrivesApiFp(this.configuration).listMyDrivesBeta($orderby, $filter, $expand, options).then((request) => request(this.axios, this.basePath));
+    public listMyDrivesBeta($orderby?: string, $filter?: string, $expand?: string, $select?: Set<ListMyDrivesBetaSelectEnum>, options?: RawAxiosRequestConfig) {
+        return MeDrivesApiFp(this.configuration).listMyDrivesBeta($orderby, $filter, $expand, $select, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+/**
+ * @export
+ */
+export const ListMyDrivesBetaSelectEnum = {
+    LibreGraphHasTrashedItems: '@libre.graph.hasTrashedItems'
+} as const;
+export type ListMyDrivesBetaSelectEnum = typeof ListMyDrivesBetaSelectEnum[keyof typeof ListMyDrivesBetaSelectEnum];
 
 
 /**

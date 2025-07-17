@@ -1,7 +1,7 @@
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 export interface CreateTargetRouteOptions {
   path: string
   fileId?: string | number
-  resource: Resource
+  resource: Resource | SpaceResource
 }

@@ -48,7 +48,7 @@ export const useSpaceActionsDisable = () => {
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && spaces.length === 1
-          ? $gettext('Space "%{space}" was disabled successfully', { space: spaces[0].name })
+          ? $gettext('Space »%{space}« was disabled successfully', { space: spaces[0].name })
           : $ngettext(
               '%{spaceCount} space was disabled successfully',
               '%{spaceCount} spaces were disabled successfully',
@@ -65,7 +65,7 @@ export const useSpaceActionsDisable = () => {
 
       const title =
         failed.length === 1 && spaces.length === 1
-          ? $gettext('Failed to disable space "%{space}"', { space: spaces[0].name })
+          ? $gettext('Failed to disable space »%{space}«', { space: spaces[0].name })
           : $ngettext(
               'Failed to disable %{spaceCount} space',
               'Failed to disable %{spaceCount} spaces',
@@ -95,7 +95,7 @@ export const useSpaceActionsDisable = () => {
 
     dispatchModal({
       title: $ngettext(
-        'Disable Space "%{space}"?',
+        'Disable Space »%{space}«?',
         'Disable %{spaceCount} Spaces?',
         allowedResources.length,
         {

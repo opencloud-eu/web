@@ -1,14 +1,13 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../../actions'
+import { FileAction, FileActionOptions, useIsResourceNameValid } from '../../actions'
 
 import { useAbility } from '../../ability'
 import { useClientService } from '../../clientService'
 import { useRouter } from '../../router'
-import { Resource, SpaceResource, isPersonalSpaceResource } from '@opencloud-eu/web-client'
+import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { isLocationSpacesActive } from '../../../router'
 import { useCreateSpace } from '../../spaces'
-import { useSpaceHelpers } from '../../spaces'
 import PQueue from 'p-queue'
 import {
   useConfigStore,
@@ -23,7 +22,6 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const { can } = useAbility()
   const { $gettext, $ngettext } = useGettext()
   const { createSpace } = useCreateSpace()
-  const { checkSpaceNameModalInput } = useSpaceHelpers()
   const clientService = useClientService()
   const router = useRouter()
   const hasCreatePermission = computed(() => can('create-all', 'Drive'))
@@ -31,6 +29,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const configStore = useConfigStore()
   const spacesStore = useSpacesStore()
   const resourcesStore = useResourcesStore()
+  const { isSpaceNameValid } = useIsResourceNameValid()
 
   const confirmAction = async ({
     spaceName,
@@ -76,7 +75,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const handler = ({ resources, space }: FileActionOptions) => {
     dispatchModal({
       title: $ngettext(
-        'Create Space from "%{resourceName}"',
+        'Create Space from »%{resourceName}«',
         'Create Space from selection',
         resources.length,
         {
@@ -84,7 +83,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
         }
       ),
       message: $ngettext(
-        'Create Space with the content of "%{resourceName}".',
+        'Create Space with the content of »%{resourceName}«.',
         'Create Space with the selected files.',
         resources.length,
         {
@@ -100,7 +99,10 @@ export const useFileActionsCreateSpaceFromResource = () => {
       hasInput: true,
       inputLabel: $gettext('Space name'),
       inputRequiredMark: true,
-      onInput: checkSpaceNameModalInput,
+      onInput: (name: string, setError: (error: string) => void) => {
+        const { isValid, error } = isSpaceNameValid(name)
+        setError(isValid ? null : error)
+      },
       onConfirm: (spaceName: string) => confirmAction({ spaceName, space, resources })
     })
   }

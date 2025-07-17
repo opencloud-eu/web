@@ -82,7 +82,6 @@ const previewAudio = '//main[@id="preview"]//div[contains(@class,"stage_media")]
 const previewVideo = '//main[@id="preview"]//div[contains(@class,"stage_media")]//video//source'
 const previewControlsCount = '.preview-controls-action-count > :first-child'
 const externalEditorIframe = '[name="app-iframe"]'
-const copyPasteWarningPopup = '#copy_paste_warning-box'
 const tagTableCell =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-tags")]'
 const tagInFilesTable = '//*[contains(@class, "oc-tag")]//span[text()="%s"]//ancestor::a'
@@ -90,7 +89,6 @@ const tagInInputForm =
   '//span[contains(@class, "tags-select-tag")]//span[text()="%s"]//ancestor::span//button[contains(@class, "vs__deselect")]'
 const tagFormInput = '//*[@data-testid="tags"]//input'
 const resourcesAsTiles = '#files-view .oc-tiles'
-const fileVersionSidebar = '#oc-file-versions-sidebar'
 const versionsPanelSelect = '//*[@data-testid="sidebar-panel-versions-select"]'
 const noLinkMessage = '#web .oc-link-resolve-error-message'
 const listItemPageSelector = '//*[contains(@class,"oc-pagination-list-item-page") and text()="%s"]'
@@ -130,7 +128,6 @@ const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
 const collaboraEditorSaveSelector = '.notebookbar-shortcuts-bar #save'
 const collaboraDocTextAreaSelector = '#clipboard-area'
-const collaboraWelcomeModalIframe = '.iframe-welcome-modal'
 const collaboraCanvasEditorSelector = '.leaflet-layer'
 // OnlyOffice
 const onlyOfficeInnerFrameSelector = '[name="frameEditor"]'
@@ -146,6 +143,8 @@ const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
+const openWithAction = '.oc-files-actions-%s-trigger'
+const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 
 export const clickResource = async ({
   page,
@@ -244,7 +243,8 @@ export const openTemplateFile = async ({
   webOffice: string
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-  await page.locator(util.format(contextMenuAction, `Open in ${webOffice}`)).click()
+  await page.locator(openWithButton).hover()
+  await page.locator(util.format(contextMenuAction, webOffice)).click()
 }
 
 export const createFileFromTemplate = async ({
@@ -266,6 +266,7 @@ export const createFileFromTemplate = async ({
     return
   } else if (via.startsWith('context')) {
     await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+    await page.locator(openWithButton).hover()
     await page.locator(util.format(contextMenuAction, menuItem)).click()
     return
   }
@@ -417,14 +418,6 @@ const createDocumentFile = async (
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
-      try {
-        await editorMainFrame
-          .locator(collaboraWelcomeModalIframe)
-          .waitFor({ timeout: config.minTimeout * 1000 })
-        await page.keyboard.press('Escape')
-      } catch {
-        console.log('No welcome modal found. Continue...')
-      }
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
       const saveLocator = editorMainFrame.locator(collaboraEditorSaveSelector)
       await expect(saveLocator).toHaveAttribute('class', /.*savemodified.*/)
@@ -489,14 +482,6 @@ export const openAndGetContentOfDocument = async ({
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
-      try {
-        await editorMainFrame
-          .locator(collaboraWelcomeModalIframe)
-          .waitFor({ timeout: config.minTimeout * 1000 })
-        await page.keyboard.press('Escape')
-      } catch {
-        console.log('No welcome modal found. Continue...')
-      }
       await editorMainFrame.locator(collaboraCanvasEditorSelector).click()
       break
     case 'OnlyOffice':
@@ -509,24 +494,21 @@ export const openAndGetContentOfDocument = async ({
         "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
       )
   }
-  // copying and getting the value with keyboard requires some
-  await page.keyboard.press('ControlOrMeta+A', { delay: 200 })
-  await page.keyboard.press('ControlOrMeta+C', { delay: 200 })
-  try {
-    await editorMainFrame
-      .locator(copyPasteWarningPopup)
-      .waitFor({ timeout: config.minTimeout * 1000 })
-    // close popup
+  return await tryCopyClipboard(page)
+}
+
+const tryCopyClipboard = async (page: Page, maxRetries = 5): Promise<string> => {
+  for (let i = 0; i < maxRetries; i++) {
+    await page.evaluate(() => navigator.clipboard.writeText(''))
+    await page.waitForTimeout(200)
+    await page.keyboard.press('ControlOrMeta+A', { delay: 100 })
+    await page.keyboard.press('ControlOrMeta+C', { delay: 100 })
+    const text = await page.evaluate(() => navigator.clipboard.readText())
+    if (text.trim().length > 0) return text
+    await page.waitForTimeout(200)
     await page.keyboard.press('Escape')
-    // deselect text. otherwise the clipboard will be empty
-    await page.keyboard.press('Escape')
-    // select text again and copy text
-    await page.keyboard.press('ControlOrMeta+A', { delay: 200 })
-    await page.keyboard.press('ControlOrMeta+C', { delay: 200 })
-  } catch {
-    console.log('No copy-paste warning popup found. Continue...')
   }
-  return await page.evaluate(() => navigator.clipboard.readText())
+  throw new Error('Failed to read non-empty clipboard content after retries')
 }
 
 const isAppProviderServiceForOfficeSuitesReadyInWebUI = async (page: Page, type: string) => {
@@ -1641,7 +1623,7 @@ export const getDisplayedResourcesFromTrashbin = async (page: Page): Promise<str
 
 export interface switchViewModeArgs {
   page: Page
-  target: 'resource-table' | 'resource-tiles'
+  target: 'resource-table' | 'resource-tiles' | 'resource-table-condensed'
 }
 
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {
@@ -1865,27 +1847,6 @@ export const previewMediaFromSidebarPanel = async ({
   await page.locator(util.format(sideBarActionButton, 'Preview')).first().click()
 }
 
-export const checkThatFileVersionIsNotAvailable = async (
-  args: resourceVersionArgs
-): Promise<void> => {
-  const { page, files, folder } = args
-  const fileName = files.map((file) => path.basename(file.name))
-  await clickResource({ page, path: folder })
-
-  await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes('dav/meta') &&
-        resp.status() === 403 &&
-        resp.request().method() === 'PROPFIND'
-    ),
-    sidebar.open({ page, resource: fileName[0] })
-  ])
-
-  await sidebar.openPanel({ page, name: 'versions' })
-  await expect(page.locator(fileVersionSidebar)).toHaveText('No versions available for this file')
-}
-
 export const checkThatFileVersionPanelIsNotAvailable = async (
   args: resourceVersionArgs
 ): Promise<void> => {
@@ -1963,21 +1924,6 @@ export const countNumberOfResourcesInThePage = async ({
 
 export const expectPageNumberNotToBeVisible = async ({ page }: { page: Page }): Promise<void> => {
   await expect(page.locator(filesPaginationNavSelector)).not.toBeVisible()
-}
-
-export interface expectFileToBeSelectedArgs {
-  page: Page
-  fileName: string
-}
-
-export const expectFileToBeSelected = async ({
-  page,
-  fileName
-}: {
-  page: Page
-  fileName: string
-}): Promise<void> => {
-  await expect(page.locator(util.format(checkBox, fileName))).toBeChecked()
 }
 
 export const createShotcut = async (args: shortcutArgs): Promise<void> => {
@@ -2093,15 +2039,6 @@ export const canEditContent = async ({
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (type) {
     case 'OpenDocument':
-      // By Default when "OpenDocument" is created, it is opened with "Collabora" if both app-provider services are running together
-      try {
-        await editorMainFrame
-          .locator(collaboraWelcomeModalIframe)
-          .waitFor({ timeout: config.minTimeout * 1000 })
-        await page.keyboard.press('Escape')
-      } catch {
-        console.log('No welcome modal found. Continue...')
-      }
       const collaboraDocPermissionModeLocator = editorMainFrame.locator(
         collaboraDocPermissionModeSelector
       )
@@ -2267,4 +2204,20 @@ export const getAvatarLocatorFromActivityPanel = async (args: {
   return await page
     .locator(util.format(userAvatarInActivitypanelSelector, user.username))
     .locator('img')
+}
+
+export const openFileViaContextMenu = async ({
+  page,
+  resource,
+  fileViewer
+}: {
+  page: Page
+  resource: string
+  fileViewer: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+  await page.locator(openWithButton).hover()
+  const editorItem = page.locator(util.format(openWithAction, fileViewer))
+  await expect(editorItem).toBeVisible()
+  await editorItem.click()
 }
