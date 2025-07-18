@@ -34,6 +34,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v25.04.4.1.1 [[#965](https://github.com/opencloud-eu/web/pull/965)]
+- chore(deps): update dependency vue-tsc to v3.0.2 [[#963](https://github.com/opencloud-eu/web/pull/963)]
+- fix(deps): update dependency @sentry/vue to v9.40.0 [[#964](https://github.com/opencloud-eu/web/pull/964)]
 - fix(deps): update dependency filesize to v11.0.2 [[#961](https://github.com/opencloud-eu/web/pull/961)]
 - fix(deps): update dependency md-editor-v3 to v5.8.1 [[#957](https://github.com/opencloud-eu/web/pull/957)]
 - chore(deps): update node.js to v22.17.1 [[#959](https://github.com/opencloud-eu/web/pull/959)]
