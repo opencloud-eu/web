@@ -27,6 +27,7 @@ READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
+INSTALL_LIBVIPS_COMMAND = "apt-get update; apt-get install libvips42 -y"
 
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
@@ -853,6 +854,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
             "detach": True,
             "environment": environment,
             "commands": [
+                INSTALL_LIBVIPS_COMMAND,
                 "mkdir -p %s" % dir["openCloudRevaDataRoot"],
                 "mkdir -p /srv/app/tmp/opencloud/storage/users/",
                 "./opencloud init",
@@ -886,9 +888,8 @@ def cacheOpenCloudPipeline(ctx):
                 buildOpenCloud() + \
                 rebuildBuildArtifactCache(ctx, "opencloud", "opencloud")
     else:
-        # Todo what is ENABLE_VIPS in buildOpenCloud for? Is it needed?
         steps = checkForExistingOpenCloudCache(ctx) + \
-                buildOpenCloud(False) + \
+                buildOpenCloud() + \
                 cacheOpenCloud()
     return [{
         "name": "cache-opencloud",
@@ -913,13 +914,9 @@ def restoreOpenCloudCache():
         ],
     }]
 
-def buildOpenCloud(enableVips = False):
+def buildOpenCloud():
     opencloud_repo_url = "https://github.com/opencloud-eu/opencloud.git"
-    if enableVips:
-        # Todo what is ENABLE_VIPS for? Is it needed?
-        build_command = "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done"
-    else:
-        build_command = "for i in $(seq 3); do make -C opencloud build && break || sleep 1; done"
+
     return [
         {
             "name": "clone-opencloud",
@@ -953,8 +950,9 @@ def buildOpenCloud(enableVips = False):
             "commands": [
                 ". ./.woodpecker.env",
                 "if $OPENCLOUD_CACHE_FOUND; then exit 0; fi",
+                "apt-get update; apt-get install libvips-dev -y",
                 "cd repo_opencloud",
-                build_command,
+                "for i in $(seq 3); do make -C opencloud build ENABLE_VIPS=1 && break || sleep 1; done",
                 "cp opencloud/bin/opencloud %s/" % dir["base"],
             ],
         },
@@ -1472,6 +1470,7 @@ def wopiCollaborationService(name):
             "detach": True,
             "environment": environment,
             "commands": [
+                INSTALL_LIBVIPS_COMMAND,
                 "./opencloud collaboration server",
             ],
         },
