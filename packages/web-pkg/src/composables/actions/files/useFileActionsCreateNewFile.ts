@@ -95,7 +95,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
           resourcesStore.upsertResource(resource)
 
           showMessage({
-            title: $gettext('"%{fileName}" was created successfully', { fileName: resource.name })
+            title: $gettext('»%{fileName}« was created successfully', { fileName: resource.name })
           })
 
           if (unref(isEmbedModeEnabled)) {
