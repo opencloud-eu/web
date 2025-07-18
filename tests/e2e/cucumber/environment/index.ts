@@ -89,6 +89,7 @@ BeforeAll(async (): Promise<void> => {
       'media.navigator.streams.fake': true,
       'media.navigator.permission.disabled': true
     },
+    webkit: {},
     headless: config.headless
   }
 
