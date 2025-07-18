@@ -19,7 +19,7 @@ export class ActorEnvironment extends EventEmitter implements Actor {
     this.context = await this.options.browser.newContext(buildBrowserContextOptions(this.options))
 
     if (this.options.context.reportTracing) {
-      await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true })
+      await this.context.tracing.start({ screenshots: true, sources: true })
     }
 
     this.page = await this.context.newPage()
