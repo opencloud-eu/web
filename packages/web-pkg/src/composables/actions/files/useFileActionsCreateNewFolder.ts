@@ -36,7 +36,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
 
       resourcesStore.upsertResource(resource)
 
-      showMessage({ title: $gettext('"%{folderName}" was created successfully', { folderName }) })
+      showMessage({ title: $gettext('»%{folderName}« was created successfully', { folderName }) })
 
       await nextTick()
       scrollToResource(resource.id, { forceScroll: true, topbarElement: 'files-app-bar' })
