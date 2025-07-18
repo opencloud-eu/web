@@ -45,7 +45,7 @@ export const useSpaceActionsRename = () => {
     }
 
     dispatchModal({
-      title: $gettext('Rename space') + ' ' + resources[0].name,
+      title: $gettext('Rename space »%{name}«', { name: resources[0].name }),
       confirmText: $gettext('Rename'),
       hasInput: true,
       inputLabel: $gettext('Space name'),

@@ -36,7 +36,7 @@ describe('useFileActionsCreateNewFolder', () => {
           expect(upsertResource).toHaveBeenCalled()
 
           const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({ title: '"myfolder" was created successfully' })
+          expect(showMessage).toHaveBeenCalledWith({ title: '»myfolder« was created successfully' })
 
           // expect scrolltoresource to have been called
         }
