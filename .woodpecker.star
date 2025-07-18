@@ -1371,10 +1371,10 @@ def uploadTracingResult(ctx):
         "environment": minio_mc_environment,
         "commands": [
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-            "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/" % dir["web"],
+            "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/" % dir["web"],
             "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
             'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/web/tracing/$CI_PIPELINE_NUMBER/$f \n"; done',
+            'for f in *.zip; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/web/tracing/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/$f \n"; done',
         ],
         "when": {
             "status": status,
