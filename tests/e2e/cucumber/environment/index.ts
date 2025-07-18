@@ -106,12 +106,12 @@ BeforeAll(async (): Promise<void> => {
       }),
 
     chrome: async () =>
-    await chromium.launch({
-      headless,
-      slowMo,
-      channel: 'chrome',
-      args: chromiumArgs
-    }),
+      await chromium.launch({
+        headless,
+        slowMo,
+        channel: 'chrome',
+        args: chromiumArgs
+      }),
 
     chromium: async () =>
       await chromium.launch({
