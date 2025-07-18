@@ -83,13 +83,13 @@ export default defineComponent({
       try {
         const resource = await saveFile({ destinationFolder, fileName, space })
         showMessage({
-          title: $gettext('"%{fileName}" was saved successfully', { fileName: resource.name })
+          title: $gettext('»%{fileName}« was saved successfully', { fileName: resource.name })
         })
         openFile({ resource, space, locationQuery })
       } catch (e) {
         console.error(e)
         showErrorMessage({
-          title: $gettext('Unable to save "%{fileName}"', { fileName }),
+          title: $gettext('Unable to save »%{fileName}«', { fileName }),
           errors: [e]
         })
         console.error(e)
