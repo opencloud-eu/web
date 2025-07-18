@@ -4,6 +4,9 @@ import { FileAction } from '../types'
 import { useClipboard } from '../../clipboard'
 import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
+import type { FileActionOptions } from '../types'
+import { useInterceptModifierClick } from '../../keyboardActions'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -15,23 +18,29 @@ export const useFileActionsCopyPermanentLink = () => {
       await copyToClipboard(url)
       showMessage({ title: $gettext('The link has been copied to your clipboard.') })
     } catch (e) {
-      console.error(e)
       showErrorMessage({
         title: $gettext('Copy link failed'),
         errors: [e]
       })
     }
   }
-
+  interface FileActionOptionsWithEvent extends FileActionOptions<Resource> {
+    event?: MouseEvent
+  }
   const actions = computed((): FileAction[] => [
     {
       name: 'copy-permanent-link',
       icon: 'link',
       label: () => $gettext('Copy permanent link'),
-      handler: ({ resources }) => {
-        const [resource] = resources
-        const permalink = resource.privateLink
-        return copyLinkToClipboard(permalink)
+      handler: (options: FileActionOptionsWithEvent) => {
+        const { resources, event } = options
+        const resource = resources[0]
+
+        if (useInterceptModifierClick(event, resource)) {
+          return
+        }
+
+        return copyLinkToClipboard(resource.privateLink)
       },
       isVisible: ({ space, resources }) => {
         if (resources.length !== 1) {
