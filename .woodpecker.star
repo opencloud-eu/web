@@ -597,7 +597,11 @@ def e2eTests(ctx):
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
                          openCloudService(params["extraServerEnvironment"])
 
-            command = "bash run-e2e.sh "
+            if browser_value == "webkit":
+                command = "pnpm playwright install-deps webkit && cd tests/e2e && bash run-e2e.sh "
+            else:
+                command = "cd tests/e2e && bash run-e2e.sh "
+
             if "suites" in matrix:
                 command += "--suites %s" % ",".join(params["suites"])
             elif "features" in matrix:
@@ -611,8 +615,6 @@ def e2eTests(ctx):
                          "image": OC_CI_NODEJS,
                          "environment": environment,
                          "commands": [
-                             "apt-get update && apt-get install -y libgstreamer1.0-0 libgstreamer-plugins-base1.0-0",
-                             "cd tests/e2e",
                              command,
                          ],
                      }] + \
