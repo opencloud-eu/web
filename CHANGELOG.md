@@ -6,6 +6,15 @@
 
 @AlexAndBear, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
 
+### 🐛 Bug Fixes
+
+- fix: add missing quotes to modal titles [[#967](https://github.com/opencloud-eu/web/pull/967)]
+- fix: show more details in trash overview filter when filtering is active [[#949](https://github.com/opencloud-eu/web/pull/949)]
+- test: get rid of unit test warnings [Vue warn]: Component is missing … [[#950](https://github.com/opencloud-eu/web/pull/950)]
+- fix: release branch fails due to prettier incompatible with auto gene… [[#946](https://github.com/opencloud-eu/web/pull/946)]
+- chore(ci): use corepack for translation sync [[#945](https://github.com/opencloud-eu/web/pull/945)]
+- fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
+
 ### ✅ Tests
 
 - e2e test. Empty trashbin using quick action [[#953](https://github.com/opencloud-eu/web/pull/953)]
@@ -14,14 +23,6 @@
 - update keycloak tests [[#906](https://github.com/opencloud-eu/web/pull/906)]
 - enable a11y tests in CI [[#886](https://github.com/opencloud-eu/web/pull/886)]
 - [full-ci] flush all the build cache [[#838](https://github.com/opencloud-eu/web/pull/838)]
-
-### 🐛 Bug Fixes
-
-- fix: show more details in trash overview filter when filtering is active [[#949](https://github.com/opencloud-eu/web/pull/949)]
-- test: get rid of unit test warnings [Vue warn]: Component is missing … [[#950](https://github.com/opencloud-eu/web/pull/950)]
-- fix: release branch fails due to prettier incompatible with auto gene… [[#946](https://github.com/opencloud-eu/web/pull/946)]
-- chore(ci): use corepack for translation sync [[#945](https://github.com/opencloud-eu/web/pull/945)]
-- fix(design-system): default colors for some of the icons [[#908](https://github.com/opencloud-eu/web/pull/908)]
 
 ### 📈 Enhancement
 
