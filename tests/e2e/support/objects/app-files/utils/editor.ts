@@ -6,18 +6,14 @@ const texEditor = '#text-editor'
 const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
 
-export const close = (page: Page): Promise<unknown> => {
-  return Promise.all([
-    page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/),
-    page.locator(closeTextEditorOrViewerButton).click()
-  ])
+export const close = async (page: Page): Promise<void> => {
+  await page.locator(closeTextEditorOrViewerButton).click()
+  await page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/)
 }
 
-export const save = async (page: Page): Promise<unknown> => {
-  return await Promise.all([
-    page.waitForResponse((res) => res.request().method() === 'PUT' && res.status() === 204),
-    page.locator(saveTextEditorOrViewerButton).click()
-  ])
+export const save = async (page: Page): Promise<void> => {
+  await page.locator(saveTextEditorOrViewerButton).click()
+  await page.waitForResponse((res) => res.request().method() === 'PUT' && res.status() === 204)
 }
 
 export const fileViewerLocator = ({
