@@ -82,25 +82,50 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
 })
 
 BeforeAll(async (): Promise<void> => {
-  const browserConfiguration = {
-    slowMo: config.slowMo,
-    args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
-    firefoxUserPrefs: {
-      'media.navigator.streams.fake': true,
-      'media.navigator.permission.disabled': true
-    },
-    headless: config.headless
-  }
+  const browserType = config.browser ?? 'chromium'
+  const headless = config.headless
+  const slowMo = config.slowMo
+
+  const chromiumArgs = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream']
 
   const browsers: Record<string, () => Promise<Browser>> = {
-    firefox: async (): Promise<Browser> => await firefox.launch(browserConfiguration),
-    webkit: async (): Promise<Browser> => await webkit.launch(browserConfiguration),
-    chrome: async (): Promise<Browser> =>
-      await chromium.launch({ ...browserConfiguration, channel: 'chrome' }),
-    chromium: async (): Promise<Browser> => await chromium.launch(browserConfiguration)
+    firefox: async () =>
+      await firefox.launch({
+        headless,
+        slowMo,
+        firefoxUserPrefs: {
+          'media.navigator.streams.fake': true,
+          'media.navigator.permission.disabled': true
+        }
+      }),
+
+    webkit: async () =>
+      await webkit.launch({
+        headless,
+        slowMo
+      }),
+
+    chrome: async () =>
+      await chromium.launch({
+        headless,
+        slowMo,
+        channel: 'chrome',
+        args: chromiumArgs
+      }),
+
+    chromium: async () =>
+      await chromium.launch({
+        headless,
+        slowMo,
+        args: chromiumArgs
+      })
   }
 
-  state.browser = await browsers[config.browser]()
+  if (!(browserType in browsers)) {
+    throw new Error(`Unknown browser: ${browserType}`)
+  }
+
+  state.browser = await browsers[browserType]()
 
   // setup keycloak admin user
   if (config.keycloak) {

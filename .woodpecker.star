@@ -10,7 +10,7 @@ OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
 OC_CI_GOLANG = "docker.io/golang:1.24"
-OC_CI_NODEJS = "owncloudci/nodejs:20"
+OC_CI_NODEJS = "owncloudci/nodejs:22"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
@@ -530,6 +530,12 @@ def e2eTests(ctx):
     params = {}
     matrices = config["e2e"]
 
+    browsers = {
+        "chromium": "chromium",
+        "firefox": "firefox",
+        "webkit": "webkit",
+    }
+
     for suite, matrix in matrices.items():
         for item in default:
             params[item] = matrix[item] if item in matrix else default[item]
@@ -546,78 +552,85 @@ def e2eTests(ctx):
         if "with-tracing" in ctx.build.title.lower():
             params["reportTracing"] = True
 
-        environment = {
-            "HEADLESS": True,
-            "RETRY": "1",
-            "REPORT_TRACING": params["reportTracing"],
-            "OC_BASE_URL": "opencloud:9200",
-            "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
-            "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
-            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-            "BROWSER": "chromium",
-        }
+        for browser_name, browser_value in browsers.items():
+            environment = {
+                "HEADLESS": True,
+                "RETRY": "1",
+                "REPORT_TRACING": params["reportTracing"],
+                "OC_BASE_URL": "opencloud:9200",
+                "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
+                "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
+                "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+                "BROWSER": browser_value,
+            }
 
-        steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-                installPnpm() + \
-                restoreBrowsersCache() + \
-                restoreBuildArtifactCache(ctx, "web-dist", "dist")
+            steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+                    installPnpm() + \
+                    restoreBrowsersCache() + \
+                    restoreBuildArtifactCache(ctx, "web-dist", "dist")
 
-        if ctx.build.event == "cron":
-            steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-        else:
-            steps += restoreOpenCloudCache()
+            if ctx.build.event == "cron":
+                steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
+            else:
+                steps += restoreOpenCloudCache()
 
-        if "app-provider-onlyOffice" in suite:
-            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-            steps += onlyofficeService() + \
-                     waitForServices("onlyOffice", ["onlyoffice:443"]) + \
-                     openCloudService(params["extraServerEnvironment"]) + \
-                     wopiCollaborationService("onlyoffice") + \
-                     waitForServices("wopi", ["wopi-onlyoffice:9300"])
+            if "app-provider-onlyOffice" in suite:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+                steps += onlyofficeService() + \
+                         waitForServices("onlyOffice", ["onlyoffice:443"]) + \
+                         openCloudService(params["extraServerEnvironment"]) + \
+                         wopiCollaborationService("onlyoffice") + \
+                         waitForServices("wopi", ["wopi-onlyoffice:9300"])
 
-        elif "app-provider" in suite:
-            environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-            steps += collaboraService() + \
-                     waitForServices("collabora", ["collabora:9980"]) + \
-                     openCloudService(params["extraServerEnvironment"]) + \
-                     wopiCollaborationService("collabora") + \
-                     waitForServices("wopi", ["wopi-collabora:9300"])
+            elif "app-provider" in suite:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+                steps += collaboraService() + \
+                         waitForServices("collabora", ["collabora:9980"]) + \
+                         openCloudService(params["extraServerEnvironment"]) + \
+                         wopiCollaborationService("collabora") + \
+                         waitForServices("wopi", ["wopi-collabora:9300"])
 
-        elif "ocm" in suite:
-            steps += openCloudService(params["extraServerEnvironment"]) + \
-                     (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
-        else:
-            # OpenCloud specific steps
-            steps += (tikaService() if params["tikaNeeded"] else []) + \
-                     openCloudService(params["extraServerEnvironment"])
+            elif "ocm" in suite:
+                steps += openCloudService(params["extraServerEnvironment"]) + \
+                         (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
+            else:
+                # OpenCloud specific steps
+                steps += (tikaService() if params["tikaNeeded"] else []) + \
+                         openCloudService(params["extraServerEnvironment"])
 
-        command = "bash run-e2e.sh "
-        if "suites" in matrix:
-            command += "--suites %s" % ",".join(params["suites"])
-        elif "features" in matrix:
-            command += "%s" % " ".join(params["features"])
-        else:
-            print("Error: No suites or features defined for e2e test suite '%s'" % suite)
-            return []
+            if browser_value == "webkit":
+                command = "pnpm playwright install-deps webkit && cd tests/e2e && bash run-e2e.sh "
+            else:
+                command = "cd tests/e2e && bash run-e2e.sh "
 
-        steps += [{
-                     "name": "e2e-tests",
-                     "image": OC_CI_NODEJS,
-                     "environment": environment,
-                     "commands": [
-                         "cd tests/e2e",
-                         command,
-                     ],
-                 }] + \
-                 uploadTracingResult(ctx)
+            if "suites" in matrix:
+                command += "--suites %s" % ",".join(params["suites"])
+            elif "features" in matrix:
+                command += "%s" % " ".join(params["features"])
+            else:
+                print("Error: No suites or features defined for e2e test suite '%s'" % suite)
+                return []
 
-        pipelines.append({
-            "name": "e2e-tests-%s" % suite,
-            "workspace": web_workspace,
-            "steps": steps,
-            "depends_on": ["cache-opencloud"],
-            "when": e2e_trigger,
-        })
+            steps += [{
+                         "name": "e2e-tests",
+                         "image": OC_CI_NODEJS,
+                         "environment": environment,
+                         "commands": [
+                             command,
+                         ],
+                     }] + \
+                     uploadTracingResult(ctx)
+
+            pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
+
+            pipelines.append({
+                "name": pipeline_name,
+                "workspace": web_workspace,
+                "steps": steps,
+                "depends_on": ["cache-opencloud"],
+                "when": e2e_trigger,
+            })
+
     return pipelines
 
 def notify():
@@ -673,7 +686,8 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install chromium --with-deps",
+            "pnpm exec playwright install chromium firefox webkit --with-deps",
+            "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
     }]
