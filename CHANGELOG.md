@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @fschade, @individual-it, @kulmann, @openclouders, @prashant-gurung899
 
 ### 🐛 Bug Fixes
 
