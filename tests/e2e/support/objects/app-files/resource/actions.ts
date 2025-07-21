@@ -354,6 +354,7 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
     }
     case 'txtFile': {
       await page.locator(createNewTxtFileButton).click()
+      await page.locator(resourceNameInput).selectText()
       await page.locator(resourceNameInput).fill(name)
       await Promise.all([
         page.waitForResponse((resp) => resp.status() === 201 && resp.request().method() === 'PUT'),
