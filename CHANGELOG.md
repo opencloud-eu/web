@@ -4,6 +4,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.8.2 [[#972](https://github.com/opencloud-eu/web/pull/972)]
+- chore(deps): update dependency @cucumber/pretty-formatter to v2 [[#973](https://github.com/opencloud-eu/web/pull/973)]
 - chore(deps): update devdependencies (non-major) [[#974](https://github.com/opencloud-eu/web/pull/974)]
 - fix(deps): update dependency eslint-config-prettier to v10.1.8 [[#975](https://github.com/opencloud-eu/web/pull/975)]
 
