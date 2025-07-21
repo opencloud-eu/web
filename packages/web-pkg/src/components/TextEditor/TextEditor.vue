@@ -47,13 +47,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, unref, PropType } from 'vue'
+import { computed, defineComponent, PropType, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 
 import { config, MdEditor, MdPreview, XSSPlugin } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 
-import { languageUserDefined, languages } from './l18n'
+import { languages, languageUserDefined } from './l18n'
 
 import { useGettext } from 'vue3-gettext'
 import { useThemeStore } from '../../composables'
@@ -162,6 +162,10 @@ export default defineComponent({
 
 .md-editor {
   height: 100%;
+
+  &-preview > * {
+    word-break: break-word !important;
+  }
 
   &-code-head {
     justify-content: end !important;
