@@ -3,9 +3,9 @@
   "short_name": "OpenCloud",
   "icons": [
     {
-      "src": "img/opencloud-icon-lilac.svg",
-      "sizes": "230x300",
-      "type": "image/svg+xml"
+      "src": "img/opencloud-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
 
