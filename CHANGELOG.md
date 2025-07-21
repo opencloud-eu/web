@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: markdown editor, adjust word break [[#976](https://github.com/opencloud-eu/web/pull/976)]
 - fix: add missing quotes to modal titles [[#967](https://github.com/opencloud-eu/web/pull/967)]
 - fix: show more details in trash overview filter when filtering is active [[#949](https://github.com/opencloud-eu/web/pull/949)]
 - test: get rid of unit test warnings [Vue warn]: Component is missing … [[#950](https://github.com/opencloud-eu/web/pull/950)]
