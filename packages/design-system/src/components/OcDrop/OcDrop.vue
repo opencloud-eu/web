@@ -1,5 +1,22 @@
 <template>
-  <div :id="dropId" ref="drop" class="oc-drop oc-box-shadow-medium oc-rounded" @click="onClick">
+  <oc-bottom-drawer
+    v-if="useAppDrawer"
+    :drawer-id="dropId"
+    :toggle="toggle"
+    :close-on-click="closeOnClick"
+    :title="title"
+    @open="emit('showDrop')"
+    @close="emit('hideDrop')"
+  >
+    <slot />
+  </oc-bottom-drawer>
+  <div
+    v-else
+    :id="dropId"
+    ref="drop"
+    class="oc-drop oc-box-shadow-medium oc-rounded"
+    @click="onClick"
+  >
     <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
       <slot />
     </div>
@@ -13,8 +30,14 @@ import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getSizeClass, SizeType, uniqueId } from '../../helpers'
 import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import { useIsMobile } from '../../composables'
+import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 
 export interface Props {
+  /**
+   * @docs The title of the drop.
+   */
+  title?: string
   /**
    * @docs Determines if the drop should close when clicked.
    * @default false
@@ -105,11 +128,15 @@ const {
   popperOptions = {},
   position = 'bottom-start',
   target,
-  toggle = ''
+  toggle = '',
+  title = ''
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
+
+const { isMobile } = useIsMobile()
+const useAppDrawer = computed(() => unref(isMobile))
 
 const drop = ref<HTMLElement | null>(null)
 const tippyInstance = ref(null)
@@ -140,10 +167,6 @@ const onFocusOut = (event: FocusEvent) => {
     hide()
   }
 }
-
-onMounted(() => {
-  drop.value?.addEventListener('focusout', onFocusOut)
-})
 
 onBeforeUnmount(() => {
   drop.value?.removeEventListener('focusout', onFocusOut)
@@ -185,6 +208,10 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
+  if (unref(useAppDrawer)) {
+    return
+  }
+
   destroy(unref(tippyInstance))
   const to = target
     ? document.querySelector(target)
@@ -256,6 +283,7 @@ onMounted(() => {
   }
 
   tippyInstance.value = tippy(to, config)
+  drop.value?.addEventListener('focusout', onFocusOut)
 })
 </script>
 

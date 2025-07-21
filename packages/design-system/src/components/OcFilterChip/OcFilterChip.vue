@@ -27,6 +27,7 @@
       v-if="!isToggle"
       ref="dropRef"
       :toggle="'#' + id"
+      :title="filterLabel"
       class="oc-filter-chip-drop"
       mode="click"
       padding-size="small"

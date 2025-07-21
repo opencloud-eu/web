@@ -10,9 +10,11 @@
     </oc-button>
     <oc-drop
       ref="editPublicLinkDropdown"
+      :title="$gettext('Edit public link')"
       :drop-id="`edit-public-link-dropdown`"
       :toggle="`#edit-public-link-dropdown-toggl-${linkShare.id}`"
       padding-size="small"
+      close-on-click
       mode="click"
     >
       <oc-list v-if="editOptions.length > 0" class="edit-public-link-dropdown-menu">

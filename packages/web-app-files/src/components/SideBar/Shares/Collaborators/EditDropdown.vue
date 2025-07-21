@@ -14,9 +14,11 @@
     </oc-button>
     <oc-drop
       ref="expirationDateDrop"
+      :title="$gettext('Edit share')"
       :toggle="'#' + editShareBtnId"
       mode="click"
       padding-size="small"
+      close-on-click
     >
       <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="shareEditOptions">
         <li v-for="(option, i) in options" :key="i" class="oc-rounded oc-menu-item-hover">
@@ -61,6 +63,7 @@ import { useConfigStore, useModals, DatePickerModal } from '@opencloud-eu/web-pk
 import { useGettext } from 'vue3-gettext'
 import { RouteLocationNamedRaw } from 'vue-router'
 import ContextMenuItem from './ContextMenuItem.vue'
+import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export type EditOption = {
   icon: string
@@ -261,6 +264,7 @@ export default defineComponent({
     }
   },
   methods: {
+    $gettext,
     removeExpirationDate() {
       this.$emit('expirationDateChanged', { expirationDateTime: null })
       this.expirationDateDrop.hide()

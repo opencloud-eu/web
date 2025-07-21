@@ -85,6 +85,7 @@
           <context-menu-quick-action
             ref="contextMenuButtonRef"
             :item="item"
+            :title="item.displayName"
             class="users-table-btn-action-dropdown"
             @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
           >

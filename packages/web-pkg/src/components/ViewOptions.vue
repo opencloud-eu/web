@@ -30,6 +30,7 @@
       <oc-icon name="settings-3" fill-type="line" />
     </oc-button>
     <oc-drop
+      :title="$gettext('View options')"
       drop-id="files-view-options-drop"
       toggle="#files-view-options-btn"
       mode="click"

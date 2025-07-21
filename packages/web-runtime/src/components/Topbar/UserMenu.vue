@@ -30,6 +30,7 @@
     </oc-button>
     <oc-drop
       ref="menu"
+      :title="$gettext('Account')"
       drop-id="account-info-container"
       toggle="#_userMenuButton"
       mode="click"

@@ -107,6 +107,7 @@
           <oc-icon name="more-2" />
           <oc-drop
             ref="showMoreShareOptionsDropRef"
+            :title="$gettext('Share options')"
             :drop-id="'show-more-share-options-drop'"
             :toggle="'#show-more-share-options-btn'"
             mode="click"

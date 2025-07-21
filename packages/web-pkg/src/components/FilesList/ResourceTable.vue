@@ -242,6 +242,7 @@
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
           ref="contextMenuButton"
+          :title="item.name"
           :item="item"
           :resource-dom-selector="resourceDomSelector"
           class="resource-table-btn-action-dropdown"
