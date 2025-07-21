@@ -41,7 +41,7 @@
     "@babel/register": "7.27.1",
     "@cucumber/cucumber": "12.1.0",
     "@cucumber/messages": "28.0.0",
-    "@cucumber/pretty-formatter": "1.0.1",
+    "@cucumber/pretty-formatter": "2.0.1",
     "@noble/hashes": "1.8.0",
     "@opencloud-eu/babel-preset": "workspace:*",
     "@opencloud-eu/eslint-config": "workspace:*",
