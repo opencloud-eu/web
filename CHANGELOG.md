@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/opencloud-eu/web/releases/tag/v3.2.1) - 2025-07-21
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#974](https://github.com/opencloud-eu/web/pull/974)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.8 [[#975](https://github.com/opencloud-eu/web/pull/975)]
+
 ## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-21
 
 ### ❤️ Thanks to all contributors! ❤️
