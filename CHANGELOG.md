@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor, @fschade, @individual-it, @kulmann, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @fschade, @individual-it, @kulmann, @openclouders, @prashant-gurung899
 
 ### 🐛 Bug Fixes
 
@@ -27,7 +27,6 @@
 
 ### 📈 Enhancement
 
-- enhancement(ci): sync translations [[#940](https://github.com/opencloud-eu/web/pull/940)]
 - feat: consistent entity names in continuous text [[#919](https://github.com/opencloud-eu/web/pull/919)]
 - Improve Trashbin  [[#905](https://github.com/opencloud-eu/web/pull/905)]
 - feat: revert material design color hacks [[#912](https://github.com/opencloud-eu/web/pull/912)]
