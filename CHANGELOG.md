@@ -1,6 +1,14 @@
 # Changelog
 
-## [3.2.1](https://github.com/opencloud-eu/web/releases/tag/v3.2.1) - 2025-07-21
+## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-07-21
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 📈 Enhancement
+
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
 
 ### 📦️ Dependencies
 
