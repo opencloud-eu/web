@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@JammingBen, @ScharfViktor
+
+### ✅ Tests
+
+- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
 
 ### 📈 Enhancement
 
