@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
   left: 0;
   top: 0;
   position: fixed;
-  z-index: calc(var(--oc-z-index-modal) - 1);
+  z-index: calc(var(--oc-z-index-modal) + 1);
 }
 
 .oc-bottom-drawer {
