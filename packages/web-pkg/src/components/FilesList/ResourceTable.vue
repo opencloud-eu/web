@@ -333,6 +333,7 @@ import { FieldType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAvatar } from '../Avatars'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
@@ -574,6 +575,7 @@ export default defineComponent({
     })
     const { isSticky } = useIsTopBarSticky()
     const { $gettext } = useGettext()
+    const { isMobile } = useIsMobile()
     const {
       isLocationPicker,
       isFilePicker,
@@ -734,7 +736,8 @@ export default defineComponent({
       isSticky,
       isResourceInDeleteQueue,
       ShareTypes,
-      showContextDrop
+      showContextDrop,
+      isMobile
     }
   },
   data() {
@@ -1120,6 +1123,15 @@ export default defineComponent({
       if (!this.isResourceSelected(item)) {
         this.emitSelect([item.id])
       }
+
+      if (this.isMobile) {
+        // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
+        // this can be triggered by clicking the context menu button of the current row.
+        const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
+        el?.click()
+        return
+      }
+
       displayPositionedDropdown(instance._tippy, event, this.contextMenuButton)
     },
     rowMounted(resource: Resource, component: ComponentPublicInstance<unknown>) {
