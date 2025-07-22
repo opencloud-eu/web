@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
   left: 0;
   top: 0;
   position: fixed;
-  z-index: calc(var(--oc-z-index-modal) + 1);
+  z-index: calc(var(--oc-z-index-modal) + 2);
 }
 
 .oc-bottom-drawer {
@@ -109,12 +109,13 @@ onBeforeUnmount(() => {
   max-height: 66vh;
   width: 100%;
   overflow-y: auto;
+  background-color: var(--oc-role-surface-container-high);
 
-  border-top-left-radius: var(--oc-border-radius);
-  border-top-right-radius: var(--oc-border-radius);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 
   .oc-card {
-    background-color: var(--oc-role-surface-container-high) !important;
+    background-color: unset !important;
 
     &-header {
       padding-top: var(--oc-space-medium);
