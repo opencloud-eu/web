@@ -5,7 +5,7 @@ export const useIsMobile = () => {
   const { width } = useWindowSize()
 
   const isMobile = computed(() => {
-    return width.value < 768
+    return width.value < 640
   })
 
   return {
