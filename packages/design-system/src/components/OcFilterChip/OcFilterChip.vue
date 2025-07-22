@@ -85,6 +85,11 @@ export interface Props {
    */
   raw?: boolean
   /**
+   * @docs Determines if the filter has an active state (e.g. if one or more items are selected).
+   * @default true
+   */
+  hasActiveState?: boolean
+  /**
    * @docs The names of the selected items.
    */
   selectedItemNames?: string[]
@@ -123,6 +128,7 @@ const {
   isToggle = false,
   isToggleActive = false,
   raw = false,
+  hasActiveState = true,
   selectedItemNames = []
 } = defineProps<Props>()
 
@@ -132,6 +138,9 @@ defineSlots<Slot>()
 const dropRef = useTemplateRef<typeof OcDrop>('dropRef')
 
 const filterActive = computed(() => {
+  if (!hasActiveState) {
+    return false
+  }
   if (isToggle) {
     return isToggleActive
   }

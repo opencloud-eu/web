@@ -4,9 +4,10 @@
       <oc-filter-chip
         :is-toggle="false"
         :is-toggle-active="false"
-        :filter-label="currentSelectionTitle"
-        :selected-item-names="[]"
+        :filter-label="$gettext('Location filter')"
+        :selected-item-names="[currentSelectionTitle]"
         class="oc-search-bar-filter"
+        :has-active-state="false"
         raw
         close-on-click
       >

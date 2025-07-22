@@ -11,25 +11,34 @@ const selectors = {
 }
 
 describe('SearchBarFilter', () => {
+  describe('filter label', () => {
+    it('shows "Location filter"', () => {
+      const { wrapper } = getWrapper()
+      const filterLabel = wrapper
+        .findComponent<typeof OcFilterChip>(selectors.filterChipStub)
+        .props('filterLabel')
+      expect(filterLabel).toBe('Location filter')
+    })
+  })
   it('shows "All files" as default option', () => {
     const { wrapper } = getWrapper({ currentFolderAvailable: true })
     const filterLabel = wrapper
       .findComponent<typeof OcFilterChip>(selectors.filterChipStub)
-      .props('filterLabel')
+      .props('selectedItemNames')[0]
     expect(filterLabel).toBe('All files')
   })
   it('shows "All files" as current option if no Current folder available', () => {
     const { wrapper } = getWrapper()
     const filterLabel = wrapper
       .findComponent<typeof OcFilterChip>(selectors.filterChipStub)
-      .props('filterLabel')
+      .props('selectedItemNames')[0]
     expect(filterLabel).toBe('All files')
   })
   it('shows "Current folder" as current option if given via scope', () => {
     const { wrapper } = getWrapper({ useScope: 'true' })
     const filterLabel = wrapper
       .findComponent<typeof OcFilterChip>(selectors.filterChipStub)
-      .props('filterLabel')
+      .props('selectedItemNames')[0]
     expect(filterLabel).toBe('Current folder')
   })
 })

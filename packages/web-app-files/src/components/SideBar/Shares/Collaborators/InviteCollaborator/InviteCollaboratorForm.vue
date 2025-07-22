@@ -57,10 +57,12 @@
           />
           <oc-filter-chip
             v-if="showShareTypeFilter"
-            :filter-label="currentShareRoleType.label"
+            :filter-label="$gettext('Share type')"
             class="invite-form-share-role-type"
             raw
             close-on-click
+            :has-active-state="false"
+            :selected-item-names="[currentShareRoleType.longLabel]"
           >
             <template #default>
               <oc-button
