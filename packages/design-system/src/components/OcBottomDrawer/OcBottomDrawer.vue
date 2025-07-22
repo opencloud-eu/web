@@ -36,6 +36,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
+import { onKeyStroke } from '@vueuse/core'
 
 const {
   drawerId,
@@ -86,6 +87,11 @@ const onBackgroundClicked = (event: MouseEvent) => {
     close()
   }
 }
+
+onKeyStroke('Escape', (e) => {
+  e.preventDefault()
+  close()
+})
 
 onMounted(() => {
   if (!unref(toggle)) {
