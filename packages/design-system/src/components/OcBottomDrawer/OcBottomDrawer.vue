@@ -43,7 +43,17 @@ const {
   closeOnClick = false,
   title = ''
 } = defineProps<{ drawerId: string; toggle: string; closeOnClick?: boolean; title?: string }>()
-const emit = defineEmits(['open', 'close'])
+
+const emit = defineEmits<{
+  /**
+   * @docs Emitted when the bottom drawer is opened.
+   */
+  (e: 'open'): void
+  /**
+   * @docs Emitted when the bottom drawer is closed.
+   */
+  (e: 'close'): void
+}>()
 
 const { $gettext } = useGettext()
 
