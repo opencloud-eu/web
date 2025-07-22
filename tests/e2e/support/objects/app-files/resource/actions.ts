@@ -367,7 +367,9 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
     }
     case 'mdFile': {
       await page.locator(createNewMdFileButton).click()
-      await page.locator(resourceNameInput).fill(name)
+      const resourceInput = page.locator(resourceNameInput)
+      await resourceInput.clear()
+      await resourceInput.fill(name)
       await Promise.all([
         page.waitForResponse((resp) => resp.status() === 201 && resp.request().method() === 'PUT'),
         page.locator(util.format(actionConfirmationButton, 'Create')).click()
@@ -406,7 +408,9 @@ const createDocumentFile = async (
     )
   }
   await page.locator(util.format(createNewOfficeDocumentFileBUtton, type)).click()
-  await page.locator(resourceNameInput).fill(name)
+  const resourceInput = page.locator(resourceNameInput)
+  await resourceInput.clear()
+  await resourceInput.fill(name)
   await Promise.all([
     page.waitForLoadState(),
     page.waitForURL(/.*\/external-.*/),
