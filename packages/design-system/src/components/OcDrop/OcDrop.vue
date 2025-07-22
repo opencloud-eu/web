@@ -5,6 +5,7 @@
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
+    use-portal
     @open="emit('showDrop')"
     @close="emit('hideDrop')"
   >
