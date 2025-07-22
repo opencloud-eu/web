@@ -29,7 +29,7 @@ import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getSizeClass, SizeType, uniqueId } from '../../helpers'
-import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, unref, watch } from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 
@@ -93,6 +93,10 @@ export interface Props {
    * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used.
    */
   toggle?: string
+  /**
+   * @docs todo
+   */
+  enforceDropOnMobile?: boolean
 }
 
 export interface Emits {
@@ -129,14 +133,15 @@ const {
   position = 'bottom-start',
   target,
   toggle = '',
-  title = ''
+  title = '',
+  enforceDropOnMobile = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { isMobile } = useIsMobile()
-const useAppDrawer = computed(() => unref(isMobile))
+const useAppDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 
 const drop = ref<HTMLElement | null>(null)
 const tippyInstance = ref(null)
@@ -207,11 +212,7 @@ onBeforeUnmount(() => {
   destroy(unref(tippyInstance))
 })
 
-onMounted(() => {
-  if (unref(useAppDrawer)) {
-    return
-  }
-
+const initializeTippy = () => {
   destroy(unref(tippyInstance))
   const to = target
     ? document.querySelector(target)
@@ -284,7 +285,19 @@ onMounted(() => {
 
   tippyInstance.value = tippy(to, config)
   drop.value?.addEventListener('focusout', onFocusOut)
-})
+}
+
+watch(
+  useAppDrawer,
+  async () => {
+    await nextTick()
+    if (unref(useAppDrawer)) {
+      return
+    }
+    initializeTippy()
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="scss">

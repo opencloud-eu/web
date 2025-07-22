@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
 
@@ -70,9 +70,11 @@ onMounted(() => {
     return
   }
 
-  document.querySelector(toggle).addEventListener('click', () => {
-    open()
-  })
+  document.querySelector(toggle).addEventListener('click', open)
+})
+
+onBeforeUnmount(() => {
+  document.querySelector(toggle).removeEventListener('click', () => open)
 })
 </script>
 
