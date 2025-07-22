@@ -17,6 +17,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v28.1.0 [[#984](https://github.com/opencloud-eu/web/pull/984)]
+- fix(deps): update typescript-eslint monorepo to v8.38.0 [[#986](https://github.com/opencloud-eu/web/pull/986)]
 - [full-ci] bump-opencloud-3.2.0. run all tests [[#983](https://github.com/opencloud-eu/web/pull/983)]
 - fix(deps): update dependency md-editor-v3 to v5.8.2 [[#972](https://github.com/opencloud-eu/web/pull/972)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v2 [[#973](https://github.com/opencloud-eu/web/pull/973)]
