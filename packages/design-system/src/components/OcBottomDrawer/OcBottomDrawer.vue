@@ -14,6 +14,7 @@
                 <span class="oc-text-bold" v-text="title" />
                 <oc-button
                   appearance="raw"
+                  class="raw-hover-surface"
                   :aria-label="$gettext('Close the bottom drawer')"
                   @click="close"
                 >
@@ -57,7 +58,7 @@ const open = async () => {
 }
 
 const close = () => {
-  unref(bottomDrawerCardBody).removeEventListener('click', onBottomDrawerChildClicked)
+  unref(bottomDrawerCardBody)?.removeEventListener('click', onBottomDrawerChildClicked)
   show.value = false
   emit('close')
 }
@@ -85,7 +86,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  document.querySelector(toggle).removeEventListener('click', () => open)
+  document.querySelector(toggle).removeEventListener('click', open)
 })
 </script>
 

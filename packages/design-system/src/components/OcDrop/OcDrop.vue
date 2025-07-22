@@ -292,6 +292,9 @@ watch(
   async () => {
     await nextTick()
     if (unref(useAppDrawer)) {
+      if (unref(tippyInstance)) {
+        destroy(unref(tippyInstance))
+      }
       return
     }
     initializeTippy()
