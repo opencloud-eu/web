@@ -19,7 +19,6 @@ import { computed, defineComponent, unref } from 'vue'
 import { useThemeStore } from '@opencloud-eu/web-pkg'
 import { useHead } from '../composables/head'
 import { storeToRefs } from 'pinia'
-import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export default defineComponent({
   name: 'MissingConfigPage',
@@ -36,7 +35,6 @@ export default defineComponent({
       logoImg,
       footerSlogan
     }
-  },
-  methods: { $gettext }
+  }
 })
 </script>

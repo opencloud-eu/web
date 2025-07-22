@@ -37,6 +37,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from
 import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
 import { onKeyStroke } from '@vueuse/core'
+import OcButton from '../OcButton/OcButton.vue'
 
 const {
   drawerId,

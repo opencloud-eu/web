@@ -35,7 +35,7 @@ import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 
 export interface Props {
   /**
-   * @docs The title of the drop.
+   * @docs The title of the drop. This is only being displayed in the bottom drawer in the mobile view.
    */
   title?: string
   /**
@@ -90,11 +90,12 @@ export interface Props {
    */
   target?: string
   /**
-   * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used.
+   * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used. Note that a toggle is mandatory for the bottom drawer in mobile view.
    */
   toggle?: string
   /**
-   * @docs todo
+   * @docs Enforce the drop to be displayed even on mobile devices where usually a bottom drawer is used.
+   * @default false
    */
   enforceDropOnMobile?: boolean
 }

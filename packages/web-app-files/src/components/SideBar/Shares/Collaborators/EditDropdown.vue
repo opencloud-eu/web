@@ -63,7 +63,6 @@ import { useConfigStore, useModals, DatePickerModal } from '@opencloud-eu/web-pk
 import { useGettext } from 'vue3-gettext'
 import { RouteLocationNamedRaw } from 'vue-router'
 import ContextMenuItem from './ContextMenuItem.vue'
-import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export type EditOption = {
   icon: string
@@ -264,7 +263,6 @@ export default defineComponent({
     }
   },
   methods: {
-    $gettext,
     removeExpirationDate() {
       this.$emit('expirationDateChanged', { expirationDateTime: null })
       this.expirationDateDrop.hide()
