@@ -100,12 +100,7 @@ onMounted(() => {
   border-top-right-radius: var(--oc-border-radius);
 
   .oc-card {
-    transition: transform 0.3s ease;
-    will-change: transform;
-
-    &.is-dismissing {
-      pointer-events: none;
-    }
+    background-color: var(--oc-role-surface-container-high) !important;
 
     &-header {
       padding-top: var(--oc-space-medium);
@@ -116,6 +111,15 @@ onMounted(() => {
 
     &-body {
       padding: var(--oc-space-small);
+
+      ul:not(:last-child) {
+        margin-bottom: var(--oc-space-small) !important;
+      }
+
+      ul {
+        background-color: var(--oc-role-surface) !important;
+        border-radius: 10px;
+      }
     }
   }
 }
