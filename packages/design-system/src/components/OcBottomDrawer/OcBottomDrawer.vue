@@ -1,6 +1,11 @@
 <template>
   <portal v-if="show" to="app.runtime.bottom.drawer">
-    <div class="oc-bottom-drawer-background">
+    <div
+      class="oc-bottom-drawer-background"
+      role="button"
+      :aria-label="$gettext('Close the bottom drawer')"
+      @click="onBackgroundClicked"
+    >
       <focus-trap>
         <div :id="drawerId" class="oc-bottom-drawer">
           <div class="oc-card">
@@ -63,6 +68,12 @@ const onBottomDrawerChildClicked = (event: MouseEvent) => {
     return
   }
   close()
+}
+
+const onBackgroundClicked = (event: MouseEvent) => {
+  if (event.target === event.currentTarget) {
+    close()
+  }
 }
 
 onMounted(() => {

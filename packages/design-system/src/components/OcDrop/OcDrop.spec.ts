@@ -1,6 +1,7 @@
 import { mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Drop from './OcDrop.vue'
 import { getSizeClass } from '../../helpers'
+import { nextTick } from 'vue'
 
 const dom = ({ position = 'auto', mode = 'click', paddingSize = 'medium' } = {}) => {
   document.body.innerHTML = ''
@@ -15,10 +16,8 @@ const dom = ({ position = 'auto', mode = 'click', paddingSize = 'medium' } = {})
       data: () => ({ position, mode, paddingSize })
     }
   )
-  const drop = wrapper.findComponent({ name: 'oc-drop' })
-  const tippy = drop.vm.tippyInstance
 
-  return { wrapper, drop, tippy }
+  return { wrapper }
 }
 
 describe('OcDrop', () => {
@@ -41,15 +40,23 @@ describe('OcDrop', () => {
 
   it.each(['xsmall', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'remove'])(
     'handles padding size prop for value %s',
-    (size) => {
-      const { drop } = dom({ paddingSize: size })
+    async (size) => {
+      const { wrapper } = dom({ paddingSize: size })
+
+      const drop = wrapper.findComponent({ name: 'oc-drop' })
+      await nextTick()
+
       expect(drop.html().includes(`oc-p-${getSizeClass(size)}`)).toBeTruthy()
     }
   )
 
   describe('tippy', () => {
-    it('inits tippy', () => {
-      const { wrapper, drop, tippy } = dom()
+    it('inits tippy', async () => {
+      const { wrapper } = dom()
+      await nextTick()
+
+      const drop = wrapper.findComponent({ name: 'oc-drop' })
+      const tippy = drop.vm.tippyInstance
 
       expect(tippy).toBeTruthy()
       expect(tippy.reference).toBe(wrapper.find('#trigger').element)
@@ -57,12 +64,16 @@ describe('OcDrop', () => {
     })
 
     it('updates tippy', async () => {
-      const { wrapper, tippy } = dom()
+      const { wrapper } = dom()
 
       await wrapper.setData({
         position: 'left',
         mode: 'hover'
       })
+
+      const drop = wrapper.findComponent({ name: 'oc-drop' })
+      const tippy = drop.vm.tippyInstance
+      await nextTick()
 
       expect(tippy.props.placement).toBe('left')
       expect(tippy.props.trigger).toBe('mouseenter focus')
@@ -70,6 +81,7 @@ describe('OcDrop', () => {
 
     it('renders tippy', async () => {
       const { wrapper } = dom()
+      await nextTick()
       const trigger = wrapper.find('#trigger')
       const wait = async () => {
         await wrapper.vm.$nextTick()

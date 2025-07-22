@@ -36,7 +36,8 @@
     drop-id="create-shortcut-modal-contextmenu"
     mode="manual"
     position="bottom-start"
-    :close-on-click="true"
+    close-on-click
+    enforce-drop-on-mobile
     @hide-drop="onHideDrop"
     @show-drop="onShowDrop"
   >
