@@ -1,5 +1,23 @@
 <template>
-  <div :id="dropId" ref="drop" class="oc-drop oc-box-shadow-medium oc-rounded" @click="onClick">
+  <oc-bottom-drawer
+    v-if="useAppDrawer"
+    :drawer-id="dropId"
+    :toggle="toggle"
+    :close-on-click="closeOnClick"
+    :title="title"
+    use-portal
+    @open="emit('showDrop')"
+    @close="emit('hideDrop')"
+  >
+    <slot />
+  </oc-bottom-drawer>
+  <div
+    v-else
+    :id="dropId"
+    ref="drop"
+    class="oc-drop oc-box-shadow-medium oc-rounded"
+    @click="onClick"
+  >
     <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
       <slot />
     </div>
@@ -12,9 +30,15 @@ import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getSizeClass, SizeType, uniqueId } from '../../helpers'
-import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, unref, watch } from 'vue'
+import { useIsMobile } from '../../composables'
+import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 
 export interface Props {
+  /**
+   * @docs The title of the drop. This is only being displayed in the bottom drawer in the mobile view.
+   */
+  title?: string
   /**
    * @docs Determines if the drop should close when clicked.
    * @default false
@@ -67,9 +91,14 @@ export interface Props {
    */
   target?: string
   /**
-   * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used.
+   * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used. Note that a toggle is mandatory for the bottom drawer in mobile view.
    */
   toggle?: string
+  /**
+   * @docs Enforce the drop to be displayed even on mobile devices where usually a bottom drawer is used.
+   * @default false
+   */
+  enforceDropOnMobile?: boolean
 }
 
 export interface Emits {
@@ -105,11 +134,16 @@ const {
   popperOptions = {},
   position = 'bottom-start',
   target,
-  toggle = ''
+  toggle = '',
+  title = '',
+  enforceDropOnMobile = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
+
+const { isMobile } = useIsMobile()
+const useAppDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 
 const drop = ref<HTMLElement | null>(null)
 const tippyInstance = ref(null)
@@ -140,10 +174,6 @@ const onFocusOut = (event: FocusEvent) => {
     hide()
   }
 }
-
-onMounted(() => {
-  drop.value?.addEventListener('focusout', onFocusOut)
-})
 
 onBeforeUnmount(() => {
   drop.value?.removeEventListener('focusout', onFocusOut)
@@ -184,7 +214,7 @@ onBeforeUnmount(() => {
   destroy(unref(tippyInstance))
 })
 
-onMounted(() => {
+const initializeTippy = () => {
   destroy(unref(tippyInstance))
   const to = target
     ? document.querySelector(target)
@@ -256,7 +286,23 @@ onMounted(() => {
   }
 
   tippyInstance.value = tippy(to, config)
-})
+  drop.value?.addEventListener('focusout', onFocusOut)
+}
+
+watch(
+  useAppDrawer,
+  async () => {
+    await nextTick()
+    if (unref(useAppDrawer)) {
+      if (unref(tippyInstance)) {
+        destroy(unref(tippyInstance))
+      }
+      return
+    }
+    initializeTippy()
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="scss">

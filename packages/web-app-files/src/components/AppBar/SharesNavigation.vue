@@ -18,7 +18,13 @@
         <span v-text="currentNavItem.text" />
         <oc-icon name="arrow-drop-down" />
       </oc-button>
-      <oc-drop toggle="#shares_navigation_mobile" mode="click" close-on-click padding-size="small">
+      <oc-drop
+        :title="$gettext('Navigation')"
+        toggle="#shares_navigation_mobile"
+        mode="click"
+        close-on-click
+        padding-size="small"
+      >
         <oc-list>
           <li v-for="navItem in navItems" :key="`shares-navigation-mobile-${navItem.to}`">
             <oc-button
@@ -41,16 +47,17 @@
 </template>
 
 <script lang="ts">
-import { isLocationSharesActive, RouteShareTypes } from '@opencloud-eu/web-pkg'
 import {
+  isLocationSharesActive,
   locationSharesViaLink,
   locationSharesWithMe,
-  locationSharesWithOthers
+  locationSharesWithOthers,
+  RouteShareTypes,
+  useActiveLocation,
+  useRouter
 } from '@opencloud-eu/web-pkg'
 
 import { computed, defineComponent, unref } from 'vue'
-import { useRouter } from '@opencloud-eu/web-pkg'
-import { useActiveLocation } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { RouteRecordNormalized } from 'vue-router'
 

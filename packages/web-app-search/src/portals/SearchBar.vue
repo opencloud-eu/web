@@ -53,6 +53,7 @@
       mode="manual"
       target="#files-global-search-bar"
       close-on-click
+      enforce-drop-on-mobile
     >
       <oc-list class="oc-list-divider">
         <li

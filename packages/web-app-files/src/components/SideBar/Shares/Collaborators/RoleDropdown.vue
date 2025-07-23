@@ -29,6 +29,7 @@
     <oc-drop
       v-if="availableRoles.length > 1"
       ref="rolesDrop"
+      :title="$gettext('Role')"
       :toggle="'#' + roleButtonId"
       mode="click"
       padding-size="small"

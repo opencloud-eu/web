@@ -35,6 +35,7 @@
             <oc-icon name="more-2" />
           </oc-button>
           <oc-drop
+            :title="space.name"
             :drop-id="`space-context-drop`"
             :toggle="`#space-context-btn`"
             mode="click"

@@ -104,6 +104,7 @@
               v-if="isSpaceResource(resource) || !isResourceDisabled(resource)"
               :ref="(el) => (tileRefs.dropBtns[resource.id] = el as ContextMenuQuickActionRef)"
               :item="resource"
+              :title="resource.name"
               class="resource-tiles-btn-action-dropdown"
               @quick-action-clicked="showContextMenuOnBtnClick($event, resource, resource.id)"
             >

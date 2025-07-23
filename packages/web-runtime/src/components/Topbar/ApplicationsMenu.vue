@@ -17,6 +17,7 @@
     </oc-button>
     <oc-drop
       ref="menu"
+      :title="$gettext('Applications')"
       drop-id="app-switcher-dropdown"
       toggle="#_appSwitcherButton"
       mode="click"

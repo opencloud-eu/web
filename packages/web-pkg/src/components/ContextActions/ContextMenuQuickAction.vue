@@ -17,6 +17,7 @@
       :ref="`context-menu-drop-ref-${resourceDomSelector(item)}`"
       :drop-id="`context-menu-drop-${resourceDomSelector(item)}`"
       :toggle="`#context-menu-trigger-${resourceDomSelector(item)}`"
+      :title="title"
       position="bottom-end"
       mode="click"
       padding-size="small"
@@ -45,6 +46,11 @@ export default defineComponent({
       type: Function,
       required: false,
       default: (resource: Resource) => extractDomSelector(resource.id)
+    },
+    title: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   emits: ['quickActionClicked'],
