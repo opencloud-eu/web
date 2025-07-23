@@ -12,24 +12,26 @@
         close-on-click
       >
         <template #default>
-          <oc-button
-            v-for="(option, index) in locationOptions"
-            :key="index"
-            appearance="raw"
-            size="medium"
-            justify-content="space-between"
-            class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-            :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
-            :disabled="!option.enabled"
-            :data-test-id="option.id"
-            @click="onOptionSelected(option)"
-          >
-            <span>{{ option.title }}</span>
-            <div v-if="option.id === currentSelection.id" class="oc-flex">
-              <oc-icon name="check" />
-            </div>
-          </oc-button> </template
-      ></oc-filter-chip>
+          <oc-list>
+            <li v-for="(option, index) in locationOptions" :key="index">
+              <oc-button
+                appearance="raw"
+                size="medium"
+                class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
+                :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
+                :disabled="!option.enabled"
+                :data-test-id="option.id"
+                @click="onOptionSelected(option)"
+              >
+                <span>{{ option.title }}</span>
+                <div v-if="option.id === currentSelection.id" class="oc-flex">
+                  <oc-icon name="check" />
+                </div>
+              </oc-button>
+            </li>
+          </oc-list>
+        </template>
+      </oc-filter-chip>
     </div>
   </div>
 </template>
@@ -136,5 +138,8 @@ export default defineComponent({
   .oc-drop {
     width: 180px;
   }
+}
+.search-bar-filter-item {
+  justify-content: space-between !important;
 }
 </style>

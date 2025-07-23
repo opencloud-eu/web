@@ -45,7 +45,6 @@
           <oc-button
             :id="`files-recipient-role-drop-btn-${role.id}`"
             ref="roleSelect"
-            justify-content="space-between"
             class="files-recipient-role-drop-btn oc-p-s"
             :class="{
               selected: isSelectedRole(role)
@@ -306,34 +305,13 @@ export default defineComponent({
     @media (min-width: $oc-breakpoint-medium-default) {
       width: 400px;
     }
-
-    &-list {
-      li {
-        margin: var(--oc-space-xsmall) 0;
-
-        &:first-child {
-          margin-top: 0;
-        }
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    }
-
-    &-btn {
-      width: 100%;
-      gap: var(--oc-space-medium);
-
-      &:hover,
-      &:focus {
-        text-decoration: none;
-      }
-    }
   }
 
   &-role-select-btn {
     max-width: 100%;
   }
+}
+.files-recipient-role-drop-btn {
+  justify-content: space-between !important;
 }
 </style>

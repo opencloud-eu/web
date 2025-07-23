@@ -30,12 +30,9 @@
       </oc-list>
       <oc-list
         v-if="canRemove"
-        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove"
+        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove oc-pt-s"
       >
-        <li
-          class="oc-rounded oc-menu-item-hover"
-          :class="{ 'oc-pt-s': options.length > 0 || sharedParentRoute }"
-        >
+        <li class="oc-rounded oc-menu-item-hover">
           <context-menu-item :option="removeShareOption" />
         </li>
       </oc-list>
@@ -293,12 +290,6 @@ export default defineComponent({
   &-remove {
     margin-top: var(--oc-space-small) !important;
     border-top: 0.5px solid var(--oc-role-outline-variant) !important;
-  }
-
-  .action-menu-item {
-    width: 100%;
-    justify-content: flex-start;
-    gap: var(--oc-space-small);
   }
 }
 .share-access-details-drop {

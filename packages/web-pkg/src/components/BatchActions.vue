@@ -49,8 +49,7 @@ export default defineComponent({
   display: block;
 
   .action-menu-item {
-    padding-left: var(--oc-space-small) !important;
-    padding-right: var(--oc-space-small) !important;
+    padding: var(--oc-space-small);
     gap: var(--oc-space-xsmall) !important;
   }
 

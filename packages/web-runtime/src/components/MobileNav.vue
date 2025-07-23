@@ -58,26 +58,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-#mobile-nav {
-  li {
-    margin: var(--oc-space-xsmall) 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    a {
-      &:focus,
-      &:hover {
-        text-decoration: none;
-      }
-    }
-  }
-}
-</style>

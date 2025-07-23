@@ -88,13 +88,13 @@
               :to="accountPageRoute"
               appearance="raw"
             >
-              <oc-icon name="settings-4" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="settings-4" fill-type="line" />
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
           <li>
             <oc-button id="oc-topbar-account-logout" appearance="raw" @click="logout">
-              <oc-icon name="logout-box-r" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
             </oc-button>
           </li>
@@ -215,29 +215,6 @@ export default defineComponent({
 .user-menu-list li {
   align-items: center;
   display: flex;
-  margin: var(--oc-space-xsmall) 0;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  a,
-  button {
-    gap: var(--oc-space-medium);
-    justify-content: flex-start;
-    min-height: 3rem;
-    padding-left: var(--oc-space-small);
-    width: 100%;
-
-    &:focus,
-    &:hover {
-      text-decoration: none;
-    }
-  }
 
   &.profile-info-wrapper {
     gap: var(--oc-space-medium);

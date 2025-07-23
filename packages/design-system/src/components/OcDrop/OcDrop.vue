@@ -315,25 +315,6 @@ watch(
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
     padding: var(--oc-space-small);
   }
-
-  li.oc-menu-item-hover {
-    a,
-    .item-has-switch,
-    button:not([role='switch']) {
-      box-sizing: border-box;
-      padding: var(--oc-space-small);
-
-      &:focus:not([disabled]),
-      &:hover:not([disabled]) {
-        text-decoration: none !important;
-        border-radius: 5px;
-      }
-
-      span {
-        text-decoration: none !important;
-      }
-    }
-  }
 }
 
 .oc-drop {
