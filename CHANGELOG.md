@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
 - [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
 - clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
 - e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
