@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
+
+### ✨ Features
+
+- Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
 ### ✅ Tests
 
