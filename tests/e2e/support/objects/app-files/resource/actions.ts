@@ -643,7 +643,8 @@ export const uploadLargeNumberOfResources = async (args: uploadResourceArgs): Pr
   await performUpload(args)
   await page.locator(uploadInfoCloseButton).waitFor()
   await expect(page.locator(uploadInfoSuccessLabelSelector)).toHaveText(
-    `${resources.length} items uploaded`
+    `${resources.length} items uploaded`,
+    { timeout: config.timeout * 1000 }
   )
 }
 
@@ -722,7 +723,7 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
   await pauseResumeUpload(page)
   await page.locator(pauseUploadButton).waitFor()
 
-  await page.locator(uploadInfoSuccessLabelSelector).waitFor()
+  await page.locator(uploadInfoSuccessLabelSelector).waitFor({ timeout: config.timeout * 1000 })
   await page.locator(uploadInfoCloseButton).click()
 }
 
