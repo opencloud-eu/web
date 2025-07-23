@@ -19,6 +19,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.18 [[#990](https://github.com/opencloud-eu/web/pull/990)]
 - fix(deps): update dependency axios to v1.11.0 [[#991](https://github.com/opencloud-eu/web/pull/991)]
 - chore(deps): update dependency @cucumber/messages to v28.1.0 [[#984](https://github.com/opencloud-eu/web/pull/984)]
 - fix(deps): update typescript-eslint monorepo to v8.38.0 [[#986](https://github.com/opencloud-eu/web/pull/986)]
