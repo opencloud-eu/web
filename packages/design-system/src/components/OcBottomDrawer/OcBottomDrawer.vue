@@ -16,7 +16,7 @@
                   <span class="oc-text-bold" v-text="title" />
                   <oc-button
                     appearance="raw"
-                    class="raw-hover-surface"
+                    class="raw-hover-surface oc-bottom-drawer-close-button"
                     :aria-label="$gettext('Close the bottom drawer')"
                     @click="close"
                   >
