@@ -39,30 +39,32 @@ export const dragDropFiles = async (page: Page, resources: File[], targetSelecto
 
   await page.evaluate(
     ([files, selector]: [FileBuffer[], string]) => {
-      const dataTransfer = new DataTransfer()
-
-      for (const file of files) {
-        const buffer = new Uint8Array(JSON.parse(file.bufferString))
-        const blob = new Blob([buffer])
-        const fileObj = new File([blob], file.name)
-
-        if (file.relativePath.includes('/')) {
-          Object.defineProperty(fileObj, 'webkitRelativePath', {
-            value: file.relativePath
-          })
-        }
-
-        dataTransfer.items.add(fileObj)
-      }
       const target = document.querySelector(selector)
       if (!target) throw new Error(`Target ${selector} not found`)
-      const dragEnter = new DragEvent('dragenter', { dataTransfer, bubbles: true })
-      const dragOver = new DragEvent('dragover', { dataTransfer, bubbles: true })
-      const drop = new DragEvent('drop', { dataTransfer, bubbles: true })
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.multiple = true
+      input.style.display = 'none'
+      input.webkitdirectory = files.some((f) => f.relativePath.includes('/'))
+      document.body.appendChild(input)
 
-      target.dispatchEvent(dragEnter)
-      target.dispatchEvent(dragOver)
-      target.dispatchEvent(drop)
+      const dt = new DataTransfer()
+      files.forEach((file) => {
+        const buffer = new Uint8Array(JSON.parse(file.bufferString))
+        const fileObj = new File([new Blob([buffer])], file.name)
+        if (file.relativePath.includes('/')) {
+          Object.defineProperty(fileObj, 'webkitRelativePath', { value: file.relativePath })
+        }
+        dt.items.add(fileObj)
+      })
+      input.files = dt.files
+
+      const dropEvent = new Event('drop', { bubbles: true })
+      Object.defineProperty(dropEvent, 'dataTransfer', {
+        value: { files: dt.files, types: ['Files'] }
+      })
+      target.dispatchEvent(dropEvent)
+      document.body.removeChild(input)
     },
     [files, targetSelector]
   )

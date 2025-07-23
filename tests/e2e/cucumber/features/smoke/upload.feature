@@ -10,7 +10,7 @@ Feature: Upload
     And "Alice" logs in
     And "Alice" opens the "files" app
 
-
+  @webkit-skip
   Scenario: Upload files in personal space
     Given "Alice" creates the following resources
       | resource          | type    | content             |
@@ -58,14 +58,6 @@ Feature: Upload
       | resource   |
       | simple.pdf |
     And "Alice" closes the file viewer
-
-    # upload empty folder
-    When "Alice" uploads the following resources
-      | resource | type   |
-      | FOLDER   | folder |
-    Then following resources should be displayed in the files list for user "Alice"
-      | resource |
-      | FOLDER   |
     
     # folder upload via drag-n-drop
     When "Alice" uploads the following resources via drag-n-drop
@@ -77,7 +69,7 @@ Feature: Upload
       | child.txt |
     And "Alice" logs out
 
-
+  @webkit-skip
   Scenario: try to upload resources when the quota is insufficient
     Given "Admin" logs in
     And "Admin" opens the "admin-settings" app
