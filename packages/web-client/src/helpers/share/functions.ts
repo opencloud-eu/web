@@ -217,8 +217,7 @@ export function buildOutgoingShareResource({
     mimeType: driveItem.file?.mimeType || 'httpd/unix-directory',
     outgoing: true,
     privateLink: urlJoin(serverUrl, 'f', driveItem.id),
-    //TODO: this check is not correct, we should check item has a preview, needs graph implementation
-    hasPreview: () => !!driveItem.image,
+    hasPreview: () => !!driveItem.thumbnails,
     canRename: () => true,
     canDownload: () => true,
     canUpload: () => true,

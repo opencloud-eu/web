@@ -34,7 +34,10 @@ export class FolderLoaderSharedWithMe implements FolderLoader {
       }
 
       const value = yield* call(
-        clientService.graphAuthenticated.driveItems.listSharedWithMe({ signal: signal1 })
+        clientService.graphAuthenticated.driveItems.listSharedWithMe(
+          { expand: new Set(['thumbnails']) },
+          { signal: signal1 }
+        )
       )
 
       const resources = value.map((driveItem) =>

@@ -8628,10 +8628,11 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * The `driveItems` returned from the `sharedByMe` method always include the `permissions` relation that indicates they are shared items. 
          * @summary Get a list of driveItem objects shared by the current user.
+         * @param {Set<ListSharedByMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSharedByMe: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listSharedByMe: async ($expand?: Set<ListSharedByMeExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1beta1/me/drive/sharedByMe`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8650,6 +8651,10 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8664,10 +8669,11 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * The `driveItems` returned from the `sharedWithMe` method always include the `remoteItem` facet that indicates they are items from a different drive. 
          * @summary Get a list of driveItem objects shared with the owner of a drive.
+         * @param {Set<ListSharedWithMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSharedWithMe: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listSharedWithMe: async ($expand?: Set<ListSharedWithMeExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1beta1/me/drive/sharedWithMe`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8685,6 +8691,10 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
             // authentication basicAuth required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
+            }
 
 
     
@@ -8722,11 +8732,12 @@ export const MeDriveApiFp = function(configuration?: Configuration) {
         /**
          * The `driveItems` returned from the `sharedByMe` method always include the `permissions` relation that indicates they are shared items. 
          * @summary Get a list of driveItem objects shared by the current user.
+         * @param {Set<ListSharedByMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSharedByMe(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDriveItems1>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listSharedByMe(options);
+        async listSharedByMe($expand?: Set<ListSharedByMeExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDriveItems1>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSharedByMe($expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['MeDriveApi.listSharedByMe']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8734,11 +8745,12 @@ export const MeDriveApiFp = function(configuration?: Configuration) {
         /**
          * The `driveItems` returned from the `sharedWithMe` method always include the `remoteItem` facet that indicates they are items from a different drive. 
          * @summary Get a list of driveItem objects shared with the owner of a drive.
+         * @param {Set<ListSharedWithMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSharedWithMe(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDriveItems1>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listSharedWithMe(options);
+        async listSharedWithMe($expand?: Set<ListSharedWithMeExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CollectionOfDriveItems1>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSharedWithMe($expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['MeDriveApi.listSharedWithMe']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8765,20 +8777,22 @@ export const MeDriveApiFactory = function (configuration?: Configuration, basePa
         /**
          * The `driveItems` returned from the `sharedByMe` method always include the `permissions` relation that indicates they are shared items. 
          * @summary Get a list of driveItem objects shared by the current user.
+         * @param {Set<ListSharedByMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSharedByMe(options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDriveItems1> {
-            return localVarFp.listSharedByMe(options).then((request) => request(axios, basePath));
+        listSharedByMe($expand?: Set<ListSharedByMeExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDriveItems1> {
+            return localVarFp.listSharedByMe($expand, options).then((request) => request(axios, basePath));
         },
         /**
          * The `driveItems` returned from the `sharedWithMe` method always include the `remoteItem` facet that indicates they are items from a different drive. 
          * @summary Get a list of driveItem objects shared with the owner of a drive.
+         * @param {Set<ListSharedWithMeExpandEnum>} [$expand] Expand related entities
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSharedWithMe(options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDriveItems1> {
-            return localVarFp.listSharedWithMe(options).then((request) => request(axios, basePath));
+        listSharedWithMe($expand?: Set<ListSharedWithMeExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<CollectionOfDriveItems1> {
+            return localVarFp.listSharedWithMe($expand, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -8804,26 +8818,42 @@ export class MeDriveApi extends BaseAPI {
     /**
      * The `driveItems` returned from the `sharedByMe` method always include the `permissions` relation that indicates they are shared items. 
      * @summary Get a list of driveItem objects shared by the current user.
+     * @param {Set<ListSharedByMeExpandEnum>} [$expand] Expand related entities
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MeDriveApi
      */
-    public listSharedByMe(options?: RawAxiosRequestConfig) {
-        return MeDriveApiFp(this.configuration).listSharedByMe(options).then((request) => request(this.axios, this.basePath));
+    public listSharedByMe($expand?: Set<ListSharedByMeExpandEnum>, options?: RawAxiosRequestConfig) {
+        return MeDriveApiFp(this.configuration).listSharedByMe($expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * The `driveItems` returned from the `sharedWithMe` method always include the `remoteItem` facet that indicates they are items from a different drive. 
      * @summary Get a list of driveItem objects shared with the owner of a drive.
+     * @param {Set<ListSharedWithMeExpandEnum>} [$expand] Expand related entities
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MeDriveApi
      */
-    public listSharedWithMe(options?: RawAxiosRequestConfig) {
-        return MeDriveApiFp(this.configuration).listSharedWithMe(options).then((request) => request(this.axios, this.basePath));
+    public listSharedWithMe($expand?: Set<ListSharedWithMeExpandEnum>, options?: RawAxiosRequestConfig) {
+        return MeDriveApiFp(this.configuration).listSharedWithMe($expand, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+/**
+ * @export
+ */
+export const ListSharedByMeExpandEnum = {
+    Thumbnails: 'thumbnails'
+} as const;
+export type ListSharedByMeExpandEnum = typeof ListSharedByMeExpandEnum[keyof typeof ListSharedByMeExpandEnum];
+/**
+ * @export
+ */
+export const ListSharedWithMeExpandEnum = {
+    Thumbnails: 'thumbnails'
+} as const;
+export type ListSharedWithMeExpandEnum = typeof ListSharedWithMeExpandEnum[keyof typeof ListSharedWithMeExpandEnum];
 
 
 /**

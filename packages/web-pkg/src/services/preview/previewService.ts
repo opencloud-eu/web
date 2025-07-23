@@ -41,7 +41,6 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string | undefined> {
     const { space, resource } = options
-    console.log(resource)
 
     if (!resource.canDownload() || !resource.hasPreview()) {
       return undefined

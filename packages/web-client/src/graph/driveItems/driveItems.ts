@@ -39,13 +39,13 @@ export const DriveItemsFactory = ({
       await driveItemApiFactory.deleteDriveItem(driveId, itemId, requestOptions)
     },
 
-    async listSharedByMe(requestOptions) {
-      const { data } = await meDriveApiFactory.listSharedByMe(requestOptions)
+    async listSharedByMe(options, requestOptions) {
+      const { data } = await meDriveApiFactory.listSharedByMe(options?.expand, requestOptions)
       return data?.value || []
     },
 
-    async listSharedWithMe(requestOptions) {
-      const { data } = await meDriveApiFactory.listSharedWithMe(requestOptions)
+    async listSharedWithMe(options, requestOptions) {
+      const { data } = await meDriveApiFactory.listSharedWithMe(options?.expand, requestOptions)
       return data?.value || []
     }
   }
