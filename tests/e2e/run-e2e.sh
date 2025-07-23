@@ -45,12 +45,12 @@ Available options:
                       e.g.: --run-part 2 (runs part 2 out of 4)
     --total-parts   - total number of groups to divide into
                       e.g.: --total-parts 4 (suites will be divided into 4 groups)
-    --browser       - browser to use (chrome, firefox, webkit)
+    --browser       - browser to use (chromium, firefox, webkit)
                       e.g.: --browser firefox
     --help, -h      - show cli options
 
 Environment variables:
-    BROWSER         - browser to use (chrome, firefox, webkit)
+    BROWSER         - browser to use (chromium, firefox, webkit)
     PARALLEL        - number of parallel workers (default: 1)
 "
 
@@ -98,7 +98,7 @@ while [[ $# -gt 0 ]]; do
     --browser)
         BROWSER=$2
         case $BROWSER in
-            chrome)
+            chromium)
                 E2E_COMMAND="pnpm test:e2e:cucumber:chromium"
                 ;;
             firefox)
@@ -109,7 +109,7 @@ while [[ $# -gt 0 ]]; do
                 ;;
             *)
                 log error "Unsupported browser: $BROWSER"
-                log info "Supported browsers: chrome, firefox, webkit"
+                log info "Supported browsers: chromium, firefox, webkit"
                 exit 1
                 ;;
         esac

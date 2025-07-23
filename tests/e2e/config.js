@@ -36,7 +36,7 @@ export const config = {
   tokenTimeout: parseInt(process.env.TOKEN_TIMEOUT) || 40,
   headless: process.env.HEADLESS === 'true',
   acceptDownloads: process.env.DOWNLOADS !== 'false',
-  browser: process.env.BROWSER ?? 'chrome',
+  browser: process.env.BROWSER ?? 'chromium',
   reportDir: process.env.REPORT_DIR || 'reports/e2e',
   get tracingReportDir() {
     return this.reportDir + '/playwright/tracing'
