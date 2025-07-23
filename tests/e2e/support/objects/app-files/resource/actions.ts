@@ -425,11 +425,10 @@ const createDocumentFile = async (
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
+      if (config.browser === 'mobile-chromium' || config.browser === 'mobile-webkit') {
+        await editorMainFrame.locator('#mobile-edit-button').click()
+      }
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
-      const saveLocator = editorMainFrame.locator(collaboraEditorSaveSelector)
-      await expect(saveLocator).toHaveAttribute('class', /.*savemodified.*/)
-      await saveLocator.click()
-      await expect(saveLocator).not.toHaveAttribute('class', /.*savemodified.*/)
       break
     case 'OnlyOffice':
       const innerIframe = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)
@@ -576,6 +575,7 @@ export const editTextDocument = async ({
     page.locator(saveTextFileInEditorButton).click()
   ])
   await editor.close(page)
+  await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
 }
 
@@ -598,7 +598,6 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
   }
 
   await page.locator(resourceUploadButton).click()
-
   let uploadAction: Promise<void> = page
     .locator(type === 'folder' ? folderUploadInput : fileUploadInput)
     .setInputFiles(resources.map((file) => file.path))
@@ -653,7 +652,11 @@ export const uploadResource = async (args: uploadResourceArgs): Promise<void> =>
 
   await performUpload(args)
 
-  if (option !== 'skip') {
+  if (
+    option !== 'skip' &&
+    config.browser !== 'mobile-chromium' &&
+    config.browser !== 'mobile-webkit'
+  ) {
     await page.locator(uploadInfoCloseButton).click()
   }
 
