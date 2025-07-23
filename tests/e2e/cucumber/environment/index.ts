@@ -118,6 +118,20 @@ BeforeAll(async (): Promise<void> => {
         headless,
         slowMo,
         args: chromiumArgs
+      }),
+
+    'mobile-chrome': async () =>
+      await chromium.launch({
+        headless,
+        slowMo,
+        channel: 'chrome',
+        args: chromiumArgs
+      }),
+
+    'mobile-safari': async () =>
+      await webkit.launch({
+        headless,
+        slowMo
       })
   }
 

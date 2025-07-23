@@ -1,5 +1,6 @@
-import { Browser, BrowserContextOptions } from '@playwright/test'
+import { Browser, BrowserContextOptions, devices } from '@playwright/test'
 import path from 'path'
+import { config } from '../../../config'
 
 export interface ActorsOptions {
   browser: Browser
@@ -49,6 +50,12 @@ export const buildBrowserContextOptions = (options: ActorOptions): BrowserContex
     contextOptions.recordHar = {
       path: path.join(options.context.reportDir, 'playwright', 'har', `${options.namespace}.har`)
     }
+  }
+
+  if (config.browser === 'mobile-chrome') {
+    Object.assign(contextOptions, devices['Pixel 5'])
+  } else if (config.browser === 'mobile-safari') {
+    Object.assign(contextOptions, devices['iPhone 12'])
   }
 
   return contextOptions
