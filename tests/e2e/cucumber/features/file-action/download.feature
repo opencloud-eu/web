@@ -17,7 +17,7 @@ Feature: Download
       | emptyFolder  |
     And "Alice" creates the following files into personal space using API
       | pathToFile                | content     |
-      | folderPublic/new file.txt | lorem ipsum |
+      | folderPublic/newfile.txt | lorem ipsum |
     And "Alice" uploads the following local file into personal space using API
       | localFile      | to             |
       | testavatar.jpg | testavatar.jpg |
@@ -51,7 +51,7 @@ Feature: Download
       | testavatar.jpg | file   |
     And "Brian" downloads the following resources using the sidebar panel
       | resource       | from         | type   |
-      | new file.txt   | folderPublic | file   |
+      | newfile.txt   | folderPublic | file   |
       | testavatar.jpg |              | file   |
       | folderPublic   |              | folder |
       | emptyFolder    |              | folder |
