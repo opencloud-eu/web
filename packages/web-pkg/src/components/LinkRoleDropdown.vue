@@ -19,6 +19,7 @@
   <oc-drop
     v-if="availableLinkTypeOptions.length > 1"
     class="link-role-dropdown"
+    :title="$gettext('Role')"
     :drop-id="`link-role-dropdown-${dropUuid}`"
     :toggle="`#link-role-dropdown-toggle-${dropUuid}`"
     padding-size="small"

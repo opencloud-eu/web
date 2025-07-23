@@ -123,6 +123,10 @@ export default defineConfig({
               link: '/OcAvatars'
             },
             {
+              text: 'OcBottomDrawer',
+              link: '/OcBottomDrawer'
+            },
+            {
               text: 'OcBreadcrumb',
               link: '/OcBreadcrumb'
             },

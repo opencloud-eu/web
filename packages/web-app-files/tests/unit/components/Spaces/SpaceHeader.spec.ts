@@ -25,7 +25,7 @@ vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
 const getSpaceMock = (spaceImageData: DriveItem = undefined) =>
   mock<SpaceResource>({
     id: '1',
-    name: '',
+    name: 'space',
     description: '',
     spaceReadmeData: undefined,
     spaceImageData

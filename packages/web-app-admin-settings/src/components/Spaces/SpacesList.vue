@@ -95,6 +95,7 @@
           <context-menu-quick-action
             ref="contextMenuButtonRef"
             :item="item"
+            :title="item.name"
             class="spaces-table-btn-action-dropdown"
             @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
           >

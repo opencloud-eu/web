@@ -15,6 +15,10 @@ export const displayPositionedDropdown = (
   event: MouseEvent | KeyboardEvent,
   contextMenuButton: ComponentPublicInstance<unknown>
 ) => {
+  if (!dropdown) {
+    return
+  }
+
   const contextMenuButtonPos = contextMenuButton.$el.getBoundingClientRect()
 
   const yValue = isKeyboardEvent(event)

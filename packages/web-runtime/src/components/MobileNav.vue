@@ -5,6 +5,7 @@
       <oc-icon name="arrow-drop-down" />
     </oc-button>
     <oc-drop
+      :title="$gettext('Navigation')"
       drop-id="mobile-nav-drop"
       toggle="#mobile-nav-button"
       mode="click"

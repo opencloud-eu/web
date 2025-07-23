@@ -14,9 +14,11 @@
     </oc-button>
     <oc-drop
       ref="expirationDateDrop"
+      :title="$gettext('Edit share')"
       :toggle="'#' + editShareBtnId"
       mode="click"
       padding-size="small"
+      close-on-click
     >
       <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="shareEditOptions">
         <li v-for="(option, i) in options" :key="i" class="oc-rounded oc-menu-item-hover">

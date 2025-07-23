@@ -92,6 +92,7 @@
         <context-menu-quick-action
           ref="contextMenuButtonRef"
           :item="item"
+          :title="item.displayName"
           class="groups-table-btn-action-dropdown"
           @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
         >

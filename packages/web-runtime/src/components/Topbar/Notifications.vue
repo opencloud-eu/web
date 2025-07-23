@@ -3,14 +3,14 @@
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
       id="oc-notifications-drop"
+      :title="$gettext('Notifications')"
       drop-id="notifications-dropdown"
       toggle="#oc-notifications-bell"
       mode="click"
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       class="oc-overflow-auto"
     >
-      <div class="oc-flex oc-flex-between oc-flex-middle oc-mb-s">
-        <span class="oc-text-bold oc-text-large oc-m-rm" v-text="$gettext('Notifications')" />
+      <div class="oc-flex oc-flex-right oc-flex-middle oc-mb-s">
         <oc-button
           v-if="notifications.length"
           class="oc-notifications-mark-all"
@@ -18,10 +18,9 @@
           no-hover
           @click="deleteNotificationsTask.perform(notifications.map((n) => n.notification_id))"
         >
-          <span v-text="$gettext('Mark all as read')" />
+          <span class="oc-text-small" v-text="$gettext('Mark all as read')" />
         </oc-button>
       </div>
-      <hr />
       <div class="oc-position-relative">
         <div v-if="loading" class="oc-notifications-loading">
           <div class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1" />

@@ -15,6 +15,7 @@
         </oc-button>
       </span>
       <oc-drop
+        :title="$gettext('New file')"
         drop-id="new-file-menu-drop"
         toggle="#new-file-menu-btn"
         class="oc-width-auto"
@@ -113,6 +114,7 @@
       </oc-button>
     </span>
     <oc-drop
+      :title="$gettext('Upload')"
       drop-id="upload-menu-drop"
       toggle="#upload-menu-btn"
       mode="click"

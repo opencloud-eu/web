@@ -1,7 +1,7 @@
 import SearchBar from '../../../src/portals/SearchBar.vue'
 import flushPromises from 'flush-promises'
 import { mock } from 'vitest-mock-extended'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { defineComponent } from 'vue'
 import {
   defaultPlugins,
@@ -122,12 +122,14 @@ describe('Search Bar portal component', () => {
   })
   test('displays all available providers', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await nextTicks(3)
     expect(wrapper.findAll(selectors.providerListItem).length).toEqual(2)
   })
   test('only displays provider list item if search results are attached', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     providerContacts.previewSearch.search.mockImplementation(() => {
       return {
         values: []
@@ -139,6 +141,7 @@ describe('Search Bar portal component', () => {
   })
   test('displays the provider name in the provider list item', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await nextTicks(3)
     const providerDisplayNameItems = wrapper.findAll(selectors.providerDisplayName)
@@ -147,12 +150,14 @@ describe('Search Bar portal component', () => {
   })
   test('The search provider only displays the more results link if a listSearch component is present', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await nextTicks(3)
     expect(wrapper.findAll(selectors.providerMoreResultsLink).length).toEqual(1)
   })
   test('hides options on preview item click', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await nextTicks(3)
     expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
@@ -161,6 +166,7 @@ describe('Search Bar portal component', () => {
   })
   test('hides options on key press enter', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
@@ -169,6 +175,7 @@ describe('Search Bar portal component', () => {
   })
   test('hides options on key press escape', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
@@ -177,6 +184,7 @@ describe('Search Bar portal component', () => {
   })
   test('hides options if no search term is given', async () => {
     wrapper = getMountedWrapper().wrapper
+    await nextTick()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
