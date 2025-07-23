@@ -723,7 +723,7 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
   await pauseResumeUpload(page)
   await page.locator(pauseUploadButton).waitFor()
 
-  await page.locator(uploadInfoSuccessLabelSelector).waitFor()
+  await page.locator(uploadInfoSuccessLabelSelector).waitFor({ timeout: config.timeout * 1000 })
   await page.locator(uploadInfoCloseButton).click()
 }
 
