@@ -26,7 +26,10 @@ function createMockActionComposables(module: Record<string, any>) {
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const original = await importOriginal()
-  return createMockActionComposables(original)
+  return {
+    ...createMockActionComposables(original),
+    ActionMenuItem: (h) => h('action-menu-item')
+  }
 })
 
 describe('ActionsPanel', () => {
