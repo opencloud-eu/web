@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-07-23
+## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-07-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.0.8 [[#1000](https://github.com/opencloud-eu/web/pull/1000)]
 - fix(deps): update vue monorepo to v3.5.18 [[#990](https://github.com/opencloud-eu/web/pull/990)]
 - fix(deps): update dependency axios to v1.11.0 [[#991](https://github.com/opencloud-eu/web/pull/991)]
 - chore(deps): update dependency @cucumber/messages to v28.1.0 [[#984](https://github.com/opencloud-eu/web/pull/984)]
