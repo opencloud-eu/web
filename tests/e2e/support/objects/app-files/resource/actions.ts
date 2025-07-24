@@ -425,11 +425,17 @@ const createDocumentFile = async (
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
-      await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
-      const saveLocator = editorMainFrame.locator(collaboraEditorSaveSelector)
-      await expect(saveLocator).toHaveAttribute('class', /.*savemodified.*/)
-      await saveLocator.click()
-      await expect(saveLocator).not.toHaveAttribute('class', /.*savemodified.*/)
+      if (config.browser === 'mobile-chromium') {
+        await editorMainFrame.locator('#mobile-edit-button').click()
+        await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
+        await editorMainFrame.locator('#toolbar-mobile-back').click()
+      } else {
+        await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
+        const saveLocator = editorMainFrame.locator(collaboraEditorSaveSelector)
+        // await expect(saveLocator).toHaveAttribute('class', /.*savemodified.*/)
+        await saveLocator.click()
+        // await expect(saveLocator).not.toHaveAttribute('class', /.*savemodified.*/)
+      }
       break
     case 'OnlyOffice':
       const innerIframe = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)

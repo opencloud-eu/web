@@ -1687,6 +1687,55 @@ def e2eTestsOnKeycloak(ctx):
         ],
     }]
 
+def e2eMobileTests(ctx):
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+            installPnpm() + \
+            restoreBrowsersCache() + \
+            restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
+            collaboraService() + \
+            waitForServices("collabora", ["collabora:9980"]) + \
+            openCloudService(params["extraServerEnvironment"]) + \
+            wopiCollaborationService("collabora") + \
+            waitForServices("wopi", ["wopi-collabora:9300"])
+
+    if ctx.build.event == "cron":
+        steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
+    else:
+        steps += restoreOpenCloudCache()
+
+    steps += openCloudService(environment) + \
+             [
+                 {
+                     "name": "e2e-tests",
+                     "image": OC_CI_NODEJS,
+                     "environment": {
+                         "OC_BASE_URL": "opencloud:9200",
+                         "HEADLESS": True,
+                         "RETRY": "1",
+                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
+                         "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+                         "FAIL_ON_UNCAUGHT_CONSOLE_ERR": "True",
+                     },
+                     "commands": [
+                         "pnpm exec playwright install webkit --with-deps",
+                         "pnpm test:e2e:mobile-parallel",
+                     ],
+                 },
+             ] + \
+             uploadTracingResult(ctx)
+
+    return [{
+        "name": "e2e-mobile-test",
+        "workspace": web_workspace,
+        "steps": steps,
+        "services": postgresService(),
+        "when": [
+            event["base"],
+            event["pull_request"],
+            event["tag"],
+        ],
+    }]
+
 def getOpenCloudlatestCommitId(ctx):
     web_repo_path = "https://raw.githubusercontent.com/opencloud-eu/web/%s" % ctx.build.commit
     return [

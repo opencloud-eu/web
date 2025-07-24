@@ -52,11 +52,42 @@ export const buildBrowserContextOptions = (options: ActorOptions): BrowserContex
     }
   }
 
-  if (config.browser === 'mobile-chrome') {
-    Object.assign(contextOptions, devices['Pixel 5'])
-  } else if (config.browser === 'mobile-safari') {
-    Object.assign(contextOptions, devices['iPhone 12'])
+  switch (config.browser) {
+    case 'mobile-chromium':
+      Object.assign(contextOptions, devices['Pixel 5'])
+      break
+
+    case 'mobile-safari':
+      Object.assign(contextOptions, {
+        ...devices['iPhone 12'],
+        userAgent:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    case 'ipad-chromium':
+      Object.assign(contextOptions, {
+        ...devices['iPad Pro 11'],
+        userAgent:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    case 'ipad-landscape-safari':
+      Object.assign(contextOptions, {
+        ...devices['iPad Pro 11 landscape'],
+        userAgent:
+          'Mozilla/5.0 (iPad; CPU iPad OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    default:
+      break
   }
 
+  // case 'ipad-landscape-safari':
+  //   Object.assign(contextOptions, {
+  //     ...devices['iPad Pro 11 landscape'],
+  //   })
   return contextOptions
 }

@@ -120,15 +120,31 @@ BeforeAll(async (): Promise<void> => {
         args: chromiumArgs
       }),
 
-    'mobile-chrome': async () =>
+    // Android Pixel 5 - Chromium
+    'mobile-chromium': async () =>
       await chromium.launch({
         headless,
         slowMo,
-        channel: 'chrome',
         args: chromiumArgs
       }),
 
+    // iPhone 12 - Safari/WebKit
     'mobile-safari': async () =>
+      await webkit.launch({
+        headless,
+        slowMo
+      }),
+
+    // iPad Pro 11 Portrait - Chromium
+    'ipad-chromium': async () =>
+      await chromium.launch({
+        headless,
+        slowMo,
+        args: chromiumArgs
+      }),
+
+    // iPad Pro 11 Landscape - Safari/WebKit
+    'ipad-landscape-safari': async () =>
       await webkit.launch({
         headless,
         slowMo
