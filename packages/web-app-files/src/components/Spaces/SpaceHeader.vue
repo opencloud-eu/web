@@ -43,8 +43,10 @@
             :options="{ delayHide: 0 }"
             padding-size="small"
             position="right-start"
+            @show-drop="isDropOpen = true"
+            @hide-drop="isDropOpen = false"
           >
-            <space-context-actions :action-options="{ resources: [space] }" />
+            <space-context-actions v-if="isDropOpen" :action-options="{ resources: [space] }" />
           </oc-drop>
         </div>
         <oc-button
@@ -145,6 +147,8 @@ const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
+
+const isDropOpen = ref(false)
 
 const markdownContainerRef = ref(null)
 const markdownContent = ref('')
