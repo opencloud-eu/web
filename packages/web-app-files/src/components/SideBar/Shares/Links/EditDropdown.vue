@@ -281,11 +281,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .edit-public-link-dropdown-menu {
-  .action-menu-item {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
   &-delete {
     margin-top: var(--oc-space-small) !important;
     border-top: 0.5px solid var(--oc-role-outline-variant) !important;

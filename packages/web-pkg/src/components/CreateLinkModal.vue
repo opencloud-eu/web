@@ -86,6 +86,7 @@
         toggle=".oc-modal-body-actions-confirm-secondary-trigger"
         mode="click"
         padding-size="small"
+        :title="$gettext('More options')"
         close-on-click
       >
         <oc-list class="oc-modal-body-actions-confirm-secondary-menu">
@@ -342,24 +343,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.action-menu-item {
-  width: 100%;
-  justify-content: flex-start;
-}
-
 .link-modal-password {
   margin-left: calc(var(--oc-space-small) + 22px);
 }
 
 .link-modal-confirm-button-group {
   outline: 0;
-}
-
-.oc-modal-body-actions-confirm-secondary-menu {
-  .action-menu-item {
-    width: 100%;
-    justify-content: flex-start;
-  }
 }
 
 .oc-modal-body-actions-confirm-secondary-trigger {
@@ -369,23 +358,5 @@ export default defineComponent({
 
 .role-dropdown-list span {
   line-height: 1.3;
-}
-
-.role-dropdown-list li {
-  margin: var(--oc-space-xsmall) 0;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .oc-button {
-    text-align: left;
-    width: 100%;
-    gap: var(--oc-space-medium);
-  }
 }
 </style>

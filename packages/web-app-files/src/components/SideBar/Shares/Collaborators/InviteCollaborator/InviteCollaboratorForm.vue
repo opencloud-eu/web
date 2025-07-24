@@ -65,21 +65,22 @@
             :selected-item-names="[currentShareRoleType.longLabel]"
           >
             <template #default>
-              <oc-button
-                v-for="(option, index) in shareRoleTypes"
-                :key="index"
-                appearance="raw"
-                size="medium"
-                justify-content="space-between"
-                class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-                :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
-                @click="selectShareRoleType(option)"
-              >
-                <span>{{ option.longLabel }}</span>
-                <div v-if="option.id === currentShareRoleType.id" class="oc-flex">
-                  <oc-icon name="check" />
-                </div>
-              </oc-button>
+              <oc-list>
+                <li v-for="(option, index) in shareRoleTypes" :key="index">
+                  <oc-button
+                    appearance="raw"
+                    size="medium"
+                    class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
+                    :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
+                    @click="selectShareRoleType(option)"
+                  >
+                    <span>{{ option.longLabel }}</span>
+                    <div v-if="option.id === currentShareRoleType.id" class="oc-flex">
+                      <oc-icon name="check" />
+                    </div>
+                  </oc-button>
+                </li>
+              </oc-list>
             </template>
           </oc-filter-chip>
         </template>
@@ -644,14 +645,6 @@ export default defineComponent({
       padding: 0 !important;
     }
 
-    &-item {
-      margin-top: var(--oc-space-xsmall);
-
-      &:first-child {
-        margin-top: 0;
-      }
-    }
-
     .oc-drop {
       width: 180px;
     }
@@ -662,5 +655,8 @@ export default defineComponent({
     cursor: inherit;
     flex-wrap: nowrap;
   }
+}
+.invite-form-share-role-type-item {
+  justify-content: space-between !important;
 }
 </style>

@@ -20,7 +20,7 @@
           <oc-list class="item-filter-list">
             <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
               <oc-button
-                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1 oc-p-s"
+                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1"
                 :class="{
                   'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
                   'oc-flex-left': allowMultiple,
@@ -45,7 +45,7 @@
                   <div>
                     <slot name="image" :item="item" />
                   </div>
-                  <div class="oc-text-truncate oc-ml-s">
+                  <div class="oc-text-truncate">
                     <slot name="item" :item="item" />
                   </div>
                 </div>
@@ -245,23 +245,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.item-filter {
-  &-list {
-    li {
-      &:first-child {
-        margin-top: 0 !important;
-      }
-      &:last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
-    &-item {
-      line-height: 1.5;
-      gap: 8px;
-    }
-  }
-}
-</style>

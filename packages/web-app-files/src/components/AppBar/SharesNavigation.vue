@@ -34,9 +34,7 @@
               :class="{ 'oc-secondary-container': navItem.active }"
               appearance="raw"
             >
-              <span class="icon-box" :class="{ 'icon-box-active': navItem.active }">
-                <oc-icon :name="navItem.icon" />
-              </span>
+              <oc-icon :name="navItem.icon" />
               <span v-text="navItem.text" />
             </oc-button>
           </li>
@@ -115,40 +113,9 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 #shares-navigation {
-  &-mobile {
-    li {
-      margin: var(--oc-space-xsmall) 0;
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-
   a {
     gap: var(--oc-space-small);
     width: 100%;
-
-    &:focus,
-    &:hover {
-      text-decoration: none;
-    }
-
-    &.shares-nav-mobile {
-      justify-content: flex-start;
-    }
-
-    .icon-box {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 40px;
-      height: 40px;
-    }
   }
 
   .shares-nav-desktop.router-link-active {

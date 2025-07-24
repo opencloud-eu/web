@@ -8,7 +8,7 @@
       toggle="#oc-notifications-bell"
       mode="click"
       :options="{ pos: 'bottom-right', delayHide: 0 }"
-      class="oc-overflow-auto"
+      padding-size="small"
     >
       <div class="oc-flex oc-flex-right oc-flex-middle oc-mb-s">
         <oc-button
@@ -35,11 +35,10 @@
           <li v-for="(el, index) in notifications" :key="index" class="oc-notifications-item">
             <component
               :is="el.computedLink ? 'router-link' : 'div'"
-              class="oc-flex oc-flex-middle oc-my-xs"
+              class="oc-flex oc-flex-middle"
               :to="el.computedLink"
             >
               <user-avatar
-                class="oc-mr-m"
                 :user-id="el.messageRichParameters?.user?.id || el.user"
                 :user-name="el.messageRichParameters?.user?.displayname || el.user"
               />
@@ -65,7 +64,7 @@
                 </div>
               </div>
             </component>
-            <hr v-if="index + 1 !== notifications.length" class="oc-my-m" />
+            <hr v-if="index + 1 !== notifications.length" class="oc-my-s" />
           </li>
         </oc-list>
       </div>
@@ -274,6 +273,8 @@ export default {
   width: 400px;
   max-width: 100%;
   max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .oc-notifications {
