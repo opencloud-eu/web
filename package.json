@@ -14,7 +14,7 @@
     "format:write": "prettier . --config packages/prettier-config/index.js --write",
     "serve": "SERVER=true pnpm build:w",
     "test:e2e:cucumber": "NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --parallel ${PARALLEL:-1}",
-    "test:e2e:cucumber:chromium": "BROWSER=chrome NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --parallel ${PARALLEL:-1}",
+    "test:e2e:cucumber:chromium": "BROWSER=chromium NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --parallel ${PARALLEL:-1}",
     "test:e2e:cucumber:firefox": "BROWSER=firefox NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --parallel ${PARALLEL:-1}",
     "test:e2e:cucumber:webkit": "BROWSER=webkit NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --parallel ${PARALLEL:-1} --tags 'not @webkit-skip'",
     "test:unit": "NODE_OPTIONS=--unhandled-rejections=throw vitest",
