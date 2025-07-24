@@ -61,7 +61,7 @@
                   <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
                 </template>
                 <template #item="{ item }">
-                  <div v-text="item.displayName" />
+                  <div class="oc-ml-s" v-text="item.displayName" />
                 </template>
               </item-filter>
               <item-filter
@@ -84,7 +84,7 @@
                   />
                 </template>
                 <template #item="{ item }">
-                  <div v-text="$gettext(item.displayName)" />
+                  <div class="oc-ml-s" v-text="$gettext(item.displayName)" />
                 </template>
               </item-filter>
             </div>

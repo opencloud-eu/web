@@ -117,25 +117,12 @@ export default defineComponent({
   }
 }
 
-.role-dropdown-list span {
-  line-height: 1.3;
-}
-
-.role-dropdown-list li {
-  margin: var(--oc-space-xsmall) 0;
-
-  &:first-child {
-    margin-top: 0;
+.role-dropdown-list {
+  span {
+    line-height: 1.3;
   }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .oc-button {
-    text-align: left;
-    width: 100%;
-    gap: var(--oc-space-medium);
+  button {
+    justify-content: space-between !important;
   }
 }
 </style>

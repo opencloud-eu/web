@@ -15,7 +15,7 @@
           :key="`section-${action.name}-action-${actionIndex}`"
           :action="action"
           :action-options="actionOptions"
-          class="oc-px-s oc-rounded oc-menu-item-hover"
+          class="oc-rounded oc-menu-item-hover"
           :data-testid="`whitespace-context-menu-item-${action.name}`"
         />
       </oc-list>
@@ -79,26 +79,5 @@ export default defineComponent({
   visibility: hidden;
   width: 0;
   height: 0;
-}
-.whitespace-context-actions-list {
-  text-align: left;
-  white-space: normal;
-
-  .oc-card {
-    padding-left: 0px !important;
-    padding-right: 0px !important;
-  }
-
-  a,
-  button,
-  span {
-    display: inline-flex;
-    font-weight: normal !important;
-    gap: 10px;
-    justify-content: flex-start;
-    vertical-align: top;
-    width: 100%;
-    text-align: left;
-  }
 }
 </style>

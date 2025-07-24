@@ -4,14 +4,7 @@
       v-oc-tooltip="showTooltip || action.hideLabel ? action.label(actionOptions) : ''"
       :type="componentType"
       v-bind="componentProps"
-      :class="[
-        action.class,
-        'action-menu-item',
-        'oc-py-s',
-        'oc-px-m',
-        'oc-width-1-1',
-        ...buttonClasses
-      ]"
+      :class="[action.class, 'action-menu-item', 'oc-width-1-1', ...buttonClasses]"
       :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
       data-testid="action-handler"
       :size="size"

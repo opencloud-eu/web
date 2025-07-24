@@ -191,13 +191,14 @@ onBeforeUnmount(() => {
 
     &-header {
       padding-top: var(--oc-space-medium);
-      padding-left: var(--oc-space-small);
-      padding-right: var(--oc-space-small);
+      padding-left: var(--oc-space-medium);
+      padding-right: var(--oc-space-medium);
       border-bottom: 0 !important;
     }
 
     &-body {
-      padding: var(--oc-space-small);
+      padding: var(--oc-space-medium);
+      padding-top: var(--oc-space-small);
 
       ul:not(:last-child) {
         margin-bottom: var(--oc-space-small) !important;
@@ -207,25 +208,6 @@ onBeforeUnmount(() => {
         background-color: var(--oc-role-surface) !important;
         border-radius: 10px;
       }
-    }
-  }
-}
-
-li.oc-menu-item-hover {
-  a,
-  .item-has-switch,
-  button:not([role='switch']) {
-    box-sizing: border-box;
-    padding: var(--oc-space-small);
-
-    &:focus:not([disabled]),
-    &:hover:not([disabled]) {
-      text-decoration: none !important;
-      border-radius: 5px;
-    }
-
-    span {
-      text-decoration: none !important;
     }
   }
 }

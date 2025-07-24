@@ -135,28 +135,9 @@ export default defineComponent({
 }
 
 .applications-list li {
-  margin: var(--oc-space-xsmall) 0;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
   a,
   button {
-    padding: 5px;
-    border-radius: 8px;
-    gap: var(--oc-space-medium);
-    justify-content: flex-start;
-    width: 100%;
-
-    &:focus,
-    &:hover {
-      text-decoration: none;
-    }
+    gap: var(--oc-space-medium) !important;
 
     .icon-box {
       display: inline-flex;
