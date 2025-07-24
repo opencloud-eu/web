@@ -10,6 +10,10 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 🐛 Bug Fixes
+
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
 ### 📈 Enhancement
 
 - feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
