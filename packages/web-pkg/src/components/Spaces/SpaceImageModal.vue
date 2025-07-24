@@ -31,7 +31,7 @@ import {
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { eventBus } from '../../services'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
 const { space, file } = defineProps<{
@@ -112,8 +112,18 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
     showMessage({ title: $gettext('Space image was set successfully') })
     eventBus.publish('app.files.spaces.uploaded-image', updatedSpace)
   } catch (error) {
-    spacesStore.removeFromImagesLoading(space.id)
     console.error(error)
+    spacesStore.removeFromImagesLoading(space.id)
+
+    if (error instanceof HttpError && error.statusCode === 507) {
+      showErrorMessage({
+        title: $gettext('Failed to set space image'),
+        desc: $gettext('Not enough quota to set the space image'),
+        errors: [error]
+      })
+      return
+    }
+
     showErrorMessage({
       title: $gettext('Failed to set space image'),
       errors: [error]
