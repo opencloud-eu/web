@@ -1,4 +1,4 @@
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { SpaceAction, SpaceActionOptions } from '../types'
 import { useClientService } from '../../clientService'
@@ -98,6 +98,16 @@ export const useSpaceActionsSetIcon = () => {
         eventBus.publish('app.files.spaces.uploaded-image', updatedSpace)
       } catch (error) {
         console.error(error)
+
+        if (error instanceof HttpError && error.statusCode === 507) {
+          showErrorMessage({
+            title: $gettext('Failed to set space image'),
+            desc: $gettext('Not enough quota to set the space icon'),
+            errors: [error]
+          })
+          return
+        }
+
         showErrorMessage({
           title: $gettext('Failed to set space icon'),
           errors: [error]
