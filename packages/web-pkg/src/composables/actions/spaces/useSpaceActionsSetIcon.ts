@@ -101,7 +101,7 @@ export const useSpaceActionsSetIcon = () => {
 
         if (error instanceof HttpError && error.statusCode === 507) {
           showErrorMessage({
-            title: $gettext('Failed to set space image'),
+            title: $gettext('Failed to set space icon'),
             desc: $gettext('Not enough quota to set the space icon'),
             errors: [error]
           })
