@@ -15,30 +15,28 @@
       <div v-if="sortFields.length" class="oc-tiles-sort">
         <oc-filter-chip
           class="oc-tiles-sort-filter-chip"
-          :filter-label="currentSortField.label"
-          :selected-item-names="[]"
+          :filter-label="$gettext('Sort by')"
+          :selected-item-names="[currentSortField.label]"
+          :has-active-state="false"
           close-on-click
           raw
         >
           <template #default>
-            <oc-button
-              v-for="(option, index) in sortFields"
-              :key="index"
-              appearance="raw"
-              size="medium"
-              justify-content="space-between"
-              class="oc-tiles-sort-filter-chip-item oc-flex oc-flex-middle oc-width-1-1 oc-p-s"
-              :class="{
-                'oc-tiles-sort-filter-chip-item-active': currentSortField === option,
-                'oc-mt-xs': index > 0
-              }"
-              @click="selectSorting(option)"
-            >
-              <span>{{ option.label }}</span>
-              <div v-if="option === currentSortField" class="oc-flex">
-                <oc-icon name="check" />
-              </div>
-            </oc-button>
+            <oc-list>
+              <li v-for="(option, index) in sortFields" :key="index">
+                <oc-button
+                  appearance="raw"
+                  :class="{ 'oc-secondary-container': currentSortField === option }"
+                  class="oc-tiles-sort-filter-chip-item"
+                  @click="selectSorting(option)"
+                >
+                  <span>{{ option.label }}</span>
+                  <div v-if="option === currentSortField" class="oc-flex">
+                    <oc-icon name="check" />
+                  </div>
+                </oc-button>
+              </li>
+            </oc-list>
           </template>
         </oc-filter-chip>
       </div>
@@ -624,12 +622,8 @@ onBeforeUnmount(() => {
       font-size: var(--oc-font-size-default);
     }
 
-    &-item-active {
-      background-color: var(--oc-role-secondary-container) !important;
-    }
-
-    &-item:hover:not(&-item-active) {
-      background-color: var(--oc-role-surface-container) !important;
+    &-item {
+      justify-content: space-between !important;
     }
   }
 }
