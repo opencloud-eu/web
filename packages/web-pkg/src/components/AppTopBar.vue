@@ -36,6 +36,7 @@
               padding-size="small"
               toggle="#oc-openfile-contextmenu-trigger"
               close-on-click
+              :title="resource.name"
               @click.stop.prevent
             >
               <context-action-menu
