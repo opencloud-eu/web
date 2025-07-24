@@ -42,6 +42,13 @@
     "type": "boolean"
   },
   {
+    "name": "hasActiveState",
+    "required": false,
+    "description": "Determines if the filter has an active state (e.g. if one or more items are selected).",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
     "name": "selectedItemNames",
     "required": false,
     "description": "The names of the selected items.",

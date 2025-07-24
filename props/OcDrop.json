@@ -1,5 +1,12 @@
 [
   {
+    "name": "title",
+    "required": false,
+    "description": "The title of the drop. This is only being displayed in the bottom drawer in the mobile view.",
+    "default": "",
+    "type": "string"
+  },
+  {
     "name": "closeOnClick",
     "required": false,
     "description": "Determines if the drop should close when clicked.",
@@ -65,8 +72,15 @@
   {
     "name": "toggle",
     "required": false,
-    "description": "CSS selector for the element to be used as toggle. By default, the preceding element is used.",
+    "description": "CSS selector for the element to be used as toggle. By default, the preceding element is used. Note that a toggle is mandatory for the bottom drawer in mobile view.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "enforceDropOnMobile",
+    "required": false,
+    "description": "Enforce the drop to be displayed even on mobile devices where usually a bottom drawer is used.",
+    "default": "false",
+    "type": "boolean"
   }
 ]

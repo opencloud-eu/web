@@ -1,0 +1,12 @@
+[
+  {
+    "name": "open",
+    "description": "Emitted when the bottom drawer is opened.",
+    "type": "(e: 'open'): void"
+  },
+  {
+    "name": "close",
+    "description": "Emitted when the bottom drawer is closed.",
+    "type": "(e: 'close'): void"
+  }
+]

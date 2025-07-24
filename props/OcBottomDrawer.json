@@ -1,0 +1,37 @@
+[
+  {
+    "name": "drawerId",
+    "required": true,
+    "description": "The ID the drawer element gets.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "toggle",
+    "required": true,
+    "description": "The CSS selector for the element that toggles the bottom drawer.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "closeOnClick",
+    "required": false,
+    "description": "Whether the bottom drawer should close when a child element is clicked.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "title",
+    "required": false,
+    "description": "The title of the bottom drawer.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "usePortal",
+    "required": false,
+    "description": "Whether to use a portal for the bottom drawer. The portal can be used to render the bottom drawer outside of the current DOM hierarchy.",
+    "default": "false",
+    "type": "boolean"
+  }
+]
