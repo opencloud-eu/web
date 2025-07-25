@@ -494,14 +494,12 @@ export const announcePreviewService = ({
   app,
   configStore,
   userStore,
-  authStore,
-  capabilityStore
+  authStore
 }: {
   app: App
   configStore: ConfigStore
   userStore: UserStore
   authStore: AuthStore
-  capabilityStore: CapabilityStore
 }): void => {
   const clientService = app.config.globalProperties.$clientService
   const previewService = new PreviewService({
