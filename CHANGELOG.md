@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-tsc to v3.0.4 [[#989](https://github.com/opencloud-eu/web/pull/989)]
 - chore(deps): update traefik docker tag to v3.5.0 - autoclosed [[#1002](https://github.com/opencloud-eu/web/pull/1002)]
 - fix(deps): update dependency zod to v4.0.10 [[#1007](https://github.com/opencloud-eu/web/pull/1007)]
 - fix(deps): update dependency @sentry/vue to v9.41.0 [[#1009](https://github.com/opencloud-eu/web/pull/1009)]
