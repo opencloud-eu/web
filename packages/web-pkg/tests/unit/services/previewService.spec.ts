@@ -5,41 +5,13 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { AxiosResponse } from 'axios'
 import {
   useAuthStore,
-  useUserStore,
   useCapabilityStore,
-  useConfigStore
+  useConfigStore,
+  useUserStore
 } from '../../../src/composables/piniaStores'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 describe('PreviewService', () => {
-  describe('method "isMimetypeSupported"', () => {
-    it('should return true if mimeType is supported', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.isMimetypeSupported(supportedMimeTypes[0])).toBe(true)
-    })
-    it('should return true if no specific supported mimeTypes given', () => {
-      const { previewService } = getWrapper()
-      expect(previewService.isMimetypeSupported('image/png')).toBe(true)
-    })
-    it('should return false if mimeType is not supported', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.isMimetypeSupported('image/jpeg')).toBe(false)
-    })
-  })
-  describe('method "getSupportedMimeTypes"', () => {
-    it('reads the supported mime types from the capabilities', () => {
-      const supportedMimeTypes = ['image/png']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.getSupportedMimeTypes()).toEqual(supportedMimeTypes)
-    })
-    it('filters the supported mime types from the capabilities', () => {
-      const supportedMimeTypes = ['image/png', 'text/plain']
-      const { previewService } = getWrapper({ supportedMimeTypes })
-      expect(previewService.getSupportedMimeTypes('image')).toEqual([supportedMimeTypes[0]])
-    })
-  })
   describe('method "loadPreview"', () => {
     it('does not load preview if no version specified', async () => {
       const supportedMimeTypes = ['image/png']
@@ -87,6 +59,26 @@ describe('PreviewService', () => {
       })
       expect(preview).toEqual(undefined)
     })
+    it('does not load preview if "hasPreview" is false', async () => {
+      const objectUrl = 'objectUrl'
+      const supportedMimeTypes = ['image/png']
+      const { previewService } = getWrapper({
+        supportedMimeTypes,
+        version: '1'
+      })
+      window.URL.createObjectURL = vi.fn().mockImplementation(() => objectUrl)
+      const preview = await previewService.loadPreview({
+        space: mock<SpaceResource>(),
+        resource: mock<Resource>({
+          mimeType: supportedMimeTypes[0],
+          webDavPath: '/',
+          etag: '',
+          canDownload: () => true,
+          hasPreview: () => false
+        })
+      })
+      expect(preview).toEqual(undefined)
+    })
     it.each([425, 429])('retries when the server returns a %s status code', async (status) => {
       const supportedMimeTypes = ['image/png']
       const { previewService, clientService } = getWrapper({
@@ -106,6 +98,7 @@ describe('PreviewService', () => {
           mimeType: supportedMimeTypes[0],
           webDavPath: '/',
           etag: '',
+          hasPreview: () => true,
           canDownload: () => true
         })
       })
@@ -126,6 +119,7 @@ describe('PreviewService', () => {
             mimeType: supportedMimeTypes[0],
             webDavPath: '/',
             etag: '',
+            hasPreview: () => true,
             canDownload: () => true
           })
         })
@@ -143,6 +137,7 @@ describe('PreviewService', () => {
           mimeType: supportedMimeTypes[0],
           webDavPath: '/',
           etag: '',
+          hasPreview: () => true,
           canDownload: () => true
         })
         window.URL.createObjectURL = vi.fn().mockImplementation(() => objectUrl)
@@ -174,6 +169,7 @@ describe('PreviewService', () => {
             mimeType: supportedMimeTypes[0],
             downloadURL,
             etag: '',
+            hasPreview: () => true,
             canDownload: () => true
           })
         })
@@ -208,8 +204,7 @@ const getWrapper = ({
       configStore,
       clientService,
       userStore,
-      authStore,
-      capabilityStore
+      authStore
     }),
     clientService
   }

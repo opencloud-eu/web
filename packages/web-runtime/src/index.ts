@@ -105,8 +105,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       app,
       configStore,
       userStore,
-      authStore,
-      capabilityStore
+      authStore
     })
     announcePasswordPolicyService({ app })
     await announceAuthClient(configStore)

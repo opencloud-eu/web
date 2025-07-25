@@ -173,6 +173,7 @@ export function buildResource(
     image: convertObjectToCamelCaseKeys(resource.props[DavProperty.Image]),
     photo: convertObjectToCamelCaseKeys(resource.props[DavProperty.Photo]),
     extraProps,
+    hasPreview: () => resource.props[DavProperty.HasPreview] === 1,
     canUpload: function () {
       return this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
     },
