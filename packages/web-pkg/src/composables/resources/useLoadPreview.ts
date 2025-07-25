@@ -97,8 +97,11 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
 
     if (isProjectSpaceResource(resource) && (!resource.spaceImageData || resource.disabled)) {
       if (unref(defaultSpaceImageBlobURL)) {
-        resource.thumbnail = unref(defaultSpaceImageBlobURL)
-        return unref(defaultSpaceImageBlobURL)
+        spacesStore.updateSpaceField({
+          id: resource.id,
+          field: 'thumbnail',
+          value: unref(defaultSpaceImageBlobURL)
+        })
       }
 
       try {
@@ -112,7 +115,11 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
         spacesStore.setDefaultSpaceImageBlobURL(
           URL.createObjectURL(defaultSpaceImageBlobURLResponse.data)
         )
-        resource.thumbnail = unref(defaultSpaceImageBlobURL)
+        spacesStore.updateSpaceField({
+          id: resource.id,
+          field: 'thumbnail',
+          value: unref(defaultSpaceImageBlobURL)
+        })
         return unref(defaultSpaceImageBlobURL)
       } catch {
         return null

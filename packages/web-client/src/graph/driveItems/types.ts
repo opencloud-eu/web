@@ -23,6 +23,16 @@ export interface GraphDriveItems {
     itemId: string,
     requestOptions?: GraphRequestOptions
   ) => Promise<void>
-  listSharedByMe: (requestOptions?: GraphRequestOptions) => Promise<DriveItem[]>
-  listSharedWithMe: (requestOptions?: GraphRequestOptions) => Promise<DriveItem[]>
+  listSharedByMe: (
+    options?: {
+      expand?: Set<'thumbnails'>
+    },
+    requestOptions?: GraphRequestOptions
+  ) => Promise<DriveItem[]>
+  listSharedWithMe: (
+    options?: {
+      expand?: Set<'thumbnails'>
+    },
+    requestOptions?: GraphRequestOptions
+  ) => Promise<DriveItem[]>
 }
