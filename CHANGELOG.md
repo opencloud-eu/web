@@ -10,16 +10,17 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 📈 Enhancement
+
+- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
+- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
+- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
+
 ### 🐛 Bug Fixes
 
 - fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
 - fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
-
-### 📈 Enhancement
-
-- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
-- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
-- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
 
 ### ✅ Tests
 
