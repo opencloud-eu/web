@@ -72,7 +72,10 @@
               <li class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details">
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
-                  <router-link class="more-results" :to="getSearchResultLocation(provider.id)">
+                  <router-link
+                    class="more-results oc-p-rm"
+                    :to="getSearchResultLocation(provider.id)"
+                  >
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>
@@ -593,6 +596,13 @@ export default defineComponent({
       width: 93vw !important;
     }
 
+    .preview-component button,
+    .preview-component a {
+      padding: 0;
+      width: initial;
+      gap: initial;
+    }
+
     ul {
       li.provider-details,
       li.loading,
@@ -603,6 +613,8 @@ export default defineComponent({
       li {
         position: relative;
         font-size: var(--oc-font-size-small);
+        margin: 0;
+        padding: 0;
 
         &.provider-details {
           font-size: var(--oc-font-size-xsmall);
@@ -615,7 +627,7 @@ export default defineComponent({
 
           &:hover,
           &.active {
-            background-color: var(--oc-role-secondary-container);
+            background-color: var(--oc-role-surface-container);
           }
 
           &.disabled {
