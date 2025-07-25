@@ -12,6 +12,7 @@
 
 ### ✅ Tests
 
+- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
 - e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
 - change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
 - cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
