@@ -6,7 +6,7 @@ const texEditor = '#text-editor'
 const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
 
-export const close = async (page: Page): Promise<void> => {
+export const close = async (page: Page) => {
   const navigationPromise = page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/)
   await page.locator(closeTextEditorOrViewerButton).click()
   await navigationPromise
