@@ -156,6 +156,7 @@ export function buildIncomingShareResource({
     sharePermissions,
     outgoing: false,
     privateLink: urlJoin(serverUrl, 'f', driveItem.remoteItem.id),
+    hasPreview: () => !!driveItem.thumbnails,
     canRename: () => driveItem['@client.synchronize'],
     canDownload: () => sharePermissions.includes(GraphSharePermission.readContent),
     canUpload: () => sharePermissions.includes(GraphSharePermission.createUpload),

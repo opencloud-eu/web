@@ -42,6 +42,9 @@ export class PreviewService {
   ): Promise<string | undefined> {
     const { space, resource } = options
 
+    console.log(resource)
+    console.log(typeof resource)
+
     if (!resource.canDownload() || !resource.hasPreview()) {
       return undefined
     }
