@@ -85,6 +85,7 @@
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
                 class="preview oc-flex oc-flex-middle"
+                @click="openPreview($event)"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -518,6 +519,17 @@ export default defineComponent({
     },
     hideOptionsDrop() {
       this.optionsDrop?.hide()
+    },
+    openPreview(event: MouseEvent | KeyboardEvent) {
+      if ((event.target as HTMLElement).closest('a')) {
+        return
+      }
+
+      const container = event.currentTarget as HTMLElement
+      const link = container.querySelector<HTMLAnchorElement>('.oc-resource-link')
+      if (link) {
+        window.location.href = link.href
+      }
     }
   }
 })
