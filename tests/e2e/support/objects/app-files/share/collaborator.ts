@@ -110,9 +110,11 @@ export default class Collaborator {
     ])
     await collaboratorInputLocator.focus()
     await page.locator('.vs--open').waitFor()
-    await page
-      .locator(util.format(Collaborator.collaboratorDropdownItem, collaborator.displayName))
-      .click()
+    const dropdownItemLocator = page.locator(
+      util.format(Collaborator.collaboratorDropdownItem, collaborator.displayName)
+    )
+    await page.waitForTimeout(200)
+    await dropdownItemLocator.click()
   }
 
   static async sendInvitation(page: Page, collaborators: string[]): Promise<void> {
