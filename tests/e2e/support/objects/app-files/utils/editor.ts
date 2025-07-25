@@ -6,11 +6,10 @@ const texEditor = '#text-editor'
 const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
 
-export const close = (page: Page): Promise<unknown> => {
-  return Promise.all([
-    page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/),
-    page.locator(closeTextEditorOrViewerButton).click()
-  ])
+export const close = async (page: Page): Promise<void> => {
+  const navigationPromise = page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/)
+  await page.locator(closeTextEditorOrViewerButton).click()
+  await navigationPromise
 }
 
 export const save = async (page: Page): Promise<unknown> => {
