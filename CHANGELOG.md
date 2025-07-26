@@ -1,5 +1,56 @@
 # Changelog
 
+## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-07-26
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
+
+### ✨ Features
+
+- Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
+
+### ✅ Tests
+
+- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
+- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
+- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
+- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
+- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
+- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
+- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
+
+### 🐛 Bug Fixes
+
+- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
+- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
+### 📈 Enhancement
+
+- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
+- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
+- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v9.42.0 [[#1012](https://github.com/opencloud-eu/web/pull/1012)]
+- chore(deps): update dependency vue-tsc to v3.0.4 [[#989](https://github.com/opencloud-eu/web/pull/989)]
+- chore(deps): update traefik docker tag to v3.5.0 - autoclosed [[#1002](https://github.com/opencloud-eu/web/pull/1002)]
+- fix(deps): update dependency zod to v4.0.10 [[#1007](https://github.com/opencloud-eu/web/pull/1007)]
+- fix(deps): update dependency @sentry/vue to v9.41.0 [[#1009](https://github.com/opencloud-eu/web/pull/1009)]
+- fix(deps): update dependency zod to v4.0.8 [[#1000](https://github.com/opencloud-eu/web/pull/1000)]
+- fix(deps): update vue monorepo to v3.5.18 [[#990](https://github.com/opencloud-eu/web/pull/990)]
+- fix(deps): update dependency axios to v1.11.0 [[#991](https://github.com/opencloud-eu/web/pull/991)]
+- chore(deps): update dependency @cucumber/messages to v28.1.0 [[#984](https://github.com/opencloud-eu/web/pull/984)]
+- fix(deps): update typescript-eslint monorepo to v8.38.0 [[#986](https://github.com/opencloud-eu/web/pull/986)]
+- [full-ci] bump-opencloud-3.2.0. run all tests [[#983](https://github.com/opencloud-eu/web/pull/983)]
+- fix(deps): update dependency md-editor-v3 to v5.8.2 [[#972](https://github.com/opencloud-eu/web/pull/972)]
+- chore(deps): update dependency @cucumber/pretty-formatter to v2 [[#973](https://github.com/opencloud-eu/web/pull/973)]
+- chore(deps): update devdependencies (non-major) [[#974](https://github.com/opencloud-eu/web/pull/974)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.8 [[#975](https://github.com/opencloud-eu/web/pull/975)]
+
 ## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-21
 
 ### ❤️ Thanks to all contributors! ❤️
