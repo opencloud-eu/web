@@ -106,8 +106,13 @@
               class="resource-tiles-btn-action-dropdown"
               @quick-action-clicked="showContextMenuOnBtnClick($event, resource, resource.id)"
             >
-              <template #contextMenu="{ isOpen }">
-                <slot name="contextMenu" :resource="resource" :is-open="isOpen" />
+              <template #contextMenu="{ isOpen, dropRef }">
+                <slot
+                  name="contextMenu"
+                  :resource="resource"
+                  :is-open="isOpen"
+                  :drop-ref="dropRef"
+                />
               </template>
             </context-menu-quick-action>
           </template>

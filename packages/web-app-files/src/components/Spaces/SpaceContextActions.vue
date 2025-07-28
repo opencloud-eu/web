@@ -3,7 +3,11 @@
     <oc-spinner :aria-label="$gettext('Loading actions')" />
   </div>
   <div v-else>
-    <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
+    <context-action-menu
+      :menu-sections="menuSections"
+      :action-options="actionOptions"
+      :drop-ref="dropRef"
+    />
     <input
       id="space-image-upload-input"
       ref="spaceImageInput"
@@ -43,6 +47,7 @@ import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'SpaceContextActions',
@@ -55,6 +60,11 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false
+    },
+    dropRef: {
+      type: Object as PropType<Ref<typeof OcDrop>>,
+      required: false,
+      default: null
     }
   },
   setup(props) {

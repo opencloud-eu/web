@@ -25,7 +25,12 @@
       @show-drop="isOpen = true"
       @hide-drop="isOpen = false"
     >
-      <slot name="contextMenu" :item="item" :is-open="isOpen" />
+      <slot
+        :drop-ref="$refs[`context-menu-drop-ref-${resourceDomSelector(item)}`]"
+        name="contextMenu"
+        :item="item"
+        :is-open="isOpen"
+      />
     </oc-drop>
   </oc-button>
 </template>

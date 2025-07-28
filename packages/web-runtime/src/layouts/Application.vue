@@ -32,7 +32,7 @@
         </template>
       </div>
 
-      <portal-target name="app.runtime.bottom.drawer" />
+      <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
     <div class="snackbars">
