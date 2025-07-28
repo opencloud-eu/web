@@ -74,7 +74,7 @@ describe('HandleUpload', () => {
       mocks.opts.clientService.webdav.createFolder.mockResolvedValue(createdFolder)
 
       const uploadFolder = mock<Resource>({ id: '1', path: '/' })
-      const result = await instance.createDirectoryTree([fileToUpload], uploadFolder)
+      const { filesToUpload } = await instance.createDirectoryTree([fileToUpload], uploadFolder)
 
       expect(mocks.opts.uppyService.publish).toHaveBeenCalledWith(
         'uploadSuccess',
@@ -105,7 +105,7 @@ describe('HandleUpload', () => {
           fetchFolder: true
         }
       )
-      expect(result.length).toBe(1)
+      expect(filesToUpload.length).toBe(1)
     })
     it('filters out files whose folders could not be created', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -116,11 +116,11 @@ describe('HandleUpload', () => {
       const fileToUpload = mock<OcUppyFile>({ name: 'name', meta: { relativeFolder } })
       mocks.opts.clientService.webdav.createFolder.mockRejectedValue({})
 
-      const result = await instance.createDirectoryTree([fileToUpload], mock<Resource>())
+      const { filesToUpload } = await instance.createDirectoryTree([fileToUpload], mock<Resource>())
 
       expect(mocks.opts.uppyService.publish).toHaveBeenCalledWith('uploadError', expect.anything())
       expect(mocks.uppy.removeFile).toHaveBeenCalled()
-      expect(result.length).toBe(0)
+      expect(filesToUpload.length).toBe(0)
     })
   })
   describe('method handleUpload', () => {
