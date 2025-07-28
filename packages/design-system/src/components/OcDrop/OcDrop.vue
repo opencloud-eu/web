@@ -179,20 +179,12 @@ onBeforeUnmount(() => {
   drop.value?.removeEventListener('focusout', onFocusOut)
 })
 
-const isTouchDevice = () => {
-  return window.matchMedia?.('(hover: none) and (pointer: coarse)')?.matches
-}
-
 const triggerMapping = computed(() => {
   return (
     {
       hover: 'mouseenter focus'
-    }[unref(dropMode)] || unref(dropMode)
+    }[mode] || mode
   )
-})
-
-const dropMode = computed(() => {
-  return isTouchDevice() ? 'click' : mode
 })
 
 const paddingClass = computed(() => {
@@ -206,9 +198,12 @@ watch(
   }
 )
 
-watch(dropMode, () => {
-  unref(tippyInstance)?.setProps({ trigger: triggerMapping.value })
-})
+watch(
+  () => mode,
+  () => {
+    unref(tippyInstance)?.setProps({ trigger: triggerMapping.value })
+  }
+)
 
 onBeforeUnmount(() => {
   destroy(unref(tippyInstance))
@@ -230,7 +225,7 @@ const initializeTippy = () => {
     trigger: triggerMapping.value,
     placement: position,
     arrow: false,
-    hideOnClick: !(isNested && unref(dropMode) === 'hover'),
+    hideOnClick: !isNested,
     interactive: true,
     plugins: [hideOnEsc],
     theme: 'none',
