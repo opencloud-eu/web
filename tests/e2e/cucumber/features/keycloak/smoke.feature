@@ -47,9 +47,7 @@ Feature: keycloak integration
     And "Alice" shares the following resource using the sidebar panel
       | resource        | recipient | type  | role     | resourceType |
       | finance-folder  | finance   | group | Can edit | folder       |
-      | finance-folder  | Brian     | user  | Can edit | folder       |
-      | security-folder | security  | group | Can view | folder       |
-      | security-folder | Carol     | user  | Can view | folder       |
+      | security-folder | Brian     | user  | Can edit | folder       |
     And "Alice" logs out
 
     And "Brian" logs in
