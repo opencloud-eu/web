@@ -568,6 +568,7 @@ def e2eTests(ctx):
                 "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                 "BROWSER": browser_name,
                 "TERM": "xterm-256color",
+                "FORCE_COLOR": "1",
             }
 
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
@@ -1668,6 +1669,7 @@ def e2eTestsOnKeycloak(ctx):
                          "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                          "BROWSER": "chromium",
                          "TERM": "xterm-256color",
+                         "FORCE_COLOR": "1",
                      },
                      "commands": [
                          "cd tests/e2e",
