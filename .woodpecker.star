@@ -567,6 +567,7 @@ def e2eTests(ctx):
                 "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
                 "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                 "BROWSER": browser_name,
+                "TERM": "xterm-256color",
             }
 
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
@@ -1666,6 +1667,7 @@ def e2eTestsOnKeycloak(ctx):
                          "KEYCLOAK_HOST": "keycloak:8443",
                          "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                          "BROWSER": "chromium",
+                         "TERM": "xterm-256color",
                      },
                      "commands": [
                          "cd tests/e2e",
