@@ -1,5 +1,9 @@
 <template>
-  <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
+  <context-action-menu
+    :menu-sections="menuSections"
+    :action-options="actionOptions"
+    :drop-ref="dropRef"
+  />
 </template>
 
 <script lang="ts">
@@ -32,6 +36,7 @@ import {
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -40,6 +45,11 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<FileActionOptions>,
       required: true
+    },
+    dropRef: {
+      type: Object as PropType<Ref<typeof OcDrop>>,
+      required: false,
+      default: null
     }
   },
   setup(props) {

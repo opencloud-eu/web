@@ -2,15 +2,16 @@
 
 exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
 "<div drawerid="button-drawer" toggle="#button-drawer-toggle" title="Bottom Drawer" closeonclick="false"><button id="button-drawer-toggle">Toggle Drawer</button>
-  <div to="app.runtime.bottom.drawer">
-    <transition-stub name="oc-bottom-drawer-slide" appear="false" persisted="true" css="true">
+  <div>
+    <transition-stub name="oc-bottom-drawer-slide" appear="false" persisted="false" css="true">
       <div class="oc-bottom-drawer-background" role="button" aria-label="Close the bottom drawer">
         <div id="button-drawer" class="oc-bottom-drawer active">
           <div class="oc-card">
             <div class="oc-card-header">
-              <div class="oc-flex oc-flex-between oc-flex-middle"><span class="oc-text-bold">Bottom Drawer</span> <button type="button" aria-label="Close the bottom drawer" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
+              <div class="oc-flex oc-flex-between oc-flex-middle">
+                <!--v-if--> <span class="oc-text-bold">Bottom Drawer</span> <button type="button" aria-label="Close the bottom drawer" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
                   <!--v-if-->
-                  <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+                  <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/close-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -19,7 +20,8 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
-                </button></div>
+                </button>
+              </div>
             </div>
             <div class="oc-card-body"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface" id="action-button">
                 <!--v-if-->
