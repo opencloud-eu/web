@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @types/luxon to v3.7.0 [[#1023](https://github.com/opencloud-eu/web/pull/1023)]
 - fix(deps): update dependency eslint-plugin-n to v17.21.3 [[#1015](https://github.com/opencloud-eu/web/pull/1015)]
 - fix(deps): update dependency @vueuse/core to v13.6.0 [[#1019](https://github.com/opencloud-eu/web/pull/1019)]
 - fix(deps): update dependency @sentry/vue to v9.42.1 [[#1020](https://github.com/opencloud-eu/web/pull/1020)]
