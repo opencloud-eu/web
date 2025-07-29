@@ -774,8 +774,8 @@ importers:
         version: 4.0.11
     devDependencies:
       '@types/luxon':
-        specifier: 3.6.2
-        version: 3.6.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@vitejs/plugin-vue':
         specifier: 6.0.1
         version: 6.0.1(vite@6.3.5(@types/node@22.16.0)(sass@1.89.2)(yaml@2.8.0))(vue@3.5.18(typescript@5.8.3))
@@ -2851,8 +2851,8 @@ packages:
   '@types/lodash@4.17.16':
     resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
 
-  '@types/luxon@3.6.2':
-    resolution: {integrity: sha512-R/BdP7OxEMc44l2Ex5lSXHoIXTB2JLNa3y2QISIbr58U/YcsffyQrYW//hZSdrfxrjRZj3GcUoxMPGdO8gSYuw==}
+  '@types/luxon@3.7.0':
+    resolution: {integrity: sha512-zNduyjkTXTttOp0KUG7ueFORgq6eyFsjbCZ/B8UfrVmfkHD1V9xC9wN/Vk0XUg0R/k/aIX1NeFwZgwe5hsDXfA==}
 
   '@types/markdown-it@14.1.2':
     resolution: {integrity: sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==}
@@ -8715,7 +8715,7 @@ snapshots:
 
   '@types/lodash@4.17.16': {}
 
-  '@types/luxon@3.6.2': {}
+  '@types/luxon@3.7.0': {}
 
   '@types/markdown-it@14.1.2':
     dependencies:
