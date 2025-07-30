@@ -36,6 +36,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v9.43.0 [[#1027](https://github.com/opencloud-eu/web/pull/1027)]
+- fix(deps): update dependency md-editor-v3 to v5.8.3 [[#1025](https://github.com/opencloud-eu/web/pull/1025)]
 - chore(deps): update dependency @types/luxon to v3.7.1 [[#1029](https://github.com/opencloud-eu/web/pull/1029)]
 - chore(deps): update dependency @types/luxon to v3.7.0 [[#1023](https://github.com/opencloud-eu/web/pull/1023)]
 - fix(deps): update dependency eslint-plugin-n to v17.21.3 [[#1015](https://github.com/opencloud-eu/web/pull/1015)]
