@@ -10,11 +10,12 @@ export const setupRouterHooks = (router: Router) => {
 
   // Dispatch a "pathchange" event after navigation for external integrations to react to
   router.afterEach((to, from) => {
-    if (to.path !== from.path) {
-      const event = new CustomEvent('pathchange', {
-        detail: { to, from }
-      })
-      window.dispatchEvent(event)
+    if (to.path === from.path) {
+      return
     }
+    const event = new CustomEvent('pathchange', {
+      detail: { to, from }
+    })
+    window.dispatchEvent(event)
   })
 }
