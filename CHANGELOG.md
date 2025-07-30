@@ -12,6 +12,7 @@
 
 ### ✅ Tests
 
+- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
 - fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
 - fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
 - e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
