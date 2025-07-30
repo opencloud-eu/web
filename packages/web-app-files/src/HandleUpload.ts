@@ -329,7 +329,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         const uppyFile = {
           id: uuidV4(),
           name: basename(path),
-          isFolder: true,
           type: 'folder',
           meta: {
             spaceId: space.id,
@@ -342,7 +341,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
             uploadId,
             routeName,
             routeDriveAliasAndItem,
-            routeShareId
+            routeShareId,
+            isFolder: true
           }
         }
 

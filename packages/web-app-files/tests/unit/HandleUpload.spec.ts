@@ -80,7 +80,6 @@ describe('HandleUpload', () => {
         'uploadSuccess',
         expect.objectContaining({
           name: relativeFolder.split('/')[1],
-          isFolder: true,
           type: 'folder',
           meta: expect.objectContaining({
             spaceId: unref(mocks.opts.space).id,
@@ -93,7 +92,8 @@ describe('HandleUpload', () => {
             routeName: fileToUpload.meta.routeName,
             routeDriveAliasAndItem: fileToUpload.meta.routeDriveAliasAndItem,
             routeShareId: fileToUpload.meta.routeShareId,
-            fileId: createdFolder.fileId
+            fileId: createdFolder.fileId,
+            isFolder: true
           })
         })
       )
