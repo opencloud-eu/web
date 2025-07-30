@@ -13,8 +13,12 @@ export const setupRouterHooks = (router: Router) => {
     if (to.path === from.path) {
       return
     }
+
     const event = new CustomEvent('pathchange', {
-      detail: { to, from }
+      detail: {
+        to: { url: new URL(to.fullPath, window.location.origin).href, name: to.name },
+        from: { name: from.name, url: new URL(from.fullPath, window.location.origin).href }
+      }
     })
     window.dispatchEvent(event)
   })
