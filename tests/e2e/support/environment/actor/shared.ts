@@ -1,5 +1,6 @@
-import { Browser, BrowserContextOptions } from '@playwright/test'
+import { Browser, BrowserContextOptions, devices } from '@playwright/test'
 import path from 'path'
+import { config } from '../../../config'
 
 export interface ActorsOptions {
   browser: Browser
@@ -51,5 +52,37 @@ export const buildBrowserContextOptions = (options: ActorOptions): BrowserContex
     }
   }
 
+  switch (config.browser) {
+    case 'mobile-chromium':
+      Object.assign(contextOptions, devices['Pixel 5'])
+      break
+
+    case 'mobile-webkit':
+      Object.assign(contextOptions, {
+        ...devices['iPhone 12'],
+        userAgent:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    case 'ipad-chromium':
+      Object.assign(contextOptions, {
+        ...devices['iPad Pro 11'],
+        userAgent:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    case 'ipad-landscape-webkit':
+      Object.assign(contextOptions, {
+        ...devices['iPad Pro 11 landscape'],
+        userAgent:
+          'Mozilla/5.0 (iPad; CPU iPad OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+      })
+      break
+
+    default:
+      break
+  }
   return contextOptions
 }
