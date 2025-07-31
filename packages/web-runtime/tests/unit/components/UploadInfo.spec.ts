@@ -35,7 +35,7 @@ describe('UploadInfo component', () => {
       const { wrapper } = getShallowWrapper()
       wrapper.vm.showInfo = true
       wrapper.vm.inPreparation = false
-      wrapper.vm.filesInProgressCount = 1
+      wrapper.vm.itemsInProgressCount = 1
       wrapper.vm.runningUploads = 1
       await nextTick()
 
@@ -81,7 +81,7 @@ describe('UploadInfo component', () => {
     it('should show that an upload is being finalized', async () => {
       const { wrapper } = getShallowWrapper()
       wrapper.vm.showInfo = true
-      wrapper.vm.filesInProgressCount = 1
+      wrapper.vm.itemsInProgressCount = 1
       wrapper.vm.runningUploads = 1
       wrapper.vm.inFinalization = true
       await nextTick()
@@ -94,7 +94,7 @@ describe('UploadInfo component', () => {
     it('should show the progress bar when an upload is in progress', async () => {
       const { wrapper } = getShallowWrapper()
       wrapper.vm.showInfo = true
-      wrapper.vm.filesInProgressCount = 1
+      wrapper.vm.itemsInProgressCount = 1
       wrapper.vm.runningUploads = 1
       await nextTick()
 

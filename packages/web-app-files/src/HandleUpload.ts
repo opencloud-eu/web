@@ -356,7 +356,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         try {
           const folder = await webdav.createFolder(space, {
             path: urlJoin(currentFolderPath, path),
-            fetchFolder: isRoot
+            fetchFolder: isRoot // FIXME: remove once we get the fileId from the server here
           })
           this.uppyService.publish('uploadSuccess', {
             ...uppyFile,
