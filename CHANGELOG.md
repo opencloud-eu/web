@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency eslint-plugin-vue to v10.4.0 [[#1036](https://github.com/opencloud-eu/web/pull/1036)]
 - chore(deps): bump pbkdf2 to 3.1.3 to fix CVE [[#993](https://github.com/opencloud-eu/web/pull/993)]
 - fix(deps): update dependency zod to v4.0.14 [[#1031](https://github.com/opencloud-eu/web/pull/1031)]
 - fix(deps): update dependency zod to v4.0.13 [[#1026](https://github.com/opencloud-eu/web/pull/1026)]
