@@ -3,7 +3,7 @@ import { BasePlugin } from '@uppy/core'
 import { getDroppedFiles } from './getDroppedFiles'
 import toArray from '@uppy/utils/lib/toArray'
 import { DropTargetOptions } from './types'
-import { basename } from 'path'
+import { convertToMinimalUppyFile, createFolderDummyFile } from '../utils'
 
 const defaultOpts = {
   target: null,
@@ -27,26 +27,6 @@ export default class DropTarget<M extends Meta, B extends Body> extends BasePlug
     super(uppy, { ...defaultOpts, ...opts })
     this.type = 'acquirer'
     this.id = this.opts.id || 'DropTarget'
-  }
-
-  addFiles = (files: Array<File>): void => {
-    const descriptors = files.map((file) => ({
-      source: this.id,
-      name: file.name,
-      type: file.type,
-      data: file,
-      meta: {
-        // path of the file relative to the ancestor directory the user selected.
-        // e.g. 'docs/Old Prague/airbnb.pdf'
-        relativePath: (file as any).relativePath || null
-      } as any
-    }))
-
-    try {
-      this.uppy.addFiles(descriptors)
-    } catch (err) {
-      this.uppy.log(err)
-    }
   }
 
   handleDrop = async (event: DragEvent): Promise<void> => {
@@ -74,18 +54,7 @@ export default class DropTarget<M extends Meta, B extends Body> extends BasePlug
 
     const emptyFolders: File[] = []
     const onEmptyFolderDetected = (path: string) => {
-      // manually construct a file object for the folder that can be added to the Uppy state
-      emptyFolders.push({
-        // only use the name of the folder, not the full path
-        name: basename(path),
-
-        // fake directory mime type so it can be identified as a folder by the upload plugin
-        type: 'directory',
-
-        // set path as relativePath. this differs a bit from files where root files don't
-        // have a relativePath.
-        relativePath: path
-      } as any) // need typecast because the File object does not have a relativePath property
+      emptyFolders.push(createFolderDummyFile(path))
     }
 
     const files = await getDroppedFiles(event.dataTransfer, onEmptyFolderDetected, logDropError)
@@ -95,7 +64,13 @@ export default class DropTarget<M extends Meta, B extends Body> extends BasePlug
 
     if (files.length > 0) {
       this.uppy.log('[DropTarget] Files were dropped')
-      this.addFiles(files)
+
+      try {
+        const uppyFiles = convertToMinimalUppyFile('DropTarget', files)
+        this.uppyService.addFiles(uppyFiles)
+      } catch (err) {
+        this.uppy.log(err)
+      }
     }
 
     this.opts.onDrop?.(event)

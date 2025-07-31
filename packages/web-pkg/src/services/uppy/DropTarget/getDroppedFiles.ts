@@ -65,6 +65,7 @@ async function* getFile(
     }
 
     if (!hasFiles && onEmptyFolderDetected) {
+      // empty folder, create a dummy file to represent it in the Uppy queue.
       // note that a folder that only contains other folders is always considered empty,
       // even if there are files located further down the hierarchy. this is because we don't
       // have insight into the contents of the subfolders at this point.

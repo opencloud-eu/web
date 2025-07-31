@@ -299,7 +299,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const directoryTree: Record<string, any> = {}
     const topLevelIds: Record<string, string> = {}
 
-    // folder files are manually constructed folders via the drop plugin.
+    // folder files are manually constructed folders.
     // they should not be part of the Uppy upload queue (which only knows files)
     // and will be created separately. they need to be filtered out later.
     const folderFiles: OcUppyFile[] = []

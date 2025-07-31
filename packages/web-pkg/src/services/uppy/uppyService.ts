@@ -6,8 +6,6 @@ import { Language } from 'vue3-gettext'
 import { eventBus } from '../eventBus'
 import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
-
-// @ts-ignore
 import generateFileID from '@uppy/utils/lib/generateFileID'
 import { Body, MinimalRequiredUppyFile } from '@uppy/utils/lib/UppyFile'
 
@@ -300,6 +298,10 @@ export class UppyService {
 
   generateUploadId(uppyFile: OcUppyFile): string {
     return generateFileID(uppyFile, this.uppy.getID())
+  }
+
+  log(message: unknown, type?: 'error' | 'warning'): void {
+    this.uppy.log(message, type)
   }
 
   addFiles(files: OcMinimalUppyFile[] | File[]) {
