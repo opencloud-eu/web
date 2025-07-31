@@ -37,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): bump pbkdf2 to 3.1.3 to fix CVE [[#993](https://github.com/opencloud-eu/web/pull/993)]
 - fix(deps): update dependency zod to v4.0.14 [[#1031](https://github.com/opencloud-eu/web/pull/1031)]
 - fix(deps): update dependency zod to v4.0.13 [[#1026](https://github.com/opencloud-eu/web/pull/1026)]
 - fix(deps): update dependency @sentry/vue to v9.43.0 [[#1027](https://github.com/opencloud-eu/web/pull/1027)]
