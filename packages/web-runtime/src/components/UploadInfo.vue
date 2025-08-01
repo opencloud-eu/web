@@ -5,7 +5,7 @@
     >
       <p v-oc-tooltip="uploadDetails" class="oc-my-xs" v-text="uploadInfoTitle" />
       <oc-button
-        v-if="!filesInProgressCount"
+        v-if="!itemsInProgressCount"
         id="close-upload-info-btn"
         :aria-label="$gettext('Close')"
         appearance="raw"
@@ -91,7 +91,7 @@
         :value="totalProgress"
         :max="100"
         size="small"
-        :indeterminate="!filesInProgressCount"
+        :indeterminate="!itemsInProgressCount"
       />
     </div>
     <div
@@ -158,9 +158,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, unref } from 'vue'
 import { isUndefined } from 'lodash-es'
-// @ts-ignore
 import getSpeed from '@uppy/utils/lib/getSpeed'
-
 import { HttpError, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { OcUppyFile, queryItemAsString, useConfigStore } from '@opencloud-eu/web-pkg'
 import { formatFileSize, ResourceListItem, ResourceIcon, ResourceName } from '@opencloud-eu/web-pkg'
@@ -187,8 +185,8 @@ export default defineComponent({
     const infoExpanded = ref(false) // show the info including all uploads?
     const uploads = ref<Record<string, UploadResult>>({}) // uploads that are being displayed via "infoExpanded"
     const errors = ref<Record<string, HttpError>>({}) // all failed files
-    const successful = ref<string[]>([]) // all successful files
-    const filesInProgressCount = ref(0) // files (not folders!) that are being processed currently
+    const successful = ref<string[]>([]) // all successful root level items
+    const itemsInProgressCount = ref(0) // root level files and folders that are being processed currently
     const totalProgress = ref(0) // current uploads progress (0-100)
     const uploadsPaused = ref(false) // all uploads paused?
     const uploadsCancelled = ref(false) // all uploads cancelled?
@@ -223,7 +221,7 @@ export default defineComponent({
       uploads,
       errors,
       successful,
-      filesInProgressCount,
+      itemsInProgressCount,
       totalProgress,
       uploadsPaused,
       uploadsCancelled,
@@ -259,12 +257,12 @@ export default defineComponent({
         return this.$gettext('Finalizing upload...')
       }
 
-      if (this.filesInProgressCount && !this.inPreparation) {
+      if (this.itemsInProgressCount && !this.inPreparation) {
         return this.$ngettext(
           '%{ filesInProgressCount } item uploading...',
           '%{ filesInProgressCount } items uploading...',
-          this.filesInProgressCount,
-          { filesInProgressCount: (this.filesInProgressCount as number).toString() }
+          this.itemsInProgressCount,
+          { filesInProgressCount: this.itemsInProgressCount.toString() }
         )
       }
       if (this.uploadsCancelled) {
@@ -332,7 +330,8 @@ export default defineComponent({
       this.inFinalization = false
     })
     this.$uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
-      this.filesInProgressCount += files.filter((f) => !f.meta.isFolder).length
+      // only count root level files and folders
+      this.itemsInProgressCount += files.filter((f) => !f.meta.relativeFolder).length
 
       for (const file of files) {
         if (!this.disableActions && file.isRemote) {
@@ -430,50 +429,44 @@ export default defineComponent({
         this.uploads[file.meta.uploadId].targetRoute = this.buildRouteFromUppyResource(file)
         this.uploads[file.meta.uploadId].status = 'error'
         this.errors[file.meta.uploadId] = error as HttpError
-        this.filesInProgressCount -= 1
 
-        if (file.meta.topLevelFolderId) {
-          this.handleTopLevelFolderUpdate(file, 'error')
+        if (!file.meta.isFolder) {
+          if (!file.meta.relativeFolder) {
+            // reduce count for failed root level files. count for folders is handled in handleTopLevelFolderUpdate
+            this.itemsInProgressCount -= 1
+          }
+
+          if (file.meta.topLevelFolderId) {
+            this.handleTopLevelFolderUpdate(file, 'error')
+          }
         }
       }
     )
     this.$uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
       // item inside folder
-      if (!this.uploads[file.meta.uploadId]) {
-        if (!file.meta.isFolder) {
-          this.successful.push(file.meta.uploadId)
-          this.filesInProgressCount -= 1
-
-          if (file.meta.topLevelFolderId) {
-            this.handleTopLevelFolderUpdate(file, 'success')
-          }
+      if (!this.uploads[file.meta.uploadId] || file.meta.relativeFolder) {
+        if (!file.meta.isFolder && file.meta.topLevelFolderId) {
+          this.handleTopLevelFolderUpdate(file, 'success')
         }
 
-        return
-      }
-
-      // file inside folder that succeeded via retry can now be removed again from this.uploads
-      if (file.meta.relativeFolder) {
-        if (!file.meta.isFolder) {
-          this.successful.push(file.meta.uploadId)
-          this.filesInProgressCount -= 1
-          if (file.meta.topLevelFolderId) {
-            this.handleTopLevelFolderUpdate(file, 'success')
-          }
+        if (this.uploads[file.meta.uploadId]) {
+          // retries end up in this.uploads, even if they're not at the top level.
+          // a succeeded retry can now be removed from this.uploads.
+          delete this.uploads[file.meta.uploadId]
         }
 
-        delete this.uploads[file.meta.uploadId]
         return
       }
 
       this.uploads[file.meta.uploadId] = file
       this.uploads[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
       this.uploads[file.meta.uploadId].targetRoute = this.buildRouteFromUppyResource(file)
+      this.uploads[file.meta.uploadId].status = 'success'
+      this.successful.push(file.meta.uploadId)
 
       if (!file.meta.isFolder) {
-        this.uploads[file.meta.uploadId].status = 'success'
-        this.successful.push(file.meta.uploadId)
-        this.filesInProgressCount -= 1
+        // reduce count for succeeded root level files. count for folders is handled in handleTopLevelFolderUpdate
+        this.itemsInProgressCount -= 1
       }
     })
   },
@@ -512,6 +505,7 @@ export default defineComponent({
       // all files for this top level folder are finished
       if (topLevelFolder.successCount + topLevelFolder.errorCount === topLevelFolder.filesCount) {
         topLevelFolder.status = topLevelFolder.errorCount ? 'error' : 'success'
+        this.itemsInProgressCount -= 1
       }
     },
     closeInfo() {
@@ -525,7 +519,7 @@ export default defineComponent({
       this.uploads = {}
       this.errors = {}
       this.successful = []
-      this.filesInProgressCount = 0
+      this.itemsInProgressCount = 0
       this.runningUploads = 0
       this.disableActions = false
     },
@@ -616,7 +610,7 @@ export default defineComponent({
       this.infoExpanded = !this.infoExpanded
     },
     retryUploads() {
-      this.filesInProgressCount += Object.keys(this.errors).length
+      this.itemsInProgressCount += Object.keys(this.errors).length
       this.runningUploads += 1
       for (const fileID of Object.keys(this.errors)) {
         this.uploads[fileID].status = undefined
@@ -642,7 +636,7 @@ export default defineComponent({
     },
     cancelAllUploads() {
       this.uploadsCancelled = true
-      this.filesInProgressCount = 0
+      this.itemsInProgressCount = 0
       this.runningUploads = 0
       this.resetProgress()
       this.$uppyService.cancelAllUploads()
