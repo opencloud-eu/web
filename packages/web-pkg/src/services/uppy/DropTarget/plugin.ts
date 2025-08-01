@@ -3,7 +3,7 @@ import { BasePlugin } from '@uppy/core'
 import { getDroppedFiles } from './getDroppedFiles'
 import toArray from '@uppy/utils/lib/toArray'
 import { DropTargetOptions } from './types'
-import { convertToMinimalUppyFile, createFolderDummyFile } from '../utils'
+import { convertToMinimalUppyFile } from '../utils'
 
 const defaultOpts = {
   target: null,
@@ -52,15 +52,7 @@ export default class DropTarget<M extends Meta, B extends Body> extends BasePlug
       }
     }
 
-    const emptyFolders: File[] = []
-    const onEmptyFolderDetected = (path: string) => {
-      emptyFolders.push(createFolderDummyFile(path))
-    }
-
-    const files = await getDroppedFiles(event.dataTransfer, onEmptyFolderDetected, logDropError)
-
-    // add empty folders to the Uppy state so the upload plugin can handle them
-    files.push(...emptyFolders)
+    const files = await getDroppedFiles(event.dataTransfer, logDropError)
 
     if (files.length > 0) {
       this.uppy.log('[DropTarget] Files were dropped')

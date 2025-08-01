@@ -1,4 +1,5 @@
 import { urlJoin } from '@opencloud-eu/web-client'
+import { createFolderDummyFile } from '../utils'
 
 /**
  * Methods to retrieve dropped files from a DataTransfer object.
@@ -43,7 +44,6 @@ async function* readDirectory(dirEntry: FileSystemDirectoryEntry): AsyncGenerato
 
 async function* getFile(
   entry: FileSystemEntry,
-  onEmptyFolderDetected?: (path: string) => void,
   logDropError?: (error?: unknown) => void
 ): AsyncGenerator<File> {
   if (entry.isDirectory) {
@@ -52,7 +52,7 @@ async function* getFile(
     for await (const e of readDirectory(entry as FileSystemDirectoryEntry)) {
       if (e.isDirectory) {
         // recurse into the directory
-        yield* getFile(e, onEmptyFolderDetected, logDropError)
+        yield* getFile(e, logDropError)
       } else if (e.isFile) {
         try {
           hasFiles = true
@@ -64,12 +64,12 @@ async function* getFile(
       }
     }
 
-    if (!hasFiles && onEmptyFolderDetected) {
+    if (!hasFiles) {
       // empty folder, create a dummy file to represent it in the Uppy queue.
       // note that a folder that only contains other folders is always considered empty,
       // even if there are files located further down the hierarchy. this is because we don't
       // have insight into the contents of the subfolders at this point.
-      onEmptyFolderDetected(entry.fullPath || entry.name)
+      yield createFolderDummyFile(entry.fullPath || entry.name)
     }
   } else {
     try {
@@ -83,7 +83,6 @@ async function* getFile(
 
 export const getDroppedFiles = async (
   dataTransfer: DataTransfer,
-  onEmptyFolderDetected?: (path: string) => void,
   logDropError?: (error?: unknown) => void
 ): Promise<File[]> => {
   try {
@@ -94,7 +93,7 @@ export const getDroppedFiles = async (
     const items = await Promise.all(Array.from(dataTransfer.items, (item) => getAsEntry(item)))
 
     for (let i = 0; i < items.length; i++) {
-      for await (const file of getFile(items[i], onEmptyFolderDetected, logDropError)) {
+      for await (const file of getFile(items[i], logDropError)) {
         files.push(file)
       }
     }
