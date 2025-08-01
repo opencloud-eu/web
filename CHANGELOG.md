@@ -38,6 +38,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.18.0 [[#1040](https://github.com/opencloud-eu/web/pull/1040)]
+- chore(deps): update pnpm to v10.14.0 [[#1039](https://github.com/opencloud-eu/web/pull/1039)]
+- chore(deps): update devdependencies (non-major) [[#1038](https://github.com/opencloud-eu/web/pull/1038)]
 - chore(deps): update dependency pino-pretty to v13.1.1 [[#1032](https://github.com/opencloud-eu/web/pull/1032)]
 - fix(deps): update dependency eslint-plugin-vue to v10.4.0 [[#1036](https://github.com/opencloud-eu/web/pull/1036)]
 - chore(deps): bump pbkdf2 to 3.1.3 to fix CVE [[#993](https://github.com/opencloud-eu/web/pull/993)]
