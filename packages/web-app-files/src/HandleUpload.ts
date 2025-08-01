@@ -128,7 +128,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         file.meta = {
           ...file.meta,
           tusEndpoint: endpoint,
-          uploadId: uuidV4()
+          uploadId: uuidV4(),
+          isFolder: file.type === 'directory'
         }
 
         filesToUpload[file.id] = file
@@ -413,6 +414,17 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const uploadId = files[0].meta?.uploadId
     const uploadFolder = this.getUploadFolder(uploadId)
     let filesToUpload = this.prepareFiles(files, uploadFolder)
+
+    if (!this.directoryTreeCreateEnabled) {
+      // if directory tree creation is disabled, we need to remove all folder files
+      // from the upload queue
+      filesToUpload = filesToUpload.filter((file) => file.type !== 'directory')
+      if (!filesToUpload.length) {
+        // if there are no files left to upload, we can clear the inputs and do nothing
+        this.uppyService.clearInputs()
+        return
+      }
+    }
 
     // quota check
     if (this.quotaCheckEnabled) {
