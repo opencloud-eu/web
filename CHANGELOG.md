@@ -38,6 +38,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.8.4 [[#1044](https://github.com/opencloud-eu/web/pull/1044)]
+- fix(deps): update dependency @sentry/vue to v10 [[#1043](https://github.com/opencloud-eu/web/pull/1043)]
 - chore(deps): update node.js to v22.18.0 [[#1040](https://github.com/opencloud-eu/web/pull/1040)]
 - chore(deps): update pnpm to v10.14.0 [[#1039](https://github.com/opencloud-eu/web/pull/1039)]
 - chore(deps): update devdependencies (non-major) [[#1038](https://github.com/opencloud-eu/web/pull/1038)]
