@@ -23,7 +23,7 @@ exports[`SharesNavigation component > renders a shares navigation for both mobil
     <oc-button-stub data-v-2b99774a="" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="shares_navigation_mobile" class="oc-p-xs"><span data-v-2b99774a="">Shared with me</span>
       <oc-icon-stub data-v-2b99774a="" accessiblelabel="" color="" filltype="fill" name="arrow-drop-down" size="medium" type="span"></oc-icon-stub>
     </oc-button-stub>
-    <oc-drop-stub data-v-2b99774a="" title="Navigation" closeonclick="true" dropid="oc-drop-1" isnested="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#shares_navigation_mobile" enforcedroponmobile="false">
+    <oc-drop-stub data-v-2b99774a="" title="Navigation" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#shares_navigation_mobile" enforcedroponmobile="false">
       <oc-list-stub data-v-2b99774a="" raw="false">
         <li data-v-2b99774a="">
           <oc-button-stub data-v-2b99774a="" to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile oc-secondary-container">

@@ -76,10 +76,11 @@
               @item-visible="loadPreview({ space, resource: $event })"
               @sort="handleSort"
             >
-              <template #contextMenu="{ resource, isOpen }">
+              <template #contextMenu="{ resource, isOpen, dropRef }">
                 <context-actions
                   v-if="isOpen && isResourceInSelection(resource)"
                   :action-options="{ space, resources: selectedResources }"
+                  :drop-ref="dropRef"
                 />
               </template>
 
