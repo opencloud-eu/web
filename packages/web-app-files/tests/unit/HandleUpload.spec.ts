@@ -41,28 +41,39 @@ describe('HandleUpload', () => {
     instance.removeFilesFromUpload([fileToRemove])
     expect(mocks.uppy.removeFile).toHaveBeenCalledWith(fileToRemove.id)
   })
-  it('correctly prepares all files that need to be uploaded', () => {
-    const { instance, mocks } = getWrapper()
-    mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
-    const fileToUpload = mock<OcUppyFile>({ name: 'name' })
-    const uploadFolder = mock<Resource>({ id: '1', path: '/' })
-    const processedFiles = instance.prepareFiles([fileToUpload], uploadFolder)
+  describe('method prepareFiles', () => {
+    it('correctly prepares all files that need to be uploaded', () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const fileToUpload = mock<OcUppyFile>({ name: 'name' })
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const processedFiles = instance.prepareFiles([fileToUpload], uploadFolder)
 
-    const route = unref(mocks.opts.route)
+      const route = unref(mocks.opts.route)
 
-    expect(processedFiles[0].tus.endpoint).toEqual('/')
-    expect(processedFiles[0].meta.name).toEqual(fileToUpload.name)
-    expect(processedFiles[0].meta.spaceId).toEqual(unref(mocks.opts.space).id)
-    expect(processedFiles[0].meta.spaceName).toEqual(unref(mocks.opts.space).name)
-    expect(processedFiles[0].meta.driveAlias).toEqual(unref(mocks.opts.space).driveAlias)
-    expect(processedFiles[0].meta.driveType).toEqual(unref(mocks.opts.space).driveType)
-    expect(processedFiles[0].meta.currentFolder).toEqual(uploadFolder.path)
-    expect(processedFiles[0].meta.currentFolderId).toEqual(uploadFolder.id)
-    expect(processedFiles[0].meta.tusEndpoint).toEqual(uploadFolder.path)
-    expect(processedFiles[0].meta.relativeFolder).toEqual('')
-    expect(processedFiles[0].meta.routeName).toEqual(route.name)
-    expect(processedFiles[0].meta.routeDriveAliasAndItem).toEqual(route.params.driveAliasAndItem)
-    expect(processedFiles[0].meta.routeShareId).toEqual(route.query.shareId)
+      expect(processedFiles[0].tus.endpoint).toEqual('/')
+      expect(processedFiles[0].meta.name).toEqual(fileToUpload.name)
+      expect(processedFiles[0].meta.spaceId).toEqual(unref(mocks.opts.space).id)
+      expect(processedFiles[0].meta.spaceName).toEqual(unref(mocks.opts.space).name)
+      expect(processedFiles[0].meta.driveAlias).toEqual(unref(mocks.opts.space).driveAlias)
+      expect(processedFiles[0].meta.driveType).toEqual(unref(mocks.opts.space).driveType)
+      expect(processedFiles[0].meta.currentFolder).toEqual(uploadFolder.path)
+      expect(processedFiles[0].meta.currentFolderId).toEqual(uploadFolder.id)
+      expect(processedFiles[0].meta.tusEndpoint).toEqual(uploadFolder.path)
+      expect(processedFiles[0].meta.relativeFolder).toEqual('')
+      expect(processedFiles[0].meta.routeName).toEqual(route.name)
+      expect(processedFiles[0].meta.routeDriveAliasAndItem).toEqual(route.params.driveAliasAndItem)
+      expect(processedFiles[0].meta.routeShareId).toEqual(route.query.shareId)
+    })
+    it('includes the folder name in the "relativeFolder" prop for folder files', () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const fileToUpload = mock<OcUppyFile>({ name: 'name', type: 'directory' })
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const processedFiles = instance.prepareFiles([fileToUpload], uploadFolder)
+
+      expect(processedFiles[0].meta.relativeFolder).toEqual(`/${fileToUpload.name}`)
+    })
   })
   describe('method createDirectoryTree', () => {
     it('creates a directory for a single file with a relative folder given', async () => {
@@ -122,6 +133,29 @@ describe('HandleUpload', () => {
       expect(mocks.uppy.removeFile).toHaveBeenCalled()
       expect(filesToUpload.length).toBe(0)
     })
+    it('returns folder files and removes them from the uppy upload files', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const relativeFolder = '/relativeFolder'
+      const fileToUpload = mock<OcUppyFile>({
+        name: 'directory',
+        type: 'directory',
+        meta: { relativeFolder }
+      })
+      const createdFolder = mock<Resource>()
+      mocks.opts.clientService.webdav.createFolder.mockResolvedValue(createdFolder)
+
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const { filesToUpload, folderFiles } = await instance.createDirectoryTree(
+        [fileToUpload],
+        uploadFolder
+      )
+
+      expect(instance.uppy.removeFile).toHaveBeenCalled()
+      expect(mocks.opts.clientService.webdav.createFolder).toHaveBeenCalledTimes(1)
+      expect(filesToUpload.length).toBe(0)
+      expect(folderFiles.length).toBe(1)
+    })
   })
   describe('method handleUpload', () => {
     it('prepares files and eventually triggers the upload in uppy', async () => {
@@ -155,7 +189,7 @@ describe('HandleUpload', () => {
         { size: 10, remaining: 90, driveType: 'personal', quotaExceeded: false }
       ])(
         'returns a correct result after quota has been checked for own personal and project spaces',
-        async ({ size, remaining, driveType, quotaExceeded }) => {
+        ({ size, remaining, driveType, quotaExceeded }) => {
           const space = mock<SpaceResource>({
             driveType,
             id: '1',
@@ -163,7 +197,7 @@ describe('HandleUpload', () => {
             isOwner: () => true
           })
           const { instance } = getWrapper({ spaces: [space] })
-          const result = await instance.checkQuotaExceeded([
+          const result = instance.checkQuotaExceeded([
             mock<OcUppyFile>({
               name: 'name',
               meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
@@ -173,7 +207,7 @@ describe('HandleUpload', () => {
           expect(result).toBe(quotaExceeded)
         }
       )
-      it('does not check quota for share spaces', async () => {
+      it('does not check quota for share spaces', () => {
         const size = 100
         const remaining = 90
         const space = mock<SpaceResource>({
@@ -182,7 +216,7 @@ describe('HandleUpload', () => {
           spaceQuota: { remaining }
         })
         const { instance } = getWrapper({ spaces: [space] })
-        const result = await instance.checkQuotaExceeded([
+        const result = instance.checkQuotaExceeded([
           mock<OcUppyFile>({
             name: 'name',
             meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
@@ -191,7 +225,7 @@ describe('HandleUpload', () => {
         ])
         expect(result).toBeFalsy()
       })
-      it("does not check quota for other's personal spaces", async () => {
+      it("does not check quota for other's personal spaces", () => {
         const size = 100
         const remaining = 90
         const space = mock<SpaceResource>({
@@ -201,7 +235,7 @@ describe('HandleUpload', () => {
           isOwner: () => false
         })
         const { instance } = getWrapper({ spaces: [space] })
-        const result = await instance.checkQuotaExceeded([
+        const result = instance.checkQuotaExceeded([
           mock<OcUppyFile>({
             name: 'name',
             meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
