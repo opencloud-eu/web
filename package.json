@@ -90,7 +90,7 @@
     "vitest-mock-extended": "3.1.0",
     "vitest": "^3.0.5",
     "vue-demi": "0.14.10",
-    "vue-tsc": "3.0.4",
+    "vue-tsc": "3.0.5",
     "vue": "3.5.18",
     "vue3-gettext": "2.4.0"
   },
