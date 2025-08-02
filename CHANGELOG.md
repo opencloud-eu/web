@@ -1,5 +1,79 @@
 # Changelog
 
+## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-02
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
+
+### ✨ Features
+
+- Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
+
+### 📈 Enhancement
+
+- feat: dispatch pathchange event for external integrations [[#1033](https://github.com/opencloud-eu/web/pull/1033)]
+- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
+- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
+- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
+
+### ✅ Tests
+
+- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
+- fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
+- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
+- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
+- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
+- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
+- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
+- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
+- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
+
+### 🐛 Bug Fixes
+
+- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
+- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
+### 📦️ Dependencies
+
+- chore(deps): update collabora/code docker tag to v25.04.4.2.1 [[#1035](https://github.com/opencloud-eu/web/pull/1035)]
+- fix(deps): update dependency md-editor-v3 to v5.8.4 [[#1044](https://github.com/opencloud-eu/web/pull/1044)]
+- fix(deps): update dependency @sentry/vue to v10 [[#1043](https://github.com/opencloud-eu/web/pull/1043)]
+- chore(deps): update node.js to v22.18.0 [[#1040](https://github.com/opencloud-eu/web/pull/1040)]
+- chore(deps): update pnpm to v10.14.0 [[#1039](https://github.com/opencloud-eu/web/pull/1039)]
+- chore(deps): update devdependencies (non-major) [[#1038](https://github.com/opencloud-eu/web/pull/1038)]
+- chore(deps): update dependency pino-pretty to v13.1.1 [[#1032](https://github.com/opencloud-eu/web/pull/1032)]
+- fix(deps): update dependency eslint-plugin-vue to v10.4.0 [[#1036](https://github.com/opencloud-eu/web/pull/1036)]
+- chore(deps): bump pbkdf2 to 3.1.3 to fix CVE [[#993](https://github.com/opencloud-eu/web/pull/993)]
+- fix(deps): update dependency zod to v4.0.14 [[#1031](https://github.com/opencloud-eu/web/pull/1031)]
+- fix(deps): update dependency zod to v4.0.13 [[#1026](https://github.com/opencloud-eu/web/pull/1026)]
+- fix(deps): update dependency @sentry/vue to v9.43.0 [[#1027](https://github.com/opencloud-eu/web/pull/1027)]
+- fix(deps): update dependency md-editor-v3 to v5.8.3 [[#1025](https://github.com/opencloud-eu/web/pull/1025)]
+- chore(deps): update dependency @types/luxon to v3.7.1 [[#1029](https://github.com/opencloud-eu/web/pull/1029)]
+- chore(deps): update dependency @types/luxon to v3.7.0 [[#1023](https://github.com/opencloud-eu/web/pull/1023)]
+- fix(deps): update dependency eslint-plugin-n to v17.21.3 [[#1015](https://github.com/opencloud-eu/web/pull/1015)]
+- fix(deps): update dependency @vueuse/core to v13.6.0 [[#1019](https://github.com/opencloud-eu/web/pull/1019)]
+- fix(deps): update dependency @sentry/vue to v9.42.1 [[#1020](https://github.com/opencloud-eu/web/pull/1020)]
+- fix(deps): update dependency zod to v4.0.11 [[#1024](https://github.com/opencloud-eu/web/pull/1024)]
+- chore(deps): update devdependencies (non-major) [[#1014](https://github.com/opencloud-eu/web/pull/1014)]
+- fix(deps): update dependency @sentry/vue to v9.42.0 [[#1012](https://github.com/opencloud-eu/web/pull/1012)]
+- chore(deps): update dependency vue-tsc to v3.0.4 [[#989](https://github.com/opencloud-eu/web/pull/989)]
+- chore(deps): update traefik docker tag to v3.5.0 - autoclosed [[#1002](https://github.com/opencloud-eu/web/pull/1002)]
+- fix(deps): update dependency zod to v4.0.10 [[#1007](https://github.com/opencloud-eu/web/pull/1007)]
+- fix(deps): update dependency @sentry/vue to v9.41.0 [[#1009](https://github.com/opencloud-eu/web/pull/1009)]
+- fix(deps): update dependency zod to v4.0.8 [[#1000](https://github.com/opencloud-eu/web/pull/1000)]
+- fix(deps): update vue monorepo to v3.5.18 [[#990](https://github.com/opencloud-eu/web/pull/990)]
+- fix(deps): update dependency axios to v1.11.0 [[#991](https://github.com/opencloud-eu/web/pull/991)]
+- chore(deps): update dependency @cucumber/messages to v28.1.0 [[#984](https://github.com/opencloud-eu/web/pull/984)]
+- fix(deps): update typescript-eslint monorepo to v8.38.0 [[#986](https://github.com/opencloud-eu/web/pull/986)]
+- [full-ci] bump-opencloud-3.2.0. run all tests [[#983](https://github.com/opencloud-eu/web/pull/983)]
+- fix(deps): update dependency md-editor-v3 to v5.8.2 [[#972](https://github.com/opencloud-eu/web/pull/972)]
+- chore(deps): update dependency @cucumber/pretty-formatter to v2 [[#973](https://github.com/opencloud-eu/web/pull/973)]
+- chore(deps): update devdependencies (non-major) [[#974](https://github.com/opencloud-eu/web/pull/974)]
+- fix(deps): update dependency eslint-config-prettier to v10.1.8 [[#975](https://github.com/opencloud-eu/web/pull/975)]
+
 ## [3.2.0](https://github.com/opencloud-eu/web/releases/tag/v3.2.0) - 2025-07-21
 
 ### ❤️ Thanks to all contributors! ❤️
