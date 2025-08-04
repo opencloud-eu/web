@@ -1,5 +1,5 @@
 import { registerClient } from '../services/clientRegistration'
-import { buildApplication, NextApplication } from './application'
+import { buildApplication, loadApplication, NextApplication } from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
 import { loadTheme } from '../helpers/theme'
@@ -42,7 +42,8 @@ import {
   UppyService,
   AppConfigObject,
   resourceIconMappingInjectionKey,
-  ResourceIconMapping
+  ResourceIconMapping,
+  ClassicApplicationScript
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -190,8 +191,9 @@ export const announceAuthClient = async (configStore: ConfigStore): Promise<void
 
 /**
  * announce applications to the runtime, it takes care that all requirements are fulfilled and then:
- * - bulk build all applications
- * - bulk register all applications, no other application is guaranteed to be registered here, don't request one
+ * - bulk loads all application scripts
+ * - builds and registers applications one by one (for a stable order)
+ * - bulk initializes all applications
  */
 export const initializeApplications = async ({
   app,
@@ -210,18 +212,25 @@ export const initializeApplications = async ({
     path?: string
     config?: AppConfigObject
   }
+  type ApplicationResponse = {
+    appName?: string
+    applicationKey: string
+    applicationPath: string
+    applicationConfig: AppConfigObject
+    applicationScript: ClassicApplicationScript
+  }
 
-  let applicationResults: PromiseSettledResult<NextApplication>[] = []
+  let applicationKeys: string[] = []
+  let applicationResponses: PromiseSettledResult<ApplicationResponse>[] = []
   if (appProviderApps) {
-    applicationResults = await Promise.allSettled(
+    applicationKeys = appProviderService.appNames
+    applicationResponses = await Promise.allSettled(
       appProviderService.appNames.map((appName) =>
-        buildApplication({
-          app,
+        loadApplication({
           appName,
           applicationKey: `web-app-external-${appName}`,
           applicationPath: 'web-app-external',
           applicationConfig: {},
-          router,
           configStore
         })
       )
@@ -233,30 +242,53 @@ export const initializeApplications = async ({
       })),
       ...configStore.externalApps
     ]
-    applicationResults = await Promise.allSettled(
-      rawApplications.map((rawApplication) =>
-        buildApplication({
-          app,
-          applicationKey: rawApplication.path,
-          applicationPath: rawApplication.path,
-          applicationConfig: rawApplication.config,
-          router,
+    applicationKeys = rawApplications.map((rawApplication) => rawApplication.path)
+    applicationResponses = await Promise.allSettled(
+      rawApplications.map((rawApplications) =>
+        loadApplication({
+          applicationKey: rawApplications.path,
+          applicationPath: rawApplications.path,
+          applicationConfig: rawApplications.config || {},
           configStore
         })
       )
     )
   }
+  const applicationScripts = applicationResponses.reduce<ApplicationResponse[]>(
+    (acc, applicationResponse) => {
+      // we don't want to fail hard with the full system when one specific application can't get loaded. only log the error.
+      if (applicationResponse.status !== 'fulfilled') {
+        console.error(applicationResponse.reason)
+      } else {
+        acc.push(applicationResponse.value)
+      }
 
-  const applications = applicationResults.reduce<NextApplication[]>((acc, applicationResult) => {
-    // we don't want to fail hard with the full system when one specific application can't get loaded. only log the error.
-    if (applicationResult.status !== 'fulfilled') {
-      console.error(applicationResult.reason)
-    } else {
-      acc.push(applicationResult.value)
+      return acc
+    },
+    []
+  )
+
+  // create applications in a stable order, one by one, so that apps and extensions get registered in the same order every time.
+  const applications: NextApplication[] = []
+  for (const applicationKey of applicationKeys) {
+    const applicationResponse = applicationScripts.find(
+      (appResponse) => appResponse.applicationKey === applicationKey
+    )
+    if (!applicationResponse) {
+      continue
     }
-
-    return acc
-  }, [])
+    try {
+      applications.push(
+        buildApplication({
+          ...applicationResponse,
+          app,
+          router
+        })
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   await Promise.all(applications.map((application) => application.initialize()))
 
