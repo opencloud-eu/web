@@ -47,12 +47,18 @@ import { AppearanceType, uniqueId } from '@opencloud-eu/design-system/helpers'
 import type { ActionOptions } from '../../composables'
 import { MenuSectionDrop } from './types'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { Ref } from 'vue'
 
-const { menuSectionDrop, appearance, actionOptions } = defineProps<{
+const {
+  menuSectionDrop,
+  appearance,
+  actionOptions,
+  parentDropRef = null
+} = defineProps<{
   menuSectionDrop: MenuSectionDrop
   appearance: AppearanceType
   actionOptions: ActionOptions
-  parentDropRef: typeof OcDrop
+  parentDropRef?: Ref<InstanceType<typeof OcDrop>>
 }>()
 
 const dropId = uniqueId(`oc-files-context-actions-${menuSectionDrop.name}-drop-`)

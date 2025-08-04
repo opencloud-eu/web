@@ -62,7 +62,7 @@ export default defineComponent({
       default: false
     },
     dropRef: {
-      type: Object as PropType<Ref<typeof OcDrop>>,
+      type: Object as PropType<Ref<InstanceType<typeof OcDrop>>>,
       required: false,
       default: null
     }
