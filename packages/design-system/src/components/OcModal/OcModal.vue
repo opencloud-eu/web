@@ -9,7 +9,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="oc-modal-title"
-        @keydown.esc="cancelModalAction"
+        @keydown.esc.stop="cancelModalAction"
       >
         <div class="oc-modal-title">
           <h2 id="oc-modal-title" class="oc-text-truncate" v-text="title" />
