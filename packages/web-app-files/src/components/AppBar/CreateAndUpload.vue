@@ -178,6 +178,7 @@
 </template>
 
 <script setup lang="ts">
+import { useEventListener } from '@vueuse/core'
 import {
   ClipboardActions,
   FileAction,
@@ -188,10 +189,8 @@ import {
   useResourcesStore,
   useRoute,
   useSpacesStore,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
-import { useActiveLocation } from '@opencloud-eu/web-pkg'
-import {
+  useUserStore,
+  useActiveLocation,
   useFileActionsCreateNewFile,
   useFileActionsCreateNewFolder,
   useFileActionsPaste,
@@ -318,7 +317,7 @@ const isActionDisabled = (action: Action) => {
   return action.isDisabled ? action.isDisabled() : false
 }
 
-const handlePasteFileEvent = (event: ClipboardEvent) => {
+useEventListener(document, 'paste', (event: ClipboardEvent) => {
   // Ignore file in clipboard if there are already files from OpenCloud in the clipboard
   if (unref(clipboardResources).length || !unref(canUpload)) {
     return
@@ -332,7 +331,7 @@ const handlePasteFileEvent = (event: ClipboardEvent) => {
   const file = fileItem.getAsFile()
   uppyService.addFiles([file])
   event.preventDefault()
-}
+})
 
 const onUploadComplete = async (result: UploadResult) => {
   if (result.successful) {
@@ -406,14 +405,12 @@ const pasteHereButtonTooltip = computed(() => {
 
 onMounted(() => {
   uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadComplete)
-  document.addEventListener('paste', handlePasteFileEvent)
 })
 
 onBeforeUnmount(() => {
   uppyService.removePlugin(uppyService.getPlugin('HandleUpload'))
   uppyService.unsubscribe('uploadCompleted', uploadCompletedSub)
   uppyService.removeDropTarget()
-  document.removeEventListener('paste', handlePasteFileEvent)
 })
 
 watch(

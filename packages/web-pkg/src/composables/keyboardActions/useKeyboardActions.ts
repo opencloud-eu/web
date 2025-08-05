@@ -34,13 +34,18 @@ export interface KeyboardActions {
   selectionCursor: Ref<number>
   removeKeyAction: (id: string) => void
   resetSelectionCursor: () => void
-  bindKeyAction: (keys: { primary: Key; modifier?: Modifier }, callback: () => void) => string
+  bindKeyAction: (
+    keys: { primary: Key; modifier?: Modifier },
+    callback: (event: KeyboardEvent) => void,
+    options?: { preventDefault?: boolean }
+  ) => string
 }
 
 export interface KeyboardAction {
   id: string
   primary: Key
   modifier: Modifier | null
+  preventDefault: boolean
   callback: (event: KeyboardEvent) => void
 }
 
@@ -108,19 +113,23 @@ export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardAc
         return action.primary === key && action.modifier === modifier
       })
       .forEach((action) => {
-        event.preventDefault()
+        if (action.preventDefault) {
+          event.preventDefault()
+        }
         action.callback(event)
       })
   }
   const bindKeyAction = (
     keys: { primary: Key; modifier?: Modifier },
-    callback: () => void
+    callback: (event: KeyboardEvent) => void,
+    { preventDefault = true }: { preventDefault?: boolean } = {}
   ): string => {
     const id = uuidV4()
     actions.value.push({
       id,
       ...keys,
       modifier: keys.modifier ?? null,
+      preventDefault,
       callback
     })
     return id
