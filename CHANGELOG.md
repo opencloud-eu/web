@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899
 
 ### ✨ Features
 
@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
 - fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
 - fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
 - fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
