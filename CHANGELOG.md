@@ -10,6 +10,19 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### ✅ Tests
+
+- upload image from clipboard test [[#1049](https://github.com/opencloud-eu/web/pull/1049)]
+- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
+- fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
+- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
+- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
+- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
+- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
+- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
+- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
+- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
+
 ### 🐛 Bug Fixes
 
 - fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
@@ -24,18 +37,6 @@
 - feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
 - feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
 - feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
-
-### ✅ Tests
-
-- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
-- fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
-- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
-- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
-- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
-- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
-- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
-- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
-- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
 
 ### 📦️ Dependencies
 
