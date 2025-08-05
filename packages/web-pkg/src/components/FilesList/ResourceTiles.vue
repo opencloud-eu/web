@@ -63,15 +63,7 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="
-            (e: MouseEvent) => {
-              if (e.shiftKey) {
-                emitTileClick(resource, e)
-              } else {
-                emitSelect([(resource as Resource).id])
-              }
-            }
-          "
+          @click.stop="(e: MouseEvent) => handleClickWithModifier(e, resource)"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -232,6 +224,7 @@ const router = useRouter()
 const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
+const { interceptModifierClick } = useInterceptModifierClick()
 const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
 const {
   isEnabled: isEmbedModeEnabled,
@@ -300,8 +293,9 @@ const getRoute = (resource: Resource) => {
 
   return action.route({ space: s, resources: [resource] })
 }
+
 const emitTileClick = (resource: Resource, event?: MouseEvent) => {
-  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 
@@ -328,7 +322,7 @@ const showContextMenuOnBtnClick = (
 ) => {
   const { dropdown, event } = data
 
-  if (event && useInterceptModifierClick(event as MouseEvent, item)) {
+  if (event && interceptModifierClick(event as MouseEvent, item)) {
     return
   }
 
@@ -423,7 +417,7 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
-  if (event instanceof MouseEvent && useInterceptModifierClick(event, item)) {
+  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
     return
   }
 
@@ -441,11 +435,20 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
+const handleClickWithModifier = (event: MouseEvent, item: Resource) => {
+  if (interceptModifierClick(event, item)) {
+    toggleSelection(item)
+    return
+  }
+
+  emitTileClick(item, event)
+}
+
 const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
   const resource = data[0]
   const eventData = data[1]
 
-  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 

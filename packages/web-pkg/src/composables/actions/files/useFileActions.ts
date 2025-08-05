@@ -48,6 +48,10 @@ export interface GetFileActionsOptions extends FileActionOptions {
   omitSystemActions?: boolean
 }
 
+export interface FileActionOptionsWithEvent extends FileActionOptions<Resource> {
+  event?: MouseEvent
+}
+
 export const useFileActions = () => {
   const appsStore = useAppsStore()
   const router = useRouter()

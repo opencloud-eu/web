@@ -5,7 +5,8 @@ import { SideBarEventTopics } from '../../sideBar'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useRouter } from '../../router'
-import { FileAction, FileActionOptions } from '../types'
+import { FileAction } from '../types'
+import { FileActionOptionsWithEvent } from './useFileActions'
 import { useCanShare } from '../../shares'
 import { useResourcesStore } from '../../piniaStores'
 import { useInterceptModifierClick } from '../../keyboardActions'
@@ -16,13 +17,14 @@ export const useFileActionsShowShares = () => {
   const { canShare } = useCanShare()
   const resourcesStore = useResourcesStore()
 
-  const handler = ({ resources, event }: FileActionOptions & { event?: MouseEvent }) => {
+  const handler = ({ resources, event }: FileActionOptionsWithEvent & { event?: MouseEvent }) => {
     const resource = resources[0]
+    const { interceptModifierClick } = useInterceptModifierClick()
 
-    if (useInterceptModifierClick(event, resource)) {
+    if (event && interceptModifierClick(event, resource)) {
       return
     }
-    resourcesStore.setSelection(resources.map(({ id }) => id))
+
     eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
   }
 

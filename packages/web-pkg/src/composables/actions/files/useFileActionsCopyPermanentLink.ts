@@ -36,9 +36,8 @@ export const useFileActionsCopyPermanentLink = () => {
         const { resources, event } = options
         const resource = resources[0]
 
-        if (useInterceptModifierClick(event, resource)) {
-          return
-        }
+        const { interceptModifierClick } = useInterceptModifierClick()
+        if (event && interceptModifierClick(event, resource)) return
 
         return copyLinkToClipboard(resource.privateLink)
       },

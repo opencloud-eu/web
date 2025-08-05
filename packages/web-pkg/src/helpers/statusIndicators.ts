@@ -66,9 +66,10 @@ const getUserIndicator = ({
     type: isDirect ? 'user-direct' : 'user-indirect',
     fillType: 'line',
     handler: (resource: Resource, event?: MouseEvent) => {
-      if (event && useInterceptModifierClick(event, resource)) {
-        return
-      }
+      const { interceptModifierClick } = useInterceptModifierClick()
+      if (event && interceptModifierClick(event, resource)) return
+
+      eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
     }
   }
 }

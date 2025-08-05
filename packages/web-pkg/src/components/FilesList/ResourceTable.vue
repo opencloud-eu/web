@@ -69,7 +69,7 @@
         :outline="isLatestSelectedItem(item)"
         @click.stop="
           (e: MouseEvent) => {
-            if (!useInterceptModifierClick(e, item)) {
+            if (!interceptModifierClick(e, item)) {
               toggleSelection(item.id)
             }
           }
@@ -105,7 +105,7 @@
           appearance="raw"
           @click.stop="
             (e: MouseEvent) => {
-              if (useInterceptModifierClick(e, item)) {
+              if (interceptModifierClick(e, item)) {
                 return
               }
               openRenameDialog(item)
@@ -202,7 +202,7 @@
         no-hover
         @click.stop="
           (e: MouseEvent) => {
-            if (useInterceptModifierClick(e, item)) {
+            if (interceptModifierClick(e, item)) {
               return
             }
             openSharingSidebar(item, e)
@@ -235,7 +235,7 @@
         no-hover
         @click.stop="
           (e: MouseEvent) => {
-            if (useInterceptModifierClick(e, item)) {
+            if (interceptModifierClick(e, item)) {
               return
             }
             openSharingSidebar(item, e)
@@ -597,6 +597,7 @@ export default defineComponent({
     const capabilityStore = useCapabilityStore()
     const { getMatchingSpace } = useGetMatchingSpace()
     const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
+    const { interceptModifierClick } = useInterceptModifierClick()
     const folderLinkUtils = useFolderLink({
       space: ref(props.space),
       targetRouteCallback: computed(() => props.targetRouteCallback)
@@ -758,7 +759,7 @@ export default defineComponent({
       emitSelect,
       toggleSelection,
       eventBus,
-      useInterceptModifierClick,
+      interceptModifierClick,
       areFileExtensionsShown,
       latestSelectedId,
       isResourceClickable,
@@ -1058,8 +1059,16 @@ export default defineComponent({
     openTagsSidebar() {
       eventBus.publish(SideBarEventTopics.open)
     },
+
+    handleFileClick(e: MouseEvent, resource: Resource) {
+      const { interceptModifierClick } = useInterceptModifierClick()
+      if (interceptModifierClick(e, resource)) return
+      this.$emit('fileClick', { space: this.getMatchingSpace(resource), resources: [resource] })
+    },
+
     openSharingSidebar(file: Resource, event?: MouseEvent) {
-      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, file)) {
+      const { interceptModifierClick } = useInterceptModifierClick()
+      if (event instanceof MouseEvent && interceptModifierClick(event, file)) {
         return
       }
       let panelToOpen: unknown
@@ -1131,7 +1140,7 @@ export default defineComponent({
     showContextMenuOnBtnClick(data: ContextMenuBtnClickEventData, item: Resource) {
       const { dropdown, event } = data
 
-      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, item)) {
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, item)) {
         return
       }
 
@@ -1148,7 +1157,7 @@ export default defineComponent({
       displayPositionedDropdown(dropdown.tippy, event, this.contextMenuButton)
     },
     showContextMenu(row: ComponentPublicInstance<unknown>, event: MouseEvent, item: Resource) {
-      if (event instanceof MouseEvent && this.useInterceptModifierClick(event, item)) {
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, item)) {
         return
       }
       event.preventDefault()
@@ -1249,7 +1258,8 @@ export default defineComponent({
       )
     },
     emitFileClick(resource: Resource, event?: MouseEvent) {
-      if (useInterceptModifierClick(event, resource)) {
+      const { interceptModifierClick } = useInterceptModifierClick()
+      if (interceptModifierClick(event, resource)) {
         return
       }
       const space = this.getMatchingSpace(resource)
