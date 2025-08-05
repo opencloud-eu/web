@@ -38,6 +38,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.1.0 [[#1041](https://github.com/opencloud-eu/web/pull/1041)]
+- fix(deps): update typescript-eslint monorepo to v8.39.0 [[#1048](https://github.com/opencloud-eu/web/pull/1048)]
 - chore(deps): update dependency vue-tsc to v3.0.5 [[#1045](https://github.com/opencloud-eu/web/pull/1045)]
 - chore(deps): update collabora/code docker tag to v25.04.4.2.1 [[#1035](https://github.com/opencloud-eu/web/pull/1035)]
 - fix(deps): update dependency md-editor-v3 to v5.8.4 [[#1044](https://github.com/opencloud-eu/web/pull/1044)]
