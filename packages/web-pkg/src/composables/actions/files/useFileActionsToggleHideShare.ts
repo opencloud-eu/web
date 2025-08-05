@@ -64,9 +64,7 @@ export const useFileActionsToggleHideShare = () => {
     }
 
     showErrorMessage({
-      title: hidden
-        ? $gettext('Failed to hide the share')
-        : $gettext('Failed to unhide share share'),
+      title: hidden ? $gettext('Failed to hide the share') : $gettext('Failed to unhide the share'),
       errors
     })
   }

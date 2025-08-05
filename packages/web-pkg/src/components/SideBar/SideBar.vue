@@ -71,8 +71,13 @@
               >
                 <component
                   :is="p.component"
-                  v-if="[activePanelName, oldPanelName].includes(p.name)"
+                  v-if="
+                    hasActiveRootPanel
+                      ? p.isRoot?.(panelContext)
+                      : [activePanelName, oldPanelName].includes(p.name)
+                  "
                   :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
+                  class="oc-rounded"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>

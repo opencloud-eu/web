@@ -8,7 +8,7 @@ import {
   announceCustomStyles,
   announceConfiguration
 } from '../../../src/container/bootstrap'
-import { buildApplication } from '../../../src/container/application'
+import { buildApplication, loadApplication } from '../../../src/container/application'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('../../../src/container/application')
@@ -24,16 +24,27 @@ describe('initialize applications', () => {
     const initialize = vi.fn()
     const ready = vi.fn()
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const buildApplicationMock = vi
+
+    const loadApplicationMock = vi
       .fn()
-      .mockImplementation(({ applicationPath }: { applicationPath: string }) => {
-        if (applicationPath.includes('Valid')) {
-          return Promise.resolve({ initialize, ready })
+      .mockImplementation(
+        ({
+          applicationKey,
+          applicationPath
+        }: {
+          applicationKey: string
+          applicationPath: string
+        }) => {
+          if (applicationPath.includes('Valid')) {
+            return Promise.resolve({ applicationKey })
+          }
+
+          return Promise.reject(fishyError)
         }
+      )
+    vi.mocked(loadApplication).mockImplementation(loadApplicationMock)
 
-        return Promise.reject(fishyError)
-      })
-
+    const buildApplicationMock = vi.fn().mockReturnValue({ initialize, ready })
     vi.mocked(buildApplication).mockImplementation(buildApplicationMock)
 
     const configStore = useConfigStore()
@@ -50,7 +61,8 @@ describe('initialize applications', () => {
       appProviderService: undefined
     })
 
-    expect(buildApplicationMock).toHaveBeenCalledTimes(4)
+    expect(loadApplicationMock).toHaveBeenCalledTimes(4)
+    expect(buildApplicationMock).toHaveBeenCalledTimes(2)
     expect(initialize).toHaveBeenCalledTimes(2)
     expect(errorSpy).toHaveBeenCalledTimes(2)
     expect(errorSpy.mock.calls[0][0]).toMatchObject(fishyError)
