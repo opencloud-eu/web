@@ -87,3 +87,15 @@ Feature: Upload
     Then following resources should not be displayed in the files list for user "Alice"
       | resource      |
       | lorem-big.txt |
+
+
+  Scenario: upload resource from clipboard
+    When "Alice" uploads an image from the clipboard
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | image.png |
+    And "Alice" opens the following file in mediaviewer
+      | resource  |
+      | image.png |
+    And "Alice" closes the file viewer
+    And "Alice" logs out

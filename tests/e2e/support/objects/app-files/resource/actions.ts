@@ -2230,3 +2230,16 @@ export const openFileViaContextMenu = async ({
   await expect(editorItem).toBeVisible()
   await editorItem.click()
 }
+
+export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promise<void> => {
+  const buffer = await page.screenshot()
+
+  await page.locator(resourceUploadButton).click()
+  const fileInput = await page.locator(fileUploadInput)
+  await fileInput.setInputFiles({
+    name: 'image.png',
+    mimeType: 'image/png',
+    buffer: buffer
+  })
+  await page.keyboard.press('Escape')
+}
