@@ -1090,3 +1090,12 @@ When(
     await resourceObject.openFileViaContextMenu(file, fileViewer as (typeof allowedViewers)[number])
   }
 )
+
+When(
+  '{string} uploads an image from the clipboard',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.uploadImageFromClipboard()
+  }
+)
