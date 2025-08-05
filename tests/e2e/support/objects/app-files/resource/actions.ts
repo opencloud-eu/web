@@ -2232,6 +2232,8 @@ export const openFileViaContextMenu = async ({
 }
 
 export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promise<void> => {
+  // We use a screenshot of the current page to simulate clipboard image content,
+  // since direct clipboard access is not available in Playwright tests.
   const buffer = await page.screenshot()
 
   await page.locator(resourceUploadButton).click()
