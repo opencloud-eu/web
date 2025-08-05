@@ -100,6 +100,9 @@ interface Props {
    * @default false
    */
   isNestedElement?: boolean
+  /**
+   * @docs The parent `OcBottomDrawer` ref of the nested bottom drawer.
+   */
   nestedParentRef?: Ref<
     ComponentPublicInstance & {
       show: () => void

@@ -67,8 +67,7 @@ export interface Props {
    */
   isNestedElement?: boolean
   /**
-   * @docs Determines the event that triggers the drop.
-   * @default 'click'
+   * @docs The parent `OcDrop` ref of the nested drop.
    */
   nestedParentRef?: Ref<
     ComponentPublicInstance & {
@@ -77,6 +76,10 @@ export interface Props {
       getElement: () => HTMLElement
     }
   >
+  /**
+   * @docs Determines the event that triggers the drop.
+   * @default 'click'
+   */
   mode?: 'click' | 'hover' | 'manual'
   /**
    * @docs The visual offset of the drop.
