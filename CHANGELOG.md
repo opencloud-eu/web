@@ -10,6 +10,14 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 🐛 Bug Fixes
+
+- fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
+- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
+- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
+- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
 ### ✅ Tests
 
 - upload image from clipboard test [[#1049](https://github.com/opencloud-eu/web/pull/1049)]
@@ -22,13 +30,6 @@
 - [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
 - clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
 - e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
-
-### 🐛 Bug Fixes
-
-- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
-- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
-- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
-- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
 
 ### 📈 Enhancement
 
