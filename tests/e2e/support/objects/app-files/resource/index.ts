@@ -405,4 +405,8 @@ export class Resource {
   async openFileViaContextMenu(resource: string, fileViewer: string): Promise<void> {
     await po.openFileViaContextMenu({ page: this.#page, resource, fileViewer })
   }
+
+  async uploadImageFromClipboard(): Promise<void> {
+    await po.uploadImageFromClipboard({ page: this.#page })
+  }
 }
