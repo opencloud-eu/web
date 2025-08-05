@@ -4,48 +4,46 @@
     v-if="isOpen"
     :to="usePortal ? portalTarget : undefined"
   >
-    <transition name="oc-bottom-drawer-slide">
-      <div
-        v-if="isOpen"
-        ref="bottomDrawerRef"
-        class="oc-bottom-drawer-background"
-        role="button"
-        :aria-label="$gettext('Close the bottom drawer')"
-        @click="onBackgroundClicked"
-      >
-        <focus-trap>
-          <div :id="drawerId" class="oc-bottom-drawer">
-            <div class="oc-card">
-              <div class="oc-card-header">
-                <div class="oc-flex oc-flex-between oc-flex-middle">
-                  <oc-button
-                    v-if="isNestedElement"
-                    appearance="raw"
-                    class="raw-hover-surface oc-bottom-drawer-back-button"
-                    :aria-label="$gettext('Open the parent bottom drawer')"
-                    @click="openParentDrawer"
-                  >
-                    <oc-icon name="arrow-left" fill-type="line" />
-                  </oc-button>
-                  <span class="oc-text-bold" v-text="title" />
-                  <oc-button
-                    appearance="raw"
-                    class="raw-hover-surface oc-bottom-drawer-close-button"
-                    :aria-label="$gettext('Close the bottom drawer')"
-                    @click="hide"
-                  >
-                    <oc-icon name="close" fill-type="line" />
-                  </oc-button>
-                </div>
-              </div>
-              <div ref="bottomDrawerCardBodyRef" class="oc-card-body">
-                <slot />
+    <div
+      v-if="isOpen"
+      ref="bottomDrawerRef"
+      class="oc-bottom-drawer-background"
+      role="button"
+      :aria-label="$gettext('Close the bottom drawer')"
+      @click="onBackgroundClicked"
+    >
+      <focus-trap>
+        <div :id="drawerId" class="oc-bottom-drawer">
+          <div class="oc-card">
+            <div class="oc-card-header">
+              <div class="oc-flex oc-flex-between oc-flex-middle">
+                <oc-button
+                  v-if="isNestedElement"
+                  appearance="raw"
+                  class="raw-hover-surface oc-bottom-drawer-back-button"
+                  :aria-label="$gettext('Open the parent bottom drawer')"
+                  @click="openParentDrawer"
+                >
+                  <oc-icon name="arrow-left" fill-type="line" />
+                </oc-button>
+                <span class="oc-text-bold" v-text="title" />
+                <oc-button
+                  appearance="raw"
+                  class="raw-hover-surface oc-bottom-drawer-close-button"
+                  :aria-label="$gettext('Close the bottom drawer')"
+                  @click="hide"
+                >
+                  <oc-icon name="close" fill-type="line" />
+                </oc-button>
               </div>
             </div>
+            <div ref="bottomDrawerCardBodyRef" class="oc-card-body">
+              <slot />
+            </div>
           </div>
-        </focus-trap>
-      </div>
-    </transition>
+        </div>
+      </focus-trap>
+    </div>
   </component>
 </template>
 
