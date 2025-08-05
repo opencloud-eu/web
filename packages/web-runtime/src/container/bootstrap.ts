@@ -223,7 +223,7 @@ export const initializeApplications = async ({
   let applicationKeys: string[] = []
   let applicationResponses: PromiseSettledResult<ApplicationResponse>[] = []
   if (appProviderApps) {
-    applicationKeys = appProviderService.appNames
+    applicationKeys = appProviderService.appNames.map((appName) => `web-app-external-${appName}`)
     applicationResponses = await Promise.allSettled(
       appProviderService.appNames.map((appName) =>
         loadApplication({
