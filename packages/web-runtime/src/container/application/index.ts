@@ -62,26 +62,26 @@ const loadScriptRequireJS = <T>(moduleUri: string) => {
     )
   )
 }
-/**
- * sniffs arguments and decides if given manifest is of next or current application style.
- */
-export const buildApplication = async ({
-  app,
+
+export const loadApplication = async ({
   appName,
   applicationKey,
   applicationPath,
   applicationConfig,
-  router,
   configStore
 }: {
-  app: App
   appName?: string
   applicationKey: string
   applicationPath: string
   applicationConfig: AppConfigObject
-  router: Router
   configStore: ConfigStore
-}) => {
+}): Promise<{
+  appName?: string
+  applicationKey: string
+  applicationPath: string
+  applicationConfig: AppConfigObject
+  applicationScript: ClassicApplicationScript
+}> => {
   if (applicationStore.has(applicationKey)) {
     throw new RuntimeError('application already announced', applicationKey, applicationPath)
   }
@@ -118,8 +118,40 @@ export const buildApplication = async ({
     throw new RuntimeError('cannot load application', applicationPath, e)
   }
 
-  let application: NextApplication
+  return {
+    appName,
+    applicationKey,
+    applicationPath,
+    applicationConfig,
+    applicationScript
+  }
+}
 
+/**
+ * sniffs arguments and decides if given manifest is of next or current application style.
+ */
+export const buildApplication = ({
+  app,
+  appName,
+  applicationKey,
+  applicationPath,
+  applicationConfig,
+  applicationScript,
+  router
+}: {
+  app: App
+  appName?: string
+  applicationKey: string
+  applicationPath: string
+  applicationConfig: AppConfigObject
+  applicationScript: ClassicApplicationScript
+  router: Router
+}) => {
+  if (applicationStore.has(applicationKey)) {
+    throw new RuntimeError('application already announced', applicationKey, applicationPath)
+  }
+
+  let application: NextApplication
   try {
     /** add valuable sniffer to detect next applications, then implement next application factory */
     if (!isObject(applicationScript.appInfo) && !applicationScript.setup) {
