@@ -6,7 +6,8 @@ export function useToggleTile(data: [Resource, MouseEvent | KeyboardEvent], even
   const resource = data[0]
   const eventData = data[1]
 
-  if (event && useInterceptModifierClick(event as MouseEvent, resource)) {
+  const { interceptModifierClick } = useInterceptModifierClick()
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
     return
   }
 
