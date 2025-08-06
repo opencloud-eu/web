@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: dynamic viewport height on mobile devices [[#1058](https://github.com/opencloud-eu/web/pull/1058)]
 - fix: crippled search after leaving public link [[#1053](https://github.com/opencloud-eu/web/pull/1053)]
 - fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
 - fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
