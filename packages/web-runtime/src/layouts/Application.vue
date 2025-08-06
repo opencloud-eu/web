@@ -199,7 +199,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-flow: column;
   flex-wrap: nowrap;
-  height: 100vh;
+  height: 100dvh;
 
   #global-progress-bar {
     z-index: 10;

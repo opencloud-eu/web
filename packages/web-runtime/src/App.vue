@@ -141,8 +141,8 @@ body {
 
 #web {
   background-color: var(--oc-role-chrome);
-  height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow-y: hidden;
 
   .mark-highlight {
