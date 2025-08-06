@@ -43,6 +43,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.0.15 [[#1055](https://github.com/opencloud-eu/web/pull/1055)]
 - fix(deps): update dependency @sentry/vue to v10.1.0 [[#1041](https://github.com/opencloud-eu/web/pull/1041)]
 - fix(deps): update typescript-eslint monorepo to v8.39.0 [[#1048](https://github.com/opencloud-eu/web/pull/1048)]
 - chore(deps): update dependency vue-tsc to v3.0.5 [[#1045](https://github.com/opencloud-eu/web/pull/1045)]
