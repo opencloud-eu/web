@@ -10,6 +10,16 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 🐛 Bug Fixes
+
+- fix: crippled search after leaving public link [[#1053](https://github.com/opencloud-eu/web/pull/1053)]
+- fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
+- fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
+- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
+- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
+- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
 ### 📈 Enhancement
 
 - feat: preserve empty folders on upload [[#1018](https://github.com/opencloud-eu/web/pull/1018)]
@@ -18,15 +28,6 @@
 - feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
 - feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
 - feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
-
-### 🐛 Bug Fixes
-
-- fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
-- fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
-- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
-- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
-- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
-- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
 
 ### ✅ Tests
 
