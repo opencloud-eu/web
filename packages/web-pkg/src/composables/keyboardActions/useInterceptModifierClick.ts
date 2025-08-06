@@ -14,7 +14,6 @@ export function useInterceptModifierClick() {
       return false
     }
 
-    event.preventDefault?.()
     event.stopPropagation?.()
     event.stopImmediatePropagation?.()
 

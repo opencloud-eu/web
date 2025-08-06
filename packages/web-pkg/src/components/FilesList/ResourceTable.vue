@@ -1059,16 +1059,14 @@ export default defineComponent({
     openTagsSidebar() {
       eventBus.publish(SideBarEventTopics.open)
     },
-
     handleFileClick(e: MouseEvent, resource: Resource) {
-      const { interceptModifierClick } = useInterceptModifierClick()
-      if (interceptModifierClick(e, resource)) return
+      if (this.interceptModifierClick(e, resource)) {
+        return
+      }
       this.$emit('fileClick', { space: this.getMatchingSpace(resource), resources: [resource] })
     },
-
     openSharingSidebar(file: Resource, event?: MouseEvent) {
-      const { interceptModifierClick } = useInterceptModifierClick()
-      if (event instanceof MouseEvent && interceptModifierClick(event, file)) {
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, file)) {
         return
       }
       let panelToOpen: unknown
@@ -1258,8 +1256,7 @@ export default defineComponent({
       )
     },
     emitFileClick(resource: Resource, event?: MouseEvent) {
-      const { interceptModifierClick } = useInterceptModifierClick()
-      if (interceptModifierClick(event, resource)) {
+      if (this.interceptModifierClick(event, resource)) {
         return
       }
       const space = this.getMatchingSpace(resource)

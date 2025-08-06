@@ -7,11 +7,13 @@ import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client
 import { Resource } from '@opencloud-eu/web-client'
 import type { FileActionOptions } from '../types'
 import { useInterceptModifierClick } from '../../keyboardActions'
+import { FileActionOptionsWithEvent } from './useFileActions'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
   const { copyToClipboard } = useClipboard()
+  const { interceptModifierClick } = useInterceptModifierClick()
 
   const copyLinkToClipboard = async (url: string) => {
     try {
@@ -24,9 +26,7 @@ export const useFileActionsCopyPermanentLink = () => {
       })
     }
   }
-  interface FileActionOptionsWithEvent extends FileActionOptions<Resource> {
-    event?: MouseEvent
-  }
+
   const actions = computed((): FileAction[] => [
     {
       name: 'copy-permanent-link',
@@ -36,8 +36,9 @@ export const useFileActionsCopyPermanentLink = () => {
         const { resources, event } = options
         const resource = resources[0]
 
-        const { interceptModifierClick } = useInterceptModifierClick()
-        if (event && interceptModifierClick(event, resource)) return
+        if (event && interceptModifierClick(event, resource)) {
+          return
+        }
 
         return copyLinkToClipboard(resource.privateLink)
       },

@@ -16,10 +16,10 @@ export const useFileActionsShowShares = () => {
   const { $gettext } = useGettext()
   const { canShare } = useCanShare()
   const resourcesStore = useResourcesStore()
+  const { interceptModifierClick } = useInterceptModifierClick()
 
   const handler = ({ resources, event }: FileActionOptionsWithEvent & { event?: MouseEvent }) => {
     const resource = resources[0]
-    const { interceptModifierClick } = useInterceptModifierClick()
 
     if (event && interceptModifierClick(event, resource)) {
       return

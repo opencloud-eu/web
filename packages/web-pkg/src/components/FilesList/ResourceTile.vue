@@ -40,7 +40,6 @@
         >
           <slot name="imageField" :item="resource">
             <oc-image
-              role="button"
               v-if="resource.thumbnail"
               class="tile-preview"
               :src="resource.thumbnail"
@@ -59,11 +58,7 @@
           </slot>
         </div>
       </resource-link>
-      <div
-        class="oc-card-body oc-p-s"
-        role="button"
-        @click.passive="toggleTile([resource, $event], $event)"
-      >
+      <div class="oc-card-body oc-p-s" @click.stop="toggleTile([resource, $event], $event)">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item
@@ -142,10 +137,7 @@ defineSlots<{
   selection?: (props: { item: Resource }) => unknown
 }>()
 
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
-  useToggleTile(data, event)
-}
-
+const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 
 const observerTarget = customRef((track, trigger) => {
