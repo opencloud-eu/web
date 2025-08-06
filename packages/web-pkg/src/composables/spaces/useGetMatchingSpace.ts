@@ -1,5 +1,5 @@
 import { useRouteParam } from '../router'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { isIncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   MountPointSpaceResource,
   extractStorageId,
@@ -81,7 +81,8 @@ export const useGetMatchingSpace = (options?: GetMatchingSpaceOptions) => {
     return (
       resource?.storageId &&
       resource?.storageId === spacesStore.personalSpace?.storageId &&
-      resource?.path === '/'
+      resource?.path === '/' &&
+      !isIncomingShareResource(resource)
     )
   }
 

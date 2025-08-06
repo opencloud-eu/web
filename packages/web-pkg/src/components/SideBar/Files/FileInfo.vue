@@ -26,8 +26,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, unref } from 'vue'
-import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useResourcesStore } from '../../../composables'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useGetMatchingSpace, useResourcesStore } from '../../../composables'
 import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 import ResourceName from '../../FilesList/ResourceName.vue'
 
@@ -42,15 +42,14 @@ export default defineComponent({
   },
   setup() {
     const resourcesStore = useResourcesStore()
+    const { isPersonalSpaceRoot } = useGetMatchingSpace()
 
     const resource = inject<Resource>('resource')
     const space = inject<SpaceResource>('space')
     const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
     const resourceName = computed(() => {
-      return isPersonalSpaceResource(unref(space)) && unref(resource).path === '/'
-        ? unref(space).name
-        : unref(resource).name
+      return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
     })
 
     return {
