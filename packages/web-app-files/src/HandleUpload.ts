@@ -128,7 +128,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         file.meta = {
           ...file.meta,
           tusEndpoint: endpoint,
-          uploadId: uuidV4()
+          uploadId: uuidV4(),
+          isFolder: file.type === 'directory'
         }
 
         filesToUpload[file.id] = file
@@ -171,6 +172,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         // file data
         name: file.name,
         mtime: (file.data as File).lastModified / 1000,
+        isFolder: file.type === 'directory',
         // current path & space
         spaceId: unref(this.space).id,
         spaceName: unref(this.space).name,
@@ -188,6 +190,13 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         routeName: name as string,
         routeDriveAliasAndItem: queryItemAsString(params?.driveAliasAndItem) || '',
         routeShareId: queryItemAsString(query?.shareId) || ''
+      }
+
+      if (file.type === 'directory') {
+        // folder files need their name appended to the relative folder
+        // so they can be created correctly. otherwise, only the parent directories
+        // would be created (because that's the behavior with files).
+        file.meta.relativeFolder = urlJoin(file.meta.relativeFolder, file.name)
       }
 
       filesToUpload[file.id] = file
@@ -278,7 +287,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   async createDirectoryTree(
     filesToUpload: OcUppyFile[],
     uploadFolder: Resource
-  ): Promise<OcUppyFile[]> {
+  ): Promise<{ filesToUpload: OcUppyFile[]; folderFiles: OcUppyFile[] }> {
     const { webdav } = this.clientService
     const space = unref(this.space)
     const { id: currentFolderId, path: currentFolderPath } = uploadFolder
@@ -291,7 +300,16 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const directoryTree: Record<string, any> = {}
     const topLevelIds: Record<string, string> = {}
 
+    // folder files are manually constructed folders.
+    // they should not be part of the Uppy upload queue (which only knows files)
+    // and will be created separately. they need to be filtered out later.
+    const folderFiles: OcUppyFile[] = []
+
     for (const file of filesToUpload.filter(({ meta }) => !!meta.relativeFolder)) {
+      if (file.type === 'directory') {
+        folderFiles.push(file)
+      }
+
       const folders = file.meta.relativeFolder.split('/').filter(Boolean)
       let current = directoryTree
       // first folder is always top level
@@ -312,7 +330,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         const uppyFile = {
           id: uuidV4(),
           name: basename(path),
-          isFolder: true,
           type: 'folder',
           meta: {
             spaceId: space.id,
@@ -325,7 +342,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
             uploadId,
             routeName,
             routeDriveAliasAndItem,
-            routeShareId
+            routeShareId,
+            isFolder: true
           }
         }
 
@@ -339,7 +357,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         try {
           const folder = await webdav.createFolder(space, {
             path: urlJoin(currentFolderPath, path),
-            fetchFolder: isRoot
+            fetchFolder: isRoot // FIXME: remove once we get the fileId from the server here
           })
           this.uppyService.publish('uploadSuccess', {
             ...uppyFile,
@@ -365,17 +383,23 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     await createDirectoryLevel(directoryTree)
 
     let filesToRemove: string[] = []
-    if (failedFolders.length) {
-      // remove files of folders that could not be created
+    if (failedFolders.length || folderFiles.length) {
+      // remove files of folders that could not be created and folder files
       filesToRemove = filesToUpload
-        .filter((f) => failedFolders.some((r) => f.meta.relativeFolder.startsWith(r)))
+        .filter(
+          (f) => f.meta.isFolder || failedFolders.some((r) => f.meta.relativeFolder.startsWith(r))
+        )
         .map(({ id }) => id)
+
       for (const fileId of filesToRemove) {
         this.uppy.removeFile(fileId)
       }
     }
 
-    return filesToUpload.filter(({ id }) => !filesToRemove.includes(id))
+    return {
+      filesToUpload: filesToUpload.filter(({ id }) => !filesToRemove.includes(id)),
+      folderFiles
+    }
   }
 
   /**
@@ -390,6 +414,17 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const uploadId = files[0].meta?.uploadId
     const uploadFolder = this.getUploadFolder(uploadId)
     let filesToUpload = this.prepareFiles(files, uploadFolder)
+
+    if (!this.directoryTreeCreateEnabled) {
+      // if directory tree creation is disabled, we need to remove all folder files
+      // from the upload queue
+      filesToUpload = filesToUpload.filter((file) => file.type !== 'directory')
+      if (!filesToUpload.length) {
+        // if there are no files left to upload, we can clear the inputs and do nothing
+        this.uppyService.clearInputs()
+        return
+      }
+    }
 
     // quota check
     if (this.quotaCheckEnabled) {
@@ -426,12 +461,21 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     }
 
     this.uppyService.publish('uploadStarted')
+    let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
-      filesToUpload = await this.createDirectoryTree(filesToUpload, uploadFolder)
+      const result = await this.createDirectoryTree(filesToUpload, uploadFolder)
+      filesToUpload = result.filesToUpload
+      folderFiles = result.folderFiles
     }
 
     if (!filesToUpload.length) {
-      this.uppyService.publish('uploadCompleted', { successful: [] })
+      const successful: OcUppyFile[] = []
+      if (folderFiles.length) {
+        // case where only empty folders have been uploaded
+        successful.push(...folderFiles)
+      }
+      this.uppyService.publish('uploadCompleted', { successful })
+      this.uppyService.removeUploadFolder(uploadId)
       return this.uppyService.clearInputs()
     }
 
