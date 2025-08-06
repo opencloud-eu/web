@@ -4,10 +4,8 @@ import { TusOptions } from '@uppy/tus'
 import XHRUpload, { XHRUploadOptions } from '@uppy/xhr-upload'
 import { Language } from 'vue3-gettext'
 import { eventBus } from '../eventBus'
-import DropTarget from '@uppy/drop-target'
+import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
-
-// @ts-ignore
 import generateFileID from '@uppy/utils/lib/generateFileID'
 import { Body, MinimalRequiredUppyFile } from '@uppy/utils/lib/UppyFile'
 
@@ -99,7 +97,7 @@ export class UppyService {
         }
         file.meta.relativePath = this.getRelativeFilePath(file)
         // id needs to be generated after the relative path has been set.
-        file.id = generateFileID(file, this.uppy.getID())
+        file.id = this.generateUploadId(file)
         return file
       }
     })
@@ -228,21 +226,9 @@ export class UppyService {
   }
 
   useDropTarget({ targetSelector }: { targetSelector: string }) {
-    if (this.uppy.getPlugin('DropTarget')) {
-      return
+    if (!this.uppy.getPlugin('DropTarget')) {
+      this.uppy.use(DropTarget, { target: targetSelector, uppyService: this })
     }
-    this.uppy.use(DropTarget, {
-      target: targetSelector,
-      onDragOver: (event) => {
-        this.publish('drag-over', event)
-      },
-      onDragLeave: (event) => {
-        this.publish('drag-out', event)
-      },
-      onDrop: (event) => {
-        this.publish('drop', event)
-      }
-    })
   }
 
   removeDropTarget() {
@@ -312,6 +298,10 @@ export class UppyService {
 
   generateUploadId(uppyFile: OcUppyFile): string {
     return generateFileID(uppyFile, this.uppy.getID())
+  }
+
+  log(message: unknown, type?: 'error' | 'warning'): void {
+    this.uppy.log(message, type)
   }
 
   addFiles(files: OcMinimalUppyFile[] | File[]) {
