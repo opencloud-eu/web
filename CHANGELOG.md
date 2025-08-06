@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update uppy monorepo [[#1028](https://github.com/opencloud-eu/web/pull/1028)]
 - chore(deps): update devdependencies (non-major) [[#1054](https://github.com/opencloud-eu/web/pull/1054)]
 - fix(deps): update dependency zod to v4.0.15 [[#1055](https://github.com/opencloud-eu/web/pull/1055)]
 - fix(deps): update dependency @sentry/vue to v10.1.0 [[#1041](https://github.com/opencloud-eu/web/pull/1041)]
