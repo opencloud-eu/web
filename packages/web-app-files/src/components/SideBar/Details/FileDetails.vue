@@ -296,7 +296,7 @@ const showSize = computed(() => {
   return formatFileSize(unref(resource).size, currentLanguage) !== '?'
 })
 const showVersions = computed(() => {
-  if (unref(resource).type === 'folder' || unref(publicLinkContextReady)) {
+  if (unref(resource).type === 'folder' || unref(publicLinkContextReady) || !unref(versions)) {
     return
   }
   return unref(versions).length > 0
