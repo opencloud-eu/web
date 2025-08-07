@@ -10,6 +10,20 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### ✅ Tests
+
+- enable upload tests for webkit [[#1057](https://github.com/opencloud-eu/web/pull/1057)]
+- upload image from clipboard test [[#1049](https://github.com/opencloud-eu/web/pull/1049)]
+- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
+- fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
+- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
+- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
+- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
+- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
+- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
+- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
+- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
+
 ### 📈 Enhancement
 
 - feat(preview): add webp as supported mimetype [[#1062](https://github.com/opencloud-eu/web/pull/1062)]
@@ -30,19 +44,6 @@
 - fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
 - fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
 - fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
-
-### ✅ Tests
-
-- upload image from clipboard test [[#1049](https://github.com/opencloud-eu/web/pull/1049)]
-- Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
-- fix keycloak flaky test [[#1021](https://github.com/opencloud-eu/web/pull/1021)]
-- fix flaky close viewer after download [[#1010](https://github.com/opencloud-eu/web/pull/1010)]
-- e2e-test. fix share with multiple user test [[#1013](https://github.com/opencloud-eu/web/pull/1013)]
-- change browser in the script [[#998](https://github.com/opencloud-eu/web/pull/998)]
-- cross browser testing [[#954](https://github.com/opencloud-eu/web/pull/954)]
-- [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
-- clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
-- e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
 
 ### 📦️ Dependencies
 
