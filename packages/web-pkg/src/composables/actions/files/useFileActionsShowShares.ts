@@ -18,7 +18,7 @@ export const useFileActionsShowShares = () => {
   const resourcesStore = useResourcesStore()
   const { interceptModifierClick } = useInterceptModifierClick()
 
-  const handler = ({ resources, event }: FileActionOptionsWithEvent & { event?: MouseEvent }) => {
+  const handler = ({ resources, event }: FileActionOptionsWithEvent) => {
     const resource = resources[0]
 
     if (event && interceptModifierClick(event, resource)) {

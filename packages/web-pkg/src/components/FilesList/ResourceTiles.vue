@@ -80,7 +80,7 @@
               class="oc-flex-inline oc-p-s"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
-              @click.stop.prevent="toggleTile([resource, $event], $event)"
+              @click.stop.prevent="toggleTile([resource, $event])"
             />
           </template>
           <template #imageField>

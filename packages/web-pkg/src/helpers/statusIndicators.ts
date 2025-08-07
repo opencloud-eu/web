@@ -27,7 +27,7 @@ export interface ResourceIndicator {
   fillType: IconFillType
   type: string
   category: ResourceIndicatorCategory
-  handler?: (resource: Resource) => void
+  handler?: (resource: Resource, event?: MouseEvent) => void
 }
 
 const isUserShare = (shareTypes: number[]) => {

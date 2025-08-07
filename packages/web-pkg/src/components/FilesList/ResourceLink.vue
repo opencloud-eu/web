@@ -8,7 +8,7 @@
     class="oc-resource-link"
     no-hover
     @dragstart.prevent.stop
-    @click="(e: MouseEvent) => emitClick(e)"
+    @click="emitClick"
   >
     <slot />
   </component>
@@ -93,8 +93,8 @@ export default {
     }
   },
   methods: {
-    emitClick(e: unknown) {
-      if (!e || typeof (e as Event).stopPropagation !== 'function') {
+    emitClick(e: MouseEvent) {
+      if (!e || typeof e.stopPropagation !== 'function') {
         return
       }
       if (this.isNavigatable) {

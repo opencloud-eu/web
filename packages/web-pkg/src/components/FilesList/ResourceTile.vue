@@ -126,7 +126,6 @@ const emit = defineEmits<{
   (e: 'click'): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
-  (e: 'shift-select', resource: Resource): void
 }>()
 
 defineSlots<{
