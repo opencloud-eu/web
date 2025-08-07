@@ -24,6 +24,7 @@
           :menu-section-drop="drop"
           :appearance="appearance"
           :action-options="actionOptions"
+          :parent-drop-ref="dropRef"
         />
       </template>
     </oc-list>
@@ -31,12 +32,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, Ref } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
 import { ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
 import { MenuSection } from './types'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'ContextActionMenu',
@@ -53,6 +55,11 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<ActionOptions>,
       required: true
+    },
+    dropRef: {
+      type: Object as PropType<Ref<InstanceType<typeof OcDrop>>>,
+      required: false,
+      default: null
     }
   },
   methods: {
