@@ -1,13 +1,16 @@
 <template>
   <oc-bottom-drawer
-    v-if="useAppDrawer"
+    v-if="useBottomDrawer"
+    ref="bottomDrawerRef"
     :drawer-id="dropId"
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
+    :is-nested-element="isNestedElement"
+    :nested-parent-ref="nestedParentRef"
     use-portal
-    @open="emit('showDrop')"
-    @close="emit('hideDrop')"
+    @show="emit('showDrop')"
+    @hide="emit('hideDrop')"
   >
     <slot />
   </oc-bottom-drawer>
@@ -30,7 +33,17 @@ import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getSizeClass, SizeType, uniqueId } from '../../helpers'
-import { computed, nextTick, onBeforeUnmount, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  Ref,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 
@@ -49,10 +62,20 @@ export interface Props {
    */
   dropId?: string
   /**
-   * @docs Determines if the drop is nested.
+   * @docs Determines if the drop element is nested.
    * @default false
    */
-  isNested?: boolean
+  isNestedElement?: boolean
+  /**
+   * @docs The parent `OcDrop` ref of the nested drop.
+   */
+  nestedParentRef?: Ref<
+    ComponentPublicInstance & {
+      show: () => void
+      hide: () => void
+      getElement: () => HTMLElement
+    }
+  >
   /**
    * @docs Determines the event that triggers the drop.
    * @default 'click'
@@ -127,7 +150,7 @@ export interface Slots {
 const {
   closeOnClick = false,
   dropId = uniqueId('oc-drop-'),
-  isNested = false,
+  isNestedElement = false,
   mode = 'click',
   offset,
   paddingSize = 'medium',
@@ -136,26 +159,41 @@ const {
   target,
   toggle = '',
   title = '',
-  enforceDropOnMobile = false
+  enforceDropOnMobile = false,
+  nestedParentRef = null
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { isMobile } = useIsMobile()
-const useAppDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
+
+const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
+const bottomDrawerRef = useTemplateRef<typeof OcBottomDrawer>('bottomDrawerRef')
 
 const drop = ref<HTMLElement | null>(null)
 const tippyInstance = ref(null)
 
 const show = (duration?: number) => {
+  if (unref(useBottomDrawer)) {
+    unref(bottomDrawerRef).show()
+    return
+  }
   unref(tippyInstance)?.show(duration)
 }
 const hide = (duration?: number) => {
+  if (unref(useBottomDrawer)) {
+    unref(bottomDrawerRef).hide()
+    return
+  }
   unref(tippyInstance)?.hide(duration)
 }
 
-defineExpose({ show, hide, tippy: tippyInstance })
+const getElement = () => {
+  return unref(useBottomDrawer) ? unref(bottomDrawerRef).getElement() : unref(drop)
+}
+
+defineExpose({ show, hide, getElement, tippy: tippyInstance })
 
 const onClick = (event: Event) => {
   const isNestedDropToggle = (event.target as HTMLElement)
@@ -225,13 +263,13 @@ const initializeTippy = () => {
     trigger: triggerMapping.value,
     placement: position,
     arrow: false,
-    hideOnClick: !isNested,
+    hideOnClick: !isNestedElement,
     interactive: true,
     plugins: [hideOnEsc],
     theme: 'none',
     maxWidth: 416,
     offset: offset ?? 0,
-    ...(!isNested && {
+    ...(!isNestedElement && {
       onShow: (instance: ReferenceElement) => {
         emit('showDrop')
         hideAll({ exclude: instance })
@@ -285,10 +323,10 @@ const initializeTippy = () => {
 }
 
 watch(
-  useAppDrawer,
+  useBottomDrawer,
   async () => {
     await nextTick()
-    if (unref(useAppDrawer)) {
+    if (unref(useBottomDrawer)) {
       if (unref(tippyInstance)) {
         destroy(unref(tippyInstance))
       }
