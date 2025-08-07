@@ -33,5 +33,26 @@
     "description": "Whether to use a portal for the bottom drawer. The portal can be used to render the bottom drawer outside of the current DOM hierarchy.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "portalTarget",
+    "required": false,
+    "description": "The target of the portal, when in use.",
+    "default": "app.runtime.bottom.drawer",
+    "type": "string"
+  },
+  {
+    "name": "isNestedElement",
+    "required": false,
+    "description": "Determines if the bottom drawer element is nested.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "nestedParentRef",
+    "required": false,
+    "description": "The parent `OcBottomDrawer` ref of the nested bottom drawer.",
+    "default": "",
+    "type": "Ref<\n    ComponentPublicInstance & {\n      show: () => void\n      hide: () => void\n      getElement: () => HTMLElement\n    }\n  >"
   }
 ]

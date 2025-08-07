@@ -21,11 +21,18 @@
     "type": "string"
   },
   {
-    "name": "isNested",
+    "name": "isNestedElement",
     "required": false,
-    "description": "Determines if the drop is nested.",
+    "description": "Determines if the drop element is nested.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "nestedParentRef",
+    "required": false,
+    "description": "The parent `OcDrop` ref of the nested drop.",
+    "default": "",
+    "type": "Ref<\n    ComponentPublicInstance & {\n      show: () => void\n      hide: () => void\n      getElement: () => HTMLElement\n    }\n  >"
   },
   {
     "name": "mode",
