@@ -10,7 +10,7 @@
       <div class="file_info__body oc-text-overflow">
         <h3 data-testid="files-info-name" class="oc-font-semibold">
           <resource-name
-            :name="resourceName"
+            :name="name"
             :extension="resource.extension"
             :type="resource.type"
             :full-path="resource.webDavPath"
@@ -24,40 +24,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, inject, unref } from 'vue'
+<script setup lang="ts">
+import { computed, inject, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace, useResourcesStore } from '../../../composables'
 import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 import ResourceName from '../../FilesList/ResourceName.vue'
 
-export default defineComponent({
-  name: 'FileInfo',
-  components: { ResourceIcon, ResourceName },
-  props: {
-    isSubPanelActive: {
-      type: Boolean,
-      default: true
-    }
-  },
-  setup() {
-    const resourcesStore = useResourcesStore()
-    const { isPersonalSpaceRoot } = useGetMatchingSpace()
+const { isSubPanelActive = true } = defineProps<{
+  isSubPanelActive?: boolean
+}>()
 
-    const resource = inject<Resource>('resource')
-    const space = inject<SpaceResource>('space')
-    const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
+const resourcesStore = useResourcesStore()
+const { isPersonalSpaceRoot } = useGetMatchingSpace()
 
-    const resourceName = computed(() => {
-      return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
-    })
+const resource = inject<Resource>('resource')
+const space = inject<SpaceResource>('space')
+const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
-    return {
-      resource,
-      resourceName,
-      areFileExtensionsShown
-    }
-  }
+const name = computed(() => {
+  return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
 })
 </script>
 
