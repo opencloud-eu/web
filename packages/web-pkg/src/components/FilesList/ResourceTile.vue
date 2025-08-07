@@ -43,7 +43,7 @@
               v-if="resource.thumbnail"
               class="tile-preview"
               :src="resource.thumbnail"
-              @click="toggleTile([resource, $event], $event)"
+              @click="toggleTile([resource, $event])"
             />
             <resource-icon
               v-else
@@ -58,7 +58,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s" @click.stop="toggleTile([resource, $event], $event)">
+      <div class="oc-card-body oc-p-s" @click.stop="toggleTile([resource, $event])">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item

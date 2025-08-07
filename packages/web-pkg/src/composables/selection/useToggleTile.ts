@@ -6,7 +6,7 @@ export function useToggleTile() {
   const { interceptModifierClick } = useInterceptModifierClick()
   const eventBus = useEventBus()
 
-  const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
+  const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
     const resource = data[0]
     const eventData = data[1]
 
