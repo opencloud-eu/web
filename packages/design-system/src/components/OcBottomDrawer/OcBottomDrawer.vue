@@ -5,7 +5,7 @@
         v-show="show"
         class="oc-bottom-drawer-background"
         role="button"
-        :aria-label="$gettext('Close the bottom drawer')"
+        :aria-label="$gettext('Close the context menu')"
         @click="onBackgroundClicked"
       >
         <focus-trap>
@@ -17,7 +17,7 @@
                   <oc-button
                     appearance="raw"
                     class="raw-hover-surface oc-bottom-drawer-close-button"
-                    :aria-label="$gettext('Close the bottom drawer')"
+                    :aria-label="$gettext('Close the context menu')"
                     @click="close"
                   >
                     <oc-icon name="close" fill-type="fill" />
