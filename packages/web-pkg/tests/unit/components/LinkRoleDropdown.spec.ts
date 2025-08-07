@@ -18,14 +18,14 @@ const selectors = {
 
 describe('LinkRoleDropdown', () => {
   it('renders the label of the corresponding role to the given link type', () => {
-    const modelValue = SharingLinkType.Internal
+    const modelValue = SharingLinkType.View
     const { wrapper } = getWrapper({ modelValue })
 
     expect(wrapper.find(selectors.currentRole).text()).toEqual(modelValue)
   })
   it('renders all available role options based on the link types', () => {
-    const modelValue = SharingLinkType.Internal
-    const availableLinkTypeOptions = [SharingLinkType.Internal, SharingLinkType.View]
+    const modelValue = SharingLinkType.Edit
+    const availableLinkTypeOptions = [SharingLinkType.Edit, SharingLinkType.View]
     const { wrapper } = getWrapper({ modelValue, availableLinkTypeOptions })
 
     expect(wrapper.findAll(selectors.roleOption).length).toEqual(availableLinkTypeOptions.length)

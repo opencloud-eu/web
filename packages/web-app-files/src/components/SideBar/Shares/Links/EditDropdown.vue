@@ -58,7 +58,6 @@ import { Resource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, DatePickerModal } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
-import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { RouteLocationNamedRaw } from 'vue-router'
 import ContextMenuItem from './ContextMenuItem.vue'
 
@@ -120,10 +119,6 @@ export default defineComponent({
         }
       })
     }
-
-    const isInternalLink = computed(() => {
-      return props.linkShare.type === SharingLinkType.Internal
-    })
 
     const sharedAncestor = computed(() => {
       if (!props.linkShare.indirect) {
@@ -229,7 +224,7 @@ export default defineComponent({
             unref(editPublicLinkDropdown).hide()
           }
         })
-      } else if (!unref(isInternalLink)) {
+      } else {
         result.push({
           id: 'add-expiration',
           title: $gettext('Set expiration date'),
@@ -256,7 +251,7 @@ export default defineComponent({
           })
         }
       }
-      if (!props.linkShare.hasPassword && !unref(isInternalLink)) {
+      if (!props.linkShare.hasPassword) {
         result.push({
           id: 'add-password',
           title: $gettext('Add password'),
