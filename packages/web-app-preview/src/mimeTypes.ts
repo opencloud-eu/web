@@ -10,6 +10,7 @@ export const mimeTypes = [
   'image/png',
   'image/tiff',
   'image/bmp',
+  'image/webp',
   'image/x-ms-bmp',
   'video/mp4',
   'video/webm'

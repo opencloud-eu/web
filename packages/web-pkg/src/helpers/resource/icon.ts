@@ -147,6 +147,7 @@ const fileIcon = {
       'psd',
       'svg',
       'ttf',
+      'webp',
       'woff',
       'xcf'
     ]
