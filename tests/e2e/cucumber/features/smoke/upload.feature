@@ -10,7 +10,7 @@ Feature: Upload
     And "Alice" logs in
     And "Alice" opens the "files" app
 
-  @webkit-skip
+
   Scenario: Upload files in personal space
     Given "Alice" creates the following resources
       | resource          | type    | content             |
@@ -69,7 +69,7 @@ Feature: Upload
       | child.txt |
     And "Alice" logs out
 
-  @webkit-skip
+
   Scenario: try to upload resources when the quota is insufficient
     Given "Admin" logs in
     And "Admin" opens the "admin-settings" app
