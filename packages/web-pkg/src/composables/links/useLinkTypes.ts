@@ -45,12 +45,6 @@ export const useLinkTypes = () => {
   // links don't have roles in graph API, hence we need to define them here
   const linkShareRoles = [
     {
-      id: SharingLinkType.Internal,
-      displayName: $gettext('Invited people'),
-      description: $gettext('Link works only for invited people. Login is required.'),
-      icon: 'user'
-    },
-    {
       id: SharingLinkType.View,
       displayName: $gettext('Can view'),
       description: $gettext('View, download'),

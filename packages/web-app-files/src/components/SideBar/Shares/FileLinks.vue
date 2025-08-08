@@ -15,7 +15,7 @@
         <list-item
           :can-rename="true"
           :is-folder-share="resource.isFolder"
-          :is-modifiable="canEditLink(link)"
+          :is-modifiable="canEditLink"
           :is-password-enforced="isPasswordEnforcedForLinkType(link.type)"
           :is-password-removable="canDeletePublicLinkPassword(link)"
           :link-share="link"
@@ -165,12 +165,9 @@ export default defineComponent({
       can('delete-all', 'ReadOnlyPublicLinkPassword')
     )
 
-    const canEditLink = (linkShare: LinkShare) => {
-      return (
-        unref(canCreateLinks) &&
-        (can('create-all', 'PublicLink') || linkShare.type === SharingLinkType.Internal)
-      )
-    }
+    const canEditLink = computed(() => {
+      return unref(canCreateLinks) && can('create-all', 'PublicLink')
+    })
 
     const addNewLink = () => {
       const handlerArgs = { space: unref(space), resources: [unref(resource)] }

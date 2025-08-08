@@ -95,26 +95,13 @@ describe('resolvePublicLink', () => {
       )
     })
   })
-  describe('internal link', () => {
-    it('redirects the user to the login page', async () => {
-      const { wrapper, mocks } = getWrapper({ isInternalLink: true })
-      await wrapper.vm.loadPublicSpaceTask.last
-
-      expect(mocks.$router.push).toHaveBeenCalledWith({
-        name: 'login',
-        query: { redirectUrl: '/i/token' }
-      })
-    })
-  })
 })
 
 function getWrapper({
   passwordRequired = false,
-  isInternalLink = false,
   getFileInfoErrorStatusCode = null
 }: {
   passwordRequired?: boolean
-  isInternalLink?: boolean
   getFileInfoErrorStatusCode?: number
 } = {}) {
   const $clientService = mockDeep<ClientService>()
@@ -124,10 +111,6 @@ function getWrapper({
   if (passwordRequired) {
     $clientService.webdav.getFileInfo.mockRejectedValueOnce(
       new DavHttpError('', 'ERR_MISSING_BASIC_AUTH', undefined, 401)
-    )
-  } else if (isInternalLink) {
-    $clientService.webdav.getFileInfo.mockRejectedValueOnce(
-      new DavHttpError('', 'ERR_MISSING_BEARER_AUTH', undefined, 401)
     )
   }
 

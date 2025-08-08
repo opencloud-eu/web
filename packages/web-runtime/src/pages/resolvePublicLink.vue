@@ -139,7 +139,6 @@ export default defineComponent({
 
     const loadedSpace = ref<PublicSpaceResource>()
     const isPasswordRequired = ref(false)
-    const isInternalLink = ref(false)
 
     const loadPublicSpaceTask = useTask(function* (signal) {
       try {
@@ -154,10 +153,6 @@ export default defineComponent({
         if (err.statusCode === 401) {
           if (err.errorCode === 'ERR_MISSING_BASIC_AUTH') {
             isPasswordRequired.value = true
-          }
-
-          if (err.errorCode === 'ERR_MISSING_BEARER_AUTH') {
-            isInternalLink.value = true
           }
 
           return
@@ -198,11 +193,6 @@ export default defineComponent({
     const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boolean) {
       if (unref(isOcmLink) && !configStore.options.ocm.openRemotely) {
         throw new Error($gettext('Opening files from remote is disabled'))
-      }
-
-      if (unref(isInternalLink)) {
-        router.push({ name: 'login', query: { redirectUrl: `/i/${unref(token)}` } })
-        return
       }
 
       yield authService.resolvePublicLink(
