@@ -57,9 +57,10 @@ const spacesResources = [
   }
 ] as unknown as SpaceResource[]
 
-const resources = [
+const resources: Resource[] = [
   {
     id: 'forest',
+    resourceId: 'forest',
     driveId: 'forest',
     name: 'forest.jpg',
     path: 'images/nature/forest.jpg',
@@ -122,10 +123,19 @@ describe('ResourceTiles component', () => {
   describe('file click', () => {
     it('emits fileClick event upon click on tile', async () => {
       const { wrapper } = getWrapper({ props: { resources } })
-      await wrapper.find('.oc-tiles-item .oc-resource-name').trigger('click')
-      expect(
-        wrapper.emitted<{ resources: Resource[] }[]>('fileClick')[0][0].resources[0].name
-      ).toMatch('forest.jpg')
+      const resourceTile = wrapper.findComponent({ name: 'ResourceTile' })
+
+      const mockMouseEvent = {
+        shiftKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        stopPropagation: vi.fn(),
+        preventDefault: vi.fn()
+      } as unknown as MouseEvent
+
+      await resourceTile.vm.$emit('click', mockMouseEvent)
+      expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
+      expect(wrapper.emitted('update:selectedIds')[0][0]).toEqual([resources[0].id])
     })
 
     it('does not emit fileClick event upon click on tile when embed mode is enabled', async () => {
