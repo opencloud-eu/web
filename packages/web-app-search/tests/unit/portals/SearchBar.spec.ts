@@ -1,7 +1,7 @@
 import SearchBar from '../../../src/portals/SearchBar.vue'
 import flushPromises from 'flush-promises'
 import { mock } from 'vitest-mock-extended'
-import { nextTick, ref } from 'vue'
+import { markRaw, nextTick, ref } from 'vue'
 import { defineComponent } from 'vue'
 import {
   defaultPlugins,
@@ -31,7 +31,7 @@ const providerFiles = {
   previewSearch: {
     available: true,
     search: vi.fn(),
-    component
+    component: markRaw(component)
   },
   listSearch: {}
 }
@@ -43,7 +43,7 @@ const providerContacts = {
   previewSearch: {
     available: true,
     search: vi.fn(),
-    component
+    component: markRaw(component)
   }
 }
 
@@ -233,7 +233,7 @@ describe('Search Bar portal component', () => {
     wrapper.find(selectors.searchInput).trigger('keyup.enter')
     expect(spyRouterPushStub).not.toHaveBeenCalled()
   })
-  test('executes search if term is empty but route is common search', async () => {
+  test('executes search if term is empty but route is common search', () => {
     wrapper = getMountedWrapper({
       route: 'files-common-search',
       store: { resourcesStore: { currentFolder: { fileId: 'root-dir' } } }
@@ -255,7 +255,7 @@ describe('Search Bar portal component', () => {
       })
     })
   })
-  test('does not execute search if term is empty and route is not common search', async () => {
+  test('does not execute search if term is empty and route is not common search', () => {
     const { wrapper } = getMountedWrapper()
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
@@ -299,7 +299,7 @@ function getMountedWrapper({
           })
         ],
         mocks: localMocks,
-        provide: localMocks,
+        provide: { ...localMocks, isMobileWidth: ref(false) },
         stubs: {
           'router-link': true
         }
