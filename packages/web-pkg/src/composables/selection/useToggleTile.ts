@@ -10,7 +10,7 @@ export function useToggleTile() {
     const resource = data[0]
     const eventData = data[1]
 
-    if (event && interceptModifierClick(event as MouseEvent, resource)) {
+    if (eventData && interceptModifierClick(eventData as MouseEvent, resource)) {
       return
     }
 
