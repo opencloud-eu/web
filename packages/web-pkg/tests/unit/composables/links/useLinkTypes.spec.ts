@@ -54,7 +54,6 @@ describe('useLinkTypes', () => {
   })
   describe('method "getLinkRoleByType"', () => {
     it.each([
-      SharingLinkType.Internal,
       SharingLinkType.View,
       SharingLinkType.Upload,
       SharingLinkType.Edit,

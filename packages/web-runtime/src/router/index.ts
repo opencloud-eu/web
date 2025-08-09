@@ -62,12 +62,6 @@ const routes = [
     meta: { title: $gettext('Public link'), authContext: 'anonymous' }
   },
   {
-    path: '/i/:token/:driveAliasAndItem(.*)?',
-    name: routeNames.resolveInternalLink,
-    component: ResolvePublicLinkPage,
-    meta: { title: $gettext('Internal link'), authContext: 'user' }
-  },
-  {
     path: '/o/:token/:driveAliasAndItem(.*)?',
     name: routeNames.resolvePublicOcmLink,
     component: ResolvePublicLinkPage,

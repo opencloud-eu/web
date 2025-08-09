@@ -85,22 +85,6 @@ describe('useFileActionsCreateLink', () => {
         }
       })
     })
-    it('shows a modal if password is enforced and link is not internal', () => {
-      getWrapper({
-        passwordEnforced: true,
-        defaultLinkType: SharingLinkType.View,
-        setup: ({ actions }) => {
-          const { addLink } = useSharesStore()
-          const { dispatchModal } = useModals()
-          unref(actions)[0].handler({
-            resources: [mock<Resource>({ canShare: () => true })],
-            space: undefined
-          })
-          expect(addLink).not.toHaveBeenCalled()
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
-    })
   })
 })
 

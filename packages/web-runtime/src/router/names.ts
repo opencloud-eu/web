@@ -5,7 +5,6 @@ export const routeNames = {
   oidcSilentRedirect: 'oidcSilentRedirect',
   resolvePrivateLink: 'resolvePrivateLink',
   resolvePublicLink: 'resolvePublicLink',
-  resolveInternalLink: 'resolveInternalLink',
   resolvePublicOcmLink: 'resolvePublicOcmLink',
   accessDenied: 'accessDenied',
   account: 'account',

@@ -54,13 +54,7 @@ describe('EditDropdown component', () => {
 
   describe('editOptions computed property', () => {
     describe('expiration date', () => {
-      it('does not contain "add-expiration" option if isInternalLink is true', () => {
-        const linkShare = { ...exampleLink }
-        linkShare.type = SharingLinkType.Internal
-        const { wrapper } = getWrapper({ linkShare })
-        expect(wrapper.vm.editOptions.some((option) => option.id === 'add-expiration')).toBeFalsy()
-      })
-      it('does contain "add-expiration" option if isInternalLink is false', () => {
+      it('does contain "add-expiration" option', () => {
         const { wrapper } = getWrapper()
         expect(wrapper.vm.editOptions.some((option) => option.id === 'add-expiration')).toBeTruthy()
       })
