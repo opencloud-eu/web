@@ -69,10 +69,10 @@ export default defineComponent({
         return classes
       }
       if (index < this.menuSections.length - 1) {
-        classes.push('oc-pb-s')
+        classes.push('pb-2')
       }
       if (index > 0) {
-        classes.push('oc-pt-s')
+        classes.push('pt-2')
       }
       if (index < this.menuSections.length - 1) {
         classes.push('oc-files-context-actions-border')

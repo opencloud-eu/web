@@ -2,11 +2,11 @@
 
 exports[`MembersRoleSection > should render all members accordingly 1`] = `
 "<ul class="oc-list">
-  <li class="oc-flex oc-flex-middle oc-mb-s" data-testid="space-members-list">
-    <user-avatar-stub userid="[Function]" username="einstein" class="oc-mr-s"></user-avatar-stub> einstein
+  <li class="oc-flex oc-flex-middle mb-2" data-testid="space-members-list">
+    <user-avatar-stub userid="[Function]" username="einstein" class="mr-2"></user-avatar-stub> einstein
   </li>
-  <li class="oc-flex oc-flex-middle oc-mb-s" data-testid="space-members-list">
-    <oc-avatar-item-stub icon="group" name="group" accessiblelabel="" background="var(--oc-role-secondary)" iconcolor="var(--oc-role-on-secondary)" iconfilltype="fill" iconsize="medium" width="36" class="oc-mr-s"></oc-avatar-item-stub> physic-lovers
+  <li class="oc-flex oc-flex-middle mb-2" data-testid="space-members-list">
+    <oc-avatar-item-stub icon="group" name="group" accessiblelabel="" background="var(--oc-role-secondary)" iconcolor="var(--oc-role-on-secondary)" iconfilltype="fill" iconsize="medium" width="36" class="mr-2"></oc-avatar-item-stub> physic-lovers
   </li>
 </ul>"
 `;

@@ -1,11 +1,10 @@
 <template>
-  <div class="live-code-block oc-mt-l oc-mb-xl">
-    <div class="live-code-block-header oc-mb-m">
+  <div class="live-code-block mt-6 mb-12">
+    <div class="live-code-block-header mb-4">
       <oc-button
         @click="() => (previewActive = true)"
         appearance="raw"
         :class="{ active: previewActive }"
-        class="oc-px-m oc-pb-s"
         no-hover
         >Preview</oc-button
       >
@@ -13,7 +12,6 @@
         @click="() => (previewActive = false)"
         appearance="raw"
         :class="{ active: !previewActive }"
-        class="oc-px-m oc-pb-s"
         no-hover
         >Code</oc-button
       >

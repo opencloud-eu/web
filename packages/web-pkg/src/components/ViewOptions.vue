@@ -2,7 +2,7 @@
   <div class="oc-flex oc-flex-middle">
     <div
       v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group oc-visible@s oc-mr-s"
+      class="viewmode-switch-buttons oc-button-group oc-visible@s mr-2"
     >
       <oc-button
         v-for="viewMode in viewModes"
@@ -25,7 +25,7 @@
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
       appearance="raw"
-      class="oc-my-s oc-p-xs"
+      class="my-2 p-1"
     >
       <oc-icon name="settings-3" fill-type="line" />
     </oc-button>

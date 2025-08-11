@@ -3,7 +3,7 @@
     <oc-text-input
       id="create-user-input-user-name"
       v-model="user.onPremisesSamAccountName"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('User name')"
       :error-message="formData.userName.errorMessage"
       :fix-message-line="true"
@@ -13,7 +13,7 @@
     <oc-text-input
       id="create-user-input-display-name"
       v-model="user.displayName"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('First and last name')"
       :error-message="formData.displayName.errorMessage"
       :fix-message-line="true"
@@ -23,7 +23,7 @@
     <oc-text-input
       id="create-user-input-email"
       v-model="user.mail"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('Email')"
       :error-message="formData.email.errorMessage"
       :error-message-debounced-time="1000"
@@ -36,7 +36,7 @@
       id="create-user-input-password"
       v-model="user.passwordProfile.password"
       autocomplete="new-password"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('Password')"
       :error-message="formData.password.errorMessage"
       type="password"

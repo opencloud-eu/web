@@ -10,7 +10,7 @@
         :action="action"
         :action-options="actionOptions"
         appearance="raw"
-        class="batch-actions oc-mr-s"
+        class="batch-actions mr-2"
         :shortcut-hint="false"
         :show-tooltip="limitedScreenSpace"
       />

@@ -11,7 +11,7 @@
       <div class="oc-flex oc-flex-middle">
         <oc-icon name="time" fill-type="line" size="small" />
         <span
-          class="oc-ml-xs"
+          class="ml-1"
           v-text="$gettext('Export is being processed. This can take up to 24 hours.')"
         />
       </div>
@@ -20,13 +20,13 @@
       <oc-button
         appearance="raw"
         data-testid="request-export-btn"
-        class="oc-mr-s"
+        class="mr-2"
         no-hover
         @click="requestExport"
       >
         <div class="oc-flex oc-flex-middle">
           <oc-icon name="question-answer" fill-type="line" size="small" />
-          <span class="oc-ml-xs" v-text="$gettext('Request new export')" />
+          <span class="ml-1" v-text="$gettext('Request new export')" />
         </div>
       </oc-button>
       <oc-button
@@ -39,7 +39,7 @@
       >
         <div class="oc-flex oc-flex-middle">
           <oc-icon name="download" fill-type="line" size="small" />
-          <span class="oc-ml-xs" v-text="$gettext('Download')" />
+          <span class="ml-1" v-text="$gettext('Download')" />
         </div>
       </oc-button>
     </div>

@@ -29,7 +29,7 @@
       type="router-link"
       appearance="filled"
       target="_blank"
-      class="oc-mt-m oc-text-center oc-width-medium"
+      class="mt-4 oc-text-center oc-width-medium"
       :to="sharedWithMeRoute"
     >
       <span class="text" v-text="openSharedWithMeLabel" />

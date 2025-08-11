@@ -28,7 +28,7 @@
               :error-message="wrongPasswordMessage"
               :label="passwordFieldLabel"
               type="password"
-              class="oc-mb-s"
+              class="mb-2"
             />
             <oc-button
               appearance="filled"

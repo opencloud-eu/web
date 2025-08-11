@@ -24,7 +24,7 @@
       />
       <oc-button
         v-if="showClearButton"
-        class="oc-mr-xs oc-position-center-right oc-color-input-btn-clear"
+        class="mr-1 oc-position-center-right oc-color-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -46,7 +46,7 @@
         size="small"
         fill-type="line"
         aria-hidden="true"
-        class="oc-mr-xs"
+        class="mr-1"
       />
 
       <span

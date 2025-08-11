@@ -3,18 +3,14 @@
     <div class="oc-flex oc-flex-between oc-flex-middle">
       <div class="oc-flex">
         <h3 v-translate class="oc-text-bold oc-text-medium oc-m-rm">Share with people</h3>
-        <oc-contextual-helper
-          v-if="helpersEnabled"
-          class="oc-pl-xs"
-          v-bind="inviteCollaboratorHelp"
-        />
+        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
       <copy-private-link :resource="resource" />
     </div>
     <invite-collaborator-form
       v-if="canShare({ resource, space })"
       key="new-collaborator"
-      class="oc-my-s"
+      class="my-2"
     />
     <p
       v-else
@@ -34,7 +30,7 @@
       <ul
         id="files-collaborators-list"
         class="oc-list oc-list-divider"
-        :class="{ 'oc-mb-l': showSpaceMembers, 'oc-m-rm': !showSpaceMembers }"
+        :class="{ 'mb-6': showSpaceMembers, 'oc-m-rm': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
         <li v-for="collaborator in displayCollaborators" :key="collaborator.id">
@@ -69,7 +65,7 @@
     </template>
     <template v-if="showSpaceMembers">
       <div class="oc-flex oc-flex-middle oc-flex-between">
-        <h4 class="oc-text-bold oc-my-s" v-text="spaceMemberLabel" />
+        <h4 class="oc-text-bold my-2" v-text="spaceMemberLabel" />
       </div>
       <ul
         id="space-collaborators-list"

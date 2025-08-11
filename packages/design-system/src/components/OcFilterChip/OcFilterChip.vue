@@ -40,7 +40,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear oc-px-xs"
+      class="oc-filter-chip-clear px-1"
       appearance="raw"
       :aria-label="$gettext('Clear filter')"
       @click="emit('clearFilter')"

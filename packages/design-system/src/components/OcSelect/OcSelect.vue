@@ -7,7 +7,7 @@
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
       v-bind="contextualHelper?.data"
-      class="oc-pl-xs"
+      class="pl-1"
     />
     <vue-select
       ref="selectRef"
@@ -45,10 +45,10 @@
       <template #selected-option-container="{ option, deselect }">
         <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly" name="lock" class="oc-mr-xs" size="small" />
+            <oc-icon v-if="readOnly" name="lock" class="mr-1" size="small" />
             {{ getOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="oc-flex oc-flex-middle oc-ml-s oc-mr-xs">
+          <span v-if="multiple" class="oc-flex oc-flex-middle ml-2 mr-1">
             <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
             <oc-button
               v-else
@@ -84,7 +84,7 @@
         size="small"
         fill-type="line"
         aria-hidden="true"
-        class="oc-mr-xs"
+        class="mr-1"
       />
 
       <span

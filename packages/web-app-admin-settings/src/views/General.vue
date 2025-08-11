@@ -9,7 +9,7 @@
       :side-bar-available-panels="sideBarAvailablePanels"
     >
       <template #mainContent>
-        <div class="oc-px-m">
+        <div class="px-4">
           <InfoSection />
         </div>
       </template>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="oc-px-m oc-py-s oc-invisible-sr">
+    <h2 class="px-4 py-2 oc-invisible-sr">
       {{ title }}
       <span class="oc-text-medium">({{ items.length }})</span>
     </h2>
@@ -56,7 +56,7 @@
             v-oc-tooltip="$gettext('Synced with your devices')"
             :accessible-label="$gettext('Synced with your devices')"
             name="loop-right"
-            class="sync-enabled oc-ml-s"
+            class="sync-enabled ml-2"
             size="small"
           />
         </div>
@@ -71,7 +71,7 @@
         <oc-button
           v-oc-tooltip="hideShareAction.label({ space: null, resources: [resource] })"
           appearance="raw"
-          :class="['oc-p-xs', hideShareAction.class, 'raw-hover-surface']"
+          :class="['p-1', hideShareAction.class, 'raw-hover-surface']"
           @click.stop="hideShareAction.handler({ space: null, resources: [resource] })"
         >
           <oc-icon :name="resource.hidden ? 'eye' : 'eye-off'" fill-type="line" />
@@ -91,7 +91,7 @@
             <oc-icon :name="'arrow-' + (showMore ? 'up' : 'down') + '-s'" fill-type="line" />
           </oc-button>
         </div>
-        <list-info v-else class="oc-width-1-1 oc-my-s" />
+        <list-info v-else class="oc-width-1-1 my-2" />
       </template>
     </resource-table>
   </div>

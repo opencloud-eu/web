@@ -2,17 +2,17 @@
   <div class="sciencemesh-app">
     <div>
       <div class="oc-flex oc-flex-between">
-        <div class="oc-flex oc-flex-middle oc-px-m oc-py-s">
+        <div class="oc-flex oc-flex-middle px-4 py-2">
           <oc-icon name="contacts-book" />
-          <h2 class="oc-px-s" v-text="$gettext('Federated connections')" />
-          <oc-contextual-helper class="oc-pl-xs" v-bind="helperContent" />
+          <h2 class="px-2" v-text="$gettext('Federated connections')" />
+          <oc-contextual-helper class="pl-1" v-bind="helperContent" />
         </div>
-        <div id="shares-links" class="oc-flex oc-flex-middle oc-flex-wrap oc-mr-m">
-          <label class="oc-mr-s" v-text="$gettext('Federated shares:')" />
+        <div id="shares-links" class="oc-flex oc-flex-middle oc-flex-wrap mr-4">
+          <label class="mr-2" v-text="$gettext('Federated shares:')" />
           <oc-button
             :aria-current="$gettext('Federated shares with me')"
             appearance="raw"
-            class="oc-p-s oc-mr-s"
+            class="p-2 mr-2"
             @click="toSharedWithMe"
           >
             <oc-icon name="share-forward" />
@@ -21,7 +21,7 @@
           <oc-button
             :aria-current="$gettext('Federated shares with me')"
             appearance="raw"
-            class="oc-p-s"
+            class="p-2"
             @click="toSharedWithOthers"
           >
             <oc-icon name="reply" />
@@ -45,7 +45,7 @@
           <template #actions="{ item }">
             <oc-button
               appearance="raw"
-              class="oc-p-s action-menu-item delete-connection-btn"
+              class="p-2 action-menu-item delete-connection-btn"
               @click="deleteConnection(item)"
             >
               <oc-icon name="delete-bin-5" fill-type="line" size="medium" />

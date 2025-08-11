@@ -3,10 +3,10 @@
     <li
       v-for="(member, index) in groupMembers"
       :key="index"
-      class="oc-flex oc-flex-middle oc-mb-s"
+      class="oc-flex oc-flex-middle mb-2"
       data-testid="group-members-list"
     >
-      <user-avatar :user-id="member.id" :user-name="member.displayName" class="oc-mr-s" />
+      <user-avatar :user-id="member.id" :user-name="member.displayName" class="mr-2" />
       <span class="oc-text-truncate" :title="member.displayName">
         {{ member.displayName }}
       </span>

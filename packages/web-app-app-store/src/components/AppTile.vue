@@ -6,18 +6,18 @@
     <div class="app-tile-body oc-card-body oc-p">
       <div class="app-tile-content">
         <div class="oc-flex oc-flex-middle">
-          <h3 class="oc-my-s oc-text-truncate mark-element app-tile-title">
+          <h3 class="my-2 oc-text-truncate mark-element app-tile-title">
             <router-link
               :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
             >
               {{ app.name }}
             </router-link>
           </h3>
-          <span class="oc-ml-s oc-text-muted oc-text-small oc-mt-xs">
+          <span class="ml-2 oc-text-muted oc-text-small mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>
-        <p class="oc-my-s mark-element">{{ app.subtitle }}</p>
+        <p class="my-2 mark-element">{{ app.subtitle }}</p>
       </div>
       <app-tags :app="app" @click="emitSearchTerm" />
       <app-actions :app="app" />

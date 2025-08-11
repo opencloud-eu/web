@@ -28,7 +28,7 @@
         :resource="resource"
       />
     </resource-link>
-    <div class="oc-resource-details oc-text-overflow" :class="{ 'oc-pl-s': isIconDisplayed }">
+    <div class="oc-resource-details oc-text-overflow" :class="{ 'pl-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
         :is-resource-clickable="isResourceClickable"

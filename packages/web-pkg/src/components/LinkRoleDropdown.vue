@@ -13,7 +13,7 @@
   <span
     v-else
     v-oc-tooltip="getLinkRoleByType(modelValue)?.description"
-    class="link-current-role oc-mr-m"
+    class="link-current-role mr-4"
     v-text="currentLinkRoleLabel"
   />
   <oc-drop
@@ -37,11 +37,11 @@
           }"
           appearance="raw"
           justify-content="space-between"
-          class="oc-p-s"
+          class="p-2"
           @click="updateSelectedType(type)"
         >
           <span class="oc-flex oc-flex-middle">
-            <oc-icon :name="getLinkRoleByType(type).icon" class="oc-pl-s oc-pr-m" />
+            <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
             <span>
               <span
                 class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"

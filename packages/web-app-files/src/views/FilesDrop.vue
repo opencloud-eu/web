@@ -28,7 +28,7 @@
         <div v-else class="oc-flex oc-flex-center oc-width-1-1">
           <p
             id="files-drop-info-message"
-            class="oc-m-rm oc-pt-xl oc-text-small"
+            class="oc-m-rm pt-12 oc-text-small"
             v-text="
               $gettext(
                 'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'

@@ -8,16 +8,11 @@
       <div v-else-if="spaceImage" class="oc-position-relative">
         <img :src="spaceImage" alt="" />
       </div>
-      <oc-icon
-        v-else
-        name="layout-grid"
-        size="xxlarge"
-        class="space-default-image oc-px-m oc-py-m"
-      />
+      <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
-      class="oc-flex oc-flex-middle oc-space-details-sidebar-members oc-mb-s oc-text-small"
+      class="oc-flex oc-flex-middle oc-space-details-sidebar-members mb-2 oc-text-small"
     >
       <oc-button
         v-if="hasMemberShares"

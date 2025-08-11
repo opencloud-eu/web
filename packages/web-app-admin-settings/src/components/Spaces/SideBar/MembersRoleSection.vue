@@ -3,14 +3,14 @@
     <li
       v-for="(m, index) in permissions"
       :key="index"
-      class="oc-flex oc-flex-middle oc-mb-s"
+      class="oc-flex oc-flex-middle mb-2"
       data-testid="space-members-list"
     >
       <user-avatar
         v-if="m.grantedToV2.user"
         :user-id="m.grantedToV2.user.id"
         :user-name="getDisplayName(m)"
-        class="oc-mr-s"
+        class="mr-2"
       />
       <oc-avatar-item
         v-else
@@ -18,7 +18,7 @@
         icon-size="medium"
         :icon="ShareTypes.group.icon"
         name="group"
-        class="oc-mr-s"
+        class="mr-2"
       />
       {{ getDisplayName(m) }}
     </li>

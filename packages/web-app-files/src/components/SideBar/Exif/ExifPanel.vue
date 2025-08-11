@@ -27,7 +27,7 @@
           v-oc-tooltip="copyLocationToClipboardLabel"
           size="small"
           appearance="raw"
-          class="oc-ml-s"
+          class="ml-2"
           :aria-label="copyLocationToClipboardLabel"
           no-hover
           @click="copyLocationToClipboard"

@@ -1,7 +1,7 @@
 <template>
-  <div v-if="showActions" class="create-and-upload-actions oc-flex-inline oc-mr-s">
+  <div v-if="showActions" class="create-and-upload-actions oc-flex-inline mr-2">
     <template v-if="createFileActionsAvailable">
-      <span v-oc-tooltip="newButtonTooltip">
+      <div v-oc-tooltip="newButtonTooltip">
         <oc-button
           id="new-file-menu-btn"
           key="new-file-menu-btn-enabled"
@@ -13,7 +13,7 @@
           <oc-icon name="add" />
           <span v-if="!limitedScreenSpace" v-text="$gettext('New')" />
         </oc-button>
-      </span>
+      </div>
       <oc-drop
         :title="$gettext('New file')"
         drop-id="new-file-menu-drop"

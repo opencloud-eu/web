@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-notification oc-mb-s" :class="classes">
+  <div class="oc-notification mb-2" :class="classes">
     <slot />
   </div>
 </template>

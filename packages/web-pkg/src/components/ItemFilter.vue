@@ -12,13 +12,13 @@
           v-if="showOptionFilter && filterableAttributes.length"
           ref="filterInputRef"
           v-model="filterTerm"
-          class="item-filter-input oc-mb-m oc-mt-s"
+          class="item-filter-input mb-4 mt-2"
           autocomplete="off"
           :label="optionFilterLabel === '' ? $gettext('Filter list') : optionFilterLabel"
         />
         <div ref="itemFilterListRef">
           <oc-list class="item-filter-list">
-            <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
+            <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
               <oc-button
                 class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1"
                 :class="{
@@ -35,7 +35,7 @@
                   <oc-checkbox
                     v-if="allowMultiple"
                     size="large"
-                    class="item-filter-checkbox oc-mr-s"
+                    class="item-filter-checkbox mr-2"
                     :label="$gettext('Toggle selection')"
                     :model-value="isItemSelected(item)"
                     :label-hidden="true"
