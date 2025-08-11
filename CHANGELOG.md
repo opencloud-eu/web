@@ -10,6 +10,18 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 🐛 Bug Fixes
+
+- fix: incoming group share name in sidebar [[#1060](https://github.com/opencloud-eu/web/pull/1060)]
+- fix: dynamic viewport height on mobile devices [[#1058](https://github.com/opencloud-eu/web/pull/1058)]
+- fix: crippled search after leaving public link [[#1053](https://github.com/opencloud-eu/web/pull/1053)]
+- fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
+- fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
+- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
+- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
+- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
+- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
+
 ### 📈 Enhancement
 
 - feat: change bottom drawer to less technical context menu label [[#1063](https://github.com/opencloud-eu/web/pull/1063)]
@@ -36,17 +48,6 @@
 - [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
 - clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
 - e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
-
-### 🐛 Bug Fixes
-
-- fix: dynamic viewport height on mobile devices [[#1058](https://github.com/opencloud-eu/web/pull/1058)]
-- fix: crippled search after leaving public link [[#1053](https://github.com/opencloud-eu/web/pull/1053)]
-- fix extension registry stable order [[#1046](https://github.com/opencloud-eu/web/pull/1046)]
-- fix: resource deselect when clicking esc in a modal [[#1051](https://github.com/opencloud-eu/web/pull/1051)]
-- fix: pasting files from local clipboard [[#1047](https://github.com/opencloud-eu/web/pull/1047)]
-- fix: search preview design [[#1008](https://github.com/opencloud-eu/web/pull/1008)]
-- fix: sidebar actions panel design [[#1005](https://github.com/opencloud-eu/web/pull/1005)]
-- fix: show explicit error message, when trying to upload space image but quota is exceeded [[#1003](https://github.com/opencloud-eu/web/pull/1003)]
 
 ### 📦️ Dependencies
 
