@@ -10,19 +10,9 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
-### 📈 Enhancement
-
-- feat: add drilldown menu for sub menus on mobile devices [[#1017](https://github.com/opencloud-eu/web/pull/1017)]
-- feat(preview): add webp as supported mimetype [[#1062](https://github.com/opencloud-eu/web/pull/1062)]
-- feat: preserve empty folders on upload [[#1018](https://github.com/opencloud-eu/web/pull/1018)]
-- feat: dispatch pathchange event for external integrations [[#1033](https://github.com/opencloud-eu/web/pull/1033)]
-- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
-- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
-- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
-- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
-
 ### ✅ Tests
 
+- test: fix unit test warnings [[#1067](https://github.com/opencloud-eu/web/pull/1067)]
 - enable upload tests for webkit [[#1057](https://github.com/opencloud-eu/web/pull/1057)]
 - upload image from clipboard test [[#1049](https://github.com/opencloud-eu/web/pull/1049)]
 - Mobile view tests [[#1006](https://github.com/opencloud-eu/web/pull/1006)]
@@ -34,6 +24,17 @@
 - [full-ci] add pipeline to send CI notifications to matrix-channel [[#960](https://github.com/opencloud-eu/web/pull/960)]
 - clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
 - e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
+
+### 📈 Enhancement
+
+- feat: add drilldown menu for sub menus on mobile devices [[#1017](https://github.com/opencloud-eu/web/pull/1017)]
+- feat(preview): add webp as supported mimetype [[#1062](https://github.com/opencloud-eu/web/pull/1062)]
+- feat: preserve empty folders on upload [[#1018](https://github.com/opencloud-eu/web/pull/1018)]
+- feat: dispatch pathchange event for external integrations [[#1033](https://github.com/opencloud-eu/web/pull/1033)]
+- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
+- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
+- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
 
 ### 🐛 Bug Fixes
 
