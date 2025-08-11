@@ -9,7 +9,6 @@
       ref="bottomDrawerRef"
       class="oc-bottom-drawer-background"
       role="button"
-      :aria-label="$gettext('Close the bottom drawer')"
       @click="onBackgroundClicked"
     >
       <focus-trap>
@@ -21,7 +20,7 @@
                   v-if="isNestedElement"
                   appearance="raw"
                   class="raw-hover-surface oc-bottom-drawer-back-button"
-                  :aria-label="$gettext('Open the parent bottom drawer')"
+                  :aria-label="$gettext('Open the parent context menu')"
                   @click="openParentDrawer"
                 >
                   <oc-icon name="arrow-left" fill-type="line" />
@@ -30,7 +29,7 @@
                 <oc-button
                   appearance="raw"
                   class="raw-hover-surface oc-bottom-drawer-close-button"
-                  :aria-label="$gettext('Close the bottom drawer')"
+                  :aria-label="$gettext('Close the context menu')"
                   @click="hide"
                 >
                   <oc-icon name="close" fill-type="line" />
