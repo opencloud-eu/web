@@ -10,6 +10,18 @@
 
 - Add bottom drawer for mobile devices [[#985](https://github.com/opencloud-eu/web/pull/985)]
 
+### 📈 Enhancement
+
+- feat: change bottom drawer to less technical context menu label [[#1063](https://github.com/opencloud-eu/web/pull/1063)]
+- feat: add drilldown menu for sub menus on mobile devices [[#1017](https://github.com/opencloud-eu/web/pull/1017)]
+- feat(preview): add webp as supported mimetype [[#1062](https://github.com/opencloud-eu/web/pull/1062)]
+- feat: preserve empty folders on upload [[#1018](https://github.com/opencloud-eu/web/pull/1018)]
+- feat: dispatch pathchange event for external integrations [[#1033](https://github.com/opencloud-eu/web/pull/1033)]
+- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
+- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
+- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
+- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
+
 ### ✅ Tests
 
 - test: fix unit test warnings [[#1067](https://github.com/opencloud-eu/web/pull/1067)]
@@ -25,17 +37,6 @@
 - clear input for md and odt files [[#987](https://github.com/opencloud-eu/web/pull/987)]
 - e2e-tests. clear input before fill name [[#982](https://github.com/opencloud-eu/web/pull/982)]
 
-### 📈 Enhancement
-
-- feat: add drilldown menu for sub menus on mobile devices [[#1017](https://github.com/opencloud-eu/web/pull/1017)]
-- feat(preview): add webp as supported mimetype [[#1062](https://github.com/opencloud-eu/web/pull/1062)]
-- feat: preserve empty folders on upload [[#1018](https://github.com/opencloud-eu/web/pull/1018)]
-- feat: dispatch pathchange event for external integrations [[#1033](https://github.com/opencloud-eu/web/pull/1033)]
-- feat: only request thumnail if server support is guaranteed [[#874](https://github.com/opencloud-eu/web/pull/874)]
-- feat: improve tile sort menu drop and drawer design [[#1004](https://github.com/opencloud-eu/web/pull/1004)]
-- feat: improve and align drop and drawer design [[#997](https://github.com/opencloud-eu/web/pull/997)]
-- feat: make web installable as PWA [[#980](https://github.com/opencloud-eu/web/pull/980)]
-
 ### 🐛 Bug Fixes
 
 - fix: dynamic viewport height on mobile devices [[#1058](https://github.com/opencloud-eu/web/pull/1058)]
@@ -49,6 +50,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint to v9.33.0 [[#1069](https://github.com/opencloud-eu/web/pull/1069)]
 - chore(deps): update dependency pino to v9.8.0 [[#1065](https://github.com/opencloud-eu/web/pull/1065)]
 - fix(deps): update dependency @sentry/vue to v10.2.0 [[#1059](https://github.com/opencloud-eu/web/pull/1059)]
 - fix(deps): update uppy monorepo [[#1028](https://github.com/opencloud-eu/web/pull/1028)]
