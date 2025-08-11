@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.1](https://github.com/opencloud-eu/web/releases/tag/v3.3.1) - 2025-08-11
+
+### ❤️ Thanks to all contributors! ❤️
+
+@ScharfViktor
+
+
+
 ## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-11
 
 ### ❤️ Thanks to all contributors! ❤️
