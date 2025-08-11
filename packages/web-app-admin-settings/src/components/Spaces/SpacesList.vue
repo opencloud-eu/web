@@ -1,6 +1,6 @@
 <template>
   <div id="space-list">
-    <div class="space-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
+    <div class="space-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4">
       <oc-text-input
         id="spaces-filter"
         v-model="filterTerm"
@@ -87,7 +87,7 @@
             v-oc-tooltip="spaceDetailsLabel"
             :aria-label="spaceDetailsLabel"
             appearance="raw"
-            class="oc-ml-xs quick-action-button oc-p-xs spaces-table-btn-details"
+            class="ml-1 quick-action-button p-1 spaces-table-btn-details"
             @click.stop.prevent="showDetailsForSpace(item)"
           >
             <oc-icon name="information" fill-type="line" />
@@ -107,7 +107,7 @@
       </template>
       <template #footer>
         <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="oc-text-center oc-width-1-1 oc-my-s">
+        <div class="oc-text-center oc-width-1-1 my-2">
           <p class="oc-text-muted">{{ footerTextTotal }}</p>
           <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
         </div>

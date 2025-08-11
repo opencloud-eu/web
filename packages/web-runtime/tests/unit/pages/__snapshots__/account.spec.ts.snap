@@ -23,8 +23,8 @@ exports[`account page > account information section > displays basic user inform
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Profile picture</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Max. 10MB, JPG, PNG</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
-          <div class="avatar-upload oc-mb-s"><input class="oc-invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
-            <div class="oc-flex oc-flex-column oc-flex-middle"><span class="vue-avatar--wrapper oc-avatar oc-mb-m" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
+          <div class="avatar-upload mb-2"><input class="oc-invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
+            <div class="oc-flex oc-flex-column oc-flex-middle"><span class="vue-avatar--wrapper oc-avatar mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div>
                 <div class="oc-button-group"><button type="button" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline avatar-upload-button">
                     <!--v-if-->
@@ -86,7 +86,7 @@ exports[`account page > header section > edit url button > should be displayed i
 `;
 
 exports[`account page > public link context > should render a limited view 1`] = `
-"<main id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
+"<main id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
   <div class="account-page">
     <h1 id="account-page-title" class="oc-mb-rm">My Account</h1>
     <!--v-if-->
@@ -113,7 +113,7 @@ exports[`account page > public link context > should render a limited view 1`] =
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Language</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
               <div class="oc-flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                  <div class="oc-flex oc-ml-xs oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s oc-ml-xs"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
+                  <div class="oc-flex ml-1 oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

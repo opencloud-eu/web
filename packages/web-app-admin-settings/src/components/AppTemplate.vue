@@ -12,7 +12,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar oc-py-s"
+            class="oc-app-bar py-2"
             :class="{ 'admin-settings-app-bar-sticky': isSticky }"
           >
             <div class="admin-settings-app-bar-controls oc-flex oc-flex-between oc-flex-middle">
@@ -36,7 +36,7 @@
             </div>
             <div
               v-if="showAppBar"
-              class="admin-settings-app-bar-actions oc-flex oc-flex-middle oc-mt-xs"
+              class="admin-settings-app-bar-actions oc-flex oc-flex-middle mt-1"
             >
               <slot
                 name="topbarActions"

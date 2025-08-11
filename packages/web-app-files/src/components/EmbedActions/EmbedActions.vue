@@ -1,5 +1,5 @@
 <template>
-  <section class="files-embed-actions oc-width-1-1 oc-flex oc-flex-middle oc-flex-between oc-my-s">
+  <section class="files-embed-actions oc-width-1-1 oc-flex oc-flex-middle oc-flex-between my-2">
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
@@ -10,7 +10,7 @@
 
     <div class="files-embed-actions-buttons oc-flex oc-flex-middle">
       <oc-button
-        class="oc-mr-m"
+        class="mr-4"
         data-testid="button-cancel"
         appearance="raw-inverse"
         no-hover
@@ -21,7 +21,7 @@
       <oc-button
         v-if="!isLocationPicker && !isFilePicker"
         key="btn-share"
-        class="oc-mr-m"
+        class="mr-4"
         data-testid="button-share"
         appearance="filled"
         :disabled="isShareLinksButtonDisabled"

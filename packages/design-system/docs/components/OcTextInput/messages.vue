@@ -1,21 +1,21 @@
 <template>
   <oc-text-input
     label="Input with description message below"
-    class="oc-mb-s"
+    class="mb-2"
     description-message="This is a description message."
     :fix-message-line="true"
   />
   <oc-text-input
     v-model="valueForMessages"
     label="Input with error with reserved space below"
-    class="oc-mb-s"
+    class="mb-2"
     :error-message="errorMessage"
     :fix-message-line="true"
   />
   <oc-text-input
     v-model="valueForMessages"
     label="Input with error without reserved space below"
-    class="oc-mb-s"
+    class="mb-2"
     :error-message="errorMessage"
   />
 </template>

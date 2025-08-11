@@ -1,11 +1,11 @@
 <template>
-  <div id="group-edit-panel" class="oc-mt-xl">
+  <div id="group-edit-panel" class="mt-12">
     <group-info-box :group="group" />
-    <form id="group-edit-form" class="oc-surface-container oc-p-m" autocomplete="off">
+    <form id="group-edit-form" class="oc-surface-container p-4" autocomplete="off">
       <oc-text-input
         id="displayName-input"
         v-model="editGroup.displayName"
-        class="oc-mb-s"
+        class="mb-2"
         :label="$gettext('Group name')"
         :error-message="formData.displayName.errorMessage"
         :fix-message-line="true"
@@ -13,7 +13,7 @@
         @update:model-value="validateDisplayName"
       />
       <compare-save-dialog
-        class="edit-compare-save-dialog oc-mb-l"
+        class="edit-compare-save-dialog mb-6"
         :original-object="group"
         :compare-object="editGroup"
         :confirm-button-disabled="invalidFormData"

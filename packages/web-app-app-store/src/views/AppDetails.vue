@@ -1,6 +1,6 @@
 <template>
   <div class="app-details oc-card oc-card-default oc-card-rounded">
-    <div class="oc-p-xs">
+    <div class="p-1">
       <router-link :to="{ name: `${APPID}-list` }" class="oc-flex oc-flex-middle app-details-back">
         <oc-icon name="arrow-left-s" fill-type="line" />
         <span v-text="$gettext('Back to list')" />
@@ -9,8 +9,8 @@
     <app-image-gallery :app="app" :show-pagination="true" />
     <div class="app-content oc-card-body oc-p">
       <div class="oc-flex oc-flex-middle">
-        <h2 class="oc-my-s oc-text-truncate app-details-title">{{ app.name }}</h2>
-        <span class="oc-ml-s oc-text-muted oc-text-small oc-mt-s">
+        <h2 class="my-2 oc-text-truncate app-details-title">{{ app.name }}</h2>
+        <span class="ml-2 oc-text-muted oc-text-small mt-2">
           v{{ app.mostRecentVersion.version }}
         </span>
       </div>
@@ -18,7 +18,7 @@
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
         <text-editor
-          class="oc-my-s"
+          class="my-2"
           :is-read-only="true"
           :markdown-mode="true"
           :current-content="app.description"

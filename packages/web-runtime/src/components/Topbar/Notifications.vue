@@ -10,7 +10,7 @@
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
     >
-      <div class="oc-flex oc-flex-right oc-flex-middle oc-mb-s">
+      <div class="oc-flex oc-flex-right oc-flex-middle mb-2">
         <oc-button
           v-if="notifications.length"
           class="oc-notifications-mark-all"
@@ -55,7 +55,7 @@
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
-                <div v-if="el.datetime" class="oc-text-small oc-text-muted oc-mt-xs">
+                <div v-if="el.datetime" class="oc-text-small oc-text-muted mt-1">
                   <span
                     v-oc-tooltip="formatDate(el.datetime)"
                     tabindex="0"
@@ -64,7 +64,7 @@
                 </div>
               </div>
             </component>
-            <hr v-if="index + 1 !== notifications.length" class="oc-my-s" />
+            <hr v-if="index + 1 !== notifications.length" class="my-2" />
           </li>
         </oc-list>
       </div>

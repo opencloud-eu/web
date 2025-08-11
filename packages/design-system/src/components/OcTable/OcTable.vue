@@ -28,7 +28,7 @@
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
-              class="oc-p-xs oc-rounded"
+              class="p-1 oc-rounded"
               size="small"
             />
           </oc-button>

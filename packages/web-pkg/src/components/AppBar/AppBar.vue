@@ -4,7 +4,7 @@
     ref="filesAppBar"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky': isSticky }"
   >
-    <div class="files-topbar oc-py-s">
+    <div class="files-topbar py-2">
       <h1 class="oc-invisible-sr" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
@@ -43,7 +43,7 @@
           />
         </div>
       </div>
-      <div class="files-app-bar-actions oc-mt-xs">
+      <div class="files-app-bar-actions mt-1">
         <div class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions

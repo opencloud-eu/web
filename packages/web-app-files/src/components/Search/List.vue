@@ -8,10 +8,10 @@
       />
       <div
         v-if="displayFilter"
-        class="files-search-result-filter oc-flex oc-flex-wrap oc-mx-m oc-mb-m oc-mt-xs"
+        class="files-search-result-filter oc-flex oc-flex-wrap mx-4 mb-4 mt-1"
       >
-        <div class="oc-mr-m oc-flex oc-flex-middle">
-          <oc-icon name="filter-2" class="oc-mr-xs" />
+        <div class="mr-4 oc-flex oc-flex-middle">
+          <oc-icon name="filter-2" class="mr-1" />
           <span v-text="$gettext('Filter:')" />
         </div>
         <item-filter
@@ -21,7 +21,7 @@
           :filter-label="$gettext('Type')"
           :filterable-attributes="['label']"
           :items="availableMediaTypeValues"
-          class="files-search-filter-file-type oc-mr-s"
+          class="files-search-filter-file-type mr-2"
           display-name-attribute="label"
           filter-name="mediaType"
         >
@@ -31,7 +31,7 @@
               :data-test-id="`media-type-${item.id.toLowerCase()}`"
             >
               <resource-icon :resource="getFakeResourceForIcon(item)" />
-              <span class="oc-ml-s">{{ item.label }}</span>
+              <span class="ml-2">{{ item.label }}</span>
             </div>
           </template>
         </item-filter>
@@ -44,14 +44,14 @@
           :items="availableTags"
           :option-filter-label="$gettext('Filter tags')"
           :show-option-filter="true"
-          class="files-search-filter-tags oc-mr-s"
+          class="files-search-filter-tags mr-2"
           display-name-attribute="label"
           filter-name="tags"
         >
           <template #image="{ item }">
             <div class="tag-option-wrapper oc-flex oc-flex-middle">
               <oc-icon name="price-tag-3" size="small" />
-              <span class="oc-ml-s">{{ item.label }}</span>
+              <span class="ml-2">{{ item.label }}</span>
             </div>
           </template>
         </item-filter>
@@ -63,7 +63,7 @@
           :items="availableLastModifiedValues"
           :show-option-filter="false"
           :close-on-click="true"
-          class="files-search-filter-last-modified oc-mr-s"
+          class="files-search-filter-last-modified mr-2"
           display-name-attribute="label"
           filter-name="lastModified"
         >
@@ -76,7 +76,7 @@
           v-if="fullTextSearchEnabled"
           :filter-label="$gettext('Title only')"
           filter-name="titleOnly"
-          class="files-search-filter-title-only oc-mr-s"
+          class="files-search-filter-title-only mr-2"
         />
       </div>
       <app-loading-spinner v-if="loading" />
@@ -130,10 +130,10 @@
             <pagination :pages="paginationPages" :current-page="paginationPage" />
             <div
               v-if="searchResultExceedsLimit"
-              class="oc-text-center oc-width-1-1 oc-my-s"
+              class="oc-text-center oc-width-1-1 my-2"
               v-text="searchResultExceedsLimitText"
             />
-            <list-info v-else-if="paginatedResources.length > 0" class="oc-width-1-1 oc-my-s" />
+            <list-info v-else-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
           </template>
         </resource-table>
       </template>

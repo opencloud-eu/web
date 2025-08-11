@@ -5,11 +5,11 @@
     :position-fixed="true"
     @selected-option-change="changeSelectedQuotaOption"
   />
-  <div v-if="warningMessage" class="oc-mt-s">
+  <div v-if="warningMessage" class="mt-2">
     <span class="oc-text-input-warning" v-text="warningMessage" />
     <oc-contextual-helper
       v-if="warningMessageContextualHelperData"
-      class="oc-pl-xs"
+      class="pl-1"
       v-bind="warningMessageContextualHelperData"
     />
   </div>

@@ -14,14 +14,10 @@
         :view-mode-default="FolderViewModeConstants.name.tiles"
       >
         <template #actions>
-          <create-space v-if="hasCreatePermission" class="oc-mr-s" />
-          <div v-if="!selectedResourcesIds?.length" class="oc-flex oc-flex-middle oc-pl-s">
+          <create-space v-if="hasCreatePermission" class="mr-2" />
+          <div v-if="!selectedResourcesIds?.length" class="oc-flex oc-flex-middle pl-2">
             <span v-text="$gettext('Learn about spaces')" />
-            <oc-contextual-helper
-              :list="spacesHelpList"
-              :title="$gettext('Spaces')"
-              class="oc-ml-xs"
-            />
+            <oc-contextual-helper :list="spacesHelpList" :title="$gettext('Spaces')" class="ml-1" />
           </div>
         </template>
       </app-bar>
@@ -39,7 +35,7 @@
         </no-content-message>
         <div v-else class="spaces-list">
           <div
-            class="spaces-list-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
+            class="spaces-list-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4"
           >
             <oc-text-input
               id="spaces-filter"
@@ -81,25 +77,25 @@
                 <oc-spinner
                   v-if="imagesLoading.includes(resource.id)"
                   :aria-label="$gettext('Space image is loading')"
-                  class="oc-mr-s"
+                  class="mr-2"
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="table-preview oc-mr-s"
+                  class="table-preview mr-2"
                   :class="{ 'table-preview-disabled': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
                   width="33"
                   height="33"
                 />
-                <resource-icon v-else class="oc-mr-s" :resource="resource" />
+                <resource-icon v-else class="mr-2" :resource="resource" />
               </template>
             </template>
             <template #actions="{ resource }">
               <oc-button
                 v-if="!resource.disabled"
                 v-oc-tooltip="showSpaceMemberLabel"
-                class="spaces-list-show-members-button raw-hover-surface oc-p-xs oc-ml-xs"
+                class="spaces-list-show-members-button raw-hover-surface p-1 ml-1"
                 :aria-label="showSpaceMemberLabel"
                 appearance="raw"
                 @click="openSidebarSharePanel(resource as SpaceResource)"
@@ -117,7 +113,7 @@
             </template>
             <template #footer>
               <pagination :pages="totalPages" :current-page="currentPage" />
-              <div class="oc-text-center oc-width-1-1 oc-my-s">
+              <div class="oc-text-center oc-width-1-1 my-2">
                 <p class="oc-text-muted">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
               </div>

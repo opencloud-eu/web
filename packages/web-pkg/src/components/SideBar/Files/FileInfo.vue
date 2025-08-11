@@ -1,11 +1,11 @@
 <template>
-  <div class="file_info oc-flex oc-flex-between oc-p-s">
+  <div class="file_info oc-flex oc-flex-between p-2">
     <div class="oc-flex oc-flex-middle">
       <resource-icon
         v-if="isSubPanelActive"
         :resource="resource"
         size="large"
-        class="file_info__icon oc-mr-s oc-position-relative"
+        class="file_info__icon mr-2 oc-position-relative"
       />
       <div class="file_info__body oc-text-overflow">
         <h3 data-testid="files-info-name" class="oc-font-semibold">

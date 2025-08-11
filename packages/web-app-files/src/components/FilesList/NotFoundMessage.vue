@@ -12,7 +12,7 @@
         We went looking everywhere, but were unable to find the selected resource.
       </span>
     </div>
-    <div class="oc-mt-s">
+    <div class="mt-2">
       <oc-button
         v-if="showSpacesButton"
         id="space-not-found-button-go-spaces"

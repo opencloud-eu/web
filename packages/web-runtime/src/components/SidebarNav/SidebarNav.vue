@@ -9,7 +9,7 @@
     <oc-button
       appearance="raw"
       :class="toggleSidebarButtonClass"
-      class="toggle-sidebar-button oc-pb-s oc-pt-m"
+      class="toggle-sidebar-button pb-2 pt-4"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
       no-hover
@@ -22,14 +22,11 @@
         :name="toggleSidebarButtonIcon"
       />
     </oc-button>
-    <nav
-      class="oc-sidebar-nav oc-mb-m oc-mt-s oc-px-xs"
-      :aria-label="$gettext('Sidebar navigation menu')"
-    >
+    <nav class="oc-sidebar-nav mb-4 mt-2 px-1" :aria-label="$gettext('Sidebar navigation menu')">
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
-        class="oc-ml-s"
+        class="ml-2"
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
@@ -51,7 +48,7 @@
     </nav>
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
-      <div v-if="!closed" class="versions oc-pb-m oc-pl-m oc-text-xsmall oc-text-muted">
+      <div v-if="!closed" class="versions pb-4 pl-4 oc-text-xsmall oc-text-muted">
         <span v-text="backendVersion" />
         <span v-text="webVersion" />
       </div>
@@ -150,9 +147,7 @@ export default defineComponent({
   },
   computed: {
     toggleSidebarButtonClass() {
-      return this.closed
-        ? 'toggle-sidebar-button-collapsed'
-        : 'toggle-sidebar-button-expanded oc-pr-s'
+      return this.closed ? 'toggle-sidebar-button-collapsed' : 'toggle-sidebar-button-expanded pr-2'
     },
 
     toggleSidebarButtonIcon() {

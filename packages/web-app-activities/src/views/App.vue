@@ -1,6 +1,6 @@
 <template>
   <h1 v-text="$gettext('Activities')" />
-  <div class="oc-width-1-1 oc-mb-m">
+  <div class="oc-width-1-1 mb-4">
     <item-filter
       ref="mediaTypeFilter"
       :allow-multiple="false"
@@ -10,7 +10,7 @@
       :show-option-filter="true"
       :items="filterableSpaces"
       :close-on-click="true"
-      class="files-search-filter-file-type oc-mr-s"
+      class="files-search-filter-file-type mr-2"
       display-name-attribute="name"
       filter-name="location"
     >

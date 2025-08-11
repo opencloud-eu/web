@@ -1,11 +1,11 @@
 <template>
   <oc-list class="activity-list">
-    <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="oc-mb-l">
+    <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="mb-6">
       <h2
         class="oc-text-bold oc-text-muted activity-list-date oc-text-medium"
         v-text="getDateHeadline(date)"
       />
-      <oc-list class="oc-ml-s oc-mt-s timeline">
+      <oc-list class="ml-2 mt-2 timeline">
         <li v-for="activityItem in activityItems" :key="activityItem.id">
           <ActivityItem :activity="activityItem" />
         </li>

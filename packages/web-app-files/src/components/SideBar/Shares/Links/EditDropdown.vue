@@ -4,7 +4,7 @@
       :id="`edit-public-link-dropdown-toggl-${linkShare.id}`"
       :aria-label="$gettext('More options')"
       appearance="raw"
-      class="edit-drop-trigger raw-hover-surface oc-p-xs"
+      class="edit-drop-trigger raw-hover-surface p-1"
     >
       <oc-icon name="more-2" />
     </oc-button>
@@ -25,7 +25,7 @@
       <oc-list
         v-if="sharedAncestor"
         class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-navigate-to-parent"
-        :class="{ 'oc-pt-s': editOptions.length > 0 }"
+        :class="{ 'pt-2': editOptions.length > 0 }"
       >
         <li class="oc-rounded oc-menu-item-hover">
           <context-menu-item :option="navigateToParentOption" />
@@ -34,7 +34,7 @@
       <oc-list
         v-if="isModifiable"
         class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-delete"
-        :class="{ 'oc-pt-s': editOptions.length > 0 }"
+        :class="{ 'pt-2': editOptions.length > 0 }"
       >
         <li class="oc-rounded oc-menu-item-hover">
           <context-menu-item :option="deleteOption" />

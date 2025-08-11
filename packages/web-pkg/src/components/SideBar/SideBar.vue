@@ -33,7 +33,7 @@
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
             v-oc-tooltip="accessibleLabelBack"
-            class="header__back oc-p-xs"
+            class="header__back p-1"
             appearance="raw"
             :aria-label="accessibleLabelBack"
             @click="closePanel"
@@ -47,7 +47,7 @@
 
           <oc-button
             appearance="raw"
-            class="header__close oc-p-xs"
+            class="header__close p-1"
             :aria-label="$gettext('Close file sidebar')"
             @click="closeSidebar"
           >
@@ -76,7 +76,7 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
+                  :class="{ 'multi-root-panel-separator oc-mt pt-2': index > 0 }"
                   class="oc-rounded"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
@@ -86,7 +86,7 @@
 
           <div
             v-if="panel.isRoot?.(panelContext) && subPanels.length > 0"
-            class="sidebar-panel__navigation oc-mt-m"
+            class="sidebar-panel__navigation mt-4"
           >
             <oc-button
               v-for="panelSelect in subPanels"

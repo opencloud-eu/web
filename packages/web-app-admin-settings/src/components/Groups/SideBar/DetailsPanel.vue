@@ -1,5 +1,5 @@
 <template>
-  <div v-if="noGroups" class="oc-flex group-info oc-text-center oc-mt-xl">
+  <div v-if="noGroups" class="oc-flex group-info oc-text-center mt-12">
     <oc-icon name="group-2" size="xxlarge" />
     <p v-translate>Select a group to view details</p>
   </div>
@@ -13,7 +13,7 @@
       class="selected-group-details"
       :aria-label="$gettext('Overview of the information about the selected group')"
     >
-      <span class="oc-pr-s oc-font-semibold" v-text="$gettext('Group name')" />
+      <span class="pr-2 oc-font-semibold" v-text="$gettext('Group name')" />
       <span v-text="group.displayName" />
     </p>
   </div>

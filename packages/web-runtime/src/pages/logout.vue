@@ -14,7 +14,7 @@
     </div>
     <oc-button
       id="exitAnchor"
-      class="oc-mt-m oc-width-medium"
+      class="mt-4 oc-width-medium"
       size="large"
       appearance="filled"
       color-role="primary"

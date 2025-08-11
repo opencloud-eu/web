@@ -19,7 +19,7 @@
       v-if="password && !disabled"
       v-oc-tooltip="showPassword ? $gettext('Hide password') : $gettext('Show password')"
       :aria-label="showPassword ? $gettext('Hide password') : $gettext('Show password')"
-      class="oc-text-input-show-password-toggle oc-px-s"
+      class="oc-text-input-show-password-toggle px-2"
       appearance="raw"
       size="small"
       @click="showPassword = !showPassword"
@@ -30,7 +30,7 @@
       v-if="password && !disabled"
       v-oc-tooltip="$gettext('Copy password')"
       :aria-label="$gettext('Copy password')"
-      class="oc-text-input-copy-password-button oc-px-s"
+      class="oc-text-input-copy-password-button px-2"
       appearance="raw"
       size="small"
       @click="copyPasswordToClipboard"
@@ -41,7 +41,7 @@
       v-if="generatePasswordMethod && !disabled"
       v-oc-tooltip="$gettext('Generate password')"
       :aria-label="$gettext('Generate password')"
-      class="oc-text-input-generate-password-button oc-px-s"
+      class="oc-text-input-generate-password-button px-2"
       appearance="raw"
       size="small"
       @click="generatePassword"
@@ -50,7 +50,7 @@
     </oc-button>
   </div>
   <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
-    <div class="oc-flex oc-text-small oc-text-input-password-policy-rule-wrapper oc-pt-s">
+    <div class="oc-flex oc-text-small oc-text-input-password-policy-rule-wrapper pt-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
@@ -58,7 +58,7 @@
       >
         <oc-icon
           size="small"
-          class="oc-mr-xs"
+          class="mr-1"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
           :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"
         />

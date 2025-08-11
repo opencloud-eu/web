@@ -64,7 +64,7 @@
           v-if="index !== displayItems.length - 1"
           color="var(--oc-role-on-surface)"
           name="arrow-right-s"
-          class="oc-mx-xs"
+          class="mx-1"
           fill-type="line"
         />
         <template v-if="showContextActions && index === displayItems.length - 1">

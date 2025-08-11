@@ -27,18 +27,18 @@
         :disabled="disabled"
         color-role="secondary"
         appearance="outline"
-        class="oc-file-input-button oc-text-input-btn oc-pr-s"
+        class="oc-file-input-button oc-text-input-btn pr-2"
         @click="addFiles"
       >
         {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
       </oc-button>
-      <div class="oc-file-input-files oc-rounded oc-ml-s">
-        <div v-if="fileNames" class="oc-py-xs oc-px-s oc-text-small oc-flex oc-flex-middle">
+      <div class="oc-file-input-files oc-rounded ml-2">
+        <div v-if="fileNames" class="py-1 px-2 oc-text-small oc-flex oc-flex-middle">
           {{ fileNames }}
           <oc-button
             v-if="clearButtonEnabled && fileNames"
             appearance="raw"
-            class="oc-file-input-clear raw-hover-surface oc-p-xs oc-ml-xs"
+            class="oc-file-input-clear raw-hover-surface p-1 ml-1"
             :aria-label="$gettext('Clear input')"
             @click="onClear"
           >
@@ -59,7 +59,7 @@
         v-if="!!errorMessage"
         name="error-warning"
         size="small"
-        class="oc-mr-xs"
+        class="mr-1"
         fill-type="line"
         aria-hidden="true"
       />

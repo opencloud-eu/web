@@ -1,7 +1,7 @@
 <template>
-  <div class="space_info oc-p-s">
+  <div class="space_info p-2">
     <div class="space_info__body oc-text-overflow oc-flex oc-flex-middle">
-      <div class="oc-mr-s">
+      <div class="mr-2">
         <oc-icon
           name="layout-grid"
           :size="resource.description ? 'large' : 'medium'"

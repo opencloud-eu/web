@@ -1,7 +1,7 @@
 <template>
-  <div class="oc-flex oc-button-justify-content-space-between oc-pb-s">
+  <div class="oc-flex oc-button-justify-content-space-between pb-2">
     <div v-if="isAdvancedMode" class="oc-flex oc-flex-middle">
-      <oc-icon class="oc-mr-s" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
         :model-value="selectedType"
         :available-link-type-options="availableLinkTypes"
@@ -9,7 +9,7 @@
       />
     </div>
     <div v-else class="oc-flex oc-flex-middle">
-      <oc-icon class="oc-mr-s" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <div class="oc-flex oc-flex-column">
         <span class="oc-text-bold" v-text="selectedTypeDisplayName" />
         <span class="oc-text-small" v-text="selectedTypeDescription" />
@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="link-modal-password oc-mb-m">
+  <div class="link-modal-password mb-4">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -47,21 +47,18 @@
     </div>
     <oc-datepicker
       v-if="isAdvancedMode"
-      class="oc-mt-s"
+      class="mt-2"
       :min-date="DateTime.now()"
       :label="$gettext('Expiry date')"
       @date-changed="onExpiryDateChanged"
     />
   </div>
-  <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
-    <oc-button
-      class="link-modal-cancel oc-modal-body-actions-cancel oc-ml-s"
-      @click="$emit('cancel')"
-    >
+  <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-2">
+    <oc-button class="link-modal-cancel oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>
     <div
-      class="link-modal-confirm-button-group oc-ml-s"
+      class="link-modal-confirm-button-group ml-2"
       :class="{ 'oc-button-group': password.value }"
     >
       <oc-button

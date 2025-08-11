@@ -12,7 +12,7 @@
           data-testid="resource-icon"
           :name="resource.icon"
           size="medium"
-          class="oc-mr-xs"
+          class="mr-1"
         />
         <span data-testid="resource-label">{{ resource.label }}</span>
       </a>

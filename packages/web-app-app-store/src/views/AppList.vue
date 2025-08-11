@@ -1,5 +1,5 @@
 <template>
-  <div class="app-list oc-mb-m">
+  <div class="app-list mb-4">
     <h2 class="oc-mt-rm app-list-headline">
       {{ $gettext('App Store') }}
       <app-contextual-helper />
@@ -24,7 +24,7 @@
         v-for="app in filteredApps"
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
-        class="oc-my-m"
+        class="my-4"
         @search="setFilterTerm"
       />
     </oc-list>

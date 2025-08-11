@@ -6,10 +6,10 @@ exports[`OcTile component > renders default space correctly 1`] = `
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
     <div class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center">
-      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image oc-pt-xs"></resource-icon-stub>
+      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
     </div>
   </resource-link-stub>
-  <div class="oc-card-body oc-p-s">
+  <div class="oc-card-body p-2">
     <div class="oc-flex oc-flex-between oc-flex-middle">
       <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
         <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
@@ -31,10 +31,10 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
     <div class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center">
-      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image oc-pt-xs"></resource-icon-stub>
+      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
     </div>
   </resource-link-stub>
-  <div class="oc-card-body oc-p-s">
+  <div class="oc-card-body p-2">
     <div class="oc-flex oc-flex-between oc-flex-middle">
       <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
         <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>

@@ -13,7 +13,7 @@ exports[`OcResource > displays parent folder name default if calculated name is 
       return svg;
     }" aria-hidden="true" focusable="false" style="fill: var(--oc-color-icon-pdf);"></svg></span>
   </button>
-  <div class="oc-resource-details oc-text-overflow oc-pl-s"><button target="_self" type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-resource-link oc-text-overflow" draggable="false">
+  <div class="oc-resource-details oc-text-overflow pl-2"><button target="_self" type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-resource-link oc-text-overflow" draggable="false">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-resource-name" data-test-resource-path="example.pdf" data-test-resource-name="example.pdf" data-test-resource-type="file"><span class="oc-text-truncate"><span class="oc-resource-basename">example</span></span><span class="oc-resource-extension">.pdf</span></span>
     </button>

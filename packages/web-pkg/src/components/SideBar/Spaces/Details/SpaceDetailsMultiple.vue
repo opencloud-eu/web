@@ -1,6 +1,6 @@
 <template>
   <div id="oc-spaces-details-multiple-sidebar">
-    <div class="spaces-preview oc-mb-l">
+    <div class="spaces-preview mb-6">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />

@@ -22,10 +22,10 @@
         v-if="!publicLinkContextReady && shareIndicators.length"
         key="file-shares"
         data-testid="sharingInfo"
-        class="oc-flex oc-flex-middle oc-my-m"
+        class="oc-flex oc-flex-middle my-4"
       >
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
-        <p class="oc-my-rm oc-mx-s" v-text="detailSharingInformation" />
+        <p class="oc-my-rm mx-2" v-text="detailSharingInformation" />
       </div>
       <dl
         class="details-list oc-m-rm"
@@ -109,7 +109,7 @@
             <oc-contextual-helper
               v-if="contextualHelper?.isEnabled"
               v-bind="contextualHelper?.data"
-              class="oc-pl-xs"
+              class="pl-1"
             ></oc-contextual-helper>
           </dt>
           <dd data-testid="tags">

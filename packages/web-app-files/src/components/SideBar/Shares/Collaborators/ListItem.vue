@@ -3,7 +3,7 @@
     :data-testid="`collaborator-${isAnyUserShareType ? 'user' : 'group'}-item-${
       share.sharedWith.displayName
     }`"
-    class="files-collaborators-collaborator oc-py-xs"
+    class="files-collaborators-collaborator py-1"
   >
     <div class="oc-width-1-1 oc-flex oc-flex-middle files-collaborators-collaborator-details">
       <div class="oc-width-2-3 oc-flex oc-flex-middle">
@@ -34,7 +34,7 @@
             />
           </template>
         </div>
-        <div class="files-collaborators-collaborator-name-wrapper oc-pl-s">
+        <div class="files-collaborators-collaborator-name-wrapper pl-2">
           <div class="oc-text-truncate">
             <span
               aria-hidden="true"
@@ -75,7 +75,7 @@
               <div v-else-if="share.role">
                 <span
                   v-oc-tooltip="$gettext(share.role.description)"
-                  class="oc-mr-xs"
+                  class="mr-1"
                   v-text="$gettext(share.role.displayName)"
                 />
               </div>
@@ -86,7 +86,7 @@
       <div class="oc-flex oc-flex-middle oc-width-1-3 files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
-          class="files-collaborators-collaborator-expiration oc-ml-xs oc-p-xs"
+          class="files-collaborators-collaborator-expiration ml-1 p-1"
           data-testid="recipient-info-expiration-date"
           :expiration-date="DateTime.fromISO(share.expirationDateTime)"
         />
@@ -95,10 +95,10 @@
           v-oc-tooltip="sharedViaTooltip"
           name="folder-shared"
           fill-type="line"
-          class="files-collaborators-collaborator-shared-via oc-ml-xs oc-p-xs"
+          class="files-collaborators-collaborator-shared-via ml-1 p-1"
         />
         <edit-dropdown
-          class="files-collaborators-collaborator-edit oc-ml-xs"
+          class="files-collaborators-collaborator-edit ml-1"
           data-testid="collaborator-edit"
           :expiration-date="share.expirationDateTime ? share.expirationDateTime : null"
           :share-category="shareCategory"

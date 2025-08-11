@@ -1,5 +1,5 @@
 <template>
-  <div v-if="noUsers" class="oc-flex user-info oc-text-center oc-mt-xl">
+  <div v-if="noUsers" class="oc-flex user-info oc-text-center mt-12">
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
@@ -23,7 +23,7 @@
       <dd>
         <span v-if="user.appRoleAssignments" v-text="roleDisplayName" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -40,7 +40,7 @@
       <dd>
         <span v-if="showUserQuota" v-text="quotaDisplayValue" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -55,7 +55,7 @@
       <dd>
         <span v-if="user.memberOf.length" v-text="groupsDisplayValue" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="$gettext('No groups assigned.')"
             :title="$gettext('Groups')"

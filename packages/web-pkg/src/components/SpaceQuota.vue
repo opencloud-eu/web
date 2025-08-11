@@ -1,6 +1,6 @@
 <template>
   <div class="space-quota">
-    <p class="oc-mb-s oc-mt-rm" v-text="spaceStorageDetailsLabel" />
+    <p class="mb-2 oc-mt-rm" v-text="spaceStorageDetailsLabel" />
     <oc-progress
       :value="quotaUsagePercent"
       :max="100"

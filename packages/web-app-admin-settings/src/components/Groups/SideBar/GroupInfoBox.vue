@@ -1,7 +1,7 @@
 <template>
-  <div class="oc-flex group-info oc-mb-l">
+  <div class="oc-flex group-info mb-6">
     <OcAvatar
-      class="oc-mb-m"
+      class="mb-4"
       :width="80"
       :userid="group.id"
       :user-name="group.displayName"
