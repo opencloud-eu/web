@@ -6,7 +6,9 @@
 
 @ScharfViktor
 
+### 📦️ Dependencies
 
+- [full-ci] bump-opencloud-3.3.0. run all tests [[#1074](https://github.com/opencloud-eu/web/pull/1074)]
 
 ## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-11
 
