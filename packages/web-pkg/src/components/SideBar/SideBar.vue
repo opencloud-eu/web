@@ -28,7 +28,7 @@
       >
         <div
           v-if="[activePanelName, oldPanelName].includes(panel.name)"
-          class="sidebar-panel__header header"
+          class="sidebar-panel__header header pt-2 px-2"
         >
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
@@ -355,7 +355,7 @@ onBeforeUnmount(() => {
   }
 
   &__header {
-    padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
+    // padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
 
     &.header {
       display: grid;
@@ -394,8 +394,6 @@ onBeforeUnmount(() => {
   }
 
   &__navigation {
-    margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
-
     > button {
       width: 100%;
       border-radius: 0;
