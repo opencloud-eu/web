@@ -47,7 +47,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
                 <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium oc-rounded">
-                  <div class="oc-card oc-card-body oc-p-s"></div>
+                  <div class="oc-card oc-card-body p-2"></div>
                 </div>
               </button>
             </div>
@@ -86,7 +86,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
                 <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded">
-                  <div class="oc-card oc-card-body oc-p-s"></div>
+                  <div class="oc-card oc-card-body p-2"></div>
                 </div>
               </button>
             </div>
