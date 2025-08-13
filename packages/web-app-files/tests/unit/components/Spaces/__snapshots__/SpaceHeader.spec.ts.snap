@@ -19,7 +19,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
     }" aria-hidden="true" focusable="false"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
-          <div class="oc-card oc-card-body oc-p-s"></div>
+          <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
@@ -60,7 +60,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
-          <div class="oc-card oc-card-body oc-p-s"></div>
+          <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
@@ -104,7 +104,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop oc-box-shadow-medium oc-rounded" options="[object Object]">
-          <div class="oc-card oc-card-body oc-p-s"></div>
+          <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->

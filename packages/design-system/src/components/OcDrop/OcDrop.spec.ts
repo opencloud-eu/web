@@ -1,6 +1,6 @@
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Drop from './OcDrop.vue'
-import { getSizeClass } from '../../helpers'
+import { getTailwindSizeClass } from '../../helpers'
 import { computed, nextTick } from 'vue'
 import { useIsMobile } from '../../composables'
 
@@ -61,7 +61,7 @@ describe('OcDrop', () => {
       const drop = wrapper.findComponent({ name: 'oc-drop' })
       await nextTick()
 
-      expect(drop.html().includes(`oc-p-${getSizeClass(size)}`)).toBeTruthy()
+      expect(drop.html().includes(`p-${getTailwindSizeClass(size)}`)).toBeTruthy()
     }
   )
 

@@ -32,7 +32,7 @@
 import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getSizeClass, SizeType, uniqueId } from '../../helpers'
+import { getTailwindSizeClass, SizeType, uniqueId } from '../../helpers'
 import {
   ComponentPublicInstance,
   computed,
@@ -226,7 +226,7 @@ const triggerMapping = computed(() => {
 })
 
 const paddingClass = computed(() => {
-  return `oc-p-${getSizeClass(paddingSize)}`
+  return `p-${getTailwindSizeClass(paddingSize)}`
 })
 
 watch(
