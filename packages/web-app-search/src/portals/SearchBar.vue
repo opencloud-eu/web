@@ -72,10 +72,7 @@
               <li class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details">
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
-                  <router-link
-                    class="more-results oc-p-rm"
-                    :to="getSearchResultLocation(provider.id)"
-                  >
+                  <router-link class="more-results p-0" :to="getSearchResultLocation(provider.id)">
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>

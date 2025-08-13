@@ -1,5 +1,5 @@
 <template>
-  <ul class="oc-mb-rm oc-p-rm">
+  <ul class="mb-0 p-0">
     <li v-for="resource in resources" :key="resource.label" class="app-resource-item">
       <a
         :href="resource.url"

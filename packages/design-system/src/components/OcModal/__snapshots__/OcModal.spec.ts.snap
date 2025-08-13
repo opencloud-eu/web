@@ -31,7 +31,7 @@ exports[`OcModal > displays loading state 1`] = `
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
-        <p class="oc-modal-body-message oc-mt-rm oc-mb-rm">Example message</p>
+        <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
       </div>
@@ -54,7 +54,7 @@ exports[`OcModal > matches snapshot 1`] = `
         <h2 id="oc-modal-title" class="oc-text-truncate">Example title</h2>
       </div>
       <div class="oc-modal-body">
-        <p class="oc-modal-body-message oc-mt-rm oc-mb-rm">Example message</p>
+        <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
       </div>

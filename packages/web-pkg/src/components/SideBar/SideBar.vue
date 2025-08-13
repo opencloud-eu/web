@@ -41,7 +41,7 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title oc-my-rm">
+          <h2 class="header__title my-0">
             {{ panel.title(panelContext) }}
           </h2>
 

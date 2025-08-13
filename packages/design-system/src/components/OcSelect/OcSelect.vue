@@ -55,7 +55,7 @@
               appearance="raw"
               :title="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
               :aria-label="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
-              class="vs__deselect oc-mx-rm"
+              class="vs__deselect mx-0"
               no-hover
               @mousedown.stop.prevent
               @click="deselect(option)"

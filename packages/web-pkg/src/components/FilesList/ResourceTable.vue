@@ -191,7 +191,7 @@
       <p
         v-oc-tooltip="formatDate(item.ddate)"
         tabindex="0"
-        class="oc-m-rm"
+        class="m-0"
         v-text="formatDateRelative(item.ddate)"
       />
     </template>

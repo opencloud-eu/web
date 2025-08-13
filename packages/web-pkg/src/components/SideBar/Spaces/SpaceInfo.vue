@@ -9,7 +9,7 @@
         />
       </div>
       <div>
-        <h3 data-testid="space-info-name" class="oc-font-semibold oc-m-rm" v-text="resource.name" />
+        <h3 data-testid="space-info-name" class="oc-font-semibold m-0" v-text="resource.name" />
         <span data-testid="space-info-subtitle" v-text="resource.description" />
       </div>
     </div>

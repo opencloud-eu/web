@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list oc-flex oc-m-rm oc-p-rm">
+    <ol class="oc-breadcrumb-list oc-flex m-0 p-0">
       <li
         v-for="(item, index) in displayItems"
         :key="index"

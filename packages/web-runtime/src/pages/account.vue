@@ -2,7 +2,7 @@
   <app-loading-spinner v-if="isLoading" />
   <main v-else id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
     <div class="account-page">
-      <h1 id="account-page-title" class="oc-mb-rm" v-text="$gettext('My Account')" />
+      <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
         :title="$gettext('Account Information')"

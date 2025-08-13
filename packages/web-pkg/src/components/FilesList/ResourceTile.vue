@@ -13,7 +13,7 @@
     <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
     <template v-else>
       <resource-link
-        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm"
+        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle m-0"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -79,7 +79,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="oc-text-left oc-my-rm oc-text-truncate">
+        <p v-if="resourceDescription" class="oc-text-left my-0 oc-text-truncate">
           <small v-text="resourceDescription" />
         </p>
       </div>

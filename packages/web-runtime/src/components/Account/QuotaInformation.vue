@@ -2,7 +2,7 @@
   <div class="quota-information oc-flex oc-flex-bottom">
     <oc-icon name="hard-drive-2" size="small" fill-type="line" class="mr-1" />
     <div>
-      <p class="oc-my-rm">
+      <p class="my-0">
         <span class="quota-information-text" v-text="personalStorageDetailsLabel" />
       </p>
       <oc-progress
