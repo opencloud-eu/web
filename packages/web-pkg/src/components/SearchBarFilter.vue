@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-location-search oc-position-small oc-position-center-right mt-0" @click.stop>
+  <div class="oc-location-search oc-position-center-right mx-4 mb-4 mt-0" @click.stop>
     <div v-if="currentSelection">
       <oc-filter-chip
         :is-toggle="false"
