@@ -12,7 +12,7 @@
       >
         <oc-icon size="large" name="arrow-drop-left" />
       </oc-button>
-      <p v-if="!isFolderLoading" class="oc-m-rm preview-controls-action-count">
+      <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
         <span class="oc-invisible-sr" v-text="screenreaderFileCount" />
       </p>

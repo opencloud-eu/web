@@ -25,10 +25,10 @@
         class="oc-flex oc-flex-middle my-4"
       >
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
-        <p class="oc-my-rm mx-2" v-text="detailSharingInformation" />
+        <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
       <dl
-        class="details-list oc-m-rm"
+        class="details-list m-0"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
         <template v-if="hasDeletionDate">
@@ -73,7 +73,7 @@
         <template v-if="ownerDisplayName && ownerDisplayName !== sharedByDisplayNames">
           <dt>{{ $gettext('Owner') }}</dt>
           <dd data-testid="ownerDisplayName">
-            <p class="oc-m-rm">
+            <p class="m-0">
               {{ ownerDisplayName }}
               <span v-if="ownedByCurrentUser" v-translate>(me)</span>
             </p>

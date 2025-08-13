@@ -5,7 +5,7 @@
       v-text="$gettext((role as ShareRole).displayName)"
     />
     <span
-      class="oc-m-rm oc-text-small oc-display-block"
+      class="m-0 oc-text-small oc-display-block"
       v-text="$gettext((role as ShareRole).description)"
     />
   </span>

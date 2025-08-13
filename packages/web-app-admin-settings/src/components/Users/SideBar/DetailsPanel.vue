@@ -10,7 +10,7 @@
   <div v-if="user" id="oc-user-details-sidebar">
     <UserInfoBox :user="user" />
     <dl
-      class="details-list oc-m-rm"
+      class="details-list m-0"
       :aria-label="$gettext('Overview of the information about the selected user')"
     >
       <dt>{{ $gettext('User name') }}</dt>

@@ -5,7 +5,7 @@
     </div>
     <div id="web-content-header">
       <div v-if="isIE11" class="oc-surface-container oc-text-center py-4">
-        <p class="oc-m-rm" v-text="ieDeprecationWarning" />
+        <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
     </div>

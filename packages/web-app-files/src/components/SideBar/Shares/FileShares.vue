@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="oc-flex oc-flex-between oc-flex-middle">
       <div class="oc-flex">
-        <h3 v-translate class="oc-text-bold oc-text-medium oc-m-rm">Share with people</h3>
+        <h3 v-translate class="oc-text-bold oc-text-medium m-0">Share with people</h3>
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
       <copy-private-link :resource="resource" />
@@ -20,7 +20,7 @@
     />
     <template v-if="hasSharees">
       <div id="files-collaborators-headline" class="oc-flex oc-flex-middle oc-flex-between">
-        <h4 class="oc-text-bold oc-my-rm" v-text="sharedWithLabel" />
+        <h4 class="oc-text-bold my-0" v-text="sharedWithLabel" />
       </div>
       <portal-target
         name="app.files.sidebar.sharing.shared-with.top"
@@ -30,7 +30,7 @@
       <ul
         id="files-collaborators-list"
         class="oc-list oc-list-divider"
-        :class="{ 'mb-6': showSpaceMembers, 'oc-m-rm': !showSpaceMembers }"
+        :class="{ 'mb-6': showSpaceMembers, 'm-0': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
         <li v-for="collaborator in displayCollaborators" :key="collaborator.id">
@@ -69,7 +69,7 @@
       </div>
       <ul
         id="space-collaborators-list"
-        class="oc-list oc-list-divider oc-overflow-hidden oc-m-rm"
+        class="oc-list oc-list-divider oc-overflow-hidden m-0"
         :aria-label="spaceMemberLabel"
       >
         <li v-for="(collaborator, i) in displaySpaceMembers" :key="i">

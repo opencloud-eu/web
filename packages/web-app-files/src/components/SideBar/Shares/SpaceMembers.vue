@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="oc-flex">
       <div v-if="canShare({ space: resource, resource })" class="oc-flex py-2">
-        <h3 class="oc-text-bold oc-text-medium oc-m-rm" v-text="$gettext('Add members')" />
+        <h3 class="oc-text-bold oc-text-medium m-0" v-text="$gettext('Add members')" />
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
       <copy-private-link :resource="resource" />
@@ -20,7 +20,7 @@
         class="oc-flex oc-flex-middle oc-flex-between oc-position-relative"
       >
         <div class="oc-flex">
-          <h4 class="oc-text-bold oc-my-rm" v-text="$gettext('Members')" />
+          <h4 class="oc-text-bold my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
             class="open-filter-btn ml-2"
@@ -58,7 +58,7 @@
       <ul
         id="files-collaborators-list"
         ref="collaboratorList"
-        class="oc-list oc-list-divider oc-m-rm"
+        class="oc-list oc-list-divider m-0"
         :aria-label="$gettext('Space members')"
       >
         <li v-for="collaborator in filteredSpaceMembers" :key="collaborator.id">

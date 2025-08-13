@@ -23,12 +23,12 @@
           <h2>
             <span v-text="$gettext('An error occurred while loading the public link')" />
           </h2>
-          <p class="oc-rm-m oc-m-rm" v-text="errorMessage" />
+          <p class="m-0" v-text="errorMessage" />
         </div>
         <div v-else class="oc-flex oc-flex-center oc-width-1-1">
           <p
             id="files-drop-info-message"
-            class="oc-m-rm pt-12 oc-text-small"
+            class="m-0 pt-12 oc-text-small"
             v-text="
               $gettext(
                 'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="oc-mt-xxl">
+      <div class="mt-24">
         <p v-text="themeSlogan" />
       </div>
     </div>

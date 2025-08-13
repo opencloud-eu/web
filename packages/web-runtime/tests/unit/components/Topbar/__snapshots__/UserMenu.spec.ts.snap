@@ -59,7 +59,7 @@ exports[`User Menu component > when quota and no email is set > renders a naviga
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
+            <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
             <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
           </div>
         </div></span>
@@ -89,7 +89,7 @@ exports[`User Menu component > when quota is above 80% and below 90% > renders a
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">810 B of 1 kB used (81%)</span></p>
+            <p class="my-0"><span class="quota-information-text">810 B of 1 kB used (81%)</span></p>
             <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="81"></oc-progress-stub>
           </div>
         </div></span>
@@ -119,7 +119,7 @@ exports[`User Menu component > when quota is above 90% > renders a danger quota 
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">910 B of 1 kB used (91%)</span></p>
+            <p class="my-0"><span class="quota-information-text">910 B of 1 kB used (91%)</span></p>
             <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-error)" value="91"></oc-progress-stub>
           </div>
         </div></span>
@@ -149,7 +149,7 @@ exports[`User Menu component > when quota is below 80% > renders a primary quota
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
+            <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
             <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
           </div>
         </div></span>
@@ -179,7 +179,7 @@ exports[`User Menu component > when quota is not defined > renders no percentag 
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">910 B used</span></p>
+            <p class="my-0"><span class="quota-information-text">910 B used</span></p>
             <!--v-if-->
           </div>
         </div></span>
@@ -209,7 +209,7 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
         <div data-v-08f1b1e7="" class="quota-information oc-flex oc-flex-bottom oc-text-small mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
-            <p class="oc-my-rm"><span class="quota-information-text">300 B used</span></p>
+            <p class="my-0"><span class="quota-information-text">300 B used</span></p>
             <!--v-if-->
           </div>
         </div></span>

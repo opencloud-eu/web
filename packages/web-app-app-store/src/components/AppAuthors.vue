@@ -1,5 +1,5 @@
 <template>
-  <ul class="oc-mb-rm oc-p-rm">
+  <ul class="mb-0 p-0">
     <li v-for="author in authors" :key="author.name" class="app-author-item">
       <a v-if="author.url" :href="author.url" data-testid="author-link" target="_blank">
         {{ author.name }}

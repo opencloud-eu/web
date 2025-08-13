@@ -14,7 +14,7 @@
           v{{ app.mostRecentVersion.version }}
         </span>
       </div>
-      <p class="oc-my-rm">{{ app.subtitle }}</p>
+      <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
         <text-editor

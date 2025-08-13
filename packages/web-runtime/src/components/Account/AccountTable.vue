@@ -13,7 +13,7 @@
           v-text="$gettext('NEW')"
         />
       </h2>
-      <p v-if="subtitle" class="oc-text-small oc-mt-rm mb-4" v-text="subtitle" />
+      <p v-if="subtitle" class="oc-text-small mt-0 mb-4" v-text="subtitle" />
     </slot>
     <oc-table-simple>
       <colgroup>

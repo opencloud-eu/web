@@ -2,7 +2,7 @@
   <div class="oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle">
     <div class="oc-login-card">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-      <div class="oc-login-card-body oc-width-medium">
+      <div class="oc-login-card-body oc-width-medium p-6">
         <h2 class="oc-login-card-title" v-text="cardTitle" />
         <p v-text="cardHint" />
         <oc-button
@@ -16,7 +16,7 @@
           <span v-text="$gettext('Read more')" />
         </oc-button>
       </div>
-      <div class="oc-login-card-footer oc-pt-rm">
+      <div class="oc-login-card-footer pt-0">
         <p>
           {{ footerSlogan }}
         </p>

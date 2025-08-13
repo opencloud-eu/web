@@ -44,7 +44,7 @@
       </oc-button>
     </div>
     <dl
-      class="details-list oc-m-rm"
+      class="details-list m-0"
       :aria-label="$gettext('Overview of the information about the selected space')"
     >
       <dt>{{ $gettext('Last activity') }}</dt>
