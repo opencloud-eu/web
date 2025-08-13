@@ -42,12 +42,12 @@ The component can be in a `disabled` or a `loading` state.
 <oc-select
 	label="Please select an option"
 	disabled
-	class="oc-mb-m"
+	class="mb-4"
 />
 <oc-select
 	label="Please select an option"
 	loading
-	class="oc-mb-m"
+	class="mb-4"
 />
 ```
 
@@ -63,12 +63,12 @@ There are two different types of messages that can be displayed: `description-me
 <oc-select
 	label="Please select an option"
 	description-message="This is a description message"
-	class="oc-mb-m"
+	class="mb-4"
 />
 <oc-select
 	label="Please select an option"
 	error-message="This is an error message"
-	class="oc-mb-m"
+	class="mb-4"
 />
 ```
 

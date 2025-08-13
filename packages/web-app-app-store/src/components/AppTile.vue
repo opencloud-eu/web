@@ -3,7 +3,7 @@
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
     </router-link>
-    <div class="app-tile-body oc-card-body oc-p">
+    <div class="app-tile-body oc-card-body p-4">
       <div class="app-tile-content">
         <div class="oc-flex oc-flex-middle">
           <h3 class="my-2 oc-text-truncate mark-element app-tile-title">

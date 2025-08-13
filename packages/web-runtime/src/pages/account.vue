@@ -261,7 +261,7 @@
         <oc-table-tr
           v-for="extensionPoint in extensionPointsWithUserPreferences"
           :key="`extension-point-preference-${extensionPoint.id}`"
-          class="oc-mb"
+          class="mb-4"
         >
           <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
           <oc-table-td v-if="extensionPoint.userPreference.description">

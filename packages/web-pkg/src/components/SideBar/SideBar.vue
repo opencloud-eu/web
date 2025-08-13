@@ -76,7 +76,7 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator oc-mt pt-2': index > 0 }"
+                  :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
                   class="oc-rounded"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />

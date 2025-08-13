@@ -78,7 +78,7 @@
         </oc-button>
       </template>
       <template #footer>
-        <div v-if="showMoreToggle && hasMore" class="oc-width-1-1 oc-text-center oc-mt">
+        <div v-if="showMoreToggle && hasMore" class="oc-width-1-1 oc-text-center mt-4">
           <oc-button
             id="files-shared-with-me-show-all"
             appearance="raw"
