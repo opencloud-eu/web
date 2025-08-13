@@ -54,7 +54,7 @@
             @click="selectRole(role)"
           >
             <span class="oc-flex oc-flex-middle">
-              <oc-icon :name="role.icon" class="pl-2 pr-4" />
+              <oc-icon :name="role.icon" class="pl-2 pr-4 box-content" />
               <role-item :role="role" />
             </span>
             <span class="oc-flex">
