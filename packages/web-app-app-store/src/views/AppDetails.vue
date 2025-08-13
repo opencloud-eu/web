@@ -7,7 +7,7 @@
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body oc-p">
+    <div class="app-content oc-card-body p-4">
       <div class="oc-flex oc-flex-middle">
         <h2 class="my-2 oc-text-truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 oc-text-muted oc-text-small mt-2">

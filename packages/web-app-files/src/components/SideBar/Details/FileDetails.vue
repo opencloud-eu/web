@@ -7,14 +7,14 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-preview oc-flex oc-flex-middle oc-flex-center mb-4"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
       <div
         v-else
-        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center mb-4"
       >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>

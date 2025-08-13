@@ -21,7 +21,7 @@ exports[`Projects view > different files view states > lists all available proje
         <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu spaces-table" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1" id="files-space-table" selection="">
           <thead class="oc-thead">
             <tr class="oc-table-header-row">
-              <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select oc-pl-m" style="top: 0px;">
+              <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select pl-4" style="top: 0px;">
                 <div><span class="oc-table-thead-content"><div class="resource-table-select-all"><span><input id="resource-table-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" aria-label="Select all"> <!--v-if--></span></div></span>
       </div>
       </th>
@@ -40,7 +40,7 @@ exports[`Projects view > different files view states > lists all available proje
       <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-indicators" style="top: 0px;">
         <div><span class="oc-table-thead-content header-text">Status</span></div>
       </th>
-      <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions oc-pr-m" style="top: 0px;">
+      <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
         <div><span class="oc-table-thead-content header-text">Actions</span></div>
       </th>
       </tr>

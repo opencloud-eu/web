@@ -7,7 +7,7 @@
   >
     <div v-if="dragareaEnabled" class="dragarea" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
-    <div class="oc-p oc-height-1-1 oc-text-center">
+    <div class="p-4 oc-height-1-1 oc-text-center">
       <div key="loaded-drop" class="oc-flex oc-flex-column">
         <div class="oc-width-1-1 oc-width-xxlarge@m">
           <h2 v-text="title" />

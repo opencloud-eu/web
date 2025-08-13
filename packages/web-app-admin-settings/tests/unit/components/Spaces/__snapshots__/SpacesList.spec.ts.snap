@@ -17,7 +17,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
   <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu spaces-table">
     <thead class="oc-thead">
       <tr class="oc-table-header-row">
-        <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select oc-pl-m" style="top: 0px;">
+        <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select pl-4" style="top: 0px;">
           <div><span class="oc-table-thead-content"><oc-checkbox-stub label="Select all spaces" disabled="false" id="oc-checkbox-1" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub></span></div>
         </th>
         <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-icon" style="top: 0px;">
@@ -110,14 +110,14 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
           </button></th>
-        <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-actions oc-pr-m" style="top: 0px;">
+        <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
           <div><span class="oc-table-thead-content header-text">Actions</span></div>
         </th>
       </tr>
     </thead>
     <tbody class="has-item-context-menu">
       <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select oc-pl-m">
+        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
           <oc-checkbox-stub option="undefined" label="Select 1 Some space" disabled="false" id="oc-checkbox-2" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
         </td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
@@ -145,7 +145,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-usedQuota">0 B</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1 GB</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
-        <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions oc-pr-m">
+        <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
           <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-1 quick-action-button p-1 spaces-table-btn-details">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
@@ -175,7 +175,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
         </td>
       </tr>
       <tr class="oc-tbody-tr oc-tbody-tr-2" data-item-id="2" draggable="false">
-        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select oc-pl-m">
+        <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
           <oc-checkbox-stub option="undefined" label="Select 2 Another space" disabled="false" id="oc-checkbox-3" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
         </td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
@@ -203,7 +203,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-usedQuota">500 MB</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1.5 GB</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
-        <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions oc-pr-m">
+        <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
           <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-1 quick-action-button p-1 spaces-table-btn-details">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
