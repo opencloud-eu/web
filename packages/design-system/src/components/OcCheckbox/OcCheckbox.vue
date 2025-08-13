@@ -74,7 +74,8 @@ const classes = computed(() => [
   'oc-checkbox',
   'oc-rounded',
   'oc-checkbox-' + getSizeClass(size),
-  { 'oc-checkbox-checked': isChecked.value }
+  { 'oc-checkbox-checked': isChecked.value },
+  'm-0.5'
 ])
 
 const labelClasses = computed(() => ({
