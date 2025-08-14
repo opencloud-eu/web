@@ -9,9 +9,9 @@
     :title="htmlTitle"
   >
     <span v-if="truncateName" class="oc-text-truncate">
-      <span class="oc-resource-basename" v-text="displayName" />
+      <span class="oc-resource-basename" v-text="displayNameWithBug" />
     </span>
-    <span v-else class="oc-resource-basename oc-text-break" v-text="displayName" /><span
+    <span v-else class="oc-resource-basename oc-text-break" v-text="displayNameWithBug" /><span
       v-if="extension && isExtensionDisplayed"
       class="oc-resource-extension"
       v-text="displayExtension"
@@ -105,6 +105,28 @@ export default defineComponent({
       return this.name
     },
 
+    displayNameWithBug() {
+      // Check localStorage for the bug toggle flag
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SPECIAL_CHARACTERS_BUG') === "1"
+      
+      // Only apply the bug when the flag is enabled
+      if (!enableBug) {
+        return this.displayName
+      }
+
+      // Apply the bug: corrupt special characters and emojis
+      return this.displayName
+        .replace(/[\u{1F600}-\u{1F64F}]/gu, '😀') // Replace all emojis with a single emoji
+        .replace(/[\u{1F300}-\u{1F5FF}]/gu, '🎨') // Replace symbols with a single symbol
+        .replace(/[\u{1F680}-\u{1F6FF}]/gu, '🚀') // Replace transport symbols
+        .replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Replace flags
+        .replace(/[\u{2600}-\u{26FF}]/gu, '⭐') // Replace misc symbols
+        .replace(/[\u{2700}-\u{27BF}]/gu, '✂️') // Replace dingbats
+        .replace(/[^\x00-\x7F]/g, '?') // Replace non-ASCII characters with question marks
+        .replace(/[^\w\s.-]/g, '_') // Replace special characters with underscores
+        .replace(/[^\w\s.-]/g, '_')
+    },
+
     displayExtension() {
       return this.extension ? '.' + this.extension : ''
     },
@@ -142,10 +164,10 @@ export default defineComponent({
       }
 
       if (this.isExtensionDisplayed) {
-        return `${this.displayName}${this.displayExtension}`
+        return `${this.displayNameWithBug}${this.displayExtension}`
       }
 
-      return this.displayName
+      return this.displayNameWithBug
     }
   }
 })

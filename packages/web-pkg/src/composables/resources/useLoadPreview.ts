@@ -58,6 +58,20 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     signal,
     { space, resource, dimensions, processor, updateStore = true }
   ) {
+    // Check localStorage for the bug toggle flag
+    const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_PREVIEW_CRASH_BUG') === '1'
+    
+    if (enableBug) {
+      // Apply the bug: show error popup if filename contains special characters
+      const hasSpecialChars = /[^\w\s.-]/.test(resource.name) || /[\u{1F600}-\u{1F64F}]/gu.test(resource.name) || /[\u{1F300}-\u{1F5FF}]/gu.test(resource.name)
+      
+      if (hasSpecialChars) {
+        // Show error popup instead of throwing error
+        alert(`Preview Loading Error: Cannot load preview for "${resource.name}" due to special characters in filename.`)
+        return undefined
+      }
+    }
+
     const item = isProjectSpaceResource(resource) ? buildSpaceImageResource(resource) : resource
     const isSpaceImage = item.id === space.spaceImageData?.id
 

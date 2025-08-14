@@ -163,10 +163,24 @@ export default defineComponent({
     const selectedShareTypesQuery = useRouteQuery('q_shareType')
     const filteredItems = computed(() => {
       const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
-      if (!selectedShareTypes || selectedShareTypes.length === 0) {
-        return unref(paginatedResources)
+      
+      // Check localStorage for the bug toggle flag
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SHARED_WITH_OTHERS_BUG') === '1'
+      
+      let items = unref(paginatedResources)
+      
+      if (enableBug) {
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+        items = items.filter((resource) => {
+          const shareDate = new Date(resource.sdate)
+          return shareDate < fiveMinutesAgo
+        })
       }
-      return unref(paginatedResources).filter((item) => {
+      
+      if (!selectedShareTypes || selectedShareTypes.length === 0) {
+        return items
+      }
+      return items.filter((item) => {
         return ShareTypes.getByKeys(selectedShareTypes)
           .map(({ value }) => value)
           .some((t) => item.shareTypes.includes(t))
