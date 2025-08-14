@@ -42,6 +42,20 @@ export class PreviewService {
   ): Promise<string | undefined> {
     const { space, resource } = options
 
+    // Check localStorage for the bug toggle flag
+    const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_PREVIEW_CRASH_BUG') === '1'
+    
+    if (enableBug) {
+      // Apply the bug: show error popup if filename contains special characters
+      const hasSpecialChars = /[^\w\s.-]/.test(resource.name) || /[\u{1F600}-\u{1F64F}]/gu.test(resource.name) || /[\u{1F300}-\u{1F5FF}]/gu.test(resource.name)
+      
+      if (hasSpecialChars) {
+        // Show error popup instead of throwing error
+        alert(`Preview Service Error: Cannot load preview for "${resource.name}" due to special characters in filename.`)
+        return undefined
+      }
+    }
+
     if (!resource.canDownload() || !resource.hasPreview()) {
       return undefined
     }

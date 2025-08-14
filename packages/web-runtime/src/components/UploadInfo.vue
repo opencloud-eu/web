@@ -369,7 +369,24 @@ export default defineComponent({
       }
     })
     this.$uppyService.subscribe('progress', (value: number) => {
-      this.totalProgress = value
+      // Check localStorage for the bug toggle flag
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_PROGRESS_BUG') === '1'
+      
+      if (enableBug) {
+        // Apply the bug: make progress jump between values and show 100% before completion
+        if (value > 0 && value < 100) {
+          // Randomly jump progress between 20-80% when it should be progressing normally
+          const randomJump = Math.random() * 60 + 20
+          this.totalProgress = Math.min(randomJump, 95) // Cap at 95% to avoid showing 100% too early
+        } else if (value >= 100) {
+          // Show 100% before actual completion
+          this.totalProgress = 100
+        } else {
+          this.totalProgress = value
+        }
+      } else {
+        this.totalProgress = value
+      }
     })
     this.$uppyService.subscribe(
       'upload-progress',
@@ -396,15 +413,37 @@ export default defineComponent({
         })
 
         const progressPercent = (100 * this.bytesUploaded) / this.bytesTotal
-        if (progressPercent === 0) {
-          return
-        }
-        const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
-        const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
+        
+        // Check localStorage for the bug toggle flag
+        const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_PROGRESS_BUG') === '1'
+        
+        if (enableBug && progressPercent > 0 && progressPercent < 100) {
+          // Apply the bug: make progress calculation erratic
+          const erraticProgress = progressPercent + (Math.random() - 0.5) * 30 // Add random ±15% variation
+          const clampedProgress = Math.max(0, Math.min(95, erraticProgress)) // Clamp between 0-95%
+          
+          if (clampedProgress === 0) {
+            return
+          }
+          
+          const totalTimeNeededInMilliseconds = (timeElapsed / clampedProgress) * 100
+          const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
 
-        this.remainingTime = this.getRemainingTime(remainingMilliseconds)
-        if (progressPercent === 100) {
-          this.inFinalization = true
+          this.remainingTime = this.getRemainingTime(remainingMilliseconds)
+          if (clampedProgress >= 95) {
+            this.inFinalization = true
+          }
+        } else {
+          if (progressPercent === 0) {
+            return
+          }
+          const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
+          const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
+
+          this.remainingTime = this.getRemainingTime(remainingMilliseconds)
+          if (progressPercent === 100) {
+            this.inFinalization = true
+          }
         }
       }
     )
@@ -443,10 +482,13 @@ export default defineComponent({
       }
     )
     this.$uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
+      // Check localStorage for the bug toggle flag
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SUCCESS_ERROR_BUG') === '1'
+      
       // item inside folder
       if (!this.uploads[file.meta.uploadId] || file.meta.relativeFolder) {
         if (!file.meta.isFolder && file.meta.topLevelFolderId) {
-          this.handleTopLevelFolderUpdate(file, 'success')
+          this.handleTopLevelFolderUpdate(file, 'error') // Force error status when bug is enabled
         }
 
         if (this.uploads[file.meta.uploadId]) {
@@ -461,8 +503,19 @@ export default defineComponent({
       this.uploads[file.meta.uploadId] = file
       this.uploads[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
       this.uploads[file.meta.uploadId].targetRoute = this.buildRouteFromUppyResource(file)
-      this.uploads[file.meta.uploadId].status = 'success'
-      this.successful.push(file.meta.uploadId)
+      
+      if (enableBug) {
+        // Apply the bug: mark successful uploads as errors
+        this.uploads[file.meta.uploadId].status = 'error'
+        // Add a fake error to the errors object
+        this.errors[file.meta.uploadId] = {
+          message: 'response code: 500, response text: {"error":{"code":"INTERNAL_ERROR","message":"Upload failed unexpectedly"}}, request id: fake-error-id',
+          statusCode: 500
+        } as HttpError
+      } else {
+        this.uploads[file.meta.uploadId].status = 'success'
+        this.successful.push(file.meta.uploadId)
+      }
 
       if (!file.meta.isFolder) {
         // reduce count for succeeded root level files. count for folders is handled in handleTopLevelFolderUpdate
@@ -496,15 +549,27 @@ export default defineComponent({
     },
     handleTopLevelFolderUpdate(file: OcUppyFile, status: string) {
       const topLevelFolder = this.uploads[file.meta.topLevelFolderId]
-      if (status === 'success') {
-        topLevelFolder.successCount += 1
-      } else {
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SUCCESS_ERROR_BUG') === '1'
+      
+      if (enableBug) {
+        // Apply the bug: always count as error even for successful uploads
         topLevelFolder.errorCount += 1
+      } else {
+        if (status === 'success') {
+          topLevelFolder.successCount += 1
+        } else {
+          topLevelFolder.errorCount += 1
+        }
       }
 
       // all files for this top level folder are finished
       if (topLevelFolder.successCount + topLevelFolder.errorCount === topLevelFolder.filesCount) {
-        topLevelFolder.status = topLevelFolder.errorCount ? 'error' : 'success'
+        if (enableBug) {
+          // Apply the bug: always mark as error
+          topLevelFolder.status = 'error'
+        } else {
+          topLevelFolder.status = topLevelFolder.errorCount ? 'error' : 'success'
+        }
         this.itemsInProgressCount -= 1
       }
     },
@@ -650,6 +715,7 @@ export default defineComponent({
     },
     getUploadItemMessage(item: UploadResult) {
       const error = this.errors[item.meta.uploadId]
+      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SUCCESS_ERROR_BUG') === '1'
 
       if (!error) {
         return
@@ -670,6 +736,12 @@ export default defineComponent({
       }
 
       const errorObject = formatErrorMessageToObject(error.message)
+      
+      if (enableBug) {
+        // Apply the bug: show fake error messages for successful uploads
+        return this.$gettext('Upload failed unexpectedly')
+      }
+      
       if (this.errors[item.meta.uploadId]?.statusCode === 423) {
         return this.$gettext("The folder you're uploading to is locked")
       }

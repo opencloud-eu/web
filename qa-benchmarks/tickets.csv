@@ -1,0 +1,125 @@
+Bug,Description,Steps to reproduce,Difficulty
+Message doesn't mark as read,The message is not marked as read even when doing you click on it and read through,"1) Find an email that still marked as unread or mark a read email as unread
+2) Click on the email and scroll through it.
+3) Go back to your inbox
+4) Email won't be marked as read",Easy
+Upload progress bar shows incorrect percentage,The upload progress bar displays wrong percentage values during file uploads,"1) Start uploading multiple files simultaneously
+2) Observe the progress bar percentage
+3) Notice the progress jumps between values
+4) Progress shows 100% before actual completion",Medium
+Pause button remains enabled during finalization,The pause upload button stays clickable even when upload is in finalization phase,"1) Upload a large file
+2) Wait for the upload to reach finalization phase
+3) Try to click the pause button
+4) Button should be disabled but remains enabled",High
+File names with special characters display incorrectly,Upload file names containing emojis or special characters overflow the container,"1) Upload a file with name containing emojis or special characters
+2) Observe the file name display in upload info
+3) File names should be properly truncated
+4) Names overflow container or show encoding issues",Low
+Upload info panel breaks on mobile devices,The upload information panel extends beyond screen boundaries on mobile screens,"1) Open upload info panel on mobile device
+2) Expand the details section
+3) Panel should be responsive and scrollable
+4) Panel extends beyond screen boundaries",Medium
+Close button missing proper ARIA label,The close button in upload info lacks descriptive ARIA label for screen readers,"1) Use a screen reader
+2) Navigate to the close button in upload info
+3) Button should have descriptive ARIA label
+4) Button has generic or missing ARIA label",High
+Error messages not displayed for network timeout,No error message appears when upload times out due to network issues,"1) Simulate slow network connection
+2) Start an upload that will timeout
+3) Error message should appear with retry option
+4) No error message shown or generic error displayed",High
+Upload status persists after page refresh,Upload information panel remains visible with stale data after page refresh,"1) Start an upload
+2) Refresh the page
+3) Upload status should be cleared on refresh
+4) Upload info panel remains visible with stale data",Medium
+Progress calculation causes UI lag,Upload progress updates become unresponsive when uploading many files,"1) Upload 100+ small files simultaneously
+2) Observe progress bar updates
+3) Progress updates should be smooth
+4) UI becomes unresponsive during progress updates",Low
+Time remaining text not translated,Upload time remaining text shows in English even when language is changed,"1) Change application language to non-English
+2) Start an upload
+3) Time text should be properly translated
+4) Shows English text or placeholder text",Medium
+Keyboard users cannot access retry button,The retry upload button is not reachable via keyboard navigation,"1) Use Tab key to navigate through upload interface
+2) Try to reach the retry button
+3) Retry button should be keyboard accessible
+4) Button is not reachable via keyboard",High
+View options dropdown closes unexpectedly,The view options dropdown menu closes before user can make a selection,"1) Open view options dropdown
+2) Move mouse to select an option
+3) Dropdown should stay open until selection
+4) Dropdown closes before selection is made",Medium
+Show hidden files switch resets on navigation,The hidden files toggle switch resets to default state when navigating folders,"1) Enable the show hidden files switch
+2) Navigate to a different folder
+3) Switch state should persist across navigation
+4) Switch resets to default state",Low
+Tile size slider jumps to wrong position,The tile size slider moves to incorrect value when dragging to specific position,"1) Drag the tile size slider to a specific position
+2) Release the mouse button
+3) Slider should stay at selected position
+4) Slider jumps to different value than selected",Medium
+Location filter shows incorrect active state,The search location filter displays wrong active selection after navigation,"1) Select 'Current folder' filter
+2) Navigate to a different location
+3) Filter should update to reflect current state
+4) Filter shows stale or incorrect selection",High
+Disabled filter options are still clickable,Filter options marked as disabled can still be clicked and activated,"1) Find a disabled filter option
+2) Try to click on the disabled option
+3) Disabled options should not be interactive
+4) Disabled options can still be clicked",Medium
+Search results don't update with filter changes,Search results remain from previous filter state when switching location filters,"1) Search for a term with current filter
+2) Change the location filter
+3) Results should update based on new filter
+4) Results remain from previous filter state",High
+Hamburger menu doesn't close on mobile,The mobile hamburger menu remains open when tapping outside the menu area,"1) Open the hamburger menu on mobile device
+2) Tap outside the menu area
+3) Menu should close when tapping outside
+4) Menu remains open",Medium
+File selection gets lost during upload,Selected files become deselected when starting an upload operation,"1) Select multiple files in the file list
+2) Start an upload operation
+3) Selection should remain during upload
+4) Selection clears when upload starts",High
+Context menu appears in wrong position,Right-click context menu appears partially off-screen near screen edges,"1) Right-click on a file near the screen edge
+2) Context menu should appear within viewport
+3) Menu appears partially off-screen
+4) Menu content is not fully visible",Medium
+Drag and drop visual feedback missing,No visual indication appears when dragging files over drop zone,"1) Drag a file over the drop zone area
+2) Visual feedback should indicate drop zone
+3) No visual indication of drop area
+4) User cannot tell where to drop files",High
+Modal doesn't trap focus properly,Focus moves to background elements when using Tab key in modal,"1) Open a modal dialog
+2) Press Tab key repeatedly to navigate
+3) Focus should cycle within modal
+4) Focus moves to background elements",High
+Escape key doesn't close modal,Modal dialog remains open when pressing the Escape key,"1) Open a modal dialog
+2) Press the Escape key
+3) Modal should close on Escape
+4) Modal remains open",Medium
+Space switcher shows incorrect active space,The space switcher highlights the wrong space as currently active,"1) Switch between different spaces
+2) Observe the active space indicator
+3) Active space should be highlighted correctly
+4) Wrong space appears as active",Medium
+Space loading spinner doesn't appear,No loading indicator shows when switching to space with slow connection,"1) Click on a space with slow connection
+2) Loading indicator should show
+3) No loading feedback provided
+4) User doesn't know if action is processing",Low
+User avatars don't load fallback image,Avatar images show broken icon instead of default avatar when URL is invalid,"1) Set user avatar to an invalid URL
+2) Observe the avatar display
+3) Should show default avatar image
+4) Shows broken image icon",Low
+Batch action buttons don't update with selection,Batch action buttons remain in previous state when file selection changes,"1) Select multiple files
+2) Observe the batch action buttons
+3) Buttons should enable/disable based on selection
+4) Buttons remain in previous state",High
+Ctrl+A shortcut doesn't work consistently,Select all shortcut behaves inconsistently in different file list contexts,"1) Press Ctrl+A in the file list
+2) Should select all visible files
+3) Selection behavior is inconsistent
+4) Sometimes selects wrong items or nothing",Medium
+Page numbers don't update correctly,Pagination shows wrong page as currently active when navigating,"1) Navigate through pages using pagination
+2) Observe the current page indicator
+3) Current page should be highlighted
+4) Wrong page appears as active",Medium
+Items per page dropdown resets on filter change,Items per page selection resets to default when applying filters,"1) Change the items per page setting
+2) Apply a filter to the file list
+3) Items per page should persist
+4) Resets to default value",Low
+Loading indicator doesn't hide after completion,Loading spinner remains visible even after the action has completed,"1) Trigger a loading action
+2) Wait for the action to complete
+3) Indicator should disappear when done
+4) Indicator remains visible",Medium
