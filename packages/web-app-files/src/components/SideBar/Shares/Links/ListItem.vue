@@ -27,7 +27,7 @@
           v-if="linkShare.hasPassword"
           v-oc-tooltip="$gettext('This link is password-protected')"
           name="lock-password"
-          class="oc-files-file-link-has-password box-content ml-1 p-1"
+          class="oc-files-file-link-has-password ml-1 p-1"
           fill-type="line"
           :aria-label="$gettext('This link is password-protected')"
         />

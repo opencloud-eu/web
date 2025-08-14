@@ -8,7 +8,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
         <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -23,7 +23,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -49,7 +49,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
         <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -64,7 +64,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -93,7 +93,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
         <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -108,7 +108,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

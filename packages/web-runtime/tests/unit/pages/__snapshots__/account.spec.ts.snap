@@ -73,7 +73,7 @@ exports[`account page > account information section > group membership > display
 exports[`account page > header section > edit url button > should be displayed if defined via config 1`] = `
 "<a href="/" target="_blank" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline" data-testid="account-page-edit-url-btn">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -113,7 +113,7 @@ exports[`account page > public link context > should render a limited view 1`] =
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto px-2 oc-td">Language</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto px-2 oc-td">
               <div class="oc-flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                  <div class="oc-flex ml-1 oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
+                  <div class="oc-flex ml-1 oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s box-content ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -133,7 +133,7 @@ exports[`account page > public link context > should render a limited view 1`] =
                     <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> English <!--v-if--></span><input class="vs__search" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
                     <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                           <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                        </svg></button><span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+                        </svg></button><span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -167,7 +167,7 @@ exports[`account page > public link context > should render a limited view 1`] =
                       <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> Auto (same as system) <!--v-if--></span><input class="vs__search" id="oc-select-2" aria-autocomplete="list" aria-labelledby="vs2__combobox" aria-controls="vs2__listbox" type="search" autocomplete="off" value=""></div>
                       <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                             <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                          </svg></button><span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+                          </svg></button><span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
