@@ -33,6 +33,12 @@
   ul {
     @apply pl-5 my-2;
   }
+
+  hr {
+    @apply mb-5 border-none overflow-visible;
+
+    border-top: 0.5px solid var(--oc-role-outline-variant);
+  }
 }
 
 @layer components {
