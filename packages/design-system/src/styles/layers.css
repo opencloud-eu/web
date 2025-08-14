@@ -1,51 +1,64 @@
 @reference 'tailwindcss';
 
 @layer base {
-	h1 {
-		@apply text-3xl font-bold my-4;
-	}
-	h2 {
-		@apply text-2xl font-bold my-4;
-	}
-	h3 {
-		@apply text-xl font-bold my-4;
-	}
-	h4 {
-		@apply text-base font-bold my-4;
-	}
-	h5 {
-		@apply text-sm font-bold my-4;
-	}
-	h5 {
-		@apply text-xs font-bold my-4;
-	}
-	p {
-		@apply my-2;
-	}
-	ol, ul {
-		@apply pl-5 my-2;
-	}
+  h1 {
+    @apply text-3xl font-bold my-4;
+  }
+
+  h2 {
+    @apply text-2xl font-bold my-4;
+  }
+
+  h3 {
+    @apply text-xl font-bold my-4;
+  }
+
+  h4 {
+    @apply text-base font-bold my-4;
+  }
+
+  h5 {
+    @apply text-sm font-bold my-4;
+  }
+
+  h5 {
+    @apply text-xs font-bold my-4;
+  }
+
+  p {
+    @apply my-2;
+  }
+
+  ol,
+  ul {
+    @apply pl-5 my-2;
+  }
 }
 
 @layer components {
-	/* card spacing FIXME: they should be in a dedicated component */
-	.oc-card-body {
-	  @apply p-6;
-	}
-	.oc-card-header {
-	  @apply px-2 py-4;
-	}
-	.oc-card-footer {
-	  @apply px-4 py-6;
-	}
-	.oc-card-body > :last-child,
-	.oc-card-header > :last-child,
-	.oc-card-footer > :last-child {
-	  @apply mb-0;
-	}
-	.oc-card-title {
-	  @apply mb-6;
-	}
+
+  /* card spacing FIXME: they should be in a dedicated component */
+  .oc-card-body {
+    @apply p-6;
+  }
+
+  .oc-card-header {
+    @apply px-2 py-4;
+  }
+
+  .oc-card-footer {
+    @apply px-4 py-6;
+  }
+
+  .oc-card-body> :last-child,
+  .oc-card-header> :last-child,
+  .oc-card-footer> :last-child {
+    @apply mb-0;
+  }
+
+  .oc-card-title {
+    @apply mb-6;
+  }
 
   /* drops */
   .oc-bottom-drawer li a,
@@ -58,17 +71,17 @@
   }
 
   .oc-bottom-drawer,
-	.oc-drop {
+  .oc-drop {
     @apply mb-1;
   }
 
   .oc-bottom-drawer li:first-child,
   .oc-drop li:first-child {
-	  @apply mt-0;
+    @apply mt-0;
   }
 
-	.oc-bottom-drawer li:last-child,
-	.oc-drop li:last-child {
-	  @apply mb-0;
+  .oc-bottom-drawer li:last-child,
+  .oc-drop li:last-child {
+    @apply mb-0;
   }
 }
