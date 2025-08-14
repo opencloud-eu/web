@@ -1,7 +1,7 @@
 <template>
   <component
     :is="type"
-    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size)]"
+    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size), 'box-content']"
   >
     <inline-svg
       :src="nameWithFillType"

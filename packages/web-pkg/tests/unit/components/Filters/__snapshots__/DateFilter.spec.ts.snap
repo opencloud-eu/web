@@ -4,7 +4,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div class="date-filter oc-flex date-filter-users">
   <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2" id="oc-filter-chip-5">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -13,7 +13,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -60,7 +60,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
         <div class="date-filter-range-panel py-2">
           <div class="oc-flex oc-flex-middle oc-flex-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -71,7 +71,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
             </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -123,7 +123,7 @@ exports[`DateFilter > renders all items 1`] = `
 "<div class="date-filter oc-flex date-filter-users">
   <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2" id="oc-filter-chip-1">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -132,7 +132,7 @@ exports[`DateFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -179,7 +179,7 @@ exports[`DateFilter > renders all items 1`] = `
         <div class="date-filter-range-panel py-2">
           <div class="oc-flex oc-flex-middle oc-flex-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -190,7 +190,7 @@ exports[`DateFilter > renders all items 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
             </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
