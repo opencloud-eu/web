@@ -5,9 +5,9 @@ exports[`ResourceTiles component > renders a footer slot 1`] = `
   <div class="oc-flex oc-flex-middle mb-2 pb-2 oc-tiles-controls"><span class="ml-2"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" disabled="" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
-  <ul class="oc-list my-0 oc-tiles"> </ul>
+  <ul class="oc-list oc-tiles"> </ul>
   <!--v-if-->
-  <div class="oc-tiles-footer">Hello, ResourceTiles footer!</div>
+  <div class="oc-tiles-footer p-1">Hello, ResourceTiles footer!</div>
 </div>"
 `;
 
@@ -16,7 +16,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   <div class="oc-flex oc-flex-middle mb-2 pb-2 oc-tiles-controls"><span class="ml-2"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
-  <ul class="oc-list my-0 oc-tiles">
+  <ul class="oc-list oc-tiles">
     <li class="oc-tiles-item has-item-context-menu">
       <div class="oc-tile-card oc-card" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle m-0" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
@@ -102,6 +102,6 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
     <li class="ghost-tile" aria-hidden="true"></li>
   </ul>
   <!--v-if-->
-  <div class="oc-tiles-footer"></div>
+  <div class="oc-tiles-footer p-1"></div>
 </div>"
 `;

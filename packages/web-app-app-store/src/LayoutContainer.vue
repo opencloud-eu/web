@@ -1,5 +1,5 @@
 <template>
-  <main id="app-store">
+  <main id="app-store" class="p-4">
     <app-loading-spinner v-if="areAppsLoading" />
     <template v-else>
       <router-view data-testid="app-store-router-view" />
@@ -40,6 +40,5 @@ export default defineComponent({
 <style lang="scss">
 #app-store {
   overflow: auto;
-  padding: var(--oc-space-medium) !important;
 }
 </style>

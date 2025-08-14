@@ -111,7 +111,6 @@ export default defineComponent({
 
 <style lang="scss">
 .files-share-invite-recipient {
-  padding: 0 0.25em;
   overflow-wrap: anywhere;
 
   .oc-recipient-avatar {

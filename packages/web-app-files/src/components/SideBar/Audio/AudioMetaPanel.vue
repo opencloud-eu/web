@@ -1,5 +1,5 @@
 <template>
-  <div id="files-sidebar-panel-audio" class="oc-rounded">
+  <div id="files-sidebar-panel-audio" class="oc-rounded p-4">
     <dl class="audio-data-list details-list m-0">
       <dt v-text="$gettext('Title')" />
       <dd data-testid="audio-panel-title" v-text="title" />
@@ -101,7 +101,6 @@ export default defineComponent({
 <style lang="scss">
 #files-sidebar-panel-audio {
   background-color: var(--oc-role-surface-container);
-  padding: var(--oc-space-medium);
 }
 
 .audio-data-list {

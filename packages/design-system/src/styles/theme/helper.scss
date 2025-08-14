@@ -139,12 +139,6 @@ hr {
   }
 }
 
-.oc-bottom-drawer {
-  ul {
-    padding: var(--oc-space-small);
-  }
-}
-
 .sidebar-actions-panel {
   > li a,
   > li a:hover {
@@ -152,13 +146,5 @@ hr {
     gap: 10px;
     vertical-align: top;
     text-decoration: none;
-  }
-
-  li {
-    margin-bottom: var(--oc-space-xsmall);
-  }
-
-  li a, li button {
-    padding: var(--oc-space-small);
   }
 }

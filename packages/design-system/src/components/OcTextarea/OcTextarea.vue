@@ -6,7 +6,7 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea oc-rounded m-0"
+      class="oc-textarea oc-rounded m-0 py-1"
       :class="{
         'oc-textarea-danger': !!errorMessage
       }"
@@ -97,8 +97,6 @@ defineExpose({ focus })
 
 <style lang="scss">
 .oc-textarea {
-  padding-bottom: var(--oc-space-xsmall);
-  padding-top: var(--oc-space-xsmall);
   box-sizing: border-box;
   background: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);

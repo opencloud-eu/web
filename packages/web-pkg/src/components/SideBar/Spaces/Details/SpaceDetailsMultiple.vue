@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar">
+  <div id="oc-spaces-details-multiple-sidebar" class="p-4">
     <div class="spaces-preview mb-6">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
@@ -83,7 +83,6 @@ const items = computed(() => [
 #oc-spaces-details-multiple-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-  padding: var(--oc-space-medium);
 }
 
 .spaces-preview {

@@ -18,7 +18,7 @@
         :class="{
           'oc-text-input-danger': !!showErrorMessage,
           'pl-6': !!readOnly,
-          'clear-action-visible': showClearButton
+          'pr-6': showClearButton
         }"
         :type="type"
         :value="modelValue"
@@ -370,10 +370,6 @@ watch(
     display: flex;
     align-items: center;
     min-height: $oc-font-size-default * 1.5;
-  }
-
-  &.clear-action-visible {
-    padding-right: ($oc-size-icon-default * 0.7) + 7px;
   }
 }
 </style>

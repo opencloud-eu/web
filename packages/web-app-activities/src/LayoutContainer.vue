@@ -1,5 +1,5 @@
 <template>
-  <main id="activities">
+  <main id="activities" class="p-4">
     <router-view />
   </main>
 </template>
@@ -15,6 +15,5 @@ export default defineComponent({
 <style lang="scss">
 #activities {
   overflow: auto;
-  padding: var(--oc-space-medium) !important;
 }
 </style>

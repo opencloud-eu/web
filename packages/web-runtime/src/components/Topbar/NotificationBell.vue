@@ -15,7 +15,8 @@
     <span
       v-if="notificationCount"
       :key="notificationCount"
-      :class="{ shake: animate, badge: true }"
+      :class="{ shake: animate }"
+      class="badge p-1"
       v-text="notificationCountLabel"
     />
   </oc-button>
@@ -70,7 +71,6 @@ export default {
     position: absolute;
     top: -6px;
     right: -9px;
-    padding: var(--oc-space-xsmall);
     line-height: var(--oc-space-small);
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;

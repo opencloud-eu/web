@@ -255,7 +255,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   max-width: 100%;
   outline: none;
   overflow: visible;
-  padding: calc(var(--oc-space-xsmall) + 2px) 7px;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-property: color, background-color;
@@ -274,7 +273,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
  */
 
 .oc-textarea {
-  padding: $form-padding-vertical $form-padding-horizontal;
   vertical-align: top;
 }
 

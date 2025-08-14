@@ -131,7 +131,7 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = ['oc-pagination-list-item-page']
+  const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2']
 
   if (isCurrentPage(page)) {
     classes.push('oc-pagination-list-item-current')
@@ -166,7 +166,6 @@ const bindPageLink = (page: Page) => {
       &-page {
         border-radius: 4px;
         color: var(--oc-role-on-surface);
-        padding: var(--oc-space-xsmall) var(--oc-space-small);
         transition: background-color $transition-duration-short ease-in-out;
 
         &:not(span):hover {

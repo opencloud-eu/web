@@ -16,7 +16,7 @@
     <template #rootHeader>
       <file-info
         v-if="isFileHeaderVisible"
-        class="sidebar-panel__file_info"
+        class="sidebar-panel__file_info px-2 pt-2"
         :is-sub-panel-active="false"
       />
       <space-info v-else-if="isSpaceHeaderVisible" class="sidebar-panel__space_info" />
@@ -24,7 +24,7 @@
     <template #subHeader>
       <file-info
         v-if="isFileHeaderVisible"
-        class="sidebar-panel__file_info"
+        class="sidebar-panel__file_info px-2 pt-2"
         :is-sub-panel-active="true"
       />
       <space-info v-else-if="isSpaceHeaderVisible" class="sidebar-panel__space_info" />
@@ -469,12 +469,6 @@ export default defineComponent({
 <style lang="scss">
 .files-side-bar {
   z-index: 3;
-
-  .sidebar-panel {
-    &__file_info {
-      padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
-    }
-  }
 
   ._clipboard-success-animation {
     animation-name: _clipboard-success-animation;

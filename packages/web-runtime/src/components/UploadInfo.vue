@@ -689,7 +689,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  #upload-info .oc-resource-details {
+    @apply pl-1;
+  }
+}
+</style>
 <style lang="scss">
 #upload-info {
   background-color: var(--oc-role-surface);
@@ -698,10 +706,6 @@ export default defineComponent({
   @media (max-width: 640px) {
     width: 100%;
     max-width: 500px;
-  }
-
-  .oc-resource-details {
-    padding-left: var(--oc-space-xsmall);
   }
 
   .upload-info-title {

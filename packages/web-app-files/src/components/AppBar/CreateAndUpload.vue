@@ -23,7 +23,11 @@
         close-on-click
         padding-size="small"
       >
-        <oc-list id="create-list" :class="areFileExtensionsShown ? 'expanded-list' : null">
+        <oc-list
+          id="create-list"
+          :class="areFileExtensionsShown ? 'expanded-list' : null"
+          class="py-2 first:pt-0 last:pb-0"
+        >
           <li class="create-list-folder oc-menu-item-hover">
             <oc-button
               id="new-folder-btn"
@@ -40,6 +44,7 @@
         <oc-list
           v-for="(group, groupIndex) in createFileActionsGroups"
           :key="`file-creation-group-${groupIndex}`"
+          class="py-2 first:pt-0 last:pb-0"
         >
           <li
             v-for="(fileAction, fileActionIndex) in group"
@@ -64,7 +69,7 @@
             </oc-button>
           </li>
         </oc-list>
-        <oc-list>
+        <oc-list class="py-2 first:pt-0 last:pb-0">
           <li class="create-list-shortcut oc-menu-item-hover">
             <oc-button
               id="new-shortcut-btn"
@@ -131,7 +136,7 @@
           <resource-upload btn-class="oc-width-1-1" :is-folder="true" />
         </li>
       </oc-list>
-      <oc-list v-if="extensionActions.length" id="extension-list">
+      <oc-list v-if="extensionActions.length" id="extension-list" class="py-2 first:pt-0 last:pb-0">
         <li
           v-for="(action, key) in extensionActions"
           :key="`${key}-${actionKeySuffix}`"
@@ -479,11 +484,6 @@ const folderIconResource = computed(() => {
 
   ul:not(:first-child) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-    padding-top: var(--oc-space-small);
-  }
-
-  ul:not(:last-child) {
-    padding-bottom: var(--oc-space-small);
   }
 }
 

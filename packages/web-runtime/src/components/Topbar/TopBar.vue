@@ -2,6 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
+    class="px-4"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left oc-flex oc-flex-middle oc-flex-start">
@@ -211,7 +212,6 @@ export default {
   grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
   grid-template-columns: 30% 30% 40%;
   grid-template-rows: 52px auto;
-  padding: 0 1rem;
   position: sticky;
   z-index: 5;
 
@@ -221,7 +221,6 @@ export default {
     grid-template-rows: 1;
     height: 52px;
     justify-content: center;
-    padding: 0 1.1rem;
   }
 
   &.open-app {

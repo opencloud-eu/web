@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <main v-else id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
-    <div class="account-page">
+    <div class="account-page px-4 lg:px-0">
       <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
@@ -833,8 +833,6 @@ export default defineComponent({
 
     @media (max-width: 1200px) {
       width: 100%;
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
     }
   }
 }

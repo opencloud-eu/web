@@ -134,7 +134,7 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
-          class="ml-2"
+          class="ml-2 px-7"
           data-testid="new-collaborators-form-create-button"
           :disabled="!$_isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"
@@ -629,11 +629,6 @@ export default defineComponent({
 <style lang="scss">
 .role-selection-dropdown {
   max-width: 150px;
-}
-
-#new-collaborators-form-create-button {
-  padding-left: 30px;
-  padding-right: 30px;
 }
 
 .new-collaborators-form-cern > .cern-files-share-invite-input {
