@@ -12,7 +12,6 @@ button.oc-button-passive-outline:focus:not(:focus-visible) {
   outline: 1px solid var(--oc-role-outline) !important;
 }
 .oc-modal-title > h2 {
-  padding: 0 !important;
   border: 0 !important;
 }
 ol.oc-pagination-list {
@@ -20,7 +19,6 @@ ol.oc-pagination-list {
 }
 p.oc-recipient-name {
   line-height: unset !important;
-  margin: 0 !important;
 }
 
 @font-face {

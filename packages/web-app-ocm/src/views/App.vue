@@ -2,7 +2,7 @@
   <div class="sciencemesh">
     <div class="oc-flex oc-flex-column sciencemesh-wrapper">
       <div class="oc-flex sciencemesh-top">
-        <div id="sciencemesh-invite" class="oc-width-1-2 m-2 p-2 mb-0 md:mb-2">
+        <div id="sciencemesh-invite" class="oc-width-1-2 m-2 p-2 mb-0 lg:mb-2">
           <outgoing-invitations />
         </div>
         <div id="sciencemesh-accept-invites" class="oc-width-1-2 m-2 p-2">
@@ -151,8 +151,5 @@ export default defineComponent({
 }
 #sciencemesh-invite {
   overflow: auto;
-  @media (max-width: $oc-breakpoint-large-default) {
-    margin-bottom: var(--oc-space-small);
-  }
 }
 </style>

@@ -35,12 +35,6 @@ defineSlots<Slots>()
   ul.oc-list-divider > :nth-child(n + 2) {
     @apply mt-2 pt-2;
   }
-}
-</style>
-<style>
-@reference 'tailwindcss';
-
-@layer components {
   ul.oc-list.oc-timeline li {
     @apply py-2 pl-5 pr-7;
   }

@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-notifications">
+  <div id="oc-notifications" class="flex">
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
       id="oc-notifications-drop"

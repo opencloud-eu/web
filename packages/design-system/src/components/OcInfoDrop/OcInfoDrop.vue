@@ -18,12 +18,13 @@
             <oc-icon name="close" fill-type="line" size="medium" />
           </oc-button>
         </div>
-        <p v-if="text" class="info-text" v-text="$gettext(text)" />
-        <dl v-if="listItems.length" class="info-list mt-2 mb-1">
+        <p v-if="text" class="info-text first:mt-0 last:mb-0" v-text="$gettext(text)" />
+        <dl v-if="listItems.length" class="info-list mt-2 mb-1 first:mt-0 last:mb-0">
           <component
             :is="item.headline ? 'dt' : 'dd'"
             v-for="(item, index) in listItems"
             :key="index"
+            :class="{ 'ml-0': !item.headline, 'first:mt-0': item.headline }"
           >
             {{ $gettext(item.text) }}
           </component>
@@ -115,25 +116,6 @@ export default {
   components: { FocusTrap }
 }
 </script>
-<style>
-@reference 'tailwindcss';
-@layer components {
-  .oc-info-drop .info-list:first-child,
-  .oc-info-drop .info-text:first-child {
-    @apply mt-0;
-  }
-  .oc-info-drop .info-list:last-child,
-  .oc-info-drop .info-text:last-child {
-    @apply mb-0;
-  }
-  .oc-info-drop .info-list dt:first-child {
-    @apply mt-0;
-  }
-  .oc-info-drop .info-list dd {
-    @apply ml-0;
-  }
-}
-</style>
 <style lang="scss">
 .oc-info-drop {
   display: inline-block;
