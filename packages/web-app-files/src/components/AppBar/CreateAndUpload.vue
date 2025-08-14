@@ -57,7 +57,7 @@
               <span class="create-list-file-item-text">{{ fileAction.label() }}</span>
               <span
                 v-if="areFileExtensionsShown && fileAction.ext"
-                class="create-list-file-item-extension"
+                class="create-list-file-item-extension ml-auto"
               >
                 {{ fileAction.ext }}
               </span>
@@ -490,7 +490,6 @@ const folderIconResource = computed(() => {
 .create-list-file-item-extension {
   font-weight: 400 !important;
   font-size: var(--oc-font-size-small);
-  margin-left: auto;
 }
 
 .expanded-list {

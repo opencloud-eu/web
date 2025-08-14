@@ -358,11 +358,4 @@ watch(
   max-width: 192px !important;
   width: 192px !important;
 }
-
-.details-list {
-  dd:last-of-type,
-  dt:last-of-type {
-    margin-bottom: 0 !important;
-  }
-}
 </style>

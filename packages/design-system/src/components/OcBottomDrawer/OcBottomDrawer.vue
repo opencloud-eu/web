@@ -237,7 +237,15 @@ const getElement = () => {
 
 defineExpose({ show, hide, getElement })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .oc-bottom-drawer .oc-card-body ul:not(:last-child) {
+    @apply mb-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-bottom-drawer-background {
   background-color: #0006;
@@ -280,10 +288,6 @@ defineExpose({ show, hide, getElement })
     &-body {
       padding: var(--oc-space-medium);
       padding-top: var(--oc-space-small);
-
-      ul:not(:last-child) {
-        margin-bottom: var(--oc-space-small) !important;
-      }
 
       ul {
         background-color: var(--oc-role-surface) !important;

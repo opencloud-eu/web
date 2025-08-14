@@ -34,7 +34,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-color-input-message oc-text-small"
+      class="oc-color-input-message oc-text-small mt-1"
       :class="{
         'oc-color-input-description': !!descriptionMessage,
         'oc-color-input-danger': !!errorMessage
@@ -232,7 +232,6 @@ const onInput = (value: string) => {
   &-message {
     display: flex;
     align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
   }
 

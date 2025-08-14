@@ -56,4 +56,19 @@
   .oc-drop li .item-has-switch {
     @apply p-2;
   }
+
+  .oc-bottom-drawer,
+	.oc-drop {
+    @apply mb-1;
+  }
+
+  .oc-bottom-drawer li:first-child,
+  .oc-drop li:first-child {
+	  @apply mt-0;
+  }
+
+	.oc-bottom-drawer li:last-child,
+	.oc-drop li:last-child {
+	  @apply mb-0;
+  }
 }

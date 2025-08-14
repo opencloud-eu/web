@@ -3,7 +3,7 @@
     <ol class="oc-pagination-list m-0">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-prev"
+          class="oc-pagination-list-item-prev mr-2"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -17,7 +17,7 @@
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-next"
+          class="oc-pagination-list-item-next ml-2"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
@@ -189,14 +189,6 @@ const bindPageLink = (page: Page) => {
         > .oc-icon > svg {
           fill: var(--oc-role-on-surface);
         }
-      }
-
-      &-prev {
-        margin-right: var(--oc-space-small);
-      }
-
-      &-next {
-        margin-left: var(--oc-space-small);
       }
     }
   }

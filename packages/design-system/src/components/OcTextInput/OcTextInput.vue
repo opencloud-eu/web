@@ -43,7 +43,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message oc-text-small mt-1"
       :class="{
         'oc-text-input-description': showDescriptionMessage,
         'oc-text-input-danger': showErrorMessage
@@ -369,7 +369,6 @@ watch(
   &-message {
     display: flex;
     align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
   }
 

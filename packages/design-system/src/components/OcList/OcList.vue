@@ -27,10 +27,13 @@ defineSlots<Slots>()
 <style>
 @reference 'tailwindcss';
 
-@layer base {
+@layer components {
   ul.oc-list,
   ul.oc-list.oc-timeline {
     @apply m-0 p-0;
+  }
+  ul.oc-list-divider > :nth-child(n + 2) {
+    @apply mt-2;
   }
 }
 </style>
@@ -40,7 +43,6 @@ ul.oc-list {
 
   &-divider > :nth-child(n + 2) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-    margin-top: var(--oc-space-small);
     padding-top: var(--oc-space-small);
   }
   &-raw {

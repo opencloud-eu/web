@@ -617,6 +617,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  #new-collaborators-form-create-button .oc-spinner {
+    @apply ml-2;
+  }
+}
+</style>
 <style lang="scss">
 .role-selection-dropdown {
   max-width: 150px;
@@ -625,10 +634,6 @@ export default defineComponent({
 #new-collaborators-form-create-button {
   padding-left: 30px;
   padding-right: 30px;
-
-  .oc-spinner {
-    margin-left: -0.5rem;
-  }
 }
 
 .new-collaborators-form-cern > .cern-files-share-invite-input {

@@ -15,7 +15,11 @@
           <h2 id="oc-modal-title" class="oc-text-truncate m-0" v-text="title" />
         </div>
         <div class="oc-modal-body">
-          <div v-if="$slots.content" key="modal-slot-content" class="oc-modal-body-message">
+          <div
+            v-if="$slots.content"
+            key="modal-slot-content"
+            class="oc-modal-body-message mt-2 mb-4"
+          >
             <slot name="content" />
           </div>
           <template v-else>
@@ -28,7 +32,7 @@
             />
             <div
               v-if="contextualHelperData"
-              class="oc-modal-body-contextual-helper"
+              class="oc-modal-body-contextual-helper mb-4"
               :class="{ 'mb-0': !hasInput }"
             >
               <span class="text" v-text="contextualHelperLabel" />
@@ -39,7 +43,7 @@
               key="modal-input"
               ref="ocModalInput"
               v-model="userInputValue"
-              class="oc-modal-body-input"
+              class="oc-modal-body-input -mb-5"
               :error-message="inputError"
               :label="inputLabel"
               :type="inputType"
@@ -365,27 +369,12 @@ export default {
     line-height: 1.625;
     padding: var(--oc-space-medium) var(--oc-space-medium) 0;
 
-    &-message {
-      margin-bottom: var(--oc-space-medium);
-      margin-top: var(--oc-space-small);
-    }
-
-    &-contextual-helper {
-      margin-bottom: var(--oc-space-medium);
-    }
-
     .oc-input {
       line-height: normal;
     }
 
     &-input {
-      /* FIXME: this is ugly, but required so that the bottom padding doesn't look off when reserving vertical space for error messages below the input. */
-      margin-bottom: -20px;
       padding-bottom: var(--oc-space-medium);
-
-      .oc-text-input-message {
-        margin-bottom: var(--oc-space-xsmall);
-      }
     }
 
     &-actions {

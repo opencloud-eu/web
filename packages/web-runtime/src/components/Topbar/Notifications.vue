@@ -302,12 +302,6 @@ export default {
     }
   }
 
-  &-actions {
-    button:not(:last-child) {
-      margin-right: var(--oc-space-small);
-    }
-  }
-
   &-link {
     white-space: nowrap;
     text-overflow: ellipsis;

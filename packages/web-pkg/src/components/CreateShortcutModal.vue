@@ -12,7 +12,7 @@
     @click="onClickUrlInput"
   >
     <template #label>
-      <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
+      <div class="oc-flex oc-flex-middle create-shortcut-modal-label mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
           <span class="oc-text-error" aria-hidden="true">*</span>
@@ -95,7 +95,7 @@
       :fix-message-line="true"
     >
       <template #label>
-        <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
+        <div class="oc-flex oc-flex-middle create-shortcut-modal-label mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
             <span class="oc-text-error" aria-hidden="true">*</span>
@@ -468,16 +468,8 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .create-shortcut-modal {
-  &-url-extension {
-    margin-bottom: calc(var(--oc-space-xsmall) + 1.3125rem);
-  }
-
   &-search-separator:hover {
     background: none !important;
-  }
-
-  &-label {
-    margin-bottom: 0.2rem;
   }
 }
 

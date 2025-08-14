@@ -50,7 +50,7 @@
         />
       </div>
       <media-controls
-        class="stage_controls"
+        class="stage_controls mx-auto my-4"
         :files="filteredFiles"
         :active-index="activeIndex"
         :is-full-screen-mode-activated="isFullScreenModeActivated"
@@ -511,7 +511,6 @@ export default defineComponent({
 
   &_controls {
     height: auto;
-    margin: 10px auto;
   }
 }
 </style>

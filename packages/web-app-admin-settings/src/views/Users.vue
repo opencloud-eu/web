@@ -98,7 +98,7 @@
               />
               <oc-button
                 id="users-filter-confirm"
-                class="ml-1 p-1"
+                class="ml-1 p-1 mt-5"
                 appearance="raw"
                 @click="filterDisplayName"
               >
@@ -508,9 +508,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 #users-filter {
   width: 16rem;
-
-  &-confirm {
-    margin-top: calc(0.2rem + var(--oc-font-size-default));
-  }
 }
 </style>
