@@ -1,6 +1,6 @@
 <template>
   <div id="files-sidebar-panel-audio" class="oc-rounded">
-    <dl class="audio-data-list m-0">
+    <dl class="audio-data-list details-list m-0">
       <dt v-text="$gettext('Title')" />
       <dd data-testid="audio-panel-title" v-text="title" />
       <dt v-text="$gettext('Duration')" />
@@ -108,18 +108,9 @@ export default defineComponent({
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
 
-  dt:not(:last-of-type),
-  dd:not(:last-of-type) {
-    margin-bottom: var(--oc-space-small);
-  }
-
   dt {
     font-weight: bold;
     white-space: nowrap;
-  }
-
-  dd {
-    margin-inline-start: var(--oc-space-medium);
   }
 }
 </style>

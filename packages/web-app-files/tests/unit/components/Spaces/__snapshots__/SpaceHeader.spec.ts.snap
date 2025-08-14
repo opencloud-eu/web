@@ -2,7 +2,7 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header p-4 oc-flex space-header-squashed">
-  <div class="space-header-image"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
   <div class="space-header-infos">
     <div class="oc-flex mb-2 oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
@@ -43,7 +43,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header p-4 oc-flex">
-  <div class="space-header-image"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
   <div class="space-header-infos">
     <div class="oc-flex mb-2 oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">
@@ -87,7 +87,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header p-4 oc-flex">
-  <div class="space-header-image"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6"><img class="oc-cursor-pointer" alt="" src="blob:image"></div>
   <div class="space-header-infos">
     <div class="oc-flex mb-2 oc-flex-middle oc-flex-between">
       <div class="oc-flex oc-flex-middle space-header-infos-heading">

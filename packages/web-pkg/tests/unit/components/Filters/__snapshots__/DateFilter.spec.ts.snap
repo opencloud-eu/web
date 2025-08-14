@@ -26,7 +26,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
     <div id="oc-drop-6" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list my-0 date-filter-list">
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="oc-flex oc-flex-middle oc-text-truncate">
@@ -36,7 +36,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="oc-flex oc-flex-middle oc-text-truncate">
@@ -89,7 +89,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small">
+              <div class="oc-text-input-message oc-text-small mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -101,7 +101,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small">
+              <div class="oc-text-input-message oc-text-small mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -145,7 +145,7 @@ exports[`DateFilter > renders all items 1`] = `
     <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list my-0 date-filter-list">
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="oc-flex oc-flex-middle oc-text-truncate">
@@ -155,7 +155,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="oc-flex oc-flex-middle oc-text-truncate">
@@ -208,7 +208,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small">
+              <div class="oc-text-input-message oc-text-small mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -220,7 +220,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small">
+              <div class="oc-text-input-message oc-text-small mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->

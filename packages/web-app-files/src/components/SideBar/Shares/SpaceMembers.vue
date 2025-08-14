@@ -5,7 +5,7 @@
         <h3 class="oc-text-bold oc-text-medium m-0" v-text="$gettext('Add members')" />
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
-      <copy-private-link :resource="resource" />
+      <copy-private-link :resource="resource" class="ml-auto" />
     </div>
     <invite-collaborator-form
       v-if="canShare({ space: resource, resource })"
@@ -35,7 +35,10 @@
       </div>
       <div
         class="oc-flex oc-flex-between space-members-filter-container"
-        :class="{ 'space-members-filter-container-expanded': isFilterOpen }"
+        :class="{
+          'space-members-filter-container-expanded': isFilterOpen,
+          'mb-4': isFilterOpen
+        }"
       >
         <oc-text-input
           ref="filterInput"
@@ -242,12 +245,6 @@ watch(filterTerm, async () => {
 </script>
 
 <style lang="scss">
-#oc-files-sharing-sidebar {
-  .copy-private-link {
-    margin-left: auto;
-  }
-}
-
 .space-members-filter {
   overflow: hidden;
 
@@ -277,7 +274,6 @@ watch(filterTerm, async () => {
         max-height 0.25s ease-in-out,
         margin-bottom 0.25s ease-in-out,
         visibility 0s;
-      margin-bottom: var(--oc-space-medium);
     }
   }
 }

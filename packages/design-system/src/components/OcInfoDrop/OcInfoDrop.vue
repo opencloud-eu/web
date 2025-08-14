@@ -19,7 +19,7 @@
           </oc-button>
         </div>
         <p v-if="text" class="info-text" v-text="$gettext(text)" />
-        <dl v-if="listItems.length" class="info-list">
+        <dl v-if="listItems.length" class="info-list mt-2 mb-1">
           <component
             :is="item.headline ? 'dt' : 'dd'"
             v-for="(item, index) in listItems"
@@ -115,7 +115,25 @@ export default {
   components: { FocusTrap }
 }
 </script>
-
+<style>
+@reference 'tailwindcss';
+@layer components {
+  .oc-info-drop .info-list:first-child,
+  .oc-info-drop .info-text:first-child {
+    @apply mt-0;
+  }
+  .oc-info-drop .info-list:last-child,
+  .oc-info-drop .info-text:last-child {
+    @apply mb-0;
+  }
+  .oc-info-drop .info-list dt:first-child {
+    @apply mt-0;
+  }
+  .oc-info-drop .info-list dd {
+    @apply ml-0;
+  }
+}
+</style>
 <style lang="scss">
 .oc-info-drop {
   display: inline-block;
@@ -135,25 +153,9 @@ export default {
     font-size: 1.125rem;
     font-weight: normal;
   }
-  .info-list:first-child,
-  .info-text:first-child {
-    margin-top: 0;
-  }
-  .info-list:last-child,
-  .info-text:last-child {
-    margin-bottom: 0;
-  }
   .info-list {
     font-weight: bold;
-    margin-bottom: var(--oc-space-xsmall);
-    margin-top: var(--oc-space-small);
-    dt {
-      &:first-child {
-        margin-top: 0;
-      }
-    }
     dd {
-      margin-left: 0;
       font-weight: normal;
     }
   }

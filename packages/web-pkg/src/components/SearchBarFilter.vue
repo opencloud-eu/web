@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-location-search oc-position-center-right mx-4 mb-4 mt-0" @click.stop>
+  <div class="oc-location-search oc-position-center-right mx-4 mb-4 mt-0 mr-[34px]" @click.stop>
     <div v-if="currentSelection">
       <oc-filter-chip
         :is-toggle="false"
@@ -133,7 +133,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-location-search {
   z-index: 9999;
-  margin-right: 34px !important;
   float: right;
   .oc-drop {
     width: 180px;

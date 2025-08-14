@@ -10,7 +10,7 @@ exports[`OcModal > displays input 1`] = `
       <div class="oc-modal-body">
         <!--v-if-->
         <!--v-if-->
-        <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" class="oc-modal-body-input"></oc-text-input-stub>
+        <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" class="oc-modal-body-input -mb-5"></oc-text-input-stub>
       </div>
       <div class="oc-modal-body-actions oc-flex oc-flex-right">
         <div class="oc-modal-body-actions-grid">
@@ -77,7 +77,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
         <h2 id="oc-modal-title" class="oc-text-truncate m-0">Example title</h2>
       </div>
       <div class="oc-modal-body">
-        <div class="oc-modal-body-message">
+        <div class="oc-modal-body-message mt-2 mb-4">
           <p>Slot message</p>
         </div>
       </div>

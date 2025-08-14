@@ -7,7 +7,7 @@
         v-if="showAccountSection"
         :title="$gettext('Account Information')"
         :fields="[$gettext('Information name'), $gettext('Information value')]"
-        class="account-page-info"
+        class="account-page-info mt-6"
       >
         <template #header="{ title }">
           <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
@@ -296,7 +296,7 @@
         :is="extension.content"
         v-for="extension in preferencesPanelExtensions"
         :key="`preferences-panel-${extension.id}`"
-        class="preferences-panel"
+        class="preferences-panel mt-6"
       />
     </div>
   </main>
@@ -822,11 +822,6 @@ export default defineComponent({
 
   #account-page-title {
     border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
-  .preferences-panel,
-  .account-table {
-    margin-top: var(--oc-space-large);
   }
 
   .preferences-panel {

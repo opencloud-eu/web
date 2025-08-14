@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`account page > account information section > displays basic user information 1`] = `
-"<div class="account-table account-page-info">
+"<div class="account-table account-page-info mt-6">
   <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
     <h2>Account Information</h2>
     <!--v-if-->

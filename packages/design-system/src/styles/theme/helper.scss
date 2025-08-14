@@ -124,16 +124,6 @@ hr {
 
 .oc-bottom-drawer li,
 .oc-drop li {
-  margin-bottom: var(--oc-space-xsmall);
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-  
   a,
   .item-has-switch,
   button:not([role='switch']) {

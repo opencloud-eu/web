@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="link-modal-password mb-4">
+  <div class="link-modal-password mb-4 ml-[30px]">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -340,10 +340,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.link-modal-password {
-  margin-left: calc(var(--oc-space-small) + 22px);
-}
-
 .link-modal-confirm-button-group {
   outline: 0;
 }

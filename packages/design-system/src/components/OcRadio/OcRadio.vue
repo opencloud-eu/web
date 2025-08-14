@@ -10,7 +10,7 @@
       :value="option"
       :disabled="disabled"
     />
-    <label :for="id" :class="labelClasses" v-text="label" />
+    <label :for="id" :class="labelClasses" class="ml-1" v-text="label" />
   </span>
 </template>
 
@@ -110,9 +110,5 @@ const labelClasses = computed(() => ({
   &.oc-radio-l {
     @include oc-form-check-size(1.5);
   }
-}
-
-label > .oc-radio + span {
-  margin-left: var(--oc-space-xsmall);
 }
 </style>

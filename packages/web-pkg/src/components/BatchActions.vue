@@ -59,11 +59,6 @@ export default defineComponent({
   @media only screen and (min-width: 1200px) {
     align-items: center;
     display: flex;
-
-    li {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
   }
 }
 .oc-appbar-batch-actions-squashed .oc-files-context-action-label {

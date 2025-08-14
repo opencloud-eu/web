@@ -11,7 +11,7 @@
       :aria-label="labelHidden ? label : null"
       @keydown.enter="keydownEnter"
     />
-    <label v-if="!labelHidden" :for="id" :class="labelClasses" v-text="label" />
+    <label v-if="!labelHidden" :for="id" :class="labelClasses" class="ml-1" v-text="label" />
   </span>
 </template>
 
@@ -168,9 +168,5 @@ const keydownEnter = (event: KeyboardEvent) => {
       $form-radio-disabled-icon-color
     );
   }
-}
-
-label > .oc-checkbox + span {
-  margin-left: var(--oc-space-xsmall);
 }
 </style>

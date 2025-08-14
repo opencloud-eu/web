@@ -33,7 +33,7 @@
       </oc-list>
       <oc-list
         v-if="isModifiable"
-        class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-delete"
+        class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-delete mt-2"
         :class="{ 'pt-2': editOptions.length > 0 }"
       >
         <li class="oc-rounded oc-menu-item-hover">
@@ -277,7 +277,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .edit-public-link-dropdown-menu {
   &-delete {
-    margin-top: var(--oc-space-small) !important;
     border-top: 0.5px solid var(--oc-role-outline-variant) !important;
   }
 }

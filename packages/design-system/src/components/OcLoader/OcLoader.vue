@@ -1,5 +1,5 @@
 <template>
-  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" :aria-label="ariaLabel" />
+  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" class="my-5" :aria-label="ariaLabel" />
 </template>
 
 <script setup lang="ts">
@@ -27,8 +27,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   border-radius: 500px;
   display: block;
   height: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
   overflow: hidden;
   vertical-align: baseline;
   width: 100%;

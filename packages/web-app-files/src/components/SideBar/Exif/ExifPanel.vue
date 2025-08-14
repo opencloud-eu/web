@@ -1,6 +1,6 @@
 <template>
   <div id="files-sidebar-panel-exif" class="oc-rounded">
-    <dl class="exif-data-list m-0">
+    <dl class="exif-data-list details-list m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
       <dt v-text="$gettext('Device make')" />
@@ -167,18 +167,9 @@ export default defineComponent({
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
 
-  dt:not(:last-of-type),
-  dd:not(:last-of-type) {
-    margin-bottom: var(--oc-space-small);
-  }
-
   dt {
     font-weight: bold;
     white-space: nowrap;
-  }
-
-  dd {
-    margin-inline-start: var(--oc-space-medium);
   }
 }
 </style>
