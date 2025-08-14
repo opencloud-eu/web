@@ -176,7 +176,7 @@ const onClick = (event: MouseEvent) => {
 
 @layer components {
   .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
-    @apply py-[0.5rem] px-[0.8rem];
+    @apply py-1.5 px-2.5;
   }
 }
 </style>
