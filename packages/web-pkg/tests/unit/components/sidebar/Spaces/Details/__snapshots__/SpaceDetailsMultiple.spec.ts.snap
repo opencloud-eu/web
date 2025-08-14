@@ -8,6 +8,6 @@ exports[`Multiple Details SideBar Panel > displays the details side panel 1`] = 
       <p data-v-cd05ba5e="" class="preview-text">1 space selected</p>
     </div>
   </div>
-  <oc-definition-list-stub data-v-cd05ba5e="" items="[object Object],[object Object],[object Object],[object Object],[object Object]" aria-label="Overview of the information about the selected spaces"></oc-definition-list-stub>
+  <oc-definition-list-stub data-v-cd05ba5e="" items="[object Object],[object Object],[object Object],[object Object],[object Object]" aria-label="Overview of the information about the selected spaces" class="m-0"></oc-definition-list-stub>
 </div>"
 `;

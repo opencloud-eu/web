@@ -10,6 +10,7 @@
       <oc-definition-list
         :aria-label="$gettext('Overview of the information about the selected files')"
         :items="details"
+        class="m-0"
       />
     </div>
   </div>
@@ -78,10 +79,6 @@ const selectedFilesString = computed(() => {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
   padding: var(--oc-space-medium);
-}
-
-.details-list {
-  margin: 0;
 }
 
 .files-preview {

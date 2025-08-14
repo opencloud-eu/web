@@ -30,7 +30,8 @@ const cellClasses = computed(() => {
     'oc-table-cell',
     `oc-table-cell-align-${alignH}`,
     `oc-table-cell-align-${alignV}`,
-    `oc-table-cell-width-${width}`
+    `oc-table-cell-width-${width}`,
+    'px-2'
   ]
   if (wrap) {
     classes.push(`oc-text-${wrap}`)
@@ -41,8 +42,6 @@ const cellClasses = computed(() => {
 
 <style lang="scss">
 .oc-table-cell {
-  /* padding is not configurable until we need it */
-  padding: 0 var(--oc-space-small);
   position: relative;
 
   &-align {

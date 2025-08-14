@@ -10,7 +10,7 @@
         data-testid="recipient-icon"
       />
     </slot>
-    <p class="oc-recipient-name" data-testid="recipient-name" v-text="recipient.name" />
+    <p class="oc-recipient-name m-0" data-testid="recipient-name" v-text="recipient.name" />
     <!-- @slot Append content (actions, additional info, etc.)  -->
     <slot name="append" />
   </span>
@@ -57,8 +57,6 @@ defineSlots<Slots>()
 
   &-name {
     color: var(--oc-role-on-surface);
-    margin: 0;
-    padding: 0;
   }
 }
 </style>

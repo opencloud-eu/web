@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium">
+  <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium mx-auto sm:m-0">
     <div class="upload-info-title oc-flex oc-flex-between oc-flex-middle px-4 py-2 oc-rounded-top">
       <p v-oc-tooltip="uploadDetails" class="my-1" v-text="uploadInfoTitle" />
       <oc-button
@@ -696,7 +696,6 @@ export default defineComponent({
   width: 400px;
 
   @media (max-width: 640px) {
-    margin: 0 auto;
     width: 100%;
     max-width: 500px;
   }

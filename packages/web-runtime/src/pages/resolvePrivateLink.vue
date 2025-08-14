@@ -5,7 +5,7 @@
     <div class="oc-card oc-text-center oc-width-large">
       <template v-if="loading">
         <div class="oc-card-header">
-          <h2 key="private-link-loading" class="oc-link-resolve-loading">
+          <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
             <span v-text="$gettext('Resolving private link…')" />
           </h2>
         </div>
@@ -15,7 +15,7 @@
       </template>
       <template v-else-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="private-link-error">
+          <h2 key="private-link-error m-0">
             <span v-text="$gettext('An error occurred while resolving the private link')" />
           </h2>
         </div>
@@ -196,10 +196,6 @@ export default defineComponent({
   .oc-card {
     background: var(--oc-role-surface-container);
     border-radius: 15px;
-  }
-
-  .oc-card-header h2 {
-    margin: 0;
   }
 }
 </style>

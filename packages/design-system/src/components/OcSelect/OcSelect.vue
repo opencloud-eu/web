@@ -474,6 +474,7 @@ export default { components: { VueSelect } }
     }
   }
 
+  // overwrite vue-select styles
   .vs {
     &__search {
       color: var(--oc-role-on-surface);
@@ -490,7 +491,6 @@ export default { components: { VueSelect } }
       border: 1px solid var(--oc-role-outline);
       box-sizing: border-box;
       line-height: inherit;
-      margin: 0;
       max-width: 100%;
       outline: none;
       padding: 2px;
@@ -498,6 +498,8 @@ export default { components: { VueSelect } }
       transition-timing-function: ease-in-out;
       transition-property: color, background-color;
       width: 100%;
+      background-color: var(--oc-role-surface);
+      margin-top: -1px;
     }
 
     &__selected-readonly {
@@ -509,20 +511,10 @@ export default { components: { VueSelect } }
       padding: 0 5px;
     }
 
-    &__dropdown-menu {
-      padding: 0;
-      background-color: var(--oc-role-surface);
-      margin-top: -1px;
-    }
-
     &__clear,
     &__open-indicator,
     &__deselect {
       fill: var(--oc-role-on-surface);
-    }
-
-    &__deselect {
-      margin: 0 var(--oc-space-small);
     }
 
     &__dropdown-option,

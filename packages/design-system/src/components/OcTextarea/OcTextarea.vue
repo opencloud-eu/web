@@ -6,7 +6,7 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea oc-rounded"
+      class="oc-textarea oc-rounded m-0"
       :class="{
         'oc-textarea-danger': !!errorMessage
       }"
@@ -102,7 +102,6 @@ defineExpose({ focus })
   box-sizing: border-box;
   background: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);
-  margin: 0;
   max-width: 100%;
   width: 100%;
   overflow: auto;

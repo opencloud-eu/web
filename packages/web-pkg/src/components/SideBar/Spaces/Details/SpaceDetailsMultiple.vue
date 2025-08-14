@@ -6,7 +6,7 @@
         <p class="preview-text" v-text="selectedSpacesString" />
       </div>
     </div>
-    <oc-definition-list :aria-label="detailsTableLabel" :items="items" />
+    <oc-definition-list :aria-label="detailsTableLabel" :items="items" class="m-0" />
   </div>
 </template>
 <script setup lang="ts">
@@ -84,10 +84,6 @@ const items = computed(() => [
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
   padding: var(--oc-space-medium);
-}
-
-.details-list {
-  margin: 0;
 }
 
 .spaces-preview {

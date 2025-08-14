@@ -332,7 +332,6 @@ const openSideBarSharePanel = () => {
 
     &-expanded {
       width: 100%;
-      margin: 0;
       max-height: 100%;
       max-width: 100%;
     }
@@ -361,14 +360,6 @@ const openSideBarSharePanel = () => {
 
   &-people-count {
     white-space: nowrap;
-  }
-
-  .markdown-container {
-    &-content {
-      .md-editor-preview-wrapper {
-        padding: 0;
-      }
-    }
   }
 
   .markdown-container.collapsed {

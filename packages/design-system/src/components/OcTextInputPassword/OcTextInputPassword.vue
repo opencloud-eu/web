@@ -175,7 +175,6 @@ watch(password, (value) => {
   &-wrapper {
     display: flex;
     flex-direction: row;
-    padding: 0;
     border-radius: 5px;
     border: 1px solid var(--oc-role-outline);
 

@@ -5,7 +5,7 @@ exports[`Spaces view > loading states > should render spaces list after loading 
   <main class="oc-flex oc-height-1-1 app-content oc-width-1-1">
     <div class="admin-settings-wrapper oc-flex oc-width-1-1 oc-width-expand oc-height-1-1 oc-flex-wrap">
       <div id="admin-settings-view-wrapper" class="oc-width-expand oc-width-1-1 oc-height-1-1 oc-flex-wrap">
-        <div id="admin-settings-app-bar" class="oc-app-bar py-2 admin-settings-app-bar-sticky">
+        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 admin-settings-app-bar-sticky">
           <div class="admin-settings-app-bar-controls oc-flex oc-flex-between oc-flex-middle">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>

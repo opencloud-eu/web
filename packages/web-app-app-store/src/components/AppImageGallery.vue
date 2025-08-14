@@ -9,7 +9,7 @@
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
-    <ul v-if="hasPagination" class="app-image-navigation">
+    <ul v-if="hasPagination" class="app-image-navigation m-0">
       <li>
         <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
           <oc-icon name="arrow-left-s" />
@@ -159,7 +159,6 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     padding: var(--oc-space-small) 0;
-    margin: 0;
     background-color: rgba(255, 255, 255, 0.8);
   }
 }

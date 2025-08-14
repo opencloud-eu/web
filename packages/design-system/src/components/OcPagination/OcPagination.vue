@@ -1,6 +1,6 @@
 <template>
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
-    <ol class="oc-pagination-list">
+    <ol class="oc-pagination-list m-0">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
           class="oc-pagination-list-item-prev"
@@ -161,8 +161,6 @@ const bindPageLink = (page: Page) => {
     flex-wrap: wrap;
     gap: var(--oc-space-small);
     list-style: none;
-    margin: 0;
-    padding: 0;
 
     &-item {
       &-page {

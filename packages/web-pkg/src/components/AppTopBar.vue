@@ -1,7 +1,9 @@
 <template>
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar oc-flex">
-      <span class="oc-app-top-bar-inner pl-4 pr-1 oc-flex oc-flex-middle oc-flex-between">
+      <span
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 oc-flex oc-flex-middle oc-flex-between"
+      >
         <div class="open-file-bar oc-flex">
           <resource-list-item
             v-if="resource"
@@ -203,12 +205,10 @@ export default defineComponent({
   display: inline-flex;
   gap: 25px;
   height: 40px;
-  margin: 10px auto;
   width: 100%;
 
   @media (min-width: $oc-breakpoint-small-default) {
     flex-basis: 250px;
-    margin: 0;
   }
 
   .oc-resource-indicators {
