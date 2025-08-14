@@ -1,8 +1,7 @@
 <template>
-  <oc-grid
-    direction="column"
+  <div
     :role="isFilter ? undefined : 'search'"
-    class="oc-search oc-flex-middle"
+    class="oc-search oc-flex oc-flex-middle"
     :class="{ 'oc-search-small': small }"
   >
     <div class="oc-width-expand oc-position-relative">
@@ -52,14 +51,13 @@
     >
       <span v-text="$gettext('Cancel')" />
     </oc-button>
-  </oc-grid>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, unref, useSlots, watch } from 'vue'
+import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import OcButton from '../OcButton/OcButton.vue'
-import OcGrid from '../OcGrid/OcGrid.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
 import { AppearanceType } from '../../helpers'

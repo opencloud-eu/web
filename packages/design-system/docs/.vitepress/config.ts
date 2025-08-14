@@ -179,10 +179,6 @@ export default defineConfig({
               link: '/OcFilterChip'
             },
             {
-              text: 'OcGrid',
-              link: '/OcGrid'
-            },
-            {
               text: 'OcHiddenAnnouncer',
               link: '/OcHiddenAnnouncer'
             },
