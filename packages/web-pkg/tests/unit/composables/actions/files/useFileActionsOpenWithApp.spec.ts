@@ -2,8 +2,8 @@ import { mock } from 'vitest-mock-extended'
 import { computed, unref } from 'vue'
 import {
   defaultComponentMocks,
-  RouteLocation,
-  getComposableWrapper
+  getComposableWrapper,
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import {
   useFileActionsOpenWithApp,
@@ -11,8 +11,10 @@ import {
   useModals
 } from '../../../../../src/composables'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ApplicationInformation } from '../../../../../src'
+import { ApplicationFileExtension, ApplicationInformation } from '../../../../../src'
+import { LocationQuery } from 'vue-router'
 
+window.open = vi.fn()
 vi.mock('../../../../../src/composables/actions/helpers/useIsFilesAppActive')
 
 const spaceMock = mock<SpaceResource>({
@@ -53,6 +55,19 @@ describe('openWithApp', () => {
         })
       })
     })
+    describe('method "onFilePicked"', () => {
+      it('opens resource in new window', () => {
+        getWrapper({
+          setup: ({ onFilePicked }) => {
+            onFilePicked({
+              resource: mock<Resource>({ storageId: spaceMock.id, path: '/' }),
+              locationQuery: mock<LocationQuery>()
+            })
+            expect(window.open).toHaveBeenCalled()
+          }
+        })
+      })
+    })
   })
 })
 
@@ -84,7 +99,12 @@ function getWrapper({
           piniaOptions: {
             spacesState: { spaces: [spaceMock] },
             appsState: {
-              apps: { 'text-editor': mock<ApplicationInformation>({ name: 'text-editor' }) }
+              apps: {
+                'text-editor': mock<ApplicationInformation>({
+                  name: 'text-editor',
+                  extensions: [mock<ApplicationFileExtension>({ extension: 'txt' })]
+                })
+              }
             }
           }
         }
