@@ -8,14 +8,14 @@ exports[`CreateAndUpload component > action buttons > should show and be enabled
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="add" size="medium" type="span"></oc-icon-stub> <span>New</span>
     </button></div>
   <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="oc-width-auto">
-    <oc-list-stub raw="false" id="create-list" class="">
+    <oc-list-stub raw="false" id="create-list" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-folder oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1" id="new-folder-btn">
           <!--v-if-->
           <!-- @slot Content of the button -->
           <resource-icon-stub resource="[object Object]" size="medium"></resource-icon-stub> <span>Folder</span>
         </button></li>
     </oc-list-stub>
-    <oc-list-stub raw="false">
+    <oc-list-stub raw="false" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-file oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1 new-file-btn-txt">
           <!--v-if-->
           <!-- @slot Content of the button -->
@@ -35,7 +35,7 @@ exports[`CreateAndUpload component > action buttons > should show and be enabled
           <!--v-if-->
         </button></li>
     </oc-list-stub>
-    <oc-list-stub raw="false">
+    <oc-list-stub raw="false" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-shortcut oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1" id="new-shortcut-btn">
           <!--v-if-->
           <!-- @slot Content of the button -->
@@ -67,14 +67,14 @@ exports[`CreateAndUpload component > file handlers > should show entries for all
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="add" size="medium" type="span"></oc-icon-stub> <span>New</span>
     </button></div>
   <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="oc-width-auto">
-    <oc-list-stub raw="false" id="create-list" class="">
+    <oc-list-stub raw="false" id="create-list" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-folder oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1" id="new-folder-btn">
           <!--v-if-->
           <!-- @slot Content of the button -->
           <resource-icon-stub resource="[object Object]" size="medium"></resource-icon-stub> <span>Folder</span>
         </button></li>
     </oc-list-stub>
-    <oc-list-stub raw="false">
+    <oc-list-stub raw="false" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-file oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1 new-file-btn-txt">
           <!--v-if-->
           <!-- @slot Content of the button -->
@@ -94,7 +94,7 @@ exports[`CreateAndUpload component > file handlers > should show entries for all
           <!--v-if-->
         </button></li>
     </oc-list-stub>
-    <oc-list-stub raw="false">
+    <oc-list-stub raw="false" class="py-2 first:pt-0 last:pb-0">
       <li class="create-list-shortcut oc-menu-item-hover"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw oc-width-1-1" id="new-shortcut-btn">
           <!--v-if-->
           <!-- @slot Content of the button -->

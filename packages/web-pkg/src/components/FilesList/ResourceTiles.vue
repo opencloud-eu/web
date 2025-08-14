@@ -128,7 +128,7 @@
     <Teleport v-if="dragItem" to="body">
       <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
-    <div class="oc-tiles-footer">
+    <div class="oc-tiles-footer p-1">
       <slot name="footer" />
     </div>
   </div>
@@ -659,7 +659,6 @@ onBeforeUnmount(() => {
   &-footer {
     font-size: var(--oc-font-size-default);
     line-height: 1.4;
-    padding: var(--oc-space-xsmall);
   }
 
   &-sort-filter-chip {

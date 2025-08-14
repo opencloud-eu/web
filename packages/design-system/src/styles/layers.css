@@ -70,8 +70,8 @@
     @apply p-2;
   }
 
-  .oc-bottom-drawer,
-  .oc-drop {
+  .oc-bottom-drawer li,
+  .oc-drop li {
     @apply mb-1;
   }
 
@@ -83,5 +83,24 @@
   .oc-bottom-drawer li:last-child,
   .oc-drop li:last-child {
     @apply mb-0;
+  }
+
+  /* inputs */
+  .oc-input {
+    @apply p-1.5
+  }
+
+  .oc-textarea {
+    @apply py-1 px-2
+  }
+
+  /* sidebar */
+  .sidebar-actions-panel li a,
+  .sidebar-actions-panel li button {
+    @apply p-2;
+  }
+
+  .sidebar-actions-panel li a {
+    @apply mb-1;
   }
 }

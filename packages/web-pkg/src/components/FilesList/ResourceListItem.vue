@@ -55,7 +55,7 @@
           :style="parentFolderStyle"
           class="parent-folder oc-text-truncate px-0.5 mr-2 -ml-0.5"
         >
-          <oc-icon v-bind="parentFolderLinkIconAttrs" />
+          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
           <span class="text oc-text-truncate" v-text="parentFolderName" />
         </component>
       </div>
@@ -273,10 +273,6 @@ export default defineComponent({
     .parent-folder {
       display: flex;
       align-items: center;
-
-      .oc-icon {
-        padding-right: 3px;
-      }
 
       .text {
         font-size: 0.8125rem;

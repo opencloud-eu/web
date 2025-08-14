@@ -3,14 +3,14 @@
     <oc-icon name="group-2" size="xxlarge" />
     <p v-translate>Select a group to view details</p>
   </div>
-  <div v-if="multipleGroups" id="oc-groups-details-multiple-sidebar" class="oc-flex group-info">
+  <div v-if="multipleGroups" id="oc-groups-details-multiple-sidebar" class="oc-flex group-info p-4">
     <oc-icon name="group-2" size="xxlarge" />
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>
-  <div v-if="group" id="oc-group-details-sidebar">
+  <div v-if="group" id="oc-group-details-sidebar" class="p-4">
     <GroupInfoBox :group="group" />
     <p
-      class="selected-group-details"
+      class="selected-group-details p-1"
       :aria-label="$gettext('Overview of the information about the selected group')"
     >
       <span class="pr-2 oc-font-semibold" v-text="$gettext('Group name')" />
@@ -55,7 +55,6 @@ export default defineComponent({
 #oc-groups-details-multiple-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-  padding: var(--oc-space-medium);
 }
 
 .group-info {
@@ -70,9 +69,5 @@ export default defineComponent({
 .selected-group-details {
   display: table;
   text-align: left;
-
-  span {
-    padding: 0.2rem;
-  }
 }
 </style>

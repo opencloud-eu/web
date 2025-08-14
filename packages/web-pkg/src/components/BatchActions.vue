@@ -43,13 +43,20 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  #oc-appbar-batch-actions .action-menu-item {
+    @apply p-2;
+  }
+}
+</style>
 <style lang="scss">
 #oc-appbar-batch-actions {
   display: block;
 
   .action-menu-item {
-    padding: var(--oc-space-small);
     gap: var(--oc-space-xsmall) !important;
   }
 

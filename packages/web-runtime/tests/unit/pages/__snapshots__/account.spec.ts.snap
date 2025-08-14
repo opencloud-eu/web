@@ -87,7 +87,7 @@ exports[`account page > header section > edit url button > should be displayed i
 
 exports[`account page > public link context > should render a limited view 1`] = `
 "<main id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
-  <div class="account-page">
+  <div class="account-page px-4 lg:px-0">
     <h1 id="account-page-title" class="mb-0">My Account</h1>
     <!--v-if-->
     <div class="account-table account-page-preferences">

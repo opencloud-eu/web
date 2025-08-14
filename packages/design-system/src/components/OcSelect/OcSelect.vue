@@ -541,7 +541,7 @@ export default { components: { VueSelect } }
       justify-content: center;
       gap: var(--oc-space-xsmall);
       cursor: pointer;
-      padding: 0 var(--oc-space-xsmall) 0 var(--oc-space-xsmall);
+      padding: 0 4px 0 4px;
 
       svg {
         overflow: visible;

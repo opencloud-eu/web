@@ -11,10 +11,10 @@
         aria-labelledby="oc-modal-title"
         @keydown.esc.stop="cancelModalAction"
       >
-        <div class="oc-modal-title">
+        <div class="oc-modal-title py-3 px-4">
           <h2 id="oc-modal-title" class="oc-text-truncate m-0" v-text="title" />
         </div>
-        <div class="oc-modal-body">
+        <div class="oc-modal-body px-4 pt-4">
           <div
             v-if="$slots.content"
             key="modal-slot-content"
@@ -43,7 +43,7 @@
               key="modal-input"
               ref="ocModalInput"
               v-model="userInputValue"
-              class="oc-modal-body-input -mb-5"
+              class="oc-modal-body-input -mb-5 pb-4"
               :error-message="inputError"
               :label="inputLabel"
               :type="inputType"
@@ -57,7 +57,7 @@
           </template>
         </div>
 
-        <div v-if="!hideActions" class="oc-modal-body-actions oc-flex oc-flex-right">
+        <div v-if="!hideActions" class="oc-modal-body-actions oc-flex oc-flex-right p-4">
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
@@ -355,7 +355,6 @@ export default {
     display: flex;
     flex-flow: row wrap;
     line-height: 1.625;
-    padding: calc(var(--oc-space-small) + var(--oc-space-xsmall)) var(--oc-space-medium);
     background-color: var(--oc-role-surface-container);
 
     > h2 {
@@ -367,21 +366,15 @@ export default {
   &-body {
     color: var(--oc-role-on-surface);
     line-height: 1.625;
-    padding: var(--oc-space-medium) var(--oc-space-medium) 0;
 
     .oc-input {
       line-height: normal;
-    }
-
-    &-input {
-      padding-bottom: var(--oc-space-medium);
     }
 
     &-actions {
       text-align: right;
       border-bottom-right-radius: 15px;
       border-bottom-left-radius: 15px;
-      padding: var(--oc-space-medium);
 
       .oc-button {
         border-radius: 4px;

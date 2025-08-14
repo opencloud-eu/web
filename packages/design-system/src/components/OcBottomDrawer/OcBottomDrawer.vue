@@ -240,9 +240,22 @@ defineExpose({ show, hide, getElement })
 <style>
 @reference 'tailwindcss';
 
-@layer utilities {
+@layer components {
   .oc-bottom-drawer .oc-card-body ul:not(:last-child) {
     @apply mb-2;
+  }
+  .oc-bottom-drawer .oc-card-body {
+    @apply px-4 pb-4 pt-2;
+  }
+  .oc-bottom-drawer .oc-card-header {
+    @apply px-4 pt-4;
+  }
+}
+
+@layer utilities {
+  .oc-bottom-drawer ul {
+    /* overwrite default list styling */
+    @apply p-2;
   }
 }
 </style>
@@ -279,16 +292,10 @@ defineExpose({ show, hide, getElement })
     background-color: unset !important;
 
     &-header {
-      padding-top: var(--oc-space-medium);
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
       border-bottom: 0 !important;
     }
 
     &-body {
-      padding: var(--oc-space-medium);
-      padding-top: var(--oc-space-small);
-
       ul {
         background-color: var(--oc-role-surface) !important;
         border-radius: 10px;

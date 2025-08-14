@@ -12,10 +12,10 @@
         v-bind="additionalAttributes"
         type="color"
         :aria-invalid="ariaInvalid"
-        class="oc-color-input oc-input oc-rounded"
+        class="oc-color-input oc-input oc-rounded py-0.5"
         :class="{
           'oc-color-input-danger': !!errorMessage,
-          'clear-action-visible': showClearButton
+          'pr-6': showClearButton
         }"
         :value="modelValue"
         :disabled="disabled"
@@ -207,9 +207,6 @@ const onInput = (value: string) => {
 }
 
 .oc-color-input {
-  padding-top: calc(var(--oc-space-xsmall) - 2px) !important;
-  padding-bottom: calc(var(--oc-space-xsmall) - 2px) !important;
-
   &-wrapper {
     max-width: 5rem !important;
   }
@@ -233,10 +230,6 @@ const onInput = (value: string) => {
     display: flex;
     align-items: center;
     min-height: $oc-font-size-default * 1.5;
-  }
-
-  &.clear-action-visible {
-    padding-right: ($oc-size-icon-default * 0.7) + 7px;
   }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
-  <div id="ghost-element" class="ghost-element">
+  <div id="ghost-element" class="ghost-element pt-1 pl-4">
     <div class="ghost-element-layer1 oc-rounded">
       <resource-icon class="p-1" :resource="previewItems[0]" />
       <div v-if="showSecondLayer" class="ghost-element-layer2 oc-rounded" />
       <div v-if="showThirdLayer" class="ghost-element-layer3 oc-rounded" />
     </div>
-    <span class="badge">{{ itemCount }}</span>
+    <span class="badge p-1">{{ itemCount }}</span>
   </div>
 </template>
 
@@ -71,8 +71,6 @@ export default defineComponent({
 }
 .ghost-element {
   background-color: transparent;
-  padding-top: var(--oc-space-xsmall);
-  padding-left: 5px;
   z-index: var(--oc-z-index-modal);
   position: absolute;
   .icon-wrapper {
@@ -82,7 +80,6 @@ export default defineComponent({
     position: absolute;
     top: -2px;
     right: -8px;
-    padding: var(--oc-space-xsmall);
     line-height: var(--oc-space-small);
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;

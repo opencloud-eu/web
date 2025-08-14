@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-file-details-multiple-sidebar">
+  <div id="oc-file-details-multiple-sidebar" class="p-4">
     <div class="files-preview mb-6">
       <div class="files-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
@@ -78,7 +78,6 @@ const selectedFilesString = computed(() => {
 #oc-file-details-multiple-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-  padding: var(--oc-space-medium);
 }
 
 .files-preview {

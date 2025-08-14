@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-file-details-sidebar" class="oc-rounded">
+  <div id="oc-file-details-sidebar" class="oc-rounded p-4">
     <div v-if="hasContent">
       <div
         v-if="isPreviewLoading || preview"
@@ -7,14 +7,14 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview oc-flex oc-flex-middle oc-flex-center mb-4"
+        class="details-preview oc-flex oc-flex-middle oc-flex-center mb-4 p-2"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
       <div
         v-else
-        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center mb-4"
+        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center mb-4 p-2"
       >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
@@ -336,13 +336,10 @@ watch(
 <style lang="scss" scoped>
 #oc-file-details-sidebar {
   background-color: var(--oc-role-surface-container);
-  padding: var(--oc-space-medium);
 }
 
 .details-preview,
 .details-icon-wrapper {
-  padding: 10px;
-
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

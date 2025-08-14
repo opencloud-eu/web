@@ -1,5 +1,5 @@
 <template>
-  <div id="files-sidebar-panel-exif" class="oc-rounded">
+  <div id="files-sidebar-panel-exif" class="oc-rounded p-4">
     <dl class="exif-data-list details-list m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
@@ -160,7 +160,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 #files-sidebar-panel-exif {
   background-color: var(--oc-role-surface-container);
-  padding: var(--oc-space-medium);
 }
 
 .exif-data-list {

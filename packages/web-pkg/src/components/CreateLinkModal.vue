@@ -71,7 +71,7 @@
       </oc-button>
       <oc-button
         v-if="password.value"
-        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger"
+        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger p-1"
         appearance="filled"
         :disabled="confirmButtonDisabled"
       >
@@ -346,7 +346,6 @@ export default defineComponent({
 
 .oc-modal-body-actions-confirm-secondary-trigger {
   background: var(--oc-role-secondary);
-  padding: var(--oc-space-xsmall);
 }
 
 .role-dropdown-list span {
