@@ -12,7 +12,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-invisible oc-file-input"
+        class="oc-invisible oc-file-input p-0"
         type="file"
         :multiple="multiple"
         :accept="fileTypes"
@@ -239,7 +239,6 @@ const onFocus = async () => {
 <style scoped lang="scss">
 .oc-file-input {
   border: 0;
-  padding: 0;
   width: 0;
   height: 0;
 

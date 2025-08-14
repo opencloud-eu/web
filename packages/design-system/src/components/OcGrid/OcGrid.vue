@@ -108,19 +108,7 @@ $grid-divider-border: #e5e5e5 !default;
   /* 1 */
   flex-wrap: wrap;
   /* 2 */
-  margin: 0;
-  padding: 0;
   list-style: none;
-}
-
-/*
- * Grid cell
- * Note: Space is allocated solely based on content dimensions, but shrinks: 0 1 auto
- * Reset margin for e.g. paragraphs
- */
-
-.oc-grid > * {
-  margin: 0;
 }
 
 /*

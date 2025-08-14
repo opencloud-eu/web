@@ -17,6 +17,7 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
+      class="mx-auto sm:mx-0"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -52,6 +53,7 @@
       ref="optionsDropRef"
       mode="manual"
       target="#files-global-search-bar"
+      padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
     >
@@ -522,7 +524,16 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utility {
+  #files-global-search-options .preview-component button,
+  #files-global-search-options .preview-component a {
+    @apply p-0;
+  }
+}
+</style>
 <style lang="scss">
 #files-global-search {
   .mobile-search-btn {
@@ -556,21 +567,15 @@ export default defineComponent({
       height: 48px;
       left: 0;
       right: 0;
-      margin: 0 auto;
       top: 0;
       width: 95vw !important;
       z-index: 9;
-
-      .oc-search-input-icon {
-        padding: 0 var(--oc-space-xlarge);
-      }
 
       input,
       input:not(:placeholder-shown) {
         background-color: var(--oc-role-surface);
         border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
-        margin: 0 auto;
       }
     }
   }
@@ -580,10 +585,6 @@ export default defineComponent({
     overflow-y: auto;
     max-height: calc(100vh - 60px);
     text-decoration: none;
-
-    .oc-card {
-      padding: 0 !important;
-    }
 
     @media (max-width: 969px) {
       width: 300px;
@@ -595,7 +596,6 @@ export default defineComponent({
 
     .preview-component button,
     .preview-component a {
-      padding: 0;
       width: initial;
       gap: initial;
     }
@@ -610,8 +610,6 @@ export default defineComponent({
       li {
         position: relative;
         font-size: var(--oc-font-size-small);
-        margin: 0;
-        padding: 0;
 
         &.provider-details {
           font-size: var(--oc-font-size-xsmall);

@@ -641,17 +641,12 @@ export default defineComponent({
 
 #new-collaborators-form {
   .invite-form-share-role-type {
-    .oc-filter-chip-button.oc-pill {
-      padding: 0 !important;
-    }
-
     .oc-drop {
       width: 180px;
     }
   }
 
   .vs__actions {
-    padding: 0 !important;
     cursor: inherit;
     flex-wrap: nowrap;
   }

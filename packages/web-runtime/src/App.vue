@@ -135,10 +135,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-body {
-  margin: 0;
-}
-
 #web {
   background-color: var(--oc-role-chrome);
   height: 100dvh;

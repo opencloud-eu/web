@@ -46,4 +46,14 @@
 	.oc-card-title {
 	  @apply mb-6;
 	}
+
+  /* drops */
+  .oc-bottom-drawer li a,
+  .oc-bottom-drawer li .item-has-switch,
+  .oc-bottom-drawer li button:not([role='switch']),
+  .oc-drop li a,
+  .oc-drop li button:not([role='switch']),
+  .oc-drop li .item-has-switch {
+    @apply p-2;
+  }
 }

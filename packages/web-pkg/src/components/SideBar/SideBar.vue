@@ -95,6 +95,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
+              class="px-2"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -402,7 +403,6 @@ onBeforeUnmount(() => {
       grid-template-columns: auto 1fr auto;
       text-align: left;
       height: 50px;
-      padding: 0 var(--oc-space-small);
       border-radius: 5px;
     }
   }
