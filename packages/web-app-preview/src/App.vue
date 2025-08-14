@@ -236,34 +236,6 @@ export default defineComponent({
         return
       }
 
-      // Check localStorage for the bug toggle flag
-      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_PREVIEW_CRASH_BUG') === '1'
-      
-      if (enableBug) {
-        // Apply the bug: show error popup if filename contains special characters
-        const hasSpecialChars = /[^\w\s.-]/.test(file.name) || /[\u{1F600}-\u{1F64F}]/gu.test(file.name) || /[\u{1F300}-\u{1F5FF}]/gu.test(file.name)
-        
-        if (hasSpecialChars) {
-          // Show error popup instead of throwing error
-          alert(`Preview Error: Cannot preview file "${file.name}" due to special characters in filename.`)
-          // Mark the file as having an error
-          const cachedFile: CachedFile = {
-            id: file.id,
-            name: file.name,
-            url: undefined,
-            ext: file.extension,
-            mimeType: file.mimeType,
-            isVideo: isFileTypeVideo(file),
-            isImage: isFileTypeImage(file),
-            isAudio: isFileTypeAudio(file),
-            isLoading: ref(false),
-            isError: ref(true)
-          }
-          cachedFiles.value[file.id] = cachedFile
-          return
-        }
-      }
-
       const cachedFile: CachedFile = {
         id: file.id,
         name: file.name,

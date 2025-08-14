@@ -40,10 +40,7 @@ export class FolderLoaderSharedWithOthers implements FolderLoader {
         )
       )
 
-      // Check localStorage for the bug toggle flag
-      const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SHARED_WITH_OTHERS_BUG') === '1'
-      
-      let resources = value
+      const resources = value
         .filter((s) => s.permissions.some(({ link }) => !link))
         .map((driveItem) =>
           buildOutgoingShareResource({
@@ -52,15 +49,6 @@ export class FolderLoaderSharedWithOthers implements FolderLoader {
             serverUrl: configStore.serverUrl
           })
         )
-
-      if (enableBug) {
-        // Apply the bug: filter out files that were recently shared (within last 5 minutes)
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-        resources = resources.filter((resource) => {
-          const shareDate = new Date(resource.sdate)
-          return shareDate < fiveMinutesAgo
-        })
-      }
 
       resourcesStore.initResourceList({ currentFolder: null, resources })
     })

@@ -150,15 +150,6 @@ export const useSharesStore = defineStore('shares', () => {
     const client = clientService.graphAuthenticated.permissions
     const share = await client.createInvite(space.id, resource.id, options, unref(graphRoles))
 
-    // Check localStorage for the bug toggle flag
-    const enableBug = localStorage.getItem('QA_BENCHMARK_ENABLE_SHARED_WITH_OTHERS_BUG') === '1'
-    
-    if (enableBug) {
-      // Apply the bug: don't add the share to the local store, making it invisible in the UI
-      console.log('Bug: Share created but not added to local store', share)
-      return share
-    }
-
     addCollaboratorShares([share])
     updateFileShareTypes(resource.id)
     return share
