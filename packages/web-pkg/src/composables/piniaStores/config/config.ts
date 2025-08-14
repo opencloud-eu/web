@@ -18,7 +18,7 @@ const defaultOptions = {
   },
   contextHelpers: true,
   contextHelpersReadMore: true,
-  defaultExtension: 'files',
+  defaultAppId: 'files',
   disabledExtensions: [] as string[],
   disableFeedbackLink: true,
   editor: {

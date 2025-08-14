@@ -638,16 +638,16 @@ export const announceDefaults = ({
 }): void => {
   // set home route
   const appIds = appsStore.appIds
-  let defaultExtensionId = configStore.options.defaultExtension
-  if (!defaultExtensionId || appIds.indexOf(defaultExtensionId) < 0) {
-    defaultExtensionId = appIds[0]
+  let defaultAppId = configStore.options.defaultAppId
+  if (!appIds.includes(defaultAppId)) {
+    defaultAppId = appIds.find((appId) => appId === 'files') || appIds[0]
   }
 
   let route: RouteRecordNormalized | RouteLocationRaw = router.getRoutes().find((r) => {
-    return r.path.startsWith(`/${defaultExtensionId}`) && r.meta?.entryPoint === true
+    return r.path.startsWith(`/${defaultAppId}`) && r.meta?.entryPoint === true
   })
   if (!route) {
-    route = getExtensionNavItems({ extensionRegistry, appId: defaultExtensionId })[0]?.route
+    route = getExtensionNavItems({ extensionRegistry, appId: defaultAppId })[0]?.route
   }
   if (route) {
     router.addRoute({
