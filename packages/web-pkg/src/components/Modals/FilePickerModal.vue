@@ -122,7 +122,7 @@ export default defineComponent({
 <style>
 @reference 'tailwindcss';
 
-@layer components {
+@layer utility {
   .oc-modal.open-with-app-modal .oc-modal-body {
     @apply p-0;
   }

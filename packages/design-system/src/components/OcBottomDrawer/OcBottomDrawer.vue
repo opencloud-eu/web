@@ -14,7 +14,7 @@
       <focus-trap>
         <div :id="drawerId" class="oc-bottom-drawer">
           <div class="oc-card">
-            <div class="oc-card-header">
+            <div class="oc-card-header px-4 pt-4">
               <div class="oc-flex oc-flex-between oc-flex-middle">
                 <oc-button
                   v-if="isNestedElement"
@@ -36,7 +36,7 @@
                 </oc-button>
               </div>
             </div>
-            <div ref="bottomDrawerCardBodyRef" class="oc-card-body">
+            <div ref="bottomDrawerCardBodyRef" class="oc-card-body px-4 pb-4 pt-2">
               <slot />
             </div>
           </div>
@@ -243,12 +243,6 @@ defineExpose({ show, hide, getElement })
 @layer components {
   .oc-bottom-drawer .oc-card-body ul:not(:last-child) {
     @apply mb-2;
-  }
-  .oc-bottom-drawer .oc-card-body {
-    @apply px-4 pb-4 pt-2;
-  }
-  .oc-bottom-drawer .oc-card-header {
-    @apply px-4 pt-4;
   }
 }
 

@@ -6,7 +6,7 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
     <div class="oc-bottom-drawer-background" role="button">
       <div id="button-drawer" class="oc-bottom-drawer active">
         <div class="oc-card">
-          <div class="oc-card-header">
+          <div class="oc-card-header px-4 pt-4">
             <div class="oc-flex oc-flex-between oc-flex-middle">
               <!--v-if--> <span class="oc-text-bold">Bottom Drawer</span> <button type="button" aria-label="Close the context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
                 <!--v-if-->
@@ -22,7 +22,7 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
               </button>
             </div>
           </div>
-          <div class="oc-card-body"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface" id="action-button">
+          <div class="oc-card-body px-4 pb-4 pt-2"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface" id="action-button">
               <!--v-if-->
               <!-- @slot Content of the button --> action button
             </button></div>
