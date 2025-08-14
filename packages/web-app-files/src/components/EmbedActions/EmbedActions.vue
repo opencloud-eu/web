@@ -3,12 +3,12 @@
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
-      class="files-embed-actions-file-name oc-flex oc-flex-row oc-flex-middle"
+      class="files-embed-actions-file-name oc-flex oc-flex-row oc-flex-middle ml-0 md:ml-[230px]"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
     />
 
-    <div class="files-embed-actions-buttons oc-flex oc-flex-middle">
+    <div class="files-embed-actions-buttons oc-flex oc-flex-middle ml-auto">
       <oc-button
         class="mr-4"
         data-testid="button-cancel"
@@ -174,7 +174,6 @@ export default defineComponent({
   gap: var(--oc-space-small);
 
   &-file-name {
-    margin-left: 230px;
     gap: var(--oc-space-small);
 
     input {
@@ -182,16 +181,10 @@ export default defineComponent({
     }
 
     @media (max-width: $oc-breakpoint-medium-default) {
-      margin-left: 0;
-
       input {
         width: auto;
       }
     }
-  }
-
-  &-buttons {
-    margin-left: auto;
   }
 }
 </style>

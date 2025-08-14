@@ -1,5 +1,5 @@
 <template>
-  <div class="app-details oc-card oc-card-default oc-card-rounded">
+  <div class="app-details oc-card oc-card-default oc-card-rounded mx-auto">
     <div class="p-1">
       <router-link :to="{ name: `${APPID}-list` }" class="oc-flex oc-flex-middle app-details-back">
         <oc-icon name="arrow-left-s" fill-type="line" />
@@ -100,7 +100,6 @@ export default defineComponent({
   background-color: var(--oc-role-surface-container);
   box-shadow: none;
   max-width: 600px;
-  margin: 0 auto;
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {

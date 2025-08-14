@@ -1,12 +1,12 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar">
+  <div id="oc-spaces-details-multiple-sidebar" class="p-4">
     <div class="spaces-preview mb-6">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
       </div>
     </div>
-    <oc-definition-list :aria-label="detailsTableLabel" :items="items" />
+    <oc-definition-list :aria-label="detailsTableLabel" :items="items" class="m-0" />
   </div>
 </template>
 <script setup lang="ts">
@@ -83,11 +83,6 @@ const items = computed(() => [
 #oc-spaces-details-multiple-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-  padding: var(--oc-space-medium);
-}
-
-.details-list {
-  margin: 0;
 }
 
 .spaces-preview {

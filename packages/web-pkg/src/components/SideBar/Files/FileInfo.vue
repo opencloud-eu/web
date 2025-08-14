@@ -8,7 +8,7 @@
         class="file_info__icon mr-2 oc-position-relative"
       />
       <div class="file_info__body oc-text-overflow">
-        <h3 data-testid="files-info-name" class="oc-font-semibold">
+        <h3 data-testid="files-info-name" class="oc-font-semibold m-0">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -58,7 +58,6 @@ const name = computed(() => {
 
     h3 {
       font-size: var(--oc-font-size-medium);
-      margin: 0;
       word-break: break-all;
     }
   }

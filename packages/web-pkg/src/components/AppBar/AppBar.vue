@@ -2,6 +2,7 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
+    class="px-4"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky': isSticky }"
   >
     <div class="files-topbar py-2">
@@ -351,7 +352,6 @@ export default defineComponent({
   box-sizing: border-box;
   z-index: 2;
   position: inherit;
-  padding: 0 var(--oc-space-medium);
   top: 0;
 
   &.files-app-bar-sticky {

@@ -12,7 +12,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar py-2"
+            class="oc-app-bar py-2 px-4"
             :class="{ 'admin-settings-app-bar-sticky': isSticky }"
           >
             <div class="admin-settings-app-bar-controls oc-flex oc-flex-between oc-flex-middle">
@@ -231,7 +231,6 @@ export default defineComponent({
   box-sizing: border-box;
   z-index: 2;
   position: inherit;
-  padding: 0 var(--oc-space-medium);
   top: 0;
 
   &.admin-settings-app-bar-sticky {

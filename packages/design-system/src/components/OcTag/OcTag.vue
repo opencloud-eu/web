@@ -87,7 +87,24 @@ function $_ocTag_click(event: MouseEvent) {
   emit('click', event)
 }
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-tag-rounded {
+    @apply px-2;
+  }
+  .oc-tag-s {
+    @apply p-1;
+  }
+  .oc-tag-m {
+    @apply py-1 px-2;
+  }
+  .oc-tag-l {
+    @apply py-2 px-4;
+  }
+}
+</style>
 <style lang="scss">
 .oc-tag {
   align-items: center;
@@ -101,25 +118,20 @@ function $_ocTag_click(event: MouseEvent) {
 
   &-s {
     font-size: 0.75rem;
-    padding: var(--oc-space-xsmall);
   }
 
   &-m {
     font-size: 0.875rem;
     min-height: 2.125rem;
-    padding: var(--oc-space-xsmall) var(--oc-space-small);
   }
 
   &-l {
     font-size: 1.5rem;
     min-height: 2.75rem;
-    padding: var(--oc-space-small) var(--oc-space-medium);
   }
 
   &-rounded {
     border-radius: 99px;
-    padding-left: var(--oc-space-small);
-    padding-right: var(--oc-space-small);
   }
 
   &-link,

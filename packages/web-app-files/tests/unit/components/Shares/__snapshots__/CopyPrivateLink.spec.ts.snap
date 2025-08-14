@@ -3,7 +3,7 @@
 exports[`CopyPrivateLink > should render a button 1`] = `
 "<div class="oc-flex oc-flex-middle copy-private-link"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
+    <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

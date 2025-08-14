@@ -1,9 +1,9 @@
 <template>
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
-    <ol class="oc-pagination-list">
+    <ol class="oc-pagination-list m-0">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-prev"
+          class="oc-pagination-list-item-prev mr-2"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -17,7 +17,7 @@
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-next"
+          class="oc-pagination-list-item-next ml-2"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
@@ -131,7 +131,7 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = ['oc-pagination-list-item-page']
+  const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2']
 
   if (isCurrentPage(page)) {
     classes.push('oc-pagination-list-item-current')
@@ -161,14 +161,11 @@ const bindPageLink = (page: Page) => {
     flex-wrap: wrap;
     gap: var(--oc-space-small);
     list-style: none;
-    margin: 0;
-    padding: 0;
 
     &-item {
       &-page {
         border-radius: 4px;
         color: var(--oc-role-on-surface);
-        padding: var(--oc-space-xsmall) var(--oc-space-small);
         transition: background-color $transition-duration-short ease-in-out;
 
         &:not(span):hover {
@@ -191,14 +188,6 @@ const bindPageLink = (page: Page) => {
         > .oc-icon > svg {
           fill: var(--oc-role-on-surface);
         }
-      }
-
-      &-prev {
-        margin-right: var(--oc-space-small);
-      }
-
-      &-next {
-        margin-left: var(--oc-space-small);
       }
     }
   }

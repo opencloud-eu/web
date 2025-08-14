@@ -14,7 +14,7 @@
       <focus-trap>
         <div :id="drawerId" class="oc-bottom-drawer">
           <div class="oc-card">
-            <div class="oc-card-header">
+            <div class="oc-card-header px-4 pt-4">
               <div class="oc-flex oc-flex-between oc-flex-middle">
                 <oc-button
                   v-if="isNestedElement"
@@ -36,7 +36,7 @@
                 </oc-button>
               </div>
             </div>
-            <div ref="bottomDrawerCardBodyRef" class="oc-card-body">
+            <div ref="bottomDrawerCardBodyRef" class="oc-card-body px-4 pb-4 pt-2">
               <slot />
             </div>
           </div>
@@ -237,7 +237,22 @@ const getElement = () => {
 
 defineExpose({ show, hide, getElement })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-bottom-drawer .oc-card-body ul:not(:last-child) {
+    @apply mb-2;
+  }
+}
+
+@layer utilities {
+  .oc-bottom-drawer ul {
+    /* overwrite default list styling */
+    @apply p-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-bottom-drawer-background {
   background-color: #0006;
@@ -271,20 +286,10 @@ defineExpose({ show, hide, getElement })
     background-color: unset !important;
 
     &-header {
-      padding-top: var(--oc-space-medium);
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
       border-bottom: 0 !important;
     }
 
     &-body {
-      padding: var(--oc-space-medium);
-      padding-top: var(--oc-space-small);
-
-      ul:not(:last-child) {
-        margin-bottom: var(--oc-space-small) !important;
-      }
-
       ul {
         background-color: var(--oc-role-surface) !important;
         border-radius: 10px;

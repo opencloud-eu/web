@@ -58,8 +58,6 @@ const toggle = () => {
     cursor: pointer;
     display: block;
     height: 18px;
-    margin: 0;
-    padding: 0;
     position: relative;
     transition: background-color 0.25s;
     width: 31px;

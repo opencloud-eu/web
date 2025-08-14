@@ -2,9 +2,9 @@
 
 exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 "<div class="item-filter oc-flex item-filter-users">
-  <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill" id="oc-filter-chip-3">
+  <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2" id="oc-filter-chip-3">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -13,7 +13,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -27,7 +27,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       <div class="oc-card oc-card-body p-2">
         <!--v-if-->
         <div>
-          <ul class="oc-list my-0 item-filter-list">
+          <ul class="oc-list item-filter-list">
             <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item oc-flex oc-flex-middle oc-width-1-1 oc-flex-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
@@ -63,9 +63,9 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 
 exports[`ItemFilter > renders all items 1`] = `
 "<div class="item-filter oc-flex item-filter-users">
-  <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill" id="oc-filter-chip-1">
+  <div class="oc-filter-chip oc-flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2" id="oc-filter-chip-1">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -74,7 +74,7 @@ exports[`ItemFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon oc-icon-s"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -88,7 +88,7 @@ exports[`ItemFilter > renders all items 1`] = `
       <div class="oc-card oc-card-body p-2">
         <!--v-if-->
         <div>
-          <ul class="oc-list my-0 item-filter-list">
+          <ul class="oc-list item-filter-list">
             <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item oc-flex oc-flex-middle oc-width-1-1 oc-flex-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->

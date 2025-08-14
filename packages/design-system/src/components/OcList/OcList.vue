@@ -1,5 +1,5 @@
 <template>
-  <ul class="oc-list my-0" :class="{ 'oc-list-raw': raw }">
+  <ul class="oc-list" :class="{ 'oc-list-raw': raw }">
     <slot />
   </ul>
 </template>
@@ -27,10 +27,16 @@ defineSlots<Slots>()
 <style>
 @reference 'tailwindcss';
 
-@layer base {
+@layer components {
   ul.oc-list,
   ul.oc-list.oc-timeline {
     @apply m-0 p-0;
+  }
+  ul.oc-list-divider > :nth-child(n + 2) {
+    @apply mt-2 pt-2;
+  }
+  ul.oc-list.oc-timeline li {
+    @apply py-2 pl-5 pr-7;
   }
 }
 </style>
@@ -40,8 +46,6 @@ ul.oc-list {
 
   &-divider > :nth-child(n + 2) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-    margin-top: var(--oc-space-small);
-    padding-top: var(--oc-space-small);
   }
   &-raw {
     list-style-type: none;
@@ -72,7 +76,6 @@ ul.oc-list.oc-timeline {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding: 10px 20px 10px 30px;
     width: 100%;
     box-sizing: border-box;
 

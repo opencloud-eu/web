@@ -12,7 +12,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-invisible oc-file-input"
+        class="oc-invisible oc-file-input p-0"
         type="file"
         :multiple="multiple"
         :accept="fileTypes"
@@ -49,7 +49,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-file-input-message oc-text-small oc-flex oc-flex-middle"
+      class="oc-file-input-message oc-text-small oc-flex oc-flex-middle mt-1"
       :class="{
         'oc-file-input-description': !!descriptionMessage,
         'oc-file-input-danger': !!errorMessage
@@ -239,7 +239,6 @@ const onFocus = async () => {
 <style scoped lang="scss">
 .oc-file-input {
   border: 0;
-  padding: 0;
   width: 0;
   height: 0;
 
@@ -259,7 +258,6 @@ const onFocus = async () => {
   &-message {
     display: flex;
     align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
   }
 }

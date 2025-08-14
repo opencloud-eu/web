@@ -4,7 +4,7 @@
   >
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
     <div class="oc-card oc-card-body oc-text-center oc-width-large">
-      <h2 key="external-redirect-loading">
+      <h2 key="external-redirect-loading" class="mt-0">
         <span v-text="$gettext('One moment please…')" />
       </h2>
       <p v-text="$gettext('You are being redirected.')" />
@@ -82,9 +82,6 @@ export default defineComponent({
     border-radius: 15px;
 
     &-body {
-      h2 {
-        margin-top: 0;
-      }
       p {
         font-size: var(--oc-font-size-large);
       }

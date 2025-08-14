@@ -18,12 +18,13 @@
             <oc-icon name="close" fill-type="line" size="medium" />
           </oc-button>
         </div>
-        <p v-if="text" class="info-text" v-text="$gettext(text)" />
-        <dl v-if="listItems.length" class="info-list">
+        <p v-if="text" class="info-text first:mt-0 last:mb-0" v-text="$gettext(text)" />
+        <dl v-if="listItems.length" class="info-list mt-2 mb-1 first:mt-0 last:mb-0">
           <component
             :is="item.headline ? 'dt' : 'dd'"
             v-for="(item, index) in listItems"
             :key="index"
+            :class="{ 'ml-0': !item.headline, 'first:mt-0': item.headline }"
           >
             {{ $gettext(item.text) }}
           </component>
@@ -115,7 +116,6 @@ export default {
   components: { FocusTrap }
 }
 </script>
-
 <style lang="scss">
 .oc-info-drop {
   display: inline-block;
@@ -135,25 +135,9 @@ export default {
     font-size: 1.125rem;
     font-weight: normal;
   }
-  .info-list:first-child,
-  .info-text:first-child {
-    margin-top: 0;
-  }
-  .info-list:last-child,
-  .info-text:last-child {
-    margin-bottom: 0;
-  }
   .info-list {
     font-weight: bold;
-    margin-bottom: var(--oc-space-xsmall);
-    margin-top: var(--oc-space-small);
-    dt {
-      &:first-child {
-        margin-top: 0;
-      }
-    }
     dd {
-      margin-left: 0;
       font-weight: normal;
     }
   }

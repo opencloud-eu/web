@@ -4,7 +4,7 @@
     :class="{ 'oc-flex': !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image"
+      class="space-header-image mr-6"
       :class="{ 'space-header-image-expanded': imageExpanded || isMobileWidth }"
     >
       <div
@@ -322,7 +322,6 @@ const openSideBarSharePanel = () => {
     width: 280px;
     min-width: 280px;
     aspect-ratio: 16 / 9;
-    margin-right: var(--oc-space-large);
     max-height: 158px;
 
     &-default {
@@ -332,7 +331,6 @@ const openSideBarSharePanel = () => {
 
     &-expanded {
       width: 100%;
-      margin: 0;
       max-height: 100%;
       max-width: 100%;
     }
@@ -361,14 +359,6 @@ const openSideBarSharePanel = () => {
 
   &-people-count {
     white-space: nowrap;
-  }
-
-  .markdown-container {
-    &-content {
-      .md-editor-preview-wrapper {
-        padding: 0;
-      }
-    }
   }
 
   .markdown-container.collapsed {

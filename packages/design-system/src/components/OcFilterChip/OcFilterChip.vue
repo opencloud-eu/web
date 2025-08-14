@@ -5,7 +5,7 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill"
+      class="oc-filter-chip-button oc-pill py-1 px-2"
       :class="{ 'oc-filter-chip-button-selected': filterActive }"
       appearance="raw-inverse"
       color-role="surface"
@@ -166,7 +166,6 @@ defineExpose({ hideDrop })
     font-size: var(--oc-font-size-xsmall);
     line-height: 1rem;
     max-width: 150px;
-    padding: var(--oc-space-xsmall) var(--oc-space-small) !important;
     height: 100%;
   }
   &-button-selected.oc-pill,

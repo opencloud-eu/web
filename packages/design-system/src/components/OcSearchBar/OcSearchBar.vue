@@ -1,8 +1,7 @@
 <template>
-  <oc-grid
-    direction="column"
+  <div
     :role="isFilter ? undefined : 'search'"
-    class="oc-search oc-flex-middle"
+    class="oc-search oc-flex oc-flex-middle"
     :class="{ 'oc-search-small': small }"
   >
     <div class="oc-width-expand oc-position-relative">
@@ -52,14 +51,13 @@
     >
       <span v-text="$gettext('Cancel')" />
     </oc-button>
-  </oc-grid>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, unref, useSlots, watch } from 'vue'
+import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import OcButton from '../OcButton/OcButton.vue'
-import OcGrid from '../OcGrid/OcGrid.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
 import { AppearanceType } from '../../helpers'
@@ -182,19 +180,14 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { $gettext } = useGettext()
-const slots = useSlots()
-
-const inputIconRightPadding = computed(() => {
-  if (Object.hasOwn(slots, 'locationFilter')) {
-    return '125px'
-  }
-  return '48px'
-})
 
 const inputClass = computed(() => {
-  const classes = ['oc-search-input', 'oc-input']
+  const classes = ['oc-search-input', 'oc-input', 'p-4']
   if (!buttonHidden) {
     classes.push('oc-search-input-button')
+  }
+  if (small) {
+    classes.push('pl-12')
   }
   return classes
 })
@@ -243,7 +236,6 @@ const onCancel = () => {
   &-input {
     border-radius: 25px !important;
     border: none;
-    padding: var(--oc-space-medium) !important;
     height: 2.3rem;
 
     &:focus {
@@ -256,11 +248,6 @@ const onCancel = () => {
     }
   }
 
-  &-input-icon {
-    padding-left: var(--oc-space-xlarge) !important;
-    padding-right: v-bind(inputIconRightPadding) !important;
-  }
-
   &-input-button {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
@@ -270,7 +257,6 @@ const onCancel = () => {
     .oc-search-input {
       height: 30px;
       line-height: 28px;
-      padding-left: var(--oc-space-xlarge);
     }
 
     .oc-icon {

@@ -72,21 +72,29 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .account-table td {
+    @apply py-2 md:py-0;
+  }
+  .account-table tr {
+    @apply pb-1 md:pb-0;
+  }
+}
+</style>
 <style lang="scss">
 @media (max-width: $oc-breakpoint-small-max) {
   .account-table {
     tr {
       display: block;
-      padding-bottom: var(--oc-space-xsmall);
       height: 100% !important;
     }
 
     td {
       display: block !important;
       width: 100% !important;
-      padding-top: var(--oc-space-small);
-      padding-bottom: var(--oc-space-small);
     }
 
     h2 {

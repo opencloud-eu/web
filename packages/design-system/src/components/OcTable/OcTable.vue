@@ -90,7 +90,7 @@
     </oc-tbody>
     <tfoot v-if="$slots.footer" class="oc-table-footer">
       <tr class="oc-table-footer-row">
-        <td :colspan="fullColspan" class="oc-table-footer-cell">
+        <td :colspan="fullColspan" class="oc-table-footer-cell p-1">
           <!-- @slot Footer of the table -->
           <slot name="footer" />
         </td>
@@ -549,7 +549,6 @@ const handleSort = (field: FieldType) => {
       color: var(--oc-role-on-surface-variant);
       font-size: 0.875rem;
       line-height: 1.4;
-      padding: var(--oc-space-xsmall);
     }
   }
 }

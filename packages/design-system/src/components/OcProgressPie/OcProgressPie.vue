@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-progress-pie" :data-fill="fill">
+  <div class="oc-progress-pie m-4" :data-fill="fill">
     <div class="oc-progress-pie-container" />
     <label v-if="showLabel" class="oc-progress-pie-label oc-text-muted" v-text="label" />
   </div>
@@ -46,7 +46,6 @@ $default-size: 64px;
 
 .oc-progress-pie {
   height: $default-size;
-  margin: 15px;
   position: relative;
   width: $default-size;
 

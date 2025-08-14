@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-space-details-sidebar">
+  <div id="oc-space-details-sidebar" class="p-4">
     <div class="oc-space-details-sidebar-image oc-text-center">
       <oc-spinner
         v-if="imagesLoading.includes(resource.id)"
@@ -237,7 +237,6 @@ const expandSharesPanel = () => {
 #oc-space-details-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-  padding: var(--oc-space-medium);
 }
 
 .oc-space-details-sidebar {

@@ -82,16 +82,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .oc-files-context-actions > li {
+    @apply px-0;
+  }
+}
+</style>
 <style lang="scss">
 .oc-files-context-actions {
   text-align: left;
   white-space: normal;
 
   > li {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-
     a,
     button,
     span {
