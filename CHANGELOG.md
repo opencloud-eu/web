@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @kulmann
+@ScharfViktor, @kulmann, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
 
 ### 📦️ Dependencies
 
