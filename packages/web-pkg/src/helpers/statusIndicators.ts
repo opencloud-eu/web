@@ -10,6 +10,7 @@ import { SideBarEventTopics } from '../composables/sideBar'
 import { AncestorMetaData } from '../types'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { IconFillType } from './resource'
+import { useInterceptModifierClick } from '../composables'
 
 // dummy to trick gettext string extraction into recognizing strings
 const $gettext = (str: string): string => {
@@ -26,7 +27,7 @@ export interface ResourceIndicator {
   fillType: IconFillType
   type: string
   category: ResourceIndicatorCategory
-  handler?: (resource: Resource) => void
+  handler?: (resource: Resource, event?: MouseEvent) => void
 }
 
 const isUserShare = (shareTypes: number[]) => {
@@ -51,10 +52,12 @@ const shareLinkDescribedBy = ({ isDirect }: { isDirect: boolean }) => {
 
 const getUserIndicator = ({
   resource,
-  isDirect
+  isDirect,
+  interceptModifierClick
 }: {
   resource: Resource
   isDirect: boolean
+  interceptModifierClick: ReturnType<typeof useInterceptModifierClick>['interceptModifierClick']
 }): ResourceIndicator => {
   return {
     id: `files-sharing-${resource.getDomSelector()}`,
@@ -64,7 +67,11 @@ const getUserIndicator = ({
     category: 'sharing',
     type: isDirect ? 'user-direct' : 'user-indirect',
     fillType: 'line',
-    handler: () => {
+    handler: (resource: Resource, event?: MouseEvent) => {
+      if (event && interceptModifierClick(event, resource)) {
+        return
+      }
+
       eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
     }
   }
@@ -143,12 +150,14 @@ export const getIndicators = ({
   space,
   resource,
   ancestorMetaData,
-  user
+  user,
+  interceptModifierClick
 }: {
   space: SpaceResource
   resource: Resource
   ancestorMetaData: AncestorMetaData
   user: User
+  interceptModifierClick: ReturnType<typeof useInterceptModifierClick>['interceptModifierClick']
 }): ResourceIndicator[] => {
   const indicators: ResourceIndicator[] = []
 
@@ -179,7 +188,9 @@ export const getIndicators = ({
 
     const isDirectUserShare = isUserShare(resource.shareTypes)
     if (isDirectUserShare || isUserShare(parentShareTypes)) {
-      indicators.push(getUserIndicator({ resource, isDirect: isDirectUserShare }))
+      indicators.push(
+        getUserIndicator({ resource, isDirect: isDirectUserShare, interceptModifierClick })
+      )
     }
 
     const isDirectLinkShare = isLinkShare(resource.shareTypes)

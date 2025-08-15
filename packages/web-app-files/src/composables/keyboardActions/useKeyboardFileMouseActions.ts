@@ -31,7 +31,7 @@ export const useKeyboardFileMouseActions = (
     skipTargetSelection: boolean
   }) => {
     if (!shiftSelectionAnchorId) {
-      shiftSelectionAnchorId = unref(latestSelectedId)
+      shiftSelectionAnchorId = unref(latestSelectedId) || resource.id
     }
     resourcesStore.setSelection([])
 
@@ -69,7 +69,7 @@ export const useKeyboardFileMouseActions = (
     skipTargetSelection: boolean
   }) => {
     if (!shiftSelectionAnchorId) {
-      shiftSelectionAnchorId = unref(latestSelectedId)
+      shiftSelectionAnchorId = unref(latestSelectedId) || resource.id
     }
     resourcesStore.setSelection([])
 
@@ -84,6 +84,10 @@ export const useKeyboardFileMouseActions = (
       (r: { getAttribute: (arg0: string) => string }) =>
         r.getAttribute('data-item-id') === shiftSelectionAnchorId
     )
+
+    if (startIndex === -1 || endIndex === -1) {
+      return
+    }
     const minIndex = Math.min(endIndex, startIndex)
     const maxIndex = Math.max(endIndex, startIndex)
 

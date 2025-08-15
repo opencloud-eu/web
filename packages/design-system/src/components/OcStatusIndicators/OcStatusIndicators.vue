@@ -14,7 +14,7 @@
         :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
         no-hover
-        @click="indicator.handler(resource)"
+        @click="(e: MouseEvent) => indicator.handler?.(resource, e)"
       >
         <oc-icon :name="indicator.icon" size="small" :fill-type="indicator.fillType" />
       </oc-button>
