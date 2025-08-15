@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="oc-flex oc-flex-center oc-my-m">
+  <div v-if="loading" class="oc-flex oc-flex-center my-4">
     <oc-spinner :aria-label="$gettext('Loading actions')" />
   </div>
   <div v-else>

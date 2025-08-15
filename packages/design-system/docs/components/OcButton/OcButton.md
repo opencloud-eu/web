@@ -43,9 +43,9 @@ Every icon-only button has to have an `aria-label` that describes the purpose of
 ```html
 <oc-button appearance="filled">Filled</oc-button>
 <oc-button appearance="outline">Outline</oc-button>
-<oc-button appearance="raw" class="oc-p-s oc-ml-xs">Raw</oc-button>
-<div class="oc-p-s oc-mt-m" style="background: #000000;">
-  <oc-button appearance="raw-inverse" class="oc-p-s">Raw-inverse</oc-button>
+<oc-button appearance="raw" class="p-2 ml-1">Raw</oc-button>
+<div class="p-2 mt-4" style="background: #000000;">
+  <oc-button appearance="raw-inverse" class="p-2">Raw-inverse</oc-button>
 </div>
 ```
 
@@ -59,7 +59,7 @@ Every icon-only button has to have an `aria-label` that describes the purpose of
 <oc-button appearance="filled"><oc-icon name="home" /><span>Home</span></oc-button>
 <oc-button><oc-icon name="home" /><span>Home</span></oc-button>
 <oc-button aria-label="Go to your home"><oc-icon name="home" /></oc-button>
-<oc-button aria-label="Go to your home" appearance="raw" class="oc-p-s oc-ml-xs"
+<oc-button aria-label="Go to your home" appearance="raw" class="p-2 ml-1"
   ><oc-icon name="home"
 /></oc-button>
 ```

@@ -3,25 +3,22 @@
   <oc-modal v-if="modalActive" title="Modal title" :hide-actions="true">
     <template #content>
       <span>Your changes were not saved. Do you want to save them?</span>
-      <div class="oc-flex oc-flex-right oc-flex-middle oc-mt-m">
+      <div class="oc-flex oc-flex-right oc-flex-middle mt-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button
-            class="oc-modal-body-actions-cancel oc-ml-s"
+            class="oc-modal-body-actions-cancel ml-2"
             appearance="outline"
             @click="hideModal"
             >Cancel
           </oc-button>
           <oc-button
-            class="oc-modal-body-actions-secondary oc-ml-s"
+            class="oc-modal-body-actions-secondary ml-2"
             appearance="outline"
             @click="hideModal"
           >
             Don't Save
           </oc-button>
-          <oc-button
-            class="oc-modal-body-actions-confirm oc-ml-s"
-            appearance="filled"
-            @click="confirm"
+          <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="confirm"
             >Save
           </oc-button>
         </div>

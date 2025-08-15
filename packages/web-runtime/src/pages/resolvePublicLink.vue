@@ -28,7 +28,7 @@
               :error-message="wrongPasswordMessage"
               :label="passwordFieldLabel"
               type="password"
-              class="oc-mb-s"
+              class="mb-2"
             />
             <oc-button
               appearance="filled"
@@ -51,7 +51,7 @@
           <oc-spinner :aria-hidden="true" />
         </div>
       </template>
-      <div class="oc-card-footer oc-pt-rm">
+      <div class="oc-card-footer pt-0">
         <p>{{ footerSlogan }}</p>
       </div>
     </div>

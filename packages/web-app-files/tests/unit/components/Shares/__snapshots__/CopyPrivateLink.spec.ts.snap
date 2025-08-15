@@ -11,6 +11,6 @@ exports[`CopyPrivateLink > should render a button 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-ml-xs">Permanent link</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="ml-1">Permanent link</span>
   </button></div>"
 `;

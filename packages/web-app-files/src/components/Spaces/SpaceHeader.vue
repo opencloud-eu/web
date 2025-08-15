@@ -1,6 +1,6 @@
 <template>
   <div
-    class="space-header oc-p-m"
+    class="space-header p-4"
     :class="{ 'oc-flex': !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
@@ -22,7 +22,7 @@
       />
     </div>
     <div class="space-header-infos">
-      <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
+      <div class="oc-flex mb-2 oc-flex-middle oc-flex-between">
         <div class="oc-flex oc-flex-middle space-header-infos-heading">
           <h2 class="space-header-name">{{ space.name }}</h2>
           <oc-button
@@ -30,7 +30,7 @@
             v-oc-tooltip="$gettext('Show context menu')"
             :aria-label="$gettext('Show context menu')"
             appearance="raw"
-            class="oc-ml-s oc-p-xs"
+            class="ml-2 p-1"
           >
             <oc-icon name="more-2" />
           </oc-button>
@@ -65,7 +65,7 @@
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
         </oc-button>
       </div>
-      <p v-if="space.description" class="oc-mt-rm oc-text-bold">{{ space.description }}</p>
+      <p v-if="space.description" class="mt-0 oc-text-bold">{{ space.description }}</p>
       <div
         v-if="readmesLoading.includes(space.id)"
         class="space-header-readme-loading oc-flex oc-flex-middle oc-flex-center"
@@ -82,13 +82,13 @@
           is-read-only
           :current-content="markdownContent"
         />
-        <div class="markdown-container-edit oc-ml-s">
+        <div class="markdown-container-edit ml-2">
           <oc-button
             type="router-link"
             size="small"
             :aria-label="$gettext('Edit description')"
             appearance="raw"
-            class="oc-p-xs"
+            class="p-1"
             :to="editReadMeContentLink"
           >
             <oc-icon name="pencil" size="small" fill-type="line" />
@@ -97,7 +97,7 @@
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
-        class="markdown-collapse oc-text-center oc-mt-s"
+        class="markdown-collapse oc-text-center mt-2"
       >
         <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
           <span>{{ toggleMarkdownCollapsedText }}</span>

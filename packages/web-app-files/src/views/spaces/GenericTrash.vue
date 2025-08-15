@@ -15,7 +15,7 @@
             :class="emptyTrashBinAction.class"
             size="medium"
             appearance="filled"
-            class="oc-mr-s"
+            class="mr-2"
             @click="emptyTrashBinAction.handler({ resources: [space] })"
           >
             <oc-icon :name="emptyTrashBinAction.icon" size="medium" />
@@ -60,7 +60,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 oc-my-s" />
+            <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
           </template>
         </resource-table>
       </template>

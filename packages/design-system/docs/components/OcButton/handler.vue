@@ -1,7 +1,7 @@
 <template>
   <oc-button @click="increaseCounter">Increase counter</oc-button>
-  <oc-button class="oc-ml-m" @click="resetCounter">Reset counter</oc-button>
-  <div class="oc-mt-m">Current count: {{ counter }}</div>
+  <oc-button class="ml-4" @click="resetCounter">Reset counter</oc-button>
+  <div class="mt-4">Current count: {{ counter }}</div>
 </template>
 
 <script setup lang="ts">

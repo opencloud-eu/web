@@ -1,12 +1,12 @@
 <template>
   <div class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-middle oc-px-m oc-pt-s">
+      <div class="oc-flex oc-flex-middle px-4 pt-2">
         <oc-icon name="user-shared" />
-        <h2 class="oc-px-s" v-text="$gettext('Invite users')"></h2>
-        <oc-contextual-helper class="oc-pl-xs" v-bind="helperContent" />
+        <h2 class="px-2" v-text="$gettext('Invite users')"></h2>
+        <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="oc-flex oc-flex-middle oc-flex-center oc-p-m">
+      <div class="oc-flex oc-flex-middle oc-flex-center p-4">
         <oc-button
           :aria-label="
             $gettext('Generate invitation link that can be shared with one or more invitees')
@@ -32,7 +32,7 @@
             <oc-text-input
               id="invite_token_description"
               v-model="formInput.description"
-              class="oc-mb-s"
+              class="mb-2"
               :error-message="descriptionErrorMessage"
               :label="$gettext('Add a description (optional)')"
               :clear-button-enabled="true"
@@ -66,7 +66,7 @@
                 v-oc-tooltip="$gettext('Copy invite token')"
                 :aria-label="$gettext('Copy invite token')"
                 appearance="raw"
-                class="oc-ml-s"
+                class="ml-2"
                 @click="copyToken(rowData)"
               >
                 <oc-icon name="file-copy" />

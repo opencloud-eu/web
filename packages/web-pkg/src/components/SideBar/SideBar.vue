@@ -28,12 +28,12 @@
       >
         <div
           v-if="[activePanelName, oldPanelName].includes(panel.name)"
-          class="sidebar-panel__header header"
+          class="sidebar-panel__header header pt-2 px-2"
         >
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
             v-oc-tooltip="accessibleLabelBack"
-            class="header__back oc-p-xs"
+            class="header__back p-1"
             appearance="raw"
             :aria-label="accessibleLabelBack"
             @click="closePanel"
@@ -41,13 +41,13 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title oc-my-rm">
+          <h2 class="header__title my-0">
             {{ panel.title(panelContext) }}
           </h2>
 
           <oc-button
             appearance="raw"
-            class="header__close oc-p-xs"
+            class="header__close p-1"
             :aria-label="$gettext('Close file sidebar')"
             @click="closeSidebar"
           >
@@ -76,7 +76,7 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
+                  :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
                   class="oc-rounded"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
@@ -86,7 +86,7 @@
 
           <div
             v-if="panel.isRoot?.(panelContext) && subPanels.length > 0"
-            class="sidebar-panel__navigation oc-mt-m"
+            class="sidebar-panel__navigation mt-4"
           >
             <oc-button
               v-for="panelSelect in subPanels"
@@ -355,7 +355,7 @@ onBeforeUnmount(() => {
   }
 
   &__header {
-    padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
+    // padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
 
     &.header {
       display: grid;
@@ -394,8 +394,6 @@ onBeforeUnmount(() => {
   }
 
   &__navigation {
-    margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
-
     > button {
       width: 100%;
       border-radius: 0;

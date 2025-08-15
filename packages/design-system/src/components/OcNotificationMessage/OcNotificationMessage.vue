@@ -1,12 +1,12 @@
 <template>
   <div
-    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded oc-p-m"
+    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded p-4"
     :class="classes"
   >
     <div class="oc-flex oc-flex-wrap oc-flex-middle oc-flex-1" :role="role" :aria-live="ariaLive">
       <div class="oc-flex oc-flex-middle oc-flex-between oc-width-1-1">
         <div class="oc-flex oc-flex-middle">
-          <oc-icon name="information" fill-type="line" class="oc-mr-s" />
+          <oc-icon name="information" fill-type="line" class="mr-2" />
           <div class="oc-notification-message-title">
             {{ title }}
           </div>
@@ -15,10 +15,10 @@
           <oc-icon name="close" />
         </oc-button>
       </div>
-      <div v-if="message || errorLogContent" class="oc-flex oc-flex-between oc-width-1-1 oc-mt-s">
+      <div v-if="message || errorLogContent" class="oc-flex oc-flex-between oc-width-1-1 mt-2">
         <span
           v-if="message"
-          class="oc-notification-message-content oc-text-muted oc-mr-s"
+          class="oc-notification-message-content oc-text-muted mr-2"
           v-text="message"
         />
         <oc-button
@@ -32,7 +32,7 @@
           <oc-icon :name="showErrorLog ? 'arrow-up-s' : 'arrow-down-s'" />
         </oc-button>
       </div>
-      <oc-error-log v-if="showErrorLog" class="oc-mt-m" :content="errorLogContent" />
+      <oc-error-log v-if="showErrorLog" class="mt-4" :content="errorLogContent" />
     </div>
   </div>
 </template>

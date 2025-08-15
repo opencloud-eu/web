@@ -20,7 +20,7 @@
             id="create-user-btn"
             v-oc-tooltip="limitedScreenSpace ? createUserAction.label() : undefined"
             :aria-label="limitedScreenSpace ? createUserAction.label() : undefined"
-            class="oc-mr-s"
+            class="mr-2"
             appearance="filled"
             @click="createUserAction.handler()"
           >
@@ -40,8 +40,8 @@
           </template>
           <template #filter>
             <div class="oc-flex oc-flex-middle">
-              <div class="oc-mr-m oc-flex oc-flex-middle">
-                <oc-icon name="filter-2" class="oc-mr-xs" />
+              <div class="mr-4 oc-flex oc-flex-middle">
+                <oc-icon name="filter-2" class="mr-1" />
                 <span v-text="$gettext('Filter:')" />
               </div>
               <item-filter
@@ -52,7 +52,7 @@
                 :items="groups"
                 :option-filter-label="$gettext('Filter groups')"
                 :show-option-filter="true"
-                class="oc-mr-s"
+                class="mr-2"
                 display-name-attribute="displayName"
                 filter-name="groups"
                 @selection-change="filterGroups"
@@ -61,7 +61,7 @@
                   <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
                 </template>
                 <template #item="{ item }">
-                  <div class="oc-ml-s" v-text="item.displayName" />
+                  <div class="ml-2" v-text="item.displayName" />
                 </template>
               </item-filter>
               <item-filter
@@ -84,7 +84,7 @@
                   />
                 </template>
                 <template #item="{ item }">
-                  <div class="oc-ml-s" v-text="$gettext(item.displayName)" />
+                  <div class="ml-2" v-text="$gettext(item.displayName)" />
                 </template>
               </item-filter>
             </div>
@@ -98,7 +98,7 @@
               />
               <oc-button
                 id="users-filter-confirm"
-                class="oc-ml-xs oc-p-xs"
+                class="ml-1 p-1"
                 appearance="raw"
                 @click="filterDisplayName"
               >

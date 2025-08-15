@@ -70,7 +70,7 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
+                    class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 py-1 px-2"
                     :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
                     @click="selectShareRoleType(option)"
                   >
@@ -86,7 +86,7 @@
         </template>
       </oc-select>
     </div>
-    <div class="oc-flex oc-flex-between oc-flex-wrap oc-mb-l oc-mt-s">
+    <div class="oc-flex oc-flex-between oc-flex-wrap mb-6 mt-2">
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
@@ -98,12 +98,12 @@
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="files-collaborators-collaborator-expiration oc-ml-xs oc-p-xs"
+          class="files-collaborators-collaborator-expiration ml-1 p-1"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="oc-ml-xs raw-hover-surface oc-p-xs"
+          class="ml-1 raw-hover-surface p-1"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >
@@ -134,7 +134,7 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
-          class="oc-ml-s"
+          class="ml-2"
           data-testid="new-collaborators-form-create-button"
           :disabled="!$_isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"
@@ -145,7 +145,7 @@
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
       </div>
-      <div class="oc-width-1-1 oc-mt-s">
+      <div class="oc-width-1-1 mt-2">
         <oc-checkbox
           v-if="isRunningOnEos"
           v-model="notifyEnabled"

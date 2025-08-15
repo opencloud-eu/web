@@ -19,7 +19,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="oc-position-small oc-position-center-right oc-mt-rm"
+        class="oc-position-center-right mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
@@ -34,7 +34,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
-        class="oc-search-button oc-ml-m"
+        class="oc-search-button ml-4"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -46,7 +46,7 @@
     <oc-button
       v-if="showCancelButton"
       :appearance="cancelButtonAppearance"
-      class="oc-ml-m"
+      class="ml-4"
       no-hover
       @click="onCancel"
     >

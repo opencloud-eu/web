@@ -1,6 +1,6 @@
 <template>
   <div id="user-list">
-    <div class="user-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
+    <div class="user-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom mx-4 mb-4">
       <slot name="filter" />
     </div>
     <app-loading-spinner v-if="isLoading" />
@@ -53,12 +53,12 @@
         </template>
         <template #accountEnabled="{ item }">
           <span v-if="item.accountEnabled === false" class="oc-flex oc-flex-middle">
-            <oc-icon name="stop-circle" fill-type="line" class="oc-mr-s" /><span
+            <oc-icon name="stop-circle" fill-type="line" class="mr-2" /><span
               v-text="$gettext('Forbidden')"
             />
           </span>
           <span v-else class="oc-flex oc-flex-middle">
-            <oc-icon name="play-circle" fill-type="line" class="oc-mr-s" /><span
+            <oc-icon name="play-circle" fill-type="line" class="mr-2" /><span
               v-text="$gettext('Allowed')"
             />
           </span>
@@ -68,7 +68,7 @@
             v-oc-tooltip="$gettext('Show details')"
             :aria-label="$gettext('Show details')"
             appearance="raw"
-            class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-details"
+            class="ml-1 quick-action-button p-1 users-table-btn-details"
             @click="showDetails(item)"
           >
             <oc-icon name="information" fill-type="line" />
@@ -77,7 +77,7 @@
             v-oc-tooltip="$gettext('Edit')"
             :aria-label="$gettext('Edit')"
             appearance="raw"
-            class="oc-ml-xs quick-action-button oc-p-xs users-table-btn-edit"
+            class="ml-1 quick-action-button p-1 users-table-btn-edit"
             @click="showEditPanel(item)"
           >
             <oc-icon name="pencil" fill-type="line" />
@@ -96,7 +96,7 @@
         </template>
         <template #footer>
           <pagination :pages="totalPages" :current-page="currentPage" />
-          <div class="oc-text-center oc-width-1-1 oc-my-s">
+          <div class="oc-text-center oc-width-1-1 my-2">
             <p class="oc-text-muted">{{ footerTextTotal }}</p>
           </div>
         </template>

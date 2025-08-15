@@ -1,7 +1,7 @@
 <template>
   <div class="oc-login-card oc-position-center">
     <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-    <div v-show="error" class="oc-login-card-body">
+    <div v-show="error" class="oc-login-card-body p-6">
       <h2 v-translate class="oc-login-card-title">Authentication failed</h2>
       <p v-translate>Please contact the administrator if this error persists.</p>
     </div>
@@ -9,7 +9,7 @@
       <h3 v-translate class="oc-login-card-title">Logging you in</h3>
       <p v-translate>Please wait, you are being redirected.</p>
     </div>
-    <div class="oc-login-card-footer oc-pt-rm">
+    <div class="oc-login-card-footer pt-0">
       <p>{{ footerSlogan }}</p>
     </div>
   </div>

@@ -13,7 +13,7 @@ import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
 import visualizer from 'rollup-plugin-visualizer'
 import compression from 'rollup-plugin-gzip'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
-
+import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
 import { existsSync, readdirSync, readFileSync } from 'fs'
 
@@ -61,6 +61,7 @@ const input = readdirSync('packages').reduce(
     return acc
   },
   {
+    'tailwind.ts': 'packages/web-runtime/src/tailwind.ts',
     'index.html': 'index.html',
     'oidc-silent-redirect.html': 'oidc-silent-redirect.html',
     'oidc-callback.html': 'oidc-callback.html'
@@ -187,6 +188,7 @@ export default defineConfig(({ mode, command }) => {
         }
       },
       plugins: [
+        tailwindcss(),
         nodePolyfills({
           exclude: ['crypto']
         }),
@@ -323,6 +325,21 @@ export default defineConfig(({ mode, command }) => {
                 }
               ]
             }
+          }
+        },
+        {
+          name: 'inject-tailwind',
+          transformIndexHtml(html) {
+            if (production) {
+              return html
+            }
+            // In development mode, we need to include the Tailwind CSS file at the start
+            // to ensure layer styles are applied correctly. In production, this is being
+            // handled via the input rollup build option (see above).
+            return html.replace(
+              '<head>',
+              '<head>\n    <link rel="stylesheet" href="./packages/web-runtime/src/tailwind.css" />'
+            )
           }
         },
         ...(command === 'serve' ? historyModePlugins() : []),

@@ -1,8 +1,8 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
+  <main v-else id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
     <div class="account-page">
-      <h1 id="account-page-title" class="oc-mb-rm" v-text="$gettext('My Account')" />
+      <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
         :title="$gettext('Account Information')"
@@ -34,7 +34,7 @@
             }}
           </oc-table-td>
           <oc-table-td>
-            <avatar-upload class="oc-mb-s" />
+            <avatar-upload class="mb-2" />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr class="account-page-info-username">
@@ -55,7 +55,7 @@
         <oc-table-tr v-if="!!quota" class="account-page-info-quota">
           <oc-table-td>{{ $gettext('Personal storage') }}</oc-table-td>
           <oc-table-td data-testid="quota">
-            <quota-information :quota="quota" class="oc-mt-xs" />
+            <quota-information :quota="quota" class="mt-1" />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr class="account-page-info-groups">
@@ -100,9 +100,9 @@
             <div class="oc-flex">
               <span v-text="$gettext('Select your language.')" />
               <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                <div class="oc-flex oc-ml-xs oc-flex-middle">
+                <div class="oc-flex ml-1 oc-flex-middle">
                   <span v-text="$gettext('Help to translate')" />
-                  <oc-icon class="oc-ml-xs" size="small" fill-type="line" name="service" />
+                  <oc-icon class="ml-1" size="small" fill-type="line" name="service" />
                 </div>
               </a>
             </div>
@@ -224,7 +224,7 @@
           :title="$gettext('Mail notification options')"
           :fields="emailNotificationsOptionsFields"
           :show-head="!isMobileWidth"
-          class="oc-mt-m"
+          class="mt-4"
         >
           <template #header="{ title }">
             <h2 class="oc-invisible-sr">{{ title }}</h2>
@@ -261,7 +261,7 @@
         <oc-table-tr
           v-for="extensionPoint in extensionPointsWithUserPreferences"
           :key="`extension-point-preference-${extensionPoint.id}`"
-          class="oc-mb"
+          class="mb-4"
         >
           <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
           <oc-table-td v-if="extensionPoint.userPreference.description">

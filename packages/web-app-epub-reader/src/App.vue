@@ -1,23 +1,19 @@
 <template>
   <div class="epub-reader oc-flex">
-    <oc-list class="epub-reader-chapters-list oc-pl-s oc-visible@l">
+    <oc-list class="epub-reader-chapters-list pl-2 oc-visible@l">
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
-        class="epub-reader-chapters-list-item oc-py-s"
+        class="epub-reader-chapters-list-item py-2"
         :class="{ active: currentChapter.id === chapter.id }"
       >
         <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
-          <span
-            v-oc-tooltip="chapter.label"
-            class="oc-text-truncate oc-mr-s"
-            v-text="chapter.label"
-          />
+          <span v-oc-tooltip="chapter.label" class="oc-text-truncate mr-2" v-text="chapter.label" />
         </oc-button>
       </li>
     </oc-list>
     <div class="oc-width-1-1 oc-height-1-1">
-      <div class="epub-reader-controls oc-flex oc-flex-middle oc-m-s">
+      <div class="epub-reader-controls oc-flex oc-flex-middle m-2">
         <div class="epub-reader-controls-font-size oc-flex oc-button-group">
           <oc-button
             v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"
@@ -51,7 +47,7 @@
         </div>
         <oc-select
           v-model="currentChapter"
-          class="epub-reader-controls-chapters-select oc-width-1-1 oc-px-s oc-hidden@l"
+          class="epub-reader-controls-chapters-select oc-width-1-1 px-2 oc-hidden@l"
           :label="$gettext('Chapter')"
           :label-hidden="true"
           :options="chapters"
@@ -60,7 +56,7 @@
         />
       </div>
       <div class="oc-flex oc-flex-center oc-width-1-1 oc-height-1-1">
-        <div class="oc-flex oc-flex-middle oc-mx-l">
+        <div class="oc-flex oc-flex-middle mx-6">
           <oc-button
             class="epub-reader-navigate-left"
             :aria-label="$gettext('Navigate to previous page')"
@@ -73,7 +69,7 @@
         </div>
         <div id="reader" ref="bookContainer" class="oc-flex oc-flex-center" />
 
-        <div class="oc-flex oc-flex-middle oc-mx-l">
+        <div class="oc-flex oc-flex-middle mx-6">
           <oc-button
             class="epub-reader-navigate-right"
             :aria-label="$gettext('Navigate to next page')"

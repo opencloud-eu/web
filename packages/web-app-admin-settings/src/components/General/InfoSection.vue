@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="oc-py-s" v-text="$gettext('Info')" />
+    <h2 class="py-2" v-text="$gettext('Info')" />
     <oc-definition-list :items="infoItems" />
   </div>
 </template>

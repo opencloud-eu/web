@@ -1,7 +1,7 @@
 <template>
   <div id="ghost-element" class="ghost-element">
     <div class="ghost-element-layer1 oc-rounded">
-      <resource-icon class="oc-p-xs" :resource="previewItems[0]" />
+      <resource-icon class="p-1" :resource="previewItems[0]" />
       <div v-if="showSecondLayer" class="ghost-element-layer2 oc-rounded" />
       <div v-if="showThirdLayer" class="ghost-element-layer3 oc-rounded" />
     </div>

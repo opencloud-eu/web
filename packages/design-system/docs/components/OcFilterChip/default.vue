@@ -12,7 +12,7 @@
         appearance="raw"
         size="medium"
         justify-content="space-between"
-        class="oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
+        class="oc-flex oc-flex-middle oc-width-1-1 py-1 px-2"
         :class="{ 'oc-secondary-container': option.id === selectedOption?.id }"
         @click="selectOption(option)"
       >

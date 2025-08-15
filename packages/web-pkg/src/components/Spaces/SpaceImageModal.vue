@@ -2,8 +2,8 @@
   <div class="space-image-modal">
     <div v-if="imageUrl" class="space-image-modal-image-container">
       <img ref="imageRef" :src="imageUrl" />
-      <div class="oc-text-small oc-text-muted oc-flex oc-flex-middle oc-mt-xs">
-        <oc-icon class="oc-mr-xs" name="information" size="small" fill-type="line" />
+      <div class="oc-text-small oc-text-muted oc-flex oc-flex-middle mt-1">
+        <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
         <span
           v-text="
             $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {

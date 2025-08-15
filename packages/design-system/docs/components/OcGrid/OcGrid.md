@@ -34,7 +34,7 @@ The component provides a default slot for any content that should be displayed i
   ></div>
 </oc-grid>
 
-<oc-grid direction="column" class="oc-mt-m">
+<oc-grid direction="column" class="mt-4">
   <div
     style="width: 80px; height: 80px; background-color: var(--oc-role-primary)"
     class="oc-height-small"

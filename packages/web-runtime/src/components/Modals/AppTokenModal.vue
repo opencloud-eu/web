@@ -8,14 +8,14 @@
     />
     <oc-datepicker
       :label="$gettext('Expiration date')"
-      class="oc-mt-s"
+      class="mt-2"
       type="date"
       :min-date="minDate"
       @date-changed="onDateChanged"
     />
-    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
+    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-2">
       <oc-button
-        class="oc-modal-body-actions-cancel oc-ml-s"
+        class="oc-modal-body-actions-cancel ml-2"
         appearance="outline"
         @click="$emit('cancel')"
       >
@@ -23,7 +23,7 @@
       </oc-button>
       <oc-button
         :disabled="isConfirmDisabled"
-        class="oc-modal-body-actions-confirm oc-ml-s"
+        class="oc-modal-body-actions-confirm ml-2"
         appearance="filled"
         @click="createAppToken"
       >
@@ -39,29 +39,29 @@
         )
       "
     />
-    <div class="oc-mt-m oc-mb-s oc-flex oc-flex-middle oc-rounded">
+    <div class="mt-4 mb-2 oc-flex oc-flex-middle oc-rounded">
       <div class="created-token-container">
-        <div class="created-token oc-rounded oc-p-s">
+        <div class="created-token oc-rounded p-2">
           {{ createdToken }}
           <oc-button
             v-oc-tooltip="$gettext('Copy app token to clipboard')"
             appearance="raw"
-            class="copy-app-token-btn oc-ml-s oc-p-xs"
+            class="copy-app-token-btn ml-2 p-1"
             :aria-label="$gettext('Copy app token to clipboard')"
             @click="copy(createdToken)"
           >
             <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
           </oc-button>
         </div>
-        <div class="oc-text-small oc-text-right oc-mt-s">
+        <div class="oc-text-small oc-text-right mt-2">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
         </div>
       </div>
     </div>
-    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-l">
+    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-6">
       <oc-button
-        class="oc-modal-body-actions-confirm oc-ml-s"
+        class="oc-modal-body-actions-confirm ml-2"
         appearance="filled"
         @click="$emit('confirm')"
       >

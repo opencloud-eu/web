@@ -3,7 +3,7 @@
     <oc-button
       :id="editShareBtnId"
       v-oc-tooltip="dropButtonTooltip"
-      class="collaborator-edit-dropdown-options-btn raw-hover-surface oc-p-xs"
+      class="collaborator-edit-dropdown-options-btn raw-hover-surface p-1"
       :aria-label="
         isLocked ? dropButtonTooltip : $gettext('Open context menu with share editing options')
       "
@@ -30,7 +30,7 @@
       </oc-list>
       <oc-list
         v-if="canRemove"
-        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove oc-pt-s"
+        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2"
       >
         <li class="oc-rounded oc-menu-item-hover">
           <context-menu-item :option="removeShareOption" />

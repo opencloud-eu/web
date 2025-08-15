@@ -95,7 +95,7 @@
         />
         <oc-button
           v-if="hasRenameAction(item)"
-          class="resource-table-edit-name raw-hover-surface oc-p-xs"
+          class="resource-table-edit-name raw-hover-surface p-1"
           appearance="raw"
           @click="openRenameDialog(item)"
         >
@@ -121,7 +121,7 @@
       >
         <oc-tag
           v-oc-tooltip="getTagToolTip(tag)"
-          class="resource-table-tag oc-ml-xs"
+          class="resource-table-tag ml-1"
           :rounded="true"
           size="small"
         >
@@ -178,7 +178,7 @@
       <p
         v-oc-tooltip="formatDate(item.ddate)"
         tabindex="0"
-        class="oc-m-rm"
+        class="m-0"
         v-text="formatDateRelative(item.ddate)"
       />
     </template>

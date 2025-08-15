@@ -1,10 +1,6 @@
 <template>
-  <div class="oc-ml-s">
-    <oc-text-input
-      v-model="filterTerm"
-      class="oc-mr-s oc-mt-m"
-      :label="$gettext('Filter members')"
-    />
+  <div class="ml-2">
+    <oc-text-input v-model="filterTerm" class="mr-2 mt-4" :label="$gettext('Filter members')" />
     <div ref="membersListRef" data-testid="space-members">
       <div v-if="!filteredPermissions.length">
         <h3 class="oc-text-bold oc-text-medium" v-text="$gettext('No members found')" />
@@ -12,7 +8,7 @@
       <div v-for="(role, i) in availableRoles" :key="i">
         <div
           v-if="getPermissionsForRole(role).length"
-          class="oc-mb-m"
+          class="mb-4"
           :data-testid="`space-members-role-${role.displayName}`"
         >
           <h3 class="oc-text-bold oc-text-medium" v-text="role.displayName" />

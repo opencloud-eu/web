@@ -1,9 +1,9 @@
 <template>
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="oc-flex">
-      <div v-if="canShare({ space: resource, resource })" class="oc-flex oc-py-s">
-        <h3 class="oc-text-bold oc-text-medium oc-m-rm" v-text="$gettext('Add members')" />
-        <oc-contextual-helper v-if="helpersEnabled" class="oc-pl-xs" v-bind="spaceAddMemberHelp" />
+      <div v-if="canShare({ space: resource, resource })" class="oc-flex py-2">
+        <h3 class="oc-text-bold oc-text-medium m-0" v-text="$gettext('Add members')" />
+        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
       <copy-private-link :resource="resource" />
     </div>
@@ -12,7 +12,7 @@
       key="new-collaborator"
       :save-button-label="$gettext('Add')"
       :invite-label="$gettext('Search')"
-      class="oc-my-s"
+      class="my-2"
     />
     <template v-if="hasCollaborators">
       <div
@@ -20,10 +20,10 @@
         class="oc-flex oc-flex-middle oc-flex-between oc-position-relative"
       >
         <div class="oc-flex">
-          <h4 class="oc-text-bold oc-my-rm" v-text="$gettext('Members')" />
+          <h4 class="oc-text-bold my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
-            class="open-filter-btn oc-ml-s"
+            class="open-filter-btn ml-2"
             :aria-label="$gettext('Filter members')"
             appearance="raw"
             :aria-expanded="isFilterOpen"
@@ -40,13 +40,13 @@
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter oc-mr-s oc-width-1-1"
+          class="space-members-filter mr-2 oc-width-1-1"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />
         <oc-button
           v-oc-tooltip="$gettext('Close filter')"
-          class="close-filter-btn oc-mt-m raw-hover-surface"
+          class="close-filter-btn mt-4 raw-hover-surface"
           :aria-label="$gettext('Close filter')"
           appearance="raw"
           @click="toggleFilter"
@@ -58,7 +58,7 @@
       <ul
         id="files-collaborators-list"
         ref="collaboratorList"
-        class="oc-list oc-list-divider oc-m-rm"
+        class="oc-list oc-list-divider m-0"
         :aria-label="$gettext('Space members')"
       >
         <li v-for="collaborator in filteredSpaceMembers" :key="collaborator.id">

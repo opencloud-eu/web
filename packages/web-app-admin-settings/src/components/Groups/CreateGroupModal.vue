@@ -3,7 +3,7 @@
     <oc-text-input
       id="create-group-input-display-name"
       v-model="group.displayName"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('Group name')"
       :error-message="formData.displayName.errorMessage"
       :fix-message-line="true"
