@@ -217,6 +217,10 @@ event = {
     "tag": {
         "event": "tag",
     },
+    "cron": {
+        "event": "cron",
+        "branch": "main",
+    },
 }
 
 def main(ctx):
@@ -340,6 +344,7 @@ def pnpmCache(ctx):
                  cacheBrowsers(),
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -372,6 +377,7 @@ def pnpmlint(ctx, lintType):
         "steps": steps,
         "when": [
             event["tag"],
+            event["cron"],
             {
                 "event": ["push", "manual"],
                 "branch": config["branches"],
@@ -457,6 +463,7 @@ def buildCacheWeb(ctx):
                  rebuildBuildArtifactCache(ctx, "web-dist", "dist"),
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -502,6 +509,7 @@ def unitTests(ctx):
                  ],
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -528,6 +536,7 @@ def e2eTests(ctx):
     }
 
     e2e_trigger = [
+        event["cron"],
         {
             "event": ["push", "manual"],
             "branch": config["branches"],
@@ -687,6 +696,7 @@ def notifyMatrix():
             },
         ],
         "when": [
+            event["cron"],
             event["pull_request"],
             {
                 "event": ["push", "manual"],
@@ -944,6 +954,7 @@ def cacheOpenCloudPipeline(ctx):
         "steps": steps,
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1115,6 +1126,7 @@ def checkStarlark():
         ],
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1142,6 +1154,7 @@ def licenseCheck():
             },
         ],
         "when": [
+            event["cron"],
             event["pull_request"],
             event["tag"],
             event["main_branch"],
@@ -1295,6 +1308,7 @@ def purgeCache(name, flush_path, flush_age):
         "name": name,
         "skip_clone": True,
         "when": [
+            event["cron"],
             event["pull_request"],
             event["main_branch"],
         ],
@@ -1687,6 +1701,7 @@ def e2eTestsOnKeycloak(ctx):
         "services": postgresService(),
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1743,6 +1758,7 @@ def e2eMobileTests(ctx):
         "services": postgresService(),
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
