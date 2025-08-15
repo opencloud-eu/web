@@ -35,7 +35,9 @@ export const useKeyboardTableMouseActions = (
     resource: Item
     skipTargetSelection: boolean
   }) => {
-    const parent = document.querySelectorAll(`[data-item-id='${resource.id}']`)[0]
+    const targetNode = document.querySelector(`[data-item-id='${resource.id}']`)
+    const parent = targetNode?.closest('tr') || targetNode?.parentElement
+
     const resourceNodes = Object.values(parent.parentNode.children)
     const latestNode = resourceNodes.find(
       (r) => r.getAttribute('data-item-id') === unref(lastSelectedRowId)

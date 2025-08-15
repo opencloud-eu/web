@@ -610,7 +610,7 @@ describe('ResourceTable', () => {
         expect(resourceRow.find('.resource-table-tag-wrapper').element.tagName).toEqual('SPAN')
       })
     })
-    describe('"more"-button', () => {
+    describe('"on', () => {
       it.each([
         { tags: [], renderButton: false },
         { tags: ['1'], renderButton: false },

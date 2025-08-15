@@ -63,7 +63,7 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="emitTileClick(resource)"
+          @click.stop="(e: MouseEvent) => handleClickWithModifier(e, resource)"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -180,6 +180,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
@@ -223,6 +224,7 @@ const router = useRouter()
 const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
+const { interceptModifierClick } = useInterceptModifierClick()
 const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
 const {
   isEnabled: isEmbedModeEnabled,
@@ -291,7 +293,12 @@ const getRoute = (resource: Resource) => {
 
   return action.route({ space: s, resources: [resource] })
 }
-const emitTileClick = (resource: Resource) => {
+
+const emitTileClick = (resource: Resource, event?: MouseEvent) => {
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
+    return
+  }
+
   if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
     return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
       resource: JSON.parse(JSON.stringify(resource)),
@@ -299,8 +306,12 @@ const emitTileClick = (resource: Resource) => {
     })
   }
 
+  if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+    toggleSelection(resource)
+  }
+
   if (resource.type !== 'space' && resource.type !== 'folder') {
-    resourceRouteResolver.createFileAction(resource)
+    resourceRouteResolver.createFileAction(resource as Resource)
   }
 }
 
@@ -310,6 +321,11 @@ const showContextMenuOnBtnClick = (
   index: string
 ) => {
   const { dropdown, event } = data
+
+  if (event && interceptModifierClick(event as MouseEvent, item)) {
+    return
+  }
+
   if (dropdown?.tippy === undefined) {
     return
   }
@@ -401,6 +417,10 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
+  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
+    return
+  }
+
   event.preventDefault()
   const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
     'resource-tiles-btn-action-dropdown'
@@ -415,9 +435,22 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
+const handleClickWithModifier = (event: MouseEvent, item: Resource) => {
+  if (interceptModifierClick(event, item)) {
+    toggleSelection(item)
+    return
+  }
+
+  emitTileClick(item, event)
+}
+
+const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
   const resource = data[0]
   const eventData = data[1]
+
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
+    return
+  }
 
   if (eventData && eventData.metaKey) {
     return eventBus.publish('app.files.list.clicked.meta', resource)
@@ -599,6 +632,13 @@ onMounted(() => {
   window.addEventListener('resize', updateViewWidth)
   updateViewWidth()
 })
+
+eventBus.subscribe('app.files.list.clicked.default', (resource) => {
+  if (isResourceClickable(resource as Resource)) {
+    emitSelect([(resource as Resource).id])
+  }
+})
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })

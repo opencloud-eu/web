@@ -133,7 +133,8 @@ import {
   useResourcesStore,
   formatDateFromJSDate,
   useResourceContents,
-  useLoadPreview
+  useLoadPreview,
+  useInterceptModifierClick
 } from '@opencloud-eu/web-pkg'
 import upperFirst from 'lodash-es/upperFirst'
 import {
@@ -173,7 +174,7 @@ const { $gettext, current: currentLanguage } = language
 
 const resourcesStore = useResourcesStore()
 const { ancestorMetaData, currentFolder } = storeToRefs(resourcesStore)
-
+const { interceptModifierClick } = useInterceptModifierClick()
 const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
@@ -229,7 +230,8 @@ const shareIndicators = computed(() => {
     space: unref(space),
     resource: unref(resource),
     ancestorMetaData: unref(ancestorMetaData),
-    user: unref(user)
+    user: unref(user),
+    interceptModifierClick
   }).filter(({ category }) => category === 'sharing')
 })
 

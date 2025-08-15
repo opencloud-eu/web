@@ -70,6 +70,9 @@ export default {
   },
   computed: {
     isNavigatable() {
+      if (!this.resource) {
+        return false
+      }
       return (this.resource.isFolder || this.link) && !this.resource.disabled
     },
     componentType() {
@@ -90,15 +93,17 @@ export default {
     }
   },
   methods: {
-    emitClick() {
+    emitClick(e: MouseEvent) {
+      if (!e || typeof e.stopPropagation !== 'function') {
+        return
+      }
       if (this.isNavigatable) {
         return
       }
-
       /**
        * Triggered when the resource is a file and the name is clicked
        */
-      this.$emit('click')
+      this.$emit('click', e)
     }
   }
 }
