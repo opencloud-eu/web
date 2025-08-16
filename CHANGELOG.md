@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.3.1](https://github.com/opencloud-eu/web/releases/tag/v3.3.1) - 2025-08-16
+
+### ❤️ Thanks to all contributors! ❤️
+
+@ScharfViktor, @kulmann, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
+### 📦️ Dependencies
+
+- [full-ci] bump-opencloud-3.3.0. run all tests [[#1074](https://github.com/opencloud-eu/web/pull/1074)]
+
 ## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-11
 
 ### ❤️ Thanks to all contributors! ❤️
