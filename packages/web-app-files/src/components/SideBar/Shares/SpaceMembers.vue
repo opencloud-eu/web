@@ -243,14 +243,18 @@ watch(filterTerm, async () => {
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .space-members-filter label {
+    @apply text-sm;
+  }
+}
+</style>
 <style lang="scss">
 .space-members-filter {
   overflow: hidden;
-
-  label {
-    font-size: var(--oc-font-size-small);
-  }
 
   input:focus {
     // use inner focus border because an outline would be cut off by the hidden overflow

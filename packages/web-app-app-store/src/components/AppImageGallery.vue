@@ -1,7 +1,7 @@
 <template>
   <div class="app-image-wrapper">
     <div v-if="app.badge" class="app-image-ribbon" :class="[`app-image-ribbon-${app.badge.color}`]">
-      <span>{{ app.badge.label }}</span>
+      <span class="text-xs">{{ app.badge.label }}</span>
     </div>
     <div class="app-image">
       <oc-image v-if="currentImage?.url" :src="currentImage?.url" />
@@ -118,10 +118,8 @@ export default defineComponent({
       position: absolute;
       top: 1.8rem;
       right: -2.2rem;
-      font-size: 0.7rem;
       font-weight: bold;
       text-align: center;
-      line-height: 2rem;
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       width: 10rem;

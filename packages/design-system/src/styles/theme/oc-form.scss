@@ -130,9 +130,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 
   /* 1 */
   box-sizing: border-box;
-
-  /* 4 */
-  font: inherit;
 }
 
 /*
@@ -154,9 +151,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
  */
 
 .oc-select optgroup {
-  /* 1 */
-  font: inherit;
-
   /* 2 */
   font-weight: bold;
 }
@@ -251,7 +245,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   box-sizing: border-box;
   color: var(--oc-role-on-surface);
   display: inline-block;
-  line-height: inherit;
   max-width: 100%;
   outline: none;
   overflow: visible;
@@ -260,12 +253,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   transition-property: color, background-color;
   vertical-align: middle;
   width: 100%;
-}
-
-/* 2 */
-.oc-input:not(input),
-.oc-select:not(select) {
-  line-height: $form-line-height;
 }
 
 /*
@@ -318,8 +305,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   padding-right: $form-small-padding-horizontal;
 }
 
-.oc-form-small:not(select):not(input):not(textarea) { line-height: $form-small-line-height; }
-
 /*
  * Large
  */
@@ -331,8 +316,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   padding-left: $form-large-padding-horizontal;
   padding-right: $form-large-padding-horizontal;
 }
-
-.oc-form-large:not(select):not(input):not(textarea) { line-height: $form-large-line-height; }
 
 /* Width modifiers (`oc-input`, `oc-select` and `oc-textarea`)
  ========================================================================== */

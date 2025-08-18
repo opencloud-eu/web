@@ -1,6 +1,6 @@
 <template>
   <div class="space_info p-2">
-    <div class="space_info__body oc-text-overflow oc-flex oc-flex-middle">
+    <div class="space_info__body oc-text-overflow oc-flex oc-flex-middle text-sm">
       <div class="mr-2">
         <oc-icon
           name="layout-grid"
@@ -9,7 +9,11 @@
         />
       </div>
       <div>
-        <h3 data-testid="space-info-name" class="oc-font-semibold m-0" v-text="resource.name" />
+        <h3
+          data-testid="space-info-name"
+          class="oc-font-semibold m-0 text-base"
+          v-text="resource.name"
+        />
         <span data-testid="space-info-subtitle" v-text="resource.description" />
       </div>
     </div>
@@ -39,11 +43,6 @@ export default defineComponent({
 
   &__body {
     text-align: left;
-    font-size: var(--oc-font-size-small);
-
-    h3 {
-      font-size: var(--oc-font-size-medium);
-    }
   }
 }
 </style>

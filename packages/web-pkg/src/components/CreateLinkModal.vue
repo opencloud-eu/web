@@ -347,8 +347,4 @@ export default defineComponent({
 .oc-modal-body-actions-confirm-secondary-trigger {
   background: var(--oc-role-secondary);
 }
-
-.role-dropdown-list span {
-  line-height: 1.3;
-}
 </style>

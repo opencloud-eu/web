@@ -98,7 +98,6 @@ export default defineComponent({
     }
 
     h2 {
-      font-size: var(--oc-font-size-large);
       font-weight: var(--oc-font-weight-default);
     }
   }

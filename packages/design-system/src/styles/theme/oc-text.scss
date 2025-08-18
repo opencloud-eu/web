@@ -13,10 +13,6 @@ html * {
   font-family: var(--oc-font-family);
 }
 
-html {
-  font-size: var(--oc-font-size-default);
-}
-
 a {
   color: var(--oc-role-secondary);
   text-decoration: none;
@@ -210,8 +206,4 @@ td.oc-text-break {
   .oc-font-#{$weightKey} {
     font-weight: $weightValue;
   }
-}
-
-.oc-tooltip .tippy-content {
-  font-size: var(--oc-font-size-small);
 }

@@ -62,7 +62,7 @@
               <span class="create-list-file-item-text">{{ fileAction.label() }}</span>
               <span
                 v-if="areFileExtensionsShown && fileAction.ext"
-                class="create-list-file-item-extension ml-auto"
+                class="create-list-file-item-extension ml-auto text-sm"
               >
                 {{ fileAction.ext }}
               </span>
@@ -82,7 +82,7 @@
               <span v-text="$gettext('Shortcut')" />
               <span
                 v-if="areFileExtensionsShown"
-                class="create-list-file-item-extension ml-auto"
+                class="create-list-file-item-extension ml-auto text-sm"
                 v-text="'url'"
               />
             </oc-button>
@@ -489,7 +489,6 @@ const folderIconResource = computed(() => {
 
 .create-list-file-item-extension {
   font-weight: 400 !important;
-  font-size: var(--oc-font-size-small);
 }
 
 .expanded-list {

@@ -3,7 +3,7 @@
     class="webfinger-resolve oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
   >
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body oc-text-center oc-width-large">
+    <div class="oc-card oc-card-body oc-text-center oc-width-large text-lg">
       <template v-if="hasError">
         <h2 key="webfinger-resolve-error" class="mt-0">
           <span v-text="$gettext('Sorry!')" />
@@ -90,12 +90,6 @@ export default defineComponent({
   .oc-card {
     background: var(--oc-role-surface-container);
     border-radius: 15px;
-
-    &-body {
-      p {
-        font-size: var(--oc-font-size-large);
-      }
-    }
   }
 }
 </style>

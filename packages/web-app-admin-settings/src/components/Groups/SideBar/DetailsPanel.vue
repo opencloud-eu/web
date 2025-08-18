@@ -62,10 +62,6 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.group-info-display-name {
-  font-size: 1.5rem;
-}
-
 .selected-group-details {
   display: table;
   text-align: left;

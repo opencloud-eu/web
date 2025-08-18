@@ -353,7 +353,6 @@ const openSideBarSharePanel = () => {
   }
 
   &-name {
-    font-size: 1.5rem;
     word-break: break-all;
   }
 

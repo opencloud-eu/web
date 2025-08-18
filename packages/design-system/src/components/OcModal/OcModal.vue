@@ -12,7 +12,7 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div class="oc-modal-title py-3 px-4">
-          <h2 id="oc-modal-title" class="oc-text-truncate m-0" v-text="title" />
+          <h2 id="oc-modal-title" class="oc-text-truncate m-0 text-base" v-text="title" />
         </div>
         <div class="oc-modal-body px-4 pt-4">
           <div
@@ -354,22 +354,15 @@ export default {
     border-top-right-radius: 5px;
     display: flex;
     flex-flow: row wrap;
-    line-height: 1.625;
     background-color: var(--oc-role-surface-container);
 
     > h2 {
-      font-size: 1rem;
       font-weight: bold;
     }
   }
 
   &-body {
     color: var(--oc-role-on-surface);
-    line-height: 1.625;
-
-    .oc-input {
-      line-height: normal;
-    }
 
     &-actions {
       text-align: right;

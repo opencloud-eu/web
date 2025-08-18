@@ -187,7 +187,7 @@ const inputClass = computed(() => {
     classes.push('oc-search-input-button')
   }
   if (small) {
-    classes.push('pl-12')
+    classes.push(...['pl-12', 'leading-7'])
   }
   return classes
 })
@@ -256,7 +256,6 @@ const onCancel = () => {
   &-small {
     .oc-search-input {
       height: 30px;
-      line-height: 28px;
     }
 
     .oc-icon {

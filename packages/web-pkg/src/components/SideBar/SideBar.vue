@@ -41,7 +41,7 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title my-0">
+          <h2 class="header__title my-0 text-lg">
             {{ panel.title(panelContext) }}
           </h2>
 
@@ -370,7 +370,6 @@ onBeforeUnmount(() => {
       &__title {
         text-align: center;
         color: var(--oc-role-on-surface);
-        font-size: var(--oc-font-size-large);
         grid-column-start: 2;
       }
 

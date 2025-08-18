@@ -1,10 +1,13 @@
 <template>
   <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item">
     <span
-      class="oc-text-bold oc-display-block oc-width-1-1"
+      class="oc-text-bold oc-display-block oc-width-1-1 leading-4"
       v-text="$gettext((role as ShareRole).displayName)"
     />
-    <span class="m-0 text-sm oc-display-block" v-text="$gettext((role as ShareRole).description)" />
+    <span
+      class="m-0 text-sm oc-display-block leading-4"
+      v-text="$gettext((role as ShareRole).description)"
+    />
   </span>
 </template>
 
@@ -26,9 +29,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .roles-select-role-item {
   text-align: left;
-
-  span {
-    line-height: 1.3;
-  }
 }
 </style>

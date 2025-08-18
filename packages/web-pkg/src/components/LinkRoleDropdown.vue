@@ -44,10 +44,12 @@
             <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
             <span>
               <span
-                class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"
+                class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1 leading-4"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"
               />
-              <span class="text-sm">{{ $gettext(getLinkRoleByType(type).description) }}</span>
+              <span class="text-sm leading-4">{{
+                $gettext(getLinkRoleByType(type).description)
+              }}</span>
             </span>
           </span>
           <span class="oc-flex">
@@ -118,9 +120,6 @@ export default defineComponent({
 }
 
 .role-dropdown-list {
-  span {
-    line-height: 1.3;
-  }
   button {
     justify-content: space-between !important;
   }

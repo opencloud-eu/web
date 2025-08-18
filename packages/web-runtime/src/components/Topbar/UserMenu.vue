@@ -223,7 +223,6 @@ export default defineComponent({
   width: calc(100% + var(--oc-space-small) * 2);
 
   a {
-    font-size: var(--oc-font-size-medium) !important;
     color: var(--oc-role-on-surface);
   }
 }

@@ -89,7 +89,4 @@ export default defineComponent({
 .compare-save-dialog {
   flex-flow: row wrap;
 }
-.state-indicator {
-  line-height: 2rem;
-}
 </style>

@@ -1,5 +1,13 @@
 @reference 'tailwindcss';
 
+
+@layer theme {
+  html {
+    @apply text-sm;
+  }
+}
+
+
 @layer base {
   h1 {
     @apply text-3xl font-bold my-4;
@@ -32,12 +40,6 @@
   ol,
   ul {
     @apply pl-5 my-2;
-  }
-
-  hr {
-    @apply mb-5 border-none overflow-visible;
-
-    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 
@@ -93,7 +95,7 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5
+    @apply p-1.5 leading-4;
   }
 
   .oc-textarea {
@@ -108,5 +110,9 @@
 
   .sidebar-actions-panel li a {
     @apply mb-1;
+  }
+
+  .oc-tooltip .tippy-content {
+    @apply text-sm;
   }
 }

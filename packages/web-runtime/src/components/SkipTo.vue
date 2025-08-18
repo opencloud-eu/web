@@ -39,7 +39,6 @@ export default defineComponent({
   border: none;
   background-color: var(--oc-role-secondary);
   color: var(--oc-role-on-secondary);
-  font: inherit;
 }
 
 .skip-button:focus {
