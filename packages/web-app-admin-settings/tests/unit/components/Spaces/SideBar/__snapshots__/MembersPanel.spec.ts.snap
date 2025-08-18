@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
-"<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-3">Filter members
+"<div class="ml-2">
+  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-3">Filter members
       <!--v-if-->
     </label>
     <div class="oc-position-relative">
@@ -31,8 +31,8 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 `;
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
-"<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-1">Filter members
+"<div class="ml-2">
+  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-1">Filter members
       <!--v-if-->
     </label>
     <div class="oc-position-relative">
@@ -45,19 +45,19 @@ exports[`MembersPanel > should render all members accordingly to their role assi
   <div data-testid="space-members">
     <!--v-if-->
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Managers">
+      <div class="mb-4" data-testid="space-members-role-Managers">
         <h3 class="oc-text-bold oc-text-medium">Managers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Editors">
+      <div class="mb-4" data-testid="space-members-role-Editors">
         <h3 class="oc-text-bold oc-text-medium">Editors</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Viewers">
+      <div class="mb-4" data-testid="space-members-role-Viewers">
         <h3 class="oc-text-bold oc-text-medium">Viewers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>

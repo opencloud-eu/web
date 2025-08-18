@@ -47,7 +47,7 @@
               :to="accountPageRoute"
               appearance="raw"
             >
-              <oc-icon name="settings-4" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="settings-4" fill-type="line" class="p-1" />
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
@@ -58,27 +58,23 @@
               type="router-link"
               :to="loginLink"
             >
-              <oc-icon name="login-box" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="login-box" fill-type="line" class="p-1" />
               <span v-text="$gettext('Log in')" />
             </oc-button>
           </li>
         </template>
         <template v-else>
-          <li class="profile-info-wrapper oc-pl-s">
+          <li class="profile-info-wrapper pl-2">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"
               color="var(--oc-role-on-chrome)"
               background-color="var(--oc-role-chrome)"
             />
-            <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.mail }">
+            <span class="profile-info-wrapper" :class="{ 'py-1': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
               <span v-if="user.mail" class="oc-text-small" v-text="user.mail" />
-              <quota-information
-                v-if="quotaEnabled"
-                :quota="quota"
-                class="oc-text-small oc-mt-xs"
-              />
+              <quota-information v-if="quotaEnabled" :quota="quota" class="oc-text-small mt-1" />
             </span>
           </li>
           <li>
@@ -100,7 +96,7 @@
           </li>
         </template>
       </oc-list>
-      <div v-if="showFooter" class="imprint-footer oc-py-s oc-mt-m oc-text-center">
+      <div v-if="showFooter" class="imprint-footer py-2 mt-4 oc-text-center">
         <oc-button
           v-if="imprintUrl"
           type="a"

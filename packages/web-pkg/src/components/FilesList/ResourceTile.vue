@@ -13,7 +13,7 @@
     <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
     <template v-else>
       <resource-link
-        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm"
+        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle m-0"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -21,7 +21,7 @@
         @click="$emit('click')"
       >
         <div class="oc-tile-card-selection">
-          <div v-if="isLoading" class="oc-tile-card-loading-spinner oc-m-s">
+          <div v-if="isLoading" class="oc-tile-card-loading-spinner m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
           <slot v-else name="selection" :item="resource" />
@@ -49,7 +49,7 @@
               v-else
               :resource="resource"
               :size="resourceIconSize"
-              class="tile-default-image oc-pt-xs"
+              class="tile-default-image pt-1"
             >
               <template v-if="showStatusIcon" #status>
                 <oc-icon v-bind="statusIconAttrs" size="xsmall" />
@@ -58,7 +58,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s" @click.stop="toggleTile([resource, $event])">
+      <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
         <div class="oc-flex oc-flex-between oc-flex-middle">
           <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
             <resource-list-item
@@ -79,7 +79,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="oc-text-left oc-my-rm oc-text-truncate">
+        <p v-if="resourceDescription" class="oc-text-left my-0 oc-text-truncate">
           <small v-text="resourceDescription" />
         </p>
       </div>

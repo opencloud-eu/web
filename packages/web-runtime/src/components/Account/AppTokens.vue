@@ -1,11 +1,11 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
-    <div class="oc-flex oc-flex-middle oc-flex-space-between oc-mb-m">
-      <h2 class="oc-m-rm" v-text="$gettext('App tokens')" />
+    <div class="oc-flex oc-flex-middle oc-flex-space-between mb-4">
+      <h2 v-text="$gettext('App tokens')" />
       <oc-button
         v-if="!authAppServiceDisabled"
         size="small"
-        class="create-app-token-btn oc-ml-m"
+        class="create-app-token-btn ml-4"
         @click="openCreateAppTokenModal"
       >
         <oc-icon name="add" size="small" />
@@ -14,7 +14,7 @@
     </div>
     <p
       v-if="authAppServiceDisabled"
-      class="oc-ml-s"
+      class="ml-2"
       data-testid="auth-service-unavailable"
       v-text="
         $gettext(
@@ -24,7 +24,7 @@
     />
     <p
       v-else-if="!appTokens.length"
-      class="oc-ml-s"
+      class="ml-2"
       data-testid="no-app-tokens-available"
       v-text="$gettext('No app tokens available.')"
     />
@@ -56,13 +56,13 @@
             @click="openDeleteAppTokenModal(item)"
           >
             <oc-icon name="delete-bin-5" size="small" fill-type="line" />
-            <span class="oc-ml-xs" v-text="$gettext('Delete')" />
+            <span class="ml-1" v-text="$gettext('Delete')" />
           </oc-button>
         </template>
       </oc-table>
       <div
         v-if="appTokens.length > TOKENS_TO_DISPLAY"
-        class="oc-width-1-1 oc-flex oc-flex-center oc-mt-m"
+        class="oc-width-1-1 oc-flex oc-flex-center mt-4"
       >
         <oc-button appearance="raw" no-hover @click="listExpanded = !listExpanded">
           <span v-text="listExpanded ? $gettext('Show less') : $gettext('Show more')" />

@@ -7,12 +7,7 @@
       </label>
     </slot>
     <div class="oc-position-relative">
-      <oc-icon
-        v-if="readOnly"
-        name="lock"
-        size="small"
-        class="oc-mt-s oc-ml-s oc-position-absolute"
-      />
+      <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 oc-position-absolute" />
       <component
         :is="inputComponent"
         :id="id"
@@ -22,7 +17,7 @@
         class="oc-text-input oc-input oc-rounded"
         :class="{
           'oc-text-input-danger': !!showErrorMessage,
-          'oc-pl-l': !!readOnly,
+          'pl-6': !!readOnly,
           'clear-action-visible': showClearButton
         }"
         :type="type"
@@ -38,7 +33,7 @@
       <oc-button
         v-if="showClearButton"
         :aria-label="clearButtonAccessibleLabelValue"
-        class="oc-pr-s oc-position-center-right oc-text-input-btn-clear"
+        class="pr-2 oc-position-center-right oc-text-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -61,7 +56,7 @@
           size="small"
           fill-type="line"
           aria-hidden="true"
-          class="oc-mr-xs"
+          class="mr-1"
         />
         <span
           v-if="showErrorMessage"

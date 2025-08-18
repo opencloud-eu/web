@@ -1,5 +1,5 @@
 <template>
-  <li class="oc-sidebar-nav-item oc-pb-xs oc-px-s" :aria-current="active ? 'page' : null">
+  <li class="oc-sidebar-nav-item pb-1 px-2" :aria-current="active ? 'page' : null">
     <oc-button
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
@@ -14,7 +14,7 @@
     >
       <span class="oc-flex">
         <oc-icon :name="icon" :fill-type="fillType" />
-        <span class="oc-ml-m text" :class="{ 'text-invisible': collapsed }" v-text="name" />
+        <span class="ml-4 text" :class="{ 'text-invisible': collapsed }" v-text="name" />
       </span>
     </oc-button>
   </li>

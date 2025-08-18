@@ -171,6 +171,15 @@ const onClick = (event: MouseEvent) => {
 }
 </script>
 
+<style>
+@reference 'tailwindcss';
+
+@layer components {
+  .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
+    @apply py-1.5 px-2.5;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-button-gap($factor) {
   gap: math.round(calc($oc-space-small * $factor / 2)) * 2;
@@ -187,7 +196,6 @@ const onClick = (event: MouseEvent) => {
     font-size: var(--oc-font-size-medium);
     font-weight: normal;
     min-height: 0;
-    padding: 0;
 
     background-color: transparent;
     color: $color;
@@ -243,7 +251,6 @@ const onClick = (event: MouseEvent) => {
   box-sizing: border-box;
   display: inline-flex;
   font-weight: 400;
-  padding: 0.5rem 0.8rem;
   text-align: left;
   text-decoration: none;
 

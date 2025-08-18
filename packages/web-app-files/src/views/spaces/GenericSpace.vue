@@ -33,7 +33,7 @@
             v-if="hasSpaceHeader"
             :space="space"
             :is-side-bar-open="isSideBarOpen"
-            class="oc-px-m oc-mt-m"
+            class="px-4 mt-4"
           />
           <no-content-message
             v-if="isCurrentFolderEmpty"
@@ -86,7 +86,7 @@
 
               <template #footer>
                 <pagination :pages="paginationPages" :current-page="paginationPage" />
-                <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 oc-my-s" />
+                <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
               </template>
               <template #quickActions="{ resource }">
                 <quick-actions

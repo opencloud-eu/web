@@ -3,7 +3,7 @@
     <oc-text-input
       id="file-name-input"
       v-model="newFileName"
-      class="oc-mb-s"
+      class="mb-2"
       :label="$gettext('File name')"
       required-mark
       :error-message="errorMessage"

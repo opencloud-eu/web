@@ -1,17 +1,17 @@
 <template>
   <div class="oc-error-log">
     <oc-textarea
-      class="oc-error-log-textarea oc-mt-s oc-text-small"
+      class="oc-error-log-textarea mt-2 oc-text-small"
       :label="contentLabel"
       :model-value="content"
       rows="4"
       readonly
     />
-    <div class="oc-flex oc-flex-between oc-mt-s">
+    <div class="oc-flex oc-flex-between mt-2">
       <div class="oc-flex">
         <div v-if="showCopied" class="oc-flex oc-flex-middle">
           <oc-icon name="checkbox-circle" />
-          <p class="oc-error-log-content-copied oc-ml-s oc-my-rm" v-text="$gettext('Copied')" />
+          <p class="oc-error-log-content-copied ml-2 my-0" v-text="$gettext('Copied')" />
         </div>
       </div>
       <oc-button size="small" appearance="filled" @click="copyContentToClipboard">

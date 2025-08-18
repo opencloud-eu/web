@@ -15,7 +15,7 @@
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayValue }">
-        <oc-icon v-if="$attrs['read-only']" name="lock" class="oc-mr-xs" size="small" />
+        <oc-icon v-if="$attrs['read-only']" name="lock" class="mr-1" size="small" />
         <span v-text="displayValue" />
       </template>
       <template #search="{ attributes, events }">

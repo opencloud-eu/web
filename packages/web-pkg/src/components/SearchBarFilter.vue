@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-location-search oc-position-small oc-position-center-right oc-mt-rm" @click.stop>
+  <div class="oc-location-search oc-position-center-right mx-4 mb-4 mt-0" @click.stop>
     <div v-if="currentSelection">
       <oc-filter-chip
         :is-toggle="false"
@@ -17,7 +17,7 @@
               <oc-button
                 appearance="raw"
                 size="medium"
-                class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
+                class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 py-1 px-2"
                 :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"

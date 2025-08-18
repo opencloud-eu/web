@@ -1,7 +1,7 @@
 <template>
   <oc-button
     appearance="raw"
-    class="oc-p-s action-menu-item"
+    class="p-2 action-menu-item"
     :type="option.to ? 'router-link' : 'button'"
     :to="option.to"
     @click="option.method"

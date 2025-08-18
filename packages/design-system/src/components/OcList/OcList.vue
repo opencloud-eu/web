@@ -1,5 +1,5 @@
 <template>
-  <ul class="oc-list oc-my-rm oc-mx-rm" :class="{ 'oc-list-raw': raw }">
+  <ul class="oc-list my-0" :class="{ 'oc-list-raw': raw }">
     <slot />
   </ul>
 </template>
@@ -24,12 +24,19 @@ const { raw = false } = defineProps<Props>()
 
 defineSlots<Slots>()
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer base {
+  ul.oc-list,
+  ul.oc-list.oc-timeline {
+    @apply m-0 p-0;
+  }
+}
+</style>
 <style lang="scss">
 ul.oc-list {
   list-style: none;
-  margin: 0;
-  padding: 0;
 
   &-divider > :nth-child(n + 2) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
@@ -50,8 +57,6 @@ ul.oc-list {
 ul.oc-list.oc-timeline {
   position: relative;
   list-style: none;
-  padding: 0;
-  margin: 0;
 
   &::before {
     content: '';

@@ -7,14 +7,14 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-preview oc-flex oc-flex-middle oc-flex-center mb-4"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
       <div
         v-else
-        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center mb-4"
       >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
@@ -22,13 +22,13 @@
         v-if="!publicLinkContextReady && shareIndicators.length"
         key="file-shares"
         data-testid="sharingInfo"
-        class="oc-flex oc-flex-middle oc-my-m"
+        class="oc-flex oc-flex-middle my-4"
       >
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
-        <p class="oc-my-rm oc-mx-s" v-text="detailSharingInformation" />
+        <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
       <dl
-        class="details-list oc-m-rm"
+        class="details-list m-0"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
         <template v-if="hasDeletionDate">
@@ -73,7 +73,7 @@
         <template v-if="ownerDisplayName && ownerDisplayName !== sharedByDisplayNames">
           <dt>{{ $gettext('Owner') }}</dt>
           <dd data-testid="ownerDisplayName">
-            <p class="oc-m-rm">
+            <p class="m-0">
               {{ ownerDisplayName }}
               <span v-if="ownedByCurrentUser" v-translate>(me)</span>
             </p>
@@ -109,7 +109,7 @@
             <oc-contextual-helper
               v-if="contextualHelper?.isEnabled"
               v-bind="contextualHelper?.data"
-              class="oc-pl-xs"
+              class="pl-1"
             ></oc-contextual-helper>
           </dt>
           <dd data-testid="tags">

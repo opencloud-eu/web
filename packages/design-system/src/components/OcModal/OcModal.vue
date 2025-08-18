@@ -22,17 +22,17 @@
             <p
               v-if="message"
               key="modal-message"
-              class="oc-modal-body-message oc-mt-rm"
-              :class="{ 'oc-mb-rm': !hasInput || contextualHelperData }"
+              class="oc-modal-body-message mt-0"
+              :class="{ 'mb-0': !hasInput || contextualHelperData }"
               v-text="message"
             />
             <div
               v-if="contextualHelperData"
               class="oc-modal-body-contextual-helper"
-              :class="{ 'oc-mb-rm': !hasInput }"
+              :class="{ 'mb-0': !hasInput }"
             >
               <span class="text" v-text="contextualHelperLabel" />
-              <oc-contextual-helper class="oc-pl-xs" v-bind="contextualHelperData" />
+              <oc-contextual-helper class="pl-1" v-bind="contextualHelperData" />
             </div>
             <oc-text-input
               v-if="hasInput"
@@ -63,7 +63,7 @@
             </oc-button>
             <oc-button
               v-if="!hideConfirmButton"
-              class="oc-modal-body-actions-confirm oc-ml-s"
+              class="oc-modal-body-actions-confirm ml-2"
               :appearance="buttonConfirmAppearance"
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
