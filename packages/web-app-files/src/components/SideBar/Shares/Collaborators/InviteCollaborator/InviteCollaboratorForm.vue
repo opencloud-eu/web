@@ -11,10 +11,10 @@
         :reduce="(option: AccountType) => option.description"
       >
         <template #option="{ description }">
-          <span class="option oc-text-xsmall" v-text="description" />
+          <span class="option text-xs" v-text="description" />
         </template>
         <template #selected-option="{ description }">
-          <span class="option oc-text-xsmall" v-text="description" />
+          <span class="option text-xs" v-text="description" />
         </template>
       </oc-select>
       <oc-select
