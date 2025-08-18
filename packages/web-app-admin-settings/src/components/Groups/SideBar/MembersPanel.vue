@@ -3,10 +3,10 @@
     <oc-text-input v-model="filterTerm" class="mr-2 mt-4" :label="$gettext('Filter members')" />
     <div ref="membersListRef" data-testid="space-members">
       <div v-if="!filteredGroupMembers.length">
-        <h3 class="oc-text-bold oc-text-medium" v-text="$gettext('No members found')" />
+        <h3 class="oc-text-bold text-base" v-text="$gettext('No members found')" />
       </div>
       <div v-if="filteredGroupMembers.length" class="mb-4" data-testid="group-members">
-        <h3 class="oc-text-bold oc-text-medium" v-text="$gettext('Members')" />
+        <h3 class="oc-text-bold text-base" v-text="$gettext('Members')" />
         <members-role-section :group-members="filteredGroupMembers" />
       </div>
     </div>
