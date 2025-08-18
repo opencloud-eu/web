@@ -60,19 +60,19 @@
       <oc-list class="oc-list-divider">
         <li
           v-if="loading"
-          class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted my-1 mx-2"
+          class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted py-1 px-2"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
           <span class="ml-2">{{ $gettext('Searching ...') }}</span>
         </li>
-        <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center my-1 mx-2">
+        <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center py-1 px-2">
           {{ $gettext('No results') }}
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
             <oc-list>
               <li
-                class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details my-1 mx-2"
+                class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details py-1 px-2"
               >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
@@ -88,7 +88,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview oc-flex oc-flex-middle my-1 mx-2"
+                class="preview oc-flex oc-flex-middle py-1 px-2"
               >
                 <component
                   :is="provider.previewSearch.component"
