@@ -328,7 +328,7 @@ export default defineConfig(({ mode, command }) => {
           }
         },
         {
-          name: 'inject-tailwind',
+          name: 'inject-tailwind-for-dev-server',
           transformIndexHtml(html) {
             if (production) {
               return html
@@ -340,6 +340,28 @@ export default defineConfig(({ mode, command }) => {
               '<head>',
               '<head>\n    <link rel="stylesheet" href="./packages/web-runtime/src/tailwind.css" />'
             )
+          }
+        },
+        {
+          // FIXME: remove when this can be configured via the tailwind() plugin, see https://github.com/tailwindlabs/tailwindcss/discussions/16429
+          name: 'inject-tailwind-reference',
+          enforce: 'pre',
+          transform(code, id) {
+            if (!id.endsWith('.vue')) {
+              return
+            }
+
+            const transformedCode = code.replace(/<style[^>]*>([\s\S]*?)<\/style>/g, (match) =>
+              match.replace(
+                /@reference\s+'tailwindcss';/g,
+                `@reference '${projectRootDir}/packages/web-runtime/src/tailwind.css';`
+              )
+            )
+
+            return {
+              code: transformedCode,
+              map: null
+            }
           }
         },
         ...(command === 'serve' ? historyModePlugins() : []),
