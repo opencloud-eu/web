@@ -624,6 +624,9 @@ export default defineComponent({
   #new-collaborators-form-create-button .oc-spinner {
     @apply ml-2;
   }
+  .invite-form-share-role-type .oc-filter-chip-button {
+    @apply pr-0;
+  }
 }
 </style>
 <style lang="scss">
