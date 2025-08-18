@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @kulmann, @tammi-23
+@JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
 
 ### 📈 Enhancement
 
