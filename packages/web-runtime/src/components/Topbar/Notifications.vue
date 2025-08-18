@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-notifications">
+  <div id="oc-notifications" class="flex">
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
       id="oc-notifications-drop"
@@ -299,12 +299,6 @@ export default {
       left: 50%;
       transform: translate(-50%, -50%);
       opacity: 1;
-    }
-  }
-
-  &-actions {
-    button:not(:last-child) {
-      margin-right: var(--oc-space-small);
     }
   }
 

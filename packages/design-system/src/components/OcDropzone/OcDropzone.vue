@@ -8,7 +8,15 @@
 <script setup lang="ts">
 defineOptions({ name: 'OcDropzone' })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-dropzone {
+    @apply p-4;
+  }
+}
+</style>
 <style lang="scss">
 .oc-dropzone {
   align-items: center;
@@ -18,7 +26,6 @@ defineOptions({ name: 'OcDropzone' })
   justify-content: center;
   line-height: 1.5;
   opacity: 0.9;
-  padding: var(--oc-space-medium);
   text-align: center;
 
   * {

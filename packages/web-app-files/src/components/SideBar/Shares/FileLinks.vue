@@ -58,7 +58,10 @@
       </h4>
       <div
         class="files-links-indirect-list"
-        :class="{ 'files-links-indirect-list-open': !indirectLinkListCollapsed }"
+        :class="{
+          'files-links-indirect-list-open': !indirectLinkListCollapsed,
+          'mt-4': !indirectLinkListCollapsed
+        }"
       >
         <ul class="oc-list oc-list-divider" :aria-label="$gettext('Public links')">
           <li v-for="link in indirectLinks" :key="link.id">
@@ -343,7 +346,6 @@ export default defineComponent({
 
   &-open {
     grid-template-rows: 1fr;
-    margin-top: var(--oc-space-medium);
   }
 }
 </style>

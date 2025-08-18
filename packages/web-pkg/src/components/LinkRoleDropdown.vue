@@ -41,7 +41,7 @@
           @click="updateSelectedType(type)"
         >
           <span class="oc-flex oc-flex-middle">
-            <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4 box-content" />
+            <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
             <span>
               <span
                 class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"

@@ -6,13 +6,13 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea oc-rounded"
+      class="oc-textarea oc-rounded m-0 py-1"
       :class="{
         'oc-textarea-danger': !!errorMessage
       }"
       :aria-invalid="ariaInvalid"
     />
-    <div v-if="showMessageLine" class="oc-textarea-message">
+    <div v-if="showMessageLine" class="oc-textarea-message mt-1">
       <span
         :id="messageId"
         :class="{
@@ -97,12 +97,9 @@ defineExpose({ focus })
 
 <style lang="scss">
 .oc-textarea {
-  padding-bottom: var(--oc-space-xsmall);
-  padding-top: var(--oc-space-xsmall);
   box-sizing: border-box;
   background: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);
-  margin: 0;
   max-width: 100%;
   width: 100%;
   overflow: auto;
@@ -120,7 +117,6 @@ defineExpose({ focus })
   &-message {
     display: flex;
     align-items: center;
-    margin-top: var(--oc-space-xsmall);
 
     min-height: $oc-font-size-default * 1.5;
   }

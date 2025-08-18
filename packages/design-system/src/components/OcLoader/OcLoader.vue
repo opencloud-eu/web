@@ -17,7 +17,15 @@ export interface Props {
 
 const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-loader {
+    @apply my-5;
+  }
+}
+</style>
 <style lang="scss">
 .oc-loader {
   -webkit-appearance: none;
@@ -27,8 +35,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   border-radius: 500px;
   display: block;
   height: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
   overflow: hidden;
   vertical-align: baseline;
   width: 100%;

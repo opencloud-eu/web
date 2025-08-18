@@ -36,7 +36,6 @@ export default defineComponent({
   grid-template-columns: auto 1fr auto;
   align-items: center;
   grid-gap: 5px;
-  padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
 
   &__body {
     text-align: left;

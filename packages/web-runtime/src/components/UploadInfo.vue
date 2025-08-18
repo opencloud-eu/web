@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium">
+  <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium mx-auto sm:m-0">
     <div class="upload-info-title oc-flex oc-flex-between oc-flex-middle px-4 py-2 oc-rounded-top">
       <p v-oc-tooltip="uploadDetails" class="my-1" v-text="uploadInfoTitle" />
       <oc-button
@@ -689,20 +689,23 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  #upload-info .oc-resource-details {
+    @apply pl-1;
+  }
+}
+</style>
 <style lang="scss">
 #upload-info {
   background-color: var(--oc-role-surface);
   width: 400px;
 
   @media (max-width: 640px) {
-    margin: 0 auto;
     width: 100%;
     max-width: 500px;
-  }
-
-  .oc-resource-details {
-    padding-left: var(--oc-space-xsmall);
   }
 
   .upload-info-title {

@@ -10,7 +10,11 @@
     >
       <template #default>
         <oc-list class="date-filter-list" :class="{ 'date-filter-list-hidden': dateRangeClicked }">
-          <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
+          <li
+            v-for="(item, index) in displayedItems"
+            :key="index"
+            class="my-1 first:mt-0 last:mb-0"
+          >
             <oc-button
               class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1"
               :class="{
@@ -313,21 +317,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss">
 .date-filter {
   overflow: hidden;
 
   &-list {
-    li {
-      &:first-child {
-        margin-top: 0 !important;
-      }
-      &:last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
     &-item {
       line-height: 1.5;
       gap: 8px;

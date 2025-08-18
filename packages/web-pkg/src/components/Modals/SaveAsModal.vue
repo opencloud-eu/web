@@ -185,7 +185,18 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .oc-modal.save-as-modal .oc-modal-body {
+    @apply p-0;
+  }
+  .oc-modal.save-as-modal .oc-modal-body-message {
+    @apply m-0;
+  }
+}
+</style>
 <style lang="scss">
 .oc-modal.save-as-modal {
   max-width: 80vw;
@@ -197,11 +208,8 @@ export default defineComponent({
   }
 
   .oc-modal-body {
-    padding: 0;
-
     &-message {
       height: 60vh;
-      margin: 0;
     }
   }
 }

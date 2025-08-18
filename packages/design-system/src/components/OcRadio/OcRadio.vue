@@ -10,7 +10,7 @@
       :value="option"
       :disabled="disabled"
     />
-    <label :for="id" :class="labelClasses" v-text="label" />
+    <label :for="id" :class="labelClasses" class="ml-1" v-text="label" />
   </span>
 </template>
 
@@ -59,7 +59,7 @@ const {
 
 const model = defineModel<boolean | unknown>()
 
-const classes = computed(() => ['oc-radio', 'oc-radio-' + getSizeClass(size)])
+const classes = computed(() => ['oc-radio', 'oc-radio-' + getSizeClass(size), 'm-0'])
 
 const labelClasses = computed(() => ({
   'oc-invisible-sr': hideLabel,
@@ -84,7 +84,6 @@ const labelClasses = computed(() => ({
   background-repeat: no-repeat;
 
   display: inline-block;
-  margin: 0;
   overflow: hidden;
 
   transition: 0.2s ease-in-out;
@@ -111,9 +110,5 @@ const labelClasses = computed(() => ({
   &.oc-radio-l {
     @include oc-form-check-size(1.5);
   }
-}
-
-label > .oc-radio + span {
-  margin-left: var(--oc-space-xsmall);
 }
 </style>

@@ -6,7 +6,7 @@
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="public-link-error">
+          <h2 key="public-link-error" class="m-0">
             <span v-text="$gettext('An error occurred while loading the public link')" />
           </h2>
         </div>
@@ -17,7 +17,7 @@
       <template v-else-if="isPasswordRequired">
         <form @submit.prevent="resolvePublicLinkTask.perform(true)">
           <div class="oc-card-header">
-            <h2>
+            <h2 class="m-0">
               <span v-text="$gettext('This resource is password-protected')" />
             </h2>
           </div>
@@ -43,7 +43,7 @@
       </template>
       <template v-else>
         <div class="oc-card-header">
-          <h2 key="public-link-loading">
+          <h2 key="public-link-loading" class="m-0">
             <span v-text="$gettext('Loading public link…')" />
           </h2>
         </div>
@@ -52,7 +52,7 @@
         </div>
       </template>
       <div class="oc-card-footer pt-0">
-        <p>{{ footerSlogan }}</p>
+        <p class="m-0">{{ footerSlogan }}</p>
       </div>
     </div>
   </div>
@@ -323,11 +323,6 @@ export default defineComponent({
 
   .oc-text-input-message {
     justify-content: center;
-  }
-
-  .oc-card-header h2,
-  .oc-card-footer p {
-    margin: 0;
   }
 }
 </style>
