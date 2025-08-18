@@ -529,7 +529,7 @@ export default defineComponent({
 <style>
 @reference 'tailwindcss';
 
-@layer utility {
+@layer utilities {
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
     @apply p-0;

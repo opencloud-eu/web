@@ -6,7 +6,7 @@
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="public-link-error m-0">
+          <h2 key="public-link-error" class="m-0">
             <span v-text="$gettext('An error occurred while loading the public link')" />
           </h2>
         </div>
@@ -43,7 +43,7 @@
       </template>
       <template v-else>
         <div class="oc-card-header">
-          <h2 key="public-link-loading m-0">
+          <h2 key="public-link-loading" class="m-0">
             <span v-text="$gettext('Loading public link…')" />
           </h2>
         </div>

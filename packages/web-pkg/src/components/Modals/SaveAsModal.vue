@@ -188,7 +188,7 @@ export default defineComponent({
 <style>
 @reference 'tailwindcss';
 
-@layer utility {
+@layer utilities {
   .oc-modal.save-as-modal .oc-modal-body {
     @apply p-0;
   }

@@ -15,7 +15,7 @@
       </template>
       <template v-else-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="private-link-error m-0">
+          <h2 key="private-link-error" class="m-0">
             <span v-text="$gettext('An error occurred while resolving the private link')" />
           </h2>
         </div>
