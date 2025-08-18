@@ -1,7 +1,7 @@
 <template>
   <main class="webfinger-resolve h-screen flex flex-col justify-center items-center">
     <h1 class="sr-only" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center w-lg text-lg bg-role-surface-container rounded-xl">
+    <oc-card class="text-center w-lg text-lg bg-role-surface-container rounded-xl">
       <template v-if="hasError">
         <h2 key="webfinger-resolve-error" class="mt-0">
           <span v-text="$gettext('Sorry!')" />
@@ -15,7 +15,7 @@
         </h2>
         <p v-text="$gettext('You are being redirected.')" />
       </template>
-    </div>
+    </oc-card>
   </main>
 </template>
 

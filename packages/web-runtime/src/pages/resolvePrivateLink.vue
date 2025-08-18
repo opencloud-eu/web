@@ -1,27 +1,13 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <div class="oc-card text-center w-lg bg-role-surface-container rounded-xl">
-      <template v-if="loading">
-        <div class="oc-card-header">
-          <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
-            <span v-text="$gettext('Resolving private link…')" />
-          </h2>
-        </div>
-        <div class="oc-card-body">
-          <oc-spinner :aria-hidden="true" />
-        </div>
+    <oc-card class="text-center w-lg bg-role-surface-container rounded-xl">
+      <template #header>
+        <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
+        <h2 class="m-0" v-text="headerTitle" />
       </template>
-      <template v-else-if="errorMessage">
-        <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="private-link-error" class="m-0">
-            <span v-text="$gettext('An error occurred while resolving the private link')" />
-          </h2>
-        </div>
-        <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="text-xl">{{ errorMessage }}</p>
-        </div>
-      </template>
-    </div>
+      <oc-spinner v-if="loading" :aria-hidden="true" />
+      <p v-else-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
+    </oc-card>
     <oc-button
       v-if="isUnacceptedShareError"
       type="router-link"
@@ -43,7 +29,8 @@ import {
   useRouteQuery,
   createLocationSpaces,
   createLocationShares,
-  useClientService
+  useClientService,
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { unref, defineComponent, computed, onMounted, ref, Ref } from 'vue'
 import { dirname } from 'path'
@@ -52,6 +39,7 @@ import { useTask } from 'vue-concurrency'
 import { isShareSpaceResource, Resource, SHARE_JAIL_ID } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'ResolvePrivateLink',
@@ -60,6 +48,9 @@ export default defineComponent({
     const id = useRouteParam('fileId')
     const { $gettext } = useGettext()
     const clientService = useClientService()
+    const themeStore = useThemeStore()
+    const { currentTheme } = storeToRefs(themeStore)
+    const logoImg = computed(() => unref(currentTheme).logo)
 
     const resource: Ref<Resource> = ref()
     const sharedParentResource: Ref<Resource> = ref()
@@ -161,6 +152,16 @@ export default defineComponent({
       return $gettext('Open "Shared with me"')
     })
 
+    const headerTitle = computed(() => {
+      if (unref(loading)) {
+        return $gettext('Resolving private link…')
+      }
+      if (unref(errorMessage)) {
+        return $gettext('An error occurred while resolving the private link')
+      }
+      return ''
+    })
+
     const errorMessage = computed(() => {
       if (unref(isUnacceptedShareError)) {
         return $gettext(
@@ -175,6 +176,8 @@ export default defineComponent({
     })
 
     return {
+      logoImg,
+      headerTitle,
       errorMessage,
       loading,
       resource,

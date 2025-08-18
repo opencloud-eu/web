@@ -1,7 +1,7 @@
 <template>
-  <div
+  <oc-card
     ref="observerTarget"
-    class="oc-tile-card oc-card flex flex-col h-full shadow-none"
+    class="oc-tile-card flex flex-col h-full shadow-none"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
@@ -99,7 +99,7 @@
         </p>
       </div>
     </template>
-  </div>
+  </oc-card>
 </template>
 
 <script setup lang="ts">

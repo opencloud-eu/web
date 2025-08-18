@@ -1,11 +1,9 @@
 <template>
-  <li
-    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col border h-full overflow-hidden shadow-none"
-  >
+  <oc-card tag="li" class="app-tile bg-role-surface-container flex flex-col border h-full overflow-hidden shadow-none">
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
     </router-link>
-    <div class="app-tile-body oc-card-body flex flex-col justify-between p-4 h-full">
+    <div class="app-tile-body flex flex-col justify-between p-4 h-full">
       <div class="app-tile-content">
         <div class="flex items-center">
           <h3 class="my-2 truncate mark-element app-tile-title">
@@ -24,7 +22,7 @@
       <app-tags :app="app" @click="emitSearchTerm" />
       <app-actions :app="app" class="mt-4" />
     </div>
-  </li>
+  </oc-card>
 </template>
 
 <script lang="ts">

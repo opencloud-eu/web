@@ -1,58 +1,34 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <div class="oc-card text-center w-lg bg-role-surface-container rounded-xl">
-      <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-      <template v-if="errorMessage">
-        <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="public-link-error" class="m-0">
-            <span v-text="$gettext('An error occurred while loading the public link')" />
-          </h2>
-        </div>
-        <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="text-xl">{{ errorMessage }}</p>
-        </div>
+    <oc-card class="text-center w-lg bg-role-surface-container rounded-xl">
+      <template #header>
+        <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
+        <h2 class="m-0" v-text="headerTitle" />
       </template>
-      <template v-else-if="isPasswordRequired">
-        <form @submit.prevent="resolvePublicLinkTask.perform(true)">
-          <div class="oc-card-header">
-            <h2 class="m-0">
-              <span v-text="$gettext('This resource is password-protected')" />
-            </h2>
-          </div>
-          <div class="oc-card-body">
-            <oc-text-input
-              ref="passwordInput"
-              v-model="password"
-              :error-message="wrongPasswordMessage"
-              :label="passwordFieldLabel"
-              type="password"
-              class="mb-2 [&_.oc-text-input-message]:justify-center"
-            />
-            <oc-button
-              appearance="filled"
-              class="oc-login-authorize-button"
-              :disabled="!password"
-              submit="submit"
-            >
-              <span v-text="$gettext('Continue')" />
-            </oc-button>
-          </div>
-        </form>
-      </template>
-      <template v-else>
-        <div class="oc-card-header">
-          <h2 key="public-link-loading" class="m-0">
-            <span v-text="$gettext('Loading public link…')" />
-          </h2>
-        </div>
-        <div class="oc-card-body">
-          <oc-spinner :aria-hidden="true" />
-        </div>
-      </template>
-      <div class="oc-card-footer pt-0">
+      <p v-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
+      <form v-else-if="isPasswordRequired" @submit.prevent="resolvePublicLinkTask.perform(true)">
+        <oc-text-input
+          ref="passwordInput"
+          v-model="password"
+          :error-message="wrongPasswordMessage"
+          :label="passwordFieldLabel"
+          type="password"
+          class="mb-2 [&_.oc-text-input-message]:justify-center"
+        />
+        <oc-button
+          appearance="filled"
+          class="oc-login-authorize-button"
+          :disabled="!password"
+          submit="submit"
+        >
+          <span v-text="$gettext('Continue')" />
+        </oc-button>
+      </form>
+      <oc-spinner v-else :aria-hidden="true" />
+      <template #footer>
         <p class="m-0">{{ footerSlogan }}</p>
-      </div>
-    </div>
+      </template>
+    </oc-card>
   </div>
 </template>
 
@@ -285,6 +261,15 @@ export default defineComponent({
       }
     })
 
+    const headerTitle = computed(() => {
+      if (unref(errorMessage)) {
+        return $gettext('An error occurred while loading the public link')
+      }
+      if (unref(isPasswordRequired)) {
+        return $gettext('This resource is password-protected')
+      }
+      return $gettext('Loading public link…')
+    })
     const footerSlogan = computed(() => unref(currentTheme).slogan)
     const passwordFieldLabel = computed(() => {
       return $gettext('Enter password for public link')
@@ -303,6 +288,7 @@ export default defineComponent({
       passwordFieldLabel,
       wrongPasswordMessage,
       errorMessage,
+      headerTitle,
       footerSlogan,
       resolvePublicLinkTask,
       loadPublicSpaceTask,

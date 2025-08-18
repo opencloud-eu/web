@@ -14,15 +14,12 @@
   >
     <slot />
   </oc-bottom-drawer>
-  <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
-    <div
-      v-if="$slots.default"
-      :class="['oc-card oc-card-body', getTailwindPaddingClass(paddingSize)]"
-    >
+  <oc-card v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
+    <div v-if="$slots.default" :class="[getTailwindPaddingClass(paddingSize)]">
       <slot />
     </div>
     <slot v-else name="special" />
-  </div>
+  </oc-card>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +40,7 @@ import {
 } from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
+import OcCard from '../OcCard/OcCard.vue'
 
 export interface Props {
   /**
