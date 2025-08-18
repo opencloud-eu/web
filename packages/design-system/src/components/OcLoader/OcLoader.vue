@@ -1,5 +1,5 @@
 <template>
-  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" class="my-5" :aria-label="ariaLabel" />
+  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" :aria-label="ariaLabel" />
 </template>
 
 <script setup lang="ts">
@@ -17,7 +17,15 @@ export interface Props {
 
 const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-loader {
+    @apply my-5;
+  }
+}
+</style>
 <style lang="scss">
 .oc-loader {
   -webkit-appearance: none;

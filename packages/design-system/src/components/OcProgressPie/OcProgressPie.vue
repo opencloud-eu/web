@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-progress-pie m-4" :data-fill="fill">
+  <div class="oc-progress-pie" :data-fill="fill">
     <div class="oc-progress-pie-container" />
     <label v-if="showLabel" class="oc-progress-pie-label oc-text-muted" v-text="label" />
   </div>
@@ -40,7 +40,15 @@ const label = computed(() => {
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-progress-pie {
+    @apply m-4;
+  }
+}
+</style>
 <style lang="scss">
 $default-size: 64px;
 

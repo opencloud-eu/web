@@ -1,5 +1,5 @@
 <template>
-  <span class="oc-recipient p-1">
+  <span class="oc-recipient">
     <slot name="avatar">
       <oc-avatar-item
         :width="16.8"
@@ -38,7 +38,15 @@ export interface Slots {
 const { recipient } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-recipient {
+    @apply p-1;
+  }
+}
+</style>
 <style lang="scss">
 .oc-recipient {
   align-items: center;

@@ -30,8 +30,7 @@ const cellClasses = computed(() => {
     'oc-table-cell',
     `oc-table-cell-align-${alignH}`,
     `oc-table-cell-align-${alignV}`,
-    `oc-table-cell-width-${width}`,
-    'px-2'
+    `oc-table-cell-width-${width}`
   ]
   if (wrap) {
     classes.push(`oc-text-${wrap}`)
@@ -39,7 +38,15 @@ const cellClasses = computed(() => {
   return classes
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-table-cell {
+    @apply px-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table-cell {
   position: relative;

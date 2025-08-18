@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded p-4 mt-2"
+    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded"
     :class="classes"
   >
     <div class="oc-flex oc-flex-wrap oc-flex-middle oc-flex-1" :role="role" :aria-live="ariaLive">
@@ -98,7 +98,15 @@ onMounted(() => {
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-notification-message {
+    @apply p-4 mt-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-notification-message {
   background-color: var(--oc-role-surface) !important;

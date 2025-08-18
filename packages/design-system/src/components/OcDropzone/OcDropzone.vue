@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-dropzone p-4">
+  <div class="oc-dropzone">
     <!-- @slot Message inside of the dropzone -->
     <slot />
   </div>
@@ -8,7 +8,15 @@
 <script setup lang="ts">
 defineOptions({ name: 'OcDropzone' })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-dropzone {
+    @apply p-4;
+  }
+}
+</style>
 <style lang="scss">
 .oc-dropzone {
   align-items: center;
