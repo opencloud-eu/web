@@ -35,7 +35,7 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div class="snackbars">
+    <div class="snackbars mx-auto sm:m-0">
       <message-bar />
       <upload-info />
     </div>
@@ -251,7 +251,6 @@ onBeforeUnmount(() => {
     @media (max-width: 640px) {
       left: 0;
       right: 0;
-      margin: 0 auto;
       width: 100%;
       max-width: 500px;
     }

@@ -1,13 +1,13 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <main v-else id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
-    <div class="account-page">
+    <div class="account-page px-4 lg:px-0">
       <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
         :title="$gettext('Account Information')"
         :fields="[$gettext('Information name'), $gettext('Information value')]"
-        class="account-page-info"
+        class="account-page-info mt-6"
       >
         <template #header="{ title }">
           <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
@@ -296,7 +296,7 @@
         :is="extension.content"
         v-for="extension in preferencesPanelExtensions"
         :key="`preferences-panel-${extension.id}`"
-        class="preferences-panel"
+        class="preferences-panel mt-6"
       />
     </div>
   </main>
@@ -824,11 +824,6 @@ export default defineComponent({
     border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 
-  .preferences-panel,
-  .account-table {
-    margin-top: var(--oc-space-large);
-  }
-
   .preferences-panel {
     border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
@@ -838,8 +833,6 @@ export default defineComponent({
 
     @media (max-width: 1200px) {
       width: 100%;
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
     }
   }
 }

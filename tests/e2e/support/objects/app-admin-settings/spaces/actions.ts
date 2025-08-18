@@ -8,7 +8,7 @@ const contextMenuSelector = `[data-item-id="%s"] .spaces-table-btn-action-dropdo
 const spaceCheckboxSelector = `[data-item-id="%s"] input[type=checkbox]`
 const contextMenuActionButton = `.oc-files-actions-%s-trigger`
 const inputFieldSelector =
-  '//div[@class="oc-modal-body-input"]//input[contains(@class,"oc-text-input")]'
+  '//div[contains(@class,"oc-modal-body-input")]//input[contains(@class,"oc-text-input")]'
 const modalConfirmBtn = `.oc-modal-body-actions-confirm`
 const quotaValueDropDown = `.vs__dropdown-option :text-is("%s")`
 const selectedQuotaValueField = '.vs__dropdown-toggle'

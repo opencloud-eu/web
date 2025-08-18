@@ -17,6 +17,7 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
+      class="mx-auto sm:mx-0"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -52,24 +53,27 @@
       ref="optionsDropRef"
       mode="manual"
       target="#files-global-search-bar"
+      padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
     >
       <oc-list class="oc-list-divider">
         <li
           v-if="loading"
-          class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted"
+          class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted py-1 px-2"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
           <span class="ml-2">{{ $gettext('Searching ...') }}</span>
         </li>
-        <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center">
+        <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center py-1 px-2">
           {{ $gettext('No results') }}
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
             <oc-list>
-              <li class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details">
+              <li
+                class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details py-1 px-2"
+              >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
                   <router-link class="more-results p-0" :to="getSearchResultLocation(provider.id)">
@@ -84,7 +88,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview oc-flex oc-flex-middle"
+                class="preview oc-flex oc-flex-middle py-1 px-2"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -522,7 +526,16 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  #files-global-search-options .preview-component button,
+  #files-global-search-options .preview-component a {
+    @apply p-0;
+  }
+}
+</style>
 <style lang="scss">
 #files-global-search {
   .mobile-search-btn {
@@ -556,21 +569,15 @@ export default defineComponent({
       height: 48px;
       left: 0;
       right: 0;
-      margin: 0 auto;
       top: 0;
       width: 95vw !important;
       z-index: 9;
-
-      .oc-search-input-icon {
-        padding: 0 var(--oc-space-xlarge);
-      }
 
       input,
       input:not(:placeholder-shown) {
         background-color: var(--oc-role-surface);
         border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
-        margin: 0 auto;
       }
     }
   }
@@ -580,10 +587,6 @@ export default defineComponent({
     overflow-y: auto;
     max-height: calc(100vh - 60px);
     text-decoration: none;
-
-    .oc-card {
-      padding: 0 !important;
-    }
 
     @media (max-width: 969px) {
       width: 300px;
@@ -595,23 +598,14 @@ export default defineComponent({
 
     .preview-component button,
     .preview-component a {
-      padding: 0;
       width: initial;
       gap: initial;
     }
 
     ul {
-      li.provider-details,
-      li.loading,
-      li#no-results {
-        padding: var(--oc-space-xsmall) var(--oc-space-small);
-      }
-
       li {
         position: relative;
         font-size: var(--oc-font-size-small);
-        margin: 0;
-        padding: 0;
 
         &.provider-details {
           font-size: var(--oc-font-size-xsmall);
@@ -620,7 +614,6 @@ export default defineComponent({
         &.preview {
           min-height: 44px;
           font-size: inherit;
-          padding: var(--oc-space-xsmall) var(--oc-space-small);
 
           &:hover,
           &.active {

@@ -38,11 +38,17 @@ const cellClasses = computed(() => {
   return classes
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-table-cell {
+    @apply px-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table-cell {
-  /* padding is not configurable until we need it */
-  padding: 0 var(--oc-space-small);
   position: relative;
 
   &-align {

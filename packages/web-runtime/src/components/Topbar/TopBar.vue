@@ -2,6 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
+    class="px-4"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left oc-flex oc-flex-middle oc-flex-start">
@@ -10,7 +11,7 @@
         :menu-items="appMenuExtensions"
       />
       <router-link v-if="!hideLogo" :to="homeLink" class="oc-width-1-1 oc-logo-href">
-        <oc-image :src="currentTheme.logo" :alt="sidebarLogoAlt" class="oc-logo-image" />
+        <oc-image :src="currentTheme.logo" :alt="sidebarLogoAlt" class="oc-logo-image ml-1" />
       </router-link>
     </div>
     <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
@@ -211,7 +212,6 @@ export default {
   grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
   grid-template-columns: 30% 30% 40%;
   grid-template-rows: 52px auto;
-  padding: 0 1rem;
   position: sticky;
   z-index: 5;
 
@@ -221,7 +221,6 @@ export default {
     grid-template-rows: 1;
     height: 52px;
     justify-content: center;
-    padding: 0 1.1rem;
   }
 
   &.open-app {
@@ -234,7 +233,6 @@ export default {
 
   .oc-logo-image {
     max-height: 26px;
-    margin-left: var(--oc-space-xsmall);
     vertical-align: middle;
     image-rendering: auto;
     image-rendering: crisp-edges;

@@ -30,7 +30,7 @@
       </oc-list>
       <oc-list
         v-if="canRemove"
-        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2"
+        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2 mt-2"
       >
         <li class="oc-rounded oc-menu-item-hover">
           <context-menu-item :option="removeShareOption" />
@@ -288,7 +288,6 @@ export default defineComponent({
 <style lang="scss">
 .collaborator-edit-dropdown-options-list {
   &-remove {
-    margin-top: var(--oc-space-small) !important;
     border-top: 0.5px solid var(--oc-role-outline-variant) !important;
   }
 }
@@ -304,7 +303,6 @@ export default defineComponent({
   }
   dd {
     grid-column-start: 2;
-    margin-left: var(--oc-space-medium);
   }
 }
 </style>

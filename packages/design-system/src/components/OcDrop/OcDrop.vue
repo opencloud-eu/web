@@ -340,13 +340,14 @@ watch(
 
 <style lang="scss">
 .tippy-box[data-theme~='none'] {
+  // overwrite tippy styles
   background-color: transparent;
   font-size: inherit;
   line-height: inherit;
 
   .tippy-content {
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
-    padding: var(--oc-space-small);
+    padding: calc(var(--spacing) * 2);
   }
 }
 

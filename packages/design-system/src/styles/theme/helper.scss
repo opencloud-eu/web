@@ -42,7 +42,6 @@
   border: 0;
   font: inherit;
   min-height: 0;
-  padding: 0;
 
   &::-moz-focus-inner {
     border: 0;
@@ -67,14 +66,6 @@
 
 .oc-disabled {
   opacity: 0.4;
-}
-
-hr {
-  border: 0;
-  border-top: 0.5px solid var(--oc-role-outline-variant);
-  margin: 0 0 20px;
-  overflow: visible;
-  text-align: inherit;
 }
 
 // Classes for border radius
@@ -125,20 +116,9 @@ hr {
 
 .oc-bottom-drawer li,
 .oc-drop li {
-  margin-bottom: var(--oc-space-xsmall);
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-  
   a,
   .item-has-switch,
   button:not([role='switch']) {
-    padding: var(--oc-space-small);
     border-radius: 8px;
     gap: var(--oc-space-small);
     justify-content: flex-start;
@@ -151,12 +131,6 @@ hr {
   }
 }
 
-.oc-bottom-drawer {
-  ul {
-    padding: var(--oc-space-small);
-  }
-}
-
 .sidebar-actions-panel {
   > li a,
   > li a:hover {
@@ -164,13 +138,5 @@ hr {
     gap: 10px;
     vertical-align: top;
     text-decoration: none;
-  }
-
-  li {
-    margin-bottom: var(--oc-space-xsmall);
-  }
-
-  li a, li button {
-    padding: var(--oc-space-small);
   }
 }

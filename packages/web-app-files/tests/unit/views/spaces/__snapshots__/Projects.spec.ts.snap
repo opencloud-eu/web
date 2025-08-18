@@ -27,7 +27,7 @@ exports[`Projects view > different files view states > lists all available proje
       </th>
       <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-table-thead-content header-text">Name</span> <span class="oc-icon oc-icon-s p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-table-thead-content header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -55,7 +55,7 @@ exports[`Projects view > different files view states > lists all available proje
       </tbody>
       <tfoot class="oc-table-footer">
         <tr class="oc-table-footer-row">
-          <td colspan="4" class="oc-table-footer-cell">
+          <td colspan="4" class="oc-table-footer-cell p-1">
             <!-- @slot Footer of the table -->
             <!-- @slot Footer of the files table -->
             <!--v-if-->

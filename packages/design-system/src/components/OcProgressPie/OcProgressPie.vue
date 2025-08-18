@@ -40,13 +40,20 @@ const label = computed(() => {
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-progress-pie {
+    @apply m-4;
+  }
+}
+</style>
 <style lang="scss">
 $default-size: 64px;
 
 .oc-progress-pie {
   height: $default-size;
-  margin: 15px;
   position: relative;
   width: $default-size;
 

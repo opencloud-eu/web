@@ -159,9 +159,13 @@ export default class Collaborator {
       dropdownSelector = Collaborator.newCollaboratorRoleDropdown
       itemSelector = util.format(Collaborator.collaboratorRoleItemSelector, '')
     }
-    // added an additional click to remove flaky
-    await page.locator('#new-collaborators-form').click()
+
     await page.locator(dropdownSelector).click()
+    const isDropVisible = await page.locator('.files-recipient-role-drop').isVisible()
+    if (!isDropVisible) {
+      // the drop sometimes doesn't show after the first click for some reason, click again
+      await page.locator(dropdownSelector).click()
+    }
     return await page.click(util.format(itemSelector, role))
   }
 

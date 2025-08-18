@@ -38,7 +38,7 @@
       padding-size="medium"
     >
       <oc-list>
-        <li v-if="hasHiddenFiles" class="files-view-options-list-item">
+        <li v-if="hasHiddenFiles" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="hiddenFilesShownModel"
             data-testid="files-switch-hidden-files"
@@ -46,7 +46,7 @@
             @update:checked="updateHiddenFilesShownModel"
           />
         </li>
-        <li v-if="hasFileExtensions" class="files-view-options-list-item">
+        <li v-if="hasFileExtensions" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="fileExtensionsShownModel"
             data-testid="files-switch-files-extensions-files"
@@ -54,7 +54,7 @@
             @update:checked="updateFileExtensionsShownModel"
           />
         </li>
-        <li v-if="hasPagination" class="files-view-options-list-item">
+        <li v-if="hasPagination" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-page-size
             v-if="!queryParamsLoading"
             :selected="queryItemAsString(itemsPerPageCurrent)"
@@ -65,7 +65,7 @@
             @change="setItemsPerPage"
           />
         </li>
-        <li v-if="isProjectsLocation" class="files-view-options-list-item">
+        <li v-if="isProjectsLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="disabledSpacesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -73,7 +73,7 @@
             @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
-        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item">
+        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="emptyTrashesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -83,7 +83,7 @@
         </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
-          class="files-view-options-list-item oc-flex oc-flex-between oc-flex-middle"
+          class="files-view-options-list-item mt-2 mb-4 last:mb-0 oc-flex oc-flex-between oc-flex-middle"
         >
           <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
           <input
@@ -298,7 +298,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 .viewmode-switch-buttons {
   flex-flow: initial;
@@ -314,17 +313,9 @@ export default defineComponent({
 }
 
 .files-view-options-list-item {
-  &:not(:last-child) {
-    margin-bottom: var(--oc-space-medium);
-  }
-
   & > * {
     display: flex;
     justify-content: space-between;
-  }
-
-  & + & {
-    margin-top: var(--oc-space-small);
   }
 }
 

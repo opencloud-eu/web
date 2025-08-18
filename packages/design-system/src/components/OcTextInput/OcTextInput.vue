@@ -18,7 +18,7 @@
         :class="{
           'oc-text-input-danger': !!showErrorMessage,
           'pl-6': !!readOnly,
-          'clear-action-visible': showClearButton
+          'pr-6': showClearButton
         }"
         :type="type"
         :value="modelValue"
@@ -43,7 +43,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message oc-text-small mt-1"
       :class="{
         'oc-text-input-description': showDescriptionMessage,
         'oc-text-input-danger': showErrorMessage
@@ -369,12 +369,7 @@ watch(
   &-message {
     display: flex;
     align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
-  }
-
-  &.clear-action-visible {
-    padding-right: ($oc-size-icon-default * 0.7) + 7px;
   }
 }
 </style>

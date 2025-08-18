@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="link-modal-password mb-4">
+  <div class="link-modal-password mb-4 ml-[30px]">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -71,7 +71,7 @@
       </oc-button>
       <oc-button
         v-if="password.value"
-        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger"
+        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger p-1"
         appearance="filled"
         :disabled="confirmButtonDisabled"
       >
@@ -340,17 +340,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.link-modal-password {
-  margin-left: calc(var(--oc-space-small) + 22px);
-}
-
 .link-modal-confirm-button-group {
   outline: 0;
 }
 
 .oc-modal-body-actions-confirm-secondary-trigger {
   background: var(--oc-role-secondary);
-  padding: var(--oc-space-xsmall);
 }
 
 .role-dropdown-list span {
