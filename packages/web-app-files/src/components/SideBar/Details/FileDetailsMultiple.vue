@@ -1,6 +1,6 @@
 <template>
   <div id="oc-file-details-multiple-sidebar">
-    <div class="files-preview oc-mb-l">
+    <div class="files-preview mb-6">
       <div class="files-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
         <p class="preview-text" data-testid="selectedFilesText" v-text="selectedFilesString" />

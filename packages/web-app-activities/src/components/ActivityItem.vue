@@ -2,7 +2,7 @@
   <div class="oc-flex oc-flex-middle activity-item">
     <div class="oc-flex oc-flex-middle">
       <oc-avatar :width="36" :user-name="activity.template.variables?.user?.displayName" />
-      <span class="oc-ml-s" v-text="activity.template.variables?.user?.displayName" />
+      <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
     </div>
     <div>activity unknown</div>
     <div class="oc-text-truncate">
@@ -10,10 +10,10 @@
       <div
         v-if="resourceNotAccessible"
         v-oc-tooltip="$gettext('The resource is unavailable, it may have been deleted.')"
-        class="oc-text-muted oc-flex oc-flex-middle oc-p-xs"
+        class="oc-text-muted oc-flex oc-flex-middle p-1"
       >
         <oc-icon name="eye-off" />
-        <span class="oc-ml-s" v-text="activity.template.variables?.resource?.name" />
+        <span class="ml-2" v-text="activity.template.variables?.resource?.name" />
       </div>
     </div>
     <div><span v-text="recordedDateTime" /></div>

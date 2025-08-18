@@ -1,7 +1,7 @@
 <template>
   <div class="account-table">
     <slot name="header" :title="title">
-      <h2 class="account-table-title oc-flex oc-flex-middle" :class="subtitle ? 'oc-mb-s' : ''">
+      <h2 class="account-table-title oc-flex oc-flex-middle" :class="subtitle ? 'mb-2' : ''">
         {{ title }}
         <oc-tag
           v-if="newTag"
@@ -9,11 +9,11 @@
           color="primary"
           appearance="filled"
           size="small"
-          class="oc-ml-s account-table-new-tag"
+          class="ml-2 account-table-new-tag"
           v-text="$gettext('NEW')"
         />
       </h2>
-      <p v-if="subtitle" class="oc-text-small oc-mt-rm oc-mb-m" v-text="subtitle" />
+      <p v-if="subtitle" class="oc-text-small mt-0 mb-4" v-text="subtitle" />
     </slot>
     <oc-table-simple>
       <colgroup>

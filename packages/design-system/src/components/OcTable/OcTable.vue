@@ -28,7 +28,7 @@
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
-              class="oc-p-xs oc-rounded"
+              class="p-1 oc-rounded"
               size="small"
             />
           </oc-button>
@@ -107,7 +107,7 @@ import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { getSizeClass, Item as BaseItem, FieldType, SizeType } from '../../helpers'
+import { Item as BaseItem, FieldType, SizeType, getTailwindSizeClass } from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -343,11 +343,11 @@ const extractThProps = (field: FieldType, index: number) => {
   }
 
   if (index === 0) {
-    props.class += ` oc-pl-${getSizeClass(paddingX)} `
+    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` oc-pr-${getSizeClass(paddingX)}`
+    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
   }
 
   extractSortThProps(props, field)
@@ -378,11 +378,11 @@ const extractTdProps = (field: FieldType, index: number, item: Item) => {
   }
 
   if (index === 0) {
-    props.class += ` oc-pl-${getSizeClass(paddingX)} `
+    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` oc-pr-${getSizeClass(paddingX)}`
+    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
   }
 
   if (Object.prototype.hasOwnProperty.call(field, 'accessibleLabelCallback')) {

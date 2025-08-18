@@ -3,15 +3,15 @@
 exports[`Details SideBar Panel > displays the details side panel 1`] = `
 "<div data-v-c7ea2f9c="" id="oc-space-details-sidebar">
   <div data-v-c7ea2f9c="" class="oc-space-details-sidebar-image oc-text-center">
-    <oc-icon-stub data-v-c7ea2f9c="" accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="space-default-image oc-px-m oc-py-m"></oc-icon-stub>
+    <oc-icon-stub data-v-c7ea2f9c="" accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="space-default-image px-4 py-4"></oc-icon-stub>
   </div>
-  <div data-v-c7ea2f9c="" class="oc-flex oc-flex-middle oc-space-details-sidebar-members oc-mb-s oc-text-small">
+  <div data-v-c7ea2f9c="" class="oc-flex oc-flex-middle oc-space-details-sidebar-members mb-2 oc-text-small">
     <oc-button-stub data-v-c7ea2f9c="" arialabel="Open member list in share panel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true"></oc-button-stub>
     <!--v-if-->
     <p data-v-c7ea2f9c="">This space has 1 member.</p>
     <oc-button-stub data-v-c7ea2f9c="" arialabel="Open share panel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="small" submit="button" type="button" nohover="true"></oc-button-stub>
   </div>
-  <dl data-v-c7ea2f9c="" class="details-list oc-m-rm" aria-label="Overview of the information about the selected space">
+  <dl data-v-c7ea2f9c="" class="details-list m-0" aria-label="Overview of the information about the selected space">
     <dt data-v-c7ea2f9c="">Last activity</dt>
     <dd data-v-c7ea2f9c="">Invalid DateTime</dd>
     <!--v-if-->

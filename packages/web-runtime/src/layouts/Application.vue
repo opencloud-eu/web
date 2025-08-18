@@ -4,12 +4,12 @@
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header">
-      <div v-if="isIE11" class="oc-surface-container oc-text-center oc-py-m">
-        <p class="oc-m-rm" v-text="ieDeprecationWarning" />
+      <div v-if="isIE11" class="oc-surface-container oc-text-center py-4">
+        <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
     </div>
-    <div id="web-content-main" class="oc-px-s oc-pb-s">
+    <div id="web-content-main" class="px-2 pb-2">
       <div class="app-container oc-flex">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>

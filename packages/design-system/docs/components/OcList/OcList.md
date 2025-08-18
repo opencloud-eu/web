@@ -26,7 +26,7 @@ The components provides a default slot to display the list items.
     <li>Third element</li>
   </oc-list>
 </div>
-<div class="oc-mt-m">
+<div class="mt-4">
   <oc-list :raw="true">
     <li>First element</li>
     <li>Second element</li>

@@ -10,9 +10,9 @@
     >
       <template #default>
         <oc-list class="date-filter-list" :class="{ 'date-filter-list-hidden': dateRangeClicked }">
-          <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
+          <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 oc-p-xs"
+              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -22,7 +22,7 @@
               @click="toggleItemSelection(item)"
             >
               <div class="oc-flex oc-flex-middle oc-text-truncate">
-                <div class="oc-text-truncate oc-ml-s">
+                <div class="oc-text-truncate ml-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
@@ -31,9 +31,9 @@
               </div>
             </oc-button>
           </li>
-          <li class="oc-my-xs">
+          <li class="my-1">
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 oc-p-xs"
+              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': dateRangeApplied
               }"
@@ -43,7 +43,7 @@
               @click="dateRangeClicked = true"
             >
               <div class="oc-flex oc-flex-middle oc-text-truncate">
-                <div class="oc-text-truncate oc-ml-s">
+                <div class="oc-text-truncate ml-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>
@@ -54,10 +54,10 @@
           </li>
         </oc-list>
         <div
-          class="date-filter-range-panel oc-py-s"
+          class="date-filter-range-panel py-2"
           :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
         >
-          <div class="oc-flex oc-flex-middle oc-flex-between oc-mb-m">
+          <div class="oc-flex oc-flex-middle oc-flex-between mb-4">
             <oc-button
               appearance="raw"
               class="date-filter-range-panel-back"
@@ -76,7 +76,7 @@
               <oc-icon name="close" />
             </oc-button>
           </div>
-          <div class="oc-mt-s">
+          <div class="mt-2">
             <oc-datepicker
               :label="$gettext('From')"
               :is-clearable="true"

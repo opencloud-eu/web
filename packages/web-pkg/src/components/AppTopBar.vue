@@ -1,7 +1,7 @@
 <template>
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar oc-flex">
-      <span class="oc-app-top-bar-inner oc-pl-m oc-pr-xs oc-flex oc-flex-middle oc-flex-between">
+      <span class="oc-app-top-bar-inner pl-4 pr-1 oc-flex oc-flex-middle oc-flex-between">
         <div class="open-file-bar oc-flex">
           <resource-list-item
             v-if="resource"
@@ -26,7 +26,7 @@
               :aria-label="contextMenuLabel"
               appearance="raw-inverse"
               color-role="chrome"
-              class="oc-p-xs"
+              class="p-1"
             >
               <oc-icon name="more-2" />
             </oc-button>
@@ -51,7 +51,7 @@
               :accessible-label="autoSaveTooltipText"
               name="refresh"
               color="white"
-              class="ox-p-xs oc-mx-xs"
+              class="ox-p-xs mx-1"
             />
           </span>
           <template v-if="mainActions.length && resource">
@@ -64,7 +64,7 @@
                     .map((action) => {
                       return {
                         ...action,
-                        class: 'oc-p-xs app-topbar-action',
+                        class: 'p-1 app-topbar-action',
                         hideLabel: true
                       }
                     })
@@ -81,7 +81,7 @@
             id="app-top-bar-close"
             appearance="raw-inverse"
             color-role="chrome"
-            class="oc-p-xs"
+            class="p-1"
             :aria-label="$gettext('Close')"
             @click="$emit('close')"
           >

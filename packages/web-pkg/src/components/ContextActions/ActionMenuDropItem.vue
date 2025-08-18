@@ -1,5 +1,5 @@
 <template>
-  <li class="context-menu oc-files-context-action oc-px-s oc-rounded oc-menu-item-hover">
+  <li class="context-menu oc-files-context-action px-2 oc-rounded oc-menu-item-hover">
     <oc-button
       :id="toggleId"
       appearance="raw"

@@ -1,12 +1,12 @@
 <template>
   <div class="oc-login-card oc-position-center">
     <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-    <div class="oc-login-card-body">
+    <div class="oc-login-card-body p-6">
       <h1 class="oc-login-card-title" v-text="$gettext('Missing or invalid config')" />
       <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
       <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
     </div>
-    <div class="oc-login-card-footer">
+    <div class="oc-login-card-footer pt-0">
       <p>
         {{ footerSlogan }}
       </p>

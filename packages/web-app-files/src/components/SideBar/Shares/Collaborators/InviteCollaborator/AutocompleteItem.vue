@@ -1,12 +1,12 @@
 <template>
   <div
     :data-testid="`recipient-autocomplete-item-${item.displayName}`"
-    class="oc-flex oc-flex-middle oc-py-xs"
+    class="oc-flex oc-flex-middle py-1"
     :class="collaboratorClass"
   >
     <user-avatar
       v-if="isAnyUserShareType"
-      class="oc-mr-s"
+      class="mr-2"
       :user-id="item.id"
       :user-name="item.displayName"
     />
@@ -16,7 +16,7 @@
       :name="shareTypeKey"
       :icon="shareTypeIcon"
       icon-size="medium"
-      class="oc-mr-s"
+      class="mr-2"
     />
     <div class="files-collaborators-autocomplete-user-text oc-text-truncate">
       <span class="files-collaborators-autocomplete-username" v-text="item.displayName" />

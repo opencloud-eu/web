@@ -6,7 +6,7 @@
     appearance="raw-inverse"
     color-role="chrome"
     no-hover
-    class="oc-my-s"
+    class="my-2"
     @click.stop="toggleSideBar"
   >
     <oc-icon name="side-bar-right" :fill-type="buttonIconFillType" />

@@ -24,14 +24,14 @@
             )
           "
           :title="$gettext('Webpage or file')"
-          class="oc-ml-xs"
+          class="ml-1"
         />
       </div>
     </template>
   </oc-text-input>
   <oc-drop
     ref="dropRef"
-    class="oc-pt-s"
+    class="pt-2"
     padding-size="remove"
     drop-id="create-shortcut-modal-contextmenu"
     mode="manual"
@@ -43,7 +43,7 @@
   >
     <oc-list>
       <li
-        class="oc-p-xs selectable-item selectable-item-url"
+        class="p-1 selectable-item selectable-item-url"
         :class="{
           active: isDropItemActive(0)
         }"
@@ -58,17 +58,17 @@
           <span v-text="dropItemUrl" />
         </oc-button>
       </li>
-      <li v-if="searchTask.isRunning" class="oc-p-xs oc-flex oc-flex-center">
+      <li v-if="searchTask.isRunning" class="p-1 oc-flex oc-flex-center">
         <oc-spinner />
       </li>
       <template v-if="searchResult?.values?.length">
-        <li class="create-shortcut-modal-search-separator oc-text-muted oc-text-small oc-pl-xs">
+        <li class="create-shortcut-modal-search-separator oc-text-muted oc-text-small pl-1">
           <span v-text="$gettext('Link to a file')" />
         </li>
         <li
           v-for="(value, index) in searchResult.values"
           :key="index"
-          class="oc-p-xs selectable-item"
+          class="p-1 selectable-item"
           :class="{
             active: isDropItemActive(index + 1)
           }"
@@ -85,7 +85,7 @@
       </template>
     </oc-list>
   </oc-drop>
-  <div v-if="inputFilename" class="oc-flex oc-width-1-1 oc-mt-m">
+  <div v-if="inputFilename" class="oc-flex oc-width-1-1 mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
@@ -103,7 +103,7 @@
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
             :title="$gettext('Shortcut name')"
-            class="oc-ml-xs"
+            class="ml-1"
           />
         </div>
       </template>

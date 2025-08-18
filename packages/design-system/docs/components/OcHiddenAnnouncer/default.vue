@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="oc-mb-m">Hidden announcer (please inspect element)</div>
+    <div class="mb-6">Hidden announcer (please inspect element)</div>
     <oc-button @click="announce">Announce</oc-button>
     <oc-hidden-announcer level="polite" :announcement="announcement" />
   </div>

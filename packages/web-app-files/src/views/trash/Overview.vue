@@ -17,7 +17,7 @@
         </no-content-message>
         <template v-else>
           <div
-            class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
+            class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4"
           >
             <oc-text-input
               id="trash-filter"
@@ -52,7 +52,7 @@
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
-              <div class="oc-text-center oc-width-1-1 oc-my-s">
+              <div class="oc-text-center oc-width-1-1 my-2">
                 <p class="oc-text-muted">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
               </div>

@@ -38,7 +38,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn oc-mr-l"
+      class="mobile-search-btn mr-6"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -61,7 +61,7 @@
           class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
-          <span class="oc-ml-s">{{ $gettext('Searching ...') }}</span>
+          <span class="ml-2">{{ $gettext('Searching ...') }}</span>
         </li>
         <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center">
           {{ $gettext('No results') }}
@@ -72,10 +72,7 @@
               <li class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details">
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
-                  <router-link
-                    class="more-results oc-p-rm"
-                    :to="getSearchResultLocation(provider.id)"
-                  >
+                  <router-link class="more-results p-0" :to="getSearchResultLocation(provider.id)">
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>
