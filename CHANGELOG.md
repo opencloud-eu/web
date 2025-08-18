@@ -6,13 +6,14 @@
 
 @JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
 ### 📈 Enhancement
 
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
-
-### 🐛 Bug Fixes
-
-- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
 
 ### 📦️ Dependencies
 
