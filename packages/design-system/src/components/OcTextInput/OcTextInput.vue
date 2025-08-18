@@ -43,7 +43,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small mt-1"
+      class="oc-text-input-message text-sm mt-1"
       :class="{
         'oc-text-input-description': showDescriptionMessage,
         'oc-text-input-danger': showErrorMessage

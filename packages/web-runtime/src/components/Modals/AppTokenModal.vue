@@ -53,7 +53,7 @@
             <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
           </oc-button>
         </div>
-        <div class="oc-text-small oc-text-right mt-2">
+        <div class="text-sm oc-text-right mt-2">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
         </div>

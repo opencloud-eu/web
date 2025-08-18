@@ -4,10 +4,7 @@
       class="oc-text-bold oc-display-block oc-width-1-1"
       v-text="$gettext((role as ShareRole).displayName)"
     />
-    <span
-      class="m-0 oc-text-small oc-display-block"
-      v-text="$gettext((role as ShareRole).description)"
-    />
+    <span class="m-0 text-sm oc-display-block" v-text="$gettext((role as ShareRole).description)" />
   </span>
 </template>
 

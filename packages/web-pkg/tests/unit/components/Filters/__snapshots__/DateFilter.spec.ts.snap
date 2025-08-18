@@ -89,7 +89,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small mt-1">
+              <div class="oc-text-input-message text-sm mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -101,7 +101,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small mt-1">
+              <div class="oc-text-input-message text-sm mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -208,7 +208,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small mt-1">
+              <div class="oc-text-input-message text-sm mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -220,7 +220,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
                 <!--v-if-->
               </div>
-              <div class="oc-text-input-message oc-text-small mt-1">
+              <div class="oc-text-input-message text-sm mt-1">
                 <!--v-if-->
               </div>
               <!--v-if-->

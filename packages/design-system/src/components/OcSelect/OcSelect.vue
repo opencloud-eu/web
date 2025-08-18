@@ -72,7 +72,7 @@
 
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message text-sm"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
         'oc-text-input-danger': !!errorMessage

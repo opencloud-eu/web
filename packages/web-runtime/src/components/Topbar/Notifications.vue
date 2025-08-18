@@ -18,7 +18,7 @@
           no-hover
           @click="deleteNotificationsTask.perform(notifications.map((n) => n.notification_id))"
         >
-          <span class="oc-text-small" v-text="$gettext('Mark all as read')" />
+          <span class="text-sm" v-text="$gettext('Mark all as read')" />
         </oc-button>
       </div>
       <div class="oc-position-relative">
@@ -55,7 +55,7 @@
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
-                <div v-if="el.datetime" class="oc-text-small oc-text-muted mt-1">
+                <div v-if="el.datetime" class="text-sm oc-text-muted mt-1">
                   <span
                     v-oc-tooltip="formatDate(el.datetime)"
                     tabindex="0"

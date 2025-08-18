@@ -12,7 +12,7 @@
       <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <div class="oc-flex oc-flex-column">
         <span class="oc-text-bold" v-text="selectedTypeDisplayName" />
-        <span class="oc-text-small" v-text="selectedTypeDescription" />
+        <span class="text-sm" v-text="selectedTypeDescription" />
       </div>
     </div>
     <oc-button
@@ -41,7 +41,7 @@
       class="link-modal-password-input"
       @update:model-value="updatePassword"
     />
-    <div v-else-if="password.value" class="link-modal-password-text oc-text-small oc-text-muted">
+    <div v-else-if="password.value" class="link-modal-password-text text-sm oc-text-muted">
       <span v-text="$gettext('Password:')" />
       <span v-text="password.value" />
     </div>

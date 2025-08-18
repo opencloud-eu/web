@@ -10,9 +10,7 @@
     <div class="app-content oc-card-body p-4">
       <div class="oc-flex oc-flex-middle">
         <h2 class="my-2 oc-text-truncate app-details-title">{{ app.name }}</h2>
-        <span class="ml-2 oc-text-muted oc-text-small mt-2">
-          v{{ app.mostRecentVersion.version }}
-        </span>
+        <span class="ml-2 oc-text-muted text-sm mt-2"> v{{ app.mostRecentVersion.version }} </span>
       </div>
       <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">

@@ -47,7 +47,7 @@
                 class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"
               />
-              <span class="oc-text-small">{{ $gettext(getLinkRoleByType(type).description) }}</span>
+              <span class="text-sm">{{ $gettext(getLinkRoleByType(type).description) }}</span>
             </span>
           </span>
           <span class="oc-flex">
