@@ -1,10 +1,14 @@
 # Changelog
 
-## [3.3.1](https://github.com/opencloud-eu/web/releases/tag/v3.3.1) - 2025-08-18
+## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-08-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @kulmann, @tammi-23
+@JammingBen, @ScharfViktor, @kulmann, @tammi-23
+
+### 📈 Enhancement
+
+- feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
 
 ### 🐛 Bug Fixes
 
