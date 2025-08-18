@@ -82,7 +82,7 @@
               <span v-text="$gettext('Shortcut')" />
               <span
                 v-if="areFileExtensionsShown"
-                class="create-list-file-item-extension"
+                class="create-list-file-item-extension ml-auto"
                 v-text="'url'"
               />
             </oc-button>
