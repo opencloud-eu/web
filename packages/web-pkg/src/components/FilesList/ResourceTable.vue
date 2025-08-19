@@ -145,7 +145,7 @@
       <oc-tag
         v-if="item.tags.length > 2"
         size="small"
-        class="resource-table-tag-more"
+        class="resource-table-tag-more align-text-bottom"
         @click="openTagsSidebar()"
       >
         + {{ item.tags.length - 2 }}
@@ -1374,7 +1374,6 @@ export default defineComponent({
   &-tag-more {
     cursor: pointer;
     border: 0 !important;
-    vertical-align: text-bottom;
   }
 
   &-edit-name,

@@ -101,7 +101,6 @@ export default defineComponent({
     span {
       display: inline-flex;
       justify-content: flex-start;
-      vertical-align: top;
       width: 100%;
     }
   }

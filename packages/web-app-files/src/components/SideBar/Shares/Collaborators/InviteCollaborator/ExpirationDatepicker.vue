@@ -19,7 +19,7 @@
   </div>
   <oc-button
     v-if="dateCurrent"
-    class="recipient-edit-expiration-btn-remove p-2 action-menu-item"
+    class="recipient-edit-expiration-btn-remove p-2 action-menu-item align-middle"
     appearance="raw"
     :aria-label="$gettext('Remove expiration date')"
     @click="dateCurrent = null"
@@ -92,9 +92,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.recipient-edit-expiration-btn-remove {
-  vertical-align: middle;
-}
-</style>

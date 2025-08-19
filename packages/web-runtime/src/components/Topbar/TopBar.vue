@@ -11,7 +11,11 @@
         :menu-items="appMenuExtensions"
       />
       <router-link v-if="!hideLogo" :to="homeLink" class="oc-width-1-1 oc-logo-href">
-        <oc-image :src="currentTheme.logo" :alt="sidebarLogoAlt" class="oc-logo-image ml-1" />
+        <oc-image
+          :src="currentTheme.logo"
+          :alt="sidebarLogoAlt"
+          class="oc-logo-image align-middle ml-1"
+        />
       </router-link>
     </div>
     <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
@@ -233,7 +237,6 @@ export default {
 
   .oc-logo-image {
     max-height: 26px;
-    vertical-align: middle;
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;

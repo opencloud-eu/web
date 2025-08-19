@@ -4,6 +4,7 @@
       :id="buttonId"
       :aria-label="$gettext('Show more information')"
       appearance="raw"
+      class="align-middle"
       no-hover
     >
       <oc-icon name="question" fill-type="line" size="small" />
@@ -55,8 +56,5 @@ const props = computed(() => ({ title, text, list, endText, readMoreLink }))
 <style lang="scss">
 .oc-contextual-helper {
   display: inline-block;
-  .oc-button {
-    vertical-align: middle;
-  }
 }
 </style>

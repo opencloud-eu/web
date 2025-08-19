@@ -95,7 +95,15 @@ const keydownEnter = (event: KeyboardEvent) => {
   emit('click', event)
 }
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-checkbox {
+    @apply align-middle;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-form-check-size($factor) {
   height: $oc-size-form-check-default * $factor;
@@ -112,7 +120,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   border: 2px solid var(--oc-role-outline);
   display: inline-block;
   overflow: hidden;
-  vertical-align: middle;
   background-color: transparent;
   outline: none;
 
