@@ -11,7 +11,7 @@
         color-role="surface"
         @click="toggleFilter(option)"
       >
-        <span class="oc-text-truncate item-inline-filter-option-label" v-text="option.label" />
+        <span class="truncate item-inline-filter-option-label" v-text="option.label" />
       </oc-button>
     </div>
   </div>

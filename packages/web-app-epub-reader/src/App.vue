@@ -8,13 +8,13 @@
         :class="{ active: currentChapter.id === chapter.id }"
       >
         <oc-button
-          class="oc-text-truncate"
+          class="max-w-full"
           :class="{ 'font-semibold': currentChapter.id === chapter.id }"
           appearance="raw"
           no-hover
           @click="showChapter(chapter)"
         >
-          <span v-oc-tooltip="chapter.label" class="oc-text-truncate mr-2" v-text="chapter.label" />
+          <span v-oc-tooltip="chapter.label" class="truncate mr-2" v-text="chapter.label" />
         </oc-button>
       </li>
     </oc-list>

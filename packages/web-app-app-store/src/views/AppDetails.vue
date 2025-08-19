@@ -9,7 +9,7 @@
     <app-image-gallery :app="app" :show-pagination="true" />
     <div class="app-content oc-card-body p-4">
       <div class="flex items-center">
-        <h2 class="my-2 oc-text-truncate app-details-title">{{ app.name }}</h2>
+        <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 oc-text-muted text-sm mt-2"> v{{ app.mostRecentVersion.version }} </span>
       </div>
       <p class="my-0">{{ app.subtitle }}</p>

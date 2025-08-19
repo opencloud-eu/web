@@ -60,7 +60,7 @@
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
         <div class="flex justify-between items-center">
-          <div class="flex items-center oc-text-truncate resource-name-wrapper">
+          <div class="flex items-center truncate resource-name-wrapper">
             <resource-list-item
               :resource="resource"
               :is-icon-displayed="false"
@@ -79,7 +79,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="text-left my-0 oc-text-truncate">
+        <p v-if="resourceDescription" class="text-left my-0 truncate">
           <small v-text="resourceDescription" />
         </p>
       </div>

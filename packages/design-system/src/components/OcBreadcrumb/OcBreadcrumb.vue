@@ -103,8 +103,8 @@
       <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
-  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current">
-    <span class="oc-text-truncate" aria-current="page" v-text="currentFolder.text" />
+  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current flex w-0 flex-1">
+    <span class="truncate" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 

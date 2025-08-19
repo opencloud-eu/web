@@ -25,8 +25,8 @@
               :data-testid="item[displayNameAttribute as keyof Item]"
               @click="toggleItemSelection(item)"
             >
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
@@ -46,8 +46,8 @@
               data-testid="custom-date-range"
               @click="dateRangeClicked = true"
             >
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>

@@ -33,7 +33,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
   </oc-button-stub>
 </nav>
 
-<div class="oc-breadcrumb-mobile-current"><span class="oc-text-truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div class="oc-breadcrumb-mobile-current flex w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
 `;
 
 exports[`OcBreadcrumb > sets correct variation 1`] = `
@@ -69,5 +69,5 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
   </oc-button-stub>
 </nav>
 
-<div class="oc-breadcrumb-mobile-current"><span class="oc-text-truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div class="oc-breadcrumb-mobile-current flex w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
 `;

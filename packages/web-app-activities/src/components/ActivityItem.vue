@@ -5,7 +5,7 @@
       <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
     </div>
     <div class="text-left">activity unknown</div>
-    <div class="oc-text-truncate text-left">
+    <div class="truncate text-left">
       <resource-list-item v-if="resource" :resource="resource" :is-resource-clickable="false" />
       <div
         v-if="resourceNotAccessible"

@@ -8,7 +8,7 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="oc-text-truncate">
+    <span v-if="truncateName" class="truncate">
       <span class="oc-resource-basename" v-text="displayName" />
     </span>
     <span v-else class="oc-resource-basename oc-text-break" v-text="displayName" /><span
