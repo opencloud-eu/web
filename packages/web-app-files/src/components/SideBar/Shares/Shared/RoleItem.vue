@@ -1,5 +1,5 @@
 <template>
-  <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item">
+  <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item text-left">
     <span
       class="font-semibold oc-display-block oc-width-1-1 leading-4"
       v-text="$gettext((role as ShareRole).displayName)"
@@ -25,9 +25,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.roles-select-role-item {
-  text-align: left;
-}
-</style>

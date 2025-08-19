@@ -57,7 +57,7 @@
           </template>
         </div>
 
-        <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4">
+        <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
@@ -361,7 +361,6 @@ export default {
     color: var(--oc-role-on-surface);
 
     &-actions {
-      text-align: right;
       border-bottom-right-radius: 15px;
       border-bottom-left-radius: 15px;
 

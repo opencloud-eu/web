@@ -1,6 +1,6 @@
 <template>
   <div id="oc-file-details-multiple-sidebar" class="p-4">
-    <div class="files-preview mb-6">
+    <div class="files-preview mb-6 text-center">
       <div class="files-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
         <p class="preview-text" data-testid="selectedFilesText" v-text="selectedFilesString" />
@@ -81,7 +81,6 @@ const selectedFilesString = computed(() => {
 }
 
 .files-preview {
-  text-align: center;
   border-radius: 5px;
 }
 </style>

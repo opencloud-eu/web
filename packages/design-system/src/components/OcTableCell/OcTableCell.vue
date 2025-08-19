@@ -45,6 +45,15 @@ const cellClasses = computed(() => {
   .oc-table-cell {
     @apply px-2;
   }
+  .oc-table-cell-align-left {
+    @apply text-left;
+  }
+  .oc-table-cell-align-center {
+    @apply text-center;
+  }
+  .oc-table-cell-align-right {
+    @apply text-right;
+  }
 }
 </style>
 <style lang="scss">
@@ -52,18 +61,6 @@ const cellClasses = computed(() => {
   position: relative;
 
   &-align {
-    &-left {
-      text-align: left;
-    }
-
-    &-center {
-      text-align: center;
-    }
-
-    &-right {
-      text-align: right;
-    }
-
     &-top {
       vertical-align: top;
     }

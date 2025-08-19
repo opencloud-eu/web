@@ -35,7 +35,7 @@
         </oc-tag>
         <div
           v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview flex items-center justify-center"
+          class="oc-tile-card-preview flex items-center justify-center text-center"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
@@ -298,7 +298,6 @@ if (!lazy) {
     position: absolute;
     height: 100%;
     width: 100%;
-    text-align: center;
   }
 
   .resource-name-wrapper {

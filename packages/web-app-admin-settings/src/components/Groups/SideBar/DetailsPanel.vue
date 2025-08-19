@@ -64,6 +64,5 @@ export default defineComponent({
 
 .selected-group-details {
   display: table;
-  text-align: left;
 }
 </style>

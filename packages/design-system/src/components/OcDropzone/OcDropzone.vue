@@ -13,7 +13,7 @@ defineOptions({ name: 'OcDropzone' })
 
 @layer components {
   .oc-dropzone {
-    @apply p-4;
+    @apply p-4 text-center;
   }
 }
 </style>
@@ -33,7 +33,6 @@ defineOptions({ name: 'OcDropzone' })
   display: flex;
   justify-content: center;
   opacity: 0.9;
-  text-align: center;
 
   * {
     pointer-events: none;
