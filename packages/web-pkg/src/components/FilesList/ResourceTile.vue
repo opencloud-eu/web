@@ -79,7 +79,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="oc-text-left my-0 oc-text-truncate">
+        <p v-if="resourceDescription" class="text-left my-0 oc-text-truncate">
           <small v-text="resourceDescription" />
         </p>
       </div>

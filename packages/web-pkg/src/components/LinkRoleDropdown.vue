@@ -5,7 +5,7 @@
     appearance="raw"
     gap-size="none"
     no-hover
-    class="oc-text-left link-role-dropdown-toggle"
+    class="text-left link-role-dropdown-toggle"
   >
     <span class="link-current-role" v-text="currentLinkRoleLabel || $gettext('Select a role')" />
     <oc-icon name="arrow-down-s" />
