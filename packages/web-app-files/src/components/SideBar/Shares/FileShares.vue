@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="flex justify-between items-center">
       <div class="flex">
-        <h3 v-translate class="oc-text-bold text-base m-0">Share with people</h3>
+        <h3 v-translate class="font-semibold text-base m-0">Share with people</h3>
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
       <copy-private-link :resource="resource" />
@@ -20,7 +20,7 @@
     />
     <template v-if="hasSharees">
       <div id="files-collaborators-headline" class="flex items-center justify-between">
-        <h4 class="oc-text-bold my-0" v-text="sharedWithLabel" />
+        <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
       <portal-target
         name="app.files.sidebar.sharing.shared-with.top"
@@ -65,7 +65,7 @@
     </template>
     <template v-if="showSpaceMembers">
       <div class="flex items-center justify-between">
-        <h4 class="oc-text-bold my-2" v-text="spaceMemberLabel" />
+        <h4 class="font-semibold my-2" v-text="spaceMemberLabel" />
       </div>
       <ul
         id="space-collaborators-list"

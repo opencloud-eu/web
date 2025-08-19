@@ -25,7 +25,7 @@
                 >
                   <oc-icon name="arrow-left" fill-type="line" />
                 </oc-button>
-                <span class="oc-text-bold" v-text="title" />
+                <span class="font-semibold" v-text="title" />
                 <oc-button
                   appearance="raw"
                   class="raw-hover-surface oc-bottom-drawer-close-button"

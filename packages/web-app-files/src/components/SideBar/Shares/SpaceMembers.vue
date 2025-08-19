@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="flex">
       <div v-if="canShare({ space: resource, resource })" class="flex py-2">
-        <h3 class="oc-text-bold text-base m-0" v-text="$gettext('Add members')" />
+        <h3 class="font-semibold text-base m-0" v-text="$gettext('Add members')" />
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
       <copy-private-link :resource="resource" class="ml-auto" />
@@ -20,7 +20,7 @@
         class="flex items-center justify-between oc-position-relative"
       >
         <div class="flex">
-          <h4 class="oc-text-bold my-0" v-text="$gettext('Members')" />
+          <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
             class="open-filter-btn ml-2"
