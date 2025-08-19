@@ -4,7 +4,7 @@
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header">
-      <div v-if="isIE11" class="oc-surface-container oc-text-center py-4">
+      <div v-if="isIE11" class="oc-surface-container text-center py-4">
         <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="noGroups" class="flex group-info oc-text-center mt-12">
+  <div v-if="noGroups" class="flex group-info text-center mt-12">
     <oc-icon name="group-2" size="xxlarge" />
     <p v-translate>Select a group to view details</p>
   </div>

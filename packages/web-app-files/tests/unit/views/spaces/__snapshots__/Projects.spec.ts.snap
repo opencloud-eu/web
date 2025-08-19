@@ -59,7 +59,7 @@ exports[`Projects view > different files view states > lists all available proje
             <!-- @slot Footer of the table -->
             <!-- @slot Footer of the files table -->
             <!--v-if-->
-            <div class="oc-text-center oc-width-1-1 my-2">
+            <div class="text-center oc-width-1-1 my-2">
               <p class="oc-text-muted">3 spaces in total (including 1 disabled)</p>
               <!--v-if-->
             </div>

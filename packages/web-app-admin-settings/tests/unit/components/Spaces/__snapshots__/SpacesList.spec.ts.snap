@@ -238,7 +238,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
         <td colspan="11" class="oc-table-footer-cell p-1 text-sm">
           <!-- @slot Footer of the table -->
           <!--v-if-->
-          <div class="oc-text-center oc-width-1-1 my-2">
+          <div class="text-center oc-width-1-1 my-2">
             <p class="oc-text-muted">2 spaces in total</p>
             <!--v-if-->
           </div>

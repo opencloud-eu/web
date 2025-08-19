@@ -56,7 +56,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
             <td colspan="3" class="oc-table-footer-cell p-1 text-sm">
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
-              <div class="oc-text-center oc-width-1-1 my-2">
+              <div class="text-center oc-width-1-1 my-2">
                 <p class="oc-text-muted">3 trash bins in total</p>
                 <!--v-if-->
               </div>
