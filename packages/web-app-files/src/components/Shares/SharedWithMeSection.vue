@@ -27,7 +27,10 @@
       @sort="sortHandler"
     >
       <template #syncEnabled="{ resource }">
-        <div :key="resource.getDomSelector()" class="oc-text-nowrap flex items-center justify-end">
+        <div
+          :key="resource.getDomSelector()"
+          class="whitespace-nowrap flex items-center justify-end"
+        >
           <oc-icon
             v-if="resource.shareRoles?.length"
             v-oc-tooltip="$gettext(resource.shareRoles[0].displayName)"
