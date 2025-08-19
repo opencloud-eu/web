@@ -125,7 +125,6 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
 
 <style lang="scss">
 .oc-avatar {
-  font-weight: normal;
   align-items: center;
   justify-content: center;
   text-align: center;

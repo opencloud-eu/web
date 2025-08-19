@@ -487,10 +487,6 @@ const folderIconResource = computed(() => {
   }
 }
 
-.create-list-file-item-extension {
-  font-weight: 400 !important;
-}
-
 .expanded-list {
   min-width: 280px !important;
 }

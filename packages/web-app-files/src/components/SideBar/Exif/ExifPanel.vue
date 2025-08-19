@@ -167,7 +167,6 @@ export default defineComponent({
   grid-template-columns: auto minmax(0, 1fr);
 
   dt {
-    font-weight: bold;
     white-space: nowrap;
   }
 }

@@ -134,7 +134,7 @@ const pageClass = (page: Page) => {
   const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2']
 
   if (isCurrentPage(page)) {
-    classes.push('oc-pagination-list-item-current')
+    classes.push(...['oc-pagination-list-item-current', 'font-bold'])
   } else if (page === '...') {
     classes.push('oc-pagination-list-item-ellipsis')
   } else {
@@ -178,7 +178,6 @@ const bindPageLink = (page: Page) => {
       &-current {
         background-color: var(--oc-role-secondary);
         color: var(--oc-role-on-secondary);
-        font-weight: bold;
       }
 
       &-prev,

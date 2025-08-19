@@ -25,11 +25,17 @@ export interface Props {
 const { alignH = 'left', alignV = 'middle', width = 'auto', wrap } = defineProps<Props>()
 defineEmits(['click'])
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-th {
+    @apply font-medium;
+  }
+}
+</style>
 <style lang="scss">
 .oc-th {
-  font-weight: inherit;
-
   &[aria-sort] {
     cursor: pointer;
   }

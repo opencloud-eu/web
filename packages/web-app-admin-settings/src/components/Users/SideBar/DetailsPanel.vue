@@ -151,16 +151,4 @@ export default defineComponent({
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
 }
-
-.details-table {
-  text-align: left;
-
-  tr {
-    height: 1.5rem;
-  }
-
-  th {
-    font-weight: 600;
-  }
-}
 </style>
