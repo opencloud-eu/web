@@ -475,9 +475,5 @@ export default defineComponent({
 
 #create-shortcut-modal-contextmenu {
   width: 458px;
-
-  .oc-resource-name {
-    text-decoration: none !important;
-  }
 }
 </style>

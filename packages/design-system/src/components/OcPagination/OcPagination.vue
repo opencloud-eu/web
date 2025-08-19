@@ -171,7 +171,6 @@ const bindPageLink = (page: Page) => {
         &:not(span):hover {
           background-color: var(--oc-role-secondary);
           color: var(--oc-role-on-secondary);
-          text-decoration: none;
         }
       }
 

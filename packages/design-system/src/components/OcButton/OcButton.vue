@@ -252,7 +252,6 @@ const onClick = (event: MouseEvent) => {
   box-sizing: border-box;
   display: inline-flex;
   text-align: left;
-  text-decoration: none;
 
   &-justify-content {
     &-left {

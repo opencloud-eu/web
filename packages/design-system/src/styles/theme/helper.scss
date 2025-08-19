@@ -122,11 +122,6 @@
     gap: var(--oc-space-small);
     justify-content: flex-start;
     width: 100%;
-
-    &:focus,
-    &:hover {
-      text-decoration: none;
-    }
   }
 }
 
@@ -136,6 +131,5 @@
     display: inline-flex;
     gap: 10px;
     vertical-align: top;
-    text-decoration: none;
   }
 }

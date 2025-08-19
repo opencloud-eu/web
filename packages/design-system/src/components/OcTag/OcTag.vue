@@ -114,7 +114,6 @@ function $_ocTag_click(event: MouseEvent) {
   box-sizing: border-box;
   display: inline-flex;
   gap: var(--oc-space-xsmall);
-  text-decoration: none;
 
   &-m {
     min-height: 2.125rem;

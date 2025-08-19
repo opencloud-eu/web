@@ -586,7 +586,6 @@ export default defineComponent({
     width: 450px;
     overflow-y: auto;
     max-height: calc(100vh - 60px);
-    text-decoration: none;
 
     @media (max-width: 969px) {
       width: 300px;

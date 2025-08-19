@@ -56,7 +56,7 @@
           class="parent-folder oc-text-truncate px-0.5 mr-2 -ml-0.5"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
-          <span class="text oc-text-truncate text-sm" v-text="parentFolderName" />
+          <span class="text oc-text-truncate text-sm hover:underline" v-text="parentFolderName" />
         </component>
       </div>
     </div>
@@ -243,10 +243,6 @@ export default defineComponent({
   &-details {
     display: block;
 
-    a {
-      text-decoration: none;
-    }
-
     a:hover,
     a:focus {
       outline-offset: 0;
@@ -265,7 +261,6 @@ export default defineComponent({
       .text {
         &:hover {
           color: var(--oc-role-on-surface);
-          text-decoration: underline;
         }
       }
     }

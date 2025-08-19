@@ -116,10 +116,6 @@ export default defineComponent({
   &.active {
     overflow: hidden;
   }
-  &:focus,
-  &:hover {
-    text-decoration: none !important;
-  }
 
   &:focus:not(.active),
   &:hover:not(.active) {
