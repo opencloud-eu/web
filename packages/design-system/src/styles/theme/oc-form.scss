@@ -289,34 +289,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-textarea::input-placeholder { color: $form-placeholder-color !important; }
 .oc-textarea::placeholder { color: $form-placeholder-color; }
 
-
-/* Style modifier (`oc-input`, `oc-select` and `oc-textarea`)
- ========================================================================== */
-
-/*
- * Small
- */
-
-.oc-form-small { font-size: $form-small-font-size; }
-
-.oc-form-small:not(textarea):not([multiple]):not([size]) {
-  height: $form-small-height;
-  padding-left: $form-small-padding-horizontal;
-  padding-right: $form-small-padding-horizontal;
-}
-
-/*
- * Large
- */
-
-.oc-form-large { font-size: $form-large-font-size; }
-
-.oc-form-large:not(textarea):not([multiple]):not([size]) {
-  height: $form-large-height;
-  padding-left: $form-large-padding-horizontal;
-  padding-right: $form-large-padding-horizontal;
-}
-
 /* Width modifiers (`oc-input`, `oc-select` and `oc-textarea`)
  ========================================================================== */
 
