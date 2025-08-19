@@ -46,13 +46,17 @@ const name = computed(() => {
   return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .file_info button {
+    @apply whitespace-nowrap;
+  }
+}
+</style>
 <style lang="scss">
 .file_info {
-  button {
-    white-space: nowrap;
-  }
-
   &__body {
     h3 {
       word-break: break-all;

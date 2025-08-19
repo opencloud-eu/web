@@ -2,12 +2,12 @@
 
 exports[`OcSidebarNav > renders navItem with toolTip if collapsed 1`] = `
 "<li class="oc-sidebar-nav-item pb-1 px-2" id="123">
-  <router-link-stub to="/files/list/all" aria-label="Navigate to Personal page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse oc-sidebar-nav-item-link oc-oc-width-1-1 p-2" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
+  <router-link-stub to="/files/list/all" aria-label="Navigate to Personal page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse oc-sidebar-nav-item-link oc-oc-width-1-1 whitespace-nowrap p-2" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
 </li>"
 `;
 
 exports[`OcSidebarNav > renders navItem without toolTip if expanded 1`] = `
 "<li class="oc-sidebar-nav-item pb-1 px-2" id="123">
-  <router-link-stub to="/files/list/all" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse oc-sidebar-nav-item-link oc-oc-width-1-1 p-2" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
+  <router-link-stub to="/files/list/all" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse oc-sidebar-nav-item-link oc-oc-width-1-1 whitespace-nowrap p-2" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
 </li>"
 `;

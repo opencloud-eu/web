@@ -572,18 +572,22 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .spaces-table .oc-table-header-cell-actions,
+  .spaces-table .oc-table-data-cell-actions {
+    @apply whitespace-nowrap;
+  }
+}
+</style>
 <style lang="scss">
 #spaces-filter {
   width: 16rem;
 }
 
 .spaces-table {
-  .oc-table-header-cell-actions,
-  .oc-table-data-cell-actions {
-    white-space: nowrap;
-  }
-
   .oc-table-header-cell-manager,
   .oc-table-data-cell-manager,
   .oc-table-header-cell-remainingQuota,

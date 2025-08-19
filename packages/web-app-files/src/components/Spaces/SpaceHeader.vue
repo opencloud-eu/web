@@ -59,7 +59,7 @@
           <oc-icon name="group" fill-type="line" size="small" />
           <span
             v-if="memberCount"
-            class="space-header-people-count text-sm"
+            class="space-header-people-count text-sm whitespace-nowrap"
             v-text="memberCountString"
           />
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
@@ -354,10 +354,6 @@ const openSideBarSharePanel = () => {
 
   &-name {
     word-break: break-all;
-  }
-
-  &-people-count {
-    white-space: nowrap;
   }
 
   .markdown-container.collapsed {

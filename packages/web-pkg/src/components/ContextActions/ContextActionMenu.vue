@@ -93,8 +93,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .oc-files-context-actions {
-  white-space: normal;
-
   > li {
     a,
     button,
