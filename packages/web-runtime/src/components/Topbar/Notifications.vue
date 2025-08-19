@@ -51,7 +51,7 @@
                 </div>
                 <div
                   v-if="el.link && el.object_type !== 'local_share'"
-                  class="oc-notifications-link"
+                  class="oc-notifications-link truncate"
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
@@ -303,9 +303,6 @@ export default {
   }
 
   &-link {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
     width: 300px;
   }
 }

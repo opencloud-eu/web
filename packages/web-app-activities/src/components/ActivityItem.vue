@@ -90,15 +90,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.activity-item {
-  .oc-resource-name {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 100%;
-    overflow: hidden;
-  }
-}
-
 .activity-item > * {
   flex: 1;
 }
