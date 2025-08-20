@@ -12,7 +12,7 @@
       "
       v-bind="attrs"
     >
-      <span class="oc-flex">
+      <span class="flex">
         <oc-icon :name="icon" :fill-type="fillType" />
         <span class="ml-4 text" :class="{ 'text-invisible': collapsed }" v-text="name" />
       </span>
@@ -115,10 +115,6 @@ export default defineComponent({
 
   &.active {
     overflow: hidden;
-  }
-  &:focus,
-  &:hover {
-    text-decoration: none !important;
   }
 
   &:focus:not(.active),

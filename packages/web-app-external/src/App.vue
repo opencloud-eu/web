@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading" class="oc-height-1-1 oc-width-1-1 oc-flex oc-flex-center oc-flex-middle">
+  <div v-if="isLoading" class="oc-height-1-1 oc-width-1-1 flex justify-center items-center">
     <oc-spinner size="large" />
   </div>
   <iframe

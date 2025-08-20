@@ -34,6 +34,9 @@ const { items } = defineProps<Props>()
   .details-list dd {
     @apply ml-4;
   }
+  .details-list dt {
+    @apply font-semibold;
+  }
   .details-list dd:last-of-type,
   .details-list dt:last-of-type {
     @apply mb-0;
@@ -50,7 +53,6 @@ const { items } = defineProps<Props>()
     align-items: center;
   }
   dt {
-    font-weight: bold;
     white-space: nowrap;
   }
 }

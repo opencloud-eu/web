@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-width-1-1">
+  <div class="flex oc-width-1-1">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -15,7 +15,7 @@
       >
         <template #actions>
           <create-space v-if="hasCreatePermission" class="mr-2" />
-          <div v-if="!selectedResourcesIds?.length" class="oc-flex oc-flex-middle pl-2">
+          <div v-if="!selectedResourcesIds?.length" class="flex items-center pl-2">
             <span v-text="$gettext('Learn about spaces')" />
             <oc-contextual-helper :list="spacesHelpList" :title="$gettext('Spaces')" class="ml-1" />
           </div>
@@ -34,9 +34,7 @@
           </template>
         </no-content-message>
         <div v-else class="spaces-list">
-          <div
-            class="spaces-list-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4"
-          >
+          <div class="spaces-list-filters flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="spaces-filter"
               v-model="filterTerm"

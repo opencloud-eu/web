@@ -13,7 +13,7 @@
       :min-date="minDate"
       @date-changed="onDateChanged"
     />
-    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-2">
+    <div class="link-modal-actions flex justify-end items-center mt-2">
       <oc-button
         class="oc-modal-body-actions-cancel ml-2"
         appearance="outline"
@@ -39,9 +39,9 @@
         )
       "
     />
-    <div class="mt-4 mb-2 oc-flex oc-flex-middle oc-rounded">
+    <div class="mt-4 mb-2 flex items-center oc-rounded">
       <div class="created-token-container">
-        <div class="created-token oc-rounded p-2">
+        <div class="created-token oc-rounded p-2 font-bold">
           {{ createdToken }}
           <oc-button
             v-oc-tooltip="$gettext('Copy app token to clipboard')"
@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-    <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-6">
+    <div class="link-modal-actions flex justify-end items-center mt-6">
       <oc-button
         class="oc-modal-body-actions-confirm ml-2"
         appearance="filled"
@@ -121,7 +121,6 @@ const createAppToken = async () => {
 
 <style lang="scss" scoped>
 .created-token {
-  font-weight: bold;
   background-color: var(--oc-role-surface-container-high);
   display: flex;
   justify-content: space-between;

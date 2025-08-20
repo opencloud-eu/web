@@ -1,12 +1,12 @@
 <template>
   <div id="incoming" class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-middle px-4 pt-2">
+      <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-received" />
         <h2 class="px-2" v-text="$gettext('Accept invitations')" />
         <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="oc-flex oc-flex-column oc-flex-middle oc-flex-center p-4">
+      <div class="flex flex-col items-center justify-center p-4">
         <div class="oc-width-1-2">
           <oc-text-input
             v-model="token"

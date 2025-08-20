@@ -12,7 +12,7 @@
   >
     <focus-trap :active="dropOpen">
       <div class="info-drop-content">
-        <div class="oc-flex oc-flex-between info-header oc-border-b pb-2">
+        <div class="flex justify-between info-header oc-border-b pb-2">
           <h4 class="m-0 info-title text-lg" v-text="$gettext(title)" />
           <oc-button appearance="raw" :aria-label="$gettext('Close')">
             <oc-icon name="close" fill-type="line" size="medium" />
@@ -24,7 +24,11 @@
             :is="item.headline ? 'dt' : 'dd'"
             v-for="(item, index) in listItems"
             :key="index"
-            :class="{ 'ml-0': !item.headline, 'first:mt-0': item.headline }"
+            :class="{
+              'ml-0': !item.headline,
+              'first:mt-0': item.headline,
+              'font-bold': item.headline
+            }"
           >
             {{ $gettext(item.text) }}
           </component>
@@ -123,15 +127,6 @@ export default {
   }
   .info-header {
     align-items: center;
-  }
-  .info-title {
-    font-weight: normal;
-  }
-  .info-list {
-    font-weight: bold;
-    dd {
-      font-weight: normal;
-    }
   }
 }
 </style>

@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list oc-flex m-0 p-0">
+    <ol class="oc-breadcrumb-list flex m-0 p-0">
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -13,8 +13,8 @@
         :aria-hidden="item.isTruncationPlaceholder"
         :class="[
           'oc-breadcrumb-list-item',
-          'oc-flex',
-          'oc-flex-middle',
+          'flex',
+          'items-center',
           {
             'oc-invisible-sr':
               hiddenItems.indexOf(item) !== -1 ||
@@ -33,20 +33,20 @@
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
           class="first:text-base text-xl"
         >
-          <span class="oc-breadcrumb-item-text oc-breadcrumb-item-navigable">{{ item.text }}</span>
+          <span class="oc-breadcrumb-item-text hover:underline">{{ item.text }}</span>
         </router-link>
         <oc-button
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
           appearance="raw"
-          class="oc-flex first:text-base text-xl"
+          class="flex first:text-base text-xl"
           no-hover
           @click="item.onClick"
         >
           <span
             :class="[
               'oc-breadcrumb-item-text',
-              'oc-breadcrumb-item-navigable',
+              'hover:underline',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -323,10 +323,6 @@ const dropItemStyling = (
     &-last {
       vertical-align: text-bottom;
     }
-  }
-
-  &-item-navigable:hover {
-    text-decoration: underline;
   }
 
   &-mobile-current,

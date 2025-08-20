@@ -34,7 +34,7 @@
       />
       <span
         v-if="!action.hideLabel"
-        class="oc-files-context-action-label oc-flex"
+        class="oc-files-context-action-label flex"
         data-testid="action-label"
       >
         <span v-text="action.label(actionOptions)" />

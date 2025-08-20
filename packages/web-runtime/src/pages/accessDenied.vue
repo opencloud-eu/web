@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle">
+  <div class="oc-height-viewport flex flex-col justify-center items-center">
     <div class="oc-login-card">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <div class="oc-login-card-body oc-width-medium p-6">

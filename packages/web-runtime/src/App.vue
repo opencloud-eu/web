@@ -134,16 +134,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  #web .mark-highlight {
+    @apply font-semibold;
+  }
+}
+</style>
 <style lang="scss">
 #web {
   background-color: var(--oc-role-chrome);
   height: 100dvh;
   max-height: 100dvh;
   overflow-y: hidden;
-
-  .mark-highlight {
-    font-weight: 600;
-  }
 }
 
 iframe {

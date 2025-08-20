@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-filter-chip oc-flex"
+    class="oc-filter-chip flex"
     :class="{ 'oc-filter-chip-toggle': isToggle, 'oc-filter-chip-raw': raw }"
   >
     <oc-button
@@ -162,7 +162,6 @@ defineExpose({ hideDrop })
     box-sizing: border-box;
     display: inline-flex;
     gap: var(--oc-space-xsmall);
-    text-decoration: none;
     max-width: 150px;
     height: 100%;
   }

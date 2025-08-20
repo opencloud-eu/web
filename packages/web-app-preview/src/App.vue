@@ -7,7 +7,7 @@
   <div
     v-else
     ref="preview"
-    class="oc-flex oc-width-1-1 oc-height-1-1"
+    class="flex oc-width-1-1 oc-height-1-1"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
@@ -21,7 +21,7 @@
         </div>
         <div
           v-else-if="activeMediaFileCached.isError"
-          class="oc-width-1-1 oc-flex oc-flex-column oc-flex-middle oc-flex-center"
+          class="oc-width-1-1 flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
           <p>

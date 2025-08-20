@@ -1,9 +1,9 @@
 <template>
-  <div v-if="noUsers" class="oc-flex user-info oc-text-center mt-12">
+  <div v-if="noUsers" class="flex user-info oc-text-center mt-12">
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
-  <div v-if="multipleUsers" id="oc-users-details-multiple-sidebar" class="oc-flex user-info p-4">
+  <div v-if="multipleUsers" id="oc-users-details-multiple-sidebar" class="flex user-info p-4">
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
@@ -150,17 +150,5 @@ export default defineComponent({
 #oc-users-details-multiple-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 5px;
-}
-
-.details-table {
-  text-align: left;
-
-  tr {
-    height: 1.5rem;
-  }
-
-  th {
-    font-weight: 600;
-  }
 }
 </style>

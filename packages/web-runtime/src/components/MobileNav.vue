@@ -26,7 +26,7 @@
             class="oc-display-block p-2"
             :class="{ 'oc-secondary-container router-link-active': item.active }"
           >
-            <span class="oc-flex">
+            <span class="flex">
               <oc-icon :name="item.icon" />
               <span class="ml-4 text" v-text="item.name" />
             </span>

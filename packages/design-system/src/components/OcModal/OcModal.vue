@@ -57,7 +57,7 @@
           </template>
         </div>
 
-        <div v-if="!hideActions" class="oc-modal-body-actions oc-flex oc-flex-right p-4">
+        <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4">
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
@@ -355,10 +355,6 @@ export default {
     display: flex;
     flex-flow: row wrap;
     background-color: var(--oc-role-surface-container);
-
-    > h2 {
-      font-weight: bold;
-    }
   }
 
   &-body {

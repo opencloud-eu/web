@@ -13,7 +13,7 @@
     <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
     <template v-else>
       <resource-link
-        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle m-0"
+        class="oc-card-media-top flex justify-center items-center m-0"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -35,7 +35,7 @@
         </oc-tag>
         <div
           v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center"
+          class="oc-tile-card-preview flex items-center justify-center"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
@@ -59,8 +59,8 @@
         </div>
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
-        <div class="oc-flex oc-flex-between oc-flex-middle">
-          <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center oc-text-truncate resource-name-wrapper">
             <resource-list-item
               :resource="resource"
               :is-icon-displayed="false"
@@ -70,7 +70,7 @@
               @click.stop="$emit('click')"
             />
           </div>
-          <div class="oc-flex oc-flex-middle">
+          <div class="flex items-center">
             <!-- Slot for indicators !-->
             <slot name="indicators" :item="resource" class="resource-indicators" />
             <!-- Slot for individual actions -->

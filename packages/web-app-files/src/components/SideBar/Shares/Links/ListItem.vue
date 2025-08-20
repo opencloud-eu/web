@@ -1,10 +1,10 @@
 <template>
-  <div class="oc-width-1-1 oc-flex oc-flex-middle oc-flex-between files-links-details">
-    <div class="oc-flex oc-flex-middle">
+  <div class="oc-width-1-1 flex items-center justify-between files-links-details">
+    <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
       <div class="files-links-name-wrapper pl-2">
         <span class="files-links-name oc-text-truncate" v-text="linkShare.displayName" />
-        <div class="oc-flex oc-flex-nowrap oc-flex-middle">
+        <div class="flex flex-nowrap items-center">
           <link-role-dropdown
             v-if="isModifiable"
             :model-value="currentLinkType"
@@ -21,8 +21,8 @@
         </div>
       </div>
     </div>
-    <div class="oc-flex oc-flex-middle">
-      <div class="oc-flex">
+    <div class="flex items-center">
+      <div class="flex">
         <oc-icon
           v-if="linkShare.hasPassword"
           v-oc-tooltip="$gettext('This link is password-protected')"

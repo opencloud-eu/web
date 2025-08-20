@@ -1,14 +1,14 @@
 <template>
   <div class="app-details oc-card oc-card-default oc-card-rounded mx-auto">
     <div class="p-1">
-      <router-link :to="{ name: `${APPID}-list` }" class="oc-flex oc-flex-middle app-details-back">
+      <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
         <oc-icon name="arrow-left-s" fill-type="line" />
         <span v-text="$gettext('Back to list')" />
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
     <div class="app-content oc-card-body p-4">
-      <div class="oc-flex oc-flex-middle">
+      <div class="flex items-center">
         <h2 class="my-2 oc-text-truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 oc-text-muted text-sm mt-2"> v{{ app.mostRecentVersion.version }} </span>
       </div>

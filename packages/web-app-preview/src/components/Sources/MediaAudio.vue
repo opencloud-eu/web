@@ -1,5 +1,5 @@
 <template>
-  <div class="audio-container oc-flex oc-flex-column">
+  <div class="audio-container flex flex-col">
     <audio :key="`media-audio-${file.id}`" controls preload="preload" :autoplay="isAutoPlayEnabled">
       <source :src="file.url" :type="file.mimeType" />
     </audio>

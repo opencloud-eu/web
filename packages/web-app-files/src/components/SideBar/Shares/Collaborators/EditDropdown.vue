@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center">
     <oc-button
       :id="editShareBtnId"
       v-oc-tooltip="dropButtonTooltip"

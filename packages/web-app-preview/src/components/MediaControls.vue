@@ -1,7 +1,7 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-surface-container p-2 oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
+      class="oc-surface-container p-2 oc-width-large flex items-center justify-center justify-around oc-rounded"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
@@ -25,7 +25,7 @@
       >
         <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
-      <div class="oc-flex">
+      <div class="flex">
         <oc-button
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
@@ -43,8 +43,8 @@
           />
         </oc-button>
       </div>
-      <div v-if="showImageControls" class="oc-flex oc-flex-middle">
-        <div class="oc-flex">
+      <div v-if="showImageControls" class="flex items-center">
+        <div class="flex">
           <oc-button
             v-oc-tooltip="imageShrinkDescription"
             class="preview-controls-image-shrink raw-hover-surface p-1"

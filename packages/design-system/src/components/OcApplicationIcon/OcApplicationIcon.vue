@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-application-icon oc-flex-inline oc-flex-middle oc-flex-center" :style="iconStyle">
+  <div class="oc-application-icon inline-flex items-center justify-center" :style="iconStyle">
     <oc-icon :name="icon" :color="iconColor" size="medium" />
   </div>
 </template>

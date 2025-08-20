@@ -101,7 +101,6 @@ export default defineComponent({
     button,
     span {
       display: inline-flex;
-      font-weight: normal !important;
       justify-content: flex-start;
       vertical-align: top;
       width: 100%;

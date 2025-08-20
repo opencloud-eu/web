@@ -1,7 +1,7 @@
 <template>
   <div class="account-table">
     <slot name="header" :title="title">
-      <h2 class="account-table-title oc-flex oc-flex-middle" :class="subtitle ? 'mb-2' : ''">
+      <h2 class="account-table-title flex items-center" :class="subtitle ? 'mb-2' : ''">
         {{ title }}
         <oc-tag
           v-if="newTag"
@@ -95,10 +95,6 @@ export default defineComponent({
     td {
       display: block !important;
       width: 100% !important;
-    }
-
-    h2 {
-      font-weight: var(--oc-font-weight-default);
     }
   }
 }

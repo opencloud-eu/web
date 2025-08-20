@@ -7,14 +7,14 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview oc-flex oc-flex-middle oc-flex-center mb-4 p-2"
+        class="details-preview flex items-center justify-center mb-4 p-2"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
       <div
         v-else
-        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center mb-4 p-2"
+        class="details-icon-wrapper oc-width-1-1 flex items-center justify-center mb-4 p-2"
       >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
@@ -22,7 +22,7 @@
         v-if="!publicLinkContextReady && shareIndicators.length"
         key="file-shares"
         data-testid="sharingInfo"
-        class="oc-flex oc-flex-middle my-4"
+        class="flex items-center my-4"
       >
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
         <p class="my-0 mx-2" v-text="detailSharingInformation" />

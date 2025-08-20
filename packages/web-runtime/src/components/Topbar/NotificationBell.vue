@@ -7,16 +7,12 @@
     :aria-label="notificationsLabel"
     no-hover
   >
-    <oc-icon
-      class="oc-cursor-pointer oc-flex oc-flex-middle"
-      name="notification-3"
-      fill-type="line"
-    />
+    <oc-icon class="oc-cursor-pointer flex items-center" name="notification-3" fill-type="line" />
     <span
       v-if="notificationCount"
       :key="notificationCount"
       :class="{ shake: animate }"
-      class="badge p-1 text-xs leading-2"
+      class="badge p-1 text-xs leading-2 font-light"
       v-text="notificationCountLabel"
     />
   </oc-button>
@@ -77,8 +73,6 @@ export default {
     min-width: var(--oc-space-small);
     height: var(--oc-space-small);
     text-align: center;
-
-    font-weight: 300;
     background: rgb(249, 54, 54);
     color: white;
     box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);

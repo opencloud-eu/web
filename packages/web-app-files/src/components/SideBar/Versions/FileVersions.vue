@@ -6,7 +6,7 @@
           <div class="version-details">
             <span
               v-oc-tooltip="formatVersionDate(item)"
-              class="version-date oc-font-semibold"
+              class="version-date font-semibold"
               data-testid="file-versions-file-last-modified-date"
               >{{ formatVersionDateRelative(item) }}</span
             >

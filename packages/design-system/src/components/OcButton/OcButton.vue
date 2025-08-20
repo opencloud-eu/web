@@ -198,7 +198,6 @@ const onClick = (event: MouseEvent) => {
   &-raw,
   &-raw-inverse {
     border-style: none;
-    font-weight: normal;
     min-height: 0;
 
     background-color: transparent;
@@ -252,9 +251,7 @@ const onClick = (event: MouseEvent) => {
   border: 0;
   box-sizing: border-box;
   display: inline-flex;
-  font-weight: 400;
   text-align: left;
-  text-decoration: none;
 
   &-justify-content {
     &-left {

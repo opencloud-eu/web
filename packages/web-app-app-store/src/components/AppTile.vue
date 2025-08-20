@@ -5,7 +5,7 @@
     </router-link>
     <div class="app-tile-body oc-card-body p-4">
       <div class="app-tile-content">
-        <div class="oc-flex oc-flex-middle">
+        <div class="flex items-center">
           <h3 class="my-2 oc-text-truncate mark-element app-tile-title">
             <router-link
               :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
@@ -76,7 +76,6 @@ export default defineComponent({
 
   .app-tile-title {
     .mark-highlight {
-      font-weight: unset !important;
       color: var(--oc-role-on-surface);
     }
   }

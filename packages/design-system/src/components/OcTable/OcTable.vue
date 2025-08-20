@@ -11,7 +11,7 @@
             v-if="field.sortable"
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
-            class="oc-button-sort oc-width-1-1"
+            class="oc-button-sort oc-width-1-1 hover:underline"
             gap-size="small"
             no-hover
             @click="handleSort(field)"
@@ -553,9 +553,6 @@ const handleSort = (field: FieldType) => {
 .oc-button-sort {
   display: flex;
   justify-content: start;
-  &:hover {
-    text-decoration: underline;
-  }
   .oc-icon {
     &:hover {
       background-color: var(--oc-role-surface-container);

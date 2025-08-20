@@ -72,7 +72,7 @@ const globalSearchDirFilterDropdown =
 const globalSearchBarFilterAllFiles = '//*[@data-test-id="all-files"]'
 const globalSearchBarFilterCurrentFolder = '//*[@data-test-id="current-folder"]'
 const searchList =
-  '//div[@id="files-global-search-options"]//li[contains(@class,"preview")]//span[@class="oc-resource-name"]'
+  '//div[@id="files-global-search-options"]//li[contains(@class,"preview")]//span[contains(@class,"oc-resource-name")]'
 const globalSearchOptions = '#files-global-search-options'
 const loadingSpinner = '#files-global-search-options .loading'
 const filesViewOptionButton = '#files-view-options-btn'

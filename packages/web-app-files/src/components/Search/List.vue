@@ -1,16 +1,13 @@
 <template>
-  <div class="files-search-result oc-flex">
+  <div class="files-search-result flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
       />
-      <div
-        v-if="displayFilter"
-        class="files-search-result-filter oc-flex oc-flex-wrap mx-4 mb-4 mt-1"
-      >
-        <div class="mr-4 oc-flex oc-flex-middle">
+      <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
+        <div class="mr-4 flex items-center">
           <oc-icon name="filter-2" class="mr-1" />
           <span v-text="$gettext('Filter:')" />
         </div>
@@ -27,7 +24,7 @@
         >
           <template #image="{ item }">
             <div
-              class="file-category-option-wrapper oc-flex oc-flex-middle"
+              class="file-category-option-wrapper flex items-center"
               :data-test-id="`media-type-${item.id.toLowerCase()}`"
             >
               <resource-icon :resource="getFakeResourceForIcon(item)" />
@@ -49,7 +46,7 @@
           filter-name="tags"
         >
           <template #image="{ item }">
-            <div class="tag-option-wrapper oc-flex oc-flex-middle">
+            <div class="tag-option-wrapper flex items-center">
               <oc-icon name="price-tag-3" size="small" />
               <span class="ml-2">{{ item.label }}</span>
             </div>
@@ -523,12 +520,19 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  .files-search-resource-highlights mark {
+    @apply font-semibold;
+  }
+}
+</style>
 <style lang="scss">
 .files-search-resource-highlights {
   mark {
     background: #fff74c;
-    font-style: normal;
-    font-weight: var(--oc-font-weight-semibold);
   }
 }
 </style>

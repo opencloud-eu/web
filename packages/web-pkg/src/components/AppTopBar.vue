@@ -1,10 +1,10 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar oc-flex">
+    <div class="oc-app-top-bar flex">
       <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 oc-flex oc-flex-middle oc-flex-between"
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 flex items-center justify-between"
       >
-        <div class="open-file-bar oc-flex">
+        <div class="open-file-bar flex">
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
@@ -20,7 +20,7 @@
             :is-resource-clickable="false"
           />
         </div>
-        <div class="oc-flex main-actions">
+        <div class="flex main-actions">
           <template v-if="dropDownMenuSections.length">
             <oc-button
               id="oc-openfile-contextmenu-trigger"
@@ -47,7 +47,7 @@
               />
             </oc-drop>
           </template>
-          <span v-if="hasAutosave" class="oc-flex oc-flex-middle">
+          <span v-if="hasAutosave" class="flex items-center">
             <oc-icon
               v-oc-tooltip="autoSaveTooltipText"
               :accessible-label="autoSaveTooltipText"
@@ -251,12 +251,6 @@ export default defineComponent({
       fill: var(--oc-role-on-chrome) !important;
       color: var(--oc-role-on-chrome) !important;
     }
-  }
-
-  .oc-resource-icon:hover,
-  .oc-resource-name:hover {
-    cursor: default;
-    text-decoration: none;
   }
 }
 </style>

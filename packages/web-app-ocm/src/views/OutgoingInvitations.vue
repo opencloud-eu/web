@@ -1,12 +1,12 @@
 <template>
   <div class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-middle px-4 pt-2">
+      <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-shared" />
         <h2 class="px-2" v-text="$gettext('Invite users')"></h2>
         <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="oc-flex oc-flex-middle oc-flex-center p-4">
+      <div class="flex items-center justify-center p-4">
         <oc-button
           :aria-label="
             $gettext('Generate invitation link that can be shared with one or more invitees')
@@ -57,7 +57,7 @@
         </no-content-message>
         <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
           <template #token="rowData">
-            <div class="invite-code-wrapper oc-flex">
+            <div class="invite-code-wrapper flex">
               <div class="oc-text-truncate">
                 <span class="oc-text-truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
               </div>

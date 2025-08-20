@@ -14,7 +14,7 @@ exports[`MembersPanel > should display an empty result if no matching members fo
   </div>
   <div data-testid="space-members">
     <div>
-      <h3 class="oc-text-bold text-base">No members found</h3>
+      <h3 class="font-semibold text-base">No members found</h3>
     </div>
     <div>
       <!--v-if-->
@@ -46,19 +46,19 @@ exports[`MembersPanel > should render all members accordingly to their role assi
     <!--v-if-->
     <div>
       <div class="mb-4" data-testid="space-members-role-Managers">
-        <h3 class="oc-text-bold text-base">Managers</h3>
+        <h3 class="font-semibold text-base">Managers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
       <div class="mb-4" data-testid="space-members-role-Editors">
-        <h3 class="oc-text-bold text-base">Editors</h3>
+        <h3 class="font-semibold text-base">Editors</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
       <div class="mb-4" data-testid="space-members-role-Viewers">
-        <h3 class="oc-text-bold text-base">Viewers</h3>
+        <h3 class="font-semibold text-base">Viewers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>

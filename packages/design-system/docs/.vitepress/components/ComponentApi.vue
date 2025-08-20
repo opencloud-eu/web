@@ -3,7 +3,7 @@
     Properties
     <a class="header-anchor" href="#properties" aria-label='Permalink to "Properties"'>​</a>
   </h2>
-  <div v-if="isLoading" class="oc-flex oc-flex-center">
+  <div v-if="isLoading" class="flex justify-center">
     <oc-spinner aria-label="Loading properties" />
   </div>
   <div v-else>
@@ -25,7 +25,7 @@
     Emits
     <a class="header-anchor" href="#emits" aria-label='Permalink to "Emits"'>​</a>
   </h2>
-  <div v-if="isLoading" class="oc-flex oc-flex-center">
+  <div v-if="isLoading" class="flex justify-center">
     <oc-spinner aria-label="Loading emits" />
   </div>
   <div v-else>
@@ -48,7 +48,7 @@
     Slots
     <a class="header-anchor" href="#slots" aria-label='Permalink to "Slots"'>​</a>
   </h2>
-  <div v-if="isLoading" class="oc-flex oc-flex-center">
+  <div v-if="isLoading" class="flex justify-center">
     <oc-spinner aria-label="Loading slots" />
   </div>
   <div v-else>

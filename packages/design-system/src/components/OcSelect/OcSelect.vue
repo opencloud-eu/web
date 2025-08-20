@@ -48,7 +48,7 @@
             <oc-icon v-if="readOnly" name="lock" class="mr-1" size="small" />
             {{ getOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="oc-flex oc-flex-middle ml-2 mr-1">
+          <span v-if="multiple" class="flex items-center ml-2 mr-1">
             <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
             <oc-button
               v-else

@@ -1,9 +1,5 @@
 <template>
-  <nav
-    id="applications-menu"
-    :aria-label="$gettext('Main navigation')"
-    class="oc-flex oc-flex-middle"
-  >
+  <nav id="applications-menu" :aria-label="$gettext('Main navigation')" class="flex items-center">
     <oc-button
       id="_appSwitcherButton"
       v-oc-tooltip="applicationSwitcherLabel"
@@ -13,7 +9,7 @@
       :aria-label="applicationSwitcherLabel"
       no-hover
     >
-      <oc-icon name="grid" size="large" class="oc-flex" />
+      <oc-icon name="grid" size="large" class="flex" />
     </oc-button>
     <oc-drop
       ref="menu"

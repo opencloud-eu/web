@@ -17,14 +17,14 @@
               <oc-button
                 appearance="raw"
                 size="medium"
-                class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 py-1 px-2"
+                class="search-bar-filter-item flex items-center oc-width-1-1 py-1 px-2"
                 :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"
                 @click="onOptionSelected(option)"
               >
                 <span>{{ option.title }}</span>
-                <div v-if="option.id === currentSelection.id" class="oc-flex">
+                <div v-if="option.id === currentSelection.id" class="flex">
                   <oc-icon name="check" />
                 </div>
               </oc-button>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showActions" class="create-and-upload-actions oc-flex-inline mr-2">
+  <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2">
     <template v-if="createFileActionsAvailable">
       <div v-oc-tooltip="newButtonTooltip">
         <oc-button
@@ -485,10 +485,6 @@ const folderIconResource = computed(() => {
   ul:not(:first-child) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
   }
-}
-
-.create-list-file-item-extension {
-  font-weight: 400 !important;
 }
 
 .expanded-list {

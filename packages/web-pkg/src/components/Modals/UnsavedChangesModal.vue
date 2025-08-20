@@ -4,7 +4,7 @@
     v-text="$gettext('Your changes were not saved. Do you want to save them?')"
   />
   <div class="my-4"></div>
-  <div class="oc-flex oc-flex-right oc-flex-middle mt-4">
+  <div class="flex justify-end items-center mt-4">
     <div class="oc-modal-body-actions-grid">
       <oc-button class="oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
         {{ $gettext('Cancel') }}

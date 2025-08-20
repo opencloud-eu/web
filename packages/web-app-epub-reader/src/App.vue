@@ -1,5 +1,5 @@
 <template>
-  <div class="epub-reader oc-flex">
+  <div class="epub-reader flex">
     <oc-list class="epub-reader-chapters-list pl-2 oc-visible@l">
       <li
         v-for="chapter in chapters"
@@ -7,14 +7,20 @@
         class="epub-reader-chapters-list-item py-2"
         :class="{ active: currentChapter.id === chapter.id }"
       >
-        <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
+        <oc-button
+          class="oc-text-truncate"
+          :class="{ 'font-semibold': currentChapter.id === chapter.id }"
+          appearance="raw"
+          no-hover
+          @click="showChapter(chapter)"
+        >
           <span v-oc-tooltip="chapter.label" class="oc-text-truncate mr-2" v-text="chapter.label" />
         </oc-button>
       </li>
     </oc-list>
     <div class="oc-width-1-1 oc-height-1-1">
-      <div class="epub-reader-controls oc-flex oc-flex-middle m-2">
-        <div class="epub-reader-controls-font-size oc-flex oc-button-group">
+      <div class="epub-reader-controls flex items-center m-2">
+        <div class="epub-reader-controls-font-size flex oc-button-group">
           <oc-button
             v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"
             :aria-label="$gettext('Decrease font size')"
@@ -55,8 +61,8 @@
           @update:model-value="showChapter"
         />
       </div>
-      <div class="oc-flex oc-flex-center oc-width-1-1 oc-height-1-1">
-        <div class="oc-flex oc-flex-middle mx-6">
+      <div class="flex justify-center oc-width-1-1 oc-height-1-1">
+        <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-left"
             :aria-label="$gettext('Navigate to previous page')"
@@ -67,9 +73,9 @@
             <oc-icon name="arrow-left-s" fill-type="line" size="xlarge" />
           </oc-button>
         </div>
-        <div id="reader" ref="bookContainer" class="oc-flex oc-flex-center" />
+        <div id="reader" ref="bookContainer" class="flex justify-center" />
 
-        <div class="oc-flex oc-flex-middle mx-6">
+        <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-right"
             :aria-label="$gettext('Navigate to next page')"
@@ -282,12 +288,6 @@ export default defineComponent({
 
     &-item:not(:last-child) {
       border-bottom: 0.5px solid var(--oc-role-outline-variant);
-    }
-
-    &-item.active {
-      .oc-button {
-        font-weight: var(--oc-font-weight-semibold);
-      }
     }
   }
 

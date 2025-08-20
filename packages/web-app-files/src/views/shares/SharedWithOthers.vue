@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex">
+  <div class="flex">
     <files-view-wrapper>
       <app-bar :is-side-bar-open="isSideBarOpen">
         <template #navigation>
@@ -8,8 +8,8 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div v-if="shareTypes.length > 1" class="oc-flex m-4">
-          <div class="mr-4 oc-flex oc-flex-middle">
+        <div v-if="shareTypes.length > 1" class="flex m-4">
+          <div class="mr-4 flex items-center">
             <oc-icon name="filter-2" class="mr-1" />
             <span v-text="$gettext('Filter:')" />
           </div>

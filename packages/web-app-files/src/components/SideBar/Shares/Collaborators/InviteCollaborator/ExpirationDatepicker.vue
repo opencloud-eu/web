@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-flex-middle oc-flex-nowrap">
+  <div class="flex items-center flex-nowrap">
     <oc-button
       data-testid="recipient-datepicker-btn"
       class="files-collaborators-expiration-button p-2 action-menu-item"

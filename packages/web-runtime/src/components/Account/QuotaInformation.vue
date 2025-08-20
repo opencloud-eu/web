@@ -1,5 +1,5 @@
 <template>
-  <div class="quota-information oc-flex oc-flex-bottom">
+  <div class="quota-information flex items-end">
     <oc-icon name="hard-drive-2" size="small" fill-type="line" class="mr-1" />
     <div>
       <p class="my-0">

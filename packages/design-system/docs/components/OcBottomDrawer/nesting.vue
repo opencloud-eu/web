@@ -8,7 +8,7 @@
     @show="renderChild = true"
     @hide="renderChild = false"
   >
-    <oc-list class="oc-flex oc-flex-column p-2">
+    <oc-list class="flex flex-col p-2">
       <oc-button justify-content="left" appearance="raw" no-hover aria-expanded="false">
         <oc-icon size="small" name="rectangle" fill-type="line" />
         Simple button
@@ -34,7 +34,7 @@
     :is-nested-element="true"
     :nested-parent-ref="parent"
   >
-    <oc-list class="oc-flex oc-flex-column p-2">
+    <oc-list class="flex flex-col p-2">
       <oc-button justify-content="left" appearance="raw" no-hover aria-expanded="false">
         <oc-icon size="small" name="rectangle" fill-type="line" />
         Simple button

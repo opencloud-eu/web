@@ -5,16 +5,16 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
   <div data-v-aba8ddeb="" class="files-topbar py-2">
     <h1 data-v-aba8ddeb="" class="oc-invisible-sr">ExampleTitle</h1>
     <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="oc-flex oc-flex-middle files-app-bar-controls oc-flex-right">
+    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls justify-end">
       <!--v-if-->
       <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="oc-flex">
+      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
-      <div data-v-aba8ddeb="" class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
+      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
     </div>
@@ -27,16 +27,16 @@ exports[`AppBar component > renders > if given, with content in the actions slot
   <div data-v-aba8ddeb="" class="files-topbar py-2">
     <h1 data-v-aba8ddeb="" class="oc-invisible-sr">ExampleTitle</h1>
     <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="oc-flex oc-flex-middle files-app-bar-controls oc-flex-right">
+    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls justify-end">
       <!--v-if-->
       <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="oc-flex">
+      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
-      <div data-v-aba8ddeb="" class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle"><button class="action-slot">Click</button>
+      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center"><button class="action-slot">Click</button>
         <!--v-if-->
       </div>
     </div>
@@ -49,16 +49,16 @@ exports[`AppBar component > renders > if given, with content in the content slot
   <div data-v-aba8ddeb="" class="files-topbar py-2">
     <h1 data-v-aba8ddeb="" class="oc-invisible-sr">ExampleTitle</h1>
     <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="oc-flex oc-flex-middle files-app-bar-controls oc-flex-right">
+    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls justify-end">
       <!--v-if-->
       <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="oc-flex">
+      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
-      <div data-v-aba8ddeb="" class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
+      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
     </div>

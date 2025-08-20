@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isModifiable || sharedAncestor" class="oc-flex">
+  <div v-if="isModifiable || sharedAncestor" class="flex">
     <oc-button
       :id="`edit-public-link-dropdown-toggl-${linkShare.id}`"
       :aria-label="$gettext('More options')"

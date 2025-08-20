@@ -1,6 +1,6 @@
 <template>
   <div class="mt-12">
-    <div class="oc-flex space-info oc-text-center">
+    <div class="flex space-info oc-text-center">
       <oc-icon name="layout-grid" size="xxlarge" />
       <p v-translate>Select a space to view details</p>
     </div>

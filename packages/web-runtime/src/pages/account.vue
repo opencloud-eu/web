@@ -1,6 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
+  <main v-else id="account" class="pt-4 pb-6 flex justify-center">
     <div class="account-page px-4 lg:px-0">
       <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
       <account-table
@@ -10,7 +10,7 @@
         class="account-page-info mt-6"
       >
         <template #header="{ title }">
-          <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
+          <div class="flex justify-between items-end oc-width-1-1">
             <h2 v-text="title" />
             <oc-button
               v-if="accountEditLink"
@@ -97,10 +97,10 @@
         <oc-table-tr class="account-page-info-language">
           <oc-table-td>{{ $gettext('Language') }}</oc-table-td>
           <oc-table-td>
-            <div class="oc-flex">
+            <div class="flex">
               <span v-text="$gettext('Select your language.')" />
               <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                <div class="oc-flex ml-1 oc-flex-middle">
+                <div class="flex ml-1 items-center">
                   <span v-text="$gettext('Help to translate')" />
                   <oc-icon class="ml-1" size="small" fill-type="line" name="service" />
                 </div>

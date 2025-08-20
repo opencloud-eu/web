@@ -1,20 +1,16 @@
 <template>
   <app-loading-spinner v-if="loading" />
-  <div
-    v-else
-    id="files-drop-container"
-    class="oc-height-1-1 oc-flex oc-flex-column oc-flex-between m-12"
-  >
+  <div v-else id="files-drop-container" class="oc-height-1-1 flex flex-col justify-between m-12">
     <div v-if="dragareaEnabled" class="dragarea" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
     <div class="p-4 oc-height-1-1 oc-text-center">
-      <div key="loaded-drop" class="oc-flex oc-flex-column">
+      <div key="loaded-drop" class="flex flex-col">
         <div class="oc-width-1-1 oc-width-xxlarge@m">
           <h2 v-text="title" />
           <resource-upload
             id="files-drop-zone"
             ref="fileUpload"
-            class="oc-flex oc-flex-middle oc-flex-center oc-placeholder"
+            class="flex items-center justify-center oc-placeholder"
             :btn-label="$gettext('Drop files here to upload or click to select file')"
           />
           <div id="previews" hidden />
@@ -25,7 +21,7 @@
           </h2>
           <p class="m-0" v-text="errorMessage" />
         </div>
-        <div v-else class="oc-flex oc-flex-center oc-width-1-1">
+        <div v-else class="flex justify-center oc-width-1-1">
           <p
             id="files-drop-info-message"
             class="m-0 pt-12 text-sm"
