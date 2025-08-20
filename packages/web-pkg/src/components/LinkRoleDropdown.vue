@@ -5,7 +5,7 @@
     appearance="raw"
     gap-size="none"
     no-hover
-    class="oc-text-left link-role-dropdown-toggle"
+    class="text-left link-role-dropdown-toggle"
   >
     <span class="link-current-role" v-text="currentLinkRoleLabel || $gettext('Select a role')" />
     <oc-icon name="arrow-down-s" />
@@ -42,7 +42,7 @@
         >
           <span class="flex items-center">
             <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
-            <span>
+            <span class="text-left">
               <span
                 class="role-dropdown-list-option-label font-semibold oc-display-block oc-width-1-1 leading-4"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"

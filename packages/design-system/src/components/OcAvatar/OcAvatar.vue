@@ -1,6 +1,6 @@
 <template>
   <span
-    class="vue-avatar--wrapper oc-avatar"
+    class="vue-avatar--wrapper oc-avatar text-center"
     :style="style"
     :width="width"
     :aria-label="accessibleLabel === '' ? null : accessibleLabel"
@@ -127,7 +127,6 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
 .oc-avatar {
   align-items: center;
   justify-content: center;
-  text-align: center;
   user-select: none;
   display: flex;
   flex-shrink: 0;

@@ -1,6 +1,6 @@
 <template>
   <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
-    <div class="oc-card oc-text-center oc-width-large">
+    <div class="oc-card text-center oc-width-large">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">

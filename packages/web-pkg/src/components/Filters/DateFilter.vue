@@ -95,7 +95,7 @@
               @date-changed="(value) => setDateRangeDate(value, 'to')"
             />
           </div>
-          <div class="date-filter-apply-btn">
+          <div class="date-filter-apply-btn text-end">
             <oc-button size="small" :disabled="!dateRangeValid" @click="applyDateRangeFilter">
               {{ $gettext('Apply') }}
             </oc-button>
@@ -340,10 +340,6 @@ export default defineComponent({
       visibility: hidden;
       transition: visibility 0.4s 0s;
     }
-  }
-
-  &-apply-btn {
-    text-align: end;
   }
 
   &-range-panel {

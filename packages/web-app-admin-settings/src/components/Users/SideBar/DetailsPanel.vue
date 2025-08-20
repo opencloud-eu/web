@@ -1,5 +1,5 @@
 <template>
-  <div v-if="noUsers" class="flex user-info oc-text-center mt-12">
+  <div v-if="noUsers" class="flex user-info text-center mt-12">
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>

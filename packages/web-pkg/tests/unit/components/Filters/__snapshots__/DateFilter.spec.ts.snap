@@ -107,7 +107,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               <!--v-if-->
             </div>
           </div>
-          <div class="date-filter-apply-btn"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
               <!--v-if-->
               <!-- @slot Content of the button --> Apply
             </button></div>
@@ -226,7 +226,7 @@ exports[`DateFilter > renders all items 1`] = `
               <!--v-if-->
             </div>
           </div>
-          <div class="date-filter-apply-btn"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
               <!--v-if-->
               <!-- @slot Content of the button --> Apply
             </button></div>

@@ -5,7 +5,7 @@ exports[`OcTile component > renders default space correctly 1`] = `
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0" tabindex="-1">
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center">
+    <div class="oc-tile-card-preview flex items-center justify-center text-center">
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
     </div>
   </resource-link-stub>
@@ -30,7 +30,7 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0" tabindex="-1">
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center">
+    <div class="oc-tile-card-preview flex items-center justify-center text-center">
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
     </div>
   </resource-link-stub>

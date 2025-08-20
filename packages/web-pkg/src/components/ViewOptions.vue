@@ -25,7 +25,7 @@
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
       appearance="raw"
-      class="my-2 p-1"
+      class="my-2 p-1 align-middle"
     >
       <oc-icon name="settings-3" fill-type="line" />
     </oc-button>
@@ -304,7 +304,6 @@ export default defineComponent({
 }
 
 #files-view-options-btn {
-  vertical-align: middle;
   border: 3px solid transparent;
 
   &:hover {

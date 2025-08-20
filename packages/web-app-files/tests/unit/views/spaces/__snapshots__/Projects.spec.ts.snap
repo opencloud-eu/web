@@ -22,12 +22,12 @@ exports[`Projects view > different files view states > lists all available proje
           <thead class="oc-thead">
             <tr class="oc-table-header-row">
               <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select pl-4" style="top: 0px;">
-                <div><span class="oc-table-thead-content"><div class="resource-table-select-all"><span><input id="resource-table-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" aria-label="Select all"> <!--v-if--></span></div></span>
+                <div><span class="oc-table-thead-content align-middle"><div class="resource-table-select-all"><span><input id="resource-table-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" aria-label="Select all"> <!--v-if--></span></div></span>
       </div>
       </th>
       <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1 hover:underline">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-table-thead-content header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-table-thead-content align-middle header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -38,10 +38,10 @@ exports[`Projects view > different files view states > lists all available proje
     }" aria-hidden="true" focusable="false"></svg></span>
         </button></th>
       <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-indicators" style="top: 0px;">
-        <div><span class="oc-table-thead-content header-text">Status</span></div>
+        <div><span class="oc-table-thead-content align-middle header-text">Status</span></div>
       </th>
       <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
-        <div><span class="oc-table-thead-content header-text">Actions</span></div>
+        <div><span class="oc-table-thead-content align-middle header-text">Actions</span></div>
       </th>
       </tr>
       </thead>
@@ -59,7 +59,7 @@ exports[`Projects view > different files view states > lists all available proje
             <!-- @slot Footer of the table -->
             <!-- @slot Footer of the files table -->
             <!--v-if-->
-            <div class="oc-text-center oc-width-1-1 my-2">
+            <div class="text-center oc-width-1-1 my-2">
               <p class="oc-text-muted">3 spaces in total (including 1 disabled)</p>
               <!--v-if-->
             </div>

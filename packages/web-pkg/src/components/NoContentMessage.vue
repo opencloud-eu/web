@@ -1,5 +1,5 @@
 <template>
-  <div class="no-content-message flex flex-col justify-center items-center oc-text-center">
+  <div class="no-content-message flex flex-col justify-center items-center text-center">
     <oc-icon :name="icon" type="div" size="xxlarge" :fill-type="iconFillType" class="mb-4" />
     <div class="oc-text-muted text-xl">
       <slot name="message" />

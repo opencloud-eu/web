@@ -3,7 +3,7 @@
   <div v-else id="files-drop-container" class="oc-height-1-1 flex flex-col justify-between m-12">
     <div v-if="dragareaEnabled" class="dragarea" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
-    <div class="p-4 oc-height-1-1 oc-text-center">
+    <div class="p-4 oc-height-1-1 text-center">
       <div key="loaded-drop" class="flex flex-col">
         <div class="oc-width-1-1 oc-width-xxlarge@m">
           <h2 v-text="title" />

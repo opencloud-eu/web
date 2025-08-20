@@ -40,9 +40,5 @@ export default defineComponent({
   grid-template-columns: auto 1fr auto;
   align-items: center;
   grid-gap: 5px;
-
-  &__body {
-    text-align: left;
-  }
 }
 </style>

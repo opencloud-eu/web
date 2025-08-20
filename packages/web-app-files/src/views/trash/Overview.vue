@@ -50,7 +50,7 @@
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
-              <div class="oc-text-center oc-width-1-1 my-2">
+              <div class="text-center oc-width-1-1 my-2">
                 <p class="oc-text-muted">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
               </div>

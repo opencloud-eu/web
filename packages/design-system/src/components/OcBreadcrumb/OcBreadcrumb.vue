@@ -33,7 +33,7 @@
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
           class="first:text-base text-xl"
         >
-          <span class="oc-breadcrumb-item-text hover:underline">{{ item.text }}</span>
+          <span class="oc-breadcrumb-item-text hover:underline align-sub">{{ item.text }}</span>
         </router-link>
         <oc-button
           v-else-if="item.onClick"
@@ -47,6 +47,7 @@
             :class="[
               'oc-breadcrumb-item-text',
               'hover:underline',
+              'align-sub',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -56,7 +57,7 @@
         </oc-button>
         <span
           v-else
-          class="oc-breadcrumb-item-text first:text-base text-xl"
+          class="oc-breadcrumb-item-text first:text-base text-xl align-sub"
           :aria-current="getAriaCurrent(index)"
           tabindex="-1"
           v-text="item.text"
@@ -65,7 +66,7 @@
           v-if="index !== displayItems.length - 1"
           color="var(--oc-role-on-surface)"
           name="arrow-right-s"
-          class="mx-1"
+          class="mx-1 align-sub"
           fill-type="line"
         />
         <template v-if="showContextActions && index === displayItems.length - 1">
@@ -76,7 +77,7 @@
             appearance="raw"
             no-hover
           >
-            <oc-icon name="more-2" color="var(--oc-role-on-surface)" />
+            <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
           </oc-button>
           <oc-drop
             drop-id="oc-breadcrumb-contextmenu"
@@ -319,10 +320,6 @@ const dropItemStyling = (
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-
-    &-last {
-      vertical-align: text-bottom;
-    }
   }
 
   &-mobile-current,
@@ -342,7 +339,6 @@ const dropItemStyling = (
     }
 
     #oc-breadcrumb-contextmenu-trigger > span {
-      vertical-align: middle;
       border: 3px solid transparent;
     }
 
@@ -371,7 +367,6 @@ const dropItemStyling = (
     span:first-of-type {
       color: var(--oc-role-on-surface);
       display: inline-block;
-      vertical-align: sub;
     }
   }
 }

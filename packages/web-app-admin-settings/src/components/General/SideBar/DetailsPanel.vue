@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-trash-no-selection" class="oc-text-center mt-12">
+  <div id="oc-trash-no-selection" class="text-center mt-12">
     <oc-icon size="xxlarge" name="settings-4" fill-type="fill" />
     <p v-text="$gettext('Select a resource from the left sidebar to manage it')" />
   </div>

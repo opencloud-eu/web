@@ -95,7 +95,7 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5 leading-4;
+    @apply p-1.5 align-middle leading-4;
   }
 
   .oc-select optgroup {
@@ -103,7 +103,11 @@
   }
 
   .oc-textarea {
-    @apply py-1 px-2
+    @apply py-1 px-2 align-top;
+  }
+
+  .oc-radio {
+    @apply align-middle;
   }
 
   /* sidebar */
@@ -113,7 +117,7 @@
   }
 
   .sidebar-actions-panel li a {
-    @apply mb-1;
+    @apply mb-1 align-top;
   }
 
   .oc-tooltip .tippy-content {

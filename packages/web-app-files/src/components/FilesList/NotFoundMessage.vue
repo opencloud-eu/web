@@ -1,7 +1,7 @@
 <template>
   <div
     id="files-list-not-found-message"
-    class="oc-text-center items-center flex justify-center flex-col"
+    class="text-center items-center flex justify-center flex-col"
   >
     <oc-icon name="cloud" type="div" size="xxlarge" />
     <div class="oc-text-muted text-xl">

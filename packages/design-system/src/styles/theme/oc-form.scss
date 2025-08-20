@@ -240,17 +240,12 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-property: color, background-color;
-  vertical-align: middle;
   width: 100%;
 }
 
 /*
  * Multi-line
  */
-
-.oc-textarea {
-  vertical-align: top;
-}
 
 /* Focus */
 .oc-input:focus,
@@ -375,7 +370,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 
   /* 2 */
   overflow: hidden;
-  vertical-align: middle;
 }
 
 .oc-radio { border-radius: 50%; }

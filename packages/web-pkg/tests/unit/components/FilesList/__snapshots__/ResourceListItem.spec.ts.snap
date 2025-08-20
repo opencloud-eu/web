@@ -3,7 +3,7 @@
 exports[`OcResource > displays parent folder name default if calculated name is empty 1`] = `
 "<div class="oc-resource oc-text-overflow"><button target="_self" type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-resource-link oc-resource-icon-link" draggable="false">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon oc-icon-l box-content oc-resource-icon oc-resource-icon-file"><svg data-testid="inline-svg-stub" src="icons/resource-type-pdf-fill.svg" transform-source="(svg) => {
+    <!-- @slot Content of the button --> <span class="oc-icon oc-icon-l box-content oc-resource-icon align-middle oc-resource-icon-file"><svg data-testid="inline-svg-stub" src="icons/resource-type-pdf-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
