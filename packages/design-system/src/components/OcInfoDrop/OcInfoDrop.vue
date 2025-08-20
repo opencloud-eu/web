@@ -122,5 +122,8 @@ export default {
 <style lang="scss">
 .oc-info-drop {
   display: inline-block;
+  .info-header {
+    align-items: center;
+  }
 }
 </style>
