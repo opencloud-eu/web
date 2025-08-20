@@ -6,7 +6,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
   <div class="space-header-infos">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading">
-        <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
+        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -47,7 +47,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
   <div class="space-header-infos">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading">
-        <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
+        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -91,7 +91,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
   <div class="space-header-infos">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading">
-        <h2 class="space-header-name">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
+        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw ml-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

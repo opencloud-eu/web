@@ -152,6 +152,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  .md-editor-preview > * {
+    @apply break-keep;
+  }
+}
+</style>
 <style lang="scss">
 #text-editor-component {
   .md-editor-preview-wrapper,
@@ -163,10 +172,6 @@ export default defineComponent({
 // overwrite md-editor styles
 .md-editor {
   height: 100%;
-
-  &-preview > * {
-    word-break: break-word !important;
-  }
 
   &-code-head {
     justify-content: end !important;

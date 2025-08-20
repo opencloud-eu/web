@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded"
+    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded break-keep"
     :class="classes"
   >
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
@@ -23,7 +23,7 @@
         />
         <oc-button
           v-if="errorLogContent"
-          class="oc-notification-message-error-log-toggle-button"
+          class="oc-notification-message-error-log-toggle-button break-keep"
           gap-size="none"
           appearance="raw"
           @click="showErrorLog = !showErrorLog"
@@ -111,10 +111,5 @@ onMounted(() => {
 .oc-notification-message {
   background-color: var(--oc-role-surface) !important;
   position: relative;
-  word-break: break-word;
-
-  &-error-log-toggle-button {
-    word-break: keep-all;
-  }
 }
 </style>

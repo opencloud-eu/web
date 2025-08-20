@@ -11,11 +11,7 @@
     <span v-if="truncateName" class="truncate">
       <span class="oc-resource-basename whitespace-pre" v-text="displayName" />
     </span>
-    <span
-      v-else
-      class="oc-resource-basename whitespace-pre oc-text-break"
-      v-text="displayName"
-    /><span
+    <span v-else class="oc-resource-basename break-normal" v-text="displayName" /><span
       v-if="extension && isExtensionDisplayed"
       class="oc-resource-extension whitespace-pre"
       v-text="displayExtension"

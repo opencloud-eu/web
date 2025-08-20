@@ -24,7 +24,7 @@
     <div class="space-header-infos">
       <div class="flex mb-2 items-center justify-between">
         <div class="flex items-center space-header-infos-heading">
-          <h2 class="space-header-name">{{ space.name }}</h2>
+          <h2 class="space-header-name break-all">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
@@ -350,10 +350,6 @@ const openSideBarSharePanel = () => {
     &-heading {
       max-width: 100%;
     }
-  }
-
-  &-name {
-    word-break: break-all;
   }
 
   .markdown-container.collapsed {

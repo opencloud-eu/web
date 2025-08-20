@@ -8,7 +8,7 @@
         class="file_info__icon mr-2 oc-position-relative"
       />
       <div class="file_info__body oc-text-overflow">
-        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base">
+        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -57,12 +57,6 @@ const name = computed(() => {
 </style>
 <style lang="scss">
 .file_info {
-  &__body {
-    h3 {
-      word-break: break-all;
-    }
-  }
-
   &__favorite {
     .oc-star {
       display: inline-block;
