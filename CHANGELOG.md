@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
 
 ### 📈 Enhancement
 
+- refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
 - refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
