@@ -22,7 +22,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
           <tr class="oc-table-header-row">
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name pl-4" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1 hover:underline">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-table-thead-content header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+                <!-- @slot Content of the button --> <span class="oc-table-thead-content align-middle header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -33,10 +33,10 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
               </button></th>
             <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-indicators" style="top: 0px;">
-              <div><span class="oc-table-thead-content header-text">Status</span></div>
+              <div><span class="oc-table-thead-content align-middle header-text">Status</span></div>
             </th>
             <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
-              <div><span class="oc-table-thead-content header-text">Actions</span></div>
+              <div><span class="oc-table-thead-content align-middle header-text">Actions</span></div>
             </th>
           </tr>
         </thead>
@@ -56,7 +56,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
             <td colspan="3" class="oc-table-footer-cell p-1 text-sm">
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
-              <div class="oc-text-center oc-width-1-1 my-2">
+              <div class="text-center oc-width-1-1 my-2">
                 <p class="oc-text-muted">3 trash bins in total</p>
                 <!--v-if-->
               </div>

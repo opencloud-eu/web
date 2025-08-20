@@ -41,7 +41,7 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title my-0 text-lg">
+          <h2 class="header__title text-center my-0 text-lg">
             {{ panel.title(panelContext) }}
           </h2>
 
@@ -95,7 +95,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
-              class="px-2"
+              class="text-left px-2"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -368,7 +368,6 @@ onBeforeUnmount(() => {
       }
 
       &__title {
-        text-align: center;
         color: var(--oc-role-on-surface);
         grid-column-start: 2;
       }
@@ -397,7 +396,6 @@ onBeforeUnmount(() => {
       color: var(--oc-role-on-surface) !important;
       display: grid;
       grid-template-columns: auto 1fr auto;
-      text-align: left;
       height: 50px;
       border-radius: 5px;
     }

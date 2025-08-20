@@ -1,11 +1,11 @@
 <template>
   <div class="flex items-center activity-item">
-    <div class="flex items-center">
+    <div class="flex items-center text-left">
       <oc-avatar :width="36" :user-name="activity.template.variables?.user?.displayName" />
       <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
     </div>
-    <div>activity unknown</div>
-    <div class="oc-text-truncate">
+    <div class="text-left">activity unknown</div>
+    <div class="oc-text-truncate text-left">
       <resource-list-item v-if="resource" :resource="resource" :is-resource-clickable="false" />
       <div
         v-if="resourceNotAccessible"
@@ -16,7 +16,7 @@
         <span class="ml-2" v-text="activity.template.variables?.resource?.name" />
       </div>
     </div>
-    <div><span v-text="recordedDateTime" /></div>
+    <div class="text-right"><span v-text="recordedDateTime" /></div>
   </div>
 </template>
 
@@ -101,10 +101,5 @@ export default defineComponent({
 
 .activity-item > * {
   flex: 1;
-  text-align: left;
-}
-
-.activity-item > *:last-child {
-  text-align: right !important;
 }
 </style>

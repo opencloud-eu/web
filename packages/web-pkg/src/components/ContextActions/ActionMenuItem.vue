@@ -4,7 +4,7 @@
       v-oc-tooltip="showTooltip || action.hideLabel ? action.label(actionOptions) : ''"
       :type="componentType"
       v-bind="componentProps"
-      :class="[action.class, 'action-menu-item', 'oc-width-1-1', ...buttonClasses]"
+      :class="[action.class, 'action-menu-item', 'align-middle', 'oc-width-1-1', ...buttonClasses]"
       :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
       data-testid="action-handler"
       :size="size"
@@ -167,10 +167,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.action-menu-item {
-  vertical-align: middle;
-}
-
 .oc-files-context-action-label {
   flex-direction: column;
 }

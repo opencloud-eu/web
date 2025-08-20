@@ -22,7 +22,7 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 
 @layer components {
   .oc-loader {
-    @apply my-5;
+    @apply my-5 align-baseline;
   }
 }
 </style>
@@ -36,7 +36,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   display: block;
   height: 15px;
   overflow: hidden;
-  vertical-align: baseline;
   width: 100%;
   position: relative;
 

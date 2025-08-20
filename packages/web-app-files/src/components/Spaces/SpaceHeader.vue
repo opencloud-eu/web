@@ -97,7 +97,7 @@
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
-        class="markdown-collapse oc-text-center mt-2"
+        class="markdown-collapse text-center mt-2"
       >
         <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
           <span>{{ toggleMarkdownCollapsedText }}</span>

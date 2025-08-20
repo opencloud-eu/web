@@ -101,7 +101,15 @@ const transformSvgElement = (svg: SVGElement) => {
   return svg
 }
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-icon {
+    @apply align-baseline;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-icon-size($factor) {
   height: $oc-size-icon-default * $factor;
@@ -113,7 +121,6 @@ const transformSvgElement = (svg: SVGElement) => {
 .oc-icon {
   // SVG wrapper
   display: inline-block;
-  vertical-align: baseline;
 
   svg {
     display: block;

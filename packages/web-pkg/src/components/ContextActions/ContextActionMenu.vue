@@ -93,7 +93,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .oc-files-context-actions {
-  text-align: left;
   white-space: normal;
 
   > li {
@@ -102,9 +101,7 @@ export default defineComponent({
     span {
       display: inline-flex;
       justify-content: flex-start;
-      vertical-align: top;
       width: 100%;
-      text-align: left;
     }
   }
 

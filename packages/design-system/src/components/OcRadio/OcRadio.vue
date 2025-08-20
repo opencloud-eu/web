@@ -66,7 +66,15 @@ const labelClasses = computed(() => ({
   'oc-cursor-pointer': !disabled
 }))
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-radio {
+    @apply align-middle;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-form-check-size($factor) {
   height: $oc-size-form-check-default * $factor;
@@ -88,7 +96,6 @@ const labelClasses = computed(() => ({
 
   transition: 0.2s ease-in-out;
   transition-property: background-color, border;
-  vertical-align: middle;
   width: 1rem;
 
   &:not(:disabled) {

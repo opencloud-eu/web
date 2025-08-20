@@ -96,7 +96,7 @@
           </li>
         </template>
       </oc-list>
-      <div v-if="showFooter" class="imprint-footer py-2 mt-4 mb-2 ml-2 oc-text-center">
+      <div v-if="showFooter" class="imprint-footer py-2 mt-4 mb-2 ml-2 text-center">
         <oc-button
           v-if="imprintUrl"
           type="a"

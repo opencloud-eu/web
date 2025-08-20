@@ -54,8 +54,6 @@ const name = computed(() => {
   }
 
   &__body {
-    text-align: left;
-
     h3 {
       word-break: break-all;
     }

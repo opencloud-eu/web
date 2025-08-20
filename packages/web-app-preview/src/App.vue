@@ -12,7 +12,7 @@
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
-    <div class="stage" :class="{ lightbox: isFullScreenModeActivated }">
+    <div class="stage text-center" :class="{ lightbox: isFullScreenModeActivated }">
       <div class="stage_media">
         <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="oc-width-1-1">
           <div class="oc-position-center">
@@ -497,7 +497,6 @@ export default defineComponent({
   flex-direction: column;
   width: 100%;
   height: 100%;
-  text-align: center;
 
   &_media {
     flex-grow: 1;
