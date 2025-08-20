@@ -8,7 +8,7 @@
         class="file_info__icon mr-2 oc-position-relative"
       />
       <div class="file_info__body oc-text-overflow">
-        <h3 data-testid="files-info-name" class="oc-font-semibold m-0 text-base">
+        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base">
           <resource-name
             :name="name"
             :extension="resource.extension"

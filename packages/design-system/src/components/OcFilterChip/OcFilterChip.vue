@@ -162,7 +162,6 @@ defineExpose({ hideDrop })
     box-sizing: border-box;
     display: inline-flex;
     gap: var(--oc-space-xsmall);
-    text-decoration: none;
     max-width: 150px;
     height: 100%;
   }

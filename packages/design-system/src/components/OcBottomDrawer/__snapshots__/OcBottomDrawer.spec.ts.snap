@@ -8,7 +8,7 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
         <div class="oc-card">
           <div class="oc-card-header px-4 pt-4">
             <div class="flex justify-between items-center">
-              <!--v-if--> <span class="oc-text-bold">Bottom Drawer</span> <button type="button" aria-label="Close the context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
+              <!--v-if--> <span class="font-semibold">Bottom Drawer</span> <button type="button" aria-label="Close the context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
                 <!--v-if-->
                 <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

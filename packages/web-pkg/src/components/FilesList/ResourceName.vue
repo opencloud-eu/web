@@ -1,7 +1,7 @@
 <template>
   <span
     v-oc-tooltip="tooltip"
-    class="oc-resource-name"
+    class="oc-resource-name hover:underline"
     :class="[{ 'oc-display-inline-block': !truncateName }]"
     :data-test-resource-path="fullPath"
     :data-test-resource-name="fullName"
@@ -156,11 +156,6 @@ export default defineComponent({
   &-name {
     display: flex;
     min-width: 0;
-
-    &:hover {
-      text-decoration: underline;
-      text-decoration-color: var(--oc-role-on-surface);
-    }
   }
 
   &-basename,

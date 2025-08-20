@@ -120,19 +120,19 @@ exports[`Users view > list view > renders list initially 1`] = `
                     <div><span class="oc-table-thead-content header-text"></span></div>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-onPremisesSamAccountName" style="top: 0px;" aria-sort="ascending">
-                    <oc-button-stub arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1 hover:underline"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-displayName" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by displayName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by displayName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1 hover:underline"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-mail" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by mail" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by mail" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1 hover:underline"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-role" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by role" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by role" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1 hover:underline"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-accountEnabled" style="top: 0px;" aria-sort="none">
-                    <oc-button-stub arialabel="Sort by accountEnabled" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1"></oc-button-stub>
+                    <oc-button-stub arialabel="Sort by accountEnabled" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort oc-width-1-1 hover:underline"></oc-button-stub>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
                     <div><span class="oc-table-thead-content header-text">Actions</span></div>

@@ -145,17 +145,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-select { text-transform: none; }
 
 /*
- * 1. Change font properties to `inherit` in all browsers
- * 2. Don't inherit the `font-weight` and use `bold` instead.
- * NOTE: Both declarations don't work in Chrome, Safari and Opera.
- */
-
-.oc-select optgroup {
-  /* 2 */
-  font-weight: bold;
-}
-
-/*
  * Remove the default vertical scrollbar in IE 10+.
  */
 

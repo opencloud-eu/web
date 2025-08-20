@@ -355,10 +355,6 @@ export default {
     display: flex;
     flex-flow: row wrap;
     background-color: var(--oc-role-surface-container);
-
-    > h2 {
-      font-weight: bold;
-    }
   }
 
   &-body {

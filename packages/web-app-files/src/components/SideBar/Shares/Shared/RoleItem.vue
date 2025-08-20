@@ -1,7 +1,7 @@
 <template>
   <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item">
     <span
-      class="oc-text-bold oc-display-block oc-width-1-1 leading-4"
+      class="font-semibold oc-display-block oc-width-1-1 leading-4"
       v-text="$gettext((role as ShareRole).displayName)"
     />
     <span

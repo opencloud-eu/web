@@ -33,7 +33,7 @@
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
           class="first:text-base text-xl"
         >
-          <span class="oc-breadcrumb-item-text oc-breadcrumb-item-navigable">{{ item.text }}</span>
+          <span class="oc-breadcrumb-item-text hover:underline">{{ item.text }}</span>
         </router-link>
         <oc-button
           v-else-if="item.onClick"
@@ -46,7 +46,7 @@
           <span
             :class="[
               'oc-breadcrumb-item-text',
-              'oc-breadcrumb-item-navigable',
+              'hover:underline',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -323,10 +323,6 @@ const dropItemStyling = (
     &-last {
       vertical-align: text-bottom;
     }
-  }
-
-  &-item-navigable:hover {
-    text-decoration: underline;
   }
 
   &-mobile-current,

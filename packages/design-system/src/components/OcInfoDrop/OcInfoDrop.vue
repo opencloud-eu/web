@@ -24,7 +24,11 @@
             :is="item.headline ? 'dt' : 'dd'"
             v-for="(item, index) in listItems"
             :key="index"
-            :class="{ 'ml-0': !item.headline, 'first:mt-0': item.headline }"
+            :class="{
+              'ml-0': !item.headline,
+              'first:mt-0': item.headline,
+              'font-bold': item.headline
+            }"
           >
             {{ $gettext(item.text) }}
           </component>
@@ -123,15 +127,6 @@ export default {
   }
   .info-header {
     align-items: center;
-  }
-  .info-title {
-    font-weight: normal;
-  }
-  .info-list {
-    font-weight: bold;
-    dd {
-      font-weight: normal;
-    }
   }
 }
 </style>

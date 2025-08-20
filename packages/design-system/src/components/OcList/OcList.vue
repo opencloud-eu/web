@@ -50,7 +50,6 @@ ul.oc-list {
   &-raw {
     list-style-type: none;
     a {
-      text-decoration: none !important;
       &:hover {
         color: inherit;
       }

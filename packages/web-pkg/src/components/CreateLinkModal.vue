@@ -11,7 +11,7 @@
     <div v-else class="flex items-center">
       <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <div class="flex flex-col">
-        <span class="oc-text-bold" v-text="selectedTypeDisplayName" />
+        <span class="font-semibold" v-text="selectedTypeDisplayName" />
         <span class="text-sm" v-text="selectedTypeDescription" />
       </div>
     </div>

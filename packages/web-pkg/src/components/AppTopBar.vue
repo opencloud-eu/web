@@ -252,11 +252,5 @@ export default defineComponent({
       color: var(--oc-role-on-chrome) !important;
     }
   }
-
-  .oc-resource-icon:hover,
-  .oc-resource-name:hover {
-    cursor: default;
-    text-decoration: none;
-  }
 }
 </style>

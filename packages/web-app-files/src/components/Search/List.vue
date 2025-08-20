@@ -520,12 +520,19 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  .files-search-resource-highlights mark {
+    @apply font-semibold;
+  }
+}
+</style>
 <style lang="scss">
 .files-search-resource-highlights {
   mark {
     background: #fff74c;
-    font-style: normal;
-    font-weight: var(--oc-font-weight-semibold);
   }
 }
 </style>

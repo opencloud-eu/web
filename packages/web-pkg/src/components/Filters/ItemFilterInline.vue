@@ -84,7 +84,6 @@ export default defineComponent({
   border: 1px solid var(--oc-role-outline);
 
   button {
-    text-decoration: none;
     height: 24px;
   }
 

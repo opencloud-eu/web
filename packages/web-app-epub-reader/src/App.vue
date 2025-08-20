@@ -7,7 +7,13 @@
         class="epub-reader-chapters-list-item py-2"
         :class="{ active: currentChapter.id === chapter.id }"
       >
-        <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
+        <oc-button
+          class="oc-text-truncate"
+          :class="{ 'font-semibold': currentChapter.id === chapter.id }"
+          appearance="raw"
+          no-hover
+          @click="showChapter(chapter)"
+        >
           <span v-oc-tooltip="chapter.label" class="oc-text-truncate mr-2" v-text="chapter.label" />
         </oc-button>
       </li>
@@ -282,12 +288,6 @@ export default defineComponent({
 
     &-item:not(:last-child) {
       border-bottom: 0.5px solid var(--oc-role-outline-variant);
-    }
-
-    &-item.active {
-      .oc-button {
-        font-weight: var(--oc-font-weight-semibold);
-      }
     }
   }
 

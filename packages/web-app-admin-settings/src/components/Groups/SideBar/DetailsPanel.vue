@@ -13,7 +13,7 @@
       class="selected-group-details p-1"
       :aria-label="$gettext('Overview of the information about the selected group')"
     >
-      <span class="pr-2 oc-font-semibold" v-text="$gettext('Group name')" />
+      <span class="pr-2 font-semibold" v-text="$gettext('Group name')" />
       <span v-text="group.displayName" />
     </p>
   </div>
