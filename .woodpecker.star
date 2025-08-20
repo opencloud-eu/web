@@ -1628,11 +1628,8 @@ def e2eTestsOnKeycloak(ctx):
             restoreBrowsersCache() + \
             ldapService() + \
             keycloakService() + \
-            restoreBuildArtifactCache(ctx, "web-dist", "dist")
-    if ctx.build.event == "cron":
-        steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-    else:
-        steps += restoreOpenCloudCache()
+            restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
+            restoreOpenCloudCache()
 
     # configs to setup opencloud with keycloak and ldap
     environment = {
