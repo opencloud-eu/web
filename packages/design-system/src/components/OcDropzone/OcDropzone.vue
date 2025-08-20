@@ -17,14 +17,21 @@ defineOptions({ name: 'OcDropzone' })
   }
 }
 </style>
+<style>
+@reference 'tailwindcss';
+
+@layer components {
+  .oc-dropzone {
+    @apply text-2xl;
+  }
+}
+</style>
 <style lang="scss">
 .oc-dropzone {
   align-items: center;
   border: 1px dashed var(--oc-role-outline);
   display: flex;
-  font-size: 1.5rem;
   justify-content: center;
-  line-height: 1.5;
   opacity: 0.9;
   text-align: center;
 

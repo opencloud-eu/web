@@ -128,7 +128,7 @@
     <Teleport v-if="dragItem" to="body">
       <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
-    <div class="oc-tiles-footer p-1">
+    <div class="oc-tiles-footer p-1 text-sm">
       <slot name="footer" />
     </div>
   </div>
@@ -643,7 +643,15 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-tiles-sort-filter-chip .oc-filter-chip-label {
+    @apply text-sm;
+  }
+}
+</style>
 <style lang="scss">
 .oc-tiles {
   column-gap: 1rem;
@@ -656,16 +664,7 @@ onBeforeUnmount(() => {
     background-color: var(--oc-role-secondary-container) !important;
   }
 
-  &-footer {
-    font-size: var(--oc-font-size-default);
-    line-height: 1.4;
-  }
-
   &-sort-filter-chip {
-    .oc-filter-chip-label {
-      font-size: var(--oc-font-size-default);
-    }
-
     &-item {
       justify-content: space-between !important;
     }

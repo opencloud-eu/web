@@ -1,7 +1,7 @@
 <template>
   <div class="oc-error-log">
     <oc-textarea
-      class="oc-error-log-textarea mt-2 oc-text-small"
+      class="oc-error-log-textarea mt-2 text-sm"
       :label="contentLabel"
       :model-value="content"
       rows="4"

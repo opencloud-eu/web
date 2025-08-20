@@ -5,7 +5,7 @@
       <div v-if="showSecondLayer" class="ghost-element-layer2 oc-rounded" />
       <div v-if="showThirdLayer" class="ghost-element-layer3 oc-rounded" />
     </div>
-    <span class="badge p-1">{{ itemCount }}</span>
+    <span class="badge p-1 text-sm leading-2">{{ itemCount }}</span>
   </div>
 </template>
 
@@ -80,7 +80,6 @@ export default defineComponent({
     position: absolute;
     top: -2px;
     right: -8px;
-    line-height: var(--oc-space-small);
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
     border-radius: 30px;
@@ -88,7 +87,6 @@ export default defineComponent({
     height: var(--oc-space-small);
     text-align: center;
 
-    font-size: 12px;
     background: red;
     color: white;
   }

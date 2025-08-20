@@ -95,13 +95,13 @@ function $_ocTag_click(event: MouseEvent) {
     @apply px-2;
   }
   .oc-tag-s {
-    @apply p-1;
+    @apply p-1 text-xs;
   }
   .oc-tag-m {
-    @apply py-1 px-2;
+    @apply py-1 px-2 text-sm;
   }
   .oc-tag-l {
-    @apply py-2 px-4;
+    @apply py-2 px-4 text-lg;
   }
 }
 </style>
@@ -116,17 +116,11 @@ function $_ocTag_click(event: MouseEvent) {
   gap: var(--oc-space-xsmall);
   text-decoration: none;
 
-  &-s {
-    font-size: 0.75rem;
-  }
-
   &-m {
-    font-size: 0.875rem;
     min-height: 2.125rem;
   }
 
   &-l {
-    font-size: 1.5rem;
     min-height: 2.75rem;
   }
 

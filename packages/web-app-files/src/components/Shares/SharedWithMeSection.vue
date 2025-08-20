@@ -2,7 +2,7 @@
   <div>
     <h2 class="px-4 py-2 oc-invisible-sr">
       {{ title }}
-      <span class="oc-text-medium">({{ items.length }})</span>
+      <span class="text-base">({{ items.length }})</span>
     </h2>
 
     <no-content-message

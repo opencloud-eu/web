@@ -41,7 +41,7 @@
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
-        class="oc-files-context-action-shortcut"
+        class="oc-files-context-action-shortcut text-sm"
         v-text="action.shortcut"
       />
     </oc-button>
@@ -177,6 +177,5 @@ export default defineComponent({
 
 .oc-files-context-action-shortcut {
   justify-content: right !important;
-  font-size: var(--oc-font-size-small);
 }
 </style>

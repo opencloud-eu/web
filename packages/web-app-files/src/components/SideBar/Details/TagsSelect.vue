@@ -60,7 +60,7 @@
       <div v-if="error" class="oc-text-input-danger">{{ error }}</div>
     </template>
     <template #no-options
-      ><span class="oc-text-small oc-text-muted" v-text="$gettext('Enter text to create a Tag')" />
+      ><span class="text-sm oc-text-muted" v-text="$gettext('Enter text to create a Tag')" />
     </template>
   </oc-select>
 </template>

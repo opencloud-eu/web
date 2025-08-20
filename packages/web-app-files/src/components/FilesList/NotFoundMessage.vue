@@ -4,7 +4,7 @@
     class="oc-text-center oc-flex-middle oc-flex oc-flex-center oc-flex-column"
   >
     <oc-icon name="cloud" type="div" size="xxlarge" />
-    <div class="oc-text-muted oc-text-xlarge">
+    <div class="oc-text-muted text-xl">
       <span v-translate>Resource not found</span>
     </div>
     <div class="oc-text-muted">

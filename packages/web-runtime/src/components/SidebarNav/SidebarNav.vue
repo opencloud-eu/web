@@ -48,7 +48,7 @@
     </nav>
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
-      <div v-if="!closed" class="versions pb-4 pl-4 oc-text-xsmall oc-text-muted">
+      <div v-if="!closed" class="versions pb-4 pl-4 text-xs oc-text-muted">
         <span v-text="backendVersion" />
         <span v-text="webVersion" />
       </div>

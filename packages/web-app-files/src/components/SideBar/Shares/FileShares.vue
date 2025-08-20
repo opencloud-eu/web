@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
     <div class="oc-flex oc-flex-between oc-flex-middle">
       <div class="oc-flex">
-        <h3 v-translate class="oc-text-bold oc-text-medium m-0">Share with people</h3>
+        <h3 v-translate class="oc-text-bold text-base m-0">Share with people</h3>
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
       <copy-private-link :resource="resource" />

@@ -7,7 +7,7 @@
       <div class="oc-flex oc-flex-middle oc-flex-between oc-width-1-1">
         <div class="oc-flex oc-flex-middle">
           <oc-icon name="information" fill-type="line" class="mr-2" />
-          <div class="oc-notification-message-title">
+          <div class="oc-notification-message-title text-lg">
             {{ title }}
           </div>
         </div>
@@ -112,10 +112,6 @@ onMounted(() => {
   background-color: var(--oc-role-surface) !important;
   position: relative;
   word-break: break-word;
-
-  &-title {
-    font-size: 1.15rem;
-  }
 
   &-error-log-toggle-button {
     word-break: keep-all;

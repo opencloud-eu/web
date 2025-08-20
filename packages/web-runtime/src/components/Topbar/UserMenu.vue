@@ -73,8 +73,8 @@
             />
             <span class="profile-info-wrapper" :class="{ 'py-1': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
-              <span v-if="user.mail" class="oc-text-small" v-text="user.mail" />
-              <quota-information v-if="quotaEnabled" :quota="quota" class="oc-text-small mt-1" />
+              <span v-if="user.mail" class="text-sm" v-text="user.mail" />
+              <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
             </span>
           </li>
           <li>
@@ -223,7 +223,6 @@ export default defineComponent({
   width: calc(100% + var(--oc-space-small) * 2);
 
   a {
-    font-size: var(--oc-font-size-medium) !important;
     color: var(--oc-role-on-surface);
   }
 }

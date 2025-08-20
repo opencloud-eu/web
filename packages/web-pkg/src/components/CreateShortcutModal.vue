@@ -62,7 +62,7 @@
         <oc-spinner />
       </li>
       <template v-if="searchResult?.values?.length">
-        <li class="create-shortcut-modal-search-separator oc-text-muted oc-text-small pl-1">
+        <li class="create-shortcut-modal-search-separator oc-text-muted text-sm pl-1">
           <span v-text="$gettext('Link to a file')" />
         </li>
         <li

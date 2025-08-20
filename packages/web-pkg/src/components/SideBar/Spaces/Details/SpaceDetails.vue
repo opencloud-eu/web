@@ -12,7 +12,7 @@
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
-      class="oc-flex oc-flex-middle oc-space-details-sidebar-members mb-2 oc-text-small"
+      class="oc-flex oc-flex-middle oc-space-details-sidebar-members mb-2 text-sm"
     >
       <oc-button
         v-if="hasMemberShares"
@@ -40,7 +40,7 @@
         no-hover
         @click="expandSharesPanel"
       >
-        <span class="oc-text-small" v-text="$gettext('Show')" />
+        <span class="text-sm" v-text="$gettext('Show')" />
       </oc-button>
     </div>
     <dl

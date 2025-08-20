@@ -72,7 +72,7 @@
 
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message text-sm"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
         'oc-text-input-danger': !!errorMessage
@@ -463,7 +463,6 @@ export default { components: { VueSelect } }
 }
 
 .oc-select {
-  line-height: normal;
   padding: 1px 0;
   color: var(--oc-role-on-surface);
 
@@ -523,7 +522,6 @@ export default { components: { VueSelect } }
       white-space: normal;
       padding: 6px 0.6rem;
       border-radius: 5px;
-      line-height: var(--vs-line-height);
 
       &--highlight,
       &--selected {

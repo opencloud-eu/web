@@ -13,7 +13,7 @@
           v-text="$gettext('NEW')"
         />
       </h2>
-      <p v-if="subtitle" class="oc-text-small mt-0 mb-4" v-text="subtitle" />
+      <p v-if="subtitle" class="text-sm mt-0 mb-4" v-text="subtitle" />
     </slot>
     <oc-table-simple>
       <colgroup>
@@ -98,7 +98,6 @@ export default defineComponent({
     }
 
     h2 {
-      font-size: var(--oc-font-size-large);
       font-weight: var(--oc-font-weight-default);
     }
   }

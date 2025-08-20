@@ -317,13 +317,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
+
+@layer utilities {
+  .date-filter .oc-date-picker label {
+    @apply text-sm;
+  }
+}
+</style>
 <style lang="scss">
 .date-filter {
   overflow: hidden;
 
   &-list {
     &-item {
-      line-height: 1.5;
       gap: 8px;
     }
 
@@ -361,10 +369,6 @@ export default defineComponent({
 
   .oc-card {
     overflow: hidden;
-  }
-
-  .oc-date-picker label {
-    font-size: var(--oc-font-size-small);
   }
 }
 </style>

@@ -13,7 +13,7 @@
               {{ app.name }}
             </router-link>
           </h3>
-          <span class="ml-2 oc-text-muted oc-text-small mt-1">
+          <span class="ml-2 oc-text-muted text-sm mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>

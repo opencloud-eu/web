@@ -13,7 +13,7 @@
     <focus-trap :active="dropOpen">
       <div class="info-drop-content">
         <div class="oc-flex oc-flex-between info-header oc-border-b pb-2">
-          <h4 class="m-0 info-title" v-text="$gettext(title)" />
+          <h4 class="m-0 info-title text-lg" v-text="$gettext(title)" />
           <oc-button appearance="raw" :aria-label="$gettext('Close')">
             <oc-icon name="close" fill-type="line" size="medium" />
           </oc-button>
@@ -34,7 +34,6 @@
           v-if="readMoreLink"
           type="a"
           appearance="raw"
-          size="small"
           class="info-more-link"
           :href="readMoreLink"
           target="_blank"
@@ -122,17 +121,10 @@ export default {
   .oc-button {
     vertical-align: middle;
   }
-  .info-drop-content {
-    font-size: var(--oc-font-size-medium);
-  }
-  .info-more-link {
-    font-size: var(--oc-font-size-medium) !important;
-  }
   .info-header {
     align-items: center;
   }
   .info-title {
-    font-size: 1.125rem;
     font-weight: normal;
   }
   .info-list {

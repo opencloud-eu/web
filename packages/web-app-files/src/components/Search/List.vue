@@ -115,7 +115,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="files-search-resource-highlights oc-text-truncate oc-display-inline-block"
+              class="files-search-resource-highlights oc-text-truncate oc-display-inline-block text-sm"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->
@@ -525,8 +525,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .files-search-resource-highlights {
-  font-size: 0.8125rem;
-
   mark {
     background: #fff74c;
     font-style: normal;

@@ -22,7 +22,7 @@
       <div v-if="runningUploads" class="oc-flex oc-flex-middle">
         <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
         <oc-spinner v-else size="small" class="mr-1" />
-        <span class="oc-text-small oc-text-muted" v-text="remainingTime" />
+        <span class="text-sm oc-text-muted" v-text="remainingTime" />
       </div>
       <div
         v-else
@@ -37,7 +37,7 @@
       <div class="oc-flex">
         <oc-button
           appearance="raw"
-          class="oc-text-muted oc-text-small upload-info-toggle-details-btn"
+          class="oc-text-muted text-sm upload-info-toggle-details-btn"
           no-hover
           @click="toggleInfo"
         >
@@ -138,7 +138,7 @@
           </span>
           <span
             v-if="getUploadItemMessage(item)"
-            class="upload-info-message ml-1 oc-text-small"
+            class="upload-info-message ml-1 text-sm"
             :class="getUploadItemClass(item)"
             v-text="getUploadItemMessage(item)"
           ></span>
