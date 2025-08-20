@@ -13,7 +13,7 @@
     <focus-trap :active="dropOpen">
       <div class="info-drop-content">
         <div class="flex justify-between info-header oc-border-b pb-2">
-          <h4 class="m-0 info-title text-lg" v-text="$gettext(title)" />
+          <h4 class="m-0 info-title text-lg font-normal" v-text="$gettext(title)" />
           <oc-button appearance="raw" :aria-label="$gettext('Close')" class="align-middle">
             <oc-icon name="close" fill-type="line" size="medium" />
           </oc-button>
