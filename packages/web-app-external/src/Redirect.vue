@@ -3,7 +3,7 @@
     class="external-redirect oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
   >
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body oc-text-center oc-width-large">
+    <div class="oc-card oc-card-body oc-text-center oc-width-large text-lg">
       <h2 key="external-redirect-loading" class="mt-0">
         <span v-text="$gettext('One moment please…')" />
       </h2>
@@ -80,12 +80,6 @@ export default defineComponent({
   .oc-card {
     background: var(--oc-role-surface-container);
     border-radius: 15px;
-
-    &-body {
-      p {
-        font-size: var(--oc-font-size-large);
-      }
-    }
   }
 }
 </style>

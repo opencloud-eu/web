@@ -162,9 +162,5 @@ export default defineComponent({
     align-items: center;
     flex-direction: column;
   }
-
-  .group-info-display-name {
-    font-size: 1.5rem;
-  }
 }
 </style>

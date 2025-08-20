@@ -59,7 +59,7 @@
           <oc-icon name="group" fill-type="line" size="small" />
           <span
             v-if="memberCount"
-            class="space-header-people-count oc-text-small"
+            class="space-header-people-count text-sm"
             v-text="memberCountString"
           />
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
@@ -353,7 +353,6 @@ const openSideBarSharePanel = () => {
   }
 
   &-name {
-    font-size: 1.5rem;
     word-break: break-all;
   }
 

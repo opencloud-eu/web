@@ -32,7 +32,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
       <!--v-if-->
     </div>
     <portal to="app.design-system.password-policy">
-      <div class="oc-flex oc-text-small oc-text-input-password-policy-rule-wrapper pt-2">
+      <div class="oc-flex text-sm oc-text-input-password-policy-rule-wrapper pt-2">
         <div class="oc-flex oc-flex-middle oc-text-input-password-policy-rule"><span class="oc-icon oc-icon-s box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/close-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
@@ -85,7 +85,7 @@ exports[`OcTextInput > password input field > password policy > displays success
       <!--v-if-->
     </div>
     <portal to="app.design-system.password-policy">
-      <div class="oc-flex oc-text-small oc-text-input-password-policy-rule-wrapper pt-2">
+      <div class="oc-flex text-sm oc-text-input-password-policy-rule-wrapper pt-2">
         <div class="oc-flex oc-flex-middle oc-text-input-password-policy-rule"><span class="oc-icon oc-icon-s box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);

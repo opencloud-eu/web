@@ -178,6 +178,15 @@ const onClick = (event: MouseEvent) => {
   .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
     @apply py-1.5 px-2.5;
   }
+  .oc-button-s {
+    @apply text-sm;
+  }
+  .oc-button-m {
+    @apply text-base;
+  }
+  .oc-button-l {
+    @apply text-lg;
+  }
 }
 </style>
 <style lang="scss">
@@ -185,15 +194,10 @@ const onClick = (event: MouseEvent) => {
   gap: math.round(calc($oc-space-small * $factor / 2)) * 2;
 }
 
-@mixin oc-button-line-height($factor) {
-  line-height: $oc-size-icon-default * $factor;
-}
-
 @mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
     border-style: none;
-    font-size: var(--oc-font-size-medium);
     font-weight: normal;
     min-height: 0;
 
@@ -244,8 +248,6 @@ const onClick = (event: MouseEvent) => {
 }
 
 .oc-button {
-  @include oc-button-line-height(1);
-
   align-items: center;
   border: 0;
   box-sizing: border-box;
@@ -307,23 +309,14 @@ const onClick = (event: MouseEvent) => {
   }
 
   &-s {
-    @include oc-button-line-height(0.7);
-
-    font-size: var(--oc-font-size-small);
     min-height: 1.2rem;
   }
 
   &-m {
-    @include oc-button-line-height(1);
-
-    font-size: var(--oc-font-size-medium);
     min-height: $global-control-height;
   }
 
   &-l {
-    @include oc-button-line-height(1.5);
-
-    font-size: var(--oc-font-size-xlarge);
     min-height: 2rem;
   }
 

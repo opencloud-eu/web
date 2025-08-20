@@ -57,7 +57,7 @@ The component provides an `append` slot to add additional content.
 <div class="oc-width-1-4">
 	<oc-recipient :recipient="{ name: 'Admin' }">
 		<template #append>
-			<span class="oc-text-small">Additional content</span>
+			<span class="text-sm">Additional content</span>
 		</template>
 	</oc-recipient>
 </div>

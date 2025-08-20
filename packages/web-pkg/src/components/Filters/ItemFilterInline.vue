@@ -5,7 +5,7 @@
         v-for="(option, index) in filterOptions"
         :id="option.name"
         :key="index"
-        class="item-inline-filter-option py-1 px-2"
+        class="item-inline-filter-option py-1 px-2 text-xs"
         :class="{ 'item-inline-filter-option-selected': activeOption === option.name }"
         appearance="raw-inverse"
         color-role="surface"
@@ -85,8 +85,6 @@ export default defineComponent({
 
   button {
     text-decoration: none;
-    font-size: var(--oc-font-size-xsmall);
-    line-height: 1rem;
     height: 24px;
   }
 

@@ -11,7 +11,7 @@
           </h2>
         </div>
         <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="oc-text-xlarge">{{ errorMessage }}</p>
+          <p class="text-xl">{{ errorMessage }}</p>
         </div>
       </template>
       <template v-else-if="isPasswordRequired">

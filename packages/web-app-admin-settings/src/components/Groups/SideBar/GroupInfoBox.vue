@@ -7,7 +7,7 @@
       :user-name="group.displayName"
       background-color="var(--oc-role-secondary)"
     />
-    <span class="oc-text-muted group-info-display-name" v-text="group.displayName"></span>
+    <span class="oc-text-muted group-info-display-name text-2xl" v-text="group.displayName"></span>
     <span class="oc-text-muted" v-text="groupMembersText"></span>
   </div>
 </template>
@@ -48,9 +48,5 @@ export default defineComponent({
 .gr-info {
   align-items: center;
   flex-direction: column;
-}
-
-.group-info-display-name {
-  font-size: 1.5rem;
 }
 </style>

@@ -31,7 +31,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count oc-text-small">1 member</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count text-sm">1 member</span>
       </button>
     </div>
     <!--v-if-->
@@ -72,7 +72,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count oc-text-small">1 member</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count text-sm">1 member</span>
       </button>
     </div>
     <!--v-if-->
@@ -116,7 +116,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count oc-text-small">1 member</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="space-header-people-count text-sm">1 member</span>
       </button>
     </div>
     <!--v-if-->

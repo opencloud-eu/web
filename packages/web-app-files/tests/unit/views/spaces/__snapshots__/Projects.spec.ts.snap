@@ -55,7 +55,7 @@ exports[`Projects view > different files view states > lists all available proje
       </tbody>
       <tfoot class="oc-table-footer">
         <tr class="oc-table-footer-row">
-          <td colspan="4" class="oc-table-footer-cell p-1">
+          <td colspan="4" class="oc-table-footer-cell p-1 text-sm">
             <!-- @slot Footer of the table -->
             <!-- @slot Footer of the files table -->
             <!--v-if-->

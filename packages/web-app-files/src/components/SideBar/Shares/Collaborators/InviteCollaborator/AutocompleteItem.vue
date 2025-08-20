@@ -28,12 +28,12 @@
       </template>
       <div
         v-if="additionalInfo"
-        class="files-collaborators-autocomplete-additionalInfo"
+        class="files-collaborators-autocomplete-additionalInfo text-sm"
         v-text="`${additionalInfo}`"
       />
       <div
         v-if="externalIssuer"
-        class="files-collaborators-autocomplete-externalIssuer"
+        class="files-collaborators-autocomplete-externalIssuer text-sm"
         v-text="`${externalIssuer}`"
       />
     </div>
@@ -96,10 +96,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.files-collaborators-autocomplete-additionalInfo,
-.files-collaborators-autocomplete-externalIssuer {
-  font-size: var(--oc-font-size-small);
-}
-</style>

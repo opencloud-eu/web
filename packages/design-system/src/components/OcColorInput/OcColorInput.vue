@@ -34,7 +34,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-color-input-message oc-text-small mt-1"
+      class="oc-color-input-message text-sm mt-1"
       :class="{
         'oc-color-input-description': !!descriptionMessage,
         'oc-color-input-danger': !!errorMessage

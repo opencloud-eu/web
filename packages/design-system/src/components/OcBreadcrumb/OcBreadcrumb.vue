@@ -31,6 +31,7 @@
           v-if="item.to"
           :aria-current="getAriaCurrent(index)"
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
+          class="first:text-base text-xl"
         >
           <span class="oc-breadcrumb-item-text oc-breadcrumb-item-navigable">{{ item.text }}</span>
         </router-link>
@@ -38,7 +39,7 @@
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
           appearance="raw"
-          class="oc-flex"
+          class="oc-flex first:text-base text-xl"
           no-hover
           @click="item.onClick"
         >
@@ -55,7 +56,7 @@
         </oc-button>
         <span
           v-else
-          class="oc-breadcrumb-item-text"
+          class="oc-breadcrumb-item-text first:text-base text-xl"
           :aria-current="getAriaCurrent(index)"
           tabindex="-1"
           v-text="item.text"
@@ -372,19 +373,9 @@ const dropItemStyling = (
     a:first-of-type,
     button:first-of-type,
     span:first-of-type {
-      font-size: var(--oc-font-size-medium);
       color: var(--oc-role-on-surface);
       display: inline-block;
       vertical-align: sub;
-      line-height: normal;
-    }
-  }
-
-  &-lead &-list-item {
-    a,
-    button,
-    span {
-      font-size: var(--oc-font-size-large);
     }
   }
 }
