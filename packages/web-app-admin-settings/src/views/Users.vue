@@ -39,8 +39,8 @@
             <context-actions :items="selectedUsers" />
           </template>
           <template #filter>
-            <div class="oc-flex oc-flex-middle">
-              <div class="mr-4 oc-flex oc-flex-middle">
+            <div class="flex items-center">
+              <div class="mr-4 flex items-center">
                 <oc-icon name="filter-2" class="mr-1" />
                 <span v-text="$gettext('Filter:')" />
               </div>
@@ -88,7 +88,7 @@
                 </template>
               </item-filter>
             </div>
-            <div class="oc-flex oc-flex-middle">
+            <div class="flex items-center">
               <oc-text-input
                 id="users-filter"
                 v-model.trim="filterTermDisplayName"

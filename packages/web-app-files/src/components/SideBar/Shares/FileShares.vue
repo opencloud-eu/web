@@ -1,7 +1,7 @@
 <template>
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
-    <div class="oc-flex oc-flex-between oc-flex-middle">
-      <div class="oc-flex">
+    <div class="flex justify-between items-center">
+      <div class="flex">
         <h3 v-translate class="oc-text-bold text-base m-0">Share with people</h3>
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
@@ -19,7 +19,7 @@
       v-text="noSharePermsMessage"
     />
     <template v-if="hasSharees">
-      <div id="files-collaborators-headline" class="oc-flex oc-flex-middle oc-flex-between">
+      <div id="files-collaborators-headline" class="flex items-center justify-between">
         <h4 class="oc-text-bold my-0" v-text="sharedWithLabel" />
       </div>
       <portal-target
@@ -53,7 +53,7 @@
           :multiple="true"
         />
       </ul>
-      <div v-if="showShareToggle" class="oc-flex oc-flex-center">
+      <div v-if="showShareToggle" class="flex justify-center">
         <oc-button
           appearance="raw"
           class="toggle-shares-list-btn"
@@ -64,7 +64,7 @@
       </div>
     </template>
     <template v-if="showSpaceMembers">
-      <div class="oc-flex oc-flex-middle oc-flex-between">
+      <div class="flex items-center justify-between">
         <h4 class="oc-text-bold my-2" v-text="spaceMemberLabel" />
       </div>
       <ul
@@ -84,7 +84,7 @@
           />
         </li>
       </ul>
-      <div v-if="showMemberToggle" class="oc-flex oc-flex-center">
+      <div v-if="showMemberToggle" class="flex justify-center">
         <oc-button appearance="raw" @click="toggleMemberListCollapsed">
           {{ collapseMemberButtonTitle }}
         </oc-button>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="item-inline-filter oc-flex-inline" :class="`item-inline-filter-${filterName}`">
+    <div class="item-inline-filter inline-flex" :class="`item-inline-filter-${filterName}`">
       <oc-button
         v-for="(option, index) in filterOptions"
         :id="option.name"

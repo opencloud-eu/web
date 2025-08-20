@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-width-1-1" :class="{ 'space-frontpage': isSpaceFrontpage }">
+  <div class="flex oc-width-1-1" :class="{ 'space-frontpage': isSpaceFrontpage }">
     <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
     <files-view-wrapper>
       <app-bar

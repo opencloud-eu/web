@@ -1,6 +1,6 @@
 <template>
   <div id="group-list">
-    <div class="group-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4">
+    <div class="group-filters flex justify-end flex-wrap items-end mx-4 mb-4">
       <oc-text-input
         id="groups-filter"
         v-model="filterTerm"
@@ -53,7 +53,7 @@
         />
       </template>
       <template #displayName="rowData">
-        <div class="oc-flex oc-flex-middle">
+        <div class="flex items-center">
           {{ rowData.item.displayName }}
           <oc-icon
             v-if="rowData.item.groupTypes?.includes('ReadOnly')"

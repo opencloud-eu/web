@@ -1,7 +1,5 @@
 <template>
-  <main
-    class="external-redirect oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
-  >
+  <main class="external-redirect oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
     <div class="oc-card oc-card-body oc-text-center oc-width-large text-lg">
       <h2 key="external-redirect-loading" class="mt-0">

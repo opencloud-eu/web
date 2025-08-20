@@ -3,7 +3,7 @@
     <li
       v-for="(m, index) in permissions"
       :key="index"
-      class="oc-flex oc-flex-middle mb-2"
+      class="flex items-center mb-2"
       data-testid="space-members-list"
     >
       <user-avatar

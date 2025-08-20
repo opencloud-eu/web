@@ -1,7 +1,7 @@
 <template>
   <div
     :role="isFilter ? undefined : 'search'"
-    class="oc-search oc-flex oc-flex-middle"
+    class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
     <div class="oc-width-expand oc-position-relative">

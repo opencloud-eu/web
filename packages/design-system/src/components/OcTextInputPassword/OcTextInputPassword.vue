@@ -50,11 +50,11 @@
     </oc-button>
   </div>
   <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
-    <div class="oc-flex text-sm oc-text-input-password-policy-rule-wrapper pt-2">
+    <div class="flex text-sm oc-text-input-password-policy-rule-wrapper pt-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
-        class="oc-flex oc-flex-middle oc-text-input-password-policy-rule"
+        class="flex items-center oc-text-input-password-policy-rule"
       >
         <oc-icon
           size="small"

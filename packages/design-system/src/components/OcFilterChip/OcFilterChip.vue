@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-filter-chip oc-flex"
+    class="oc-filter-chip flex"
     :class="{ 'oc-filter-chip-toggle': isToggle, 'oc-filter-chip-raw': raw }"
   >
     <oc-button

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="ready" class="oc-flex">
+  <div v-if="ready" class="flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -16,9 +16,7 @@
           </template>
         </no-content-message>
         <template v-else>
-          <div
-            class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4"
-          >
+          <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="trash-filter"
               v-model="filterTerm"

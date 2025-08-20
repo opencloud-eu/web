@@ -1,6 +1,6 @@
 <template>
   <div id="tiles-view" class="px-4 pt-6">
-    <div class="oc-flex oc-flex-middle mb-2 pb-2 oc-tiles-controls">
+    <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
@@ -31,7 +31,7 @@
                   @click="selectSorting(option)"
                 >
                   <span>{{ option.label }}</span>
-                  <div v-if="option === currentSortField" class="oc-flex">
+                  <div v-if="option === currentSortField" class="flex">
                     <oc-icon name="check" />
                   </div>
                 </oc-button>
@@ -77,7 +77,7 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="oc-flex-inline p-2"
+              class="inline-flex p-2"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
               @click.stop.prevent="toggleTile([resource, $event])"

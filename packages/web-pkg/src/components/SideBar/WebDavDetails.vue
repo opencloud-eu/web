@@ -1,6 +1,6 @@
 <template>
   <dt>{{ $gettext('WebDAV path') }}</dt>
-  <dd class="oc-flex">
+  <dd class="flex">
     <div v-oc-tooltip="webDavPath" class="oc-text-truncate" v-text="webDavPath" />
     <oc-button
       v-oc-tooltip="$gettext('Copy WebDAV path')"
@@ -15,7 +15,7 @@
     </oc-button>
   </dd>
   <dt>{{ $gettext('WebDAV URL') }}</dt>
-  <dd class="oc-flex">
+  <dd class="flex">
     <div v-oc-tooltip="webDavUrl" class="oc-text-truncate" v-text="webDavUrl" />
     <oc-button
       v-oc-tooltip="$gettext('Copy WebDAV URL')"

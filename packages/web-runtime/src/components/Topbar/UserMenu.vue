@@ -11,7 +11,7 @@
     >
       <user-avatar
         v-if="onPremisesSamAccountName"
-        class="oc-topbar-avatar oc-topbar-personal-avatar oc-flex-inline oc-flex-center oc-flex-middle"
+        class="oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center"
         :user-id="user.id"
         :user-name="user.displayName"
         background-color="var(--oc-role-on-chrome)"
@@ -19,7 +19,7 @@
       />
       <oc-avatar-item
         v-else
-        class="oc-topbar-avatar oc-topbar-unauthenticated-avatar oc-flex-inline oc-flex-center oc-flex-middle"
+        class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"
         :name="$gettext('User Menu login')"
         :width="32"
         icon="user"

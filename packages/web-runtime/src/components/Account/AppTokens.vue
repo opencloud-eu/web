@@ -1,6 +1,6 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
-    <div class="oc-flex oc-flex-middle oc-flex-space-between mb-4">
+    <div class="flex items-center mb-4">
       <h2 v-text="$gettext('App tokens')" />
       <oc-button
         v-if="!authAppServiceDisabled"
@@ -62,7 +62,7 @@
       </oc-table>
       <div
         v-if="appTokens.length > TOKENS_TO_DISPLAY"
-        class="oc-width-1-1 oc-flex oc-flex-center mt-4"
+        class="oc-width-1-1 flex justify-center mt-4"
       >
         <oc-button appearance="raw" no-hover @click="listExpanded = !listExpanded">
           <span v-text="listExpanded ? $gettext('Show less') : $gettext('Show more')" />

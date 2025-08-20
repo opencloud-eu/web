@@ -1,6 +1,6 @@
 <template>
   <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium mx-auto sm:m-0">
-    <div class="upload-info-title oc-flex oc-flex-between oc-flex-middle px-4 py-2 oc-rounded-top">
+    <div class="upload-info-title flex justify-between items-center px-4 py-2 oc-rounded-top">
       <p v-oc-tooltip="uploadDetails" class="my-1" v-text="uploadInfoTitle" />
       <oc-button
         v-if="!itemsInProgressCount"
@@ -14,12 +14,12 @@
       </oc-button>
     </div>
     <div
-      class="upload-info-status px-4 pt-4 oc-flex oc-flex-between oc-flex-middle"
+      class="upload-info-status px-4 pt-4 flex justify-between items-center"
       :class="{
         'pb-4': !runningUploads
       }"
     >
-      <div v-if="runningUploads" class="oc-flex oc-flex-middle">
+      <div v-if="runningUploads" class="flex items-center">
         <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
         <oc-spinner v-else size="small" class="mr-1" />
         <span class="text-sm oc-text-muted" v-text="remainingTime" />
@@ -34,7 +34,7 @@
       >
         {{ uploadingLabel }}
       </div>
-      <div class="oc-flex">
+      <div class="flex">
         <oc-button
           appearance="raw"
           class="oc-text-muted text-sm upload-info-toggle-details-btn"
@@ -99,7 +99,7 @@
     >
       <ul class="oc-list">
         <li v-for="(item, idx) in uploads" :key="idx">
-          <span class="oc-flex oc-flex-middle">
+          <span class="flex items-center">
             <oc-icon
               v-if="item.status === 'error'"
               name="close"
@@ -109,7 +109,7 @@
             <oc-icon v-else-if="item.status === 'success'" name="check" size="small" />
             <oc-icon v-else-if="item.status === 'cancelled'" name="close" size="small" />
             <oc-icon v-else-if="uploadsPaused" name="pause" size="small" />
-            <div v-else class="oc-flex"><oc-spinner size="small" /></div>
+            <div v-else class="flex"><oc-spinner size="small" /></div>
             <resource-list-item
               v-if="displayFileAsResource(item)"
               :key="item.path"
@@ -121,7 +121,7 @@
               :link="resourceLink(item)"
               :parent-folder-link="parentFolderLink(item)"
             />
-            <span v-else class="oc-flex oc-flex-middle oc-text-truncate">
+            <span v-else class="flex items-center oc-text-truncate">
               <resource-icon
                 :resource="item as Resource"
                 size="large"

@@ -9,10 +9,10 @@
       <h1 class="oc-invisible-sr" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
-        class="oc-flex oc-flex-middle files-app-bar-controls"
+        class="flex items-center files-app-bar-controls"
         :class="{
-          'oc-flex-between': breadcrumbs.length || hasSharesNavigation,
-          'oc-flex-right': !breadcrumbs.length && !hasSharesNavigation
+          'justify-between': breadcrumbs.length || hasSharesNavigation,
+          'justify-end': !breadcrumbs.length && !hasSharesNavigation
         }"
       >
         <oc-breadcrumb
@@ -33,7 +33,7 @@
         </oc-breadcrumb>
         <portal-target v-if="showMobileNav" name="app.runtime.mobile.nav" />
         <slot v-if="hasSharesNavigation" name="navigation" />
-        <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="oc-flex">
+        <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
             :view-modes="viewModes"
             :has-hidden-files="hasHiddenFiles"
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="files-app-bar-actions mt-1">
-        <div class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
+        <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
             v-if="showBatchActions && !batchActionsLoading"

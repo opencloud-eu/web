@@ -6,7 +6,7 @@
         <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-flex oc-flex-middle">
+    <div class="flex items-center">
       <input
         :id="id"
         v-bind="additionalAttributes"
@@ -33,7 +33,7 @@
         {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
       </oc-button>
       <div class="oc-file-input-files oc-rounded ml-2">
-        <div v-if="fileNames" class="py-1 px-2 text-sm oc-flex oc-flex-middle">
+        <div v-if="fileNames" class="py-1 px-2 text-sm flex items-center">
           {{ fileNames }}
           <oc-button
             v-if="clearButtonEnabled && fileNames"
@@ -49,7 +49,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-file-input-message text-sm oc-flex oc-flex-middle mt-1"
+      class="oc-file-input-message text-sm flex items-center mt-1"
       :class="{
         'oc-file-input-description': !!descriptionMessage,
         'oc-file-input-danger': !!errorMessage

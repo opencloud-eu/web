@@ -6,7 +6,7 @@
     tabindex="-1"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
-      'oc-flex oc-flex-center oc-flex-middle': loading,
+      'flex justify-center items-center': loading,
       'app-sidebar-full-width': fullWidthSideBar
     }"
   >

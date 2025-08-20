@@ -1,6 +1,6 @@
 <template>
   <div id="user-list">
-    <div class="user-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom mx-4 mb-4">
+    <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
       <slot name="filter" />
     </div>
     <app-loading-spinner v-if="isLoading" />
@@ -52,12 +52,12 @@
           <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
         </template>
         <template #accountEnabled="{ item }">
-          <span v-if="item.accountEnabled === false" class="oc-flex oc-flex-middle">
+          <span v-if="item.accountEnabled === false" class="flex items-center">
             <oc-icon name="stop-circle" fill-type="line" class="mr-2" /><span
               v-text="$gettext('Forbidden')"
             />
           </span>
-          <span v-else class="oc-flex oc-flex-middle">
+          <span v-else class="flex items-center">
             <oc-icon name="play-circle" fill-type="line" class="mr-2" /><span
               v-text="$gettext('Allowed')"
             />

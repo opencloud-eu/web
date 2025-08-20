@@ -7,9 +7,9 @@
       rows="4"
       readonly
     />
-    <div class="oc-flex oc-flex-between mt-2">
-      <div class="oc-flex">
-        <div v-if="showCopied" class="oc-flex oc-flex-middle">
+    <div class="flex justify-between mt-2">
+      <div class="flex">
+        <div v-if="showCopied" class="flex items-center">
           <oc-icon name="checkbox-circle" />
           <p class="oc-error-log-content-copied ml-2 my-0" v-text="$gettext('Copied')" />
         </div>

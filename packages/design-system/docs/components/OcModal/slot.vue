@@ -3,7 +3,7 @@
   <oc-modal v-if="modalActive" title="Modal title" :hide-actions="true">
     <template #content>
       <span>Your changes were not saved. Do you want to save them?</span>
-      <div class="oc-flex oc-flex-right oc-flex-middle mt-4">
+      <div class="flex justify-end items-center mt-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button
             class="oc-modal-body-actions-cancel ml-2"

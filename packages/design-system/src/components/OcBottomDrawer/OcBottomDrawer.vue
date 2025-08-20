@@ -15,7 +15,7 @@
         <div :id="drawerId" class="oc-bottom-drawer">
           <div class="oc-card">
             <div class="oc-card-header px-4 pt-4">
-              <div class="oc-flex oc-flex-between oc-flex-middle">
+              <div class="flex justify-between items-center">
                 <oc-button
                   v-if="isNestedElement"
                   appearance="raw"

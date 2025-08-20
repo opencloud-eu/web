@@ -5,7 +5,7 @@
     class="px-4"
     :aria-label="$gettext('Top bar')"
   >
-    <div class="oc-topbar-left oc-flex oc-flex-middle oc-flex-start">
+    <div class="oc-topbar-left flex items-center flex-start">
       <applications-menu
         v-if="appMenuExtensions.length && !isEmbedModeEnabled"
         :menu-items="appMenuExtensions"
@@ -17,7 +17,7 @@
     <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
-    <div class="oc-topbar-right oc-flex oc-flex-middle">
+    <div class="oc-topbar-right flex items-center">
       <portal-target name="app.runtime.header.right" multiple />
     </div>
     <template v-if="!isEmbedModeEnabled">

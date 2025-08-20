@@ -1,11 +1,11 @@
 <template>
   <div
-    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded"
+    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded"
     :class="classes"
   >
-    <div class="oc-flex oc-flex-wrap oc-flex-middle oc-flex-1" :role="role" :aria-live="ariaLive">
-      <div class="oc-flex oc-flex-middle oc-flex-between oc-width-1-1">
-        <div class="oc-flex oc-flex-middle">
+    <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
+      <div class="flex items-center justify-between oc-width-1-1">
+        <div class="flex items-center">
           <oc-icon name="information" fill-type="line" class="mr-2" />
           <div class="oc-notification-message-title text-lg">
             {{ title }}
@@ -15,7 +15,7 @@
           <oc-icon name="close" />
         </oc-button>
       </div>
-      <div v-if="message || errorLogContent" class="oc-flex oc-flex-between oc-width-1-1 mt-2">
+      <div v-if="message || errorLogContent" class="flex justify-between oc-width-1-1 mt-2">
         <span
           v-if="message"
           class="oc-notification-message-content oc-text-muted mr-2"

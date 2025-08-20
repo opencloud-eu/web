@@ -1,8 +1,8 @@
 <template>
-  <div v-if="option.hasSwitch" class="action-menu-item item-has-switch p-2 oc-flex oc-flex-center">
+  <div v-if="option.hasSwitch" class="action-menu-item item-has-switch p-2 flex justify-center">
     <oc-icon :name="option.icon" fill-type="line" size="medium" />
     <oc-switch
-      class="ml-2 oc-flex oc-width-1-1"
+      class="ml-2 flex oc-width-1-1"
       :checked="option.isChecked.value"
       :class="option.class"
       :label="option.title"

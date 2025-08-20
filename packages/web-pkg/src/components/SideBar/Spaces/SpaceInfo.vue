@@ -1,6 +1,6 @@
 <template>
   <div class="space_info p-2">
-    <div class="space_info__body oc-text-overflow oc-flex oc-flex-middle text-sm">
+    <div class="space_info__body oc-text-overflow flex items-center text-sm">
       <div class="mr-2">
         <oc-icon
           name="layout-grid"

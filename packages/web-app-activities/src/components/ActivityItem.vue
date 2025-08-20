@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-flex oc-flex-middle activity-item">
-    <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center activity-item">
+    <div class="flex items-center">
       <oc-avatar :width="36" :user-name="activity.template.variables?.user?.displayName" />
       <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
     </div>
@@ -10,7 +10,7 @@
       <div
         v-if="resourceNotAccessible"
         v-oc-tooltip="$gettext('The resource is unavailable, it may have been deleted.')"
-        class="oc-text-muted oc-flex oc-flex-middle p-1"
+        class="oc-text-muted flex items-center p-1"
       >
         <oc-icon name="eye-off" />
         <span class="ml-2" v-text="activity.template.variables?.resource?.name" />

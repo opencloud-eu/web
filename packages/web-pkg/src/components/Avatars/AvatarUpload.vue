@@ -7,7 +7,7 @@
       accept="image/jpeg, image/png"
       @change="onFileChange"
     />
-    <div class="oc-flex oc-flex-column oc-flex-middle">
+    <div class="flex flex-col items-center">
       <user-avatar class="mb-4" :width="128" :user-id="user.id" :user-name="user.displayName" />
       <div>
         <div class="oc-button-group">
@@ -38,7 +38,7 @@
       <template #content>
         <div v-if="imageUrl">
           <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
-          <div class="text-sm oc-text-muted oc-flex oc-flex-middle mt-1">
+          <div class="text-sm oc-text-muted flex items-center mt-1">
             <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
             <span
               v-text="

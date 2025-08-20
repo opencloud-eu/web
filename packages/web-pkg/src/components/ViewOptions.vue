@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center">
     <div
       v-if="viewModes.length > 1"
       class="viewmode-switch-buttons oc-button-group oc-visible@s mr-2"
@@ -83,7 +83,7 @@
         </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
-          class="files-view-options-list-item mt-2 mb-4 last:mb-0 oc-flex oc-flex-between oc-flex-middle"
+          class="files-view-options-list-item mt-2 mb-4 last:mb-0 flex justify-between items-center"
         >
           <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
           <input

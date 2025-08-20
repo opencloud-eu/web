@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isEmbedModeEnabled" class="oc-flex">
+  <div v-if="!isEmbedModeEnabled" class="flex">
     <oc-button
       v-for="action in filteredActions"
       :key="action.label()"

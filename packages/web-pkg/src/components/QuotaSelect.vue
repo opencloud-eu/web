@@ -22,7 +22,7 @@
         <input class="vs__search" v-bind="attributes" v-on="events" />
       </template>
       <template #option="{ displayValue, error }">
-        <div class="oc-flex oc-flex-between">
+        <div class="flex justify-between">
           <span v-text="displayValue" />
         </div>
         <div v-if="error" class="oc-text-input-danger">{{ error }}</div>

@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-flex">
-    <files-view-wrapper class="oc-flex-column">
+  <div class="flex">
+    <files-view-wrapper class="flex-col">
       <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen">
         <template #navigation>
           <SharesNavigation />
@@ -8,11 +8,9 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div
-          class="shared-with-me-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom mx-4 mb-4"
-        >
-          <div class="oc-flex oc-flex-wrap">
-            <div class="mr-4 oc-flex oc-flex-middle">
+        <div class="shared-with-me-filters flex justify-between flex-wrap items-end mx-4 mb-4">
+          <div class="flex flex-wrap">
+            <div class="mr-4 flex items-center">
               <oc-icon name="filter-2" class="mr-1" />
               <span v-text="$gettext('Filter:')" />
             </div>

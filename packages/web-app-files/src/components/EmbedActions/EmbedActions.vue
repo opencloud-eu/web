@@ -1,14 +1,14 @@
 <template>
-  <section class="files-embed-actions oc-width-1-1 oc-flex oc-flex-middle oc-flex-between my-2">
+  <section class="files-embed-actions oc-width-1-1 flex items-center justify-between my-2">
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
-      class="files-embed-actions-file-name oc-flex oc-flex-row oc-flex-middle ml-0 md:ml-[230px]"
+      class="files-embed-actions-file-name flex flex-row items-center ml-0 md:ml-[230px]"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
     />
 
-    <div class="files-embed-actions-buttons oc-flex oc-flex-middle ml-auto">
+    <div class="files-embed-actions-buttons flex items-center ml-auto">
       <oc-button
         class="mr-4"
         data-testid="button-cancel"

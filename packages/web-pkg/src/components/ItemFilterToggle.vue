@@ -1,5 +1,5 @@
 <template>
-  <div class="item-filter oc-flex" :class="`item-filter-${filterName}`">
+  <div class="item-filter flex" :class="`item-filter-${filterName}`">
     <oc-filter-chip
       :is-toggle="true"
       :filter-label="filterLabel"

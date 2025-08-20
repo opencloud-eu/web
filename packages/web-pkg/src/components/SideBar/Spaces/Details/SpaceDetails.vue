@@ -12,7 +12,7 @@
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
-      class="oc-flex oc-flex-middle oc-space-details-sidebar-members mb-2 text-sm"
+      class="flex items-center oc-space-details-sidebar-members mb-2 text-sm"
     >
       <oc-button
         v-if="hasMemberShares"

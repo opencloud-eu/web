@@ -9,7 +9,7 @@
       :aria-label="checkboxLabel"
     />
   </div>
-  <div class="oc-flex oc-flex-right oc-flex-middle mt-4">
+  <div class="flex justify-end items-center mt-4">
     <div class="oc-modal-body-actions-grid">
       <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
         {{ $gettext('Skip') }}

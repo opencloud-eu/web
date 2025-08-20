@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-flex oc-button-justify-content-space-between pb-2">
-    <div v-if="isAdvancedMode" class="oc-flex oc-flex-middle">
+  <div class="flex oc-button-justify-content-space-between pb-2">
+    <div v-if="isAdvancedMode" class="flex items-center">
       <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
         :model-value="selectedType"
@@ -8,9 +8,9 @@
         @update:model-value="updateSelectedLinkType"
       />
     </div>
-    <div v-else class="oc-flex oc-flex-middle">
+    <div v-else class="flex items-center">
       <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
-      <div class="oc-flex oc-flex-column">
+      <div class="flex flex-col">
         <span class="oc-text-bold" v-text="selectedTypeDisplayName" />
         <span class="text-sm" v-text="selectedTypeDescription" />
       </div>
@@ -53,7 +53,7 @@
       @date-changed="onExpiryDateChanged"
     />
   </div>
-  <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle mt-2">
+  <div class="link-modal-actions flex justify-end items-center mt-2">
     <oc-button class="link-modal-cancel oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>
