@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
 
