@@ -12,7 +12,7 @@ exports[`OcModal > displays input 1`] = `
         <!--v-if-->
         <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" class="oc-modal-body-input -mb-5 pb-4"></oc-text-input-stub>
       </div>
-      <div class="oc-modal-body-actions oc-flex oc-flex-right p-4">
+      <div class="oc-modal-body-actions flex justify-end p-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>
@@ -35,7 +35,7 @@ exports[`OcModal > displays loading state 1`] = `
         <!--v-if-->
         <!--v-if-->
       </div>
-      <div class="oc-modal-body-actions oc-flex oc-flex-right p-4">
+      <div class="oc-modal-body-actions flex justify-end p-4">
         <div class="oc-modal-body-actions-grid"><button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> Cancel
@@ -58,7 +58,7 @@ exports[`OcModal > matches snapshot 1`] = `
         <!--v-if-->
         <!--v-if-->
       </div>
-      <div class="oc-modal-body-actions oc-flex oc-flex-right p-4">
+      <div class="oc-modal-body-actions flex justify-end p-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>
@@ -81,7 +81,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
           <p>Slot message</p>
         </div>
       </div>
-      <div class="oc-modal-body-actions oc-flex oc-flex-right p-4">
+      <div class="oc-modal-body-actions flex justify-end p-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-cancel">Cancel</oc-button-stub>
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>

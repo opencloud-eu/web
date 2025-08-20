@@ -25,14 +25,14 @@
         <component
           :is="type"
           v-bind="getAdditionalAttributes(option.label)"
-          class="oc-flex oc-flex-middle"
+          class="flex items-center"
           @click="onTagClicked"
         >
           <oc-icon name="price-tag-3" class="mr-1" size="small" />
           <span class="oc-text-truncate">{{ option.label }}</span>
         </component>
 
-        <span class="oc-flex oc-flex-middle mr-1">
+        <span class="flex items-center mr-1">
           <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
           <oc-button
             v-else
@@ -49,8 +49,8 @@
       </oc-tag>
     </template>
     <template #option="{ label, error }">
-      <div class="oc-flex test">
-        <span class="oc-flex oc-flex-center">
+      <div class="flex test">
+        <span class="flex justify-center">
           <oc-tag class="tags-select-tag ml-1" :rounded="true" size="small">
             <oc-icon name="price-tag-3" size="small" />
             <span class="oc-text-truncate">{{ label }}</span>

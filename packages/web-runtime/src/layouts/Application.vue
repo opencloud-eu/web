@@ -10,7 +10,7 @@
       <top-bar :applications-list="Object.values(apps)" />
     </div>
     <div id="web-content-main" class="px-2 pb-2">
-      <div class="app-container oc-flex">
+      <div class="app-container flex">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav

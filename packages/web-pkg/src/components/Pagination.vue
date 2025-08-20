@@ -5,7 +5,7 @@
     :current-page="currentPage"
     :max-displayed="3"
     :current-route="$route"
-    class="files-pagination oc-flex oc-flex-center my-2"
+    class="files-pagination flex justify-center my-2"
   />
 </template>
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="file_info oc-flex oc-flex-between p-2">
-    <div class="oc-flex oc-flex-middle">
+  <div class="file_info flex justify-between p-2">
+    <div class="flex items-center">
       <resource-icon
         v-if="isSubPanelActive"
         :resource="resource"

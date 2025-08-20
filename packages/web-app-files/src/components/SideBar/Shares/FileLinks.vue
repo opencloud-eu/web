@@ -1,6 +1,6 @@
 <template>
   <div id="oc-files-file-link" class="oc-position-relative">
-    <div class="oc-flex oc-flex-middle">
+    <div class="flex items-center">
       <h3 class="oc-text-bold text-base m-0" v-text="$gettext('Public links')" />
       <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
     </div>
@@ -24,7 +24,7 @@
         />
       </li>
     </ul>
-    <div v-if="directLinks.length > 3" class="oc-flex oc-flex-center">
+    <div v-if="directLinks.length > 3" class="flex justify-center">
       <oc-button
         class="indirect-link-list-toggle"
         appearance="raw"

@@ -10,7 +10,7 @@
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
     >
-      <div class="oc-flex oc-flex-right oc-flex-middle mb-2">
+      <div class="flex justify-end items-center mb-2">
         <oc-button
           v-if="notifications.length"
           class="oc-notifications-mark-all"
@@ -35,7 +35,7 @@
           <li v-for="(el, index) in notifications" :key="index" class="oc-notifications-item">
             <component
               :is="el.computedLink ? 'router-link' : 'div'"
-              class="oc-flex oc-flex-middle"
+              class="flex items-center"
               :to="el.computedLink"
             >
               <user-avatar

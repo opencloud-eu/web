@@ -13,9 +13,9 @@
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayName, id }">
-        <span class="oc-flex oc-flex-center">
+        <span class="flex justify-center">
           <avatar-image
-            class="oc-flex oc-align-self-center mr-2"
+            class="flex oc-align-self-center mr-2"
             :width="16.8"
             :userid="id"
             :user-name="displayName"
@@ -24,10 +24,10 @@
         </span>
       </template>
       <template #option="{ displayName, id }">
-        <div class="oc-flex">
-          <span class="oc-flex oc-flex-center">
+        <div class="flex">
+          <span class="flex justify-center">
             <avatar-image
-              class="oc-flex oc-align-self-center mr-2"
+              class="flex oc-align-self-center mr-2"
               :width="16.8"
               :userid="id"
               :user-name="displayName"

@@ -2,7 +2,7 @@
 
 exports[`account page > account information section > displays basic user information 1`] = `
 "<div class="account-table account-page-info mt-6">
-  <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
+  <div class="flex justify-between items-end oc-width-1-1">
     <h2>Account Information</h2>
     <!--v-if-->
   </div>
@@ -24,7 +24,7 @@ exports[`account page > account information section > displays basic user inform
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Max. 10MB, JPG, PNG</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
           <div class="avatar-upload mb-2"><input class="oc-invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
-            <div class="oc-flex oc-flex-column oc-flex-middle"><span class="vue-avatar--wrapper oc-avatar mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
+            <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div>
                 <div class="oc-button-group"><button type="button" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline avatar-upload-button">
                     <!--v-if-->
@@ -86,12 +86,12 @@ exports[`account page > header section > edit url button > should be displayed i
 `;
 
 exports[`account page > public link context > should render a limited view 1`] = `
-"<main id="account" class="pt-4 pb-6 oc-flex oc-flex-center">
+"<main id="account" class="pt-4 pb-6 flex justify-center">
   <div class="account-page px-4 lg:px-0">
     <h1 id="account-page-title" class="mb-0">My Account</h1>
     <!--v-if-->
     <div class="account-table account-page-preferences">
-      <h2 class="account-table-title oc-flex oc-flex-middle">Preferences
+      <h2 class="account-table-title flex items-center">Preferences
         <!--v-if-->
       </h2>
       <!--v-if-->
@@ -112,8 +112,8 @@ exports[`account page > public link context > should render a limited view 1`] =
           <tr class="account-page-info-language">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Language</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
-              <div class="oc-flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                  <div class="oc-flex ml-1 oc-flex-middle"><span>Help to translate</span> <span class="oc-icon oc-icon-s box-content ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
+              <div class="flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
+                  <div class="flex ml-1 items-center"><span>Help to translate</span> <span class="oc-icon oc-icon-s box-content ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

@@ -1,9 +1,9 @@
 <template>
-  <div v-if="noGroups" class="oc-flex group-info oc-text-center mt-12">
+  <div v-if="noGroups" class="flex group-info oc-text-center mt-12">
     <oc-icon name="group-2" size="xxlarge" />
     <p v-translate>Select a group to view details</p>
   </div>
-  <div v-if="multipleGroups" id="oc-groups-details-multiple-sidebar" class="oc-flex group-info p-4">
+  <div v-if="multipleGroups" id="oc-groups-details-multiple-sidebar" class="flex group-info p-4">
     <oc-icon name="group-2" size="xxlarge" />
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>

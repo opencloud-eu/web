@@ -2,7 +2,7 @@
   <div class="space-image-modal">
     <div v-if="imageUrl" class="space-image-modal-image-container">
       <img ref="imageRef" :src="imageUrl" />
-      <div class="text-sm oc-text-muted oc-flex oc-flex-middle mt-1">
+      <div class="text-sm oc-text-muted flex items-center mt-1">
         <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
         <span
           v-text="

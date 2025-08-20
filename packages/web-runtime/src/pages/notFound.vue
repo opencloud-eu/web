@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-flex-center oc-flex-middle oc-flex-column page-not-found">
+  <div class="flex justify-center items-center flex-col page-not-found">
     <oc-icon name="emotion-normal" fill-type="line" size="xxlarge" />
     <h1 class="oc-text-muted">404</h1>
     <p

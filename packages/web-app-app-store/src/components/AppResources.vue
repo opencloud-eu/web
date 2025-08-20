@@ -5,7 +5,7 @@
         :href="resource.url"
         data-testid="resource-link"
         target="_blank"
-        class="oc-flex-inline oc-flex-middle"
+        class="inline-flex items-center"
       >
         <oc-icon
           v-if="resource.icon"

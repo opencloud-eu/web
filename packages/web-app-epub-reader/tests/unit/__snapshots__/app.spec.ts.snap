@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Epub reader app > renders correctly 1`] = `
-"<div class="epub-reader oc-flex">
+"<div class="epub-reader flex">
   <ul class="oc-list epub-reader-chapters-list pl-2 oc-visible@l">
     <li class="epub-reader-chapters-list-item py-2 active"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-text-truncate">
         <!--v-if-->
@@ -13,8 +13,8 @@ exports[`Epub reader app > renders correctly 1`] = `
       </button></li>
   </ul>
   <div class="oc-width-1-1 oc-height-1-1">
-    <div class="epub-reader-controls oc-flex oc-flex-middle m-2">
-      <div class="epub-reader-controls-font-size oc-flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-decrease">
+    <div class="epub-reader-controls flex items-center m-2">
+      <div class="epub-reader-controls-font-size flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline epub-reader-controls-font-size-decrease">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -83,8 +83,8 @@ exports[`Epub reader app > renders correctly 1`] = `
         <!--v-if-->
       </div>
     </div>
-    <div class="oc-flex oc-flex-center oc-width-1-1 oc-height-1-1">
-      <div class="oc-flex oc-flex-middle mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw epub-reader-navigate-left">
+    <div class="flex justify-center oc-width-1-1 oc-height-1-1">
+      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw epub-reader-navigate-left">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-xl box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -96,8 +96,8 @@ exports[`Epub reader app > renders correctly 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
         </button></div>
-      <div id="reader" class="oc-flex oc-flex-center"></div>
-      <div class="oc-flex oc-flex-middle mx-6"><button type="button" aria-label="Navigate to next page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw epub-reader-navigate-right">
+      <div id="reader" class="flex justify-center"></div>
+      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to next page" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw epub-reader-navigate-right">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-xl box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

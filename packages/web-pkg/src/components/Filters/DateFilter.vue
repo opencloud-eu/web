@@ -1,5 +1,5 @@
 <template>
-  <div class="date-filter oc-flex" :class="`date-filter-${filterName}`">
+  <div class="date-filter flex" :class="`date-filter-${filterName}`">
     <oc-filter-chip
       ref="filterChip"
       :filter-label="filterLabel"
@@ -16,7 +16,7 @@
             class="my-1 first:mt-0 last:mb-0"
           >
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -25,19 +25,19 @@
               :data-testid="item[displayNameAttribute as keyof Item]"
               @click="toggleItemSelection(item)"
             >
-              <div class="oc-flex oc-flex-middle oc-text-truncate">
+              <div class="flex items-center oc-text-truncate">
                 <div class="oc-text-truncate ml-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
-              <div class="oc-flex">
+              <div class="flex">
                 <oc-icon v-if="isItemSelected(item)" name="check" />
               </div>
             </oc-button>
           </li>
           <li class="my-1">
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': dateRangeApplied
               }"
@@ -46,12 +46,12 @@
               data-testid="custom-date-range"
               @click="dateRangeClicked = true"
             >
-              <div class="oc-flex oc-flex-middle oc-text-truncate">
+              <div class="flex items-center oc-text-truncate">
                 <div class="oc-text-truncate ml-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>
-              <div class="oc-flex">
+              <div class="flex">
                 <oc-icon v-if="dateRangeApplied" name="check" />
               </div>
             </oc-button>
@@ -61,7 +61,7 @@
           class="date-filter-range-panel py-2"
           :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
         >
-          <div class="oc-flex oc-flex-middle oc-flex-between mb-4">
+          <div class="flex items-center justify-between mb-4">
             <oc-button
               appearance="raw"
               class="date-filter-range-panel-back"

@@ -1,7 +1,7 @@
 <template>
   <div class="sciencemesh">
-    <div class="oc-flex oc-flex-column sciencemesh-wrapper">
-      <div class="oc-flex sciencemesh-top">
+    <div class="flex flex-col sciencemesh-wrapper">
+      <div class="flex sciencemesh-top">
         <div id="sciencemesh-invite" class="oc-width-1-2 m-2 p-2 mb-0 lg:mb-2">
           <outgoing-invitations />
         </div>

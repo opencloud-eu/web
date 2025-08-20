@@ -12,7 +12,7 @@
     @click="onClickUrlInput"
   >
     <template #label>
-      <div class="oc-flex oc-flex-middle create-shortcut-modal-label mb-1">
+      <div class="flex items-center create-shortcut-modal-label mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
           <span class="oc-text-error" aria-hidden="true">*</span>
@@ -58,7 +58,7 @@
           <span v-text="dropItemUrl" />
         </oc-button>
       </li>
-      <li v-if="searchTask.isRunning" class="p-1 oc-flex oc-flex-center">
+      <li v-if="searchTask.isRunning" class="p-1 flex justify-center">
         <oc-spinner />
       </li>
       <template v-if="searchResult?.values?.length">
@@ -85,7 +85,7 @@
       </template>
     </oc-list>
   </oc-drop>
-  <div v-if="inputFilename" class="oc-flex oc-width-1-1 mt-4">
+  <div v-if="inputFilename" class="flex oc-width-1-1 mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
@@ -95,7 +95,7 @@
       :fix-message-line="true"
     >
       <template #label>
-        <div class="oc-flex oc-flex-middle create-shortcut-modal-label mb-1">
+        <div class="flex items-center create-shortcut-modal-label mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
             <span class="oc-text-error" aria-hidden="true">*</span>

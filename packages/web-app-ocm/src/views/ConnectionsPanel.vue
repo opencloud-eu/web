@@ -1,13 +1,13 @@
 <template>
   <div class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-between">
-        <div class="oc-flex oc-flex-middle px-4 py-2">
+      <div class="flex justify-between">
+        <div class="flex items-center px-4 py-2">
           <oc-icon name="contacts-book" />
           <h2 class="px-2" v-text="$gettext('Federated connections')" />
           <oc-contextual-helper class="pl-1" v-bind="helperContent" />
         </div>
-        <div id="shares-links" class="oc-flex oc-flex-middle oc-flex-wrap mr-4">
+        <div id="shares-links" class="flex items-center flex-wrap mr-4">
           <label class="mr-2" v-text="$gettext('Federated shares:')" />
           <oc-button
             :aria-current="$gettext('Federated shares with me')"

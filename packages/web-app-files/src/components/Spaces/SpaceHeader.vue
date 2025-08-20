@@ -1,7 +1,7 @@
 <template>
   <div
     class="space-header p-4"
-    :class="{ 'oc-flex': !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
+    :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
       class="space-header-image mr-6"
@@ -9,7 +9,7 @@
     >
       <div
         v-if="imagesLoading.includes(space.id)"
-        class="oc-height-1-1 oc-flex oc-flex-middle oc-flex-center"
+        class="oc-height-1-1 flex items-center justify-center"
       >
         <oc-spinner :aria-label="$gettext('Space image is loading')" />
       </div>
@@ -22,8 +22,8 @@
       />
     </div>
     <div class="space-header-infos">
-      <div class="oc-flex mb-2 oc-flex-middle oc-flex-between">
-        <div class="oc-flex oc-flex-middle space-header-infos-heading">
+      <div class="flex mb-2 items-center justify-between">
+        <div class="flex items-center space-header-infos-heading">
           <h2 class="space-header-name">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
@@ -68,14 +68,14 @@
       <p v-if="space.description" class="mt-0 oc-text-bold">{{ space.description }}</p>
       <div
         v-if="readmesLoading.includes(space.id)"
-        class="space-header-readme-loading oc-flex oc-flex-middle oc-flex-center"
+        class="space-header-readme-loading flex items-center justify-center"
       >
         <oc-spinner :aria-label="$gettext('Space description is loading')" />
       </div>
       <div
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
-        class="markdown-container oc-flex"
+        class="markdown-container flex"
       >
         <text-editor
           class="markdown-container-content"

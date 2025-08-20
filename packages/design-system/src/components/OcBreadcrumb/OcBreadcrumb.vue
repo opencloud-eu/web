@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list oc-flex m-0 p-0">
+    <ol class="oc-breadcrumb-list flex m-0 p-0">
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -13,8 +13,8 @@
         :aria-hidden="item.isTruncationPlaceholder"
         :class="[
           'oc-breadcrumb-list-item',
-          'oc-flex',
-          'oc-flex-middle',
+          'flex',
+          'items-center',
           {
             'oc-invisible-sr':
               hiddenItems.indexOf(item) !== -1 ||
@@ -39,7 +39,7 @@
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
           appearance="raw"
-          class="oc-flex first:text-base text-xl"
+          class="flex first:text-base text-xl"
           no-hover
           @click="item.onClick"
         >

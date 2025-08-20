@@ -1,5 +1,5 @@
 <template>
-  <span v-if="selectedRole" class="oc-flex oc-flex-middle">
+  <span v-if="selectedRole" class="flex items-center">
     <span v-if="availableRoles.length === 1">
       <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
       <span v-text="inviteLabel" />
@@ -53,11 +53,11 @@
             :color-role="isSelectedRole(role) ? 'secondaryContainer' : 'surface'"
             @click="selectRole(role)"
           >
-            <span class="oc-flex oc-flex-middle">
+            <span class="flex items-center">
               <oc-icon :name="role.icon" class="pl-2 pr-4" />
               <role-item :role="role" />
             </span>
-            <span class="oc-flex">
+            <span class="flex">
               <oc-icon v-if="isSelectedRole(role)" name="check" />
             </span>
           </oc-button>

@@ -3,7 +3,7 @@
     <li
       v-for="(member, index) in groupMembers"
       :key="index"
-      class="oc-flex oc-flex-middle mb-2"
+      class="flex items-center mb-2"
       data-testid="group-members-list"
     >
       <user-avatar :user-id="member.id" :user-name="member.displayName" class="mr-2" />

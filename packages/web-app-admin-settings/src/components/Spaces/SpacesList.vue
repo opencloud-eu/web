@@ -1,6 +1,6 @@
 <template>
   <div id="space-list">
-    <div class="space-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom mx-4 mb-4">
+    <div class="space-filters flex justify-end flex-wrap items-end mx-4 mb-4">
       <oc-text-input
         id="spaces-filter"
         v-model="filterTerm"
@@ -72,7 +72,7 @@
         />
       </template>
       <template #status="{ item }">
-        <span class="oc-flex oc-flex-middle">
+        <span class="flex items-center">
           <oc-icon
             v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
             :name="item.disabled ? 'stop-circle' : 'play-circle'"

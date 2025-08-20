@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex">
+  <div class="flex">
     <files-view-wrapper>
       <app-bar ref="appBarRef" :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
       <app-loading-spinner v-if="areResourcesLoading" />

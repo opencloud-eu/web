@@ -5,7 +5,7 @@
     <div v-else class="ml-2">
       <oc-list class="oc-timeline">
         <li v-for="activity in activities" :key="activity.id">
-          <div class="oc-flex oc-flex-middle">
+          <div class="flex items-center">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
               class="mr-1"

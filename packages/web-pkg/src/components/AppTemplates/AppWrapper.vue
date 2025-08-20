@@ -15,7 +15,7 @@
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div
       v-else
-      class="oc-flex oc-width-1-1 oc-height-1-1"
+      class="flex oc-width-1-1 oc-height-1-1"
       :class="{ 'app-sidebar-open': isSideBarOpen }"
     >
       <slot class="app-wrapper-content oc-height-1-1" v-bind="slotAttrs" />

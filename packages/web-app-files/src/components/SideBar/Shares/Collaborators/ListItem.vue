@@ -5,8 +5,8 @@
     }`"
     class="files-collaborators-collaborator py-1"
   >
-    <div class="oc-width-1-1 oc-flex oc-flex-middle files-collaborators-collaborator-details">
-      <div class="oc-width-2-3 oc-flex oc-flex-middle">
+    <div class="oc-width-1-1 flex items-center files-collaborators-collaborator-details">
+      <div class="oc-width-2-3 flex items-center">
         <div>
           <template v-if="isShareDenied">
             <oc-avatar-item
@@ -56,11 +56,11 @@
             <div
               v-if="isShareDenied"
               v-oc-tooltip="shareDeniedTooltip"
-              class="oc-flex oc-flex-nowrap oc-flex-middle"
+              class="flex flex-nowrap items-center"
               v-text="$gettext('Access denied')"
             />
             <template v-else>
-              <div v-if="modifiable" class="oc-flex oc-flex-nowrap oc-flex-middle">
+              <div v-if="modifiable" class="flex flex-nowrap items-center">
                 <role-dropdown
                   :dom-selector="shareDomSelector"
                   :existing-share-role="share.role"
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="oc-flex oc-flex-middle oc-width-1-3 files-collaborators-collaborator-navigation">
+      <div class="flex items-center oc-width-1-3 files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
           class="files-collaborators-collaborator-expiration ml-1 p-1"

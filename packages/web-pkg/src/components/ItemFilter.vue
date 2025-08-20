@@ -1,5 +1,5 @@
 <template>
-  <div class="item-filter oc-flex" :class="`item-filter-${filterName}`">
+  <div class="item-filter flex" :class="`item-filter-${filterName}`">
     <oc-filter-chip
       :filter-label="filterLabel"
       :selected-item-names="selectedItems.map((i) => i[displayNameAttribute])"
@@ -20,18 +20,18 @@
           <oc-list class="item-filter-list">
             <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
               <oc-button
-                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1"
+                class="item-filter-list-item flex items-center oc-width-1-1"
                 :class="{
                   'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
-                  'oc-flex-left': allowMultiple,
-                  'oc-flex-between': !allowMultiple
+                  'justify-start': allowMultiple,
+                  'justify-between': !allowMultiple
                 }"
                 justify-content="space-between"
                 appearance="raw"
                 :data-test-value="item[displayNameAttribute as keyof Item]"
                 @click="toggleItemSelection(item)"
               >
-                <div class="oc-flex oc-flex-middle oc-text-truncate">
+                <div class="flex items-center oc-text-truncate">
                   <oc-checkbox
                     v-if="allowMultiple"
                     size="large"
@@ -49,7 +49,7 @@
                     <slot name="item" :item="item" />
                   </div>
                 </div>
-                <div class="oc-flex">
+                <div class="flex">
                   <oc-icon v-if="!allowMultiple && isItemSelected(item)" name="check" />
                 </div>
               </oc-button>

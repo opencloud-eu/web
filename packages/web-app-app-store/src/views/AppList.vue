@@ -4,7 +4,7 @@
       {{ $gettext('App Store') }}
       <app-contextual-helper />
     </h2>
-    <div class="oc-flex oc-flex-middle">
+    <div class="flex items-center">
       <oc-text-input
         id="apps-filter"
         :model-value="filterTermInput"

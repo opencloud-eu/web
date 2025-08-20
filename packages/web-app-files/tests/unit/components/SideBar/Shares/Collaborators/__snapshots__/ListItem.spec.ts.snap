@@ -2,8 +2,8 @@
 
 exports[`Collaborator ListItem component > share inheritance indicators > show when sharedParentRoute is given 1`] = `
 "<div data-v-ccf14be2="" data-testid="collaborator-user-item-einstein" class="files-collaborators-collaborator py-1">
-  <div data-v-ccf14be2="" class="oc-width-1-1 oc-flex oc-flex-middle files-collaborators-collaborator-details">
-    <div data-v-ccf14be2="" class="oc-width-2-3 oc-flex oc-flex-middle">
+  <div data-v-ccf14be2="" class="oc-width-1-1 flex items-center files-collaborators-collaborator-details">
+    <div data-v-ccf14be2="" class="oc-width-2-3 flex items-center">
       <div data-v-ccf14be2="">
         <user-avatar-stub data-v-ccf14be2="" userid="3" username="einstein" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
@@ -12,13 +12,13 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
           <!--v-if-->
         </div>
         <div data-v-ccf14be2="">
-          <div data-v-ccf14be2="" class="oc-flex oc-flex-nowrap oc-flex-middle">
+          <div data-v-ccf14be2="" class="flex flex-nowrap items-center">
             <role-dropdown-stub data-v-ccf14be2="" existingsharerole="undefined" existingsharepermissions="" domselector="1" mode="edit" showicon="false" islocked="false" isexternal="false" class="files-collaborators-collaborator-role"></role-dropdown-stub>
           </div>
         </div>
       </div>
     </div>
-    <div data-v-ccf14be2="" class="oc-flex oc-flex-middle oc-width-1-3 files-collaborators-collaborator-navigation">
+    <div data-v-ccf14be2="" class="flex items-center oc-width-1-3 files-collaborators-collaborator-navigation">
       <!--v-if-->
       <oc-icon-stub data-v-ccf14be2="" name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
       <edit-dropdown-stub data-v-ccf14be2="" accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="files-collaborators-collaborator-edit ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>

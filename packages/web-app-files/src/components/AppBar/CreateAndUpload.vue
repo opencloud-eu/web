@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showActions" class="create-and-upload-actions oc-flex-inline mr-2">
+  <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2">
     <template v-if="createFileActionsAvailable">
       <div v-oc-tooltip="newButtonTooltip">
         <oc-button

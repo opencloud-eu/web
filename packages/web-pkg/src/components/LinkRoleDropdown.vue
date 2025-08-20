@@ -40,7 +40,7 @@
           class="p-2"
           @click="updateSelectedType(type)"
         >
-          <span class="oc-flex oc-flex-middle">
+          <span class="flex items-center">
             <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
             <span>
               <span
@@ -52,7 +52,7 @@
               }}</span>
             </span>
           </span>
-          <span class="oc-flex">
+          <span class="flex">
             <oc-icon v-if="isSelectedType(type)" name="check" />
           </span>
         </oc-button>

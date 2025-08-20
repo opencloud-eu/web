@@ -1,7 +1,7 @@
 <template>
   <div
     :data-testid="`recipient-autocomplete-item-${item.displayName}`"
-    class="oc-flex oc-flex-middle py-1"
+    class="flex items-center py-1"
     :class="collaboratorClass"
   >
     <user-avatar

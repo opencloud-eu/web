@@ -1,6 +1,6 @@
 <template>
   <div id="new-collaborators-form" data-testid="new-collaborators-form">
-    <div :class="['oc-flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
+    <div :class="['flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -70,12 +70,12 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 py-1 px-2"
+                    class="invite-form-share-role-type-item flex items-center oc-width-1-1 py-1 px-2"
                     :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
                     @click="selectShareRoleType(option)"
                   >
                     <span>{{ option.longLabel }}</span>
-                    <div v-if="option.id === currentShareRoleType.id" class="oc-flex">
+                    <div v-if="option.id === currentShareRoleType.id" class="flex">
                       <oc-icon name="check" />
                     </div>
                   </oc-button>
@@ -86,7 +86,7 @@
         </template>
       </oc-select>
     </div>
-    <div class="oc-flex oc-flex-between oc-flex-wrap mb-6 mt-2">
+    <div class="flex justify-between flex-wrap mb-6 mt-2">
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
@@ -94,7 +94,7 @@
         :is-external="isExternalShareRoleType"
         @option-change="collaboratorRoleChanged"
       />
-      <div class="oc-flex oc-flex-middle">
+      <div class="flex items-center">
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
