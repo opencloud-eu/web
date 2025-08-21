@@ -11,6 +11,7 @@
             v-if="field.sortable"
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
+            justify-content="left"
             class="oc-button-sort oc-width-1-1 hover:underline"
             gap-size="small"
             no-hover
@@ -199,34 +200,42 @@ export interface Emits {
    * @docs Emitted when an item has been dropped onto a row.
    */
   (e: 'itemDropped', selector: string, event: DragEvent): void
+
   /**
    * @docs Emitted when an item has been dragged onto a row.
    */
   (e: 'itemDragged', item: Item, event: DragEvent): void
+
   /**
    * @docs Emitted when a table header has been clicked.
    */
   (e: 'theadClicked', event: MouseEvent): void
+
   /**
    * @docs Emitted when a table row has been clicked.
    */
   (e: 'highlight', args: [Item, MouseEvent]): void
+
   /**
    * @docs Emitted when a table row has been mounted.
    */
   (e: 'rowMounted', item: Item, element: HTMLElement): void
+
   /**
    * @docs Emitted when a table row has been right-clicked.
    */
   (e: 'contextmenuClicked', element: HTMLElement, event: MouseEvent, item: Item): void
+
   /**
    * @docs Emitted when a column has been sorted.
    */
   (e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void
+
   /**
    * @docs Emitted when an element has entered a drop zone inside the table.
    */
   (e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void
+
   /**
    * @docs Emitted when an item has been scrolled into the view.
    */
@@ -549,9 +558,8 @@ const handleSort = (field: FieldType) => {
     }
   }
 }
+
 .oc-button-sort {
-  display: flex;
-  justify-content: start;
   .oc-icon {
     &:hover {
       background-color: var(--oc-role-surface-container);

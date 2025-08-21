@@ -7,7 +7,7 @@
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body p-4">
+    <div class="app-content oc-card-body flex flex-col p-4">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 oc-text-muted text-sm mt-2"> v{{ app.mostRecentVersion.version }} </span>
@@ -101,8 +101,6 @@ export default defineComponent({
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {
-    display: flex;
-    flex-flow: column;
     gap: 1rem;
   }
 

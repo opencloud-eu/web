@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-page-size">
+  <div class="oc-page-size flex items-center">
     <label
       class="oc-page-size-label"
       :for="selectId"
@@ -63,8 +63,6 @@ const emitChange = (value: string | boolean) => {
 
 <style lang="scss">
 .oc-page-size {
-  align-items: center;
-  display: flex;
   gap: var(--oc-space-xsmall);
 
   &-select,

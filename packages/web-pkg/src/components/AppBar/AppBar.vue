@@ -44,7 +44,7 @@
           />
         </div>
       </div>
-      <div class="files-app-bar-actions mt-1">
+      <div class="files-app-bar-actions flex items-center justify-end mt-1">
         <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
@@ -367,10 +367,7 @@ export default defineComponent({
   }
 
   .files-app-bar-actions {
-    align-items: center;
-    display: flex;
     gap: var(--oc-space-small);
-    justify-content: flex-end;
     min-height: 3rem;
   }
 

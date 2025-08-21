@@ -673,14 +673,5 @@ onBeforeUnmount(() => {
 
 .ghost-tile {
   display: list-item;
-
-  div {
-    opacity: 0;
-    box-shadow: none;
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    outline: 0.5px solid var(--oc-role-outline-variant);
-  }
 }
 </style>

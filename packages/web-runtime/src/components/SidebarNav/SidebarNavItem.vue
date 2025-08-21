@@ -4,6 +4,7 @@
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
       color-role="secondaryContainer"
+      :justify-content="'space-between'"
       :class="[
         'oc-sidebar-nav-item-link',
         'oc-oc-width-1-1',
@@ -96,23 +97,23 @@ export default defineComponent({
 <style lang="scss">
 .oc-sidebar-nav-item-link {
   position: relative;
-  align-items: center !important;
-  display: flex !important;
-  justify-content: space-between !important;
   border-radius: 5px;
   user-select: none;
 
   .oc-tag {
     background-color: var(--oc-role-tertiary-container);
     color: var(--oc-role-on-tertiary-container);
+
     svg {
       fill: var(--oc-role-on-tertiary-container);
     }
   }
+
   .text {
     opacity: 1;
     transition: all 0.3s;
   }
+
   .text-invisible {
     opacity: 0 !important;
     transition: 0s;

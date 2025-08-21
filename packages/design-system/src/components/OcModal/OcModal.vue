@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-modal-background">
+  <div class="oc-modal-background flex items-center justify-center flex-row flex-wrap">
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
@@ -11,7 +11,7 @@
         aria-labelledby="oc-modal-title"
         @keydown.esc.stop="cancelModalAction"
       >
-        <div class="oc-modal-title py-3 px-4">
+        <div class="oc-modal-title flex items-center flex-row flex-wrap py-3 px-4">
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
         </div>
         <div class="oc-modal-body px-4 pt-4">
@@ -335,12 +335,8 @@ export default {
   }
 
   &-background {
-    align-items: center;
     background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-flow: row wrap;
     height: 100%;
-    justify-content: center;
     left: 0;
     position: fixed;
     top: 0;
@@ -349,11 +345,8 @@ export default {
   }
 
   &-title {
-    align-items: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    display: flex;
-    flex-flow: row wrap;
     background-color: var(--oc-role-surface-container);
   }
 

@@ -49,7 +49,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-file-input-message text-sm flex items-center mt-1"
+      class="oc-file-input-message flex items-center text-sm mt-1"
       :class="{
         'oc-file-input-description': !!descriptionMessage,
         'oc-file-input-danger': !!errorMessage
@@ -256,8 +256,6 @@ const onFocus = async () => {
   }
 
   &-message {
-    display: flex;
-    align-items: center;
     min-height: $oc-font-size-default * 1.5;
   }
 }
