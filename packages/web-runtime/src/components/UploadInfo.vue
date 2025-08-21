@@ -121,7 +121,7 @@
               :link="resourceLink(item)"
               :parent-folder-link="parentFolderLink(item)"
             />
-            <span v-else class="flex items-center oc-text-truncate">
+            <span v-else class="flex items-center truncate">
               <resource-icon
                 :resource="item as Resource"
                 size="large"

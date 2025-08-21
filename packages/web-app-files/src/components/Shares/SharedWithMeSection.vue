@@ -5,7 +5,7 @@
       <span class="text-base">({{ items.length }})</span>
     </h2>
 
-    <no-content-message v-if="!items.length" class="files-empty items-stretch" icon="share-forward">
+    <no-content-message v-if="!items.length" class="files-empty" icon="share-forward">
       <template #message>
         <span>{{ emptyMessage }}</span>
       </template>
@@ -27,7 +27,10 @@
       @sort="sortHandler"
     >
       <template #syncEnabled="{ resource }">
-        <div :key="resource.getDomSelector()" class="oc-text-nowrap flex items-center justify-end">
+        <div
+          :key="resource.getDomSelector()"
+          class="whitespace-nowrap flex items-center justify-end"
+        >
           <oc-icon
             v-if="resource.shareRoles?.length"
             v-oc-tooltip="$gettext(resource.shareRoles[0].displayName)"

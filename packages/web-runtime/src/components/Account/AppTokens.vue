@@ -31,17 +31,17 @@
     <div v-else>
       <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
         <template #label="{ item }">
-          <div class="oc-width-1-1 oc-text-truncate">
+          <div class="oc-width-1-1 truncate">
             <span v-text="item.label || '-'" />
           </div>
         </template>
         <template #creationDate="{ item }">
-          <div class="oc-width-1-1 oc-text-truncate">
+          <div class="oc-width-1-1 truncate">
             <span v-text="formatDateFromISO(item.created_date, currentLanguage)" />
           </div>
         </template>
         <template #expirationDate="{ item }">
-          <div class="oc-width-1-1 oc-text-truncate">
+          <div class="oc-width-1-1 truncate">
             <span v-text="formatDateFromISO(item.expiration_date, currentLanguage)" />
           </div>
         </template>

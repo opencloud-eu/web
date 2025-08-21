@@ -8,12 +8,12 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="oc-text-truncate">
-      <span class="oc-resource-basename" v-text="displayName" />
+    <span v-if="truncateName" class="truncate">
+      <span class="oc-resource-basename whitespace-pre" v-text="displayName" />
     </span>
-    <span v-else class="oc-resource-basename oc-text-break" v-text="displayName" /><span
+    <span v-else class="oc-resource-basename break-normal" v-text="displayName" /><span
       v-if="extension && isExtensionDisplayed"
-      class="oc-resource-extension"
+      class="oc-resource-extension whitespace-pre"
       v-text="displayExtension"
     />
   </span>
@@ -161,7 +161,6 @@ export default defineComponent({
   &-basename,
   &-extension {
     color: var(--oc-role-on-surface);
-    white-space: pre;
   }
 }
 </style>

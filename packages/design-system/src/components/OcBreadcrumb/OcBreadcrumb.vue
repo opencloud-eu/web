@@ -33,7 +33,10 @@
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
           class="first:text-base text-xl"
         >
-          <span class="oc-breadcrumb-item-text hover:underline align-sub">{{ item.text }}</span>
+          <span
+            class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]"
+            >{{ item.text }}</span
+          >
         </router-link>
         <oc-button
           v-else-if="item.onClick"
@@ -48,6 +51,9 @@
               'oc-breadcrumb-item-text',
               'hover:underline',
               'align-sub',
+              'truncate',
+              'inline-block',
+              'leading-[1.2]',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -57,7 +63,7 @@
         </oc-button>
         <span
           v-else
-          class="oc-breadcrumb-item-text first:text-base text-xl align-sub"
+          class="oc-breadcrumb-item-text first:text-base text-xl align-sub truncate inline-block leading-[1.2]"
           :aria-current="getAriaCurrent(index)"
           tabindex="-1"
           v-text="item.text"
@@ -103,8 +109,8 @@
       <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
-  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current">
-    <span class="oc-text-truncate" aria-current="page" v-text="currentFolder.text" />
+  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current flex w-0 flex-1">
+    <span class="truncate" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 
@@ -317,9 +323,6 @@ const dropItemStyling = (
   }
   &-item-text {
     max-width: 200px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
   }
 
   &-mobile-current,
@@ -366,7 +369,6 @@ const dropItemStyling = (
     button:first-of-type,
     span:first-of-type {
       color: var(--oc-role-on-surface);
-      display: inline-block;
     }
   }
 }

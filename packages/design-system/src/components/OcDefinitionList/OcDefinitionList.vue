@@ -32,10 +32,10 @@ const { items } = defineProps<Props>()
     @apply mb-2;
   }
   .details-list dd {
-    @apply ml-4;
+    @apply ml-4 font-normal;
   }
   .details-list dt {
-    @apply font-semibold;
+    @apply font-semibold whitespace-nowrap;
   }
   .details-list dd:last-of-type,
   .details-list dt:last-of-type {
@@ -51,9 +51,6 @@ const { items } = defineProps<Props>()
   dd {
     display: flex;
     align-items: center;
-  }
-  dt {
-    white-space: nowrap;
   }
 }
 </style>

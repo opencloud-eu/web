@@ -8,7 +8,7 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
         <user-avatar-stub data-v-ccf14be2="" userid="3" username="einstein" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
       <div data-v-ccf14be2="" class="files-collaborators-collaborator-name-wrapper pl-2">
-        <div data-v-ccf14be2="" class="oc-text-truncate"><span data-v-ccf14be2="" aria-hidden="true" class="files-collaborators-collaborator-name">einstein</span> <span data-v-ccf14be2="" class="oc-invisible-sr">Share receiver name: einstein</span>
+        <div data-v-ccf14be2="" class="truncate"><span data-v-ccf14be2="" aria-hidden="true" class="files-collaborators-collaborator-name">einstein</span> <span data-v-ccf14be2="" class="oc-invisible-sr">Share receiver name: einstein</span>
           <!--v-if-->
         </div>
         <div data-v-ccf14be2="">

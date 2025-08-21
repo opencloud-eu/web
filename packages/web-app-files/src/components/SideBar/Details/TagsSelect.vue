@@ -25,11 +25,11 @@
         <component
           :is="type"
           v-bind="getAdditionalAttributes(option.label)"
-          class="flex items-center"
+          class="flex items-center max-w-50"
           @click="onTagClicked"
         >
           <oc-icon name="price-tag-3" class="mr-1" size="small" />
-          <span class="oc-text-truncate">{{ option.label }}</span>
+          <span class="truncate">{{ option.label }}</span>
         </component>
 
         <span class="flex items-center mr-1">
@@ -51,9 +51,9 @@
     <template #option="{ label, error }">
       <div class="flex test">
         <span class="flex justify-center">
-          <oc-tag class="tags-select-tag ml-1" :rounded="true" size="small">
+          <oc-tag class="tags-select-tag ml-1 max-w-50" :rounded="true" size="small">
             <oc-icon name="price-tag-3" size="small" />
-            <span class="oc-text-truncate">{{ label }}</span>
+            <span class="truncate">{{ label }}</span>
           </oc-tag>
         </span>
       </div>

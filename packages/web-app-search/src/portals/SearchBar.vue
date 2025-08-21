@@ -72,7 +72,7 @@
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
             <oc-list>
               <li
-                class="oc-text-truncate flex justify-between oc-text-muted provider-details py-1 px-2 text-xs"
+                class="truncate flex justify-between oc-text-muted provider-details py-1 px-2 text-xs"
               >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">

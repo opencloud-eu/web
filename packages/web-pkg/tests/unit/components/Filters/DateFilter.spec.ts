@@ -18,7 +18,7 @@ const filterItems = [
 const selectors = {
   filterListItem: '.date-filter-list-item',
   filterChipLabel: '.oc-filter-chip-label',
-  activeFilterListItemSpan: '.date-filter-list-item-active .oc-text-truncate span',
+  activeFilterListItemSpan: '.date-filter-list-item-active .truncate span',
   customDateRangeBtn: '[data-testid="custom-date-range"]',
   customDateRangePanel: '.date-filter-range-panel',
   customDateRangeApplyBtn: '.date-filter-apply-btn button',

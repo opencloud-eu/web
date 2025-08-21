@@ -1,10 +1,10 @@
 <template>
-  <span v-if="selectedRole" class="flex items-center">
+  <div v-if="selectedRole" class="flex items-center">
     <span v-if="availableRoles.length === 1">
       <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
       <span v-text="inviteLabel" />
     </span>
-    <div v-else v-oc-tooltip="dropButtonTooltip">
+    <div v-else v-oc-tooltip="dropButtonTooltip" class="max-w-full">
       <oc-button
         :id="roleButtonId"
         class="files-recipient-role-select-btn"
@@ -16,7 +16,7 @@
         "
       >
         <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
-        <span class="oc-text-truncate" v-text="inviteLabel" />
+        <span class="truncate" v-text="inviteLabel" />
         <oc-icon name="arrow-down-s" />
       </oc-button>
       <oc-contextual-helper
@@ -64,7 +64,7 @@
         </li>
       </oc-list>
     </oc-drop>
-  </span>
+  </div>
 </template>
 
 <script lang="ts">

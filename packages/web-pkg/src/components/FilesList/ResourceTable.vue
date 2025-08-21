@@ -139,7 +139,7 @@
           size="small"
         >
           <oc-icon name="price-tag-3" size="small" />
-          <span class="oc-text-truncate">{{ tag }}</span>
+          <span class="truncate">{{ tag }}</span>
         </oc-tag>
       </component>
       <oc-tag

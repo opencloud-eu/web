@@ -6,7 +6,7 @@
     <div class="app-tile-body oc-card-body p-4">
       <div class="app-tile-content">
         <div class="flex items-center">
-          <h3 class="my-2 oc-text-truncate mark-element app-tile-title">
+          <h3 class="my-2 truncate mark-element app-tile-title">
             <router-link
               :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
             >

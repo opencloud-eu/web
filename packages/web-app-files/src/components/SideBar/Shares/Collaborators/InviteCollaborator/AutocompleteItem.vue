@@ -18,7 +18,7 @@
       icon-size="medium"
       class="mr-2"
     />
-    <div class="files-collaborators-autocomplete-user-text oc-text-truncate">
+    <div class="files-collaborators-autocomplete-user-text truncate">
       <span class="files-collaborators-autocomplete-username" v-text="item.displayName" />
       <template v-if="!isAnyPrimaryShareType">
         <span

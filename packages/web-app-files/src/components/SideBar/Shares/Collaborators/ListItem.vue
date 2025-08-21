@@ -35,7 +35,7 @@
           </template>
         </div>
         <div class="files-collaborators-collaborator-name-wrapper pl-2">
-          <div class="oc-text-truncate">
+          <div class="truncate">
             <span
               aria-hidden="true"
               class="files-collaborators-collaborator-name"

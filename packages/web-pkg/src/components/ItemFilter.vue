@@ -31,7 +31,7 @@
                 :data-test-value="item[displayNameAttribute as keyof Item]"
                 @click="toggleItemSelection(item)"
               >
-                <div class="flex items-center oc-text-truncate">
+                <div class="flex items-center truncate">
                   <oc-checkbox
                     v-if="allowMultiple"
                     size="large"
@@ -45,7 +45,7 @@
                   <div>
                     <slot name="image" :item="item" />
                   </div>
-                  <div class="oc-text-truncate">
+                  <div class="truncate">
                     <slot name="item" :item="item" />
                   </div>
                 </div>
