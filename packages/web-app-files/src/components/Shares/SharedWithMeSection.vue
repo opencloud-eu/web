@@ -5,7 +5,7 @@
       <span class="text-base">({{ items.length }})</span>
     </h2>
 
-    <no-content-message v-if="!items.length" class="files-empty items-stretch" icon="share-forward">
+    <no-content-message v-if="!items.length" class="files-empty" icon="share-forward">
       <template #message>
         <span>{{ emptyMessage }}</span>
       </template>
