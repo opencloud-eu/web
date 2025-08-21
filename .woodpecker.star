@@ -584,12 +584,8 @@ def e2eTests(ctx):
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
                     restoreBrowsersCache() + \
-                    restoreBuildArtifactCache(ctx, "web-dist", "dist")
-
-            if ctx.build.event == "cron":
-                steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-            else:
-                steps += restoreOpenCloudCache()
+                    restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
+                    restoreOpenCloudCache()
 
             if "app-provider-onlyOffice" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
@@ -940,14 +936,10 @@ def checkForExistingOpenCloudCache(ctx):
     ]
 
 def cacheOpenCloudPipeline(ctx):
-    if ctx.build.event == "cron":
-        steps = getOpenCloudlatestCommitId(ctx) + \
-                buildOpenCloud() + \
-                rebuildBuildArtifactCache(ctx, "opencloud", "opencloud")
-    else:
-        steps = checkForExistingOpenCloudCache(ctx) + \
-                buildOpenCloud() + \
-                cacheOpenCloud()
+    steps = checkForExistingOpenCloudCache(ctx) + \
+            buildOpenCloud() + \
+            cacheOpenCloud()
+
     return [{
         "name": "cache-opencloud",
         "skip_clone": True,
