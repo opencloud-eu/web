@@ -164,7 +164,7 @@
         v-oc-tooltip="pasteHereButtonTooltip"
         :disabled="isPasteHereButtonDisabled"
         :aria-label="$gettext('Paste here')"
-        class="paste-files-btn"
+        class="paste-files-btn whitespace-nowrap"
         @click="pasteFileAction"
       >
         <oc-icon fill-type="line" name="clipboard" />
@@ -504,7 +504,6 @@ const folderIconResource = computed(() => {
 
   :nth-child(1) {
     border-right: 0px !important;
-    white-space: nowrap;
   }
 
   :nth-child(2) {

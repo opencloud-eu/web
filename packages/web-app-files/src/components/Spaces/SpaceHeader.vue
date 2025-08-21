@@ -24,7 +24,7 @@
     <div class="space-header-infos">
       <div class="flex mb-2 items-center justify-between">
         <div class="flex items-center space-header-infos-heading">
-          <h2 class="space-header-name">{{ space.name }}</h2>
+          <h2 class="space-header-name break-all">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
@@ -59,7 +59,7 @@
           <oc-icon name="group" fill-type="line" size="small" />
           <span
             v-if="memberCount"
-            class="space-header-people-count text-sm"
+            class="space-header-people-count text-sm whitespace-nowrap"
             v-text="memberCountString"
           />
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
@@ -350,14 +350,6 @@ const openSideBarSharePanel = () => {
     &-heading {
       max-width: 100%;
     }
-  }
-
-  &-name {
-    word-break: break-all;
-  }
-
-  &-people-count {
-    white-space: nowrap;
   }
 
   .markdown-container.collapsed {

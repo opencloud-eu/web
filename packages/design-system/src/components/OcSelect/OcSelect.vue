@@ -434,7 +434,6 @@ const messageId = computed(() => {
   return `${id}-message`
 })
 </script>
-
 <script lang="ts">
 // @ts-ignore
 import VueSelect from 'vue-select'
@@ -442,7 +441,15 @@ import VueSelect from 'vue-select'
 // importing VueSelect in script setup leads to an anomymousstub in unit tests
 export default { components: { VueSelect } }
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer components {
+  .oc-select {
+    @apply py-[1px] normal-case;
+  }
+}
+</style>
 <style lang="scss">
 .vs--disabled {
   cursor: not-allowed;
@@ -463,7 +470,6 @@ export default { components: { VueSelect } }
 }
 
 .oc-select {
-  padding: 1px 0;
   color: var(--oc-role-on-surface);
 
   &-position-fixed {

@@ -4,7 +4,13 @@
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
       color-role="secondaryContainer"
-      :class="['oc-sidebar-nav-item-link', 'oc-oc-width-1-1', 'p-2', { active: active }]"
+      :class="[
+        'oc-sidebar-nav-item-link',
+        'oc-oc-width-1-1',
+        'whitespace-nowrap',
+        'p-2',
+        { active: active }
+      ]"
       :data-nav-id="index"
       :data-nav-name="navName"
       :aria-label="
@@ -94,7 +100,6 @@ export default defineComponent({
   display: flex !important;
   justify-content: space-between !important;
   border-radius: 5px;
-  white-space: nowrap;
   user-select: none;
 
   .oc-tag {

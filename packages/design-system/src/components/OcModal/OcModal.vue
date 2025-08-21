@@ -12,7 +12,7 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div class="oc-modal-title py-3 px-4">
-          <h2 id="oc-modal-title" class="oc-text-truncate m-0 text-base" v-text="title" />
+          <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
         </div>
         <div class="oc-modal-body px-4 pt-4">
           <div

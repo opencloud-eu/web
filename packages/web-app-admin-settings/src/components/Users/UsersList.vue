@@ -458,14 +458,18 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference 'tailwindcss';
 
+@layer utilities {
+  .users-table .oc-table-header-cell-actions,
+  .users-table .oc-table-data-cell-actions {
+    @apply whitespace-nowrap;
+  }
+}
+</style>
 <style lang="scss">
 .users-table {
-  .oc-table-header-cell-actions,
-  .oc-table-data-cell-actions {
-    white-space: nowrap;
-  }
-
   .oc-table-header-cell-role,
   .oc-table-data-cell-role,
   .oc-table-header-cell-accountEnabled,

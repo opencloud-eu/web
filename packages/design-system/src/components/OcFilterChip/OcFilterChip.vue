@@ -17,7 +17,7 @@
         size="small"
       />
       <span
-        class="oc-text-truncate oc-filter-chip-label"
+        class="truncate oc-filter-chip-label"
         v-text="!!selectedItemNames.length ? selectedItemNames[0] : filterLabel"
       />
       <span v-if="selectedItemNames.length > 1" v-text="` +${selectedItemNames.length - 1}`" />

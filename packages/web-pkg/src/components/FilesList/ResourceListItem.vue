@@ -53,10 +53,10 @@
           v-if="isPathDisplayed"
           :to="parentFolderLink"
           :style="parentFolderStyle"
-          class="parent-folder oc-text-truncate px-0.5 mr-2 -ml-0.5"
+          class="parent-folder truncate px-0.5 mr-2 -ml-0.5"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
-          <span class="text oc-text-truncate text-sm hover:underline" v-text="parentFolderName" />
+          <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
         </component>
       </div>
     </div>

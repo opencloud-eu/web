@@ -12,7 +12,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
       <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
@@ -29,8 +29,8 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">today</div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">today</div>
               </div>
               <div class="flex">
                 <!--v-if-->
@@ -39,8 +39,8 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">yesterday</div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">yesterday</div>
               </div>
               <div class="flex">
                 <!--v-if-->
@@ -49,8 +49,8 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
           <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2"><span>Custom date range</span></div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2"><span>Custom date range</span></div>
               </div>
               <div class="flex">
                 <!--v-if-->
@@ -131,7 +131,7 @@ exports[`DateFilter > renders all items 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-text-truncate oc-filter-chip-label">Users</span>
+    }" aria-hidden="true" focusable="false"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
       <!--v-if--> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
@@ -148,8 +148,8 @@ exports[`DateFilter > renders all items 1`] = `
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">today</div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">today</div>
               </div>
               <div class="flex">
                 <!--v-if-->
@@ -158,8 +158,8 @@ exports[`DateFilter > renders all items 1`] = `
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2">yesterday</div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">yesterday</div>
               </div>
               <div class="flex">
                 <!--v-if-->
@@ -168,8 +168,8 @@ exports[`DateFilter > renders all items 1`] = `
           <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
               <!--v-if-->
               <!-- @slot Content of the button -->
-              <div class="flex items-center oc-text-truncate">
-                <div class="oc-text-truncate ml-2"><span>Custom date range</span></div>
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2"><span>Custom date range</span></div>
               </div>
               <div class="flex">
                 <!--v-if-->

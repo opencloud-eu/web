@@ -112,7 +112,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="files-search-resource-highlights oc-text-truncate oc-display-inline-block text-sm"
+              class="files-search-resource-highlights truncate oc-display-inline-block text-sm"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->

@@ -106,9 +106,5 @@ export default defineComponent({
 .audio-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-
-  dt {
-    white-space: nowrap;
-  }
 }
 </style>

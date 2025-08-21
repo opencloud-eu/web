@@ -58,8 +58,8 @@
         <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
           <template #token="rowData">
             <div class="invite-code-wrapper flex">
-              <div class="oc-text-truncate">
-                <span class="oc-text-truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
+              <div class="truncate max-w-full">
+                <span class="truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
               </div>
               <oc-button
                 id="oc-sciencemesh-copy-token"

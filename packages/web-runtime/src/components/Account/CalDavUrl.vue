@@ -18,7 +18,7 @@
       <oc-table-tr class="account-page-info-caldav-url">
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
         <oc-table-td>
-          <span class="oc-text-truncate">{{ configStore.serverUrl }}</span>
+          <span class="truncate">{{ configStore.serverUrl }}</span>
         </oc-table-td>
         <oc-table-td>
           <oc-button

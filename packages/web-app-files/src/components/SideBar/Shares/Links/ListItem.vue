@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
       <div class="files-links-name-wrapper pl-2">
-        <span class="files-links-name oc-text-truncate" v-text="linkShare.displayName" />
+        <span class="files-links-name truncate" v-text="linkShare.displayName" />
         <div class="flex flex-nowrap items-center">
           <link-role-dropdown
             v-if="isModifiable"

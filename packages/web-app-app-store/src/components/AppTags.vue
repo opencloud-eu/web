@@ -5,7 +5,7 @@
       :key="`app-tag-${app.id}-${tag}`"
       data-testid="tag-button"
       size="small"
-      class="oc-text-nowrap"
+      class="whitespace-nowrap"
       type="button"
       @click="emitClick(tag)"
     >

@@ -7,7 +7,7 @@
       data-testid="group-members-list"
     >
       <user-avatar :user-id="member.id" :user-name="member.displayName" class="mr-2" />
-      <span class="oc-text-truncate" :title="member.displayName">
+      <span class="truncate" :title="member.displayName">
         {{ member.displayName }}
       </span>
     </li>
