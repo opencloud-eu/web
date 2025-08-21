@@ -32,7 +32,7 @@ const { items } = defineProps<Props>()
     @apply mb-2;
   }
   .details-list dd {
-    @apply ml-4;
+    @apply ml-4 font-normal;
   }
   .details-list dt {
     @apply font-semibold;
