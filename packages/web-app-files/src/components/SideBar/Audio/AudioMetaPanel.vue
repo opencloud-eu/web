@@ -1,5 +1,5 @@
 <template>
-  <div id="files-sidebar-panel-audio" class="oc-rounded p-4">
+  <div id="files-sidebar-panel-audio" class="oc-rounded p-4 bg-role-surface-container">
     <dl class="audio-data-list details-list m-0">
       <dt v-text="$gettext('Title')" />
       <dd data-testid="audio-panel-title" v-text="title" />
@@ -99,10 +99,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-#files-sidebar-panel-audio {
-  background-color: var(--oc-role-surface-container);
-}
-
 .audio-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

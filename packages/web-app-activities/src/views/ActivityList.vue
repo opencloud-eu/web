@@ -2,7 +2,7 @@
   <oc-list class="activity-list">
     <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="mb-6">
       <h2
-        class="font-semibold oc-text-muted activity-list-date text-base capitalize"
+        class="font-semibold text-role-on-surface-variant activity-list-date text-base capitalize"
         v-text="getDateHeadline(date)"
       />
       <oc-list class="ml-2 mt-2 timeline">

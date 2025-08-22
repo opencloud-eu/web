@@ -1,6 +1,6 @@
 <template>
   <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
-    <div class="oc-card text-center oc-width-large">
+    <div class="oc-card text-center oc-width-large bg-role-surface-container">
       <template v-if="loading">
         <div class="oc-card-header">
           <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
@@ -192,7 +192,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-link-resolve {
   .oc-card {
-    background: var(--oc-role-surface-container);
     border-radius: 15px;
   }
 }

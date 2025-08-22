@@ -1,5 +1,7 @@
 <template>
-  <section class="files-embed-actions oc-width-1-1 flex items-center justify-between my-2">
+  <section
+    class="files-embed-actions oc-width-1-1 flex items-center justify-between my-2 text-role-on-chrome"
+  >
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
@@ -169,7 +171,6 @@ export default defineComponent({
 .files-embed-actions {
   // Prevent .snackbar from overlapping the actions
   z-index: calc(var(--oc-z-index-modal) + 2);
-  color: var(--oc-role-on-chrome);
   flex-wrap: wrap;
   gap: var(--oc-space-small);
 

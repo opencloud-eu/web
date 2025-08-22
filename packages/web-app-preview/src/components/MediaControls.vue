@@ -1,7 +1,7 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-surface-container p-2 oc-width-large flex items-center justify-center justify-around oc-rounded"
+      class="bg-role-surface-container p-2 oc-width-large flex items-center justify-center justify-around oc-rounded"
     >
       <oc-button
         v-oc-tooltip="previousDescription"

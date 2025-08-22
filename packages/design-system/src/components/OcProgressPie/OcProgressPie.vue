@@ -1,7 +1,11 @@
 <template>
   <div class="oc-progress-pie" :data-fill="fill">
     <div class="oc-progress-pie-container" />
-    <label v-if="showLabel" class="oc-progress-pie-label oc-text-muted" v-text="label" />
+    <label
+      v-if="showLabel"
+      class="oc-progress-pie-label text-role-on-surface-variant"
+      v-text="label"
+    />
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test'
 import util from 'util'
 
-const searchResultMessageSelector = '//p[@class="oc-text-muted"]'
+const searchResultMessageSelector = '//p[@class="text-role-on-surface-variant"]'
 const selectTagDropdownSelector =
   '//div[contains(@class,"files-search-filter-tags")]//button[contains(@class,"oc-filter-chip-button")]'
 const tagFilterChipSelector = '//button[contains(@data-test-value,"%s")]'

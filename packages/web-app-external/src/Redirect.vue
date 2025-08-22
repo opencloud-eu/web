@@ -1,7 +1,7 @@
 <template>
   <main class="external-redirect oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center oc-width-large text-lg">
+    <div class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container">
       <h2 key="external-redirect-loading" class="mt-0">
         <span v-text="$gettext('One moment please…')" />
       </h2>
@@ -76,7 +76,6 @@ export default defineComponent({
 <style lang="scss">
 .external-redirect {
   .oc-card {
-    background: var(--oc-role-surface-container);
     border-radius: 15px;
   }
 }

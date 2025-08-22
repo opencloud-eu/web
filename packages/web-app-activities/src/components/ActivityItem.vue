@@ -10,7 +10,7 @@
       <div
         v-if="resourceNotAccessible"
         v-oc-tooltip="$gettext('The resource is unavailable, it may have been deleted.')"
-        class="oc-text-muted flex items-center p-1"
+        class="text-role-on-surface-variant flex items-center p-1"
       >
         <oc-icon name="eye-off" />
         <span class="ml-2" v-text="activity.template.variables?.resource?.name" />

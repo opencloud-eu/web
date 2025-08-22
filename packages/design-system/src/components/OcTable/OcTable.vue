@@ -91,7 +91,10 @@
     </oc-tbody>
     <tfoot v-if="$slots.footer" class="oc-table-footer">
       <tr class="oc-table-footer-row">
-        <td :colspan="fullColspan" class="oc-table-footer-cell p-1 text-sm">
+        <td
+          :colspan="fullColspan"
+          class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant"
+        >
           <!-- @slot Footer of the table -->
           <slot name="footer" />
         </td>
@@ -494,7 +497,24 @@ const handleSort = (field: FieldType) => {
   })
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-table-accentuated,
+  .oc-table-highlighted,
+  .oc-table .highlightedDropTarget {
+    @apply bg-role-secondary-container;
+  }
+  .oc-table-sticky .oc-table-header-cell {
+    @apply bg-role-surface;
+  }
+  .oc-table-hover tr:not(.oc-table-footer-row, .oc-table-header-row, .oc-table-highlighted):hover,
+  .oc-button-sort .oc-icon:hover {
+    @apply bg-role-surface-container;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table {
   border-collapse: collapse;
@@ -514,18 +534,6 @@ const handleSort = (field: FieldType) => {
     border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
-  &-hover tr:not(&-footer-row, &-header-row):hover {
-    background-color: var(--oc-role-surface-container);
-  }
-
-  &-highlighted {
-    background-color: var(--oc-role-secondary-container) !important;
-  }
-
-  &-accentuated {
-    background-color: var(--oc-role-secondary-container);
-  }
-
   &-disabled {
     opacity: 0.7;
     filter: grayscale(0.6);
@@ -538,12 +546,7 @@ const handleSort = (field: FieldType) => {
     .oc-table-header-cell {
       position: sticky;
       z-index: 1;
-      background-color: var(--oc-role-surface);
     }
-  }
-
-  .highlightedDropTarget {
-    background-color: var(--oc-role-secondary-container);
   }
 
   &-thead-content {
@@ -552,18 +555,6 @@ const handleSort = (field: FieldType) => {
 
   &-footer {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-
-    &-cell {
-      color: var(--oc-role-on-surface-variant);
-    }
-  }
-}
-
-.oc-button-sort {
-  .oc-icon {
-    &:hover {
-      background-color: var(--oc-role-surface-container);
-    }
   }
 }
 </style>

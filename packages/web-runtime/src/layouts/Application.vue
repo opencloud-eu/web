@@ -4,7 +4,7 @@
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header" class="shrink basis-auto grow-0">
-      <div v-if="isIE11" class="oc-surface-container text-center py-4">
+      <div v-if="isIE11" class="bg-role-surface-container text-center py-4">
         <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
@@ -13,7 +13,7 @@
       id="web-content-main"
       class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
     >
-      <div class="app-container flex">
+      <div class="app-container flex bg-role-surface-container">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav
@@ -29,7 +29,7 @@
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
-            class="app-content oc-width-1-1"
+            class="app-content oc-width-1-1 bg-role-surface"
             :name="name"
           />
         </template>
@@ -213,13 +213,11 @@ onBeforeUnmount(() => {
 
     .app-container {
       height: 100%;
-      background: var(--oc-role-surface-container);
       border-radius: 15px;
       overflow: hidden;
       width: 100%;
 
       .app-content {
-        background: var(--oc-role-surface);
         border-top-left-radius: 15px;
         border-bottom-left-radius: 15px;
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);

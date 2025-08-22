@@ -3,11 +3,15 @@
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
-  <div v-if="multipleUsers" id="oc-users-details-multiple-sidebar" class="flex user-info p-4">
+  <div
+    v-if="multipleUsers"
+    id="oc-users-details-multiple-sidebar"
+    class="flex user-info p-4 bg-role-surface-container"
+  >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
-  <div v-if="user" id="oc-user-details-sidebar" class="p-4">
+  <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container">
     <UserInfoBox :user="user" />
     <dl
       class="details-list m-0"
@@ -148,7 +152,6 @@ export default defineComponent({
 <style lang="scss">
 #oc-user-details-sidebar,
 #oc-users-details-multiple-sidebar {
-  background-color: var(--oc-role-surface-container);
   border-radius: 5px;
 }
 </style>

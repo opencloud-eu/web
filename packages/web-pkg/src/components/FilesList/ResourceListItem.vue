@@ -53,7 +53,7 @@
           v-if="isPathDisplayed"
           :to="parentFolderLink"
           :style="parentFolderStyle"
-          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5"
+          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
@@ -246,27 +246,6 @@ export default defineComponent({
     a:hover,
     a:focus {
       outline-offset: 0;
-    }
-  }
-
-  &-indicators {
-    a {
-      &:hover {
-        background-color: var(--oc-role-surface-container);
-        border-radius: 2px;
-      }
-
-      .text {
-        &:hover {
-          color: var(--oc-role-on-surface);
-        }
-      }
-    }
-
-    .parent-folder {
-      &:hover {
-        background: transparent;
-      }
     }
   }
 }

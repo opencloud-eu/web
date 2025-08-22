@@ -96,11 +96,15 @@
           </li>
         </template>
       </oc-list>
-      <div v-if="showFooter" class="imprint-footer py-2 mt-4 mb-2 ml-2 text-center">
+      <div
+        v-if="showFooter"
+        class="imprint-footer py-2 mt-4 mb-2 ml-2 text-center bg-role-surface-container"
+      >
         <oc-button
           v-if="imprintUrl"
           type="a"
-          appearance="raw"
+          appearance="raw-inverse"
+          color-role="surface"
           :href="imprintUrl"
           target="_blank"
           no-hover
@@ -109,13 +113,27 @@
         </oc-button>
         <template v-if="privacyUrl">
           <span>·</span>
-          <oc-button type="a" appearance="raw" :href="privacyUrl" target="_blank" no-hover>
+          <oc-button
+            type="a"
+            appearance="raw-inverse"
+            color-role="surface"
+            :href="privacyUrl"
+            target="_blank"
+            no-hover
+          >
             <span v-text="$gettext('Privacy')" />
           </oc-button>
         </template>
         <template v-if="accessibilityUrl">
           <span>·</span>
-          <oc-button type="a" appearance="raw" :href="accessibilityUrl" target="_blank" no-hover>
+          <oc-button
+            type="a"
+            appearance="raw-inverse"
+            color-role="surface"
+            :href="accessibilityUrl"
+            target="_blank"
+            no-hover
+          >
             <span v-text="$gettext('Accessibility')" />
           </oc-button>
         </template>
@@ -216,11 +234,6 @@ export default defineComponent({
 }
 
 .imprint-footer {
-  background-color: var(--oc-role-surface-container);
   width: calc(100% + var(--oc-space-small) * 2);
-
-  a {
-    color: var(--oc-role-on-surface);
-  }
 }
 </style>

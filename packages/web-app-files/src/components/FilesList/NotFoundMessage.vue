@@ -4,10 +4,10 @@
     class="text-center items-center flex justify-center flex-col"
   >
     <oc-icon name="cloud" type="div" size="xxlarge" />
-    <div class="oc-text-muted text-xl">
+    <div class="text-role-on-surface-variant text-xl">
       <span v-translate>Resource not found</span>
     </div>
-    <div class="oc-text-muted">
+    <div class="text-role-on-surface-variant">
       <span v-translate>
         We went looking everywhere, but were unable to find the selected resource.
       </span>

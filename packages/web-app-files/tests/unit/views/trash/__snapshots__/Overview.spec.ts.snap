@@ -42,22 +42,22 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
         </thead>
         <tbody class="has-item-context-menu">
           <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
           <tr class="oc-tbody-tr oc-tbody-tr-2" data-item-id="2" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
           <tr class="oc-tbody-tr oc-tbody-tr-3" data-item-id="3" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
         </tbody>
         <tfoot class="oc-table-footer">
           <tr class="oc-table-footer-row">
-            <td colspan="3" class="oc-table-footer-cell p-1 text-sm">
+            <td colspan="3" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
               <div class="text-center oc-width-1-1 my-2">
-                <p class="oc-text-muted">3 trash bins in total</p>
+                <p class="text-role-on-surface-variant">3 trash bins in total</p>
                 <!--v-if-->
               </div>
             </td>

@@ -195,8 +195,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input,
 .oc-select,
 .oc-textarea {
-  background: $form-background;
-
   /* 3 */
   border: 0 none;
   color: $form-color;
@@ -220,7 +218,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input {
   -webkit-appearance: none;
   background-clip: padding-box, border-box;
-  background-color: $form-focus-background;
   background-origin: border-box;
   border-radius: 0;
   border-radius: 5px;
@@ -252,7 +249,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 /* Disabled */
 .oc-input:disabled,
 .oc-select:disabled {
-  background-color: $form-disabled-background;
   color: $form-disabled-color;
   cursor: not-allowed;
 }
@@ -352,10 +348,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  /* 5 */
-  background-color: $form-radio-background;
-  background-position: 50% 50%;
-
   /* 6 */
   background-repeat: no-repeat;
 
@@ -374,19 +366,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 }
 
 /*
- * Checked
- */
-
-.oc-radio:checked {
-  background-color: $form-radio-checked-background;
-}
-
-/* Focus */
-.oc-radio:checked:focus {
-  background-color: $form-radio-checked-focus-background;
-}
-
-/*
  * Icons
  */
 
@@ -395,10 +374,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 /*
  * Disabled
  */
-
-.oc-radio:disabled {
-  background-color: $form-radio-disabled-background;
-}
 
 .oc-radio:disabled:checked { @include svg-fill($internal-form-radio-image, "#000", $form-radio-disabled-icon-color); }
 

@@ -7,13 +7,13 @@
     <div
       v-if="isOpen"
       ref="bottomDrawerRef"
-      class="oc-bottom-drawer-background"
+      class="oc-bottom-drawer-background bg-black/40"
       role="button"
       @click="onBackgroundClicked"
     >
       <focus-trap>
-        <div :id="drawerId" class="oc-bottom-drawer">
-          <div class="oc-card">
+        <div :id="drawerId" class="oc-bottom-drawer bg-role-surface-container-high">
+          <div class="oc-card bg-transparent">
             <div class="oc-card-header px-4 pt-4">
               <div class="flex justify-between items-center">
                 <oc-button
@@ -249,13 +249,12 @@ defineExpose({ show, hide, getElement })
 @layer utilities {
   .oc-bottom-drawer ul {
     /* overwrite default list styling */
-    @apply p-2;
+    @apply p-2 bg-role-surface;
   }
 }
 </style>
 <style lang="scss">
 .oc-bottom-drawer-background {
-  background-color: #0006;
   height: 100%;
   width: 100% !important;
   left: 0;
@@ -272,7 +271,6 @@ defineExpose({ show, hide, getElement })
   max-height: 66vh;
   width: 100%;
   overflow-y: auto;
-  background-color: var(--oc-role-surface-container-high);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   transition: all 0.2s;
@@ -283,15 +281,12 @@ defineExpose({ show, hide, getElement })
   }
 
   .oc-card {
-    background-color: unset !important;
-
     &-header {
       border-bottom: 0 !important;
     }
 
     &-body {
       ul {
-        background-color: var(--oc-role-surface) !important;
         border-radius: 10px;
       }
     }

@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="flex items-center">
@@ -22,7 +22,7 @@
       <oc-button
         ref="inputBtnRef"
         :class="{
-          'oc-file-input-danger': !!errorMessage
+          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         :disabled="disabled"
         color-role="secondary"
@@ -32,7 +32,7 @@
       >
         {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
       </oc-button>
-      <div class="oc-file-input-files oc-rounded ml-2">
+      <div class="oc-file-input-files oc-rounded ml-2 bg-role-surface-container">
         <div v-if="fileNames" class="py-1 px-2 text-sm flex items-center">
           {{ fileNames }}
           <oc-button
@@ -51,8 +51,8 @@
       v-if="showMessageLine"
       class="oc-file-input-message flex items-center text-sm mt-1"
       :class="{
-        'oc-file-input-description': !!descriptionMessage,
-        'oc-file-input-danger': !!errorMessage
+        'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
       }"
     >
       <oc-icon
@@ -67,8 +67,8 @@
       <span
         :id="messageId"
         :class="{
-          'oc-file-input-description': !!descriptionMessage,
-          'oc-file-input-danger': !!errorMessage
+          'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         v-text="messageText"
       />
@@ -241,19 +241,6 @@ const onFocus = async () => {
   border: 0;
   width: 0;
   height: 0;
-
-  &-files {
-    background-color: var(--oc-role-surface-container);
-  }
-
-  &-danger,
-  &-danger:focus {
-    color: var(--oc-role-error) !important;
-  }
-
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
 
   &-message {
     min-height: $oc-font-size-default * 1.5;

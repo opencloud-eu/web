@@ -1,5 +1,10 @@
 <template>
-  <button class="skip-button py-1 px-2" @click="skipToTarget"><slot /></button>
+  <button
+    class="skip-button bg-role-secondary text-role-on-secondary py-1 px-2"
+    @click="skipToTarget"
+  >
+    <slot />
+  </button>
 </template>
 
 <script lang="ts">
@@ -37,8 +42,6 @@ export default defineComponent({
   z-index: 6;
   -webkit-appearance: none;
   border: none;
-  background-color: var(--oc-role-secondary);
-  color: var(--oc-role-on-secondary);
 }
 
 .skip-button:focus {

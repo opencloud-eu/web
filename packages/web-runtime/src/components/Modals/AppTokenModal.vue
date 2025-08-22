@@ -41,7 +41,9 @@
     />
     <div class="mt-4 mb-2 flex items-center oc-rounded">
       <div class="created-token-container">
-        <div class="created-token flex items-center justify-between oc-rounded p-2 font-bold">
+        <div
+          class="created-token flex items-center justify-between oc-rounded p-2 font-bold bg-role-surface-container-high"
+        >
           {{ createdToken }}
           <oc-button
             v-oc-tooltip="$gettext('Copy app token to clipboard')"
@@ -121,8 +123,6 @@ const createAppToken = async () => {
 
 <style lang="scss" scoped>
 .created-token {
-  background-color: var(--oc-role-surface-container-high);
-
   &-container {
     width: 100%;
   }

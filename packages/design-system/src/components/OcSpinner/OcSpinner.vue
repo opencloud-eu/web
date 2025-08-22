@@ -21,7 +21,12 @@ export interface Props {
 const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
 
 const spinnerClass = computed(() => {
-  return ['oc-spinner', `oc-spinner-${getSizeClass(size || 'medium')}`]
+  return [
+    'oc-spinner',
+    `oc-spinner-${getSizeClass(size || 'medium')}`,
+    'after:bg-transparent',
+    'text-role-on-surface'
+  ]
 })
 </script>
 
@@ -34,12 +39,10 @@ const spinnerClass = computed(() => {
 .oc-spinner {
   @include oc-spinner-size(1);
 
-  color: var(--oc-role-on-surface);
   display: inline-block;
 
   &::after {
     animation: ball-clip-rotate 1s linear infinite;
-    background: transparent;
     border: 1px solid currentColor;
     border-bottom-color: transparent;
     border-radius: 100%;

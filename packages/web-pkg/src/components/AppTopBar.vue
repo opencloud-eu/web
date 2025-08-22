@@ -2,7 +2,7 @@
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar flex">
       <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 flex items-center justify-between"
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 flex items-center justify-between bg-role-chrome"
       >
         <div class="open-file-bar flex">
           <resource-list-item
@@ -184,7 +184,25 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-app-top-bar-inner .oc-resource-indicators .text,
+  .app-topbar-action,
+  .app-topbar-action:hover:not(:disabled),
+  #app-top-bar-resource .oc-resource-name span {
+    @apply text-role-on-chrome;
+  }
+}
+
+/* must not be inside a layer to overwrite the icon styles */
+.app-topbar-action svg,
+.app-topbar-action:hover:not(:disabled) svg,
+#app-top-bar-resource svg {
+  fill: var(--oc-role-on-chrome) !important;
+}
+</style>
 <style lang="scss">
 .oc-app-top-bar {
   align-self: center;
@@ -199,7 +217,6 @@ export default defineComponent({
 
 .oc-app-top-bar-inner {
   align-self: center;
-  background-color: var(--oc-role-chrome);
   border-radius: 10px;
   border: 1px solid var(--oc-role-on-chrome);
   display: inline-flex;
@@ -209,28 +226,6 @@ export default defineComponent({
 
   @media (min-width: $oc-breakpoint-small-default) {
     flex-basis: 250px;
-  }
-
-  .oc-resource-indicators {
-    .text {
-      color: var(--oc-role-on-chrome);
-    }
-  }
-}
-
-.app-topbar-action {
-  color: var(--oc-role-on-chrome) !important;
-
-  svg {
-    fill: var(--oc-role-on-chrome) !important;
-  }
-
-  &:hover:not(:disabled) {
-    color: var(--oc-role-on-surface) !important;
-
-    svg {
-      fill: var(--oc-role-on-surface) !important;
-    }
   }
 }
 
@@ -244,12 +239,6 @@ export default defineComponent({
 
     @media (min-width: $oc-breakpoint-small-default) {
       widows: initial;
-    }
-
-    svg,
-    .oc-resource-name span {
-      fill: var(--oc-role-on-chrome) !important;
-      color: var(--oc-role-on-chrome) !important;
     }
   }
 }

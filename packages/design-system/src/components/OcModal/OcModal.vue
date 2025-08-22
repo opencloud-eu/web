@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-modal-background flex items-center justify-center flex-row flex-wrap">
+  <div class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap">
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
@@ -11,7 +11,9 @@
         aria-labelledby="oc-modal-title"
         @keydown.esc.stop="cancelModalAction"
       >
-        <div class="oc-modal-title flex items-center flex-row flex-wrap py-3 px-4">
+        <div
+          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap py-3 px-4"
+        >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
         </div>
         <div class="oc-modal-body px-4 pt-4">
@@ -283,7 +285,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
 })
 
 const classes = computed(() => {
-  return ['oc-modal', elementClass]
+  return ['oc-modal', 'bg-role-surface', elementClass]
 })
 
 watch(
@@ -321,7 +323,6 @@ export default {
 
 <style lang="scss">
 .oc-modal {
-  background-color: var(--oc-role-surface);
   border: 1px solid var(--oc-role-outline);
   border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
@@ -335,7 +336,6 @@ export default {
   }
 
   &-background {
-    background-color: rgba(0, 0, 0, 0.4);
     height: 100%;
     left: 0;
     position: fixed;
@@ -347,12 +347,9 @@ export default {
   &-title {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: var(--oc-role-surface-container);
   }
 
   &-body {
-    color: var(--oc-role-on-surface);
-
     &-actions {
       border-bottom-right-radius: 15px;
       border-bottom-left-radius: 15px;

@@ -4,7 +4,8 @@
     class="oc-tile-card oc-card flex flex-col"
     :data-item-id="resource.id"
     :class="{
-      'oc-tile-card-selected': isResourceSelected,
+      'oc-tile-card-selected bg-role-secondary-container': isResourceSelected,
+      'bg-role-surface-container hover:bg-role-surface-container-highest': !isResourceSelected,
       'oc-tile-card-disabled': isResourceDisabled && !isProjectSpaceResource(resource),
       'state-trashed': isResourceDisabled && isProjectSpaceResource(resource)
     }"
@@ -28,7 +29,7 @@
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator oc-position-absolute"
+          class="resource-disabled-indicator oc-position-absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />
@@ -60,7 +61,7 @@
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
         <div class="flex justify-between items-center">
-          <div class="flex items-center truncate resource-name-wrapper">
+          <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
             <resource-list-item
               :resource="resource"
               :is-icon-displayed="false"
@@ -201,11 +202,16 @@ if (!lazy) {
   emit('itemVisible')
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-<style lang="scss">
-.oc-tile-card.oc-card {
-  background-color: var(--oc-role-surface-container);
+@layer utilities {
+  .oc-tile-card-selection input {
+    background-color: var(--oc-role-surface-container);
+  }
 }
+</style>
+<style lang="scss">
 .oc-tile-card {
   box-shadow: none;
   height: 100%;
@@ -245,8 +251,6 @@ if (!lazy) {
     width: 100%;
 
     .oc-tag {
-      color: var(--oc-role-on-surface);
-
       &.resource-disabled-indicator {
         z-index: 1;
       }
@@ -273,11 +277,7 @@ if (!lazy) {
       }
     }
   }
-  &:hover {
-    background-color: var(--oc-role-surface-container-highest);
-  }
   &-selected {
-    background-color: var(--oc-role-secondary-container) !important;
     outline: 2px solid var(--oc-role-outline);
   }
 
@@ -286,10 +286,6 @@ if (!lazy) {
     position: absolute;
     top: 0;
     left: 0;
-
-    input {
-      background-color: var(--oc-role-surface-container);
-    }
   }
 
   &-preview {
@@ -299,7 +295,6 @@ if (!lazy) {
   }
 
   .resource-name-wrapper {
-    color: var(--oc-role-on-surface);
     max-width: 70%;
     overflow: hidden;
   }

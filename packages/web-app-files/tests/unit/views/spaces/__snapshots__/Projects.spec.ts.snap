@@ -22,7 +22,7 @@ exports[`Projects view > different files view states > lists all available proje
           <thead class="oc-thead">
             <tr class="oc-table-header-row">
               <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select pl-4" style="top: 0px;">
-                <div><span class="oc-table-thead-content align-middle"><div class="resource-table-select-all flex justify-center items-center"><span><input id="resource-table-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5" aria-label="Select all"> <!--v-if--></span></div></span>
+                <div><span class="oc-table-thead-content align-middle"><div class="resource-table-select-all flex justify-center items-center"><span><input id="resource-table-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent" aria-label="Select all"> <!--v-if--></span></div></span>
       </div>
       </th>
       <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1 hover:underline">
@@ -47,20 +47,20 @@ exports[`Projects view > different files view states > lists all available proje
       </thead>
       <tbody class="has-item-context-menu">
         <tr class="oc-tbody-tr oc-tbody-tr-2" data-item-id="2" draggable="false">
-          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer"></span></td>
+          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer bg-role-shadow"></span></td>
         </tr>
         <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer"></span></td>
+          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer bg-role-shadow"></span></td>
         </tr>
       </tbody>
       <tfoot class="oc-table-footer">
         <tr class="oc-table-footer-row">
-          <td colspan="4" class="oc-table-footer-cell p-1 text-sm">
+          <td colspan="4" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
             <!-- @slot Footer of the table -->
             <!-- @slot Footer of the files table -->
             <!--v-if-->
             <div class="text-center oc-width-1-1 my-2">
-              <p class="oc-text-muted">3 spaces in total (including 1 disabled)</p>
+              <p class="text-role-on-surface-variant">3 spaces in total (including 1 disabled)</p>
               <!--v-if-->
             </div>
           </td>

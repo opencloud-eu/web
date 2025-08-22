@@ -128,7 +128,7 @@ exports[`account page > public link context > should render a limited view 1`] =
               <div options="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" model-value="[object Object]">
                 <!--v-if-->
                 <!--v-if-->
-                <div dir="auto" class="v-select vs--single vs--searchable oc-select" style="background: transparent;">
+                <div dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
                   <div id="vs1__combobox" class="vs__dropdown-toggle" role="combobox" aria-expanded="false" aria-owns="vs1__listbox" aria-label="Language - Search for option">
                     <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> English <!--v-if--></span><input class="vs__search" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
                     <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
@@ -162,7 +162,7 @@ exports[`account page > public link context > should render a limited view 1`] =
                 <div model-value="[object Object]" options="[object Object],[object Object],[object Object]">
                   <!--v-if-->
                   <!--v-if-->
-                  <div dir="auto" class="v-select vs--single vs--searchable oc-select" style="background: transparent;">
+                  <div dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
                     <div id="vs2__combobox" class="vs__dropdown-toggle" role="combobox" aria-expanded="false" aria-owns="vs2__listbox" aria-label="Theme - Search for option">
                       <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> Auto (same as system) <!--v-if--></span><input class="vs__search" id="oc-select-2" aria-autocomplete="list" aria-labelledby="vs2__combobox" aria-controls="vs2__listbox" type="search" autocomplete="off" value=""></div>
                       <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">

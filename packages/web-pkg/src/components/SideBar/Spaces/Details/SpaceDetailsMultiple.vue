@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar" class="p-4">
+  <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container">
     <div class="spaces-preview text-center mb-6">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
@@ -81,7 +81,6 @@ const items = computed(() => [
 </script>
 <style lang="scss" scoped>
 #oc-spaces-details-multiple-sidebar {
-  background-color: var(--oc-role-surface-container);
   border-radius: 5px;
 }
 
