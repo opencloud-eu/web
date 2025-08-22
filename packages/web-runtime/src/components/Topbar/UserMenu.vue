@@ -40,7 +40,7 @@
     >
       <oc-list class="user-menu-list">
         <template v-if="!onPremisesSamAccountName">
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
@@ -51,7 +51,7 @@
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
@@ -64,7 +64,7 @@
           </li>
         </template>
         <template v-else>
-          <li class="profile-info-wrapper pl-2">
+          <li class="profile-info-wrapper flex items-center pl-2">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"
@@ -77,7 +77,7 @@
               <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
             </span>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
@@ -88,7 +88,7 @@
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button id="oc-topbar-account-logout" appearance="raw" @click="logout">
               <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
@@ -209,9 +209,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .user-menu-list li {
-  align-items: center;
-  display: flex;
-
   &.profile-info-wrapper {
     gap: var(--oc-space-medium);
     min-height: 3rem;

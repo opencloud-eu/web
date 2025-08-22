@@ -1,5 +1,5 @@
 <template>
-  <span class="oc-recipient">
+  <span class="oc-recipient flex align-center justify-center">
     <slot name="avatar">
       <oc-avatar-item
         :width="16.8"
@@ -49,13 +49,10 @@ defineSlots<Slots>()
 </style>
 <style lang="scss">
 .oc-recipient {
-  align-items: center;
   background-color: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);
   border-radius: 6px;
-  display: flex;
   gap: var(--oc-space-xsmall);
-  justify-content: flex-start;
   width: auto;
 
   &-icon > svg {

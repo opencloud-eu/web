@@ -12,7 +12,7 @@
       }"
       :aria-invalid="ariaInvalid"
     />
-    <div v-if="showMessageLine" class="oc-textarea-message mt-1">
+    <div v-if="showMessageLine" class="oc-textarea-message flex items-center mt-1">
       <span
         :id="messageId"
         :class="{
@@ -115,9 +115,6 @@ defineExpose({ focus })
   }
 
   &-message {
-    display: flex;
-    align-items: center;
-
     min-height: $oc-font-size-default * 1.5;
   }
 }

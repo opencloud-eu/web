@@ -1,7 +1,7 @@
 <template>
   <div
     ref="observerTarget"
-    class="oc-tile-card oc-card"
+    class="oc-tile-card oc-card flex flex-col"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected': isResourceSelected,
@@ -209,8 +209,6 @@ if (!lazy) {
 .oc-tile-card {
   box-shadow: none;
   height: 100%;
-  display: flex;
-  flex-flow: column;
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   &-disabled {

@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-dropzone">
+  <div class="oc-dropzone flex justify-center items-center">
     <!-- @slot Message inside of the dropzone -->
     <slot />
   </div>
@@ -28,10 +28,7 @@ defineOptions({ name: 'OcDropzone' })
 </style>
 <style lang="scss">
 .oc-dropzone {
-  align-items: center;
   border: 1px dashed var(--oc-role-outline);
-  display: flex;
-  justify-content: center;
   opacity: 0.9;
 
   * {

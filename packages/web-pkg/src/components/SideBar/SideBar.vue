@@ -59,10 +59,15 @@
           <slot v-if="panel.isRoot?.(panelContext)" name="rootHeader" />
           <slot v-else name="subHeader" />
         </div>
-        <div class="sidebar-panel__body p-2" :class="[`sidebar-panel__body-${panel.name}`]">
+        <div
+          class="sidebar-panel__body flex flex-col p-2"
+          :class="[`sidebar-panel__body-${panel.name}`]"
+        >
           <div
             class="sidebar-panel__body-content"
-            :class="{ 'sidebar-panel__body-content-stretch': !panel.isRoot?.(panelContext) }"
+            :class="{
+              'sidebar-panel__body-content-stretch flex-1 ': !panel.isRoot?.(panelContext)
+            }"
           >
             <slot name="body">
               <div
@@ -381,12 +386,6 @@ onBeforeUnmount(() => {
   &__body {
     overflow-y: auto;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-
-    &-content-stretch {
-      flex: 1;
-    }
   }
 
   &__navigation {

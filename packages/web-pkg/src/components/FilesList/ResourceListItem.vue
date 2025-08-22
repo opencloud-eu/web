@@ -47,13 +47,13 @@
           :is-extension-displayed="isExtensionDisplayed"
         />
       </resource-link>
-      <div class="oc-resource-indicators">
+      <div class="oc-resource-indicators flex">
         <component
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
           :style="parentFolderStyle"
-          class="parent-folder truncate px-0.5 mr-2 -ml-0.5"
+          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
@@ -250,8 +250,6 @@ export default defineComponent({
   }
 
   &-indicators {
-    display: flex;
-
     a {
       &:hover {
         background-color: var(--oc-role-surface-container);
@@ -266,9 +264,6 @@ export default defineComponent({
     }
 
     .parent-folder {
-      display: flex;
-      align-items: center;
-
       &:hover {
         background: transparent;
       }

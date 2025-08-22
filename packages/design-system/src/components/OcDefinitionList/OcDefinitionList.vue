@@ -29,14 +29,17 @@ const { items } = defineProps<Props>()
 @layer components {
   .details-list dt,
   .details-list dd {
-    @apply mb-2;
+    @apply mb-2 flex items-center;
   }
+
   .details-list dd {
     @apply ml-4 font-normal;
   }
+
   .details-list dt {
     @apply font-semibold whitespace-nowrap;
   }
+
   .details-list dd:last-of-type,
   .details-list dt:last-of-type {
     @apply mb-0;
@@ -47,10 +50,5 @@ const { items } = defineProps<Props>()
 .details-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  dt,
-  dd {
-    display: flex;
-    align-items: center;
-  }
 }
 </style>

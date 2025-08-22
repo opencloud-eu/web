@@ -18,14 +18,14 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul class="oc-list oc-tiles">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
           <div class="flex justify-between items-center">
             <div class="flex items-center truncate resource-name-wrapper">
               <div class="oc-resource oc-text-overflow">
                 <!--v-if-->
                 <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow" no-hover=""></a>
-                  <div class="oc-resource-indicators">
+                  <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
                 </div>
@@ -57,14 +57,14 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
           <div class="flex justify-between items-center">
             <div class="flex items-center truncate resource-name-wrapper">
               <div class="oc-resource oc-text-overflow">
                 <!--v-if-->
                 <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow" no-hover=""></a>
-                  <div class="oc-resource-indicators">
+                  <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
                 </div>

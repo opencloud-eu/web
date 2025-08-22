@@ -34,7 +34,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-color-input-message text-sm mt-1"
+      class="oc-color-input-message flex items-center text-sm mt-1"
       :class="{
         'oc-color-input-description': !!descriptionMessage,
         'oc-color-input-danger': !!errorMessage
@@ -52,7 +52,7 @@
       <span
         :id="messageId"
         :class="{
-          'oc-color-input-description': !!descriptionMessage,
+          'oc-color-input-description flex items-center': !!descriptionMessage,
           'oc-color-input-danger': !!errorMessage
         }"
         v-text="messageText"
@@ -195,8 +195,6 @@ const onInput = (value: string) => {
 
 <style lang="scss">
 .oc-color-input-message.oc-color-input-description {
-  display: flex;
-  align-items: center;
   position: relative;
 
   .oc-icon {
@@ -227,8 +225,6 @@ const onInput = (value: string) => {
   }
 
   &-message {
-    display: flex;
-    align-items: center;
     min-height: $oc-font-size-default * 1.5;
   }
 }

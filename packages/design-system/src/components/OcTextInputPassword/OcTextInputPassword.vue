@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-text-input-password-wrapper"
+    class="oc-text-input-password-wrapper flex flex-row"
     :class="{
       'oc-text-input-password-wrapper-danger': hasError,
       'oc-text-input-password-wrapper-focused': hasFocus
@@ -10,6 +10,7 @@
       v-bind="$attrs"
       ref="passwordInput"
       v-model="password"
+      class="grow-2"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -50,7 +51,7 @@
     </oc-button>
   </div>
   <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
-    <div class="flex text-sm oc-text-input-password-policy-rule-wrapper pt-2">
+    <div class="oc-text-input-password-policy-rule-wrapper flex flex-row flex-wrap text-sm pt-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
@@ -173,8 +174,6 @@ watch(password, (value) => {
 <style lang="scss">
 .oc-text-input-password {
   &-wrapper {
-    display: flex;
-    flex-direction: row;
     border-radius: 5px;
     border: 1px solid var(--oc-role-outline);
 
@@ -184,7 +183,6 @@ watch(password, (value) => {
     }
 
     input {
-      flex-grow: 2;
       border: none !important;
 
       &:focus {
@@ -201,8 +199,6 @@ watch(password, (value) => {
   }
 
   &-policy-rule-wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
     column-gap: var(--oc-space-small);
   }
 }
