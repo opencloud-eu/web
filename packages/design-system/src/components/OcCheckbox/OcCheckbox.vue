@@ -73,7 +73,7 @@ const model = defineModel<boolean | unknown[]>()
 
 const classes = computed(() => [
   'oc-checkbox',
-  'oc-rounded',
+  'rounded-sm',
   'oc-checkbox-' + getSizeClass(size),
   { 'oc-checkbox-checked': isChecked.value },
   { 'bg-white': isChecked.value },

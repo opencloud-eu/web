@@ -136,7 +136,7 @@ defineSlots<Slots>()
 const buttonClass = computed(() => {
   const classes = [
     'oc-button',
-    'oc-rounded',
+    'rounded-sm',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
     `oc-button-gap-${getSizeClass(gapSize)}`,

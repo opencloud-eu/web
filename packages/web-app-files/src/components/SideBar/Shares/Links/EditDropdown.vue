@@ -18,7 +18,7 @@
       mode="click"
     >
       <oc-list v-if="editOptions.length > 0" class="edit-public-link-dropdown-menu">
-        <li v-for="(option, i) in editOptions" :key="i" class="oc-rounded oc-menu-item-hover">
+        <li v-for="(option, i) in editOptions" :key="i" class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="option" />
         </li>
       </oc-list>
@@ -27,7 +27,7 @@
         class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-navigate-to-parent"
         :class="{ 'pt-2': editOptions.length > 0 }"
       >
-        <li class="oc-rounded oc-menu-item-hover">
+        <li class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
@@ -36,7 +36,7 @@
         class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-delete mt-2 border-t"
         :class="{ 'pt-2': editOptions.length > 0 }"
       >
-        <li class="oc-rounded oc-menu-item-hover">
+        <li class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="deleteOption" />
         </li>
       </oc-list>

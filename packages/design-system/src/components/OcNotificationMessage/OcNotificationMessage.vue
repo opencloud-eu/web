@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded break-keep bg-role-surface"
+    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium rounded-sm break-keep bg-role-surface"
     :class="classes"
   >
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">

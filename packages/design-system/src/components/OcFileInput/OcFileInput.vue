@@ -32,7 +32,7 @@
       >
         {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
       </oc-button>
-      <div class="oc-file-input-files oc-rounded ml-2 bg-role-surface-container">
+      <div class="oc-file-input-files rounded-sm ml-2 bg-role-surface-container">
         <div v-if="fileNames" class="py-1 px-2 text-sm flex items-center">
           {{ fileNames }}
           <oc-button

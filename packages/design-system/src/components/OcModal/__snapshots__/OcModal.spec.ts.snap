@@ -36,10 +36,10 @@ exports[`OcModal > displays loading state 1`] = `
         <!--v-if-->
       </div>
       <div class="oc-modal-body-actions flex justify-end p-4 text-right">
-        <div class="oc-modal-body-actions-grid"><button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-cancel">
+        <div class="oc-modal-body-actions-grid"><button type="button" disabled="" class="oc-button rounded-sm oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> Cancel
-          </button> <button type="button" disabled="" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-confirm ml-2"><span class="oc-spinner oc-spinner-s after:bg-transparent text-role-on-surface after:border after:border-current spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
+          </button> <button type="button" disabled="" class="oc-button rounded-sm oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-modal-body-actions-confirm ml-2"><span class="oc-spinner oc-spinner-s after:bg-transparent text-role-on-surface after:border after:border-current spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
       </div>
     </div>
   </focus-trap-stub>

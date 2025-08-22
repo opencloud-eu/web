@@ -21,10 +21,10 @@
       close-on-click
     >
       <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="shareEditOptions">
-        <li v-for="(option, i) in options" :key="i" class="oc-rounded oc-menu-item-hover">
+        <li v-for="(option, i) in options" :key="i" class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="option" />
         </li>
-        <li v-if="sharedParentRoute" class="oc-rounded oc-menu-item-hover">
+        <li v-if="sharedParentRoute" class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
@@ -32,7 +32,7 @@
         v-if="canRemove"
         class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2 mt-2 border-t"
       >
-        <li class="oc-rounded oc-menu-item-hover">
+        <li class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="removeShareOption" />
         </li>
       </oc-list>

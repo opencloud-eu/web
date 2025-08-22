@@ -14,7 +14,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-text-input oc-input oc-rounded focus:border focus:border-role-surface"
+        class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface"
         :class="{
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,

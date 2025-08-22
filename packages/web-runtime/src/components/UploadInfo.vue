@@ -2,10 +2,10 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="oc-rounded oc-box-shadow-medium bg-role-surface mx-auto sm:m-0"
+    class="rounded-sm oc-box-shadow-medium bg-role-surface mx-auto sm:m-0"
   >
     <div
-      class="upload-info-title flex justify-between items-center px-4 py-2 oc-rounded-top bg-role-surface-container"
+      class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-sm bg-role-surface-container"
     >
       <p v-oc-tooltip="uploadDetails" class="my-1" v-text="uploadInfoTitle" />
       <oc-button

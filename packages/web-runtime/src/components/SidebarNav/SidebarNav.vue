@@ -19,7 +19,7 @@
       <oc-icon
         size="large"
         fill-type="line"
-        class="raw-hover-surface oc-rounded"
+        class="raw-hover-surface rounded-sm"
         :name="toggleSidebarButtonIcon"
       />
     </oc-button>

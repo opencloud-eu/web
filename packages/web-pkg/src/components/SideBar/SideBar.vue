@@ -83,7 +83,7 @@
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
                   :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
-                  class="oc-rounded border-t"
+                  class="rounded-sm border-t"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>

@@ -14,7 +14,7 @@
           :action="action"
           :appearance="appearance"
           :action-options="actionOptions"
-          class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
+          class="context-menu oc-files-context-action rounded-sm oc-menu-item-hover"
         />
       </template>
       <template v-for="drop in section.dropItems">

@@ -18,7 +18,7 @@
     v-else
     :id="dropId"
     ref="drop"
-    class="oc-drop oc-box-shadow-medium oc-rounded"
+    class="oc-drop oc-box-shadow-medium rounded-sm"
     @click="onClick"
   >
     <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
