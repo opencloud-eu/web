@@ -1200,6 +1200,7 @@ def designSystemDocs(ctx):
         "when": [
             event["pull_request"],
             event["main_branch"],
+            event["cron"],
         ],
         "workspace": web_workspace,
     }]
