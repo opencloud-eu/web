@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+
+@theme {
+  --spacing: 4px;
+  --breakpoint-xs: 580px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1600px;
+
+  --color-role-background: var(--oc-role-background);
+  --color-role-chrome: var(--oc-role-chrome);
+  --color-role-error: var(--oc-role-error);
+  --color-role-error-container: var(--oc-role-error-container);
+  --color-role-inverse-on-surface: var(--oc-role-inverse-on-surface);
+  --color-role-inverse-primary: var(--oc-role-inverse-primary);
+  --color-role-inverse-surface: var(--oc-role-inverse-surface);
+  --color-role-on-background: var(--oc-role-on-background);
+  --color-role-on-chrome: var(--oc-role-on-chrome);
+  --color-role-on-error: var(--oc-role-on-error);
+  --color-role-on-error-container: var(--oc-role-on-error-container);
+  --color-role-on-primary: var(--oc-role-on-primary);
+  --color-role-on-primary-container: var(--oc-role-on-primary-container);
+  --color-role-on-primary-fixed: var(--oc-role-on-primary-fixed);
+  --color-role-on-secondary: var(--oc-role-on-secondary);
+  --color-role-on-secondary-container: var(--oc-role-on-secondary-container);
+  --color-role-on-secondary-fixed: var(--oc-role-on-secondary-fixed);
+  --color-role-on-surface: var(--oc-role-on-surface);
+  --color-role-on-surface-variant: var(--oc-role-on-surface-variant);
+  --color-role-on-tertiary: var(--oc-role-on-tertiary);
+  --color-role-on-tertiary-container: var(--oc-role-on-tertiary-container);
+  --color-role-on-tertiary-fixed: var(--oc-role-on-tertiary-fixed);
+  --color-role-outline: var(--oc-role-outline);
+  --color-role-outline-variant: var(--oc-role-outline-variant);
+  --color-role-primary: var(--oc-role-primary);
+  --color-role-primary-container: var(--oc-role-primary-container);
+  --color-role-primary-fixed: var(--oc-role-primary-fixed);
+  --color-role-scrim: var(--oc-role-scrim);
+  --color-role-secondary: var(--oc-role-secondary);
+  --color-role-secondary-container: var(--oc-role-secondary-container);
+  --color-role-secondary-fixed: var(--oc-role-secondary-fixed);
+  --color-role-shadow: var(--oc-role-shadow);
+  --color-role-surface: var(--oc-role-surface);
+  --color-role-surface-bright: var(--oc-role-surface-bright);
+  --color-role-surface-container: var(--oc-role-surface-container);
+  --color-role-surface-container-high: var(--oc-role-surface-container-high);
+  --color-role-surface-container-highest: var(--oc-role-surface-container-highest);
+  --color-role-surface-container-low: var(--oc-role-surface-container-low);
+  --color-role-surface-container-lowest: var(--oc-role-surface-container-lowest);
+  --color-role-surface-dim: var(--oc-role-surface-dim);
+  --color-role-surface-tint: var(--oc-role-surface-tint);
+  --color-role-surface-variant: var(--oc-role-surface-variant);
+  --color-role-tertiary: var(--oc-role-tertiary);
+  --color-role-tertiary-container: var(--oc-role-tertiary-container);
+  --color-role-tertiary-fixed: var(--oc-role-tertiary-fixed);
+}

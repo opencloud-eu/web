@@ -442,7 +442,7 @@ import VueSelect from 'vue-select'
 export default { components: { VueSelect } }
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-select {

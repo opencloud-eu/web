@@ -47,7 +47,7 @@ const name = computed(() => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   .file_info button {

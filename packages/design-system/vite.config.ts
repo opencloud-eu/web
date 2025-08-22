@@ -58,6 +58,10 @@ export default defineConfig({
           {
             src: './l10n/translations.json',
             dest: '.'
+          },
+          {
+            src: './src/styles/tailwind.css',
+            dest: '.'
           }
         ]
       })()

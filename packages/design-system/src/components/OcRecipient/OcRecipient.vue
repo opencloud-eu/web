@@ -39,7 +39,7 @@ const { recipient } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-recipient {

@@ -172,7 +172,7 @@ const onClick = (event: MouseEvent) => {
 </script>
 
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {

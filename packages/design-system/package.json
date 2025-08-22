@@ -73,6 +73,9 @@
       "./dist/translations.json": {
         "default": "./dist/translations.json"
       },
+      "./dist/tailwind.css": {
+        "default": "./dist/tailwind.css"
+      },
       "./types": {
         "types": "./dist/types.d.ts"
       }
@@ -93,6 +96,9 @@
     },
     "./l10n": {
       "default": "./l10n/translations.json"
+    },
+    "./tailwind": {
+      "default": "./src/styles/tailwind.css"
     }
   },
   "dependencies": {

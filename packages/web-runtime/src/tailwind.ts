@@ -3,4 +3,4 @@
  * Tailwind CSS always comes before any other CSS, which is necessary for the
  * layer styles to be applied correctly.
  */
-import './tailwind.css'
+import '@opencloud-eu/design-system/tailwind'

@@ -238,7 +238,7 @@ const getElement = () => {
 defineExpose({ show, hide, getElement })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-bottom-drawer .oc-card-body ul:not(:last-child) {

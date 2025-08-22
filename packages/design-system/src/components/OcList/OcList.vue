@@ -25,7 +25,7 @@ const { raw = false } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   ul.oc-list,
