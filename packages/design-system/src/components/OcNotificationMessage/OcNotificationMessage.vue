@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded break-keep"
+    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded break-keep bg-role-surface"
     :class="classes"
   >
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
@@ -18,7 +18,7 @@
       <div v-if="message || errorLogContent" class="flex justify-between oc-width-1-1 mt-2">
         <span
           v-if="message"
-          class="oc-notification-message-content oc-text-muted mr-2"
+          class="oc-notification-message-content text-role-on-surface-variant mr-2"
           v-text="message"
         />
         <oc-button
@@ -109,7 +109,6 @@ onMounted(() => {
 </style>
 <style lang="scss">
 .oc-notification-message {
-  background-color: var(--oc-role-surface) !important;
   position: relative;
 }
 </style>

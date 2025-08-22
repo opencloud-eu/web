@@ -17,7 +17,7 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
-      class="mx-auto sm:mx-0"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -60,7 +60,7 @@
       <oc-list class="oc-list-divider">
         <li
           v-if="loading"
-          class="loading spinner flex justify-center items-center oc-text-muted py-1 px-2 text-sm"
+          class="loading spinner flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
           <span class="ml-2">{{ $gettext('Searching ...') }}</span>
@@ -72,7 +72,7 @@
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
             <oc-list>
               <li
-                class="truncate flex justify-between oc-text-muted provider-details py-1 px-2 text-xs"
+                class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 text-xs"
               >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
@@ -534,6 +534,13 @@ export default defineComponent({
   #files-global-search-options .preview-component a {
     @apply p-0;
   }
+  #files-global-search .oc-search-input {
+    background-color: var(--oc-role-surface);
+  }
+  #files-global-search-options ul li.preview:hover,
+  #files-global-search-options ul li.preview.active {
+    background-color: var(--oc-role-surface-container);
+  }
 }
 </style>
 <style lang="scss">
@@ -546,7 +553,6 @@ export default defineComponent({
   }
 
   .oc-search-input {
-    background-color: var(--oc-role-surface);
     transition: 0s;
     height: 2.3rem;
 
@@ -564,7 +570,6 @@ export default defineComponent({
 
     @media (max-width: 639px) {
       visibility: hidden;
-      background-color: var(--oc-role-chrome);
       position: absolute;
       height: 48px;
       left: 0;
@@ -575,7 +580,6 @@ export default defineComponent({
 
       input,
       input:not(:placeholder-shown) {
-        background-color: var(--oc-role-surface);
         border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
       }
@@ -607,11 +611,6 @@ export default defineComponent({
 
         &.preview {
           min-height: 44px;
-
-          &:hover,
-          &.active {
-            background-color: var(--oc-role-surface-container);
-          }
 
           &.disabled {
             pointer-events: none;

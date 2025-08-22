@@ -31,7 +31,7 @@
           v-if="item.to"
           :aria-current="getAriaCurrent(index)"
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
-          class="first:text-base text-xl"
+          class="first:text-base text-xl text-role-on-surface"
         >
           <span
             class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]"
@@ -41,7 +41,8 @@
         <oc-button
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
-          appearance="raw"
+          appearance="raw-inverse"
+          color-role="surface"
           class="flex first:text-base text-xl"
           no-hover
           @click="item.onClick"
@@ -307,7 +308,18 @@ const dropItemStyling = (
   leaving ? classList.remove(className) : classList.add(className)
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-breadcrumb-item-dragover {
+    @apply bg-role-secondary-container;
+  }
+  .oc-breadcrumb-list > :nth-child(n + 2)::before {
+    @apply text-role-on-surface;
+  }
+}
+</style>
 <style lang="scss">
 .oc-breadcrumb {
   overflow: visible;
@@ -317,7 +329,6 @@ const dropItemStyling = (
       border 0s 0.08s,
       border-color 0s,
       border-width 0.06s;
-    background-color: var(--oc-role-secondary-container);
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
     border-radius: 5px;
   }
@@ -354,21 +365,7 @@ const dropItemStyling = (
     }
 
     > :nth-child(n + 2)::before {
-      color: var(--oc-role-on-surface);
       display: inline-block;
-    }
-
-    > :last-child > span {
-      color: var(--oc-role-on-surface);
-    }
-  }
-
-  /* stylelint-disable */
-  &-list-item {
-    a:first-of-type,
-    button:first-of-type,
-    span:first-of-type {
-      color: var(--oc-role-on-surface);
     }
   }
 }

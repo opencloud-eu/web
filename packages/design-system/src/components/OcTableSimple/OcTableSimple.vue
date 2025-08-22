@@ -33,7 +33,15 @@ const tableClasses = computed(() => {
   return result
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-table-simple-hover tr:hover {
+    @apply bg-role-secondary-container;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table-simple {
   border-collapse: collapse;
@@ -46,10 +54,6 @@ const tableClasses = computed(() => {
 
   tr + tr {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-
-  &-hover tr:hover {
-    background-color: var(--oc-role-secondary-container);
   }
 }
 </style>

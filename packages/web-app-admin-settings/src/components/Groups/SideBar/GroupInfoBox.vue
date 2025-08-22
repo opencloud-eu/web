@@ -7,8 +7,8 @@
       :user-name="group.displayName"
       background-color="var(--oc-role-secondary)"
     />
-    <span class="oc-text-muted group-info-display-name text-2xl" v-text="group.displayName"></span>
-    <span class="oc-text-muted" v-text="groupMembersText"></span>
+    <span class="text-role-on-surface-variant text-2xl" v-text="group.displayName"></span>
+    <span class="text-role-on-surface-variant" v-text="groupMembersText"></span>
   </div>
 </template>
 <script lang="ts">

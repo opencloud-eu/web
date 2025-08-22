@@ -9,11 +9,15 @@
     :title="htmlTitle"
   >
     <span v-if="truncateName" class="truncate">
-      <span class="oc-resource-basename whitespace-pre" v-text="displayName" />
+      <span class="oc-resource-basename whitespace-pre text-role-on-surface" v-text="displayName" />
     </span>
-    <span v-else class="oc-resource-basename break-normal" v-text="displayName" /><span
+    <span
+      v-else
+      class="oc-resource-basename break-normal text-role-on-surface"
+      v-text="displayName"
+    /><span
       v-if="extension && isExtensionDisplayed"
-      class="oc-resource-extension whitespace-pre"
+      class="oc-resource-extension whitespace-pre text-role-on-surface"
       v-text="displayExtension"
     />
   </span>
@@ -155,11 +159,6 @@ export default defineComponent({
 .oc-resource {
   &-name {
     min-width: 0;
-  }
-
-  &-basename,
-  &-extension {
-    color: var(--oc-role-on-surface);
   }
 }
 </style>

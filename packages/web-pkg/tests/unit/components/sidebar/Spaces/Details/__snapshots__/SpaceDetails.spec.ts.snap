@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Details SideBar Panel > displays the details side panel 1`] = `
-"<div data-v-c7ea2f9c="" id="oc-space-details-sidebar" class="p-4">
+"<div data-v-c7ea2f9c="" id="oc-space-details-sidebar" class="p-4 bg-role-surface-container">
   <div data-v-c7ea2f9c="" class="oc-space-details-sidebar-image text-center">
     <oc-icon-stub data-v-c7ea2f9c="" accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="space-default-image px-4 py-4"></oc-icon-stub>
   </div>

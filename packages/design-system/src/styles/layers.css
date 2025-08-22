@@ -41,11 +41,31 @@
   ul {
     @apply pl-5 my-2;
   }
+
+  a {
+    @apply text-role-secondary;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  a:hover {
+    @apply text-role-on-surface;
+  }
 }
 
 @layer components {
 
   /* card spacing FIXME: they should be in a dedicated component */
+  .oc-card {
+    @apply bg-role-surface text-role-on-surface;
+  }
+
   .oc-card-body {
     @apply p-6;
   }
@@ -108,6 +128,17 @@
 
   .oc-radio {
     @apply align-middle;
+  }
+
+  .oc-input,
+  .oc-select,
+  .oc-textarea {
+    @apply bg-role-surface;
+  }
+
+  .oc-input:disabled,
+  .oc-select:disabled {
+    @apply bg-role-surface-container;
   }
 
   /* sidebar */

@@ -97,7 +97,7 @@
         <template #footer>
           <pagination :pages="totalPages" :current-page="currentPage" />
           <div class="text-center oc-width-1-1 my-2">
-            <p class="oc-text-muted">{{ footerTextTotal }}</p>
+            <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
           </div>
         </template>
       </oc-table>

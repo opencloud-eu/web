@@ -10,7 +10,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar py-2 px-4"
+            class="oc-app-bar py-2 px-4 bg-role-surface"
             :class="{ 'admin-settings-app-bar-sticky': isSticky }"
           >
             <div class="admin-settings-app-bar-controls flex justify-between items-center">
@@ -221,7 +221,6 @@ export default defineComponent({
 }
 
 #admin-settings-app-bar {
-  background-color: var(--oc-role-surface);
   border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;

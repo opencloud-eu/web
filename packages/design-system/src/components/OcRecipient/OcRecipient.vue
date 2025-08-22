@@ -1,5 +1,5 @@
 <template>
-  <span class="oc-recipient flex align-center justify-center">
+  <span class="oc-recipient bg-role-surface-container flex align-center justify-center">
     <slot name="avatar">
       <oc-avatar-item
         :width="16.8"
@@ -49,7 +49,6 @@ defineSlots<Slots>()
 </style>
 <style lang="scss">
 .oc-recipient {
-  background-color: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);
   border-radius: 6px;
   gap: var(--oc-space-xsmall);
@@ -57,10 +56,6 @@ defineSlots<Slots>()
 
   &-icon > svg {
     fill: var(--oc-role-on-surface);
-  }
-
-  &-name {
-    color: var(--oc-role-on-surface);
   }
 }
 </style>

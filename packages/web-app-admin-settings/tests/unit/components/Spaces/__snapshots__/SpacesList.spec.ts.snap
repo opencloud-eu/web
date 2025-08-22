@@ -235,11 +235,11 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
     </tbody>
     <tfoot class="oc-table-footer">
       <tr class="oc-table-footer-row">
-        <td colspan="11" class="oc-table-footer-cell p-1 text-sm">
+        <td colspan="11" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
           <!-- @slot Footer of the table -->
           <!--v-if-->
           <div class="text-center oc-width-1-1 my-2">
-            <p class="oc-text-muted">2 spaces in total</p>
+            <p class="text-role-on-surface-variant">2 spaces in total</p>
             <!--v-if-->
           </div>
         </td>

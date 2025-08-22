@@ -6,6 +6,7 @@
       type="radio"
       name="radio"
       :class="classes"
+      class="checked:bg-role-secondary-container"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -100,10 +101,6 @@ const labelClasses = computed(() => ({
 
   &:not(:disabled) {
     cursor: pointer;
-  }
-
-  &:checked {
-    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &.oc-radio-s {

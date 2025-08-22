@@ -23,7 +23,9 @@
       </div>
       <div class="oc-position-relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1" />
+          <div
+            class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1 bg-role-surface"
+          />
           <oc-spinner class="oc-notifications-loading-spinner" size="large" />
         </div>
         <span
@@ -55,7 +57,7 @@
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
-                <div v-if="el.datetime" class="text-sm oc-text-muted mt-1">
+                <div v-if="el.datetime" class="text-sm text-role-on-surface-variant mt-1">
                   <span
                     v-oc-tooltip="formatDate(el.datetime)"
                     tabindex="0"
@@ -267,7 +269,15 @@ export default {
   }
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-notifications-item > a {
+    @apply text-role-on-surface;
+  }
+}
+</style>
 <style lang="scss" scoped>
 #oc-notifications-drop {
   width: 400px;
@@ -278,19 +288,12 @@ export default {
 }
 
 .oc-notifications {
-  &-item {
-    > a {
-      color: var(--oc-role-on-surface);
-    }
-  }
-
   &-loading {
     * {
       position: absolute;
     }
 
     &-background {
-      background-color: var(--oc-role-surface);
       opacity: 0.6;
     }
 

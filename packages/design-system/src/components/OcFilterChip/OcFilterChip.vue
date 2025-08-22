@@ -7,8 +7,9 @@
       :id="id"
       class="oc-filter-chip-button oc-pill py-1 px-2 text-xs"
       :class="{ 'oc-filter-chip-button-selected': filterActive }"
-      appearance="raw-inverse"
-      color-role="surface"
+      :appearance="filterActive ? 'filled' : 'raw-inverse'"
+      :color-role="filterActive ? 'secondaryContainer' : 'surface'"
+      :no-hover="filterActive || !hasActiveState"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
@@ -41,8 +42,10 @@
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
       class="oc-filter-chip-clear px-1"
-      appearance="raw"
+      appearance="filled"
+      color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
+      :no-hover="filterActive"
       @click="emit('clearFilter')"
     >
       <oc-icon name="close" size="small" />
@@ -167,8 +170,6 @@ defineExpose({ hideDrop })
   }
   &-button-selected.oc-pill,
   &-button-selected.oc-pill:hover {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
     border-top-left-radius: 99px !important;
     border-bottom-left-radius: 99px !important;
     border-top-right-radius: 0px !important;
@@ -177,8 +178,6 @@ defineExpose({ hideDrop })
   }
   &-clear,
   &-clear:hover {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     border-top-right-radius: 99px !important;
@@ -191,7 +190,6 @@ defineExpose({ hideDrop })
 }
 .oc-filter-chip-raw {
   .oc-filter-chip-button {
-    background-color: transparent !important;
     border: none !important;
   }
 }

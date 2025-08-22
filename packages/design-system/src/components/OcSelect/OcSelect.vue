@@ -2,7 +2,7 @@
   <div>
     <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="oc-label">
       {{ label }}
-      <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+      <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
     </label>
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
@@ -17,11 +17,10 @@
       :searchable="searchable"
       :clearable="clearable"
       :multiple="multiple"
-      class="oc-select"
+      class="oc-select bg-transparent"
       :class="{
         'oc-select-position-fixed': positionFixed
       }"
-      style="background: transparent"
       :dropdown-should-open="selectDropdownShouldOpen"
       :map-keydown="selectMapKeydown"
       v-bind="additionalAttributes"

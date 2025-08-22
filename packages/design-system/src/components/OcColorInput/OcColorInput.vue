@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-color-input-wrapper oc-position-relative">
@@ -14,7 +14,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-color-input oc-input oc-rounded py-0.5"
         :class="{
-          'oc-color-input-danger': !!errorMessage,
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage,
           'pr-6': showClearButton
         }"
         :value="modelValue"
@@ -36,8 +36,8 @@
       v-if="showMessageLine"
       class="oc-color-input-message flex items-center text-sm mt-1"
       :class="{
-        'oc-color-input-description': !!descriptionMessage,
-        'oc-color-input-danger': !!errorMessage
+        'oc-color-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
       }"
     >
       <oc-icon
@@ -52,8 +52,9 @@
       <span
         :id="messageId"
         :class="{
-          'oc-color-input-description flex items-center': !!descriptionMessage,
-          'oc-color-input-danger': !!errorMessage
+          'oc-color-input-description text-role-on-surface-variant flex items-center':
+            !!descriptionMessage,
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         v-text="messageText"
       />
@@ -214,13 +215,8 @@ const onInput = (value: string) => {
     outline: 2px solid var(--oc-role-outline) !important;
   }
 
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
-
   &-danger,
   &-danger:focus {
-    border-color: var(--oc-role-error) !important;
     color: var(--oc-role-error) !important;
   }
 

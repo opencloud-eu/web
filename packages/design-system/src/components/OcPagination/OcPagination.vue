@@ -11,7 +11,12 @@
         </router-link>
       </li>
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
-        <component :is="pageComponent(page)" :class="pageClass(page)" v-bind="bindPageProps(page)">
+        <component
+          :is="pageComponent(page)"
+          :class="pageClass(page)"
+          class="hover:bg-role-secondary hover:text-role-on-secondary"
+          v-bind="bindPageProps(page)"
+        >
           {{ page }}
         </component>
       </li>
@@ -131,10 +136,17 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2']
+  const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2', 'text-role-on-surface']
 
   if (isCurrentPage(page)) {
-    classes.push(...['oc-pagination-list-item-current', 'font-bold'])
+    classes.push(
+      ...[
+        'oc-pagination-list-item-current',
+        'font-bold',
+        'bg-role-secondary',
+        'text-role-on-secondary'
+      ]
+    )
   } else if (page === '...') {
     classes.push('oc-pagination-list-item-ellipsis')
   } else {
@@ -162,18 +174,7 @@ const bindPageLink = (page: Page) => {
     &-item {
       &-page {
         border-radius: 4px;
-        color: var(--oc-role-on-surface);
         transition: background-color $transition-duration-short ease-in-out;
-
-        &:not(span):hover {
-          background-color: var(--oc-role-secondary);
-          color: var(--oc-role-on-secondary);
-        }
-      }
-
-      &-current {
-        background-color: var(--oc-role-secondary);
-        color: var(--oc-role-on-secondary);
       }
 
       &-prev,

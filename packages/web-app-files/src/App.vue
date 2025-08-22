@@ -1,6 +1,6 @@
 <template>
   <main id="files" class="flex oc-height-1-1">
-    <div v-if="dragareaEnabled" class="dragarea" />
+    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20" />
     <router-view tabindex="0" class="files-wrapper oc-width-expand oc-height-1-1 flex-wrap" />
   </main>
 </template>
@@ -44,7 +44,6 @@ main {
 }
 
 .dragarea {
-  background-color: rgba(60, 130, 225, 0.21);
   pointer-events: none;
   top: 0;
   left: 0;

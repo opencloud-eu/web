@@ -15,7 +15,7 @@
       <div class="flex items-center create-shortcut-modal-label mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
-          <span class="oc-text-error" aria-hidden="true">*</span>
+          <span class="text-role-on-error" aria-hidden="true">*</span>
         </label>
         <oc-contextual-helper
           :text="
@@ -62,7 +62,9 @@
         <oc-spinner />
       </li>
       <template v-if="searchResult?.values?.length">
-        <li class="create-shortcut-modal-search-separator oc-text-muted text-sm pl-1">
+        <li
+          class="create-shortcut-modal-search-separator text-role-on-surface-variant text-sm pl-1"
+        >
           <span v-text="$gettext('Link to a file')" />
         </li>
         <li
@@ -98,7 +100,7 @@
         <div class="flex items-center create-shortcut-modal-label mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
-            <span class="oc-text-error" aria-hidden="true">*</span>
+            <span class="text-role-on-error" aria-hidden="true">*</span>
           </label>
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
@@ -467,12 +469,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.create-shortcut-modal {
-  &-search-separator:hover {
-    background: none !important;
-  }
-}
-
 #create-shortcut-modal-contextmenu {
   width: 458px;
 }

@@ -1,7 +1,7 @@
 <template>
   <div id="group-edit-panel" class="mt-12">
     <group-info-box :group="group" />
-    <form id="group-edit-form" class="oc-surface-container p-4" autocomplete="off">
+    <form id="group-edit-form" class="bg-role-surface-container p-4" autocomplete="off">
       <oc-text-input
         id="displayName-input"
         v-model="editGroup.displayName"

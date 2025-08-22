@@ -52,7 +52,6 @@ export default defineComponent({
 <style lang="scss">
 #oc-loading-indicator {
   .oc-progress {
-    background-color: transparent;
     height: 2px;
 
     &-indeterminate-first {

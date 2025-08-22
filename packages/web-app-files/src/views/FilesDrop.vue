@@ -1,7 +1,11 @@
 <template>
   <app-loading-spinner v-if="loading" />
-  <div v-else id="files-drop-container" class="oc-height-1-1 flex flex-col justify-between m-12">
-    <div v-if="dragareaEnabled" class="dragarea" />
+  <div
+    v-else
+    id="files-drop-container"
+    class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent"
+  >
+    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
     <div class="p-4 oc-height-1-1 text-center">
       <div key="loaded-drop" class="flex flex-col">
@@ -254,7 +258,6 @@ export default defineComponent({
 #files-drop {
   &-container {
     position: relative;
-    background: transparent;
     border: 1px dashed var(--oc-role-outline-variant);
   }
 
@@ -266,7 +269,6 @@ export default defineComponent({
 }
 
 .dragarea {
-  background-color: rgba(60, 130, 225, 0.21);
   pointer-events: none;
   top: 0;
   left: 0;
