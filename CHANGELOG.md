@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.5.0 [[#1068](https://github.com/opencloud-eu/web/pull/1068)]
 - fix(deps): update typescript-eslint monorepo to v8.40.0 [[#1075](https://github.com/opencloud-eu/web/pull/1075)]
 - chore(deps): update apache/tika docker tag to v3.2.2.0 [[#1066](https://github.com/opencloud-eu/web/pull/1066)]
 - chore(deps): update dependency vite-plugin-static-copy to v3.1.2 [security] [[#1106](https://github.com/opencloud-eu/web/pull/1106)]
