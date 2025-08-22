@@ -1,5 +1,7 @@
 <template>
-  <div class="app-details oc-card oc-card-default oc-card-rounded mx-auto">
+  <div
+    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container"
+  >
     <div class="p-1">
       <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
         <oc-icon name="arrow-left-s" fill-type="line" />
@@ -7,10 +9,12 @@
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body flex flex-col p-4">
+    <div class="app-content oc-card-body bg-role-surface-container flex flex-col p-4">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
-        <span class="ml-2 oc-text-muted text-sm mt-2"> v{{ app.mostRecentVersion.version }} </span>
+        <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
+          v{{ app.mostRecentVersion.version }}
+        </span>
       </div>
       <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
@@ -95,18 +99,12 @@ export default defineComponent({
 
 <style lang="scss">
 .app-details {
-  background-color: var(--oc-role-surface-container);
   box-shadow: none;
   max-width: 600px;
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {
     gap: 1rem;
-  }
-
-  #text-editor-preview-component-preview,
-  .app-content {
-    background-color: var(--oc-role-surface-container) !important;
   }
 }
 </style>

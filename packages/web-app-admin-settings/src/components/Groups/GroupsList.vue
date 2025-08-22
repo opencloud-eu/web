@@ -104,8 +104,8 @@
       <template #footer>
         <pagination :pages="totalPages" :current-page="currentPage" />
         <div class="text-center oc-width-1-1 my-2">
-          <p class="oc-text-muted">{{ footerTextTotal }}</p>
-          <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
+          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+          <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
         </div>
       </template>
     </oc-table>

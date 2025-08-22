@@ -1,5 +1,7 @@
 <template>
-  <li class="app-tile oc-card oc-card-default oc-card-rounded flex flex-col">
+  <li
+    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col"
+  >
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
     </router-link>
@@ -13,7 +15,7 @@
               {{ app.name }}
             </router-link>
           </h3>
-          <span class="ml-2 oc-text-muted text-sm mt-1">
+          <span class="ml-2 text-role-on-surface-variant text-sm mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>
@@ -60,19 +62,12 @@ export default defineComponent({
 <style lang="scss">
 .app-tile {
   overflow: hidden;
-  background-color: var(--oc-role-surface-container) !important;
   box-shadow: none;
   height: 100%;
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-tile-body {
     height: 100%;
-  }
-
-  .app-tile-title {
-    .mark-highlight {
-      color: var(--oc-role-on-surface);
-    }
   }
 }
 </style>

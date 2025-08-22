@@ -85,7 +85,7 @@
           icon-fill-type="line"
         >
           <template #message>
-            <p class="oc-text-muted">
+            <p class="text-role-on-surface-variant">
               <span v-if="!!$route.query.term" v-text="$gettext('No results found')" />
               <span v-else v-text="$gettext('Search for files')" />
             </p>
@@ -525,14 +525,7 @@ export default defineComponent({
 
 @layer utilities {
   .files-search-resource-highlights mark {
-    @apply font-semibold;
-  }
-}
-</style>
-<style lang="scss">
-.files-search-resource-highlights {
-  mark {
-    background: #fff74c;
+    @apply font-semibold bg-yellow-200;
   }
 }
 </style>

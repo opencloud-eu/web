@@ -38,6 +38,13 @@ defineSlots<Slots>()
   ul.oc-list.oc-timeline li {
     @apply py-2 pl-5 pr-7 flex flex-col;
   }
+  ul.oc-list.oc-timeline::before,
+  ul.oc-list.oc-timeline li::before {
+    @apply bg-role-outline-variant;
+  }
+  ul.oc-list-raw a:hover {
+    @apply text-inherit;
+  }
 }
 </style>
 <style lang="scss">
@@ -46,14 +53,6 @@ ul.oc-list {
 
   &-divider > :nth-child(n + 2) {
     border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-  &-raw {
-    list-style-type: none;
-    a {
-      &:hover {
-        color: inherit;
-      }
-    }
   }
 }
 
@@ -68,7 +67,6 @@ ul.oc-list.oc-timeline {
     top: 0;
     bottom: 0;
     width: 1.5px;
-    background-color: var(--oc-role-outline-variant);
   }
 
   li {
@@ -80,7 +78,6 @@ ul.oc-list.oc-timeline {
       content: '';
       width: 10px;
       height: 10px;
-      background-color: var(--oc-role-outline-variant);
       border-radius: 50%;
       position: absolute;
       left: -4px;

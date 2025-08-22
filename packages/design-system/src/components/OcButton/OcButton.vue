@@ -400,4 +400,11 @@ const onClick = (event: MouseEvent) => {
     }
   }
 }
+.quick-action-button,
+.raw-hover-surface {
+  &:hover {
+    // overwrite default hover with an inverted one for buttons on backgrounds that have the default hover color
+    background-color: var(--oc-role-surface) !important;
+  }
+}
 </style>

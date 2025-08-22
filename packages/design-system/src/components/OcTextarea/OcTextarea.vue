@@ -8,7 +8,7 @@
       v-model="model"
       class="oc-textarea oc-rounded m-0 py-1"
       :class="{
-        'oc-textarea-danger': !!errorMessage
+        'oc-textarea-danger text-role-on-error focus:text-role-on-error': !!errorMessage
       }"
       :aria-invalid="ariaInvalid"
     />
@@ -16,8 +16,8 @@
       <span
         :id="messageId"
         :class="{
-          'oc-textarea-description': !!descriptionMessage,
-          'oc-textarea-danger': !!errorMessage
+          'oc-textarea-description text-role-on-surface-variant': !!descriptionMessage,
+          'oc-textarea-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         v-text="messageText"
       />
@@ -98,7 +98,6 @@ defineExpose({ focus })
 <style lang="scss">
 .oc-textarea {
   box-sizing: border-box;
-  background: var(--oc-role-surface-container);
   border: 1px solid var(--oc-role-outline);
   max-width: 100%;
   width: 100%;
@@ -111,7 +110,6 @@ defineExpose({ focus })
   &-danger,
   &-danger:focus {
     border-color: var(--oc-role-error);
-    color: var(--oc-role-error);
   }
 
   &-message {

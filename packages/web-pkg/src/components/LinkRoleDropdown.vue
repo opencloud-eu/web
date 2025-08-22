@@ -32,10 +32,10 @@
         <oc-button
           :id="`files-role-${getLinkRoleByType(type).id}`"
           :class="{
-            selected: isSelectedType(type),
-            'oc-secondary-container': isSelectedType(type)
+            selected: isSelectedType(type)
           }"
-          appearance="raw"
+          :appearance="isSelectedType(type) ? 'filled' : 'raw-inverse'"
+          :color-role="isSelectedType(type) ? 'secondaryContainer' : 'surface'"
           justify-content="space-between"
           class="p-2"
           @click="updateSelectedType(type)"

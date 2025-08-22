@@ -6,9 +6,12 @@
         :id="option.name"
         :key="index"
         class="item-inline-filter-option py-1 px-2 text-xs"
-        :class="{ 'item-inline-filter-option-selected': activeOption === option.name }"
-        appearance="raw-inverse"
-        color-role="surface"
+        :class="{
+          'item-inline-filter-option-selected': activeOption === option.name
+        }"
+        :appearance="activeOption === option.name ? 'filled' : 'raw-inverse'"
+        :color-role="activeOption === option.name ? 'secondaryContainer' : 'surface'"
+        :no-hover="activeOption === option.name"
         @click="toggleFilter(option)"
       >
         <span class="truncate item-inline-filter-option-label" v-text="option.label" />
@@ -98,11 +101,6 @@ export default defineComponent({
     border-bottom-left-radius: 0px !important;
     border-top-right-radius: 99px !important;
     border-bottom-right-radius: 99px !important;
-  }
-
-  &-option-selected {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
   }
 }
 </style>

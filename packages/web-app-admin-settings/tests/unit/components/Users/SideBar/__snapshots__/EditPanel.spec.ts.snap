@@ -3,7 +3,7 @@
 exports[`EditPanel > renders all available inputs 1`] = `
 "<div id="user-edit-panel" class="mt-12">
   <user-info-box-stub user="[object Object]"></user-info-box-stub>
-  <form id="user-edit-form" class="oc-surface-container p-4" autocomplete="off">
+  <form id="user-edit-form" class="bg-role-surface-container p-4" autocomplete="off">
     <div>
       <oc-text-input-stub label="User name" errormessage="" id="userName-input" type="text" modelvalue="" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="true" passwordpolicy="[object Object]" class="mb-2"></oc-text-input-stub>
       <oc-text-input-stub label="First and last name" errormessage="" id="displayName-input" type="text" modelvalue="jan" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="true" passwordpolicy="[object Object]" class="mb-2"></oc-text-input-stub>

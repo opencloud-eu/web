@@ -41,7 +41,10 @@
       class="link-modal-password-input"
       @update:model-value="updatePassword"
     />
-    <div v-else-if="password.value" class="link-modal-password-text text-sm oc-text-muted">
+    <div
+      v-else-if="password.value"
+      class="link-modal-password-text text-sm text-role-on-surface-variant"
+    >
       <span v-text="$gettext('Password:')" />
       <span v-text="password.value" />
     </div>
@@ -342,9 +345,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .link-modal-confirm-button-group {
   outline: 0;
-}
-
-.oc-modal-body-actions-confirm-secondary-trigger {
-  background: var(--oc-role-secondary);
 }
 </style>

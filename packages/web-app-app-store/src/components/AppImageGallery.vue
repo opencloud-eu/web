@@ -5,17 +5,19 @@
       class="app-image-ribbon text-right"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
-      <span class="text-xs font-bold text-center">{{ app.badge.label }}</span>
+      <span class="text-xs font-bold text-center leading-6" :class="ribbonColorClasses">{{
+        app.badge.label
+      }}</span>
     </div>
     <div class="app-image">
       <oc-image v-if="currentImage?.url" :src="currentImage?.url" />
-      <div v-else class="fallback-icon flex items-center justify-center">
+      <div v-else class="fallback-icon bg-white flex items-center justify-center">
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
     <ul
       v-if="hasPagination"
-      class="app-image-navigation flex justify-center items-center flex-row m-0 py-2"
+      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2"
     >
       <li>
         <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
@@ -81,11 +83,23 @@ export default defineComponent({
       currentImageIndex.value = index
     }
 
+    const ribbonColorClasses = computed(() => {
+      switch (props.app.badge?.color) {
+        case 'primary':
+          return ['bg-role-primary', 'text-role-on-primary']
+        case 'danger':
+          return ['bg-role-error', 'text-role-on-error']
+        default:
+          return ['bg-role-primary', 'text-role-on-primary']
+      }
+    })
+
     return {
       currentImage,
       currentImageIndex,
       images,
       hasPagination,
+      ribbonColorClasses,
       nextImage,
       previousImage,
       setImageIndex
@@ -106,19 +120,6 @@ export default defineComponent({
     overflow: hidden;
     width: 7rem;
     height: 7rem;
-
-    &-primary {
-      span {
-        color: var(--oc-role-on-primary);
-        background-color: var(--oc-role-primary);
-      }
-    }
-    &-danger {
-      span {
-        color: var(--oc-role-on-error);
-        background-color: var(--oc-role-error);
-      }
-    }
 
     span {
       position: absolute;
@@ -144,7 +145,6 @@ export default defineComponent({
     .fallback-icon {
       width: 100%;
       aspect-ratio: 3/2;
-      background-color: white;
     }
   }
 
@@ -153,7 +153,6 @@ export default defineComponent({
     width: 100%;
     position: absolute;
     bottom: 0;
-    background-color: rgba(255, 255, 255, 0.8);
   }
 }
 </style>

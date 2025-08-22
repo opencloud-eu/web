@@ -58,7 +58,7 @@
           </li>
         </oc-list>
         <div
-          class="date-filter-range-panel py-2"
+          class="date-filter-range-panel py-2 bg-role-surface"
           :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
         >
           <div class="flex items-center justify-between mb-4">
@@ -350,7 +350,6 @@ export default defineComponent({
     visibility: hidden;
     position: absolute;
     width: calc(100% - var(--oc-space-medium));
-    background: #fff;
     top: 0;
 
     &-active {

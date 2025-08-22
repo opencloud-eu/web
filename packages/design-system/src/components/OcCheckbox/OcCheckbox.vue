@@ -75,7 +75,12 @@ const classes = computed(() => [
   'oc-rounded',
   'oc-checkbox-' + getSizeClass(size),
   { 'oc-checkbox-checked': isChecked.value },
-  'm-0.5'
+  { 'bg-white': isChecked.value },
+  'm-0.5',
+  'checked:bg-white',
+  'disabled:bg-role-surface-container-low',
+  'indeterminate:bg-white',
+  'bg-transparent'
 ])
 
 const labelClasses = computed(() => ({
@@ -120,7 +125,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   border: 2px solid var(--oc-role-outline);
   display: inline-block;
   overflow: hidden;
-  background-color: transparent;
   outline: none;
 
   &-s {
@@ -144,12 +148,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &-checked,
-  :checked,
-  &:indeterminate {
-    background-color: white;
-  }
-
-  &-checked,
   :checked {
     @include svg-fill($internal-form-checkbox-image, '#000', '#000');
   }
@@ -159,7 +157,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &:disabled {
-    background-color: $form-radio-disabled-background;
     cursor: default;
     opacity: 0.4;
   }

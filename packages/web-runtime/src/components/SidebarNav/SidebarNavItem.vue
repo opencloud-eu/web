@@ -93,21 +93,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss">
 .oc-sidebar-nav-item-link {
   position: relative;
   border-radius: 5px;
   user-select: none;
-
-  .oc-tag {
-    background-color: var(--oc-role-tertiary-container);
-    color: var(--oc-role-on-tertiary-container);
-
-    svg {
-      fill: var(--oc-role-on-tertiary-container);
-    }
-  }
 
   .text {
     opacity: 1;
@@ -125,6 +115,7 @@ export default defineComponent({
 
   &:focus:not(.active),
   &:hover:not(.active) {
+    // must not be a tailwind layer because we're overwriting colors from the button mixin
     background: var(--oc-role-surface-container-highest) !important;
   }
 

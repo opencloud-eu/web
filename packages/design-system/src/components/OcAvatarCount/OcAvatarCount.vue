@@ -1,6 +1,6 @@
 <template>
   <span
-    class="oc-avatar-count flex justify-center items-center"
+    class="oc-avatar-count flex justify-center items-center bg-role-secondary text-role-on-secondary"
     :style="{ width: size + 'px', height: size + 'px', fontSize: fontSize }"
     v-text="`+${count}`"
   />
@@ -30,9 +30,7 @@ const fontSize = computed(() => {
 
 <style lang="scss">
 .oc-avatar-count {
-  background-color: var(--oc-role-secondary);
   border-radius: 50%;
-  color: var(--oc-role-on-secondary);
   border: 1px solid var(--oc-role-outline-variant);
 }
 </style>

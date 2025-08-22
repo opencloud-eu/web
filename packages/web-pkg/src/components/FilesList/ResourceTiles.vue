@@ -25,8 +25,9 @@
             <oc-list>
               <li v-for="(option, index) in sortFields" :key="index">
                 <oc-button
-                  appearance="raw"
-                  :class="{ 'oc-secondary-container': currentSortField === option }"
+                  :appearance="currentSortField === option ? 'filled' : 'raw-inverse'"
+                  :color-role="currentSortField === option ? 'secondaryContainer' : 'surface'"
+                  :no-hover="currentSortField === option"
                   class="oc-tiles-sort-filter-chip-item"
                   @click="selectSorting(option)"
                 >
@@ -529,10 +530,10 @@ const setDropStyling = (
   }
   const el = unref(tileRefs).tiles[resource.id]
   if (leaving) {
-    el.$el.classList.remove('oc-tiles-item-drop-highlight')
+    el.$el.classList.remove('bg-role-secondary-container')
     return
   }
-  el.$el.classList.add('oc-tiles-item-drop-highlight')
+  el.$el.classList.add('bg-role-secondary-container')
 }
 const dragSelection = computed(() => {
   return selectedIds.filter((id) => id !== unref(dragItem).id)
@@ -659,10 +660,6 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
   justify-content: flex-start;
   row-gap: 1rem;
-
-  &-item-drop-highlight {
-    background-color: var(--oc-role-secondary-container) !important;
-  }
 
   &-sort-filter-chip {
     &-item {

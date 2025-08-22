@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-position-relative">
@@ -45,8 +45,8 @@
       v-if="showMessageLine"
       class="oc-text-input-message flex align-center text-sm mt-1"
       :class="{
-        'oc-text-input-description': showDescriptionMessage,
-        'oc-text-input-danger': showErrorMessage
+        'oc-text-input-description text-role-on-surface-variant': showDescriptionMessage,
+        'oc-text-input-danger text-role-on-error focus:text-role-on-error': showErrorMessage
       }"
     >
       <template v-if="showErrorMessage">
@@ -61,14 +61,14 @@
         <span
           v-if="showErrorMessage"
           :id="messageId"
-          class="oc-text-input-danger"
+          class="oc-text-input-danger text-role-on-error focus:text-role-on-error"
           v-text="errorMessage"
         />
       </template>
       <span
         v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="oc-text-input-description flex items-center"
+        class="oc-text-input-description text-role-on-surface-variant flex items-center"
         v-text="descriptionMessage"
       />
     </div>
@@ -354,14 +354,9 @@ watch(
     outline: 2px solid var(--oc-role-outline) !important;
   }
 
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
-
   &-danger,
   &-danger:focus {
     border-color: var(--oc-role-error) !important;
-    color: var(--oc-role-error) !important;
   }
 
   &-message {

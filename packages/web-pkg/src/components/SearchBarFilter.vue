@@ -18,7 +18,7 @@
                 appearance="raw"
                 size="medium"
                 class="search-bar-filter-item flex items-center oc-width-1-1 py-1 px-2"
-                :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
+                :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"
                 @click="onOptionSelected(option)"

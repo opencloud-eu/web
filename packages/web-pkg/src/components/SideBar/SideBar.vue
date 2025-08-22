@@ -18,7 +18,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel"
+        class="sidebar-panel bg-role-surface"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -319,7 +319,6 @@ onBeforeUnmount(() => {
   max-height: 100%;
   display: grid;
   grid-template-rows: auto auto 1fr;
-  background-color: var(--oc-role-surface);
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -373,7 +372,6 @@ onBeforeUnmount(() => {
       }
 
       &__title {
-        color: var(--oc-role-on-surface);
         grid-column-start: 2;
       }
 
@@ -392,7 +390,6 @@ onBeforeUnmount(() => {
     > button {
       width: 100%;
       border-radius: 0;
-      color: var(--oc-role-on-surface) !important;
       display: grid;
       grid-template-columns: auto 1fr auto;
       height: 50px;

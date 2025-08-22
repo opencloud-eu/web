@@ -1,7 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="flex flex-col"
+    class="bg-role-surface-container flex flex-col"
     :class="{
       'oc-app-navigation-collapsed': closed,
       'oc-app-navigation-expanded': !closed
@@ -27,7 +27,7 @@
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
-        class="ml-2"
+        class="ml-2 bg-role-secondary-container text-role-on-secondary-container"
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
@@ -51,7 +51,7 @@
     <slot name="bottom">
       <div
         v-if="!closed"
-        class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs oc-text-muted"
+        class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"
       >
         <span v-text="backendVersion" />
         <span v-text="webVersion" />
@@ -174,16 +174,13 @@ export default defineComponent({
 #nav-highlighter {
   position: absolute;
   border-radius: 5px;
-  background: var(--oc-role-secondary-container);
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
-  color: var(--oc-role-on-surface);
   svg {
     fill: var(--oc-role-on-surface);
   }
 }
 
 #web-nav-sidebar {
-  background-color: var(--oc-role-surface-container);
   border-radius: 15px 0 0 15px;
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);

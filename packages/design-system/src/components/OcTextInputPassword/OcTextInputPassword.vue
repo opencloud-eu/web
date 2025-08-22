@@ -2,7 +2,7 @@
   <div
     class="oc-text-input-password-wrapper flex flex-row"
     :class="{
-      'oc-text-input-password-wrapper-danger': hasError,
+      'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error': hasError,
       'oc-text-input-password-wrapper-focused': hasFocus
     }"
   >
@@ -194,7 +194,6 @@ watch(password, (value) => {
     &-danger,
     &-danger:focus {
       border-color: var(--oc-role-error) !important;
-      color: var(--oc-role-error) !important;
     }
   }
 

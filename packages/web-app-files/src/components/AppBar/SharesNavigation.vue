@@ -31,7 +31,7 @@
               type="router-link"
               class="shares-nav-mobile"
               :to="navItem.to"
-              :class="{ 'oc-secondary-container': navItem.active }"
+              :class="{ 'bg-role-secondary-container': navItem.active }"
               appearance="raw"
             >
               <oc-icon :name="navItem.icon" />

@@ -1,24 +1,5 @@
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-  color: var(--oc-role-on-surface);
-}
-
 html * {
   font-family: var(--oc-font-family);
-}
-
-a {
-  color: var(--oc-role-secondary);
-
-  &:hover {
-    color: var(--oc-role-on-surface);
-  }
 }
 
 .oc-heading-divider {

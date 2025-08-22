@@ -165,6 +165,7 @@ export default defineComponent({
 #text-editor-component {
   .md-editor-preview-wrapper,
   .md-editor-resize-operate {
+    // overwrite vendor styling
     background-color: var(--oc-role-surface-container);
   }
 }

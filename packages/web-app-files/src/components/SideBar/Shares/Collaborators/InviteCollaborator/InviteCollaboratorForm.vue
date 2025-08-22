@@ -71,7 +71,9 @@
                     appearance="raw"
                     size="medium"
                     class="invite-form-share-role-type-item flex items-center oc-width-1-1 py-1 px-2"
-                    :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
+                    :class="{
+                      'bg-role-secondary-container': option.id === currentShareRoleType.id
+                    }"
                     @click="selectShareRoleType(option)"
                   >
                     <span>{{ option.longLabel }}</span>

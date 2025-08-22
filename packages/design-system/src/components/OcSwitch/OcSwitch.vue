@@ -45,7 +45,21 @@ const toggle = () => {
   emit('update:checked', !checked)
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-switch-btn::before {
+    @apply bg-role-on-secondary-container;
+  }
+  .oc-switch-btn[aria-checked='false'] {
+    @apply bg-role-surface-container;
+  }
+  .oc-switch-btn[aria-checked='true'] {
+    @apply bg-role-secondary-container;
+  }
+}
+</style>
 <style lang="scss">
 .oc-switch {
   align-items: center;
@@ -63,7 +77,6 @@ const toggle = () => {
     width: 31px;
 
     &::before {
-      background-color: var(--oc-role-on-secondary-container);
       box-shadow: rgb(0 0 0 / 25%) 0px 0px 2px 1px;
       border-radius: 50%;
       content: '';
@@ -76,8 +89,6 @@ const toggle = () => {
     }
 
     &[aria-checked='false'] {
-      background-color: var(--oc-role-surface-container);
-
       &::before {
         transform: translateX(0);
         left: 2px;
@@ -85,8 +96,6 @@ const toggle = () => {
     }
 
     &[aria-checked='true'] {
-      background-color: var(--oc-role-secondary-container);
-
       &::before {
         transform: translateX(calc(100% + 2px));
         left: 1px;

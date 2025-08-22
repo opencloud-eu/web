@@ -79,6 +79,13 @@ const tagClasses = computed(() => {
   if (rounded) {
     classes.push('oc-tag-rounded')
   }
+  if (appearance === 'filled') {
+    classes.push(`bg-role-${color}`)
+    classes.push(`text-role-on-${color}`)
+  } else {
+    classes.push('bg-role-surface')
+    classes.push(`text-role-${color}`)
+  }
 
   return classes
 })
@@ -108,7 +115,6 @@ function $_ocTag_click(event: MouseEvent) {
 <style lang="scss">
 .oc-tag {
   align-items: center;
-  background-color: var(--oc-role-surface);
   border: 1px solid var(--oc-role-outline);
   border-radius: 7px;
   box-sizing: border-box;
@@ -137,30 +143,21 @@ function $_ocTag_click(event: MouseEvent) {
   }
 
   &-appearance-outline.oc-tag-color-primary {
-    color: var(--oc-role-primary);
     border: 1px solid var(--oc-role-primary);
   }
   &-appearance-outline.oc-tag-color-secondary {
-    color: var(--oc-role-secondary);
     border: 1px solid var(--oc-role-secondary);
   }
   &-appearance-outline.oc-tag-color-tertiary {
-    color: var(--oc-role-tertiary);
     border: 1px solid var(--oc-role-tertiary);
   }
   &-appearance-filled.oc-tag-color-primary {
-    background-color: var(--oc-role-primary);
-    color: var(--oc-role-on-primary);
     border: 1px solid var(--oc-role-on-primary);
   }
   &-appearance-filled.oc-tag-color-secondary {
-    background-color: var(--oc-role-secondary);
-    color: var(--oc-role-on-secondary);
     border: 1px solid var(--oc-role-on-secondary);
   }
   &-appearance-filled.oc-tag-color-tertiary {
-    background-color: var(--oc-role-tertiary);
-    color: var(--oc-role-on-tertiary);
     border: 1px solid var(--oc-role-on-tertiary);
   }
 }

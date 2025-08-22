@@ -26,10 +26,13 @@
             </oc-avatars>
             <span v-html="getHtmlFromActivity(activity)" />
           </div>
-          <span class="oc-text-muted text-sm mt-2" v-text="getTimeFromActivity(activity)" />
+          <span
+            class="text-role-on-surface-variant text-sm mt-2"
+            v-text="getTimeFromActivity(activity)"
+          />
         </li>
       </oc-list>
-      <p class="oc-text-muted text-sm" v-text="activitiesFooterText" />
+      <p class="text-role-on-surface-variant text-sm" v-text="activitiesFooterText" />
     </div>
   </template>
 </template>

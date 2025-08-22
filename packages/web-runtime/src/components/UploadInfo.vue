@@ -1,6 +1,12 @@
 <template>
-  <div v-if="showInfo" id="upload-info" class="oc-rounded oc-box-shadow-medium mx-auto sm:m-0">
-    <div class="upload-info-title flex justify-between items-center px-4 py-2 oc-rounded-top">
+  <div
+    v-if="showInfo"
+    id="upload-info"
+    class="oc-rounded oc-box-shadow-medium bg-role-surface mx-auto sm:m-0"
+  >
+    <div
+      class="upload-info-title flex justify-between items-center px-4 py-2 oc-rounded-top bg-role-surface-container"
+    >
       <p v-oc-tooltip="uploadDetails" class="my-1" v-text="uploadInfoTitle" />
       <oc-button
         v-if="!itemsInProgressCount"
@@ -22,13 +28,13 @@
       <div v-if="runningUploads" class="flex items-center">
         <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
         <oc-spinner v-else size="small" class="mr-1" />
-        <span class="text-sm oc-text-muted" v-text="remainingTime" />
+        <span class="text-sm text-role-on-surface-variant" v-text="remainingTime" />
       </div>
       <div
         v-else
         class="upload-info-label"
         :class="{
-          'upload-info-danger': Object.keys(errors).length && !uploadsCancelled,
+          'upload-info-danger text-role-on-error': Object.keys(errors).length && !uploadsCancelled,
           'upload-info-success': !Object.keys(errors).length && !uploadsCancelled
         }"
       >
@@ -37,7 +43,7 @@
       <div class="flex">
         <oc-button
           appearance="raw"
-          class="oc-text-muted text-sm upload-info-toggle-details-btn"
+          class="text-role-on-surface-variant text-sm upload-info-toggle-details-btn"
           no-hover
           @click="toggleInfo"
         >
@@ -684,7 +690,9 @@ export default defineComponent({
       }
     },
     getUploadItemClass(item: UploadResult) {
-      return this.errors[item.meta.uploadId] ? 'upload-info-danger' : 'upload-info-success'
+      return this.errors[item.meta.uploadId]
+        ? 'upload-info-danger text-role-on-error'
+        : 'upload-info-success'
     }
   }
 })
@@ -700,20 +708,11 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #upload-info {
-  background-color: var(--oc-role-surface);
   width: 400px;
 
   @media (max-width: 640px) {
     width: 100%;
     max-width: 500px;
-  }
-
-  .upload-info-title {
-    background-color: var(--oc-role-surface-container);
-  }
-
-  .oc-resource-indicators .parent-folder .text {
-    color: var(--oc-role-on-surface);
   }
 
   .upload-info-items {
@@ -723,14 +722,6 @@ export default defineComponent({
 
   .upload-info-items.has-errors {
     max-height: calc(50vh - 100px) !important;
-  }
-
-  .upload-info-danger {
-    color: var(--oc-role-error);
-  }
-
-  .upload-info-success {
-    color: var(--oc-role-on-surface);
   }
 }
 </style>
