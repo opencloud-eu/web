@@ -199,13 +199,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.delete-app-token-btn,
-.copy-app-token-btn {
-  &:hover {
-    border-radius: 3px;
-  }
-}
-
 .app-token-table {
   td:nth-of-type(1) {
     width: 30%;

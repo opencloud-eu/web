@@ -33,7 +33,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
-        class="oc-search-button ml-4"
+        class="oc-search-button ml-4 rounded-l-none"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -182,9 +182,9 @@ defineSlots<Slots>()
 const { $gettext } = useGettext()
 
 const inputClass = computed(() => {
-  const classes = ['oc-search-input', 'oc-input', 'p-4']
+  const classes = ['oc-search-input', 'oc-input', 'p-4', 'rounded-4xl']
   if (!buttonHidden) {
-    classes.push('oc-search-input-button')
+    classes.push(...['oc-search-input-button', 'rounded-r-none'])
   }
   if (small) {
     classes.push(...['pl-12', 'leading-7'])
@@ -214,8 +214,6 @@ const onCancel = () => {
   min-width: $form-width-medium;
 
   &-button {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
     // Prevent double borders
     // from input and button
     transform: translateX(-1px);
@@ -234,7 +232,6 @@ const onCancel = () => {
   }
 
   &-input {
-    border-radius: 25px !important;
     height: 2.3rem;
 
     &:focus {
@@ -245,11 +242,6 @@ const onCancel = () => {
     &::-ms-reveal {
       display: none;
     }
-  }
-
-  &-input-button {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
   }
 
   &-small {

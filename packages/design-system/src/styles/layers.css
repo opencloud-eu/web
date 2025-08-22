@@ -71,7 +71,7 @@
 
   /* card spacing FIXME: they should be in a dedicated component */
   .oc-card {
-    @apply bg-role-surface text-role-on-surface;
+    @apply bg-role-surface text-role-on-surface rounded-sm;
   }
 
   .oc-card-body {
@@ -123,7 +123,7 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5 align-middle leading-4 border border-role-outline;
+    @apply p-1.5 align-middle leading-4 border border-role-outline rounded-sm;
   }
 
   .oc-select optgroup {

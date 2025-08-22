@@ -1,7 +1,9 @@
 <template>
   <main class="webfinger-resolve oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container">
+    <div
+      class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container rounded-xl"
+    >
       <template v-if="hasError">
         <h2 key="webfinger-resolve-error" class="mt-0">
           <span v-text="$gettext('Sorry!')" />
@@ -82,11 +84,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.webfinger-resolve {
-  .oc-card {
-    border-radius: 15px;
-  }
-}
-</style>

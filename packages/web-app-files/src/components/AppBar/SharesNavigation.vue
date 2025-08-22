@@ -5,7 +5,7 @@
         <oc-button
           type="router-link"
           class="mr-4 py-2 shares-nav-desktop"
-          :class="{ 'border-b-2 border-role-secondary-container': navItem.active }"
+          :class="{ 'border-b-2 border-role-secondary-container rounded-none': navItem.active }"
           appearance="raw"
           :to="navItem.to"
         >
@@ -117,10 +117,6 @@ export default defineComponent({
   a {
     gap: var(--oc-space-small);
     width: 100%;
-  }
-
-  .shares-nav-desktop.router-link-active {
-    border-radius: 0;
   }
 }
 </style>

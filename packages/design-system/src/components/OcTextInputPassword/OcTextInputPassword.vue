@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-text-input-password-wrapper flex flex-row border"
+    class="oc-text-input-password-wrapper flex flex-row border rounded-sm"
     :class="{
       'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error border-role-error':
         hasError,
@@ -176,8 +176,6 @@ watch(password, (value) => {
 <style lang="scss">
 .oc-text-input-password {
   &-wrapper {
-    border-radius: 5px;
-
     &-focused {
       outline: 2px solid var(--oc-role-outline);
     }

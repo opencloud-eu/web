@@ -15,7 +15,7 @@
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer"
+        class="oc-cursor-pointer rounded-lg"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"
@@ -324,11 +324,6 @@ const openSideBarSharePanel = () => {
     aspect-ratio: 16 / 9;
     max-height: 158px;
 
-    &-default {
-      height: 100%;
-      border-radius: 10px;
-    }
-
     &-expanded {
       width: 100%;
       max-height: 100%;
@@ -336,7 +331,6 @@ const openSideBarSharePanel = () => {
     }
 
     img {
-      border-radius: 10px;
       height: 100%;
       width: 100%;
       max-height: 100%;

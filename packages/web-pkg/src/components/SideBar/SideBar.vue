@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel bg-role-surface"
+        class="sidebar-panel bg-role-surface rounded-r-xl"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -82,8 +82,8 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
-                  class="rounded-sm border-t"
+                  :class="{ 'multi-root-panel-separator mt-4 pt-2 border-t': index > 0 }"
+                  class="rounded-sm"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>
@@ -330,8 +330,6 @@ onBeforeUnmount(() => {
   // hidden: if element is off screen
   // visible: if element is on screen
   visibility: hidden;
-  border-top-right-radius: var(--oc-space-medium);
-  border-bottom-right-radius: var(--oc-space-medium);
 
   @media screen and (prefers-reduced-motion: reduce), (update: slow) {
     transition-duration: 0.001ms !important;
@@ -385,11 +383,9 @@ onBeforeUnmount(() => {
   &__navigation {
     > button {
       width: 100%;
-      border-radius: 0;
       display: grid;
       grid-template-columns: auto 1fr auto;
       height: 50px;
-      border-radius: 5px;
     }
   }
 }

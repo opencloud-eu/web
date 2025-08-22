@@ -136,7 +136,6 @@ defineSlots<Slots>()
 const buttonClass = computed(() => {
   const classes = [
     'oc-button',
-    'rounded-sm',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
     `oc-button-gap-${getSizeClass(gapSize)}`,
@@ -186,6 +185,15 @@ const onClick = (event: MouseEvent) => {
   }
   .oc-button-l {
     @apply text-lg;
+  }
+  .oc-button {
+    @apply rounded-sm;
+  }
+  .oc-button-group {
+    @apply rounded-sm;
+  }
+  .oc-button-group .oc-button {
+    @apply rounded-none first:rounded-l-sm last:rounded-r-sm;
   }
 }
 </style>
@@ -382,19 +390,9 @@ const onClick = (event: MouseEvent) => {
     flex-flow: row wrap;
     outline: 1px solid var(--oc-role-secondary);
     outline-offset: -1px;
-    border-radius: 5px;
 
     .oc-button {
-      border-radius: 0;
       outline: 0;
-
-      &:first-of-type {
-        border-radius: 5px 0 0 5px;
-      }
-
-      &:last-of-type {
-        border-radius: 0 5px 5px 0;
-      }
     }
   }
 }

@@ -6,7 +6,7 @@
       type="radio"
       name="radio"
       :class="classes"
-      class="checked:bg-role-secondary-container border"
+      class="checked:bg-role-secondary-container border rounded-[50%]"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -86,7 +86,6 @@ const labelClasses = computed(() => ({
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  border-radius: 50%;
   box-sizing: border-box;
   background-position: 50% 50%;
   background-repeat: no-repeat;

@@ -87,10 +87,6 @@
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
   }
-
-  &-pill {
-    border-radius: 100px;
-  }
 }
 
 // outline for visible focus (via tab)
@@ -113,7 +109,6 @@
   a,
   .item-has-switch,
   button:not([role='switch']) {
-    border-radius: 8px;
     gap: var(--oc-space-small);
     justify-content: flex-start;
     width: 100%;

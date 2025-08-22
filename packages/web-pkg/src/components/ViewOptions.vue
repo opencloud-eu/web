@@ -92,7 +92,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high"
+            class="oc-range bg-role-surface-container-high rounded-sm"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -312,15 +312,8 @@ export default defineComponent({
   flex-flow: initial;
 }
 
-#files-view-options-btn {
-  &:hover {
-    border-radius: 3px;
-  }
-}
-
 .oc-range {
   -webkit-appearance: none;
-  border-radius: 0.3rem;
   height: 0.5rem;
   outline: none;
   width: 100%;

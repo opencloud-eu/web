@@ -11,9 +11,10 @@
         class="ghost-element-layer3 rounded-sm bg-role-surface-container-high"
       />
     </div>
-    <span class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white">{{
-      itemCount
-    }}</span>
+    <span
+      class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content"
+      >{{ itemCount }}</span
+    >
   </div>
 </template>
 
@@ -84,9 +85,6 @@ export default defineComponent({
     position: absolute;
     top: -2px;
     right: -8px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;
     min-width: var(--oc-space-small);
     height: var(--oc-space-small);
   }

@@ -2,7 +2,7 @@
   <main id="files" class="flex oc-height-1-1">
     <div
       v-if="dragareaEnabled"
-      class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline"
+      class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
     />
     <router-view tabindex="0" class="files-wrapper oc-width-expand oc-height-1-1 flex-wrap" />
   </main>
@@ -54,7 +54,6 @@ main {
   bottom: 0;
   position: absolute;
   z-index: 9;
-  border-radius: 14px;
 }
 
 #files {

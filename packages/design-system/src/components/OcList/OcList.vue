@@ -36,7 +36,7 @@ defineSlots<Slots>()
     @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7 flex flex-col;
+    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%];
   }
   ul.oc-list.oc-timeline::before,
   ul.oc-list.oc-timeline li::before {
@@ -70,7 +70,6 @@ ul.oc-list.oc-timeline {
       content: '';
       width: 10px;
       height: 10px;
-      border-radius: 50%;
       position: absolute;
       left: -4px;
       top: 50%;

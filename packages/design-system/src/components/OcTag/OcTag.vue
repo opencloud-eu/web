@@ -77,7 +77,9 @@ const tagClasses = computed(() => {
   classes.push(`oc-tag-color-${color}`)
   classes.push(`oc-tag-appearance-${appearance}`)
   if (rounded) {
-    classes.push('oc-tag-rounded')
+    classes.push('rounded-full')
+  } else {
+    classes.push('rounded-lg')
   }
   if (appearance === 'filled') {
     classes.push(`bg-role-${color}`)
@@ -116,7 +118,6 @@ function $_ocTag_click(event: MouseEvent) {
 .oc-tag {
   align-items: center;
   border: 1px solid var(--oc-role-outline);
-  border-radius: 7px;
   box-sizing: border-box;
   display: inline-flex;
   gap: var(--oc-space-xsmall);
@@ -127,10 +128,6 @@ function $_ocTag_click(event: MouseEvent) {
 
   &-l {
     min-height: 2.75rem;
-  }
-
-  &-rounded {
-    border-radius: 99px;
   }
 
   &-link,

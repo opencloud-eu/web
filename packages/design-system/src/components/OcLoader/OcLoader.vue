@@ -4,7 +4,8 @@
       'oc-loader',
       'bg-role-surface-container',
       'after:bg-role-secondary',
-      { 'oc-loader-flat': flat }
+      { 'oc-loader-flat rounded-none': flat },
+      { 'rounded-[500px]': !flat }
     ]"
     :aria-label="ariaLabel"
   />
@@ -38,7 +39,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  border-radius: 500px;
   display: block;
   height: 15px;
   overflow: hidden;
@@ -46,7 +46,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   position: relative;
 
   &-flat {
-    border-radius: 0 !important;
     height: 5px !important;
   }
 

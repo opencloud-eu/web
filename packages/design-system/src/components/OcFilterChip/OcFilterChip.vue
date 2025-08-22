@@ -5,10 +5,10 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs"
-      :class="{ 'oc-filter-chip-button-selected': filterActive }"
-      :appearance="filterActive ? 'filled' : 'raw-inverse'"
-      :color-role="filterActive ? 'secondaryContainer' : 'surface'"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full"
+      :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
+      :appearance="buttonAppearance"
+      :color-role="buttonColorRole"
       :no-hover="filterActive || !hasActiveState"
       @click="isToggle ? emit('toggleFilter') : false"
     >
@@ -41,7 +41,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1"
+      class="oc-filter-chip-clear px-1 rounded-r-full"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
@@ -186,20 +186,6 @@ defineExpose({ hideDrop })
     gap: var(--oc-space-xsmall);
     max-width: 150px;
     height: 100%;
-  }
-  &-button-selected.oc-pill,
-  &-button-selected.oc-pill:hover {
-    border-top-left-radius: 99px !important;
-    border-bottom-left-radius: 99px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-  }
-  &-clear,
-  &-clear:hover {
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-top-right-radius: 99px !important;
-    border-bottom-right-radius: 99px !important;
   }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {

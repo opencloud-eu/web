@@ -1,7 +1,7 @@
 <template>
   <span
     :class="spinnerClass"
-    class="after:border after:border-current"
+    class="after:border after:border-current after:rounded-full"
     :aria-label="ariaLabel"
     tabindex="-1"
     role="img"
@@ -50,7 +50,6 @@ const spinnerClass = computed(() => {
   &::after {
     animation: ball-clip-rotate 1s linear infinite;
     border-bottom-color: transparent;
-    border-radius: 100%;
     content: '';
     display: block;
     height: 100%;

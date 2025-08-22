@@ -4,8 +4,6 @@
 // and shifting towards using our margin/padding helper classes
 
 .oc-card {
-  @extend .oc-rounded;
-
   box-sizing: border-box;
   position: relative;
   transition: box-shadow 0.1s ease-in-out;

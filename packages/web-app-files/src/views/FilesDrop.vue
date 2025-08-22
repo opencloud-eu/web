@@ -5,7 +5,7 @@
     id="files-drop-container"
     class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline"
   >
-    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20" />
+    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20 rounded-xl" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
     <div class="p-4 oc-height-1-1 text-center">
       <div key="loaded-drop" class="flex flex-col">
@@ -275,6 +275,5 @@ export default defineComponent({
   bottom: 0;
   position: absolute;
   z-index: 9;
-  border-radius: 14px;
 }
 </style>

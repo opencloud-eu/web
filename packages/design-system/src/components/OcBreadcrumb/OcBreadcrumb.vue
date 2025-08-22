@@ -317,7 +317,7 @@ const dropItemStyling = (
     @apply bg-role-secondary-container;
   }
   .oc-breadcrumb-list > :nth-child(n + 2)::before {
-    @apply text-role-on-surface;
+    @apply text-role-on-surface rounded-sm;
   }
 }
 </style>
@@ -331,7 +331,6 @@ const dropItemStyling = (
       border-color 0s,
       border-width 0.06s;
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
-    border-radius: 5px;
   }
   &-item-text {
     max-width: 200px;

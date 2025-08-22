@@ -1,6 +1,6 @@
 <template>
-  <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container">
-    <div class="files-preview mb-6 text-center">
+  <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <div class="files-preview mb-6 text-center rounded-sm">
       <div class="files-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
         <p class="preview-text" data-testid="selectedFilesText" v-text="selectedFilesString" />
@@ -74,12 +74,3 @@ const selectedFilesString = computed(() => {
   )
 })
 </script>
-<style lang="scss" scoped>
-#oc-file-details-multiple-sidebar {
-  border-radius: 5px;
-}
-
-.files-preview {
-  border-radius: 5px;
-}
-</style>

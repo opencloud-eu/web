@@ -4,11 +4,11 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
 "<div drawerid="button-drawer" toggle="#button-drawer-toggle" title="Bottom Drawer" closeonclick="false"><button id="button-drawer-toggle">Toggle Drawer</button>
   <div>
     <div class="oc-bottom-drawer-background bg-black/40" role="button">
-      <div id="button-drawer" class="oc-bottom-drawer bg-role-surface-container-high active">
+      <div id="button-drawer" class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm active">
         <div class="oc-card bg-transparent">
           <div class="oc-card-header border-b-0 px-4 pt-4">
             <div class="flex justify-between items-center">
-              <!--v-if--> <span class="font-semibold">Bottom Drawer</span> <button type="button" aria-label="Close the context menu" class="oc-button rounded-sm oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
+              <!--v-if--> <span class="font-semibold">Bottom Drawer</span> <button type="button" aria-label="Close the context menu" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface oc-bottom-drawer-close-button">
                 <!--v-if-->
                 <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -22,7 +22,7 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
               </button>
             </div>
           </div>
-          <div class="oc-card-body px-4 pb-4 pt-2"><button type="button" class="oc-button rounded-sm oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface" id="action-button">
+          <div class="oc-card-body px-4 pb-4 pt-2"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw raw-hover-surface" id="action-button">
               <!--v-if-->
               <!-- @slot Content of the button --> action button
             </button></div>

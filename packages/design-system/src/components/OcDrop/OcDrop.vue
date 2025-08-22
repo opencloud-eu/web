@@ -354,9 +354,5 @@ watch(
 .oc-drop {
   max-width: 100%;
   width: 300px;
-
-  .oc-card {
-    border-radius: var(--oc-space-small) !important;
-  }
 }
 </style>

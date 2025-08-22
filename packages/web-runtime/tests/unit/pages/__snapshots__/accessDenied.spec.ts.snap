@@ -11,6 +11,6 @@ exports[`access denied page > renders component 1`] = `
     <div class="oc-login-card-footer pt-0">
       <p></p>
     </div>
-  </div> <a attrs="[object Object]" class="oc-button rounded-sm oc-button-l oc-button-justify-content-center oc-button-gap-m oc-button-primary oc-button-filled oc-button-primary-filled mt-4 oc-width-medium" id="exitAnchor"></a>
+  </div> <a attrs="[object Object]" class="oc-button oc-button-l oc-button-justify-content-center oc-button-gap-m oc-button-primary oc-button-filled oc-button-primary-filled mt-4 oc-width-medium" id="exitAnchor"></a>
 </div>"
 `;
