@@ -299,7 +299,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 /* Can't use @layer here: Tailwind only accepts plain class selectors, not `> *`. */
 .files-view-options-list-item > * {
