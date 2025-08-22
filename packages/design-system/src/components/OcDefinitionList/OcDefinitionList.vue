@@ -24,7 +24,7 @@ export interface Props {
 const { items } = defineProps<Props>()
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .details-list dt,

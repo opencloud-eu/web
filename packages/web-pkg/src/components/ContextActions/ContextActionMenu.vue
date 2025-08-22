@@ -83,7 +83,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   .oc-files-context-actions > li {

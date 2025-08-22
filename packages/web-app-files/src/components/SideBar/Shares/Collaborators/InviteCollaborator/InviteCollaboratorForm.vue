@@ -618,7 +618,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   #new-collaborators-form-create-button .oc-spinner {

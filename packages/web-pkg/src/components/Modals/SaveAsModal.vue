@@ -186,7 +186,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   .oc-modal.save-as-modal .oc-modal-body {

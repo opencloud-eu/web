@@ -28,7 +28,7 @@ defineSlots<Slots>()
 const classes = computed(() => `oc-notification-${position}`)
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-notification-top-center {

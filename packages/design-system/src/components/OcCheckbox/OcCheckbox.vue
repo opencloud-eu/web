@@ -96,7 +96,7 @@ const keydownEnter = (event: KeyboardEvent) => {
 }
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-checkbox {

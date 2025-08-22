@@ -99,7 +99,7 @@ onMounted(() => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-notification-message {

@@ -39,7 +39,7 @@ const cellClasses = computed(() => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-table-cell {
