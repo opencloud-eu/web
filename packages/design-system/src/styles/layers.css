@@ -1,12 +1,10 @@
 @reference '@opencloud-eu/design-system/tailwind';
 
-
 @layer theme {
   html {
     @apply text-sm;
   }
 }
-
 
 @layer base {
   h1 {
@@ -57,6 +55,16 @@
   a:hover {
     @apply text-role-on-surface;
   }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    /* default border color */
+    border-color: var(--oc-role-surface-container-highest);
+  }
+
 }
 
 @layer components {
