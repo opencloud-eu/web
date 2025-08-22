@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
 - refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
 - refactor: text-align and vertical-align to tailwind [[#1094](https://github.com/opencloud-eu/web/pull/1094)]
 - refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
