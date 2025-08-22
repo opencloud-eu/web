@@ -18,10 +18,10 @@
         />
       </router-link>
     </div>
-    <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
+    <div v-if="!contentOnLeftPortal" class="oc-topbar-center flex justify-end sm:justify-center">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
-    <div class="oc-topbar-right flex items-center">
+    <div class="oc-topbar-right flex items-center justify-end">
       <portal-target name="app.runtime.header.right" multiple />
     </div>
     <template v-if="!isEmbedModeEnabled">
@@ -253,19 +253,12 @@ export default {
   }
 
   .oc-topbar-center {
-    display: flex;
     grid-area: center;
-    justify-content: flex-end;
-
-    @media (min-width: $oc-breakpoint-small-default) {
-      justify-content: center;
-    }
   }
 
   .oc-topbar-right {
     gap: 20px;
     grid-area: right;
-    justify-content: flex-end;
   }
 }
 </style>

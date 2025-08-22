@@ -9,11 +9,14 @@
     </div>
     <div class="app-image">
       <oc-image v-if="currentImage?.url" :src="currentImage?.url" />
-      <div v-else class="fallback-icon">
+      <div v-else class="fallback-icon flex items-center justify-center">
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
-    <ul v-if="hasPagination" class="app-image-navigation m-0 py-2">
+    <ul
+      v-if="hasPagination"
+      class="app-image-navigation flex justify-center items-center flex-row m-0 py-2"
+    >
       <li>
         <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
           <oc-icon name="arrow-left-s" />
@@ -142,9 +145,6 @@ export default defineComponent({
       width: 100%;
       aspect-ratio: 3/2;
       background-color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 
@@ -153,10 +153,6 @@ export default defineComponent({
     width: 100%;
     position: absolute;
     bottom: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
     background-color: rgba(255, 255, 255, 0.8);
   }
 }

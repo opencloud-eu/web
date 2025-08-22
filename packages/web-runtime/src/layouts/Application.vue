@@ -1,15 +1,18 @@
 <template>
-  <div id="web-content">
+  <div id="web-content" class="flex flex-col flex-nowrap">
     <div id="global-progress-bar">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
-    <div id="web-content-header">
+    <div id="web-content-header" class="shrink basis-auto grow-0">
       <div v-if="isIE11" class="oc-surface-container text-center py-4">
         <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
     </div>
-    <div id="web-content-main" class="px-2 pb-2">
+    <div
+      id="web-content-main"
+      class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
+    >
       <div class="app-container flex">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
@@ -196,9 +199,6 @@ onBeforeUnmount(() => {
 </script>
 <style lang="scss">
 #web-content {
-  display: flex;
-  flex-flow: column;
-  flex-wrap: nowrap;
   height: 100dvh;
 
   #global-progress-bar {
@@ -208,22 +208,7 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
-  #web-content-header,
   #web-content-main {
-    flex-shrink: 1;
-    flex-basis: auto;
-  }
-
-  #web-content-header {
-    flex-grow: 0;
-  }
-
-  #web-content-main {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: flex-start;
     overflow-y: hidden;
 
     .app-container {

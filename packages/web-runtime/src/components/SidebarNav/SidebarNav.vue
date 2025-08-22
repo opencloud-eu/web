@@ -1,6 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
+    class="flex flex-col"
     :class="{
       'oc-app-navigation-collapsed': closed,
       'oc-app-navigation-expanded': !closed
@@ -48,7 +49,10 @@
     </nav>
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
-      <div v-if="!closed" class="versions pb-4 pl-4 text-xs oc-text-muted">
+      <div
+        v-if="!closed"
+        class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs oc-text-muted"
+      >
         <span v-text="backendVersion" />
         <span v-text="webVersion" />
       </div>
@@ -181,8 +185,6 @@ export default defineComponent({
 #web-nav-sidebar {
   background-color: var(--oc-role-surface-container);
   border-radius: 15px 0 0 15px;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
   z-index: 4;
@@ -202,14 +204,6 @@ export default defineComponent({
 
   .toggle-sidebar-button-expanded {
     justify-content: flex-end !important;
-  }
-
-  .versions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    flex-grow: 1;
   }
 }
 

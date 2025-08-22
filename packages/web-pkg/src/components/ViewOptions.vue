@@ -298,6 +298,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+/* Can't use @layer here: Tailwind only accepts plain class selectors, not `> *`. */
+.files-view-options-list-item > * {
+  @apply flex justify-between;
+}
+</style>
+
 <style lang="scss" scoped>
 .viewmode-switch-buttons {
   flex-flow: initial;
@@ -308,13 +317,6 @@ export default defineComponent({
 
   &:hover {
     border-radius: 3px;
-  }
-}
-
-.files-view-options-list-item {
-  & > * {
-    display: flex;
-    justify-content: space-between;
   }
 }
 

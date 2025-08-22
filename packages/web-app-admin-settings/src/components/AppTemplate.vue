@@ -242,8 +242,6 @@ export default defineComponent({
 }
 
 .admin-settings-app-bar-actions {
-  align-items: center;
-  display: flex;
   min-height: 3rem;
 }
 

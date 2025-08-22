@@ -1,9 +1,9 @@
 <template>
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
-    <ol class="oc-pagination-list m-0">
+    <ol class="oc-pagination-list flex items-center flex-wrap m-0">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-prev mr-2"
+          class="oc-pagination-list-item-prev flex mr-2"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -17,7 +17,7 @@
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-next ml-2"
+          class="oc-pagination-list-item-next flex ml-2"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
@@ -156,9 +156,6 @@ const bindPageLink = (page: Page) => {
 <style lang="scss">
 .oc-pagination {
   &-list {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
     gap: var(--oc-space-small);
     list-style: none;
 
@@ -181,8 +178,6 @@ const bindPageLink = (page: Page) => {
 
       &-prev,
       &-next {
-        display: flex;
-
         > .oc-icon > svg {
           fill: var(--oc-role-on-surface);
         }

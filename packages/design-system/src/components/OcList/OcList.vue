@@ -36,7 +36,7 @@ defineSlots<Slots>()
     @apply mt-2 pt-2;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7;
+    @apply py-2 pl-5 pr-7 flex flex-col;
   }
 }
 </style>
@@ -72,8 +72,6 @@ ul.oc-list.oc-timeline {
   }
 
   li {
-    display: flex;
-    flex-direction: column;
     position: relative;
     width: 100%;
     box-sizing: border-box;

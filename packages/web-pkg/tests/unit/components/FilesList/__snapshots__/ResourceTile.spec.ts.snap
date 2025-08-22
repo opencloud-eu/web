@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcTile component > renders default space correctly 1`] = `
-"<div class="oc-tile-card oc-card">
+"<div class="oc-tile-card oc-card flex flex-col">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0" tabindex="-1">
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->
@@ -26,7 +26,7 @@ exports[`OcTile component > renders default space correctly 1`] = `
 `;
 
 exports[`OcTile component > renders disabled space correctly 1`] = `
-"<div class="oc-tile-card oc-card oc-tile-card-disabled">
+"<div class="oc-tile-card oc-card flex flex-col oc-tile-card-disabled">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0" tabindex="-1">
     <div class="oc-tile-card-selection"></div>
     <!--v-if-->

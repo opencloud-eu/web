@@ -13,7 +13,7 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
+    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1">
       <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
@@ -35,7 +35,7 @@ exports[`AppBar component > renders > if given, with content in the actions slot
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
+    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1">
       <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center"><button class="action-slot">Click</button>
         <!--v-if-->
       </div>
@@ -57,7 +57,7 @@ exports[`AppBar component > renders > if given, with content in the content slot
         <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions mt-1">
+    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1">
       <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>

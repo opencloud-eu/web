@@ -37,7 +37,7 @@
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template v-if="!isLocationPicker && !isFilePicker" #selectHeader>
-      <div class="resource-table-select-all">
+      <div class="resource-table-select-all flex justify-center items-center">
         <oc-checkbox
           id="resource-table-select-all"
           v-oc-tooltip="{ content: selectAllCheckboxLabel, placement: 'bottom' }"
@@ -78,7 +78,7 @@
     </template>
     <template #name="{ item }">
       <div
-        class="resource-table-resource-wrapper"
+        class="resource-table-resource-wrapper flex items-center"
         :class="[{ 'resource-table-resource-wrapper-limit-max-width': hasRenameAction(item) }]"
       >
         <slot name="image" :resource="item" />
@@ -210,7 +210,7 @@
         "
       >
         <oc-avatars
-          class="resource-table-people"
+          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
           :is-tooltip-displayed="true"
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
@@ -243,7 +243,7 @@
         "
       >
         <oc-avatars
-          class="resource-table-people"
+          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
           :items="getSharedWithAvatarItems(item)"
           :stacked="true"
           :max-displayed="3"
@@ -264,7 +264,10 @@
       </oc-button>
     </template>
     <template #actions="{ item }">
-      <div v-if="showContextDrop(item)" class="resource-table-actions">
+      <div
+        v-if="showContextDrop(item)"
+        class="resource-table-actions flex items-center justify-end flex-row flex-nowrap"
+      >
         <!-- @slot Add quick actions before the `context-menu / three dot` button in the actions column -->
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
@@ -1353,9 +1356,6 @@ export default defineComponent({
   }
 
   &-resource-wrapper {
-    display: flex;
-    align-items: center;
-
     &-limit-max-width {
       max-width: calc(100% - var(--oc-space-medium));
     }
@@ -1379,20 +1379,6 @@ export default defineComponent({
   &-edit-name,
   &-activity-indicator {
     display: inline-flex;
-  }
-
-  &-actions,
-  &-people {
-    align-items: center;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-  }
-
-  &-select-all {
-    align-items: center;
-    display: flex;
-    justify-content: center;
   }
 }
 

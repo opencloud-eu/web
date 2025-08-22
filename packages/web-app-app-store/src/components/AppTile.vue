@@ -1,9 +1,9 @@
 <template>
-  <li class="app-tile oc-card oc-card-default oc-card-rounded">
+  <li class="app-tile oc-card oc-card-default oc-card-rounded flex flex-col">
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
     </router-link>
-    <div class="app-tile-body oc-card-body p-4">
+    <div class="app-tile-body oc-card-body flex flex-col justify-between p-4">
       <div class="app-tile-content">
         <div class="flex items-center">
           <h3 class="my-2 truncate mark-element app-tile-title">
@@ -63,14 +63,9 @@ export default defineComponent({
   background-color: var(--oc-role-surface-container) !important;
   box-shadow: none;
   height: 100%;
-  display: flex;
-  flex-flow: column;
   outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-tile-body {
-    display: flex;
-    flex-flow: column;
-    justify-content: space-between;
     height: 100%;
   }
 

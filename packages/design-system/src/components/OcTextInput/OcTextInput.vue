@@ -43,7 +43,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message text-sm mt-1"
+      class="oc-text-input-message flex align-center text-sm mt-1"
       :class="{
         'oc-text-input-description': showDescriptionMessage,
         'oc-text-input-danger': showErrorMessage
@@ -68,7 +68,7 @@
       <span
         v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="oc-text-input-description"
+        class="oc-text-input-description flex items-center"
         v-text="descriptionMessage"
       />
     </div>
@@ -345,8 +345,6 @@ watch(
 
 <style lang="scss">
 .oc-text-input-message.oc-text-input-description {
-  display: flex;
-  align-items: center;
   position: relative;
 }
 
@@ -367,8 +365,6 @@ watch(
   }
 
   &-message {
-    display: flex;
-    align-items: center;
     min-height: $oc-font-size-default * 1.5;
   }
 }
