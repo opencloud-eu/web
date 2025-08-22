@@ -10,7 +10,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
             <!--v-if-->
           </label>
           <div class="oc-position-relative">
-            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded focus:border focus:border-role-surface" type="text" value="">
             <!--v-if-->
           </div>
           <!--v-if-->
@@ -18,7 +18,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
         </div>
       </div>
       <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" id="files-space-table" selection="">
-        <thead class="oc-thead">
+        <thead class="oc-thead border-b">
           <tr class="oc-table-header-row">
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name pl-4" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-left oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1 hover:underline">
                 <!--v-if-->
@@ -41,17 +41,17 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
           </tr>
         </thead>
         <tbody class="has-item-context-menu">
-          <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
+          <tr class="oc-tbody-tr oc-tbody-tr-1 border-t" data-item-id="1" draggable="false">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
-          <tr class="oc-tbody-tr oc-tbody-tr-2" data-item-id="2" draggable="false">
+          <tr class="oc-tbody-tr oc-tbody-tr-2 border-t" data-item-id="2" draggable="false">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
-          <tr class="oc-tbody-tr oc-tbody-tr-3" data-item-id="3" draggable="false">
+          <tr class="oc-tbody-tr oc-tbody-tr-3 border-t" data-item-id="3" draggable="false">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
         </tbody>
-        <tfoot class="oc-table-footer">
+        <tfoot class="oc-table-footer border-t">
           <tr class="oc-table-footer-row">
             <td colspan="3" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
               <!-- @slot Footer of the table -->

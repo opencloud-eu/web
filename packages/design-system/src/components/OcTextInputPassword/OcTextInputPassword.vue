@@ -1,16 +1,18 @@
 <template>
   <div
-    class="oc-text-input-password-wrapper flex flex-row"
+    class="oc-text-input-password-wrapper flex flex-row border"
     :class="{
-      'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error': hasError,
-      'oc-text-input-password-wrapper-focused': hasFocus
+      'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error border-role-error':
+        hasError,
+      'oc-text-input-password-wrapper-focused border-role-surface': hasFocus,
+      'border-role-outline': !hasFocus
     }"
   >
     <input
       v-bind="$attrs"
       ref="passwordInput"
       v-model="password"
-      class="grow-2"
+      class="grow-2 border-0 focus:border-0"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -175,25 +177,15 @@ watch(password, (value) => {
 .oc-text-input-password {
   &-wrapper {
     border-radius: 5px;
-    border: 1px solid var(--oc-role-outline);
 
     &-focused {
-      border: 1px solid var(--oc-role-surface);
       outline: 2px solid var(--oc-role-outline);
     }
 
     input {
-      border: none !important;
-
       &:focus {
         outline: none !important;
-        border: none !important;
       }
-    }
-
-    &-danger,
-    &-danger:focus {
-      border-color: var(--oc-role-error) !important;
     }
   }
 

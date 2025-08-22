@@ -79,7 +79,7 @@
   }
 
   .oc-card-header {
-    @apply px-2 py-4;
+    @apply px-2 py-4 border-b border-role-outline;
   }
 
   .oc-card-footer {
@@ -123,7 +123,7 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5 align-middle leading-4;
+    @apply p-1.5 align-middle leading-4 border border-role-outline;
   }
 
   .oc-select optgroup {

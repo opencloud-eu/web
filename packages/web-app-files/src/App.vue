@@ -1,6 +1,9 @@
 <template>
   <main id="files" class="flex oc-height-1-1">
-    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20" />
+    <div
+      v-if="dragareaEnabled"
+      class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline"
+    />
     <router-view tabindex="0" class="files-wrapper oc-width-expand oc-height-1-1 flex-wrap" />
   </main>
 </template>
@@ -52,7 +55,6 @@ main {
   position: absolute;
   z-index: 9;
   border-radius: 14px;
-  border: 2px dashed var(--oc-role-outline);
 }
 
 #files {

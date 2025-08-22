@@ -197,7 +197,6 @@ const onClick = (event: MouseEvent) => {
 @mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
-    border-style: none;
     min-height: 0;
 
     background-color: transparent;
@@ -248,7 +247,6 @@ const onClick = (event: MouseEvent) => {
 
 .oc-button {
   align-items: center;
-  border: 0;
   box-sizing: border-box;
   display: inline-flex;
 

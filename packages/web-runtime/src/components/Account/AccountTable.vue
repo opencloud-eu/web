@@ -80,7 +80,7 @@ export default defineComponent({
     @apply py-2 md:py-0;
   }
   .account-table tr {
-    @apply pb-1 md:pb-0;
+    @apply pb-1 md:pb-0 border-b;
   }
 }
 </style>
@@ -101,8 +101,6 @@ export default defineComponent({
 
 .account-table {
   tr {
-    border-top: 0;
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
   }
 

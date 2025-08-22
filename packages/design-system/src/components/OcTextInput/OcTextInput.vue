@@ -14,9 +14,9 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-text-input oc-input oc-rounded"
+        class="oc-text-input oc-input oc-rounded focus:border focus:border-role-surface"
         :class="{
-          'oc-text-input-danger': !!showErrorMessage,
+          'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
           'pr-6': showClearButton
         }"
@@ -46,7 +46,8 @@
       class="oc-text-input-message flex align-center text-sm mt-1"
       :class="{
         'oc-text-input-description text-role-on-surface-variant': showDescriptionMessage,
-        'oc-text-input-danger text-role-on-error focus:text-role-on-error': showErrorMessage
+        'oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          showErrorMessage
       }"
     >
       <template v-if="showErrorMessage">
@@ -61,7 +62,7 @@
         <span
           v-if="showErrorMessage"
           :id="messageId"
-          class="oc-text-input-danger text-role-on-error focus:text-role-on-error"
+          class="oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error"
           v-text="errorMessage"
         />
       </template>
@@ -350,13 +351,7 @@ watch(
 
 .oc-text-input {
   &:focus {
-    border: 1px solid var(--oc-role-surface) !important;
     outline: 2px solid var(--oc-role-outline) !important;
-  }
-
-  &-danger,
-  &-danger:focus {
-    border-color: var(--oc-role-error) !important;
   }
 
   &-message {

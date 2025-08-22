@@ -5,6 +5,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
+        class="border border-role-outline"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -323,7 +324,6 @@ export default {
 
 <style lang="scss">
 .oc-modal {
-  border: 1px solid var(--oc-role-outline);
   border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;

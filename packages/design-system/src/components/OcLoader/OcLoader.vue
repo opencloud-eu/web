@@ -38,7 +38,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  border: 0;
   border-radius: 500px;
   display: block;
   height: 15px;

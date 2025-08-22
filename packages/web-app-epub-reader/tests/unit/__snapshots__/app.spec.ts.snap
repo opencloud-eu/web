@@ -2,12 +2,12 @@
 
 exports[`Epub reader app > renders correctly 1`] = `
 "<div class="epub-reader flex">
-  <ul class="oc-list epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l">
-    <li class="epub-reader-chapters-list-item py-2 active"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover max-w-full font-semibold">
+  <ul class="oc-list epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r">
+    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0 active"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover max-w-full font-semibold">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 1</span>
       </button></li>
-    <li class="epub-reader-chapters-list-item py-2"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover max-w-full">
+    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover max-w-full">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 2</span>
       </button></li>

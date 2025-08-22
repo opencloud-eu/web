@@ -83,6 +83,7 @@
             :aria-label="contextMenuLabel"
             appearance="raw"
             no-hover
+            class="mx-1"
           >
             <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
           </oc-button>
@@ -350,10 +351,6 @@ const dropItemStyling = (
 
     @media (max-width: $oc-breakpoint-xsmall-max) {
       display: none !important;
-    }
-
-    #oc-breadcrumb-contextmenu-trigger > span {
-      border: 3px solid transparent;
     }
 
     #oc-breadcrumb-contextmenu li button {

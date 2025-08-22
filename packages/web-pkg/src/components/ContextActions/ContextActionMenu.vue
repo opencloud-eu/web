@@ -75,7 +75,7 @@ export default defineComponent({
         classes.push('pt-2')
       }
       if (index < this.menuSections.length - 1) {
-        classes.push('oc-files-context-actions-border')
+        classes.push('border-b')
       }
       return classes
     }
@@ -101,10 +101,6 @@ export default defineComponent({
       justify-content: flex-start;
       width: 100%;
     }
-  }
-
-  &-border {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

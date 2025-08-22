@@ -2,7 +2,7 @@
   <app-loading-spinner v-if="isLoading" />
   <main v-else id="account" class="pt-4 pb-6 flex justify-center">
     <div class="account-page px-4 lg:px-0">
-      <h1 id="account-page-title" class="mb-0" v-text="$gettext('My Account')" />
+      <h1 id="account-page-title" class="mb-0 border-b" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
         :title="$gettext('Account Information')"
@@ -296,7 +296,7 @@
         :is="extension.content"
         v-for="extension in preferencesPanelExtensions"
         :key="`preferences-panel-${extension.id}`"
-        class="preferences-panel mt-6"
+        class="preferences-panel mt-6 border-b"
       />
     </div>
   </main>
@@ -819,14 +819,6 @@ export default defineComponent({
 <style lang="scss">
 #account {
   overflow-y: auto;
-
-  #account-page-title {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
-  .preferences-panel {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
 
   .account-page {
     width: 80rem;

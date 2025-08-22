@@ -31,6 +31,5 @@ const fontSize = computed(() => {
 <style lang="scss">
 .oc-avatar-count {
   border-radius: 50%;
-  border: 1px solid var(--oc-role-outline-variant);
 }
 </style>

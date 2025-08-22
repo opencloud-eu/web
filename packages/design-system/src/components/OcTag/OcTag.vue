@@ -142,6 +142,7 @@ function $_ocTag_click(event: MouseEvent) {
     }
   }
 
+  // FIXME
   &-appearance-outline.oc-tag-color-primary {
     border: 1px solid var(--oc-role-primary);
   }

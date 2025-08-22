@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="item-inline-filter inline-flex" :class="`item-inline-filter-${filterName}`">
+    <div
+      class="item-inline-filter inline-flex border border-role-secondary"
+      :class="`item-inline-filter-${filterName}`"
+    >
       <oc-button
         v-for="(option, index) in filterOptions"
         :id="option.name"
@@ -84,7 +87,6 @@ export default defineComponent({
 <style lang="scss">
 .item-inline-filter {
   border-radius: 99px;
-  border: 1px solid var(--oc-role-outline);
 
   button {
     height: 24px;

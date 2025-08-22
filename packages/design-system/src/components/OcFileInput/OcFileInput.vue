@@ -238,7 +238,6 @@ const onFocus = async () => {
 
 <style scoped lang="scss">
 .oc-file-input {
-  border: 0;
   width: 0;
   height: 0;
 

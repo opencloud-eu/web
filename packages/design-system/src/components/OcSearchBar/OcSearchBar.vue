@@ -235,7 +235,6 @@ const onCancel = () => {
 
   &-input {
     border-radius: 25px !important;
-    border: none;
     height: 2.3rem;
 
     &:focus {

@@ -14,7 +14,7 @@
       <focus-trap>
         <div :id="drawerId" class="oc-bottom-drawer bg-role-surface-container-high">
           <div class="oc-card bg-transparent">
-            <div class="oc-card-header px-4 pt-4">
+            <div class="oc-card-header border-b-0 px-4 pt-4">
               <div class="flex justify-between items-center">
                 <oc-button
                   v-if="isNestedElement"
@@ -281,10 +281,6 @@ defineExpose({ show, hide, getElement })
   }
 
   .oc-card {
-    &-header {
-      border-bottom: 0 !important;
-    }
-
     &-body {
       ul {
         border-radius: 10px;

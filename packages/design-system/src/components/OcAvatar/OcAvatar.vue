@@ -127,7 +127,6 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
 .oc-avatar {
   user-select: none;
   border-radius: 50%;
-  border: 1px solid var(--oc-role-outline-variant);
 
   .avatarImg {
     width: 100%;

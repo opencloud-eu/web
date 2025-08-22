@@ -4,6 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
+    class="border-l"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -82,7 +83,7 @@
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
                   :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
-                  class="oc-rounded"
+                  class="oc-rounded border-t"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>
@@ -287,7 +288,6 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  border-left: 0.5px solid var(--oc-role-outline-variant);
   position: relative;
   overflow: hidden;
   min-width: 440px;
@@ -353,10 +353,6 @@ onBeforeUnmount(() => {
     visibility: visible;
     transition: right 0.4s 0s;
     right: 100px;
-  }
-
-  .multi-root-panel-separator {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &__header {

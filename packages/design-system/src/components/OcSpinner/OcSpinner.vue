@@ -1,5 +1,11 @@
 <template>
-  <span :class="spinnerClass" :aria-label="ariaLabel" tabindex="-1" role="img" />
+  <span
+    :class="spinnerClass"
+    class="after:border after:border-current"
+    :aria-label="ariaLabel"
+    tabindex="-1"
+    role="img"
+  />
 </template>
 
 <script setup lang="ts">
@@ -43,7 +49,6 @@ const spinnerClass = computed(() => {
 
   &::after {
     animation: ball-clip-rotate 1s linear infinite;
-    border: 1px solid currentColor;
     border-bottom-color: transparent;
     border-radius: 100%;
     content: '';

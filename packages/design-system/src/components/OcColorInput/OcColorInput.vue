@@ -12,9 +12,10 @@
         v-bind="additionalAttributes"
         type="color"
         :aria-invalid="ariaInvalid"
-        class="oc-color-input oc-input oc-rounded py-0.5"
+        class="oc-color-input oc-input oc-rounded py-0.5 focus:border focus:border-role-outline"
         :class="{
-          'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage,
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+            !!errorMessage,
           'pr-6': showClearButton
         }"
         :value="modelValue"
@@ -37,7 +38,8 @@
       class="oc-color-input-message flex items-center text-sm mt-1"
       :class="{
         'oc-color-input-description text-role-on-surface-variant': !!descriptionMessage,
-        'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+        'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          !!errorMessage
       }"
     >
       <oc-icon
@@ -54,7 +56,8 @@
         :class="{
           'oc-color-input-description text-role-on-surface-variant flex items-center':
             !!descriptionMessage,
-          'oc-color-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+            !!errorMessage
         }"
         v-text="messageText"
       />
@@ -211,13 +214,7 @@ const onInput = (value: string) => {
   }
 
   &:focus {
-    border: 1px solid var(--oc-role-surface) !important;
     outline: 2px solid var(--oc-role-outline) !important;
-  }
-
-  &-danger,
-  &-danger:focus {
-    color: var(--oc-role-error) !important;
   }
 
   &-message {

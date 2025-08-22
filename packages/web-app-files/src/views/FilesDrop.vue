@@ -3,7 +3,7 @@
   <div
     v-else
     id="files-drop-container"
-    class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent"
+    class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline"
   >
     <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
@@ -258,7 +258,6 @@ export default defineComponent({
 #files-drop {
   &-container {
     position: relative;
-    border: 1px dashed var(--oc-role-outline-variant);
   }
 
   &-info-message {
@@ -277,6 +276,5 @@ export default defineComponent({
   position: absolute;
   z-index: 9;
   border-radius: 14px;
-  border: 0;
 }
 </style>

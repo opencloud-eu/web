@@ -154,6 +154,26 @@ const hideDrop = () => {
   unref(dropRef)?.hide()
 }
 
+const buttonAppearance = computed(() => {
+  if (unref(filterActive)) {
+    return 'filled'
+  }
+  if (raw) {
+    return 'raw-inverse'
+  }
+  return 'outline'
+})
+
+const buttonColorRole = computed(() => {
+  if (unref(filterActive)) {
+    return 'secondaryContainer'
+  }
+  if (raw) {
+    return 'surface'
+  }
+  return 'secondary'
+})
+
 defineExpose({ hideDrop })
 </script>
 
@@ -161,7 +181,6 @@ defineExpose({ hideDrop })
 .oc-filter-chip {
   &-button.oc-pill {
     align-items: center;
-    border: 1px solid var(--oc-role-outline);
     box-sizing: border-box;
     display: inline-flex;
     gap: var(--oc-space-xsmall);
@@ -174,7 +193,6 @@ defineExpose({ hideDrop })
     border-bottom-left-radius: 99px !important;
     border-top-right-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
-    border: 0;
   }
   &-clear,
   &-clear:hover {
@@ -186,11 +204,6 @@ defineExpose({ hideDrop })
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
     margin-left: 1px;
-  }
-}
-.oc-filter-chip-raw {
-  .oc-filter-chip-button {
-    border: none !important;
   }
 }
 .oc-filter-check-icon-active {
