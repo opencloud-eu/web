@@ -44,7 +44,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   #oc-appbar-batch-actions .action-menu-item {

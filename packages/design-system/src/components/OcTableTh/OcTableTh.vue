@@ -26,7 +26,7 @@ const { alignH = 'left', alignV = 'middle', width = 'auto', wrap } = defineProps
 defineEmits(['click'])
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-th {

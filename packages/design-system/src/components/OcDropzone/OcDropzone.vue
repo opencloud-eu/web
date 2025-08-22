@@ -9,7 +9,7 @@
 defineOptions({ name: 'OcDropzone' })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-dropzone {
@@ -18,7 +18,7 @@ defineOptions({ name: 'OcDropzone' })
 }
 </style>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-dropzone {

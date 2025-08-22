@@ -41,7 +41,7 @@ const label = computed(() => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-progress-pie {

@@ -88,7 +88,7 @@ function $_ocTag_click(event: MouseEvent) {
 }
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-tag-rounded {

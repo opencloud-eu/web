@@ -244,7 +244,7 @@ watch(filterTerm, async () => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
   .space-members-filter label {

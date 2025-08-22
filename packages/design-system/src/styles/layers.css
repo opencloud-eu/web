@@ -1,4 +1,4 @@
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 
 @layer theme {

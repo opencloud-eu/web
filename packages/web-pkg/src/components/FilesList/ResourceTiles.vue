@@ -644,7 +644,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <style>
-@reference 'tailwindcss';
+@reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-tiles-sort-filter-chip .oc-filter-chip-label {
