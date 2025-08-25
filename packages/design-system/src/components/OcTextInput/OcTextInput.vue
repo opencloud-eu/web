@@ -343,17 +343,21 @@ watch(
   }
 )
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-text-input:focus {
+    @apply outline-2 outline-role-outline;
+  }
+}
+</style>
 <style lang="scss">
 .oc-text-input-message.oc-text-input-description {
   position: relative;
 }
 
 .oc-text-input {
-  &:focus {
-    outline: 2px solid var(--oc-role-outline) !important;
-  }
-
   &-message {
     min-height: $oc-font-size-default * 1.5;
   }

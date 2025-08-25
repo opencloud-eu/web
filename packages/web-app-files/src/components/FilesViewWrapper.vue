@@ -1,6 +1,6 @@
 <template>
-  <div class="files-view-wrapper oc-width-expand">
-    <div id="files-view" v-bind="$attrs">
+  <div class="files-view-wrapper oc-width-expand focus:outline-0">
+    <div id="files-view" v-bind="$attrs" class="outline-0">
       <slot />
     </div>
   </div>
@@ -39,15 +39,10 @@ export default defineComponent({
     'header'
     'upload'
     'main';
-
-  &:focus {
-    outline: none;
-  }
 }
 
 #files-view {
   grid-area: main;
   z-index: 0;
-  outline: none;
 }
 </style>
