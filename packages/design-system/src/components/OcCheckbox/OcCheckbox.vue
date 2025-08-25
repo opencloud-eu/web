@@ -6,7 +6,7 @@
       type="checkbox"
       name="checkbox"
       :class="classes"
-      class="m-0.5 border-2 border-role-outline"
+      class="m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary"
       :value="option"
       :disabled="disabled"
       :aria-label="labelHidden ? label : null"
@@ -125,7 +125,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   background-repeat: no-repeat !important;
   display: inline-block;
   overflow: hidden;
-  outline: none;
 
   &-s {
     @include oc-form-check-size(0.7);
@@ -141,10 +140,6 @@ const keydownEnter = (event: KeyboardEvent) => {
 
   &:hover {
     cursor: pointer;
-  }
-
-  &:focus-visible {
-    outline: var(--oc-role-secondary) auto 1px;
   }
 
   &-checked,

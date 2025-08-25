@@ -341,9 +341,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.link-modal-confirm-button-group {
-  outline: 0;
-}
-</style>

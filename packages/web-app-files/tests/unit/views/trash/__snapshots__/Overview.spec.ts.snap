@@ -2,8 +2,8 @@
 
 exports[`TrashOverview > view states > should render trash list 1`] = `
 "<div class="flex">
-  <div data-v-39c970be="" class="files-view-wrapper oc-width-expand">
-    <div data-v-39c970be="" id="files-view">
+  <div data-v-39c970be="" class="files-view-wrapper oc-width-expand focus:outline-0">
+    <div data-v-39c970be="" id="files-view" class="outline-0">
       <app-bar-stub viewmodedefault="resource-table" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
         <div class=""><label class="oc-label" for="trash-filter">Search

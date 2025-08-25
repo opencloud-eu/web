@@ -4,7 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l"
+    class="border-l focus:outline-0 focus-visible:outline-0"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -296,7 +296,6 @@ onBeforeUnmount(() => {
   &:focus,
   &:focus-visible {
     box-shadow: none;
-    outline: none;
   }
 }
 .app-sidebar-full-width {

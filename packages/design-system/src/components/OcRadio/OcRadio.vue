@@ -6,7 +6,7 @@
       type="radio"
       name="radio"
       :class="classes"
-      class="checked:bg-role-secondary-container border rounded-[50%]"
+      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"

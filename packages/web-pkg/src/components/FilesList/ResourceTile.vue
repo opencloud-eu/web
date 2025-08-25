@@ -4,8 +4,10 @@
     class="oc-tile-card oc-card flex flex-col"
     :data-item-id="resource.id"
     :class="{
-      'oc-tile-card-selected bg-role-secondary-container': isResourceSelected,
-      'bg-role-surface-container hover:bg-role-surface-container-highest': !isResourceSelected,
+      'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
+        isResourceSelected,
+      'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
+        !isResourceSelected,
       'oc-tile-card-disabled': isResourceDisabled && !isProjectSpaceResource(resource),
       'state-trashed': isResourceDisabled && isProjectSpaceResource(resource)
     }"
@@ -219,7 +221,6 @@ if (!lazy) {
 .oc-tile-card {
   box-shadow: none;
   height: 100%;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   &-disabled {
     pointer-events: none;
@@ -274,9 +275,6 @@ if (!lazy) {
       width: calc(100% - var(--oc-space-medium));
       height: calc(100% - var(--oc-space-medium));
     }
-  }
-  &-selected {
-    outline: 2px solid var(--oc-role-outline);
   }
 
   &-selection {

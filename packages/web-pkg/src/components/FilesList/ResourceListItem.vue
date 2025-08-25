@@ -33,7 +33,7 @@
         :resource="resource"
         :is-resource-clickable="isResourceClickable"
         :link="link"
-        class="oc-text-overflow"
+        class="oc-text-overflow hover:outline-offset-0 focus:outline-offset-0"
         @click="emitClick"
       >
         <resource-name
@@ -241,11 +241,6 @@ export default defineComponent({
 
   &-details {
     display: block;
-
-    a:hover,
-    a:focus {
-      outline-offset: 0;
-    }
   }
 }
 </style>

@@ -92,7 +92,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high rounded-sm"
+            class="oc-range bg-role-surface-container-high rounded-sm outline-0"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -315,7 +315,6 @@ export default defineComponent({
 .oc-range {
   -webkit-appearance: none;
   height: 0.5rem;
-  outline: none;
   width: 100%;
   max-width: 50%;
 

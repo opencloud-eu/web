@@ -12,7 +12,7 @@
         v-bind="additionalAttributes"
         type="color"
         :aria-invalid="ariaInvalid"
-        class="oc-color-input oc-input rounded-sm py-0.5 focus:border focus:border-role-outline"
+        class="oc-color-input oc-input rounded-sm py-0.5 focus:border focus:border-role-outline focus:outline-2 focus:outline-role-outline"
         :class="{
           'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
             !!errorMessage,
@@ -211,10 +211,6 @@ const onInput = (value: string) => {
 .oc-color-input {
   &-wrapper {
     max-width: 5rem !important;
-  }
-
-  &:focus {
-    outline: 2px solid var(--oc-role-outline) !important;
   }
 
   &-message {

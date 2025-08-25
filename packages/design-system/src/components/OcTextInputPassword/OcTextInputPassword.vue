@@ -4,7 +4,7 @@
     :class="{
       'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error border-role-error':
         hasError,
-      'oc-text-input-password-wrapper-focused border-role-surface': hasFocus,
+      'border-role-surface outline-2 outline-role-outline': hasFocus,
       'border-role-outline': !hasFocus
     }"
   >
@@ -12,7 +12,7 @@
       v-bind="$attrs"
       ref="passwordInput"
       v-model="password"
-      class="grow-2 border-0 focus:border-0"
+      class="grow-2 border-0 focus:border-0 focus:outline-0"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -175,18 +175,6 @@ watch(password, (value) => {
 
 <style lang="scss">
 .oc-text-input-password {
-  &-wrapper {
-    &-focused {
-      outline: 2px solid var(--oc-role-outline);
-    }
-
-    input {
-      &:focus {
-        outline: none !important;
-      }
-    }
-  }
-
   &-policy-rule-wrapper {
     column-gap: var(--oc-space-small);
   }

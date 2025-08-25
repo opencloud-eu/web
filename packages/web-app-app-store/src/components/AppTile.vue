@@ -1,6 +1,6 @@
 <template>
   <li
-    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col"
+    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col border"
   >
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
@@ -64,7 +64,6 @@ export default defineComponent({
   overflow: hidden;
   box-shadow: none;
   height: 100%;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-tile-body {
     height: 100%;

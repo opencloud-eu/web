@@ -219,7 +219,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   color: var(--oc-role-on-surface);
   display: inline-block;
   max-width: 100%;
-  outline: none;
   overflow: visible;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
@@ -230,14 +229,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 /*
  * Multi-line
  */
-
-/* Focus */
-.oc-input:focus,
-.oc-select:focus,
-.oc-textarea:focus {
-  outline: none;
-  color: $form-focus-color;
-}
 
 /* Disabled */
 .oc-input:disabled,
@@ -349,11 +340,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 
   /* 2 */
   overflow: hidden;
-}
-
-/* Focus */
-.oc-radio:focus {
-  outline: none;
 }
 
 /*
