@@ -149,6 +149,11 @@ export interface Props {
    */
   optionLabel?: string
   /**
+   * @docs The getOptionLabel function of the options object. Takes precedence over the `optionLabel` prop.
+   * @default function
+   */
+  getOptionLabel?: (option: unknown) => string
+  /**
    * @docs Determines if the options of the select are searchable.
    * @default true
    */
@@ -246,6 +251,7 @@ const {
   labelHidden = false,
   contextualHelper,
   optionLabel = 'label',
+  getOptionLabel: getOptionLabelProp = null,
   searchable = true,
   clearable = false,
   loading = false,
@@ -263,22 +269,6 @@ defineSlots<Slots>()
 
 const { $gettext } = useGettext()
 const selectRef = useTemplateRef<typeof VueSelect>('selectRef')
-
-const getOptionLabel = (option: string | Record<string, unknown>): string => {
-  if (typeof option === 'object') {
-    const key = optionLabel || label
-    if (!Object.hasOwn(option, key)) {
-      console.warn(
-        `[vue-select warn]: Label key "option.${key}" does not` +
-          ` exist in options object ${JSON.stringify(option)}.\n` +
-          'https://vue-select.org/api/html#getoptionlabel'
-      )
-      return ''
-    }
-    return option[key] as string
-  }
-  return option
-}
 
 const setComboBoxAriaLabel = () => {
   const comboBoxElement = unref(selectRef).$el.querySelector('div:first-child')
@@ -393,6 +383,27 @@ watch(dropdownOpen, async () => {
   }
 })
 
+const getOptionLabel = computed(() => {
+  return (
+    getOptionLabelProp ||
+    ((option: string | Record<string, unknown>): string => {
+      if (typeof option === 'object') {
+        const key = optionLabel || label
+        if (!Object.hasOwn(option, key)) {
+          console.warn(
+            `[vue-select warn]: Label key "option.${key}" does not` +
+              ` exist in options object ${JSON.stringify(option)}.\n` +
+              'https://vue-select.org/api/html#getoptionlabel'
+          )
+          return ''
+        }
+        return option[key] as string
+      }
+      return option
+    })
+  )
+})
+
 onMounted(() => {
   setComboBoxAriaLabel()
 
@@ -411,7 +422,7 @@ const attrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
   additionalAttrs['input-id'] = id
-  additionalAttrs['getOptionLabel'] = getOptionLabel
+  additionalAttrs['getOptionLabel'] = unref(getOptionLabel)
   additionalAttrs['label'] = optionLabel
 
   return { ...attrs, ...additionalAttrs }
