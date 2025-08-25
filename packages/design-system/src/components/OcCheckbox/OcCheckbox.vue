@@ -6,6 +6,7 @@
       type="checkbox"
       name="checkbox"
       :class="classes"
+      class="m-0.5 border-2 border-role-outline"
       :value="option"
       :disabled="disabled"
       :aria-label="labelHidden ? label : null"
@@ -72,7 +73,7 @@ const model = defineModel<boolean | unknown[]>()
 
 const classes = computed(() => [
   'oc-checkbox',
-  'oc-rounded',
+  'rounded-sm',
   'oc-checkbox-' + getSizeClass(size),
   { 'oc-checkbox-checked': isChecked.value },
   { 'bg-white': isChecked.value },
@@ -122,7 +123,6 @@ const keydownEnter = (event: KeyboardEvent) => {
 
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-  border: 2px solid var(--oc-role-outline);
   display: inline-block;
   overflow: hidden;
   outline: none;

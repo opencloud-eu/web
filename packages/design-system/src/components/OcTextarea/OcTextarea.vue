@@ -6,9 +6,10 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea oc-rounded m-0 py-1"
+      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline"
       :class="{
-        'oc-textarea-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+        'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
+          !!errorMessage
       }"
       :aria-invalid="ariaInvalid"
     />
@@ -17,7 +18,8 @@
         :id="messageId"
         :class="{
           'oc-textarea-description text-role-on-surface-variant': !!descriptionMessage,
-          'oc-textarea-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+          'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
+            !!errorMessage
         }"
         v-text="messageText"
       />
@@ -98,18 +100,12 @@ defineExpose({ focus })
 <style lang="scss">
 .oc-textarea {
   box-sizing: border-box;
-  border: 1px solid var(--oc-role-outline);
   max-width: 100%;
   width: 100%;
   overflow: auto;
 
   &:disabled {
     opacity: 0.7;
-  }
-
-  &-danger,
-  &-danger:focus {
-    border-color: var(--oc-role-error);
   }
 
   &-message {

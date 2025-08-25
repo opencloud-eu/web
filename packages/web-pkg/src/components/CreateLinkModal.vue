@@ -90,7 +90,7 @@
         close-on-click
       >
         <oc-list class="oc-modal-body-actions-confirm-secondary-menu">
-          <li class="oc-rounded oc-menu-item-hover">
+          <li class="rounded-sm oc-menu-item-hover">
             <oc-button
               class="oc-modal-body-actions-confirm-password action-menu-item"
               appearance="raw"

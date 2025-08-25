@@ -44,7 +44,7 @@
         <oc-list
           v-for="(group, groupIndex) in createFileActionsGroups"
           :key="`file-creation-group-${groupIndex}`"
-          class="py-2 first:pt-0 last:pb-0"
+          class="py-2 first:pt-0 last:pb-0 border-t"
         >
           <li
             v-for="(fileAction, fileActionIndex) in group"
@@ -69,7 +69,7 @@
             </oc-button>
           </li>
         </oc-list>
-        <oc-list class="py-2 first:pt-0 last:pb-0">
+        <oc-list class="py-2 first:pt-0 last:pb-0 border-t">
           <li class="create-list-shortcut oc-menu-item-hover">
             <oc-button
               id="new-shortcut-btn"
@@ -136,7 +136,11 @@
           <resource-upload btn-class="oc-width-1-1" :is-folder="true" />
         </li>
       </oc-list>
-      <oc-list v-if="extensionActions.length" id="extension-list" class="py-2 first:pt-0 last:pb-0">
+      <oc-list
+        v-if="extensionActions.length"
+        id="extension-list"
+        class="py-2 first:pt-0 last:pb-0 border-t"
+      >
         <li
           v-for="(action, key) in extensionActions"
           :key="`${key}-${actionKeySuffix}`"
@@ -481,10 +485,6 @@ const folderIconResource = computed(() => {
 #upload-menu-drop,
 #new-file-menu-drop {
   min-width: 230px;
-
-  ul:not(:first-child) {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
 }
 
 .expanded-list {
@@ -501,14 +501,6 @@ const folderIconResource = computed(() => {
 
 #clipboard-btns {
   flex-flow: inherit;
-
-  :nth-child(1) {
-    border-right: 0px !important;
-  }
-
-  :nth-child(2) {
-    border-left: 0px !important;
-  }
 }
 
 #clipboard-btns.disabled {

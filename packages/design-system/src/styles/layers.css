@@ -1,12 +1,10 @@
 @reference '@opencloud-eu/design-system/tailwind';
 
-
 @layer theme {
   html {
     @apply text-sm;
   }
 }
-
 
 @layer base {
   h1 {
@@ -57,13 +55,23 @@
   a:hover {
     @apply text-role-on-surface;
   }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    /* default border color */
+    border-color: var(--oc-role-surface-container-highest);
+  }
+
 }
 
 @layer components {
 
   /* card spacing FIXME: they should be in a dedicated component */
   .oc-card {
-    @apply bg-role-surface text-role-on-surface;
+    @apply bg-role-surface text-role-on-surface rounded-sm;
   }
 
   .oc-card-body {
@@ -71,7 +79,7 @@
   }
 
   .oc-card-header {
-    @apply px-2 py-4;
+    @apply px-2 py-4 border-b border-role-outline;
   }
 
   .oc-card-footer {
@@ -115,7 +123,7 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5 align-middle leading-4;
+    @apply p-1.5 align-middle leading-4 border border-role-outline rounded-sm;
   }
 
   .oc-select optgroup {

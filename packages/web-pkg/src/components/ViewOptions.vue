@@ -25,7 +25,7 @@
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
       appearance="raw"
-      class="my-2 p-1 align-middle"
+      class="my-2 mx-1 p-1 align-middle"
     >
       <oc-icon name="settings-3" fill-type="line" />
     </oc-button>
@@ -92,7 +92,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high"
+            class="oc-range bg-role-surface-container-high rounded-sm"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -312,17 +312,8 @@ export default defineComponent({
   flex-flow: initial;
 }
 
-#files-view-options-btn {
-  border: 3px solid transparent;
-
-  &:hover {
-    border-radius: 3px;
-  }
-}
-
 .oc-range {
   -webkit-appearance: none;
-  border-radius: 0.3rem;
   height: 0.5rem;
   outline: none;
   width: 100%;

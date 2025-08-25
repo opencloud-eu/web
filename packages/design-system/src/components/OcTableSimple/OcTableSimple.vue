@@ -40,6 +40,9 @@ const tableClasses = computed(() => {
   .oc-table-simple-hover tr:hover {
     @apply bg-role-secondary-container;
   }
+  .oc-table-simple tr + tr {
+    @apply border-t;
+  }
 }
 </style>
 <style lang="scss">
@@ -50,10 +53,6 @@ const tableClasses = computed(() => {
 
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;
-  }
-
-  tr + tr {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

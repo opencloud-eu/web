@@ -125,9 +125,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-select,
 .oc-textarea,
 .oc-radio {
-  /* 3 */
-  border-radius: 0;
-
   /* 1 */
   box-sizing: border-box;
 }
@@ -196,7 +193,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-select,
 .oc-textarea {
   /* 3 */
-  border: 0 none;
   color: $form-color;
 
   /* 1 */
@@ -219,9 +215,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   -webkit-appearance: none;
   background-clip: padding-box, border-box;
   background-origin: border-box;
-  border-radius: 0;
-  border-radius: 5px;
-  border: 1px solid var(--oc-role-outline);
   box-sizing: border-box;
   color: var(--oc-role-on-surface);
   display: inline-block;
@@ -357,8 +350,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
   /* 2 */
   overflow: hidden;
 }
-
-.oc-radio { border-radius: 50%; }
 
 /* Focus */
 .oc-radio:focus {

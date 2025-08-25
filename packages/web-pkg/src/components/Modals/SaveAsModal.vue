@@ -200,7 +200,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-modal.save-as-modal {
   max-width: 80vw;
-  border: none;
   overflow: hidden;
 
   .oc-modal-title {

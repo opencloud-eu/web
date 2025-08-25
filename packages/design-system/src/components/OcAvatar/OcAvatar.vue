@@ -1,6 +1,6 @@
 <template>
   <span
-    class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center"
+    class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%]"
     :style="style"
     :width="width"
     :aria-label="accessibleLabel === '' ? null : accessibleLabel"
@@ -9,7 +9,13 @@
     :role="accessibleLabel === '' ? null : 'img'"
     :data-test-user-name="userName"
   >
-    <oc-image v-if="isImage" loading-type="lazy" class="avatarImg" :src="src" @error="onImgError" />
+    <oc-image
+      v-if="isImage"
+      loading-type="lazy"
+      class="avatarImg rounded-[50%]"
+      :src="src"
+      @error="onImgError"
+    />
     <span v-else class="avatar-initials" :style="{ color }">{{ userInitial }}</span>
   </span>
 </template>
@@ -126,13 +132,10 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
 <style lang="scss">
 .oc-avatar {
   user-select: none;
-  border-radius: 50%;
-  border: 1px solid var(--oc-role-outline-variant);
 
   .avatarImg {
     width: 100%;
     height: auto;
-    border-radius: 50%;
   }
 }
 </style>

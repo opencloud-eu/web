@@ -1,7 +1,11 @@
 <template>
   <div id="group-edit-panel" class="mt-12">
     <group-info-box :group="group" />
-    <form id="group-edit-form" class="bg-role-surface-container p-4" autocomplete="off">
+    <form
+      id="group-edit-form"
+      class="bg-role-surface-container p-4 rounded-t-sm"
+      autocomplete="off"
+    >
       <oc-text-input
         id="displayName-input"
         v-model="editGroup.displayName"
@@ -13,7 +17,7 @@
         @update:model-value="validateDisplayName"
       />
       <compare-save-dialog
-        class="edit-compare-save-dialog mb-6"
+        class="edit-compare-save-dialog mb-6 rounded-b-sm"
         :original-object="group"
         :compare-object="editGroup"
         :confirm-button-disabled="invalidFormData"
@@ -148,16 +152,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 #group-edit-panel {
-  #group-edit-form {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-
-  .edit-compare-save-dialog {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-  }
-
   .group-info {
     align-items: center;
     flex-direction: column;

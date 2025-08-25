@@ -557,7 +557,6 @@ export default defineComponent({
     height: 2.3rem;
 
     @media (max-width: 639px) {
-      border: none;
       display: inline;
     }
   }
@@ -580,7 +579,6 @@ export default defineComponent({
 
       input,
       input:not(:placeholder-shown) {
-        border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <main class="flex oc-height-1-1 app-content oc-width-1-1">
+  <main class="flex oc-height-1-1 app-content oc-width-1-1 rounded-l-xl">
     <div class="admin-settings-wrapper flex oc-width-1-1 oc-width-expand oc-height-1-1 flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
@@ -221,7 +221,6 @@ export default defineComponent({
 }
 
 #admin-settings-app-bar {
-  border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;
   position: inherit;

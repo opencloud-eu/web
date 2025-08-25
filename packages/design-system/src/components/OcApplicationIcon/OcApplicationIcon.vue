@@ -1,5 +1,8 @@
 <template>
-  <div class="oc-application-icon inline-flex items-center justify-center" :style="iconStyle">
+  <div
+    class="oc-application-icon inline-flex items-center justify-center rounded-sm"
+    :style="iconStyle"
+  >
     <oc-icon :name="icon" :color="iconColor" size="medium" />
   </div>
 </template>
@@ -59,7 +62,6 @@ const iconStyle = computed(() => {
 .oc-application-icon {
   width: 28px;
   height: 28px;
-  border-radius: 4px;
 
   .oc-icon {
     height: 18px !important;

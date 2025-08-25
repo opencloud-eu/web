@@ -4,15 +4,18 @@
       <div class="flex sciencemesh-top">
         <div
           id="sciencemesh-invite"
-          class="oc-width-1-2 m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container"
+          class="oc-width-1-2 m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container rounded-xl"
         >
           <outgoing-invitations />
         </div>
-        <div id="sciencemesh-accept-invites" class="oc-width-1-2 m-2 p-2 bg-role-surface-container">
+        <div
+          id="sciencemesh-accept-invites"
+          class="oc-width-1-2 m-2 p-2 bg-role-surface-container rounded-xl"
+        >
           <incoming-invitations @highlight-new-connections="highlightNewConnections" />
         </div>
       </div>
-      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container">
+      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container rounded-xl">
         <connections-panel
           v-model:connections="connections"
           :highlighted-connections="highlightedConnections.map((c) => c.id)"
@@ -143,7 +146,6 @@ export default defineComponent({
 #sciencemesh-invite,
 #sciencemesh-accept-invites,
 #sciencemesh-connections {
-  border-radius: 15px;
   @media (max-width: $oc-breakpoint-large-default) {
     width: auto;
   }

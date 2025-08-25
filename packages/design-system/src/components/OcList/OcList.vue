@@ -33,10 +33,10 @@ defineSlots<Slots>()
     @apply m-0 p-0;
   }
   ul.oc-list-divider > :nth-child(n + 2) {
-    @apply mt-2 pt-2;
+    @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7 flex flex-col;
+    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%];
   }
   ul.oc-list.oc-timeline::before,
   ul.oc-list.oc-timeline li::before {
@@ -48,14 +48,6 @@ defineSlots<Slots>()
 }
 </style>
 <style lang="scss">
-ul.oc-list {
-  list-style: none;
-
-  &-divider > :nth-child(n + 2) {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-}
-
 ul.oc-list.oc-timeline {
   position: relative;
   list-style: none;
@@ -78,7 +70,6 @@ ul.oc-list.oc-timeline {
       content: '';
       width: 10px;
       height: 10px;
-      border-radius: 50%;
       position: absolute;
       left: -4px;
       top: 50%;

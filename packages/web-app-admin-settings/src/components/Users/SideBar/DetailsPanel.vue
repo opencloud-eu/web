@@ -6,12 +6,12 @@
   <div
     v-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
-    class="flex user-info p-4 bg-role-surface-container"
+    class="flex user-info p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
-  <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container">
+  <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <UserInfoBox :user="user" />
     <dl
       class="details-list m-0"
@@ -149,9 +149,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#oc-user-details-sidebar,
-#oc-users-details-multiple-sidebar {
-  border-radius: 5px;
-}
-</style>

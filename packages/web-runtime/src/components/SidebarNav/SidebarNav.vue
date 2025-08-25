@@ -1,7 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="bg-role-surface-container flex flex-col"
+    class="bg-role-surface-container flex flex-col rounded-l-xl"
     :class="{
       'oc-app-navigation-collapsed': closed,
       'oc-app-navigation-expanded': !closed
@@ -19,7 +19,7 @@
       <oc-icon
         size="large"
         fill-type="line"
-        class="raw-hover-surface oc-rounded"
+        class="raw-hover-surface rounded-sm"
         :name="toggleSidebarButtonIcon"
       />
     </oc-button>
@@ -27,7 +27,7 @@
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
-        class="ml-2 bg-role-secondary-container text-role-on-secondary-container"
+        class="ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm"
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
@@ -173,7 +173,6 @@ export default defineComponent({
 <style lang="scss">
 #nav-highlighter {
   position: absolute;
-  border-radius: 5px;
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
   svg {
     fill: var(--oc-role-on-surface);
@@ -181,7 +180,6 @@ export default defineComponent({
 }
 
 #web-nav-sidebar {
-  border-radius: 15px 0 0 15px;
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
   z-index: 4;

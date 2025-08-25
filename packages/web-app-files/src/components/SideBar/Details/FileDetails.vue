@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-file-details-sidebar" class="oc-rounded p-4 bg-role-surface-container">
+  <div id="oc-file-details-sidebar" class="rounded-sm p-4 bg-role-surface-container">
     <div v-if="hasContent">
       <div
         v-if="isPreviewLoading || preview"

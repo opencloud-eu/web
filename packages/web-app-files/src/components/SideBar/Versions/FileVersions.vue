@@ -21,7 +21,7 @@
             appearance="raw"
             justify-content="left"
             :aria-label="$gettext('Restore')"
-            class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m py-2 px-4"
+            class="version-action-item oc-width-1-1 rounded-sm oc-button-justify-content-left oc-button-gap-m py-2 px-4"
             @click="revertToVersion(item)"
           >
             <oc-icon name="history" class="oc-icon-m mr-2 -mt-1" fill-type="line" />
@@ -32,7 +32,7 @@
             justify-content="left"
             appearance="raw"
             :aria-label="$gettext('Download')"
-            class="version-action-item oc-width-1-1 oc-rounded c-button-gap-m py-2 px-4"
+            class="version-action-item oc-width-1-1 rounded-sm c-button-gap-m py-2 px-4"
             @click="downloadVersion(item)"
           >
             <oc-icon name="file-download" class="oc-icon-m mr-2" fill-type="line" />

@@ -136,7 +136,13 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = ['oc-pagination-list-item-page', 'py-1', 'px-2', 'text-role-on-surface']
+  const classes = [
+    'oc-pagination-list-item-page',
+    'py-1',
+    'px-2',
+    'text-role-on-surface',
+    'rounded-sm'
+  ]
 
   if (isCurrentPage(page)) {
     classes.push(
@@ -173,7 +179,6 @@ const bindPageLink = (page: Page) => {
 
     &-item {
       &-page {
-        border-radius: 4px;
         transition: background-color $transition-duration-short ease-in-out;
       }
 

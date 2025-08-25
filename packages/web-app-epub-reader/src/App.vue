@@ -1,10 +1,10 @@
 <template>
   <div class="epub-reader flex">
-    <oc-list class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l">
+    <oc-list class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r">
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
-        class="epub-reader-chapters-list-item py-2"
+        class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"
         :class="{ active: currentChapter.id === chapter.id }"
       >
         <oc-button
@@ -281,13 +281,8 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    border-right: 0.5px solid var(--oc-role-outline-variant);
     width: 240px;
     overflow-y: auto;
-
-    &-item:not(:last-child) {
-      border-bottom: 0.5px solid var(--oc-role-outline-variant);
-    }
   }
 
   &-controls-font-size {

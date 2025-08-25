@@ -12,9 +12,9 @@
       @click="onBackgroundClicked"
     >
       <focus-trap>
-        <div :id="drawerId" class="oc-bottom-drawer bg-role-surface-container-high">
+        <div :id="drawerId" class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm">
           <div class="oc-card bg-transparent">
-            <div class="oc-card-header px-4 pt-4">
+            <div class="oc-card-header border-b-0 px-4 pt-4">
               <div class="flex justify-between items-center">
                 <oc-button
                   v-if="isNestedElement"
@@ -249,7 +249,7 @@ defineExpose({ show, hide, getElement })
 @layer utilities {
   .oc-bottom-drawer ul {
     /* overwrite default list styling */
-    @apply p-2 bg-role-surface;
+    @apply p-2 bg-role-surface rounded-lg;
   }
 }
 </style>
@@ -271,25 +271,11 @@ defineExpose({ show, hide, getElement })
   max-height: 66vh;
   width: 100%;
   overflow-y: auto;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
   transition: all 0.2s;
 
   &.active {
     bottom: 0;
     transition: all 0.2s;
-  }
-
-  .oc-card {
-    &-header {
-      border-bottom: 0 !important;
-    }
-
-    &-body {
-      ul {
-        border-radius: 10px;
-      }
-    }
   }
 }
 </style>

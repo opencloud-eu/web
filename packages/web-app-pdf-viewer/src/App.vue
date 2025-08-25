@@ -26,7 +26,6 @@ export default defineComponent({
 
 <style scoped>
 .pdf-viewer {
-  border: none;
   overflow: hidden;
 }
 </style>

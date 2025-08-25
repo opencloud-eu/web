@@ -1,6 +1,6 @@
 <template>
   <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
-    <div class="oc-card text-center oc-width-large bg-role-surface-container">
+    <div class="oc-card text-center oc-width-large bg-role-surface-container rounded-xl">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
@@ -314,10 +314,6 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-link-resolve {
-  .oc-card {
-    border-radius: 15px;
-  }
-
   .oc-text-input-message {
     justify-content: center;
   }
