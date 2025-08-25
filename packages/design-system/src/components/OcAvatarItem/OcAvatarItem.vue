@@ -7,7 +7,7 @@
     :role="accessibleLabel === '' ? null : 'img'"
   >
     <span
-      class="oc-avatar-item"
+      class="oc-avatar-item inline-flex items-center justify-center"
       :style="{
         backgroundColor,
         '--icon-color': iconColor,
@@ -102,14 +102,11 @@ const pickBackgroundColor = () => {
 
 <style lang="scss">
 .oc-avatar-item {
-  align-items: center;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 18px;
   border-radius: 50%;
-  display: inline-flex;
   height: var(--width);
-  justify-content: center;
   width: var(--width);
   border: 1px solid var(--oc-role-outline-variant);
 

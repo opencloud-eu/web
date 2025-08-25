@@ -2,7 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
-    class="px-4"
+    class="grid items-center px-4"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left flex items-center flex-start">
@@ -211,8 +211,6 @@ export default {
 
 <style lang="scss">
 #oc-topbar {
-  align-items: center;
-  display: grid;
   grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
   grid-template-columns: 30% 30% 40%;
   grid-template-rows: 52px auto;

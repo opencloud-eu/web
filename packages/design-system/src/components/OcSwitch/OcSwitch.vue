@@ -1,9 +1,9 @@
 <template>
-  <span :key="`oc-switch-${checked.toString()}`" class="oc-switch">
+  <span :key="`oc-switch-${checked.toString()}`" class="oc-switch inline-flex items-center">
     <span :id="labelId" v-text="label" />
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn"
+      class="oc-switch-btn block"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"
@@ -48,15 +48,12 @@ const toggle = () => {
 
 <style lang="scss">
 .oc-switch {
-  align-items: center;
-  display: inline-flex;
   gap: var(--oc-space-small);
 
   &-btn {
     border: 1px solid var(--oc-role-outline-variant);
     border-radius: 20px;
     cursor: pointer;
-    display: block;
     height: 18px;
     position: relative;
     transition: background-color 0.25s;

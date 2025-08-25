@@ -53,7 +53,7 @@
     <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
       <oc-spinner
         v-if="isResourceInDeleteQueue(item.id)"
-        class="resource-table-activity-indicator ml-1"
+        class="resource-table-activity-indicator inline-flex ml-1"
         size="medium"
         :aria-label="$gettext('File is being processed')"
       />
@@ -101,7 +101,7 @@
         />
         <oc-button
           v-if="hasRenameAction(item)"
-          class="resource-table-edit-name raw-hover-surface p-1 ml-1"
+          class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
           appearance="raw"
           @click.stop="
             (e: MouseEvent) => {
@@ -1374,11 +1374,6 @@ export default defineComponent({
   &-tag-more {
     cursor: pointer;
     border: 0 !important;
-  }
-
-  &-edit-name,
-  &-activity-indicator {
-    display: inline-flex;
   }
 }
 

@@ -17,12 +17,15 @@
             no-hover
             @click="handleSort(field)"
           >
-            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content align-middle">
+            <span
+              v-if="field.headerType === 'slot'"
+              class="oc-table-thead-content inline-table align-middle"
+            >
               <slot :name="field.name + 'Header'" />
             </span>
             <span
               v-else
-              class="oc-table-thead-content align-middle header-text"
+              class="oc-table-thead-content inline-table align-middle header-text"
               v-text="extractFieldTitle(field)"
             />
             <oc-icon
@@ -34,12 +37,15 @@
             />
           </oc-button>
           <div v-else>
-            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content align-middle">
+            <span
+              v-if="field.headerType === 'slot'"
+              class="oc-table-thead-content inline-table align-middle"
+            >
               <slot :name="field.name + 'Header'" />
             </span>
             <span
               v-else
-              class="oc-table-thead-content align-middle header-text"
+              class="oc-table-thead-content inline-table align-middle header-text"
               v-text="extractFieldTitle(field)"
             />
           </div>
@@ -544,10 +550,6 @@ const handleSort = (field: FieldType) => {
 
   .highlightedDropTarget {
     background-color: var(--oc-role-secondary-container);
-  }
-
-  &-thead-content {
-    display: inline-table;
   }
 
   &-footer {

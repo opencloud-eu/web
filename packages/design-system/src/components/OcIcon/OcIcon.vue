@@ -106,7 +106,11 @@ const transformSvgElement = (svg: SVGElement) => {
 
 @layer components {
   .oc-icon {
-    @apply align-baseline;
+    @apply align-baseline inline-block;
+  }
+
+  .oc-icon svg {
+    @apply block;
   }
 }
 </style>
@@ -120,11 +124,6 @@ const transformSvgElement = (svg: SVGElement) => {
 
 .oc-icon {
   // SVG wrapper
-  display: inline-block;
-
-  svg {
-    display: block;
-  }
 
   &,
   > svg {

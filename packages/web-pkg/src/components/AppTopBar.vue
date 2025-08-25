@@ -2,7 +2,7 @@
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar flex">
       <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 flex items-center justify-between"
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between"
       >
         <div class="open-file-bar flex">
           <resource-list-item
@@ -198,11 +198,9 @@ export default defineComponent({
 }
 
 .oc-app-top-bar-inner {
-  align-self: center;
   background-color: var(--oc-role-chrome);
   border-radius: 10px;
   border: 1px solid var(--oc-role-on-chrome);
-  display: inline-flex;
   gap: 25px;
   height: 40px;
   width: 100%;

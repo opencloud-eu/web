@@ -53,14 +53,16 @@ const name = computed(() => {
   .file_info button {
     @apply whitespace-nowrap;
   }
+
+  .file_info .file_info__favorite .oc-star {
+    @apply inline-block;
+  }
 }
 </style>
 <style lang="scss">
 .file_info {
   &__favorite {
     .oc-star {
-      display: inline-block;
-
       &-shining svg {
         fill: #ffba0a !important;
 

@@ -28,7 +28,7 @@
         <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
       <dl
-        class="details-list m-0"
+        class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
         <template v-if="hasDeletionDate">

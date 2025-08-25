@@ -1,5 +1,8 @@
 <template>
-  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" :aria-label="ariaLabel" />
+  <div
+    :class="['oc-loader', 'block', 'after:block', { 'oc-loader-flat': flat }]"
+    :aria-label="ariaLabel"
+  />
 </template>
 
 <script setup lang="ts">
@@ -33,7 +36,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   background-color: var(--oc-role-surface-container);
   border: 0;
   border-radius: 500px;
-  display: block;
   height: 15px;
   overflow: hidden;
   width: 100%;
@@ -49,7 +51,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
     content: '';
     height: 100%;
     width: 0;
-    display: block;
     position: absolute;
 
     animation: {

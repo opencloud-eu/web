@@ -124,7 +124,16 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .applications-list li a .icon-box,
+  .applications-list li button .icon-box {
+    @apply inline-flex justify-center items-center;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .oc-drop {
   width: 280px;
@@ -136,9 +145,6 @@ export default defineComponent({
     gap: var(--oc-space-medium) !important;
 
     .icon-box {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
       width: 40px;
       height: 40px;
     }

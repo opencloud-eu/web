@@ -1,5 +1,7 @@
 <template>
-  <div class="files-view-wrapper oc-width-expand">
+  <div
+    class="files-view-wrapper grid grid-cols-1 [grid-template-rows:max-content_max-content_1fr] oc-width-expand"
+  >
     <div id="files-view" v-bind="$attrs">
       <slot />
     </div>
@@ -31,9 +33,6 @@ export default defineComponent({
   height: 100%;
   position: relative;
   overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: max-content max-content 1fr;
   gap: 0 0;
   grid-template-areas:
     'header'

@@ -2,6 +2,7 @@
   <div>
     <oc-list
       id="oc-appbar-batch-actions"
+      class="block xl:flex xl:items-center"
       :class="{ 'oc-appbar-batch-actions-squashed': limitedScreenSpace }"
     >
       <action-menu-item
@@ -50,12 +51,14 @@ export default defineComponent({
   #oc-appbar-batch-actions .action-menu-item {
     @apply p-2;
   }
+
+  .oc-appbar-batch-actions-squashed .oc-files-context-action-label {
+    @apply hidden;
+  }
 }
 </style>
 <style lang="scss">
 #oc-appbar-batch-actions {
-  display: block;
-
   .action-menu-item {
     gap: var(--oc-space-xsmall) !important;
   }
@@ -63,12 +66,5 @@ export default defineComponent({
   li {
     float: left !important;
   }
-  @media only screen and (min-width: 1200px) {
-    align-items: center;
-    display: flex;
-  }
-}
-.oc-appbar-batch-actions-squashed .oc-files-context-action-label {
-  display: none;
 }
 </style>

@@ -75,7 +75,8 @@ const classes = computed(() => [
   'oc-rounded',
   'oc-checkbox-' + getSizeClass(size),
   { 'oc-checkbox-checked': isChecked.value },
-  'm-0.5'
+  'm-0.5',
+  'inline-block'
 ])
 
 const labelClasses = computed(() => ({
@@ -118,7 +119,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
   border: 2px solid var(--oc-role-outline);
-  display: inline-block;
   overflow: hidden;
   background-color: transparent;
   outline: none;

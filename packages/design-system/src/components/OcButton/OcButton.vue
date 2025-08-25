@@ -4,6 +4,7 @@
     v-bind="additionalAttributes"
     :aria-label="ariaLabel"
     :class="buttonClass"
+    class="inline-flex"
     v-on="handlers"
   >
     <oc-spinner v-if="showSpinner" size="small" class="spinner" />
@@ -178,14 +179,21 @@ const onClick = (event: MouseEvent) => {
   .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
     @apply py-1.5 px-2.5;
   }
+
   .oc-button-s {
     @apply text-sm;
   }
+
   .oc-button-m {
     @apply text-base;
   }
+
   .oc-button-l {
     @apply text-lg;
+  }
+
+  .oc-button-group {
+    @apply inline-flex flex-row flex-wrap;
   }
 }
 </style>
@@ -202,6 +210,7 @@ const onClick = (event: MouseEvent) => {
 
     background-color: transparent;
     color: $color;
+
     .oc-icon > svg {
       fill: $color;
     }
@@ -215,6 +224,7 @@ const onClick = (event: MouseEvent) => {
     &:hover:not([disabled]):not(.active):not(.no-hover) {
       background-color: var(--oc-role-surface-container);
       color: var(--oc-role-on-surface);
+
       .oc-icon > svg {
         fill: var(--oc-role-on-surface);
       }
@@ -222,6 +232,7 @@ const onClick = (event: MouseEvent) => {
   }
   &-raw-inverse {
     color: $on-color;
+
     .oc-icon > svg {
       fill: $on-color;
     }
@@ -230,6 +241,7 @@ const onClick = (event: MouseEvent) => {
   &-filled {
     background-color: $color;
     color: $on-color !important;
+
     .oc-icon > svg {
       fill: $on-color;
     }
@@ -240,6 +252,7 @@ const onClick = (event: MouseEvent) => {
     outline-offset: -1px;
     background-color: transparent;
     color: $color;
+
     .oc-icon > svg {
       fill: $color;
     }
@@ -250,7 +263,6 @@ const onClick = (event: MouseEvent) => {
   align-items: center;
   border: 0;
   box-sizing: border-box;
-  display: inline-flex;
 
   &-justify-content {
     &-left {
@@ -319,48 +331,59 @@ const onClick = (event: MouseEvent) => {
   &-primary {
     @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
   }
+
   &-primary-container {
     @include oc-button-color-role(
       var(--oc-role-primary-container),
       var(--oc-role-on-primary-container)
     );
   }
+
   &-primary-fixed {
     @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
   }
+
   &-secondary {
     @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
   }
+
   &-secondary-container {
     @include oc-button-color-role(
       var(--oc-role-secondary-container),
       var(--oc-role-on-secondary-container)
     );
   }
+
   &-secondary-fixed {
     @include oc-button-color-role(
       var(--oc-role-secondary-fixed),
       var(--oc-role-on-secondary-fixed)
     );
   }
+
   &-tertiary {
     @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
   }
+
   &-tertiary-container {
     @include oc-button-color-role(
       var(--oc-role-tertiary-container),
       var(--oc-role-on-tertiary-container)
     );
   }
+
   &-tertiary-fixed {
     @include oc-button-color-role(var(--oc-role-tertiary-fixed), var(--oc-role-on-tertiary-fixed));
   }
+
   &-surface {
     @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
   }
+
   &-surface-container {
     @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
   }
+
   &-chrome {
     @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
   }
@@ -380,8 +403,6 @@ const onClick = (event: MouseEvent) => {
   }
 
   &-group {
-    display: inline-flex;
-    flex-flow: row wrap;
     outline: 1px solid var(--oc-role-secondary);
     outline-offset: -1px;
     border-radius: 5px;

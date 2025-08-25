@@ -1,5 +1,5 @@
 <template>
-  <div class="space_info p-2">
+  <div class="space_info grid items-center p-2">
     <div class="space_info__body oc-text-overflow flex items-center text-sm">
       <div class="mr-2">
         <oc-icon
@@ -36,9 +36,7 @@ export default defineComponent({
 
 <style lang="scss">
 .space_info {
-  display: grid;
   grid-template-columns: auto 1fr auto;
-  align-items: center;
   grid-gap: 5px;
 }
 </style>

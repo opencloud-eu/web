@@ -4,7 +4,7 @@
     :name="icon.name"
     :color="icon.color"
     :size="size"
-    :class="['oc-resource-icon', 'align-middle', iconTypeClass]"
+    :class="['oc-resource-icon', 'inline-flex', 'items-center', iconTypeClass]"
   />
 </template>
 
@@ -149,9 +149,6 @@ export default defineComponent({
 
 <style lang="scss">
 span.oc-resource-icon {
-  display: inline-flex;
-  align-items: center;
-
   &-file svg {
     height: 70%;
   }

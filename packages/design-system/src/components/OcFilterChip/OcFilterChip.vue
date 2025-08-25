@@ -100,14 +100,17 @@ export interface Emits {
    * @docs Emitted when the filter has been cleared.
    */
   (e: 'clearFilter'): void
+
   /**
    * @docs Emitted when the drop has been hidden.
    */
   (e: 'hideDrop'): void
+
   /**
    * @docs Emitted when the drop has been displayed.
    */
   (e: 'showDrop'): void
+
   /**
    * @docs Emitted when the filter has been toggled.
    */
@@ -153,18 +156,26 @@ const hideDrop = () => {
 
 defineExpose({ hideDrop })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-filter-chip-button.oc-pill {
+    @apply inline-flex items-center;
+  }
+}
+</style>
 
 <style lang="scss">
 .oc-filter-chip {
   &-button.oc-pill {
-    align-items: center;
     border: 1px solid var(--oc-role-outline);
     box-sizing: border-box;
-    display: inline-flex;
     gap: var(--oc-space-xsmall);
     max-width: 150px;
     height: 100%;
   }
+
   &-button-selected.oc-pill,
   &-button-selected.oc-pill:hover {
     background-color: var(--oc-role-secondary-container) !important;
@@ -175,6 +186,7 @@ defineExpose({ hideDrop })
     border-bottom-right-radius: 0px !important;
     border: 0;
   }
+
   &-clear,
   &-clear:hover {
     background-color: var(--oc-role-secondary-container) !important;
@@ -184,21 +196,25 @@ defineExpose({ hideDrop })
     border-top-right-radius: 99px !important;
     border-bottom-right-radius: 99px !important;
   }
+
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
     margin-left: 1px;
   }
 }
+
 .oc-filter-chip-raw {
   .oc-filter-chip-button {
     background-color: transparent !important;
     border: none !important;
   }
 }
+
 .oc-filter-check-icon-active {
   transition: all 0.25s ease-in;
   transform: scale(1) !important;
 }
+
 .oc-filter-check-icon-inactive {
   transition: all 0.25 ease-in;
   transform: scale(0) !important;

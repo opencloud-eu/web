@@ -11,7 +11,7 @@ exports[`Details SideBar Panel > displays the details side panel 1`] = `
     <p data-v-c7ea2f9c="">This space has 1 member.</p>
     <oc-button-stub data-v-c7ea2f9c="" arialabel="Open share panel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="small" submit="button" type="button" nohover="true"></oc-button-stub>
   </div>
-  <dl data-v-c7ea2f9c="" class="details-list m-0" aria-label="Overview of the information about the selected space">
+  <dl data-v-c7ea2f9c="" class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0" aria-label="Overview of the information about the selected space">
     <dt data-v-c7ea2f9c="">Last activity</dt>
     <dd data-v-c7ea2f9c="">Invalid DateTime</dd>
     <!--v-if-->

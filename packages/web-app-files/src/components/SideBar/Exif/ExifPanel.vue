@@ -1,6 +1,6 @@
 <template>
   <div id="files-sidebar-panel-exif" class="oc-rounded p-4">
-    <dl class="exif-data-list details-list m-0">
+    <dl class="exif-data-list details-list grid grid-cols-[auto_minmax(0,1fr)] m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
       <dt v-text="$gettext('Device make')" />
@@ -160,10 +160,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 #files-sidebar-panel-exif {
   background-color: var(--oc-role-surface-container);
-}
-
-.exif-data-list {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
 }
 </style>

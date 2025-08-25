@@ -1,7 +1,7 @@
 <template>
   <oc-drop
     ref="drop"
-    class="oc-width-1-1 oc-info-drop"
+    class="oc-width-1-1 oc-info-drop inline-block"
     :drop-id="dropId"
     :toggle="toggle"
     :mode="mode"
@@ -121,7 +121,6 @@ export default {
 </script>
 <style lang="scss">
 .oc-info-drop {
-  display: inline-block;
   .info-header {
     align-items: center;
   }
