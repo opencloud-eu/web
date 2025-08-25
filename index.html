@@ -34,6 +34,10 @@
       .splash-banner {
         padding: 0.5rem;
         height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
       }
       .splash-hide {
         display: none;
@@ -64,11 +68,8 @@
     </style>
   </head>
   <body>
-    <div
-      id="splash-incompatible"
-      class="splash-banner splash-hide flex flex-col justify-center items-center"
-    >
-      <div class="oc-card border oc-rounded oc-width-large text-center">
+    <div id="splash-incompatible" class="splash-banner splash-hide">
+      <div class="oc-card border rounded-sm oc-width-large text-center">
         <div class="oc-card-header">
           <div class="flex items-center justify-center">
             <span class="mr-2 oc-icon oc-icon-m oc-icon-warning">
