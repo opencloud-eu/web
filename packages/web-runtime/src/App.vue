@@ -149,8 +149,4 @@ export default defineComponent({
   max-height: 100dvh;
   overflow-y: hidden;
 }
-
-iframe {
-  border: 0;
-}
 </style>

@@ -2,7 +2,7 @@
 
 exports[`Users view > list view > renders initially warning if filters are mandatory 1`] = `
 "<div data-v-32efd9c6="">
-  <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content oc-width-1-1">
+  <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content oc-width-1-1 rounded-l-xl">
     <div class="admin-settings-wrapper flex oc-width-1-1 oc-width-expand oc-height-1-1 flex-wrap">
       <div id="admin-settings-view-wrapper" class="oc-width-expand oc-width-1-1 oc-height-1-1 flex-wrap">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
@@ -40,7 +40,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
                   <!--v-if-->
                 </label>
                 <div class="oc-position-relative">
-                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text">
+                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text">
                   <!--v-if-->
                 </div>
                 <!--v-if-->
@@ -62,7 +62,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
 
 exports[`Users view > list view > renders list initially 1`] = `
 "<div data-v-32efd9c6="">
-  <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content oc-width-1-1">
+  <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content oc-width-1-1 rounded-l-xl">
     <div class="admin-settings-wrapper flex oc-width-1-1 oc-width-expand oc-height-1-1 flex-wrap">
       <div id="admin-settings-view-wrapper" class="oc-width-expand oc-width-1-1 oc-height-1-1 flex-wrap">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
@@ -100,7 +100,7 @@ exports[`Users view > list view > renders list initially 1`] = `
                   <!--v-if-->
                 </label>
                 <div class="oc-position-relative">
-                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text">
+                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text">
                   <!--v-if-->
                 </div>
                 <!--v-if-->
@@ -111,10 +111,10 @@ exports[`Users view > list view > renders list initially 1`] = `
           </div>
           <div>
             <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu users-table">
-              <thead class="oc-thead">
+              <thead class="oc-thead border-b">
                 <tr class="oc-table-header-row">
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-select pl-4" style="top: 0px;">
-                    <div><span class="oc-table-thead-content align-middle"><span><input id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent" aria-label="Select all users"> <!--v-if--></span></span></div>
+                    <div><span class="oc-table-thead-content align-middle"><span><input id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox rounded-sm oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent m-0.5 border-2 border-role-outline" aria-label="Select all users"> <!--v-if--></span></span></div>
                   </th>
                   <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-avatar" style="top: 0px;">
                     <div><span class="oc-table-thead-content align-middle header-text"></span></div>
@@ -140,9 +140,9 @@ exports[`Users view > list view > renders list initially 1`] = `
                 </tr>
               </thead>
               <tbody class="has-item-context-menu">
-                <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select pl-4"><span><input id="oc-checkbox-2" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent" aria-label="Select Admin" value="[object Object]"> <!--v-if--></span></td>
-                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-avatar"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center" style="width: 36px; height: 36px; line-height: 36px; background-color: #106892; font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Admin"><span class="avatar-initials" style="color: white;">A</span></span></td>
+                <tr class="oc-tbody-tr oc-tbody-tr-1 border-t" data-item-id="1" draggable="false">
+                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-select pl-4"><span><input id="oc-checkbox-2" type="checkbox" name="checkbox" class="oc-checkbox rounded-sm oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent m-0.5 border-2 border-role-outline" aria-label="Select Admin" value="[object Object]"> <!--v-if--></span></td>
+                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-td oc-table-data-cell oc-table-data-cell-avatar"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%]" style="width: 36px; height: 36px; line-height: 36px; background-color: #106892; font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Admin"><span class="avatar-initials" style="color: white;">A</span></span></td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-onPremisesSamAccountName"></td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-displayName mark-element">Admin</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mail">admin@example.org</td>
@@ -163,7 +163,7 @@ exports[`Users view > list view > renders list initially 1`] = `
                   </td>
                 </tr>
               </tbody>
-              <tfoot class="oc-table-footer">
+              <tfoot class="oc-table-footer border-t">
                 <tr class="oc-table-footer-row">
                   <td colspan="8" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
                     <!-- @slot Footer of the table -->

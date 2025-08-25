@@ -66,7 +66,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="tile-preview"
+                  class="tile-preview rounded-t-sm"
                   :src="resource.thumbnail"
                   alt=""
                 />
@@ -79,7 +79,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="table-preview mr-2"
+                  class="table-preview mr-2 rounded-sm"
                   :class="{ 'table-preview-disabled': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
@@ -473,7 +473,6 @@ const openSidebarSharePanel = (space: SpaceResource) => {
 
 .table-preview {
   object-fit: cover;
-  border-radius: 3px;
 }
 
 .table-preview-disabled {

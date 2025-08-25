@@ -29,7 +29,7 @@
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
-              class="p-1 oc-rounded"
+              class="p-1 rounded-sm"
               size="small"
             />
           </oc-button>
@@ -54,6 +54,7 @@
         v-bind="extractTbodyTrProps(item, trIndex)"
         :data-item-id="item[idKey as keyof Item]"
         :draggable="dragDrop"
+        class="border-t"
         @click="$emit(constants.EVENT_TROW_CLICKED, [item, $event])"
         @contextmenu="
           $emit(
@@ -89,7 +90,7 @@
         </oc-td>
       </oc-tr>
     </oc-tbody>
-    <tfoot v-if="$slots.footer" class="oc-table-footer">
+    <tfoot v-if="$slots.footer" class="oc-table-footer border-t">
       <tr class="oc-table-footer-row">
         <td
           :colspan="fullColspan"
@@ -530,10 +531,6 @@ const handleSort = (field: FieldType) => {
     height: var(--oc-size-height-table-row);
   }
 
-  tr + tr {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-
   &-disabled {
     opacity: 0.7;
     filter: grayscale(0.6);
@@ -551,10 +548,6 @@ const handleSort = (field: FieldType) => {
 
   &-thead-content {
     display: inline-table;
-  }
-
-  &-footer {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

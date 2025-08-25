@@ -1,7 +1,9 @@
 <template>
   <main class="external-redirect oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container">
+    <div
+      class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container rounded-xl"
+    >
       <h2 key="external-redirect-loading" class="mt-0">
         <span v-text="$gettext('One moment please…')" />
       </h2>
@@ -72,11 +74,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.external-redirect {
-  .oc-card {
-    border-radius: 15px;
-  }
-}
-</style>

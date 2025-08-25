@@ -2,7 +2,7 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
-    class="px-4 bg-role-surface"
+    class="px-4 bg-role-surface rounded-t-xl"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky': isSticky }"
   >
     <div class="files-topbar py-2">
@@ -346,8 +346,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #files-app-bar {
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;
   position: inherit;

@@ -15,7 +15,7 @@
           :key="`section-${action.name}-action-${actionIndex}`"
           :action="action"
           :action-options="actionOptions"
-          class="oc-rounded oc-menu-item-hover"
+          class="rounded-sm oc-menu-item-hover"
           :data-testid="`whitespace-context-menu-item-${action.name}`"
         />
       </oc-list>

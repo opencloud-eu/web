@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container">
+  <div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <div class="oc-space-details-sidebar-image text-center">
       <oc-spinner
         v-if="imagesLoading.includes(resource.id)"
@@ -234,10 +234,6 @@ const expandSharesPanel = () => {
 }
 </script>
 <style lang="scss" scoped>
-#oc-space-details-sidebar {
-  border-radius: 5px;
-}
-
 .oc-space-details-sidebar {
   &-members {
     gap: var(--oc-space-small);

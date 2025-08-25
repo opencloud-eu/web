@@ -83,6 +83,7 @@
             :aria-label="contextMenuLabel"
             appearance="raw"
             no-hover
+            class="mx-1"
           >
             <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
           </oc-button>
@@ -316,7 +317,7 @@ const dropItemStyling = (
     @apply bg-role-secondary-container;
   }
   .oc-breadcrumb-list > :nth-child(n + 2)::before {
-    @apply text-role-on-surface;
+    @apply text-role-on-surface rounded-sm;
   }
 }
 </style>
@@ -330,7 +331,6 @@ const dropItemStyling = (
       border-color 0s,
       border-width 0.06s;
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
-    border-radius: 5px;
   }
   &-item-text {
     max-width: 200px;
@@ -350,10 +350,6 @@ const dropItemStyling = (
 
     @media (max-width: $oc-breakpoint-xsmall-max) {
       display: none !important;
-    }
-
-    #oc-breadcrumb-contextmenu-trigger > span {
-      border: 3px solid transparent;
     }
 
     #oc-breadcrumb-contextmenu li button {

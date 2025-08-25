@@ -5,6 +5,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
+        class="border border-role-outline rounded-sm"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -12,7 +13,7 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap py-3 px-4"
+          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap py-3 px-4 rounded-t-sm"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
         </div>
@@ -323,8 +324,6 @@ export default {
 
 <style lang="scss">
 .oc-modal {
-  border: 1px solid var(--oc-role-outline);
-  border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   max-width: 500px;
@@ -344,20 +343,8 @@ export default {
     z-index: var(--oc-z-index-modal);
   }
 
-  &-title {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-
   &-body {
     &-actions {
-      border-bottom-right-radius: 15px;
-      border-bottom-left-radius: 15px;
-
-      .oc-button {
-        border-radius: 4px;
-      }
-
       &-grid {
         display: inline-grid;
         grid-auto-flow: column;

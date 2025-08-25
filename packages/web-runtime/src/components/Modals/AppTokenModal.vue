@@ -39,10 +39,10 @@
         )
       "
     />
-    <div class="mt-4 mb-2 flex items-center oc-rounded">
+    <div class="mt-4 mb-2 flex items-center rounded-sm">
       <div class="created-token-container">
         <div
-          class="created-token flex items-center justify-between oc-rounded p-2 font-bold bg-role-surface-container-high"
+          class="created-token flex items-center justify-between rounded-sm p-2 font-bold bg-role-surface-container-high"
         >
           {{ createdToken }}
           <oc-button

@@ -134,7 +134,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-modal.open-with-app-modal {
   max-width: 80vw;
-  border: none;
   overflow: hidden;
 
   .oc-modal-title {

@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-files-file-link" class="oc-position-relative">
+  <div id="oc-files-file-link" class="oc-position-relative rounded-sm">
     <div class="flex items-center">
       <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
       <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
@@ -330,11 +330,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#oc-files-file-link,
-#oc-files-sharing-sidebar {
-  border-radius: 5px;
-}
-
 .files-links-indirect-list {
   display: grid;
   grid-template-rows: 0fr;

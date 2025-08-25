@@ -42,7 +42,8 @@
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview"
+              class="tile-preview rounded-t-sm"
+              :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
               @click="toggleTile([resource, $event])"
             />
@@ -209,6 +210,9 @@ if (!lazy) {
   .oc-tile-card-selection input {
     background-color: var(--oc-role-surface-container);
   }
+  .oc-tile-card:hover .tile-preview {
+    @apply rounded-sm;
+  }
 }
 </style>
 <style lang="scss">
@@ -261,8 +265,6 @@ if (!lazy) {
       height: 100%;
       object-fit: cover;
       width: 100%;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
     }
   }
 
@@ -271,10 +273,6 @@ if (!lazy) {
     .oc-tile-card-preview {
       width: calc(100% - var(--oc-space-medium));
       height: calc(100% - var(--oc-space-medium));
-
-      .tile-preview {
-        border-radius: 5px !important;
-      }
     }
   }
   &-selected {

@@ -69,7 +69,7 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const tagClasses = computed(() => {
-  const classes = ['oc-tag', `oc-tag-${getSizeClass(size)}`]
+  const classes = ['oc-tag', `oc-tag-${getSizeClass(size)}`, 'border']
 
   type === 'router-link' || type === 'a'
     ? classes.push('oc-tag-link')
@@ -77,14 +77,18 @@ const tagClasses = computed(() => {
   classes.push(`oc-tag-color-${color}`)
   classes.push(`oc-tag-appearance-${appearance}`)
   if (rounded) {
-    classes.push('oc-tag-rounded')
+    classes.push('rounded-full')
+  } else {
+    classes.push('rounded-lg')
   }
   if (appearance === 'filled') {
     classes.push(`bg-role-${color}`)
     classes.push(`text-role-on-${color}`)
+    classes.push(`border-role-on-${color}`)
   } else {
     classes.push('bg-role-surface')
     classes.push(`text-role-${color}`)
+    classes.push(`border-role-${color}`)
   }
 
   return classes
@@ -115,8 +119,6 @@ function $_ocTag_click(event: MouseEvent) {
 <style lang="scss">
 .oc-tag {
   align-items: center;
-  border: 1px solid var(--oc-role-outline);
-  border-radius: 7px;
   box-sizing: border-box;
   display: inline-flex;
   gap: var(--oc-space-xsmall);
@@ -129,10 +131,6 @@ function $_ocTag_click(event: MouseEvent) {
     min-height: 2.75rem;
   }
 
-  &-rounded {
-    border-radius: 99px;
-  }
-
   &-link,
   &-button {
     transition: color $transition-duration-short ease-in-out;
@@ -140,25 +138,6 @@ function $_ocTag_click(event: MouseEvent) {
     .oc-icon > svg {
       transition: fill $transition-duration-short ease-in-out;
     }
-  }
-
-  &-appearance-outline.oc-tag-color-primary {
-    border: 1px solid var(--oc-role-primary);
-  }
-  &-appearance-outline.oc-tag-color-secondary {
-    border: 1px solid var(--oc-role-secondary);
-  }
-  &-appearance-outline.oc-tag-color-tertiary {
-    border: 1px solid var(--oc-role-tertiary);
-  }
-  &-appearance-filled.oc-tag-color-primary {
-    border: 1px solid var(--oc-role-on-primary);
-  }
-  &-appearance-filled.oc-tag-color-secondary {
-    border: 1px solid var(--oc-role-on-secondary);
-  }
-  &-appearance-filled.oc-tag-color-tertiary {
-    border: 1px solid var(--oc-role-on-tertiary);
   }
 }
 </style>

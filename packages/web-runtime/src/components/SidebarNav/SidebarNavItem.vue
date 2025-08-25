@@ -96,7 +96,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-sidebar-nav-item-link {
   position: relative;
-  border-radius: 5px;
   user-select: none;
 
   .text {

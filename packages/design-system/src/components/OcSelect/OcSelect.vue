@@ -490,8 +490,7 @@ export default { components: { VueSelect } }
       -webkit-appearance: none;
       color: var(--oc-role-on-surface);
       background-color: var(--oc-role-surface);
-      border-radius: 0;
-      border-radius: 5px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--oc-role-outline);
       box-sizing: border-box;
       line-height: inherit;
@@ -526,7 +525,7 @@ export default { components: { VueSelect } }
       color: var(--oc-role-on-surface);
       white-space: normal;
       padding: 6px 0.6rem;
-      border-radius: 5px;
+      border-radius: var(--radius-sm);
 
       &--highlight,
       &--selected {

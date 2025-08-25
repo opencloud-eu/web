@@ -2,7 +2,7 @@
 
 exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div class="date-filter flex date-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2 text-xs" id="oc-filter-chip-5">
+  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full" id="oc-filter-chip-5">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -23,10 +23,10 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
     </button>
-    <div id="oc-drop-6" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
+    <div id="oc-drop-6" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -36,7 +36,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -46,7 +46,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
+          <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -58,7 +58,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             </button></li>
         </ul>
         <div class="date-filter-range-panel py-2 bg-role-surface">
-          <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
+          <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -69,7 +69,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
-            </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
+            </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -86,7 +86,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </label>
               <div class="oc-position-relative">
-                <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1">
@@ -98,7 +98,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </label>
               <div class="oc-position-relative">
-                <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1">
@@ -107,7 +107,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               <!--v-if-->
             </div>
           </div>
-          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
               <!--v-if-->
               <!-- @slot Content of the button --> Apply
             </button></div>
@@ -121,7 +121,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 
 exports[`DateFilter > renders all items 1`] = `
 "<div class="date-filter flex date-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2 text-xs" id="oc-filter-chip-1">
+  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full" id="oc-filter-chip-1">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -142,10 +142,10 @@ exports[`DateFilter > renders all items 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
     </button>
-    <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
+    <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -155,7 +155,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -165,7 +165,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
+          <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-list-item flex justify-between items-center oc-width-1-1 p-1" data-testid="custom-date-range">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -177,7 +177,7 @@ exports[`DateFilter > renders all items 1`] = `
             </button></li>
         </ul>
         <div class="date-filter-range-panel py-2 bg-role-surface">
-          <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
+          <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -188,7 +188,7 @@ exports[`DateFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
-            </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
+            </button> <span>Custom date range</span> <button type="button" aria-label="Close filter" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw date-filter-range-panel-close">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -205,7 +205,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </label>
               <div class="oc-position-relative">
-                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1">
@@ -217,7 +217,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </label>
               <div class="oc-position-relative">
-                <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1">
@@ -226,7 +226,7 @@ exports[`DateFilter > renders all items 1`] = `
               <!--v-if-->
             </div>
           </div>
-          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-rounded oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
+          <div class="date-filter-apply-btn text-end"><button type="button" disabled="" class="oc-button oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline">
               <!--v-if-->
               <!-- @slot Content of the button --> Apply
             </button></div>

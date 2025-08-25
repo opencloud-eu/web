@@ -18,7 +18,7 @@
     v-else
     :id="dropId"
     ref="drop"
-    class="oc-drop oc-box-shadow-medium oc-rounded"
+    class="oc-drop oc-box-shadow-medium rounded-sm"
     @click="onClick"
   >
     <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
@@ -354,9 +354,5 @@ watch(
 .oc-drop {
   max-width: 100%;
   width: 300px;
-
-  .oc-card {
-    border-radius: var(--oc-space-small) !important;
-  }
 }
 </style>

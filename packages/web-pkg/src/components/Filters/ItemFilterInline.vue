@@ -1,11 +1,14 @@
 <template>
   <div>
-    <div class="item-inline-filter inline-flex" :class="`item-inline-filter-${filterName}`">
+    <div
+      class="item-inline-filter inline-flex border border-role-secondary rounded-full"
+      :class="`item-inline-filter-${filterName}`"
+    >
       <oc-button
         v-for="(option, index) in filterOptions"
         :id="option.name"
         :key="index"
-        class="item-inline-filter-option py-1 px-2 text-xs"
+        class="item-inline-filter-option py-1 px-2 text-xs first:rounded-l-full last:rounded-r-full"
         :class="{
           'item-inline-filter-option-selected': activeOption === option.name
         }"
@@ -83,24 +86,8 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .item-inline-filter {
-  border-radius: 99px;
-  border: 1px solid var(--oc-role-outline);
-
   button {
     height: 24px;
-  }
-
-  button:first-child {
-    border-top-left-radius: 99px !important;
-    border-bottom-left-radius: 99px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-  }
-  button:last-child {
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-top-right-radius: 99px !important;
-    border-bottom-right-radius: 99px !important;
   }
 }
 </style>

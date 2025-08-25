@@ -2,7 +2,7 @@
 
 exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 "<div class="item-filter flex item-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2 text-xs" id="oc-filter-chip-3">
+  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full" id="oc-filter-chip-3">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -23,12 +23,12 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
     </button>
-    <div id="oc-drop-4" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
+    <div id="oc-drop-4" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <!--v-if-->
         <div>
           <ul class="oc-list item-filter-list">
-            <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -40,7 +40,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
                   <!--v-if-->
                 </div>
               </button></li>
-            <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -63,7 +63,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 
 exports[`ItemFilter > renders all items 1`] = `
 "<div class="item-filter flex item-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-surface oc-button-raw-inverse oc-button-surface-raw-inverse oc-filter-chip-button oc-pill py-1 px-2 text-xs" id="oc-filter-chip-1">
+  <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full" id="oc-filter-chip-1">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -84,12 +84,12 @@ exports[`ItemFilter > renders all items 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
     </button>
-    <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded oc-filter-chip-drop">
+    <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <!--v-if-->
         <div>
           <ul class="oc-list item-filter-list">
-            <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -101,7 +101,7 @@ exports[`ItemFilter > renders all items 1`] = `
                   <!--v-if-->
                 </div>
               </button></li>
-            <li class="my-1"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">

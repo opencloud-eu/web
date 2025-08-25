@@ -250,6 +250,9 @@ watch(filterTerm, async () => {
   .space-members-filter label {
     @apply text-sm;
   }
+  .space-members-filter input:focus {
+    @apply border border-role-outline;
+  }
 }
 </style>
 <style lang="scss">
@@ -259,7 +262,6 @@ watch(filterTerm, async () => {
   input:focus {
     // use inner focus border because an outline would be cut off by the hidden overflow
     outline: 0px !important;
-    border: 1px solid var(--oc-role-outline) !important;
     box-shadow: inset 0px 0px 0px 1px var(--oc-role-outline);
   }
 

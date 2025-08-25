@@ -1,6 +1,6 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container">
-    <div class="spaces-preview text-center mb-6">
+  <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <div class="spaces-preview text-center mb-6 rounded-sm">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
@@ -79,12 +79,3 @@ const items = computed(() => [
   { term: $gettext('Disabled:'), definition: unref(totalDisabledSpaces).toString() }
 ])
 </script>
-<style lang="scss" scoped>
-#oc-spaces-details-multiple-sidebar {
-  border-radius: 5px;
-}
-
-.spaces-preview {
-  border-radius: 5px;
-}
-</style>

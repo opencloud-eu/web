@@ -4,6 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
+    class="border-l"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -18,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel bg-role-surface"
+        class="sidebar-panel bg-role-surface rounded-r-xl"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -81,8 +82,8 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator mt-4 pt-2': index > 0 }"
-                  class="oc-rounded"
+                  :class="{ 'multi-root-panel-separator mt-4 pt-2 border-t': index > 0 }"
+                  class="rounded-sm"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>
@@ -287,7 +288,6 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  border-left: 0.5px solid var(--oc-role-outline-variant);
   position: relative;
   overflow: hidden;
   min-width: 440px;
@@ -330,8 +330,6 @@ onBeforeUnmount(() => {
   // hidden: if element is off screen
   // visible: if element is on screen
   visibility: hidden;
-  border-top-right-radius: var(--oc-space-medium);
-  border-bottom-right-radius: var(--oc-space-medium);
 
   @media screen and (prefers-reduced-motion: reduce), (update: slow) {
     transition-duration: 0.001ms !important;
@@ -353,10 +351,6 @@ onBeforeUnmount(() => {
     visibility: visible;
     transition: right 0.4s 0s;
     right: 100px;
-  }
-
-  .multi-root-panel-separator {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
   }
 
   &__header {
@@ -389,11 +383,9 @@ onBeforeUnmount(() => {
   &__navigation {
     > button {
       width: 100%;
-      border-radius: 0;
       display: grid;
       grid-template-columns: auto 1fr auto;
       height: 50px;
-      border-radius: 5px;
     }
   }
 }

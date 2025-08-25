@@ -6,12 +6,12 @@
   <div
     v-if="multipleGroups"
     id="oc-groups-details-multiple-sidebar"
-    class="flex group-info p-4 bg-role-surface-container"
+    class="flex group-info p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group-2" size="xxlarge" />
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>
-  <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container">
+  <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <GroupInfoBox :group="group" />
     <p
       class="selected-group-details p-1"
@@ -55,11 +55,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#oc-group-details-sidebar,
-#oc-groups-details-multiple-sidebar {
-  border-radius: 5px;
-}
-
 .group-info {
   align-items: center;
   flex-direction: column;

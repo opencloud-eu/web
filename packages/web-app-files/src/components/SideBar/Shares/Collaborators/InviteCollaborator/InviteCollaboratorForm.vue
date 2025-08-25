@@ -123,7 +123,7 @@
               class="collaborator-edit-dropdown-options-list"
               :aria-label="'shareEditOptions'"
             >
-              <li class="oc-rounded oc-menu-item-hover">
+              <li class="rounded-sm oc-menu-item-hover">
                 <expiration-datepicker
                   v-if="!saving"
                   :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
