@@ -4,7 +4,7 @@
     :class="classes"
   >
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
-      <div class="flex items-center justify-between oc-width-1-1">
+      <div class="flex items-center justify-between w-full">
         <div class="flex items-center">
           <oc-icon name="information" fill-type="line" class="mr-2" />
           <div class="oc-notification-message-title text-lg">
@@ -15,7 +15,7 @@
           <oc-icon name="close" />
         </oc-button>
       </div>
-      <div v-if="message || errorLogContent" class="flex justify-between oc-width-1-1 mt-2">
+      <div v-if="message || errorLogContent" class="flex justify-between w-full mt-2">
         <span
           v-if="message"
           class="oc-notification-message-content text-role-on-surface-variant mr-2"

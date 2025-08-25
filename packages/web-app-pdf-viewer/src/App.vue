@@ -1,5 +1,5 @@
 <template>
-  <object class="pdf-viewer oc-width-1-1 oc-height-1-1" :data="url" :type="objectType" />
+  <object class="pdf-viewer w-full oc-height-1-1" :data="url" :type="objectType" />
 </template>
 
 <script lang="ts">

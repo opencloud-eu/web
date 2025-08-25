@@ -12,10 +12,7 @@
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
-      <div
-        v-else
-        class="details-icon-wrapper oc-width-1-1 flex items-center justify-center mb-4 p-2"
-      >
+      <div v-else class="details-icon-wrapper w-full flex items-center justify-center mb-4 p-2">
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
       <div

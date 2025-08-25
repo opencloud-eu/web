@@ -1,5 +1,5 @@
 <template>
-  <div class="flex oc-width-1-1" :class="{ 'space-frontpage': isSpaceFrontpage }">
+  <div class="flex w-full" :class="{ 'space-frontpage': isSpaceFrontpage }">
     <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
     <files-view-wrapper>
       <app-bar
@@ -86,7 +86,7 @@
 
               <template #footer>
                 <pagination :pages="paginationPages" :current-page="paginationPage" />
-                <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
+                <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
               </template>
               <template #quickActions="{ resource }">
                 <quick-actions

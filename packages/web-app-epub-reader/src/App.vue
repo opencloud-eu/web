@@ -18,7 +18,7 @@
         </oc-button>
       </li>
     </oc-list>
-    <div class="oc-width-1-1 oc-height-1-1">
+    <div class="w-full oc-height-1-1">
       <div class="epub-reader-controls flex items-center m-2">
         <div class="epub-reader-controls-font-size flex oc-button-group">
           <oc-button
@@ -53,7 +53,7 @@
         </div>
         <oc-select
           v-model="currentChapter"
-          class="epub-reader-controls-chapters-select oc-width-1-1 px-2 oc-hidden@l"
+          class="epub-reader-controls-chapters-select w-full px-2 oc-hidden@l"
           :label="$gettext('Chapter')"
           :label-hidden="true"
           :options="chapters"
@@ -61,7 +61,7 @@
           @update:model-value="showChapter"
         />
       </div>
-      <div class="flex justify-center oc-width-1-1 oc-height-1-1">
+      <div class="flex justify-center w-full oc-height-1-1">
         <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-left"

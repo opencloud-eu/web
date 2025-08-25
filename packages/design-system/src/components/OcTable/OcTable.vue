@@ -12,7 +12,7 @@
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
             justify-content="left"
-            class="oc-button-sort oc-width-1-1 hover:underline"
+            class="oc-button-sort w-full hover:underline"
             gap-size="small"
             no-hover
             @click="handleSort(field)"

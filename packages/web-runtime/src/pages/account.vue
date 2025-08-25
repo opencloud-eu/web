@@ -10,7 +10,7 @@
         class="account-page-info mt-6"
       >
         <template #header="{ title }">
-          <div class="flex justify-between items-end oc-width-1-1">
+          <div class="flex justify-between items-end w-full">
             <h2 v-text="title" />
             <oc-button
               v-if="accountEditLink"

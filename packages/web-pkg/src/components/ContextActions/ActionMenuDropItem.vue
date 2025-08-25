@@ -4,7 +4,7 @@
       :id="toggleId"
       appearance="raw"
       gap-size="medium"
-      class="oc-width-1-1 flex justify-between oc-width-1-1"
+      class="w-full flex justify-between w-full"
       aria-expanded="false"
     >
       <oc-icon :name="menuSectionDrop.icon" size="medium" fill-type="line" />

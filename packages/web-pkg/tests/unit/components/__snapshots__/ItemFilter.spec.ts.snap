@@ -28,7 +28,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
         <!--v-if-->
         <div>
           <ul class="oc-list item-filter-list">
-            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -40,7 +40,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
                   <!--v-if-->
                 </div>
               </button></li>
-            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -89,7 +89,7 @@ exports[`ItemFilter > renders all items 1`] = `
         <!--v-if-->
         <div>
           <ul class="oc-list item-filter-list">
-            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Albert Einstein">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">
@@ -101,7 +101,7 @@ exports[`ItemFilter > renders all items 1`] = `
                   <!--v-if-->
                 </div>
               </button></li>
-            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center oc-width-1-1 justify-between" data-test-value="Marie Curie">
+            <li class="my-1"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
                 <!--v-if-->
                 <!-- @slot Content of the button -->
                 <div class="flex items-center truncate">

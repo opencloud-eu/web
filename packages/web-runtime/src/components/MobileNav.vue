@@ -16,7 +16,7 @@
         <li
           v-for="(item, index) in navItems"
           :key="index"
-          class="mobile-nav-item oc-width-1-1"
+          class="mobile-nav-item w-full"
           :aria-current="item.active ? 'page' : null"
         >
           <oc-button

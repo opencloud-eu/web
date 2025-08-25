@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-width-1-1 flex items-center justify-between files-links-details">
+  <div class="w-full flex items-center justify-between files-links-details">
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
       <div class="files-links-name-wrapper grid pl-2">

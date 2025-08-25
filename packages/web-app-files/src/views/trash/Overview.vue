@@ -50,7 +50,7 @@
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
-              <div class="text-center oc-width-1-1 my-2">
+              <div class="text-center w-full my-2">
                 <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
               </div>

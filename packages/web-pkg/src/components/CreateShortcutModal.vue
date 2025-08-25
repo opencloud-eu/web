@@ -49,7 +49,7 @@
         }"
       >
         <oc-button
-          class="oc-width-1-1"
+          class="w-full"
           appearance="raw"
           justify-content="left"
           @click="dropItemUrlClicked"
@@ -76,7 +76,7 @@
           }"
         >
           <oc-button
-            class="oc-width-1-1"
+            class="w-full"
             appearance="raw"
             justify-content="left"
             @click="dropItemResourceClicked(value)"
@@ -87,12 +87,12 @@
       </template>
     </oc-list>
   </oc-drop>
-  <div v-if="inputFilename" class="flex oc-width-1-1 mt-4">
+  <div v-if="inputFilename" class="flex w-full mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
       :label="$gettext('Shortcut name')"
-      class="oc-width-1-1"
+      class="w-full"
       :error-message="inputFileNameErrorMessage"
       :fix-message-line="true"
     >

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex oc-width-1-1">
+  <div class="flex w-full">
     <app-loading-spinner />
   </div>
 </template>

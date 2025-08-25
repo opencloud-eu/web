@@ -4,7 +4,7 @@
     <iframe
       v-show="!isLoading"
       ref="iframeRef"
-      class="oc-width-1-1 oc-height-1-1"
+      class="w-full oc-height-1-1"
       :title="iframeTitle"
       :src="iframeSrc"
       tabindex="0"

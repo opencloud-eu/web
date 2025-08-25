@@ -16,7 +16,7 @@
             class="my-1 first:mt-0 last:mb-0"
           >
             <oc-button
-              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center w-full p-1"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -37,7 +37,7 @@
           </li>
           <li class="my-1">
             <oc-button
-              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center w-full p-1"
               :class="{
                 'date-filter-list-item-active': dateRangeApplied
               }"

@@ -5,7 +5,7 @@
     }`"
     class="files-collaborators-collaborator py-1"
   >
-    <div class="oc-width-1-1 flex items-center files-collaborators-collaborator-details">
+    <div class="w-full flex items-center files-collaborators-collaborator-details">
       <div class="oc-width-2-3 flex items-center">
         <div>
           <template v-if="isShareDenied">

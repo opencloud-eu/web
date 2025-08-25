@@ -31,7 +31,7 @@
           <li class="create-list-folder oc-menu-item-hover">
             <oc-button
               id="new-folder-btn"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               appearance="raw"
               @click="createNewFolderAction"
@@ -53,7 +53,7 @@
           >
             <oc-button
               appearance="raw"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               :class="['new-file-btn-' + fileAction.ext]"
               @click="fileAction.handler"
@@ -73,7 +73,7 @@
           <li class="create-list-shortcut oc-menu-item-hover">
             <oc-button
               id="new-shortcut-btn"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               appearance="raw"
               @click="createNewShortcutAction"
@@ -130,10 +130,10 @@
     >
       <oc-list id="upload-list">
         <li class="oc-menu-item-hover">
-          <resource-upload btn-class="oc-width-1-1" />
+          <resource-upload btn-class="w-full" />
         </li>
         <li class="oc-menu-item-hover">
-          <resource-upload btn-class="oc-width-1-1" :is-folder="true" />
+          <resource-upload btn-class="w-full" :is-folder="true" />
         </li>
       </oc-list>
       <oc-list
@@ -150,7 +150,7 @@
           class="oc-menu-item-hover"
         >
           <oc-button
-            class="oc-width-1-1"
+            class="w-full"
             :class="action.class"
             appearance="raw"
             justify-content="left"

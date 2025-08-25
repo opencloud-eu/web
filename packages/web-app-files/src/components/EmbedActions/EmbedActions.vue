@@ -1,6 +1,6 @@
 <template>
   <section
-    class="files-embed-actions oc-width-1-1 flex items-center justify-between my-2 text-role-on-chrome"
+    class="files-embed-actions w-full flex items-center justify-between my-2 text-role-on-chrome"
   >
     <oc-text-input
       v-if="chooseFileName"

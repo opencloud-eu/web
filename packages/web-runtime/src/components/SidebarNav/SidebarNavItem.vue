@@ -7,7 +7,7 @@
       :justify-content="'space-between'"
       :class="[
         'oc-sidebar-nav-item-link',
-        'oc-oc-width-1-1',
+        'w-full',
         'whitespace-nowrap',
         'p-2',
         { active: active }

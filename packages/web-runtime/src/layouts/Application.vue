@@ -29,7 +29,7 @@
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
-            class="app-content oc-width-1-1 bg-role-surface rounded-l-xl"
+            class="app-content w-full bg-role-surface rounded-l-xl"
             :name="name"
           />
         </template>

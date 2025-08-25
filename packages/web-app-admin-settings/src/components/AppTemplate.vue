@@ -1,11 +1,11 @@
 <template>
-  <main class="flex oc-height-1-1 app-content oc-width-1-1 rounded-l-xl">
-    <div class="admin-settings-wrapper flex oc-width-1-1 oc-width-expand oc-height-1-1 flex-wrap">
+  <main class="flex oc-height-1-1 app-content w-full rounded-l-xl">
+    <div class="admin-settings-wrapper flex w-full oc-width-expand oc-height-1-1 flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
         <div
           id="admin-settings-view-wrapper"
-          class="oc-width-expand oc-width-1-1 oc-height-1-1 flex-wrap"
+          class="oc-width-expand w-full oc-height-1-1 flex-wrap"
         >
           <div
             id="admin-settings-app-bar"

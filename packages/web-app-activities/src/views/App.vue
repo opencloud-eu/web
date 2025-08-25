@@ -1,6 +1,6 @@
 <template>
   <h1 v-text="$gettext('Activities')" />
-  <div class="oc-width-1-1 mb-4">
+  <div class="w-full mb-4">
     <item-filter
       ref="mediaTypeFilter"
       :allow-multiple="false"

@@ -31,17 +31,17 @@
     <div v-else>
       <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
         <template #label="{ item }">
-          <div class="oc-width-1-1 truncate">
+          <div class="w-full truncate">
             <span v-text="item.label || '-'" />
           </div>
         </template>
         <template #creationDate="{ item }">
-          <div class="oc-width-1-1 truncate">
+          <div class="w-full truncate">
             <span v-text="formatDateFromISO(item.created_date, currentLanguage)" />
           </div>
         </template>
         <template #expirationDate="{ item }">
-          <div class="oc-width-1-1 truncate">
+          <div class="w-full truncate">
             <span v-text="formatDateFromISO(item.expiration_date, currentLanguage)" />
           </div>
         </template>
@@ -60,10 +60,7 @@
           </oc-button>
         </template>
       </oc-table>
-      <div
-        v-if="appTokens.length > TOKENS_TO_DISPLAY"
-        class="oc-width-1-1 flex justify-center mt-4"
-      >
+      <div v-if="appTokens.length > TOKENS_TO_DISPLAY" class="w-full flex justify-center mt-4">
         <oc-button appearance="raw" no-hover @click="listExpanded = !listExpanded">
           <span v-text="listExpanded ? $gettext('Show less') : $gettext('Show more')" />
           <oc-icon :name="'arrow-' + (listExpanded ? 'up' : 'down') + '-s'" fill-type="line" />

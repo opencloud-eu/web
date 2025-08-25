@@ -2,7 +2,7 @@
 
 exports[`account page > account information section > displays basic user information 1`] = `
 "<div class="account-table account-page-info mt-6">
-  <div class="flex justify-between items-end oc-width-1-1">
+  <div class="flex justify-between items-end w-full">
     <h2>Account Information</h2>
     <!--v-if-->
   </div>

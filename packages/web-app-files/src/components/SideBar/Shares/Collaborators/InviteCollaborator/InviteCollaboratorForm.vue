@@ -1,6 +1,6 @@
 <template>
   <div id="new-collaborators-form" data-testid="new-collaborators-form">
-    <div :class="['flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
+    <div :class="['flex', 'w-full', { 'new-collaborators-form-cern': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -20,7 +20,7 @@
       <oc-select
         id="files-share-invite-input"
         ref="ocSharingAutocomplete"
-        :class="['oc-width-1-1', { 'cern-files-share-invite-input': isRunningOnEos }]"
+        :class="['w-full', { 'cern-files-share-invite-input': isRunningOnEos }]"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
         :loading="searchInProgress"
@@ -70,7 +70,7 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item flex items-center oc-width-1-1 py-1 px-2"
+                    class="invite-form-share-role-type-item flex items-center w-full py-1 px-2"
                     :class="{
                       'bg-role-secondary-container': option.id === currentShareRoleType.id
                     }"
@@ -147,7 +147,7 @@
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
       </div>
-      <div class="oc-width-1-1 mt-2">
+      <div class="w-full mt-2">
         <oc-checkbox
           v-if="isRunningOnEos"
           v-model="notifyEnabled"
