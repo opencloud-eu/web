@@ -2,7 +2,7 @@
 
 exports[`Projects view > different files view states > lists all available project spaces 1`] = `
 "<div class="flex w-full">
-  <div data-v-39c970be="" class="files-view-wrapper grid grid-cols-1 oc-width-expand focus:outline-0">
+  <div data-v-39c970be="" class="files-view-wrapper grid grid-cols-1 focus:outline-0">
     <div data-v-39c970be="" id="files-view" class="outline-0">
       <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="spaces-list">

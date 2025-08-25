@@ -4,7 +4,7 @@
     class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
-    <div class="oc-width-expand oc-position-relative">
+    <div class="flex-1 oc-position-relative">
       <input
         v-model="model"
         :class="inputClass"

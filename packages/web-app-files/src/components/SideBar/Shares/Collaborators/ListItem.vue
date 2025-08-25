@@ -5,8 +5,8 @@
     }`"
     class="files-collaborators-collaborator py-1"
   >
-    <div class="w-full flex items-center files-collaborators-collaborator-details">
-      <div class="oc-width-2-3 flex items-center">
+    <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
+      <div class="flex items-center">
         <div>
           <template v-if="isShareDenied">
             <oc-avatar-item
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center oc-width-1-3 files-collaborators-collaborator-navigation">
+      <div class="flex items-center files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
           class="files-collaborators-collaborator-expiration ml-1 p-1"

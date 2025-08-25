@@ -7,7 +7,7 @@
         <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
       <div class="flex flex-col items-center justify-center p-4">
-        <div class="oc-width-1-2">
+        <div class="w-[50%]">
           <oc-text-input
             v-model="token"
             :label="$gettext('Enter invite token')"

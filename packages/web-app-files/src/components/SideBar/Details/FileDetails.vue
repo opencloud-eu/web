@@ -110,7 +110,7 @@
             ></oc-contextual-helper>
           </dt>
           <dd data-testid="tags">
-            <tags-select :resource="resource" class="oc-width-1"></tags-select>
+            <tags-select :resource="resource" class="w-full" />
           </dd>
         </template>
       </dl>

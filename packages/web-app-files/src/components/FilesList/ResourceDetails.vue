@@ -1,6 +1,6 @@
 <template>
   <div class="resource-details flex flex-col items-center">
-    <div class="oc-width-1-3@l oc-width-1-2@m oc-width-3-4">
+    <div class="w-md lg:w-lg xl:w-2xl">
       <file-info />
       <file-details class="mb-4" />
       <file-actions />

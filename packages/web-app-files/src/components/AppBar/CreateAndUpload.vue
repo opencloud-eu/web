@@ -18,7 +18,7 @@
         :title="$gettext('New file')"
         drop-id="new-file-menu-drop"
         toggle="#new-file-menu-btn"
-        class="oc-width-auto"
+        class="w-auto"
         mode="click"
         close-on-click
         padding-size="small"
@@ -123,7 +123,7 @@
       drop-id="upload-menu-drop"
       toggle="#upload-menu-btn"
       mode="click"
-      class="oc-width-auto"
+      class="w-auto"
       close-on-click
       padding-size="small"
       @show-drop="showDrop"

@@ -3,8 +3,8 @@
 exports[`Users view > list view > renders initially warning if filters are mandatory 1`] = `
 "<div data-v-32efd9c6="">
   <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content w-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex w-full oc-width-expand oc-height-1-1 flex-wrap">
-      <div id="admin-settings-view-wrapper" class="oc-width-expand w-full oc-height-1-1 flex-wrap">
+    <div class="admin-settings-wrapper flex-1 flex w-full oc-height-1-1 flex-wrap">
+      <div id="admin-settings-view-wrapper" class="flex-1 w-full oc-height-1-1 flex-wrap">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
@@ -63,8 +63,8 @@ exports[`Users view > list view > renders initially warning if filters are manda
 exports[`Users view > list view > renders list initially 1`] = `
 "<div data-v-32efd9c6="">
   <main data-v-32efd9c6="" class="flex oc-height-1-1 app-content w-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex w-full oc-width-expand oc-height-1-1 flex-wrap">
-      <div id="admin-settings-view-wrapper" class="oc-width-expand w-full oc-height-1-1 flex-wrap">
+    <div class="admin-settings-wrapper flex-1 flex w-full oc-height-1-1 flex-wrap">
+      <div id="admin-settings-view-wrapper" class="flex-1 w-full oc-height-1-1 flex-wrap">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>

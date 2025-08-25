@@ -9,33 +9,31 @@
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
     <div class="p-4 oc-height-1-1 text-center">
       <div key="loaded-drop" class="flex flex-col">
-        <div class="w-full oc-width-xxlarge@m">
-          <h2 v-text="title" />
-          <resource-upload
-            id="files-drop-zone"
-            ref="fileUpload"
-            class="flex items-center justify-center oc-placeholder"
-            :btn-label="$gettext('Drop files here to upload or click to select file')"
-          />
-          <div id="previews" hidden />
-        </div>
-        <div v-if="errorMessage">
-          <h2>
-            <span v-text="$gettext('An error occurred while loading the public link')" />
-          </h2>
-          <p class="m-0" v-text="errorMessage" />
-        </div>
-        <div v-else class="flex justify-center w-full">
-          <p
-            id="files-drop-info-message"
-            class="m-0 pt-12 text-sm"
-            v-text="
-              $gettext(
-                'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
-              )
-            "
-          />
-        </div>
+        <h2 v-text="title" />
+        <resource-upload
+          id="files-drop-zone"
+          ref="fileUpload"
+          class="flex items-center justify-center oc-placeholder"
+          :btn-label="$gettext('Drop files here to upload or click to select file')"
+        />
+        <div id="previews" hidden />
+      </div>
+      <div v-if="errorMessage">
+        <h2>
+          <span v-text="$gettext('An error occurred while loading the public link')" />
+        </h2>
+        <p class="m-0" v-text="errorMessage" />
+      </div>
+      <div v-else class="flex justify-center w-full">
+        <p
+          id="files-drop-info-message"
+          class="m-0 pt-12 text-sm"
+          v-text="
+            $gettext(
+              'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
+            )
+          "
+        />
       </div>
 
       <div class="mt-24">
