@@ -1,5 +1,36 @@
 # Changelog
 
+## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-08-25
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
+
+### 📈 Enhancement
+
+- refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
+- refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
+- refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
+- refactor: text-align and vertical-align to tailwind [[#1094](https://github.com/opencloud-eu/web/pull/1094)]
+- refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
+- refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
+- refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
+- feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
+
+### 🐛 Bug Fixes
+
+- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.5.0 [[#1068](https://github.com/opencloud-eu/web/pull/1068)]
+- fix(deps): update typescript-eslint monorepo to v8.40.0 [[#1075](https://github.com/opencloud-eu/web/pull/1075)]
+- chore(deps): update apache/tika docker tag to v3.2.2.0 [[#1066](https://github.com/opencloud-eu/web/pull/1066)]
+- chore(deps): update dependency vite-plugin-static-copy to v3.1.2 [security] [[#1106](https://github.com/opencloud-eu/web/pull/1106)]
+- [full-ci] bump-opencloud-3.3.0. run all tests [[#1074](https://github.com/opencloud-eu/web/pull/1074)]
+
 ## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-11
 
 ### ❤️ Thanks to all contributors! ❤️
