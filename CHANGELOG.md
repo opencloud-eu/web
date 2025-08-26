@@ -25,6 +25,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @vueuse/core to v13.7.0 [[#1087](https://github.com/opencloud-eu/web/pull/1087)]
+- fix(deps): update dependency zod to v4.1.3 [[#1070](https://github.com/opencloud-eu/web/pull/1070)]
 - fix(deps): update dependency @sentry/vue to v10.5.0 [[#1068](https://github.com/opencloud-eu/web/pull/1068)]
 - fix(deps): update typescript-eslint monorepo to v8.40.0 [[#1075](https://github.com/opencloud-eu/web/pull/1075)]
 - chore(deps): update apache/tika docker tag to v3.2.2.0 [[#1066](https://github.com/opencloud-eu/web/pull/1066)]
