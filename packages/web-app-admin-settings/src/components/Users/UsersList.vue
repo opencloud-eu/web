@@ -148,6 +148,7 @@ import { findIndex } from 'lodash-es'
 import Mark from 'mark.js'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { useAdminUsersFlags } from '../../composables/useAdminUsersFlags'
 
 export default defineComponent({
   name: 'UsersList',
@@ -175,6 +176,7 @@ export default defineComponent({
     const lastSelectedUserIndex = ref(0)
     const lastSelectedUserId = ref(null)
 
+    const { isLoginToggleHidden } = useAdminUsersFlags()
     const userSettingsStore = useUserSettingsStore()
     const { users, selectedUsers } = storeToRefs(userSettingsStore)
 
@@ -337,7 +339,7 @@ export default defineComponent({
     )
 
     const fields = computed<FieldType[]>(() => {
-      return [
+      const cols: FieldType[] = [
         {
           name: 'select',
           title: '',
@@ -372,21 +374,27 @@ export default defineComponent({
           title: $gettext('Role'),
           type: 'slot',
           sortable: true
-        },
-        {
+        }
+      ]
+
+      if (!isLoginToggleHidden.value) {
+        cols.push({
           name: 'accountEnabled',
           title: $gettext('Login'),
           type: 'slot',
           sortable: true
-        },
-        {
-          name: 'actions',
-          title: $gettext('Actions'),
-          sortable: false,
-          type: 'slot',
-          alignH: 'right'
-        }
-      ]
+        })
+      }
+
+      cols.push({
+        name: 'actions',
+        title: $gettext('Actions'),
+        sortable: false,
+        type: 'slot',
+        alignH: 'right'
+      })
+
+      return cols
     })
 
     const markInstance = ref<Mark>(null)

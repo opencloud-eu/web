@@ -63,7 +63,7 @@
           />
           <div class="oc-text-input-message"></div>
         </div>
-        <div class="oc-mb-s">
+        <div class="oc-mb-s" v-if="!isLoginToggleHidden">
           <oc-select
             id="login-input"
             :disabled="isLoginInputDisabled"
@@ -201,6 +201,12 @@ export default defineComponent({
     const isInputFieldReadOnly = (key: string) => {
       return capabilityStore.graphUsersReadOnlyAttributes.includes(key)
     }
+    const isLoginToggleHidden = computed(() => {
+      const list = (capabilityStore.graphUsersReadOnlyAttributes ?? []).map((s: string) =>
+        s.trim().toLowerCase()
+      )
+      return list.includes('user.accountenabled') || list.includes('accountenabled')
+    })
 
     const onUpdateUserAppRoleAssignments = (user: User, editUser: User) => {
       const client = clientService.graphAuthenticated
@@ -298,6 +304,7 @@ export default defineComponent({
       maxQuota: capabilityRefs.spacesMaxQuota,
       isInputFieldReadOnly,
       isLoginInputDisabled,
+      isLoginToggleHidden,
       editUser,
       formData,
       groupOptions,

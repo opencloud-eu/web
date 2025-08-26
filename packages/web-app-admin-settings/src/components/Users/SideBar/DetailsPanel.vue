@@ -34,8 +34,12 @@
           />
         </span>
       </dd>
-      <dt>{{ $gettext('Login') }}</dt>
-      <dd>{{ loginDisplayValue }}</dd>
+
+      <template v-if="!isLoginToggleHidden">
+        <dt>{{ $gettext('Login') }}</dt>
+        <dd>{{ loginDisplayValue }}</dd>
+      </template>
+
       <dt>{{ $gettext('Quota') }}</dt>
       <dd>
         <span v-if="showUserQuota" v-text="quotaDisplayValue" />
@@ -69,7 +73,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
-import { formatFileSize } from '@opencloud-eu/web-pkg'
+import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
@@ -94,12 +98,19 @@ export default defineComponent({
   },
   setup() {
     const language = useGettext()
-    const currentLanguage = computed(() => {
-      return language.current
+    const currentLanguage = computed(() => language.current)
+
+    const capabilityStore = useCapabilityStore()
+    const isLoginToggleHidden = computed(() => {
+      const list = (capabilityStore.graphUsersReadOnlyAttributes ?? []).map((s: string) =>
+        s.trim().toLowerCase()
+      )
+      return list.includes('user.accountenabled') || list.includes('accountenabled')
     })
 
     return {
-      currentLanguage
+      currentLanguage,
+      isLoginToggleHidden
     }
   },
   computed: {
