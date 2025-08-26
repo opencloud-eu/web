@@ -9,7 +9,7 @@
       />
     </div>
     <oc-table
-      class="settings-spaces-table"
+      class="spaces-table"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -576,38 +576,42 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .settings-spaces-table .oc-table-header-cell-actions,
-  .settings-spaces-table .oc-table-data-cell-actions {
+  #space-list .spaces-table .oc-table-header-cell-actions,
+  #space-list .spaces-table .oc-table-data-cell-actions {
     @apply whitespace-nowrap;
   }
 
-  .settings-spaces-table .oc-table-header-cell-manager,
-  .settings-spaces-table .oc-table-data-cell-manager,
-  .settings-spaces-table .oc-table-header-cell-remainingQuota,
-  .settings-spaces-table .oc-table-data-cell-remainingQuota {
+  /* Manager + RemainingQuota: hidden by default, visible from xl */
+  #space-list .spaces-table .oc-table-header-cell-manager,
+  #space-list .spaces-table .oc-table-data-cell-manager,
+  #space-list .spaces-table .oc-table-header-cell-remainingQuota,
+  #space-list .spaces-table .oc-table-data-cell-remainingQuota {
     @apply hidden xl:table-cell;
   }
 
-  .settings-spaces-table .oc-table-header-cell-totalQuota,
-  .settings-spaces-table .oc-table-data-cell-totalQuota,
-  .settings-spaces-table .oc-table-header-cell-usedQuota,
-  .settings-spaces-table .oc-table-data-cell-usedQuota {
+  /* TotalQuota + UsedQuota: hidden by default, visible from 2xl */
+  #space-list .spaces-table .oc-table-header-cell-totalQuota,
+  #space-list .spaces-table .oc-table-data-cell-totalQuota,
+  #space-list .spaces-table .oc-table-header-cell-usedQuota,
+  #space-list .spaces-table .oc-table-data-cell-usedQuota {
     @apply hidden 2xl:table-cell;
   }
 
-  .settings-spaces-table-squashed .oc-table-header-cell-manager,
-  .settings-spaces-table-squashed .oc-table-data-cell-manager,
-  .settings-spaces-table-squashed .oc-table-header-cell-totalQuota,
-  .settings-spaces-table-squashed .oc-table-data-cell-totalQuota,
-  .settings-spaces-table-squashed .oc-table-header-cell-usedQuota,
-  .settings-spaces-table-squashed .oc-table-data-cell-usedQuota {
+  /* Squashed variant */
+  #space-list .spaces-table-squashed .oc-table-header-cell-manager,
+  #space-list .spaces-table-squashed .oc-table-data-cell-manager,
+  #space-list .spaces-table-squashed .oc-table-header-cell-totalQuota,
+  #space-list .spaces-table-squashed .oc-table-data-cell-totalQuota,
+  #space-list .spaces-table-squashed .oc-table-header-cell-usedQuota,
+  #space-list .spaces-table-squashed .oc-table-data-cell-usedQuota {
     @apply hidden;
   }
 
-  .settings-spaces-table-squashed .oc-table-header-cell-remainingQuota,
-  .settings-spaces-table-squashed .oc-table-data-cell-remainingQuota,
-  .settings-spaces-table-squashed .oc-table-header-cell-mdate,
-  .settings-spaces-table-squashed .oc-table-data-cell-mdate {
+  /* RemainingQuota + mdate visible from xl */
+  #space-list .spaces-table-squashed .oc-table-header-cell-remainingQuota,
+  #space-list .spaces-table-squashed .oc-table-data-cell-remainingQuota,
+  #space-list .spaces-table-squashed .oc-table-header-cell-mdate,
+  #space-list .spaces-table-squashed .oc-table-data-cell-mdate {
     @apply hidden xl:table-cell;
   }
 }

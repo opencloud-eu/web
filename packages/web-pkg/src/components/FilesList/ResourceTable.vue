@@ -1349,7 +1349,8 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  /* spaces-table */
+  /* ---------------- SPACES TABLE ---------------- */
+  /* Mdate, Manager, RemainingQuota, Members, Status: visible from lg */
   .spaces-table .oc-table-header-cell-mdate,
   .spaces-table .oc-table-data-cell-mdate,
   .spaces-table .oc-table-header-cell-manager,
@@ -1360,21 +1361,18 @@ export default defineComponent({
   .spaces-table .oc-table-data-cell-members,
   .spaces-table .oc-table-header-cell-status,
   .spaces-table .oc-table-data-cell-status {
-    @apply hidden md:table-cell;
+    @apply hidden lg:table-cell;
   }
 
+  /* TotalQuota, UsedQuota: visible from xl */
   .spaces-table .oc-table-header-cell-totalQuota,
   .spaces-table .oc-table-data-cell-totalQuota,
   .spaces-table .oc-table-header-cell-usedQuota,
   .spaces-table .oc-table-data-cell-usedQuota {
-    @apply hidden lg:table-cell;
+    @apply hidden xl:table-cell;
   }
 
-  /**
-   * squashed = right sidebar is open.
-   * same media queries as above but +440px width of the right sidebar
-   * (because the right sidebar steals 440px from the file list)
-   */
+  /* Squashed variant */
   .spaces-table-squashed .oc-table-header-cell-status,
   .spaces-table-squashed .oc-table-data-cell-status,
   .spaces-table-squashed .oc-table-header-cell-manager,
@@ -1395,7 +1393,8 @@ export default defineComponent({
     @apply hidden 2xl:table-cell;
   }
 
-  /* files-table */
+  /* ---------------- FILES TABLE ---------------- */
+  /* Size, SharedWith, SharedBy, Status: visible from sm */
   .files-table .oc-table-header-cell-size,
   .files-table .oc-table-data-cell-size,
   .files-table .oc-table-header-cell-sharedWith,
@@ -1407,29 +1406,27 @@ export default defineComponent({
     @apply hidden sm:table-cell;
   }
 
+  /* Mdate, Sdate, Ddate: visible from lg */
   .files-table .oc-table-header-cell-mdate,
   .files-table .oc-table-data-cell-mdate,
   .files-table .oc-table-header-cell-sdate,
   .files-table .oc-table-data-cell-sdate,
   .files-table .oc-table-header-cell-ddate,
   .files-table .oc-table-data-cell-ddate {
-    @apply hidden md:table-cell;
+    @apply hidden lg:table-cell;
   }
 
+  /* SharedBy, Tags, Indicators: visible from xl */
   .files-table .oc-table-header-cell-sharedBy,
   .files-table .oc-table-data-cell-sharedBy,
   .files-table .oc-table-header-cell-tags,
   .files-table .oc-table-data-cell-tags,
   .files-table .oc-table-header-cell-indicators,
   .files-table .oc-table-data-cell-indicators {
-    @apply hidden lg:table-cell;
+    @apply hidden xl:table-cell;
   }
 
-  /**
-   * squashed = right sidebar is open.
-   * same media queries as above but +440px width of the right sidebar
-   * (because the right sidebar steals 440px from the file list)
-   */
+  /* Squashed variant */
   .files-table-squashed .oc-table-header-cell-size,
   .files-table-squashed .oc-table-data-cell-size,
   .files-table-squashed .oc-table-header-cell-sharedWith,
@@ -1459,14 +1456,16 @@ export default defineComponent({
     @apply hidden 2xl:table-cell;
   }
 
-  /* shared with me: hide shared with column and display sharedBy column instead */
+  /* ---------------- SHARED WITH ME VIEW ---------------- */
+  /* Show SharedBy, SyncEnabled from sm */
   #files-shared-with-me-view .files-table .oc-table-header-cell-sharedBy,
   #files-shared-with-me-view .files-table .oc-table-data-cell-sharedBy,
   #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
   #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
-    @apply hidden md:table-cell;
+    @apply sm:table-cell;
   }
 
+  /* Hide SharedWith, SyncEnabled below xl */
   #files-shared-with-me-view .files-table .oc-table-header-cell-sharedWith,
   #files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith,
   #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
