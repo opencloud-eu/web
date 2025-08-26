@@ -1,5 +1,5 @@
 <template>
-  <div class="files-view-wrapper oc-width-expand focus:outline-0">
+  <div class="files-view-wrapper grid grid-cols-1 oc-width-expand focus:outline-0">
     <div id="files-view" v-bind="$attrs" class="outline-0">
       <slot />
     </div>
@@ -31,8 +31,6 @@ export default defineComponent({
   height: 100%;
   position: relative;
   overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr;
   grid-template-rows: max-content max-content 1fr;
   gap: 0 0;
   grid-template-areas:

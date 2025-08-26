@@ -1,6 +1,6 @@
 <template>
-  <div id="files-sidebar-panel-audio" class="rounded-sm p-4 bg-role-surface-container">
-    <dl class="audio-data-list details-list m-0">
+  <div id="files-sidebar-panel-audio" class="oc-rounded p-4 bg-role-surface-container">
+    <dl class="audio-data-list details-list grid grid-cols-[auto_minmax(0,1fr)] m-0">
       <dt v-text="$gettext('Title')" />
       <dd data-testid="audio-panel-title" v-text="title" />
       <dt v-text="$gettext('Duration')" />
@@ -100,7 +100,6 @@ export default defineComponent({
 
 <style lang="scss">
 .audio-data-list {
-  display: grid;
   grid-template-columns: auto minmax(0, 1fr);
 }
 </style>

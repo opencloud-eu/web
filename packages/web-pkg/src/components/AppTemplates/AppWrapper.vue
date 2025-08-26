@@ -761,13 +761,16 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-@media (max-width: 580px) {
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
   .app-sidebar-open > *:not(:last-child) {
-    display: none;
+    @apply hidden sm:block;
   }
 }
-
+</style>
+<style lang="scss">
 .app-wrapper {
   .app-wrapper-content {
     width: 100%;

@@ -39,7 +39,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn mr-6"
+      class="mobile-search-btn inline-flex sm:hidden mr-6"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -530,6 +530,10 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #files-global-search .oc-search-input {
+    @apply inline sm:block;
+  }
+
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
     @apply p-0;
@@ -545,20 +549,9 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #files-global-search {
-  .mobile-search-btn {
-    display: none;
-    @media (max-width: 639px) {
-      display: inline-flex;
-    }
-  }
-
   .oc-search-input {
     transition: 0s;
     height: 2.3rem;
-
-    @media (max-width: 639px) {
-      display: inline;
-    }
   }
 
   #files-global-search-bar {

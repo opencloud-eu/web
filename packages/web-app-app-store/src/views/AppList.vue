@@ -109,12 +109,18 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .app-list .app-tiles {
+    @apply grid [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))];
+  }
+}
+</style>
 <style lang="scss">
 .app-list {
   .app-tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
   }
 }

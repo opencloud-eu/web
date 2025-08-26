@@ -64,7 +64,7 @@ const {
 } = defineProps<Props>()
 
 const classes = computed(() => {
-  return `oc-progress oc-progress-${size}`
+  return `oc-progress oc-progress-${size} block`
 })
 
 const progressValue = computed(() => {
@@ -81,7 +81,6 @@ $progress-height: 15px !default;
 $progress-height-small: 5px !default;
 
 .oc-progress {
-  display: block;
   height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
   width: 100%;
@@ -91,20 +90,24 @@ $progress-height-small: 5px !default;
   &-small {
     height: $progress-height-small;
   }
+
   &-current {
     height: 100%;
     position: absolute;
     transition: width 0.5s;
   }
+
   &-indeterminate div {
     height: 100%;
     position: absolute;
   }
+
   &-indeterminate-first {
     animation-duration: 2s;
     animation-name: indeterminate-first;
     animation-iteration-count: infinite;
   }
+
   &-indeterminate-second {
     animation-duration: 2s;
     animation-delay: 0.5s;

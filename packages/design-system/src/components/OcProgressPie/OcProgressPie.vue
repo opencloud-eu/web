@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-progress-pie" :data-fill="fill">
-    <div class="oc-progress-pie-container" />
+  <div class="oc-progress-pie after:block" :data-fill="fill">
+    <div class="oc-progress-pie-container before:block after:block" />
     <label
       v-if="showLabel"
       class="oc-progress-pie-label text-role-on-surface-variant"
@@ -73,7 +73,6 @@ $default-size: 64px;
     border-radius: 50%;
     box-sizing: border-box;
     content: '';
-    display: block;
     height: 100%;
     width: 100%;
   }
@@ -93,7 +92,6 @@ $default-size: 64px;
       border-radius: 50%;
       clip: rect(0, calc($default-size / 2), $default-size, 0);
       content: '';
-      display: block;
       height: 100%;
       left: 0;
       position: absolute;

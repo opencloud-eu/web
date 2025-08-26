@@ -30,6 +30,8 @@ const spinnerClass = computed(() => {
   return [
     'oc-spinner',
     `oc-spinner-${getSizeClass(size || 'medium')}`,
+    'inline-block',
+    'after:block',
     'after:bg-transparent',
     'text-role-on-surface'
   ]
@@ -45,13 +47,10 @@ const spinnerClass = computed(() => {
 .oc-spinner {
   @include oc-spinner-size(1);
 
-  display: inline-block;
-
   &::after {
     animation: ball-clip-rotate 1s linear infinite;
     border-bottom-color: transparent;
     content: '';
-    display: block;
     height: 100%;
     width: 100%;
   }

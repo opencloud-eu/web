@@ -9,7 +9,7 @@
       />
     </div>
     <oc-table
-      class="spaces-table"
+      class="settings-spaces-table"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -576,59 +576,44 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .spaces-table .oc-table-header-cell-actions,
-  .spaces-table .oc-table-data-cell-actions {
+  .settings-spaces-table .oc-table-header-cell-actions,
+  .settings-spaces-table .oc-table-data-cell-actions {
     @apply whitespace-nowrap;
+  }
+
+  .settings-spaces-table .oc-table-header-cell-manager,
+  .settings-spaces-table .oc-table-data-cell-manager,
+  .settings-spaces-table .oc-table-header-cell-remainingQuota,
+  .settings-spaces-table .oc-table-data-cell-remainingQuota {
+    @apply hidden xl:table-cell;
+  }
+
+  .settings-spaces-table .oc-table-header-cell-totalQuota,
+  .settings-spaces-table .oc-table-data-cell-totalQuota,
+  .settings-spaces-table .oc-table-header-cell-usedQuota,
+  .settings-spaces-table .oc-table-data-cell-usedQuota {
+    @apply hidden 2xl:table-cell;
+  }
+
+  .settings-spaces-table-squashed .oc-table-header-cell-manager,
+  .settings-spaces-table-squashed .oc-table-data-cell-manager,
+  .settings-spaces-table-squashed .oc-table-header-cell-totalQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-totalQuota,
+  .settings-spaces-table-squashed .oc-table-header-cell-usedQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-usedQuota {
+    @apply hidden;
+  }
+
+  .settings-spaces-table-squashed .oc-table-header-cell-remainingQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-remainingQuota,
+  .settings-spaces-table-squashed .oc-table-header-cell-mdate,
+  .settings-spaces-table-squashed .oc-table-data-cell-mdate {
+    @apply hidden xl:table-cell;
   }
 }
 </style>
 <style lang="scss">
 #spaces-filter {
   width: 16rem;
-}
-
-.spaces-table {
-  .oc-table-header-cell-manager,
-  .oc-table-data-cell-manager,
-  .oc-table-header-cell-remainingQuota,
-  .oc-table-data-cell-remainingQuota {
-    display: none;
-
-    @media only screen and (min-width: 1200px) {
-      display: table-cell;
-    }
-  }
-
-  .oc-table-header-cell-totalQuota,
-  .oc-table-data-cell-totalQuota,
-  .oc-table-header-cell-usedQuota,
-  .oc-table-data-cell-usedQuota {
-    display: none;
-
-    @media only screen and (min-width: 1600px) {
-      display: table-cell;
-    }
-  }
-
-  &-squashed {
-    .oc-table-header-cell-manager,
-    .oc-table-data-cell-manager,
-    .oc-table-header-cell-totalQuota,
-    .oc-table-data-cell-totalQuota,
-    .oc-table-header-cell-usedQuota,
-    .oc-table-data-cell-usedQuota {
-      display: none;
-    }
-
-    .oc-table-header-cell-remainingQuota,
-    .oc-table-data-cell-remainingQuota,
-    .oc-table-header-cell-mdate,
-    .oc-table-data-cell-mdate {
-      display: none;
-      @media only screen and (min-width: 1400px) {
-        display: table-cell;
-      }
-    }
-  }
 }
 </style>

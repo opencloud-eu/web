@@ -56,7 +56,7 @@
       v-if="slots.length"
       :fields="fields.filter((f) => f.name !== 'required')"
       :data="slots"
-      class="slots-table"
+      class="slots-table !table"
     >
       <template #type="{ item }">
         <code> {{ item.type }}</code>
@@ -128,7 +128,6 @@ onMounted(async () => {
 .emits-table,
 .props-table,
 .slots-table {
-  display: table !important;
   width: 100%;
   th,
   td {

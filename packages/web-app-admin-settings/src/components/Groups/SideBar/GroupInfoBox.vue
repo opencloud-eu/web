@@ -1,5 +1,5 @@
 <template>
-  <div class="flex group-info mb-6">
+  <div class="group-info flex flex-col items-center mb-6">
     <OcAvatar
       class="mb-4"
       :width="80"

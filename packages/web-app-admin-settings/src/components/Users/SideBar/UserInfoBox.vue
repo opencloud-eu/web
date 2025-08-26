@@ -1,5 +1,5 @@
 <template>
-  <div class="flex user-info mb-6">
+  <div class="user-info flex flex-col items-center mb-6">
     <user-avatar class="mb-4" :width="80" :user-id="user.id" :user-name="user.displayName" />
     <span v-text="user.onPremisesSamAccountName"></span>
     <span class="text-role-on-surface-variant text-2xl" v-text="user.displayName"></span>
@@ -20,9 +20,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.user-info {
-  align-items: center;
-  flex-direction: column;
-}
-</style>

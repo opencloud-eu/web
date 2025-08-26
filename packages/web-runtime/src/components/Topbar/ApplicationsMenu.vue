@@ -124,7 +124,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 .oc-drop {
   width: 280px;
@@ -134,14 +133,6 @@ export default defineComponent({
   a,
   button {
     gap: var(--oc-space-medium) !important;
-
-    .icon-box {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 40px;
-      height: 40px;
-    }
 
     .active-check {
       position: absolute;

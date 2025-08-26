@@ -180,9 +180,7 @@ defineExpose({ hideDrop })
 <style lang="scss">
 .oc-filter-chip {
   &-button.oc-pill {
-    align-items: center;
     box-sizing: border-box;
-    display: inline-flex;
     gap: var(--oc-space-xsmall);
     max-width: 150px;
     height: 100%;

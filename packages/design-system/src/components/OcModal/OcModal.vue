@@ -61,7 +61,7 @@
         </div>
 
         <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
-          <div class="oc-modal-body-actions-grid">
+          <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
             <oc-button
               class="oc-modal-body-actions-cancel"
               :disabled="isLoading"
@@ -337,16 +337,6 @@ export default {
     top: 0;
     width: 100%;
     z-index: var(--oc-z-index-modal);
-  }
-
-  &-body {
-    &-actions {
-      &-grid {
-        display: inline-grid;
-        grid-auto-flow: column;
-        grid-auto-columns: 1fr;
-      }
-    }
   }
 }
 </style>

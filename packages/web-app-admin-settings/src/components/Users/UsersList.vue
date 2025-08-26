@@ -466,63 +466,38 @@ export default defineComponent({
   .users-table .oc-table-data-cell-actions {
     @apply whitespace-nowrap;
   }
-}
-</style>
-<style lang="scss">
-.users-table {
-  .oc-table-header-cell-role,
-  .oc-table-data-cell-role,
-  .oc-table-header-cell-accountEnabled,
-  .oc-table-data-cell-accountEnabled,
-  .oc-table-header-cell-mail,
-  .oc-table-data-cell-mail {
-    display: none;
 
-    @media only screen and (min-width: 1200px) {
-      display: table-cell;
-    }
+  .users-table .oc-table-header-cell-role,
+  .users-table .oc-table-data-cell-role,
+  .users-table .oc-table-header-cell-accountEnabled,
+  .users-table .oc-table-data-cell-accountEnabled,
+  .users-table .oc-table-header-cell-mail,
+  .users-table .oc-table-data-cell-mail {
+    @apply hidden xl:table-cell;
   }
 
-  .oc-table-header-cell-displayName,
-  .oc-table-data-cell-displayName {
-    display: none;
-
-    @media only screen and (min-width: 1000px) {
-      display: table-cell;
-    }
+  .users-table .oc-table-header-cell-displayName,
+  .users-table .oc-table-data-cell-displayName {
+    @apply hidden lg:table-cell;
   }
 
-  &-squashed {
-    .oc-table-header-cell-role,
-    .oc-table-data-cell-role,
-    .oc-table-header-cell-accountEnabled,
-    .oc-table-data-cell-accountEnabled,
-    .oc-table-header-cell-mail,
-    .oc-table-data-cell-mail {
-      display: none;
+  .users-table-squashed .oc-table-header-cell-role,
+  .users-table-squashed .oc-table-data-cell-role,
+  .users-table-squashed .oc-table-header-cell-accountEnabled,
+  .users-table-squashed .oc-table-data-cell-accountEnabled,
+  .users-table-squashed .oc-table-header-cell-mail,
+  .users-table-squashed .oc-table-data-cell-mail {
+    @apply hidden 2xl:table-cell;
+  }
 
-      @media only screen and (min-width: 1600px) {
-        display: table-cell;
-      }
-    }
+  .users-table-squashed .oc-table-header-cell-displayName,
+  .users-table-squashed .oc-table-data-cell-displayName {
+    @apply hidden xl:table-cell;
+  }
 
-    .oc-table-header-cell-displayName,
-    .oc-table-data-cell-displayName {
-      display: none;
-
-      @media only screen and (min-width: 1400px) {
-        display: table-cell;
-      }
-    }
-
-    .oc-table-header-cell-mail,
-    .oc-table-data-cell-mail {
-      display: none;
-
-      @media only screen and (min-width: 1200px) {
-        display: table-cell;
-      }
-    }
+  .users-table-squashed .oc-table-header-cell-mail,
+  .users-table-squashed .oc-table-data-cell-mail {
+    @apply hidden xl:table-cell;
   }
 }
 </style>

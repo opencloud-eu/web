@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-contextual-helper">
+  <div class="oc-contextual-helper inline-block">
     <oc-button
       :id="buttonId"
       :aria-label="$gettext('Show more information')"
@@ -52,9 +52,3 @@ const buttonId = computed(() => `${dropId.value}-button`)
 const toggleId = computed(() => `#${buttonId.value}`)
 const props = computed(() => ({ title, text, list, endText, readMoreLink }))
 </script>
-
-<style lang="scss">
-.oc-contextual-helper {
-  display: inline-block;
-}
-</style>

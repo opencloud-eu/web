@@ -4,6 +4,7 @@
     v-bind="additionalAttributes"
     :aria-label="ariaLabel"
     :class="buttonClass"
+    class="inline-flex"
     v-on="handlers"
   >
     <oc-spinner v-if="showSpinner" size="small" class="spinner" />
@@ -190,7 +191,7 @@ const onClick = (event: MouseEvent) => {
     @apply rounded-sm;
   }
   .oc-button-group {
-    @apply rounded-sm outline outline-role-secondary outline-offset-[-1px];
+    @apply inline-flex flex-row flex-wrap rounded-sm outline outline-role-secondary outline-offset-[-1px];
   }
   .oc-button-group .oc-button {
     @apply rounded-none first:rounded-l-sm last:rounded-r-sm outline-0;
@@ -256,7 +257,6 @@ const onClick = (event: MouseEvent) => {
 .oc-button {
   align-items: center;
   box-sizing: border-box;
-  display: inline-flex;
 
   &-justify-content {
     &-left {
@@ -387,11 +387,6 @@ const onClick = (event: MouseEvent) => {
     &:disabled {
       cursor: default;
       opacity: 0.6;
-    }
-
-    &-group {
-      display: inline-flex;
-      flex-flow: row wrap;
     }
   }
 }
