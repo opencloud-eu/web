@@ -7,7 +7,7 @@
     <div v-else v-oc-tooltip="dropButtonTooltip" class="max-w-full">
       <oc-button
         :id="roleButtonId"
-        class="files-recipient-role-select-btn"
+        class="files-recipient-role-select-btn max-w-full"
         appearance="raw"
         gap-size="none"
         :disabled="isLocked"
@@ -297,11 +297,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.files-recipient {
-  &-role-select-btn {
-    max-width: 100%;
-  }
-}
 .files-recipient-role-drop-btn {
   justify-content: space-between !important;
 }

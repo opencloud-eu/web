@@ -2,7 +2,7 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="rounded-sm oc-box-shadow-medium bg-role-surface mx-auto sm:m-0 w-full sm:w-md"
+    class="rounded-sm oc-box-shadow-medium bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg"
   >
     <div
       class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-sm bg-role-surface-container"
@@ -708,10 +708,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #upload-info {
-  @media (max-width: 640px) {
-    max-width: 500px;
-  }
-
   .upload-info-items {
     max-height: 50vh;
     overflow-y: auto;

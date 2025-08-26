@@ -341,11 +341,4 @@ watch(
 .details-preview {
   height: 230px;
 }
-
-.details-icon > svg {
-  height: 192px !important;
-  max-height: 192px !important;
-  max-width: 192px !important;
-  width: 192px !important;
-}
 </style>

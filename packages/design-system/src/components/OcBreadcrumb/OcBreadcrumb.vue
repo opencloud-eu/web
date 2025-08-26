@@ -33,10 +33,9 @@
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
           class="first:text-base text-xl text-role-on-surface"
         >
-          <span
-            class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]"
-            >{{ item.text }}</span
-          >
+          <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
+            item.text
+          }}</span>
         </router-link>
         <oc-button
           v-else-if="item.onClick"
@@ -49,12 +48,12 @@
         >
           <span
             :class="[
-              'oc-breadcrumb-item-text',
               'hover:underline',
               'align-sub',
               'truncate',
               'inline-block',
               'leading-[1.2]',
+              'max-w-3xs',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -64,7 +63,7 @@
         </oc-button>
         <span
           v-else
-          class="oc-breadcrumb-item-text first:text-base text-xl align-sub truncate inline-block leading-[1.2]"
+          class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
           :aria-current="getAriaCurrent(index)"
           tabindex="-1"
           v-text="item.text"
@@ -344,10 +343,6 @@ const dropItemStyling = (
       border-color 0s,
       border-width 0.06s;
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
-  }
-
-  &-item-text {
-    max-width: 200px;
   }
 
   &-list {

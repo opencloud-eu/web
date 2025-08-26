@@ -5,7 +5,7 @@
   >
     <div
       class="space-header-image mr-6 w-[280px]"
-      :class="{ 'space-header-image-expanded w-full': imageExpanded || isMobileWidth }"
+      :class="{ 'space-header-image-expanded w-full max-w-full': imageExpanded || isMobileWidth }"
     >
       <div
         v-if="imagesLoading.includes(space.id)"
@@ -23,7 +23,7 @@
     </div>
     <div class="space-header-infos">
       <div class="flex mb-2 items-center justify-between">
-        <div class="flex items-center space-header-infos-heading">
+        <div class="flex items-center space-header-infos-heading max-w-full">
           <h2 class="space-header-name break-all">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
@@ -327,7 +327,6 @@ const openSideBarSharePanel = () => {
 
     &-expanded {
       max-height: 100%;
-      max-width: 100%;
     }
 
     img {
@@ -338,10 +337,6 @@ const openSideBarSharePanel = () => {
 
   &-infos {
     flex: 1;
-
-    &-heading {
-      max-width: 100%;
-    }
   }
 
   .markdown-container.collapsed {

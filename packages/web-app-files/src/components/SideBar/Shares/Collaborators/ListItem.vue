@@ -34,7 +34,7 @@
             />
           </template>
         </div>
-        <div class="files-collaborators-collaborator-name-wrapper pl-2">
+        <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
             <span
               aria-hidden="true"
@@ -67,7 +67,7 @@
                   :existing-share-permissions="share.permissions"
                   :is-locked="isLocked"
                   :is-external="isExternalShare"
-                  class="files-collaborators-collaborator-role"
+                  class="files-collaborators-collaborator-role max-w-full"
                   mode="edit"
                   @option-change="shareRoleChanged"
                 />
@@ -429,13 +429,5 @@ export default defineComponent({
 .files-collaborators-collaborator-navigation {
   align-items: center;
   justify-content: end;
-}
-
-.files-collaborators-collaborator-role {
-  max-width: 100%;
-}
-
-.files-collaborators-collaborator-name-wrapper {
-  max-width: 100%;
 }
 </style>

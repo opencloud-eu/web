@@ -3,8 +3,8 @@
     id="web-nav-sidebar"
     class="bg-role-surface-container flex flex-col rounded-l-xl"
     :class="{
-      'oc-app-navigation-collapsed': closed,
-      'oc-app-navigation-expanded': !closed
+      'oc-app-navigation-collapsed max-w-[62px]': closed,
+      'oc-app-navigation-expanded max-w-[230px]': !closed
     }"
   >
     <oc-button
@@ -204,11 +204,9 @@ export default defineComponent({
 
 .oc-app-navigation-expanded {
   min-width: 230px !important;
-  max-width: 230px !important;
 }
 
 .oc-app-navigation-collapsed {
   min-width: 62px !important;
-  max-width: 62px !important;
 }
 </style>

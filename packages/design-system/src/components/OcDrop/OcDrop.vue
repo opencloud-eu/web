@@ -342,7 +342,7 @@ watch(
 
 @layer components {
   .oc-drop {
-    @apply w-xs;
+    @apply w-xs max-w-full;
   }
 }
 </style>
@@ -357,9 +357,5 @@ watch(
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
     padding: calc(var(--spacing) * 2);
   }
-}
-
-.oc-drop {
-  max-width: 100%;
 }
 </style>

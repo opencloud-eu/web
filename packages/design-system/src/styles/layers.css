@@ -141,7 +141,7 @@
   .oc-input,
   .oc-select,
   .oc-textarea {
-    @apply bg-role-surface w-full;
+    @apply bg-role-surface w-full max-w-full;
   }
 
   .oc-input:disabled,

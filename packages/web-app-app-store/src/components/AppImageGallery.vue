@@ -10,7 +10,7 @@
       }}</span>
     </div>
     <div class="app-image w-full">
-      <oc-image v-if="currentImage?.url" :src="currentImage?.url" class="w-full" />
+      <oc-image v-if="currentImage?.url" :src="currentImage?.url" class="w-full max-w-full" />
       <div v-else class="fallback-icon bg-white flex items-center justify-center w-full">
         <oc-icon name="computer" size="xxlarge" />
       </div>
@@ -140,7 +140,6 @@ export default defineComponent({
 
   .app-image {
     img {
-      max-width: 100%;
       aspect-ratio: 3/2;
       object-fit: cover;
     }

@@ -92,7 +92,7 @@
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
-        class="role-selection-dropdown"
+        class="max-w-40"
         :is-external="isExternalShareRoleType"
         @option-change="collaboratorRoleChanged"
       />
@@ -635,10 +635,6 @@ export default defineComponent({
 }
 </style>
 <style lang="scss">
-.role-selection-dropdown {
-  max-width: 150px;
-}
-
 #new-collaborators-form {
   .vs__actions {
     cursor: inherit;

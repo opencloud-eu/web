@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border border-role-outline rounded-sm focus:outline-0 w-full"
+        class="border border-role-outline rounded-sm focus:outline-0 w-full max-w-xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -328,7 +328,6 @@ export default {
 .oc-modal {
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
-  max-width: 500px;
   overflow: auto;
 
   &-background {

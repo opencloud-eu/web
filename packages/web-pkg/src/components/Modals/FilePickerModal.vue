@@ -123,7 +123,10 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  oc-modal.open-with-app-modal .oc-modal-title {
+  .oc-modal.open-with-app-modal {
+    max-width: 80vw;
+  }
+  .oc-modal.open-with-app-modal .oc-modal-title {
     @apply hidden;
   }
   .oc-modal.open-with-app-modal .oc-modal-body {
@@ -136,7 +139,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .oc-modal.open-with-app-modal {
-  max-width: 80vw;
   overflow: hidden;
 
   .oc-modal-body {
