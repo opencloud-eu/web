@@ -190,10 +190,10 @@ const onClick = (event: MouseEvent) => {
     @apply rounded-sm;
   }
   .oc-button-group {
-    @apply rounded-sm;
+    @apply rounded-sm outline outline-role-secondary outline-offset-[-1px];
   }
   .oc-button-group .oc-button {
-    @apply rounded-none first:rounded-l-sm last:rounded-r-sm;
+    @apply rounded-none first:rounded-l-sm last:rounded-r-sm outline-0;
   }
 }
 </style>
@@ -306,93 +306,92 @@ const onClick = (event: MouseEvent) => {
     }
   }
 
-  &:hover {
-    cursor: pointer;
-  }
+  @layer components {
+    &:hover {
+      cursor: pointer;
+    }
 
-  &-s {
-    min-height: 1.2rem;
-  }
+    &-s {
+      min-height: 1.2rem;
+    }
 
-  &-m {
-    min-height: $global-control-height;
-  }
+    &-m {
+      min-height: $global-control-height;
+    }
 
-  &-l {
-    min-height: 2rem;
-  }
+    &-l {
+      min-height: 2rem;
+    }
 
-  &-primary {
-    @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
-  }
-  &-primary-container {
-    @include oc-button-color-role(
-      var(--oc-role-primary-container),
-      var(--oc-role-on-primary-container)
-    );
-  }
-  &-primary-fixed {
-    @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
-  }
-  &-secondary {
-    @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
-  }
-  &-secondary-container {
-    @include oc-button-color-role(
-      var(--oc-role-secondary-container),
-      var(--oc-role-on-secondary-container)
-    );
-  }
-  &-secondary-fixed {
-    @include oc-button-color-role(
-      var(--oc-role-secondary-fixed),
-      var(--oc-role-on-secondary-fixed)
-    );
-  }
-  &-tertiary {
-    @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
-  }
-  &-tertiary-container {
-    @include oc-button-color-role(
-      var(--oc-role-tertiary-container),
-      var(--oc-role-on-tertiary-container)
-    );
-  }
-  &-tertiary-fixed {
-    @include oc-button-color-role(var(--oc-role-tertiary-fixed), var(--oc-role-on-tertiary-fixed));
-  }
-  &-surface {
-    @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
-  }
-  &-surface-container {
-    @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
-  }
-  &-chrome {
-    @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
-  }
+    &-primary {
+      @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
+    }
+    &-primary-container {
+      @include oc-button-color-role(
+        var(--oc-role-primary-container),
+        var(--oc-role-on-primary-container)
+      );
+    }
+    &-primary-fixed {
+      @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
+    }
+    &-secondary {
+      @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
+    }
+    &-secondary-container {
+      @include oc-button-color-role(
+        var(--oc-role-secondary-container),
+        var(--oc-role-on-secondary-container)
+      );
+    }
+    &-secondary-fixed {
+      @include oc-button-color-role(
+        var(--oc-role-secondary-fixed),
+        var(--oc-role-on-secondary-fixed)
+      );
+    }
+    &-tertiary {
+      @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
+    }
+    &-tertiary-container {
+      @include oc-button-color-role(
+        var(--oc-role-tertiary-container),
+        var(--oc-role-on-tertiary-container)
+      );
+    }
+    &-tertiary-fixed {
+      @include oc-button-color-role(
+        var(--oc-role-tertiary-fixed),
+        var(--oc-role-on-tertiary-fixed)
+      );
+    }
+    &-surface {
+      @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
+    }
+    &-surface-container {
+      @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
+    }
+    &-chrome {
+      @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
+    }
 
-  &:hover:not(.no-hover, .oc-button-raw-inverse, .oc-button-raw, .active, .selected, [disabled]) {
-    filter: brightness(85%);
-  }
+    &:hover:not(.no-hover, .oc-button-raw-inverse, .oc-button-raw, .active, .selected, [disabled]) {
+      filter: brightness(85%);
+    }
 
-  &-outline:hover:not(.no-hover, [disabled]) {
-    background-color: var(--oc-role-surface-container);
-    filter: none !important;
-  }
+    &-outline:hover:not(.no-hover, [disabled]) {
+      background-color: var(--oc-role-surface-container);
+      filter: none !important;
+    }
 
-  &:disabled {
-    cursor: default;
-    opacity: 0.6;
-  }
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
 
-  &-group {
-    display: inline-flex;
-    flex-flow: row wrap;
-    outline: 1px solid var(--oc-role-secondary);
-    outline-offset: -1px;
-
-    .oc-button {
-      outline: 0;
+    &-group {
+      display: inline-flex;
+      flex-flow: row wrap;
     }
   }
 }
