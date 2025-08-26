@@ -64,7 +64,7 @@
         </div>
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center">
           <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
             <resource-list-item
               :resource="resource"

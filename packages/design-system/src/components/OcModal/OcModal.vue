@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap w-full"
+    class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap size-full"
   >
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
@@ -332,7 +332,6 @@ export default {
   overflow: auto;
 
   &-background {
-    height: 100%;
     left: 0;
     position: fixed;
     top: 0;

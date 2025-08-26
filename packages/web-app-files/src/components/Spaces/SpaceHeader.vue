@@ -15,7 +15,7 @@
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer rounded-lg w-full"
+        class="oc-cursor-pointer rounded-lg size-full"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"
@@ -331,7 +331,6 @@ const openSideBarSharePanel = () => {
     }
 
     img {
-      height: 100%;
       max-height: 100%;
       object-fit: cover;
     }

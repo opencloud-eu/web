@@ -66,7 +66,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="tile-preview rounded-t-sm"
+                  class="tile-preview rounded-t-sm w-full"
                   :src="resource.thumbnail"
                   alt=""
                 />

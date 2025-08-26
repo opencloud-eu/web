@@ -13,7 +13,7 @@
       id="web-content-main"
       class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
     >
-      <div class="app-container flex bg-role-surface-container rounded-xl w-full">
+      <div class="app-container flex bg-role-surface-container rounded-xl size-full">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav
@@ -211,7 +211,6 @@ onBeforeUnmount(() => {
     overflow-y: hidden;
 
     .app-container {
-      height: 100%;
       overflow: hidden;
 
       .app-content {

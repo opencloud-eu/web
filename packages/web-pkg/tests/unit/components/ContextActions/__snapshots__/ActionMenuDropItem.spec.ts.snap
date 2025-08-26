@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
-"<li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between w-full" id="oc-files-context-actions-actions-toggle-2" aria-expanded="false">
+"<li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between" id="oc-files-context-actions-actions-toggle-2" aria-expanded="false">
     <!--v-if-->
     <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/eye-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

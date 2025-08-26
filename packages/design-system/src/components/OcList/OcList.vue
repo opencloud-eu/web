@@ -43,10 +43,10 @@ defineSlots<Slots>()
     @apply bg-role-outline-variant;
   }
   ul.oc-list.oc-timeline::before {
-    @apply w-[1.5px];
+    width: 1.5px;
   }
   ul.oc-list.oc-timeline li::before {
-    @apply w-[10px];
+    width: 10px;
   }
   ul.oc-list-raw a:hover {
     @apply text-inherit;

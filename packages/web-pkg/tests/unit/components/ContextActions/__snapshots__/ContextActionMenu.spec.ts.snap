@@ -10,7 +10,7 @@ exports[`ContextActionMenu component > renders the menu with actions 1`] = `
 exports[`ContextActionMenu component > renders the menu with drop menu items 1`] = `
 "<div id="oc-files-context-menu">
   <ul class="oc-list oc-files-context-actions pb-2 border-b" id="oc-files-context-actions-apps">
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between w-full" id="oc-files-context-actions-apps-toggle-2" aria-expanded="false">
+    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between" id="oc-files-context-actions-apps-toggle-2" aria-expanded="false">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -57,7 +57,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         <!--v-if--> <span class="oc-files-context-action-label flex" data-testid="action-label"><span>Download</span></span>
         <!--v-if-->
       </button></li>
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between w-full" id="oc-files-context-actions-actions-toggle-4" aria-expanded="false">
+    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between" id="oc-files-context-actions-actions-toggle-4" aria-expanded="false">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -96,7 +96,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         </div>
       </div>
     </li>
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between w-full" id="oc-files-context-actions-delete-toggle-6" aria-expanded="false">
+    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex w-full flex justify-between" id="oc-files-context-actions-delete-toggle-6" aria-expanded="false">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

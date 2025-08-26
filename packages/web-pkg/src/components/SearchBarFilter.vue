@@ -134,7 +134,7 @@ export default defineComponent({
 
 @layer utilities {
   .oc-location-search .oc-drop {
-    @apply w-[180px];
+    width: 180px;
   }
 }
 </style>
