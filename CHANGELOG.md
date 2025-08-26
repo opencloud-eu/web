@@ -25,6 +25,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.15.0 [[#1095](https://github.com/opencloud-eu/web/pull/1095)]
 - fix(deps): update dependency @vavt/cm-extension to v1.11.0 [[#1113](https://github.com/opencloud-eu/web/pull/1113)]
 - fix(deps): update dependency @vueuse/core to v13.7.0 [[#1087](https://github.com/opencloud-eu/web/pull/1087)]
 - fix(deps): update dependency zod to v4.1.3 [[#1070](https://github.com/opencloud-eu/web/pull/1070)]
