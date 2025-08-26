@@ -20,6 +20,7 @@
             <oc-text-input
               id="trash-filter"
               v-model="filterTerm"
+              class="w-3xs"
               :label="$gettext('Search')"
               autocomplete="off"
             />
@@ -260,9 +261,3 @@ watch(filterTerm, () => {
   })
 })
 </script>
-
-<style lang="scss">
-#trash-filter {
-  width: 16rem;
-}
-</style>

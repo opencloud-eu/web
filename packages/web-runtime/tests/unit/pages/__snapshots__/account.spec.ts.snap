@@ -8,9 +8,9 @@ exports[`account page > account information section > displays basic user inform
   </div>
   <table class="oc-table-simple">
     <colgroup>
-      <col style="width: 30%;">
-      <col style="width: 40%;">
-      <col style="width: 30%;">
+      <col class="w-auto md:w-[30%]">
+      <col class="w-auto md:w-[40%]">
+      <col class="w-auto md:w-[30%]">
     </colgroup>
     <thead class="oc-thead border-b oc-invisible-sr">
       <tr>
@@ -87,7 +87,7 @@ exports[`account page > header section > edit url button > should be displayed i
 
 exports[`account page > public link context > should render a limited view 1`] = `
 "<main id="account" class="pt-4 pb-6 flex justify-center">
-  <div class="account-page px-4 lg:px-0">
+  <div class="account-page px-4 lg:px-0 w-full lg:w-7xl">
     <h1 id="account-page-title" class="mb-0 border-b">My Account</h1>
     <!--v-if-->
     <div class="account-table account-page-preferences">
@@ -97,9 +97,9 @@ exports[`account page > public link context > should render a limited view 1`] =
       <!--v-if-->
       <table class="oc-table-simple">
         <colgroup>
-          <col style="width: 30%;">
-          <col style="width: 40%;">
-          <col style="width: 30%;">
+          <col class="w-auto md:w-[30%]">
+          <col class="w-auto md:w-[40%]">
+          <col class="w-auto md:w-[30%]">
         </colgroup>
         <thead class="oc-thead border-b oc-invisible-sr">
           <tr>

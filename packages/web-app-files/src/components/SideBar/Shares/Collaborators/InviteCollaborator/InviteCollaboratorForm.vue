@@ -1,6 +1,6 @@
 <template>
   <div id="new-collaborators-form" data-testid="new-collaborators-form">
-    <div :class="['flex', 'w-full', { 'new-collaborators-form-cern': isRunningOnEos }]">
+    <div :class="['flex', 'w-full', { 'grid grid-cols-2': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -629,6 +629,9 @@ export default defineComponent({
   .invite-form-share-role-type .oc-filter-chip-button {
     @apply pr-0;
   }
+  #new-collaborators-form .invite-form-share-role-type .oc-drop {
+    @apply w-3xs;
+  }
 }
 </style>
 <style lang="scss">
@@ -636,21 +639,7 @@ export default defineComponent({
   max-width: 150px;
 }
 
-.new-collaborators-form-cern > .cern-files-share-invite-input {
-  width: 75%;
-}
-
-.new-collaborators-form-cern > .cern-account-type-input {
-  width: 30%;
-}
-
 #new-collaborators-form {
-  .invite-form-share-role-type {
-    .oc-drop {
-      width: 180px;
-    }
-  }
-
   .vs__actions {
     cursor: inherit;
     flex-wrap: nowrap;

@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-progress-pie after:block" :data-fill="fill">
-    <div class="oc-progress-pie-container before:block after:block" />
+  <div class="oc-progress-pie after:block after:w-full" :data-fill="fill">
+    <div class="oc-progress-pie-container before:block after:block w-full after:w-full" />
     <label
       v-if="showLabel"
       class="oc-progress-pie-label text-role-on-surface-variant"
@@ -74,7 +74,6 @@ $default-size: 64px;
     box-sizing: border-box;
     content: '';
     height: 100%;
-    width: 100%;
   }
 
   &-container {
@@ -83,7 +82,6 @@ $default-size: 64px;
     left: 0;
     position: absolute;
     top: 0;
-    width: 100%;
 
     &::before,
     &::after {
@@ -96,7 +94,6 @@ $default-size: 64px;
       left: 0;
       position: absolute;
       top: 0;
-      width: 100%;
     }
   }
 

@@ -508,6 +508,9 @@ const handleSort = (field: FieldType) => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .oc-table {
+    @apply w-full;
+  }
   .oc-table-accentuated,
   .oc-table-highlighted,
   .oc-table .highlightedDropTarget {
@@ -526,7 +529,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-  width: 100%;
 
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;

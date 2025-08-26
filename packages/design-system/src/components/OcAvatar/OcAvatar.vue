@@ -12,7 +12,7 @@
     <oc-image
       v-if="isImage"
       loading-type="lazy"
-      class="avatarImg rounded-[50%]"
+      class="avatarImg rounded-[50%] w-full"
       :src="src"
       @error="onImgError"
     />
@@ -134,7 +134,6 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
   user-select: none;
 
   .avatarImg {
-    width: 100%;
     height: auto;
   }
 }

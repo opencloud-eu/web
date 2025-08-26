@@ -4,6 +4,7 @@
       <oc-text-input
         id="spaces-filter"
         v-model="filterTerm"
+        class="w-3xs"
         :label="$gettext('Search')"
         autocomplete="off"
       />
@@ -628,10 +629,5 @@ export default defineComponent({
   .settings-spaces-table-squashed .oc-table-data-cell-mdate {
     @apply hidden xl:table-cell;
   }
-}
-</style>
-<style lang="scss">
-#spaces-filter {
-  width: 16rem;
 }
 </style>

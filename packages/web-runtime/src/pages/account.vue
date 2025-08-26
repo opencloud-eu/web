@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <main v-else id="account" class="pt-4 pb-6 flex justify-center">
-    <div class="account-page px-4 lg:px-0">
+    <div class="account-page px-4 lg:px-0 w-full lg:w-7xl">
       <h1 id="account-page-title" class="mb-0 border-b" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
@@ -819,13 +819,5 @@ export default defineComponent({
 <style lang="scss">
 #account {
   overflow-y: auto;
-
-  .account-page {
-    width: 80rem;
-
-    @media (max-width: 1200px) {
-      width: 100%;
-    }
-  }
 }
 </style>

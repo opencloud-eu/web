@@ -4,7 +4,7 @@
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"
-          class="mr-4 py-2 shares-nav-desktop"
+          class="mr-4 py-2 shares-nav-desktop w-full"
           :class="{ 'border-b-2 border-role-secondary-container rounded-none': navItem.active }"
           appearance="raw"
           :to="navItem.to"
@@ -116,7 +116,6 @@ export default defineComponent({
 #shares-navigation {
   a {
     gap: var(--oc-space-small);
-    width: 100%;
   }
 }
 </style>

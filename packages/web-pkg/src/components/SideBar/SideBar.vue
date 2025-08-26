@@ -4,11 +4,11 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0"
+    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px]"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
-      'app-sidebar-full-width': fullWidthSideBar
+      'app-sidebar-full-width w-full': fullWidthSideBar
     }"
   >
     <oc-spinner v-if="loading" />
@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl"
+        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -101,7 +101,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
-              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2"
+              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -291,7 +291,6 @@ onBeforeUnmount(() => {
   position: relative;
   overflow: hidden;
   min-width: 440px;
-  width: 440px;
 
   &:focus,
   &:focus-visible {
@@ -300,7 +299,6 @@ onBeforeUnmount(() => {
 }
 .app-sidebar-full-width {
   min-width: 100% !important;
-  width: 100% !important;
 }
 
 @media only screen and (max-width: $oc-breakpoint-small-default) {
@@ -312,7 +310,6 @@ onBeforeUnmount(() => {
 .sidebar-panel {
   $root: &;
   overflow: hidden;
-  width: 100%;
   max-width: 100%;
   height: 100%;
   max-height: 100%;
@@ -357,7 +354,6 @@ onBeforeUnmount(() => {
 
   &__navigation {
     > button {
-      width: 100%;
       height: 50px;
     }
   }

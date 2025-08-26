@@ -2,7 +2,7 @@
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar flex">
       <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg"
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg w-full"
       >
         <div class="open-file-bar flex">
           <resource-list-item
@@ -218,7 +218,6 @@ export default defineComponent({
 .oc-app-top-bar-inner {
   gap: 25px;
   height: 40px;
-  width: 100%;
 
   @media (min-width: $oc-breakpoint-small-default) {
     flex-basis: 250px;

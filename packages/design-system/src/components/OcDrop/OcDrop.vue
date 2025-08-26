@@ -337,7 +337,15 @@ watch(
   { immediate: true }
 )
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-drop {
+    @apply w-xs;
+  }
+}
+</style>
 <style lang="scss">
 .tippy-box[data-theme~='none'] {
   // overwrite tippy styles
@@ -353,6 +361,5 @@ watch(
 
 .oc-drop {
   max-width: 100%;
-  width: 300px;
 }
 </style>

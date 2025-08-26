@@ -31,7 +31,7 @@
   </oc-text-input>
   <oc-drop
     ref="dropRef"
-    class="pt-2"
+    class="w-lg"
     padding-size="remove"
     drop-id="create-shortcut-modal-contextmenu"
     mode="manual"
@@ -468,8 +468,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#create-shortcut-modal-contextmenu {
-  width: 458px;
-}
-</style>

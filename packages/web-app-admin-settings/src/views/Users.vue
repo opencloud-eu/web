@@ -92,6 +92,7 @@
               <oc-text-input
                 id="users-filter"
                 v-model.trim="filterTermDisplayName"
+                class="w-3xs"
                 :label="$gettext('Search')"
                 autocomplete="off"
                 @keypress.enter="filterDisplayName"
@@ -505,8 +506,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-#users-filter {
-  width: 16rem;
-}
-</style>

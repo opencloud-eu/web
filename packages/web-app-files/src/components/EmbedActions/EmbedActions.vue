@@ -166,7 +166,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .files-embed-actions-file-name input {
+    @apply w-auto md:w-sm;
+  }
+}
+</style>
 <style lang="scss">
 .files-embed-actions {
   // Prevent .snackbar from overlapping the actions
@@ -176,16 +184,6 @@ export default defineComponent({
 
   &-file-name {
     gap: var(--oc-space-small);
-
-    input {
-      width: 400px;
-    }
-
-    @media (max-width: $oc-breakpoint-medium-default) {
-      input {
-        width: auto;
-      }
-    }
   }
 }
 </style>

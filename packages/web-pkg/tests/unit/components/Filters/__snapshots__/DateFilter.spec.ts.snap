@@ -4,7 +4,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div class="date-filter flex date-filter-users">
   <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px]" id="oc-filter-chip-5">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive w-0"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -57,7 +57,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel py-2 bg-role-surface">
+        <div class="date-filter-range-panel p-2 bg-role-surface">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -123,7 +123,7 @@ exports[`DateFilter > renders all items 1`] = `
 "<div class="date-filter flex date-filter-users">
   <div class="oc-filter-chip flex"><button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px]" id="oc-filter-chip-1">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content oc-filter-check-icon-inactive w-0"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel py-2 bg-role-surface">
+        <div class="date-filter-range-panel p-2 bg-role-surface">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {

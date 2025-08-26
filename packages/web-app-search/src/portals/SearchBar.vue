@@ -17,7 +17,7 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -53,6 +53,7 @@
       ref="optionsDropRef"
       mode="manual"
       target="#files-global-search-bar"
+      class="w-[93vw] sm:w-2xs md:w-lg"
       padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
@@ -536,7 +537,7 @@ export default defineComponent({
 
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
-    @apply p-0;
+    @apply p-0 w-auto;
   }
   #files-global-search .oc-search-input {
     background-color: var(--oc-role-surface);
@@ -555,11 +556,6 @@ export default defineComponent({
   }
 
   #files-global-search-bar {
-    width: 452px;
-    @media (max-width: 959px) {
-      width: 240px;
-    }
-
     @media (max-width: 639px) {
       visibility: hidden;
       position: absolute;
@@ -567,7 +563,6 @@ export default defineComponent({
       left: 0;
       right: 0;
       top: 0;
-      width: 95vw !important;
       z-index: 9;
 
       input,
@@ -578,21 +573,11 @@ export default defineComponent({
   }
 
   #files-global-search-options {
-    width: 450px;
     overflow-y: auto;
     max-height: calc(100vh - 60px);
 
-    @media (max-width: 969px) {
-      width: 300px;
-    }
-
-    @media (max-width: 639px) {
-      width: 93vw !important;
-    }
-
     .preview-component button,
     .preview-component a {
-      width: initial;
       gap: initial;
     }
 

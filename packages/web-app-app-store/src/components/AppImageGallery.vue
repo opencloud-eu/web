@@ -2,22 +2,22 @@
   <div class="app-image-wrapper">
     <div
       v-if="app.badge"
-      class="app-image-ribbon text-right"
+      class="app-image-ribbon text-right size-[7rem]"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
-      <span class="text-xs font-bold text-center leading-6" :class="ribbonColorClasses">{{
+      <span class="text-xs font-bold text-center leading-6 w-[10rem]" :class="ribbonColorClasses">{{
         app.badge.label
       }}</span>
     </div>
-    <div class="app-image">
-      <oc-image v-if="currentImage?.url" :src="currentImage?.url" />
-      <div v-else class="fallback-icon bg-white flex items-center justify-center">
+    <div class="app-image w-full">
+      <oc-image v-if="currentImage?.url" :src="currentImage?.url" class="w-full" />
+      <div v-else class="fallback-icon bg-white flex items-center justify-center w-full">
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
     <ul
       v-if="hasPagination"
-      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2"
+      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2 w-full"
     >
       <li>
         <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
@@ -128,8 +128,6 @@ export default defineComponent({
     right: 0;
     z-index: 1;
     overflow: hidden;
-    width: 7rem;
-    height: 7rem;
 
     span {
       position: absolute;
@@ -137,29 +135,23 @@ export default defineComponent({
       right: -2.2rem;
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
-      width: 10rem;
     }
   }
 
   .app-image {
-    width: 100%;
-
     img {
-      width: 100%;
       max-width: 100%;
       aspect-ratio: 3/2;
       object-fit: cover;
     }
 
     .fallback-icon {
-      width: 100%;
       aspect-ratio: 3/2;
     }
   }
 
   .app-image-navigation {
     list-style: none;
-    width: 100%;
     position: absolute;
     bottom: 0;
   }

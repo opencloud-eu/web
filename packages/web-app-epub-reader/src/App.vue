@@ -1,6 +1,8 @@
 <template>
   <div class="epub-reader flex">
-    <oc-list class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r">
+    <oc-list
+      class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r w-xs"
+    >
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
@@ -34,7 +36,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="$gettext('Reset font size')"
-            class="epub-reader-controls-font-size-reset"
+            class="epub-reader-controls-font-size-reset w-[58px]"
             @click="resetFontSize"
           >
             {{ `${currentFontSizePercentage}%` }}
@@ -281,16 +283,11 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    width: 240px;
     overflow-y: auto;
   }
 
   &-controls-font-size {
     flex-wrap: nowrap;
-
-    &-reset {
-      width: 58px; //prevent jumpy behaviour
-    }
   }
 }
 </style>

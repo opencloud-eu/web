@@ -18,9 +18,9 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul class="oc-list oc-tiles grid justify-start">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between">
             <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
               <div class="oc-resource inline-flex justify-start items-center oc-text-overflow">
                 <!--v-if-->
@@ -57,9 +57,9 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between">
             <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
               <div class="oc-resource inline-flex justify-start items-center oc-text-overflow">
                 <!--v-if-->

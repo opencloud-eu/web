@@ -33,7 +33,7 @@
       :toggle="'#' + roleButtonId"
       mode="click"
       padding-size="small"
-      class="files-recipient-role-drop"
+      class="files-recipient-role-drop w-md"
       offset="0"
       close-on-click
     >
@@ -298,15 +298,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .files-recipient {
-  &-role-drop {
-    @media (max-width: $oc-breakpoint-medium-default) {
-      width: 100%;
-    }
-    @media (min-width: $oc-breakpoint-medium-default) {
-      width: 400px;
-    }
-  }
-
   &-role-select-btn {
     max-width: 100%;
   }

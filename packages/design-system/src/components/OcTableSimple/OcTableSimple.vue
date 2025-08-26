@@ -37,6 +37,9 @@ const tableClasses = computed(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .oc-table-simple {
+    @apply w-full;
+  }
   .oc-table-simple-hover tr:hover {
     @apply bg-role-secondary-container;
   }
@@ -49,7 +52,6 @@ const tableClasses = computed(() => {
 .oc-table-simple {
   border-collapse: collapse;
   border-spacing: 0;
-  width: 100%;
 
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;

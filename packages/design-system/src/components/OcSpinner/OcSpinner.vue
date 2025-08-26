@@ -1,7 +1,7 @@
 <template>
   <span
     :class="spinnerClass"
-    class="after:border after:border-current after:rounded-full"
+    class="after:border after:border-current after:rounded-full after:w-full"
     :aria-label="ariaLabel"
     tabindex="-1"
     role="img"
@@ -52,7 +52,6 @@ const spinnerClass = computed(() => {
     border-bottom-color: transparent;
     content: '';
     height: 100%;
-    width: 100%;
   }
 
   &,

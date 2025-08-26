@@ -761,19 +761,14 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  .app-wrapper .app-wrapper-content {
+    @apply w-full;
+  }
   .app-sidebar-open > *:not(:last-child) {
     @apply hidden sm:block;
   }
-}
-</style>
-<style lang="scss">
-.app-wrapper {
-  .app-wrapper-content {
-    width: 100%;
-  }
-
-  .app-sidebar-open .app-wrapper-content {
-    // 440px is the width of the app sidebar
+  .app-wrapper .app-sidebar-open .app-wrapper-content {
+    /* 440px is the width of the app sidebar */
     width: calc(100% - 440px);
   }
 }

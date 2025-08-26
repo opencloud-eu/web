@@ -40,7 +40,7 @@
       "
     />
     <div class="mt-4 mb-2 flex items-center rounded-sm">
-      <div class="created-token-container">
+      <div class="created-token-container w-full">
         <div
           class="created-token flex items-center justify-between rounded-sm p-2 font-bold bg-role-surface-container-high"
         >
@@ -120,11 +120,3 @@ const createAppToken = async () => {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.created-token {
-  &-container {
-    width: 100%;
-  }
-}
-</style>

@@ -26,8 +26,8 @@
       </div>
       <div v-else class="flex justify-center w-full">
         <p
-          id="files-drop-info-message"
-          class="m-0 pt-12 text-sm"
+          id="files-drop-info-message "
+          class="m-0 pt-12 text-sm w-md lg:w-full"
           v-text="
             $gettext(
               'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
@@ -256,12 +256,6 @@ export default defineComponent({
 #files-drop {
   &-container {
     position: relative;
-  }
-
-  &-info-message {
-    @media only screen and (min-width: 1200px) {
-      width: 400px;
-    }
   }
 }
 

@@ -232,14 +232,6 @@ const onCancel = () => {
     z-index: 0;
   }
 
-  &-icon {
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 40px;
-  }
-
   &-input {
     height: 2.3rem;
 
@@ -256,14 +248,6 @@ const onCancel = () => {
   &-small {
     .oc-search-input {
       height: 30px;
-    }
-
-    .oc-icon {
-      &,
-      svg {
-        height: 18px;
-        width: 18px;
-      }
     }
   }
 }

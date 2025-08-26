@@ -231,8 +231,4 @@ export default defineComponent({
   z-index: 1000;
   opacity: 0.9;
 }
-
-.preview-controls-image-original-size {
-  width: 42px;
-}
 </style>

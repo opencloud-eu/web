@@ -1,6 +1,6 @@
 <template>
   <div id="web-content" class="flex flex-col flex-nowrap">
-    <div id="global-progress-bar">
+    <div id="global-progress-bar" class="w-full">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header" class="shrink basis-auto grow-0">
@@ -13,7 +13,7 @@
       id="web-content-main"
       class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
     >
-      <div class="app-container flex bg-role-surface-container rounded-xl">
+      <div class="app-container flex bg-role-surface-container rounded-xl w-full">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav
@@ -38,7 +38,7 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div class="snackbars mx-auto sm:m-0">
+    <div class="snackbars mx-auto sm:m-0 w-full">
       <message-bar />
       <upload-info />
     </div>
@@ -205,7 +205,6 @@ onBeforeUnmount(() => {
     z-index: 10;
     position: absolute;
     top: 0;
-    width: 100%;
   }
 
   #web-content-main {
@@ -214,7 +213,6 @@ onBeforeUnmount(() => {
     .app-container {
       height: 100%;
       overflow: hidden;
-      width: 100%;
 
       .app-content {
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
@@ -231,7 +229,6 @@ onBeforeUnmount(() => {
     @media (max-width: 640px) {
       left: 0;
       right: 0;
-      width: 100%;
       max-width: 500px;
     }
   }

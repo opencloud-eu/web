@@ -195,22 +195,18 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss">
-.app-token-table {
-  td:nth-of-type(1) {
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .app-token-table td:nth-of-type(1),
+  .app-token-table td:nth-of-type(4) {
     width: 30%;
   }
 
-  td:nth-of-type(2) {
+  .app-token-table td:nth-of-type(2),
+  .app-token-table td:nth-of-type(3) {
     width: 20%;
-  }
-
-  td:nth-of-type(3) {
-    width: 20%;
-  }
-
-  td:nth-of-type(4) {
-    width: 30%;
   }
 }
 </style>

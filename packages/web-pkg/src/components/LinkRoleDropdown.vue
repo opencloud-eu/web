@@ -18,7 +18,7 @@
   />
   <oc-drop
     v-if="availableLinkTypeOptions.length > 1"
-    class="link-role-dropdown"
+    class="link-role-dropdown w-md"
     :title="$gettext('Role')"
     :drop-id="`link-role-dropdown-${dropUuid}`"
     :toggle="`#link-role-dropdown-toggle-${dropUuid}`"
@@ -107,18 +107,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@media (max-width: $oc-breakpoint-medium-default) {
-  .link-role-dropdown {
-    width: 100%;
-  }
-}
-
-@media (min-width: $oc-breakpoint-medium-default) {
-  .link-role-dropdown {
-    width: 400px;
-  }
-}
-
 .role-dropdown-list {
   button {
     justify-content: space-between !important;

@@ -16,7 +16,7 @@
     <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
     <template v-else>
       <resource-link
-        class="oc-card-media-top flex justify-center items-center m-0"
+        class="oc-card-media-top flex justify-center items-center m-0 w-full"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -38,13 +38,14 @@
         </oc-tag>
         <div
           v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview flex items-center justify-center text-center"
+          class="oc-tile-card-preview flex items-center justify-center text-center size-full"
+          :class="{ 'p-2': isResourceSelected }"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm"
+              class="tile-preview rounded-t-sm w-full"
               :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
               @click="toggleTile([resource, $event])"
@@ -63,7 +64,7 @@
         </div>
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between">
           <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
             <resource-list-item
               :resource="resource"
@@ -215,6 +216,9 @@ if (!lazy) {
   .oc-tile-card:hover .tile-preview {
     @apply rounded-sm;
   }
+  .oc-tile-card:hover .oc-tile-card-preview {
+    @apply p-2;
+  }
 }
 </style>
 <style lang="scss">
@@ -253,7 +257,6 @@ if (!lazy) {
     position: relative;
     aspect-ratio: 16/9;
     justify-content: center;
-    width: 100%;
 
     .oc-tag {
       &.resource-disabled-indicator {
@@ -265,15 +268,6 @@ if (!lazy) {
       aspect-ratio: 16/9;
       height: 100%;
       object-fit: cover;
-      width: 100%;
-    }
-  }
-
-  &-selected,
-  &:hover {
-    .oc-tile-card-preview {
-      width: calc(100% - var(--oc-space-medium));
-      height: calc(100% - var(--oc-space-medium));
     }
   }
 
@@ -286,12 +280,9 @@ if (!lazy) {
 
   &-preview {
     position: absolute;
-    height: 100%;
-    width: 100%;
   }
 
   .resource-name-wrapper {
-    max-width: 70%;
     overflow: hidden;
   }
 

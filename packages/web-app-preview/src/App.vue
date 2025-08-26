@@ -12,8 +12,11 @@
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
-    <div class="stage flex flex-col text-center" :class="{ lightbox: isFullScreenModeActivated }">
-      <div class="stage_media flex justify-center items-center grow">
+    <div
+      class="stage size-full flex flex-col text-center"
+      :class="{ lightbox: isFullScreenModeActivated }"
+    >
+      <div class="stage_media size-full flex justify-center items-center grow">
         <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="w-full">
           <div class="oc-position-center">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
@@ -493,13 +496,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .stage {
-  width: 100%;
-  height: 100%;
-
   &_media {
     overflow: hidden;
-    width: 100%;
-    height: 100%;
   }
 
   &_controls {

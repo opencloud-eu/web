@@ -6,7 +6,7 @@
       type="radio"
       name="radio"
       :class="classes"
-      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0"
+      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 w-1"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -99,7 +99,6 @@ const labelClasses = computed(() => ({
 
   transition: 0.2s ease-in-out;
   transition-property: background-color, border;
-  width: 1rem;
 
   &:not(:disabled) {
     cursor: pointer;

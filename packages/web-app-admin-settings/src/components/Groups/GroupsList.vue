@@ -4,6 +4,7 @@
       <oc-text-input
         id="groups-filter"
         v-model="filterTerm"
+        class="w-3xs"
         :label="$gettext('Search')"
         autocomplete="off"
       />
@@ -432,9 +433,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-#groups-filter {
-  width: 16rem;
-}
-</style>

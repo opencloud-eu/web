@@ -129,14 +129,19 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-location-search .oc-drop {
+    @apply w-[180px];
+  }
+}
+</style>
 <style lang="scss">
 .oc-location-search {
   z-index: 9999;
   float: right;
-  .oc-drop {
-    width: 180px;
-  }
 }
 .search-bar-filter-item {
   justify-content: space-between !important;
