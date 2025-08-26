@@ -581,20 +581,26 @@ export default defineComponent({
     @apply whitespace-nowrap;
   }
 
-  /* Manager + RemainingQuota: hidden by default, visible from xl */
-  #space-list .spaces-table .oc-table-header-cell-manager,
-  #space-list .spaces-table .oc-table-data-cell-manager,
-  #space-list .spaces-table .oc-table-header-cell-remainingQuota,
-  #space-list .spaces-table .oc-table-data-cell-remainingQuota {
-    @apply hidden xl:table-cell;
+  /* Status, Members, Mdate: hidden by default, visible from md */
+  #space-list .oc-table-header-cell-status,
+  #space-list .oc-table-data-cell-status,
+  #space-list .oc-table-header-cell-members,
+  #space-list .oc-table-data-cell-members,
+  #space-list .oc-table-header-cell-mdate,
+  #space-list .oc-table-data-cell-mdate {
+    @apply hidden md:table-cell;
   }
 
-  /* TotalQuota + UsedQuota: hidden by default, visible from 2xl */
+  /* Manager, TotalQuota, UsedQuota, RemainingQuota: hidden by default, visible from lg */
+  #space-list .spaces-table .oc-table-header-cell-manager,
+  #space-list .spaces-table .oc-table-data-cell-manager,
   #space-list .spaces-table .oc-table-header-cell-totalQuota,
   #space-list .spaces-table .oc-table-data-cell-totalQuota,
   #space-list .spaces-table .oc-table-header-cell-usedQuota,
-  #space-list .spaces-table .oc-table-data-cell-usedQuota {
-    @apply hidden 2xl:table-cell;
+  #space-list .spaces-table .oc-table-data-cell-usedQuota,
+  #space-list .spaces-table .oc-table-header-cell-remainingQuota,
+  #space-list .spaces-table .oc-table-data-cell-remainingQuota {
+    @apply hidden lg:table-cell;
   }
 
   /* Squashed variant */

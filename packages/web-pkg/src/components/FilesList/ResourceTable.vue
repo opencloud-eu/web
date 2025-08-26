@@ -1352,7 +1352,11 @@ export default defineComponent({
   /* ---------------- SPACES TABLE ---------------- */
   /* Mdate, Manager, RemainingQuota, Members, Status: visible from lg */
   .spaces-table .oc-table-header-cell-mdate,
-  .spaces-table .oc-table-data-cell-mdate,
+  .spaces-table .oc-table-data-cell-mdate {
+    @apply hidden md:table-cell;
+  }
+
+  /* Manager, RemainingQuota, Members, Status: visible from lg */
   .spaces-table .oc-table-header-cell-manager,
   .spaces-table .oc-table-data-cell-manager,
   .spaces-table .oc-table-header-cell-remainingQuota,
@@ -1406,24 +1410,32 @@ export default defineComponent({
     @apply hidden sm:table-cell;
   }
 
-  /* Mdate, Sdate, Ddate: visible from lg */
+  /* Mdate, Sdate, Ddate: visible from md */
   .files-table .oc-table-header-cell-mdate,
   .files-table .oc-table-data-cell-mdate,
   .files-table .oc-table-header-cell-sdate,
   .files-table .oc-table-data-cell-sdate,
   .files-table .oc-table-header-cell-ddate,
   .files-table .oc-table-data-cell-ddate {
+    @apply hidden md:table-cell;
+  }
+
+  /* Tags, Indicators: visible from lg */
+  .files-table .oc-table-header-cell-tags,
+  .files-table .oc-table-data-cell-tags,
+  .files-table .oc-table-header-cell-indicators,
+  .files-table .oc-table-data-cell-indicators {
     @apply hidden lg:table-cell;
   }
 
-  /* SharedBy, Tags, Indicators: visible from xl */
+  /* SharedBy: visible from xl */
   .files-table .oc-table-header-cell-sharedBy,
   .files-table .oc-table-data-cell-sharedBy,
   .files-table .oc-table-header-cell-tags,
   .files-table .oc-table-data-cell-tags,
   .files-table .oc-table-header-cell-indicators,
   .files-table .oc-table-data-cell-indicators {
-    @apply hidden xl:table-cell;
+    @apply hidden lg:table-cell;
   }
 
   /* Squashed variant */
