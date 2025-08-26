@@ -60,36 +60,38 @@ const spinnerClass = computed(() => {
     position: relative;
   }
 
-  &-xs {
-    @include oc-spinner-size(0.5);
-  }
+  @layer components {
+    &-xs {
+      @include oc-spinner-size(0.5);
+    }
 
-  &-s {
-    @include oc-spinner-size(0.7);
-  }
+    &-s {
+      @include oc-spinner-size(0.7);
+    }
 
-  &-search {
-    @include oc-spinner-size(0.8);
-  }
+    &-search {
+      @include oc-spinner-size(0.8);
+    }
 
-  &-m {
-    @include oc-spinner-size(1);
-  }
+    &-m {
+      @include oc-spinner-size(1);
+    }
 
-  &-l {
-    @include oc-spinner-size(1.5);
-  }
+    &-l {
+      @include oc-spinner-size(1.5);
+    }
 
-  &-xl {
-    @include oc-spinner-size(2);
-  }
+    &-xl {
+      @include oc-spinner-size(2);
+    }
 
-  &-xxl {
-    @include oc-spinner-size(4);
-  }
+    &-xxl {
+      @include oc-spinner-size(4);
+    }
 
-  &-xxxl {
-    @include oc-spinner-size(8);
+    &-xxxl {
+      @include oc-spinner-size(8);
+    }
   }
 }
 

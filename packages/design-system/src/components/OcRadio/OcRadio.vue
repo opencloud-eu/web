@@ -104,16 +104,18 @@ const labelClasses = computed(() => ({
     cursor: pointer;
   }
 
-  &.oc-radio-s {
-    @include oc-form-check-size(0.7);
-  }
+  @layer components {
+    &.oc-radio-s {
+      @include oc-form-check-size(0.7);
+    }
 
-  &.oc-radio-m {
-    @include oc-form-check-size(1);
-  }
+    &.oc-radio-m {
+      @include oc-form-check-size(1);
+    }
 
-  &.oc-radio-l {
-    @include oc-form-check-size(1.5);
+    &.oc-radio-l {
+      @include oc-form-check-size(1.5);
+    }
   }
 }
 </style>
