@@ -1,16 +1,16 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="oc-pt-m oc-pb-l oc-flex oc-flex-center">
-    <div class="account-page">
-      <h1 id="account-page-title" class="oc-mb-rm" v-text="$gettext('My Account')" />
+  <main v-else id="account" class="pt-4 pb-6 flex justify-center">
+    <div class="account-page px-4 lg:px-0">
+      <h1 id="account-page-title" class="mb-0 border-b" v-text="$gettext('My Account')" />
       <account-table
         v-if="showAccountSection"
         :title="$gettext('Account Information')"
         :fields="[$gettext('Information name'), $gettext('Information value')]"
-        class="account-page-info"
+        class="account-page-info mt-6"
       >
         <template #header="{ title }">
-          <div class="oc-flex oc-flex-between oc-flex-bottom oc-width-1-1">
+          <div class="flex justify-between items-end oc-width-1-1">
             <h2 v-text="title" />
             <oc-button
               v-if="accountEditLink"
@@ -34,7 +34,7 @@
             }}
           </oc-table-td>
           <oc-table-td>
-            <avatar-upload class="oc-mb-s" />
+            <avatar-upload class="mb-2" />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr class="account-page-info-username">
@@ -55,7 +55,7 @@
         <oc-table-tr v-if="!!quota" class="account-page-info-quota">
           <oc-table-td>{{ $gettext('Personal storage') }}</oc-table-td>
           <oc-table-td data-testid="quota">
-            <quota-information :quota="quota" class="oc-mt-xs" />
+            <quota-information :quota="quota" class="mt-1" />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr class="account-page-info-groups">
@@ -97,12 +97,12 @@
         <oc-table-tr class="account-page-info-language">
           <oc-table-td>{{ $gettext('Language') }}</oc-table-td>
           <oc-table-td>
-            <div class="oc-flex">
+            <div class="flex">
               <span v-text="$gettext('Select your language.')" />
               <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                <div class="oc-flex oc-ml-xs oc-flex-middle">
+                <div class="flex ml-1 items-center">
                   <span v-text="$gettext('Help to translate')" />
-                  <oc-icon class="oc-ml-xs" size="small" fill-type="line" name="service" />
+                  <oc-icon class="ml-1" size="small" fill-type="line" name="service" />
                 </div>
               </a>
             </div>
@@ -224,7 +224,7 @@
           :title="$gettext('Mail notification options')"
           :fields="emailNotificationsOptionsFields"
           :show-head="!isMobileWidth"
-          class="oc-mt-m"
+          class="mt-4"
         >
           <template #header="{ title }">
             <h2 class="oc-invisible-sr">{{ title }}</h2>
@@ -261,7 +261,7 @@
         <oc-table-tr
           v-for="extensionPoint in extensionPointsWithUserPreferences"
           :key="`extension-point-preference-${extensionPoint.id}`"
-          class="oc-mb"
+          class="mb-4"
         >
           <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
           <oc-table-td v-if="extensionPoint.userPreference.description">
@@ -296,7 +296,7 @@
         :is="extension.content"
         v-for="extension in preferencesPanelExtensions"
         :key="`preferences-panel-${extension.id}`"
-        class="preferences-panel"
+        class="preferences-panel mt-6 border-b"
       />
     </div>
   </main>
@@ -820,26 +820,11 @@ export default defineComponent({
 #account {
   overflow-y: auto;
 
-  #account-page-title {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
-  .preferences-panel,
-  .account-table {
-    margin-top: var(--oc-space-large);
-  }
-
-  .preferences-panel {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
-  }
-
   .account-page {
     width: 80rem;
 
     @media (max-width: 1200px) {
       width: 100%;
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
     }
   }
 }

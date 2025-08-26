@@ -1,28 +1,26 @@
 <template>
-  <main class="oc-flex oc-height-1-1 app-content oc-width-1-1">
-    <div
-      class="admin-settings-wrapper oc-flex oc-width-1-1 oc-width-expand oc-height-1-1 oc-flex-wrap"
-    >
+  <main class="flex oc-height-1-1 app-content oc-width-1-1 rounded-l-xl">
+    <div class="admin-settings-wrapper flex oc-width-1-1 oc-width-expand oc-height-1-1 flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
         <div
           id="admin-settings-view-wrapper"
-          class="oc-width-expand oc-width-1-1 oc-height-1-1 oc-flex-wrap"
+          class="oc-width-expand oc-width-1-1 oc-height-1-1 flex-wrap"
         >
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar oc-py-s"
+            class="oc-app-bar py-2 px-4 bg-role-surface"
             :class="{ 'admin-settings-app-bar-sticky': isSticky }"
           >
-            <div class="admin-settings-app-bar-controls oc-flex oc-flex-between oc-flex-middle">
+            <div class="admin-settings-app-bar-controls flex justify-between items-center">
               <oc-breadcrumb
                 v-if="!isMobileWidth"
                 id="admin-settings-breadcrumb"
                 :items="breadcrumbs"
               />
               <portal-target name="app.runtime.mobile.nav" />
-              <div class="oc-flex">
+              <div class="flex">
                 <view-options
                   v-if="showViewOptions"
                   :has-hidden-files="false"
@@ -34,14 +32,11 @@
                 />
               </div>
             </div>
-            <div
-              v-if="showAppBar"
-              class="admin-settings-app-bar-actions oc-flex oc-flex-middle oc-mt-xs"
-            >
+            <div v-if="showAppBar" class="admin-settings-app-bar-actions flex items-center mt-1">
               <slot
                 name="topbarActions"
                 :limited-screen-space="limitedScreenSpace"
-                class="oc-flex-1 oc-flex oc-flex-start"
+                class="flex-1 flex flex-start"
               />
               <batch-actions
                 v-if="showBatchActions"
@@ -226,12 +221,9 @@ export default defineComponent({
 }
 
 #admin-settings-app-bar {
-  background-color: var(--oc-role-surface);
-  border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;
   position: inherit;
-  padding: 0 var(--oc-space-medium);
   top: 0;
 
   &.admin-settings-app-bar-sticky {
@@ -248,8 +240,6 @@ export default defineComponent({
 }
 
 .admin-settings-app-bar-actions {
-  align-items: center;
-  display: flex;
   min-height: 3rem;
 }
 

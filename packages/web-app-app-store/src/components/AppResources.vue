@@ -1,18 +1,18 @@
 <template>
-  <ul class="oc-mb-rm oc-p-rm">
+  <ul class="mb-0 p-0">
     <li v-for="resource in resources" :key="resource.label" class="app-resource-item">
       <a
         :href="resource.url"
         data-testid="resource-link"
         target="_blank"
-        class="oc-flex-inline oc-flex-middle"
+        class="inline-flex items-center"
       >
         <oc-icon
           v-if="resource.icon"
           data-testid="resource-icon"
           :name="resource.icon"
           size="medium"
-          class="oc-mr-xs"
+          class="mr-1"
         />
         <span data-testid="resource-label">{{ resource.label }}</span>
       </a>

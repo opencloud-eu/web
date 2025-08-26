@@ -1,11 +1,11 @@
 <template>
   <oc-list class="activity-list">
-    <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="oc-mb-l">
+    <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="mb-6">
       <h2
-        class="oc-text-bold oc-text-muted activity-list-date oc-text-medium"
+        class="font-semibold text-role-on-surface-variant activity-list-date text-base capitalize"
         v-text="getDateHeadline(date)"
       />
-      <oc-list class="oc-ml-s oc-mt-s timeline">
+      <oc-list class="ml-2 mt-2 timeline">
         <li v-for="activityItem in activityItems" :key="activityItem.id">
           <ActivityItem :activity="activityItem" />
         </li>
@@ -68,9 +68,5 @@ export default defineComponent({
 <style lang="scss">
 .activity-list {
   max-width: 1000px;
-
-  &-date {
-    text-transform: capitalize;
-  }
 }
 </style>

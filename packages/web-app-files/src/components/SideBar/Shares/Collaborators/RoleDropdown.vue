@@ -1,10 +1,10 @@
 <template>
-  <span v-if="selectedRole" class="oc-flex oc-flex-middle">
+  <div v-if="selectedRole" class="flex items-center">
     <span v-if="availableRoles.length === 1">
-      <oc-icon v-if="showIcon" :name="selectedRole.icon" class="oc-mr-s" />
+      <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
       <span v-text="inviteLabel" />
     </span>
-    <div v-else v-oc-tooltip="dropButtonTooltip">
+    <div v-else v-oc-tooltip="dropButtonTooltip" class="max-w-full">
       <oc-button
         :id="roleButtonId"
         class="files-recipient-role-select-btn"
@@ -15,13 +15,13 @@
           mode === 'create' ? $gettext('Select permission') : $gettext('Edit permission')
         "
       >
-        <oc-icon v-if="showIcon" :name="selectedRole.icon" class="oc-mr-s" />
-        <span class="oc-text-truncate" v-text="inviteLabel" />
+        <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
+        <span class="truncate" v-text="inviteLabel" />
         <oc-icon name="arrow-down-s" />
       </oc-button>
       <oc-contextual-helper
         v-if="isDisabledRole"
-        class="oc-ml-xs files-permission-actions-list"
+        class="ml-1 files-permission-actions-list"
         :text="customPermissionsText"
         :title="$gettext('Custom permissions')"
       />
@@ -45,7 +45,7 @@
           <oc-button
             :id="`files-recipient-role-drop-btn-${role.id}`"
             ref="roleSelect"
-            class="files-recipient-role-drop-btn oc-p-s"
+            class="files-recipient-role-drop-btn p-2"
             :class="{
               selected: isSelectedRole(role)
             }"
@@ -53,18 +53,18 @@
             :color-role="isSelectedRole(role) ? 'secondaryContainer' : 'surface'"
             @click="selectRole(role)"
           >
-            <span class="oc-flex oc-flex-middle">
-              <oc-icon :name="role.icon" class="oc-pl-s oc-pr-m" />
+            <span class="flex items-center">
+              <oc-icon :name="role.icon" class="pl-2 pr-4" />
               <role-item :role="role" />
             </span>
-            <span class="oc-flex">
+            <span class="flex">
               <oc-icon v-if="isSelectedRole(role)" name="check" />
             </span>
           </oc-button>
         </li>
       </oc-list>
     </oc-drop>
-  </span>
+  </div>
 </template>
 
 <script lang="ts">

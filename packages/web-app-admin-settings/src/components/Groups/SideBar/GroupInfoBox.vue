@@ -1,14 +1,14 @@
 <template>
-  <div class="oc-flex group-info oc-mb-l">
+  <div class="flex group-info mb-6">
     <OcAvatar
-      class="oc-mb-m"
+      class="mb-4"
       :width="80"
       :userid="group.id"
       :user-name="group.displayName"
       background-color="var(--oc-role-secondary)"
     />
-    <span class="oc-text-muted group-info-display-name" v-text="group.displayName"></span>
-    <span class="oc-text-muted" v-text="groupMembersText"></span>
+    <span class="text-role-on-surface-variant text-2xl" v-text="group.displayName"></span>
+    <span class="text-role-on-surface-variant" v-text="groupMembersText"></span>
   </div>
 </template>
 <script lang="ts">
@@ -48,9 +48,5 @@ export default defineComponent({
 .gr-info {
   align-items: center;
   flex-direction: column;
-}
-
-.group-info-display-name {
-  font-size: 1.5rem;
 }
 </style>

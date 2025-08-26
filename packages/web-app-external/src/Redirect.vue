@@ -1,10 +1,10 @@
 <template>
-  <main
-    class="external-redirect oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
-  >
+  <main class="external-redirect oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body oc-text-center oc-width-large">
-      <h2 key="external-redirect-loading">
+    <div
+      class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container rounded-xl"
+    >
+      <h2 key="external-redirect-loading" class="mt-0">
         <span v-text="$gettext('One moment please…')" />
       </h2>
       <p v-text="$gettext('You are being redirected.')" />
@@ -74,21 +74,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.external-redirect {
-  .oc-card {
-    background: var(--oc-role-surface-container);
-    border-radius: 15px;
-
-    &-body {
-      h2 {
-        margin-top: 0;
-      }
-      p {
-        font-size: var(--oc-font-size-large);
-      }
-    }
-  }
-}
-</style>

@@ -125,17 +125,8 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-select,
 .oc-textarea,
 .oc-radio {
-  /* 3 */
-  border-radius: 0;
-
   /* 1 */
   box-sizing: border-box;
-
-  /* 4 */
-  font: inherit;
-
-  /* 2 */
-  margin: 0;
 }
 
 /*
@@ -143,26 +134,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
  */
 
 .oc-input { overflow: visible; }
-
-/*
- * Remove the inheritance of text transform in Firefox.
- */
-
-.oc-select { text-transform: none; }
-
-/*
- * 1. Change font properties to `inherit` in all browsers
- * 2. Don't inherit the `font-weight` and use `bold` instead.
- * NOTE: Both declarations don't work in Chrome, Safari and Opera.
- */
-
-.oc-select optgroup {
-  /* 1 */
-  font: inherit;
-
-  /* 2 */
-  font-weight: bold;
-}
 
 /*
  * Remove the default vertical scrollbar in IE 10+.
@@ -221,10 +192,7 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input,
 .oc-select,
 .oc-textarea {
-  background: $form-background;
-
   /* 3 */
-  border: 0 none;
   color: $form-color;
 
   /* 1 */
@@ -246,54 +214,25 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input {
   -webkit-appearance: none;
   background-clip: padding-box, border-box;
-  background-color: $form-focus-background;
   background-origin: border-box;
-  border-radius: 0;
-  border-radius: 5px;
-  border: 1px solid var(--oc-role-outline);
   box-sizing: border-box;
   color: var(--oc-role-on-surface);
   display: inline-block;
-  line-height: inherit;
-  margin: 0;
   max-width: 100%;
-  outline: none;
   overflow: visible;
-  padding: calc(var(--oc-space-xsmall) + 2px) 7px;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-property: color, background-color;
-  vertical-align: middle;
   width: 100%;
-}
-
-/* 2 */
-.oc-input:not(input),
-.oc-select:not(select) {
-  line-height: $form-line-height;
 }
 
 /*
  * Multi-line
  */
 
-.oc-textarea {
-  padding: $form-padding-vertical $form-padding-horizontal;
-  vertical-align: top;
-}
-
-/* Focus */
-.oc-input:focus,
-.oc-select:focus,
-.oc-textarea:focus {
-  outline: none;
-  color: $form-focus-color;
-}
-
 /* Disabled */
 .oc-input:disabled,
 .oc-select:disabled {
-  background-color: $form-disabled-background;
   color: $form-disabled-color;
   cursor: not-allowed;
 }
@@ -307,38 +246,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 
 .oc-textarea::input-placeholder { color: $form-placeholder-color !important; }
 .oc-textarea::placeholder { color: $form-placeholder-color; }
-
-
-/* Style modifier (`oc-input`, `oc-select` and `oc-textarea`)
- ========================================================================== */
-
-/*
- * Small
- */
-
-.oc-form-small { font-size: $form-small-font-size; }
-
-.oc-form-small:not(textarea):not([multiple]):not([size]) {
-  height: $form-small-height;
-  padding-left: $form-small-padding-horizontal;
-  padding-right: $form-small-padding-horizontal;
-}
-
-.oc-form-small:not(select):not(input):not(textarea) { line-height: $form-small-line-height; }
-
-/*
- * Large
- */
-
-.oc-form-large { font-size: $form-large-font-size; }
-
-.oc-form-large:not(textarea):not([multiple]):not([size]) {
-  height: $form-large-height;
-  padding-left: $form-large-padding-horizontal;
-  padding-right: $form-large-padding-horizontal;
-}
-
-.oc-form-large:not(select):not(input):not(textarea) { line-height: $form-large-line-height; }
 
 /* Width modifiers (`oc-input`, `oc-select` and `oc-textarea`)
  ========================================================================== */
@@ -425,10 +332,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  /* 5 */
-  background-color: $form-radio-background;
-  background-position: 50% 50%;
-
   /* 6 */
   background-repeat: no-repeat;
 
@@ -437,27 +340,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 
   /* 2 */
   overflow: hidden;
-  vertical-align: middle;
-}
-
-.oc-radio { border-radius: 50%; }
-
-/* Focus */
-.oc-radio:focus {
-  outline: none;
-}
-
-/*
- * Checked
- */
-
-.oc-radio:checked {
-  background-color: $form-radio-checked-background;
-}
-
-/* Focus */
-.oc-radio:checked:focus {
-  background-color: $form-radio-checked-focus-background;
 }
 
 /*
@@ -469,10 +351,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 /*
  * Disabled
  */
-
-.oc-radio:disabled {
-  background-color: $form-radio-disabled-background;
-}
 
 .oc-radio:disabled:checked { @include svg-fill($internal-form-radio-image, "#000", $form-radio-disabled-icon-color); }
 

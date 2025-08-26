@@ -2,21 +2,26 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
+    class="px-4"
     :aria-label="$gettext('Top bar')"
   >
-    <div class="oc-topbar-left oc-flex oc-flex-middle oc-flex-start">
+    <div class="oc-topbar-left flex items-center flex-start">
       <applications-menu
         v-if="appMenuExtensions.length && !isEmbedModeEnabled"
         :menu-items="appMenuExtensions"
       />
       <router-link v-if="!hideLogo" :to="homeLink" class="oc-width-1-1 oc-logo-href">
-        <oc-image :src="currentTheme.logo" :alt="sidebarLogoAlt" class="oc-logo-image" />
+        <oc-image
+          :src="currentTheme.logo"
+          :alt="sidebarLogoAlt"
+          class="oc-logo-image align-middle ml-1"
+        />
       </router-link>
     </div>
-    <div v-if="!contentOnLeftPortal" class="oc-topbar-center">
+    <div v-if="!contentOnLeftPortal" class="oc-topbar-center flex justify-end sm:justify-center">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
-    <div class="oc-topbar-right oc-flex oc-flex-middle">
+    <div class="oc-topbar-right flex items-center justify-end">
       <portal-target name="app.runtime.header.right" multiple />
     </div>
     <template v-if="!isEmbedModeEnabled">
@@ -211,7 +216,6 @@ export default {
   grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
   grid-template-columns: 30% 30% 40%;
   grid-template-rows: 52px auto;
-  padding: 0 1rem;
   position: sticky;
   z-index: 5;
 
@@ -221,7 +225,6 @@ export default {
     grid-template-rows: 1;
     height: 52px;
     justify-content: center;
-    padding: 0 1.1rem;
   }
 
   &.open-app {
@@ -234,8 +237,6 @@ export default {
 
   .oc-logo-image {
     max-height: 26px;
-    margin-left: var(--oc-space-xsmall);
-    vertical-align: middle;
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;
@@ -252,19 +253,12 @@ export default {
   }
 
   .oc-topbar-center {
-    display: flex;
     grid-area: center;
-    justify-content: flex-end;
-
-    @media (min-width: $oc-breakpoint-small-default) {
-      justify-content: center;
-    }
   }
 
   .oc-topbar-right {
     gap: 20px;
     grid-area: right;
-    justify-content: flex-end;
   }
 }
 </style>

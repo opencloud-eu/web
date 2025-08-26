@@ -1,19 +1,23 @@
 <template>
   <span
     v-oc-tooltip="tooltip"
-    class="oc-resource-name"
+    class="oc-resource-name flex hover:underline"
     :class="[{ 'oc-display-inline-block': !truncateName }]"
     :data-test-resource-path="fullPath"
     :data-test-resource-name="fullName"
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="oc-text-truncate">
-      <span class="oc-resource-basename" v-text="displayName" />
+    <span v-if="truncateName" class="truncate">
+      <span class="oc-resource-basename whitespace-pre text-role-on-surface" v-text="displayName" />
     </span>
-    <span v-else class="oc-resource-basename oc-text-break" v-text="displayName" /><span
+    <span
+      v-else
+      class="oc-resource-basename break-normal text-role-on-surface"
+      v-text="displayName"
+    /><span
       v-if="extension && isExtensionDisplayed"
-      class="oc-resource-extension"
+      class="oc-resource-extension whitespace-pre text-role-on-surface"
       v-text="displayExtension"
     />
   </span>
@@ -154,19 +158,7 @@ export default defineComponent({
 <style lang="scss">
 .oc-resource {
   &-name {
-    display: flex;
     min-width: 0;
-
-    &:hover {
-      text-decoration: underline;
-      text-decoration-color: var(--oc-role-on-surface);
-    }
-  }
-
-  &-basename,
-  &-extension {
-    color: var(--oc-role-on-surface);
-    white-space: pre;
   }
 }
 </style>

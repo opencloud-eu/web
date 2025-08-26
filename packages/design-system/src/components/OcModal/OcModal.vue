@@ -1,45 +1,52 @@
 <template>
-  <div class="oc-modal-background">
+  <div class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap">
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
         ref="ocModal"
         :class="classes"
+        class="border border-role-outline rounded-sm focus:outline-0"
         tabindex="0"
         role="dialog"
         aria-modal="true"
         aria-labelledby="oc-modal-title"
         @keydown.esc.stop="cancelModalAction"
       >
-        <div class="oc-modal-title">
-          <h2 id="oc-modal-title" class="oc-text-truncate" v-text="title" />
+        <div
+          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap py-3 px-4 rounded-t-sm"
+        >
+          <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
         </div>
-        <div class="oc-modal-body">
-          <div v-if="$slots.content" key="modal-slot-content" class="oc-modal-body-message">
+        <div class="oc-modal-body px-4 pt-4">
+          <div
+            v-if="$slots.content"
+            key="modal-slot-content"
+            class="oc-modal-body-message mt-2 mb-4"
+          >
             <slot name="content" />
           </div>
           <template v-else>
             <p
               v-if="message"
               key="modal-message"
-              class="oc-modal-body-message oc-mt-rm"
-              :class="{ 'oc-mb-rm': !hasInput || contextualHelperData }"
+              class="oc-modal-body-message mt-0"
+              :class="{ 'mb-0': !hasInput || contextualHelperData }"
               v-text="message"
             />
             <div
               v-if="contextualHelperData"
-              class="oc-modal-body-contextual-helper"
-              :class="{ 'oc-mb-rm': !hasInput }"
+              class="oc-modal-body-contextual-helper mb-4"
+              :class="{ 'mb-0': !hasInput }"
             >
               <span class="text" v-text="contextualHelperLabel" />
-              <oc-contextual-helper class="oc-pl-xs" v-bind="contextualHelperData" />
+              <oc-contextual-helper class="pl-1" v-bind="contextualHelperData" />
             </div>
             <oc-text-input
               v-if="hasInput"
               key="modal-input"
               ref="ocModalInput"
               v-model="userInputValue"
-              class="oc-modal-body-input"
+              class="oc-modal-body-input -mb-5 pb-4"
               :error-message="inputError"
               :label="inputLabel"
               :type="inputType"
@@ -53,7 +60,7 @@
           </template>
         </div>
 
-        <div v-if="!hideActions" class="oc-modal-body-actions oc-flex oc-flex-right">
+        <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
           <div class="oc-modal-body-actions-grid">
             <oc-button
               class="oc-modal-body-actions-cancel"
@@ -63,7 +70,7 @@
             </oc-button>
             <oc-button
               v-if="!hideConfirmButton"
-              class="oc-modal-body-actions-confirm oc-ml-s"
+              class="oc-modal-body-actions-confirm ml-2"
               :appearance="buttonConfirmAppearance"
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
@@ -279,7 +286,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
 })
 
 const classes = computed(() => {
-  return ['oc-modal', elementClass]
+  return ['oc-modal', 'bg-role-surface', elementClass]
 })
 
 watch(
@@ -317,26 +324,14 @@ export default {
 
 <style lang="scss">
 .oc-modal {
-  background-color: var(--oc-role-surface);
-  border: 1px solid var(--oc-role-outline);
-  border-radius: 5px;
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   max-width: 500px;
   overflow: auto;
   width: 100%;
 
-  &:focus {
-    outline: none;
-  }
-
   &-background {
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-flow: row wrap;
     height: 100%;
-    justify-content: center;
     left: 0;
     position: fixed;
     top: 0;
@@ -344,61 +339,8 @@ export default {
     z-index: var(--oc-z-index-modal);
   }
 
-  &-title {
-    align-items: center;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    display: flex;
-    flex-flow: row wrap;
-    line-height: 1.625;
-    padding: calc(var(--oc-space-small) + var(--oc-space-xsmall)) var(--oc-space-medium);
-    background-color: var(--oc-role-surface-container);
-
-    > h2 {
-      font-size: 1rem;
-      font-weight: bold;
-      margin: 0;
-    }
-  }
-
   &-body {
-    color: var(--oc-role-on-surface);
-    line-height: 1.625;
-    padding: var(--oc-space-medium) var(--oc-space-medium) 0;
-
-    &-message {
-      margin-bottom: var(--oc-space-medium);
-      margin-top: var(--oc-space-small);
-    }
-
-    &-contextual-helper {
-      margin-bottom: var(--oc-space-medium);
-    }
-
-    .oc-input {
-      line-height: normal;
-    }
-
-    &-input {
-      /* FIXME: this is ugly, but required so that the bottom padding doesn't look off when reserving vertical space for error messages below the input. */
-      margin-bottom: -20px;
-      padding-bottom: var(--oc-space-medium);
-
-      .oc-text-input-message {
-        margin-bottom: var(--oc-space-xsmall);
-      }
-    }
-
     &-actions {
-      text-align: right;
-      border-bottom-right-radius: 15px;
-      border-bottom-left-radius: 15px;
-      padding: var(--oc-space-medium);
-
-      .oc-button {
-        border-radius: 4px;
-      }
-
       &-grid {
         display: inline-grid;
         grid-auto-flow: column;

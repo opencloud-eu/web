@@ -1,14 +1,14 @@
 <template>
-  <div id="oc-files-file-link" class="oc-position-relative">
-    <div class="oc-flex oc-flex-middle">
-      <h3 class="oc-text-bold oc-text-medium oc-m-rm" v-text="$gettext('Public links')" />
-      <oc-contextual-helper v-if="helpersEnabled" class="oc-pl-xs" v-bind="viaLinkHelp" />
+  <div id="oc-files-file-link" class="oc-position-relative rounded-sm">
+    <div class="flex items-center">
+      <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
+      <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
     </div>
-    <p v-if="!directLinks.length" class="files-links-empty oc-mt-m" v-text="noLinksLabel" />
+    <p v-if="!directLinks.length" class="files-links-empty mt-4" v-text="noLinksLabel" />
     <ul
       v-else
       id="files-links-list"
-      class="oc-list oc-list-divider oc-mt-m"
+      class="oc-list oc-list-divider mt-4"
       :aria-label="$gettext('Public links')"
     >
       <li v-for="link in displayLinks" :key="link.id">
@@ -24,7 +24,7 @@
         />
       </li>
     </ul>
-    <div v-if="directLinks.length > 3" class="oc-flex oc-flex-center">
+    <div v-if="directLinks.length > 3" class="flex justify-center">
       <oc-button
         class="indirect-link-list-toggle"
         appearance="raw"
@@ -33,7 +33,7 @@
         <span v-text="collapseButtonTitle" />
       </oc-button>
     </div>
-    <div class="oc-mt-m">
+    <div class="mt-4">
       <oc-button
         v-if="canCreateLinks"
         id="files-file-link-add"
@@ -46,19 +46,22 @@
       <p
         v-else
         data-testid="files-links-no-share-permissions-message"
-        class="oc-mt-m"
+        class="mt-4"
         v-text="$gettext('You do not have permission to create public links.')"
       />
     </div>
-    <div v-if="indirectLinks.length" class="files-links-indirect oc-mt-m">
-      <hr class="oc-my-m" />
-      <h4 class="oc-text-bold oc-text-medium oc-m-rm">
+    <div v-if="indirectLinks.length" class="files-links-indirect mt-4">
+      <hr class="my-4" />
+      <h4 class="font-semibold text-base m-0">
         {{ indirectLinksHeading }}
-        <oc-contextual-helper v-if="helpersEnabled" class="oc-pl-xs" v-bind="indirectLinkHelp" />
+        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
       </h4>
       <div
         class="files-links-indirect-list"
-        :class="{ 'files-links-indirect-list-open': !indirectLinkListCollapsed }"
+        :class="{
+          'files-links-indirect-list-open': !indirectLinkListCollapsed,
+          'mt-4': !indirectLinkListCollapsed
+        }"
       >
         <ul class="oc-list oc-list-divider" :aria-label="$gettext('Public links')">
           <li v-for="link in indirectLinks" :key="link.id">
@@ -327,11 +330,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#oc-files-file-link,
-#oc-files-sharing-sidebar {
-  border-radius: 5px;
-}
-
 .files-links-indirect-list {
   display: grid;
   grid-template-rows: 0fr;
@@ -343,7 +341,6 @@ export default defineComponent({
 
   &-open {
     grid-template-rows: 1fr;
-    margin-top: var(--oc-space-medium);
   }
 }
 </style>

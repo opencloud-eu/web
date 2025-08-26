@@ -18,7 +18,7 @@
       }
     ]"
   />
-  <div class="oc-mt-m">Cloud indicator clicked: {{ cloudIndicatorClicked }}</div>
+  <div class="mt-4">Cloud indicator clicked: {{ cloudIndicatorClicked }}</div>
   <div>Share indicator clicked: {{ shareIndicatorClicked }}</div>
 </template>
 

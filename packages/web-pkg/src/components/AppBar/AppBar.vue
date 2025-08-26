@@ -2,16 +2,17 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
+    class="px-4 bg-role-surface rounded-t-xl"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky': isSticky }"
   >
-    <div class="files-topbar oc-py-s">
+    <div class="files-topbar py-2">
       <h1 class="oc-invisible-sr" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
-        class="oc-flex oc-flex-middle files-app-bar-controls"
+        class="flex items-center files-app-bar-controls"
         :class="{
-          'oc-flex-between': breadcrumbs.length || hasSharesNavigation,
-          'oc-flex-right': !breadcrumbs.length && !hasSharesNavigation
+          'justify-between': breadcrumbs.length || hasSharesNavigation,
+          'justify-end': !breadcrumbs.length && !hasSharesNavigation
         }"
       >
         <oc-breadcrumb
@@ -32,7 +33,7 @@
         </oc-breadcrumb>
         <portal-target v-if="showMobileNav" name="app.runtime.mobile.nav" />
         <slot v-if="hasSharesNavigation" name="navigation" />
-        <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="oc-flex">
+        <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
             :view-modes="viewModes"
             :has-hidden-files="hasHiddenFiles"
@@ -43,8 +44,8 @@
           />
         </div>
       </div>
-      <div class="files-app-bar-actions oc-mt-xs">
-        <div class="oc-flex-1 oc-flex oc-flex-start oc-flex-middle">
+      <div class="files-app-bar-actions flex items-center justify-end mt-1">
+        <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
             v-if="showBatchActions && !batchActionsLoading"
@@ -345,13 +346,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #files-app-bar {
-  background-color: var(--oc-role-surface);
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
   box-sizing: border-box;
   z-index: 2;
   position: inherit;
-  padding: 0 var(--oc-space-medium);
   top: 0;
 
   &.files-app-bar-sticky {
@@ -367,10 +364,7 @@ export default defineComponent({
   }
 
   .files-app-bar-actions {
-    align-items: center;
-    display: flex;
     gap: var(--oc-space-small);
-    justify-content: flex-end;
     min-height: 3rem;
   }
 

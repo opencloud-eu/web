@@ -9,13 +9,13 @@
     @date-changed="onDateChanged"
   />
 
-  <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
-    <oc-button class="oc-modal-body-actions-cancel oc-ml-s" @click="$emit('cancel')">
+  <div class="link-modal-actions flex justify-end items-center mt-2">
+    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>
     <oc-button
       :disabled="confirmDisabled"
-      class="oc-modal-body-actions-confirm oc-ml-s"
+      class="oc-modal-body-actions-confirm ml-2"
       appearance="filled"
       @click="$emit('confirm', dateTime)"
     >

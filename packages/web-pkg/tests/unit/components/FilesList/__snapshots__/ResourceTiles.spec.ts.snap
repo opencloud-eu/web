@@ -1,43 +1,43 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ResourceTiles component > renders a footer slot 1`] = `
-"<div id="tiles-view" class="oc-px-m oc-pt-l">
-  <div class="oc-flex oc-flex-middle oc-mb-s oc-pb-s oc-tiles-controls"><span class="oc-ml-s"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" disabled="" aria-label="Select all"> <!--v-if--></span>
+"<div id="tiles-view" class="px-4 pt-6">
+  <div class="flex items-center mb-2 pb-2 oc-tiles-controls"><span class="ml-2"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox rounded-sm oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary" disabled="" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
-  <ul class="oc-list oc-my-rm oc-mx-rm oc-tiles"> </ul>
+  <ul class="oc-list oc-tiles"> </ul>
   <!--v-if-->
-  <div class="oc-tiles-footer">Hello, ResourceTiles footer!</div>
+  <div class="oc-tiles-footer p-1 text-sm">Hello, ResourceTiles footer!</div>
 </div>"
 `;
 
 exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
-"<div id="tiles-view" class="oc-px-m oc-pt-l">
-  <div class="oc-flex oc-flex-middle oc-mb-s oc-pb-s oc-tiles-controls"><span class="oc-ml-s"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox oc-rounded oc-checkbox-l" aria-label="Select all"> <!--v-if--></span>
+"<div id="tiles-view" class="px-4 pt-6">
+  <div class="flex items-center mb-2 pb-2 oc-tiles-controls"><span class="ml-2"><input id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox rounded-sm oc-checkbox-l m-0.5 checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
-  <ul class="oc-list oc-my-rm oc-mx-rm oc-tiles">
+  <ul class="oc-list oc-tiles">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
-        <div class="oc-card-body oc-p-s">
-          <div class="oc-flex oc-flex-between oc-flex-middle">
-            <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
+      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+        <div class="oc-card-body p-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
               <div class="oc-resource oc-text-overflow">
                 <!--v-if-->
-                <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow" no-hover=""></a>
-                  <div class="oc-resource-indicators">
+                <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                  <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
                 </div>
               </div>
             </div>
-            <div class="oc-flex oc-flex-middle">
+            <div class="flex items-center">
               <!-- Slot for indicators !-->
               <!--v-if-->
               <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button oc-ml-xs oc-p-xs resource-tiles-btn-action-dropdown" id="context-menu-trigger-1">
+              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-1">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -46,8 +46,8 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
-                <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium oc-rounded">
-                  <div class="oc-card oc-card-body oc-p-s"></div>
+                <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium rounded-sm">
+                  <div class="oc-card oc-card-body p-2"></div>
                 </div>
               </button>
             </div>
@@ -57,26 +57,26 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm" no-hover="" tabindex="-1"></a>
-        <div class="oc-card-body oc-p-s">
-          <div class="oc-flex oc-flex-between oc-flex-middle">
-            <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
+      <div class="oc-tile-card oc-card flex flex-col bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-card-media-top flex justify-center items-center m-0" no-hover="" tabindex="-1"></a>
+        <div class="oc-card-body p-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
               <div class="oc-resource oc-text-overflow">
                 <!--v-if-->
-                <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow" no-hover=""></a>
-                  <div class="oc-resource-indicators">
+                <div class="oc-resource-details oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link oc-text-overflow hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                  <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
                 </div>
               </div>
             </div>
-            <div class="oc-flex oc-flex-middle">
+            <div class="flex items-center">
               <!-- Slot for indicators !-->
               <!--v-if-->
               <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button oc-ml-xs oc-p-xs resource-tiles-btn-action-dropdown" id="context-menu-trigger-2">
+              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-2">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+                <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -85,8 +85,8 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false"></svg></span>
-                <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium oc-rounded">
-                  <div class="oc-card oc-card-body oc-p-s"></div>
+                <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm">
+                  <div class="oc-card oc-card-body p-2"></div>
                 </div>
               </button>
             </div>
@@ -102,6 +102,6 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
     <li class="ghost-tile" aria-hidden="true"></li>
   </ul>
   <!--v-if-->
-  <div class="oc-tiles-footer"></div>
+  <div class="oc-tiles-footer p-1 text-sm"></div>
 </div>"
 `;

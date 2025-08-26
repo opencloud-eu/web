@@ -4,9 +4,10 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
+    class="border-l focus:outline-0 focus-visible:outline-0"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
-      'oc-flex oc-flex-center oc-flex-middle': loading,
+      'flex justify-center items-center': loading,
       'app-sidebar-full-width': fullWidthSideBar
     }"
   >
@@ -18,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel"
+        class="sidebar-panel bg-role-surface rounded-r-xl"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -28,12 +29,12 @@
       >
         <div
           v-if="[activePanelName, oldPanelName].includes(panel.name)"
-          class="sidebar-panel__header header"
+          class="sidebar-panel__header header pt-2 px-2"
         >
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
             v-oc-tooltip="accessibleLabelBack"
-            class="header__back oc-p-xs"
+            class="header__back p-1"
             appearance="raw"
             :aria-label="accessibleLabelBack"
             @click="closePanel"
@@ -41,13 +42,13 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title oc-my-rm">
+          <h2 class="header__title text-center my-0 text-lg">
             {{ panel.title(panelContext) }}
           </h2>
 
           <oc-button
             appearance="raw"
-            class="header__close oc-p-xs"
+            class="header__close p-1"
             :aria-label="$gettext('Close file sidebar')"
             @click="closeSidebar"
           >
@@ -59,10 +60,15 @@
           <slot v-if="panel.isRoot?.(panelContext)" name="rootHeader" />
           <slot v-else name="subHeader" />
         </div>
-        <div class="sidebar-panel__body" :class="[`sidebar-panel__body-${panel.name}`]">
+        <div
+          class="sidebar-panel__body flex flex-col p-2"
+          :class="[`sidebar-panel__body-${panel.name}`]"
+        >
           <div
             class="sidebar-panel__body-content"
-            :class="{ 'sidebar-panel__body-content-stretch': !panel.isRoot?.(panelContext) }"
+            :class="{
+              'sidebar-panel__body-content-stretch flex-1 ': !panel.isRoot?.(panelContext)
+            }"
           >
             <slot name="body">
               <div
@@ -76,8 +82,8 @@
                       ? p.isRoot?.(panelContext)
                       : [activePanelName, oldPanelName].includes(p.name)
                   "
-                  :class="{ 'multi-root-panel-separator oc-mt oc-pt-s': index > 0 }"
-                  class="oc-rounded"
+                  :class="{ 'multi-root-panel-separator mt-4 pt-2 border-t': index > 0 }"
+                  class="rounded-sm"
                   v-bind="p.componentAttrs?.(panelContext) || {}"
                 />
               </div>
@@ -86,7 +92,7 @@
 
           <div
             v-if="panel.isRoot?.(panelContext) && subPanels.length > 0"
-            class="sidebar-panel__navigation oc-mt-m"
+            class="sidebar-panel__navigation mt-4"
           >
             <oc-button
               v-for="panelSelect in subPanels"
@@ -95,6 +101,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
+              class="text-left px-2"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -281,7 +288,6 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  border-left: 0.5px solid var(--oc-role-outline-variant);
   position: relative;
   overflow: hidden;
   min-width: 440px;
@@ -290,7 +296,6 @@ onBeforeUnmount(() => {
   &:focus,
   &:focus-visible {
     box-shadow: none;
-    outline: none;
   }
 }
 .app-sidebar-full-width {
@@ -313,7 +318,6 @@ onBeforeUnmount(() => {
   max-height: 100%;
   display: grid;
   grid-template-rows: auto auto 1fr;
-  background-color: var(--oc-role-surface);
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -325,8 +329,6 @@ onBeforeUnmount(() => {
   // hidden: if element is off screen
   // visible: if element is on screen
   visibility: hidden;
-  border-top-right-radius: var(--oc-space-medium);
-  border-bottom-right-radius: var(--oc-space-medium);
 
   @media screen and (prefers-reduced-motion: reduce), (update: slow) {
     transition-duration: 0.001ms !important;
@@ -350,13 +352,7 @@ onBeforeUnmount(() => {
     right: 100px;
   }
 
-  .multi-root-panel-separator {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-
   &__header {
-    padding: var(--oc-space-small) var(--oc-space-small) 0 var(--oc-space-small);
-
     &.header {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -369,9 +365,6 @@ onBeforeUnmount(() => {
       }
 
       &__title {
-        text-align: center;
-        color: var(--oc-role-on-surface);
-        font-size: var(--oc-font-size-large);
         grid-column-start: 2;
       }
 
@@ -384,28 +377,14 @@ onBeforeUnmount(() => {
   &__body {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: var(--oc-space-small);
-    display: flex;
-    flex-direction: column;
-
-    &-content-stretch {
-      flex: 1;
-    }
   }
 
   &__navigation {
-    margin: var(--oc-space-small) - var(--oc-space-small) - var(--oc-space-small);
-
     > button {
       width: 100%;
-      border-radius: 0;
-      color: var(--oc-role-on-surface) !important;
       display: grid;
       grid-template-columns: auto 1fr auto;
-      text-align: left;
       height: 50px;
-      padding: 0 var(--oc-space-small);
-      border-radius: 5px;
     }
   }
 }

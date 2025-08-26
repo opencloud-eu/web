@@ -1,5 +1,5 @@
 <template>
-  <div v-if="ready" class="oc-flex">
+  <div v-if="ready" class="flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -16,9 +16,7 @@
           </template>
         </no-content-message>
         <template v-else>
-          <div
-            class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
-          >
+          <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="trash-filter"
               v-model="filterTerm"
@@ -52,9 +50,9 @@
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
-              <div class="oc-text-center oc-width-1-1 oc-my-s">
-                <p class="oc-text-muted">{{ footerTextTotal }}</p>
-                <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
+              <div class="text-center oc-width-1-1 my-2">
+                <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+                <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
               </div>
             </template>
           </resource-table>

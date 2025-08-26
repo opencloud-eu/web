@@ -1,18 +1,18 @@
 <template>
-  <main
-    class="webfinger-resolve oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
-  >
+  <main class="webfinger-resolve oc-height-viewport flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
-    <div class="oc-card oc-card-body oc-text-center oc-width-large">
+    <div
+      class="oc-card oc-card-body text-center oc-width-large text-lg bg-role-surface-container rounded-xl"
+    >
       <template v-if="hasError">
-        <h2 key="webfinger-resolve-error">
+        <h2 key="webfinger-resolve-error" class="mt-0">
           <span v-text="$gettext('Sorry!')" />
         </h2>
         <p v-text="$gettext('Something went wrong.')" />
         <p v-text="$gettext('We could not resolve the destination.')" />
       </template>
       <template v-else>
-        <h2 key="webfinger-resolve-loading">
+        <h2 key="webfinger-resolve-loading" class="mt-0">
           <span v-text="$gettext('One moment please…')" />
         </h2>
         <p v-text="$gettext('You are being redirected.')" />
@@ -84,21 +84,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.webfinger-resolve {
-  .oc-card {
-    background: var(--oc-role-surface-container);
-    border-radius: 15px;
-
-    &-body {
-      h2 {
-        margin-top: 0;
-      }
-      p {
-        font-size: var(--oc-font-size-large);
-      }
-    }
-  }
-}
-</style>

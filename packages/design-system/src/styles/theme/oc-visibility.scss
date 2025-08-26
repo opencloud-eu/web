@@ -78,7 +78,6 @@
 /// Used to hide an element visually, but keeping it accessible for
 /// accessibility tools.
 .oc-invisible-sr {
-  border: 0 !important;
   clip: rect(1px, 1px, 1px, 1px) !important;
   height: 1px !important;
   overflow: hidden !important;

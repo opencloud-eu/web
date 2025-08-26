@@ -5,7 +5,7 @@
     appearance="raw"
     gap-size="none"
     no-hover
-    class="oc-text-left link-role-dropdown-toggle"
+    class="text-left link-role-dropdown-toggle"
   >
     <span class="link-current-role" v-text="currentLinkRoleLabel || $gettext('Select a role')" />
     <oc-icon name="arrow-down-s" />
@@ -13,7 +13,7 @@
   <span
     v-else
     v-oc-tooltip="getLinkRoleByType(modelValue)?.description"
-    class="link-current-role oc-mr-m"
+    class="link-current-role mr-4"
     v-text="currentLinkRoleLabel"
   />
   <oc-drop
@@ -32,25 +32,27 @@
         <oc-button
           :id="`files-role-${getLinkRoleByType(type).id}`"
           :class="{
-            selected: isSelectedType(type),
-            'oc-secondary-container': isSelectedType(type)
+            selected: isSelectedType(type)
           }"
-          appearance="raw"
+          :appearance="isSelectedType(type) ? 'filled' : 'raw-inverse'"
+          :color-role="isSelectedType(type) ? 'secondaryContainer' : 'surface'"
           justify-content="space-between"
-          class="oc-p-s"
+          class="p-2"
           @click="updateSelectedType(type)"
         >
-          <span class="oc-flex oc-flex-middle">
-            <oc-icon :name="getLinkRoleByType(type).icon" class="oc-pl-s oc-pr-m" />
-            <span>
+          <span class="flex items-center">
+            <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
+            <span class="text-left">
               <span
-                class="role-dropdown-list-option-label oc-text-bold oc-display-block oc-width-1-1"
+                class="role-dropdown-list-option-label font-semibold oc-display-block oc-width-1-1 leading-4"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"
               />
-              <span class="oc-text-small">{{ $gettext(getLinkRoleByType(type).description) }}</span>
+              <span class="text-sm leading-4">{{
+                $gettext(getLinkRoleByType(type).description)
+              }}</span>
             </span>
           </span>
-          <span class="oc-flex">
+          <span class="flex">
             <oc-icon v-if="isSelectedType(type)" name="check" />
           </span>
         </oc-button>
@@ -118,9 +120,6 @@ export default defineComponent({
 }
 
 .role-dropdown-list {
-  span {
-    line-height: 1.3;
-  }
   button {
     justify-content: space-between !important;
   }

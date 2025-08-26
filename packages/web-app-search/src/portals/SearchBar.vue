@@ -3,7 +3,7 @@
     v-if="isSearchBarEnabled"
     id="files-global-search"
     ref="searchBar"
-    class="oc-flex"
+    class="flex"
     data-custom-key-bindings-disabled="true"
   >
     <oc-search-bar
@@ -17,6 +17,7 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -38,7 +39,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn oc-mr-l"
+      class="mobile-search-btn mr-6"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -52,30 +53,30 @@
       ref="optionsDropRef"
       mode="manual"
       target="#files-global-search-bar"
+      padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
     >
       <oc-list class="oc-list-divider">
         <li
           v-if="loading"
-          class="loading spinner oc-flex oc-flex-center oc-flex-middle oc-text-muted"
+          class="loading spinner flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
-          <span class="oc-ml-s">{{ $gettext('Searching ...') }}</span>
+          <span class="ml-2">{{ $gettext('Searching ...') }}</span>
         </li>
-        <li v-else-if="showNoResults" id="no-results" class="oc-flex oc-flex-center">
+        <li v-else-if="showNoResults" id="no-results" class="flex justify-center py-1 px-2 text-sm">
           {{ $gettext('No results') }}
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
             <oc-list>
-              <li class="oc-text-truncate oc-flex oc-flex-between oc-text-muted provider-details">
+              <li
+                class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 text-xs"
+              >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
-                  <router-link
-                    class="more-results oc-p-rm"
-                    :to="getSearchResultLocation(provider.id)"
-                  >
+                  <router-link class="more-results p-0" :to="getSearchResultLocation(provider.id)">
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>
@@ -87,7 +88,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview oc-flex oc-flex-middle"
+                class="preview flex items-center py-1 px-2 text-sm"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -525,7 +526,23 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  #files-global-search-options .preview-component button,
+  #files-global-search-options .preview-component a {
+    @apply p-0;
+  }
+  #files-global-search .oc-search-input {
+    background-color: var(--oc-role-surface);
+  }
+  #files-global-search-options ul li.preview:hover,
+  #files-global-search-options ul li.preview.active {
+    background-color: var(--oc-role-surface-container);
+  }
+}
+</style>
 <style lang="scss">
 #files-global-search {
   .mobile-search-btn {
@@ -536,12 +553,10 @@ export default defineComponent({
   }
 
   .oc-search-input {
-    background-color: var(--oc-role-surface);
     transition: 0s;
     height: 2.3rem;
 
     @media (max-width: 639px) {
-      border: none;
       display: inline;
     }
   }
@@ -554,26 +569,17 @@ export default defineComponent({
 
     @media (max-width: 639px) {
       visibility: hidden;
-      background-color: var(--oc-role-chrome);
       position: absolute;
       height: 48px;
       left: 0;
       right: 0;
-      margin: 0 auto;
       top: 0;
       width: 95vw !important;
       z-index: 9;
 
-      .oc-search-input-icon {
-        padding: 0 var(--oc-space-xlarge);
-      }
-
       input,
       input:not(:placeholder-shown) {
-        background-color: var(--oc-role-surface);
-        border: 1px solid var(--oc-role-outline);
         z-index: var(--oc-z-index-modal);
-        margin: 0 auto;
       }
     }
   }
@@ -582,11 +588,6 @@ export default defineComponent({
     width: 450px;
     overflow-y: auto;
     max-height: calc(100vh - 60px);
-    text-decoration: none;
-
-    .oc-card {
-      padding: 0 !important;
-    }
 
     @media (max-width: 969px) {
       width: 300px;
@@ -598,37 +599,16 @@ export default defineComponent({
 
     .preview-component button,
     .preview-component a {
-      padding: 0;
       width: initial;
       gap: initial;
     }
 
     ul {
-      li.provider-details,
-      li.loading,
-      li#no-results {
-        padding: var(--oc-space-xsmall) var(--oc-space-small);
-      }
-
       li {
         position: relative;
-        font-size: var(--oc-font-size-small);
-        margin: 0;
-        padding: 0;
-
-        &.provider-details {
-          font-size: var(--oc-font-size-xsmall);
-        }
 
         &.preview {
           min-height: 44px;
-          font-size: inherit;
-          padding: var(--oc-space-xsmall) var(--oc-space-small);
-
-          &:hover,
-          &.active {
-            background-color: var(--oc-role-surface-container);
-          }
 
           &.disabled {
             pointer-events: none;

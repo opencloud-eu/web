@@ -1,6 +1,6 @@
 <template>
-  <div id="oc-file-details-multiple-sidebar">
-    <div class="files-preview oc-mb-l">
+  <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <div class="files-preview mb-6 text-center rounded-sm">
       <div class="files-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
         <p class="preview-text" data-testid="selectedFilesText" v-text="selectedFilesString" />
@@ -10,6 +10,7 @@
       <oc-definition-list
         :aria-label="$gettext('Overview of the information about the selected files')"
         :items="details"
+        class="m-0"
       />
     </div>
   </div>
@@ -73,19 +74,3 @@ const selectedFilesString = computed(() => {
   )
 })
 </script>
-<style lang="scss" scoped>
-#oc-file-details-multiple-sidebar {
-  background-color: var(--oc-role-surface-container);
-  border-radius: 5px;
-  padding: var(--oc-space-medium);
-}
-
-.details-list {
-  margin: 0;
-}
-
-.files-preview {
-  text-align: center;
-  border-radius: 5px;
-}
-</style>

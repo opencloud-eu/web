@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
-"<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-3">Filter members
+"<div class="ml-2">
+  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-3">Filter members
       <!--v-if-->
     </label>
     <div class="oc-position-relative">
-      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="no-match">
+      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text" value="no-match">
       <!--v-if-->
     </div>
     <!--v-if-->
@@ -14,7 +14,7 @@ exports[`MembersPanel > should display an empty result if no matching members fo
   </div>
   <div data-testid="space-members">
     <div>
-      <h3 class="oc-text-bold oc-text-medium">No members found</h3>
+      <h3 class="font-semibold text-base">No members found</h3>
     </div>
     <div>
       <!--v-if-->
@@ -31,12 +31,12 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 `;
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
-"<div class="oc-ml-s">
-  <div class="oc-mr-s oc-mt-m"><label class="oc-label" for="oc-textinput-1">Filter members
+"<div class="ml-2">
+  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-1">Filter members
       <!--v-if-->
     </label>
     <div class="oc-position-relative">
-      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
+      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text" value="">
       <!--v-if-->
     </div>
     <!--v-if-->
@@ -45,20 +45,20 @@ exports[`MembersPanel > should render all members accordingly to their role assi
   <div data-testid="space-members">
     <!--v-if-->
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Managers">
-        <h3 class="oc-text-bold oc-text-medium">Managers</h3>
+      <div class="mb-4" data-testid="space-members-role-Managers">
+        <h3 class="font-semibold text-base">Managers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Editors">
-        <h3 class="oc-text-bold oc-text-medium">Editors</h3>
+      <div class="mb-4" data-testid="space-members-role-Editors">
+        <h3 class="font-semibold text-base">Editors</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>
     <div>
-      <div class="oc-mb-m" data-testid="space-members-role-Viewers">
-        <h3 class="oc-text-bold oc-text-medium">Viewers</h3>
+      <div class="mb-4" data-testid="space-members-role-Viewers">
+        <h3 class="font-semibold text-base">Viewers</h3>
         <members-role-section-stub permissions="undefined"></members-role-section-stub>
       </div>
     </div>

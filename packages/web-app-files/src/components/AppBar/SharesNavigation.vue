@@ -1,10 +1,11 @@
 <template>
-  <nav id="shares-navigation" class="oc-py-s" :aria-label="$gettext('Shares pages navigation')">
-    <oc-list class="oc-flex oc-visible@s">
+  <nav id="shares-navigation" class="py-2" :aria-label="$gettext('Shares pages navigation')">
+    <oc-list class="flex oc-visible@s">
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"
-          class="oc-mr-m oc-py-s shares-nav-desktop"
+          class="mr-4 py-2 shares-nav-desktop"
+          :class="{ 'border-b-2 border-role-secondary-container rounded-none': navItem.active }"
           appearance="raw"
           :to="navItem.to"
         >
@@ -14,7 +15,7 @@
       </li>
     </oc-list>
     <div id="shares-navigation-mobile" class="oc-hidden@s">
-      <oc-button id="shares_navigation_mobile" class="oc-p-xs" appearance="raw">
+      <oc-button id="shares_navigation_mobile" class="p-1" appearance="raw">
         <span v-text="currentNavItem.text" />
         <oc-icon name="arrow-drop-down" />
       </oc-button>
@@ -31,7 +32,7 @@
               type="router-link"
               class="shares-nav-mobile"
               :to="navItem.to"
-              :class="{ 'oc-secondary-container': navItem.active }"
+              :class="{ 'bg-role-secondary-container': navItem.active }"
               appearance="raw"
             >
               <oc-icon :name="navItem.icon" />
@@ -116,11 +117,6 @@ export default defineComponent({
   a {
     gap: var(--oc-space-small);
     width: 100%;
-  }
-
-  .shares-nav-desktop.router-link-active {
-    border-bottom: 2px solid var(--oc-role-secondary-container) !important;
-    border-radius: 0;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-status-indicators oc-flex">
+  <div class="oc-status-indicators flex">
     <template v-for="(indicator, index) in indicators">
       <oc-button
         v-if="hasHandler(indicator) && !disableHandler"
@@ -7,14 +7,14 @@
         :key="`${indicator.id}-handler`"
         v-oc-tooltip="$gettext(indicator.label)"
         class="oc-status-indicators-indicator"
-        :class="{ 'oc-ml-xs': index > 0 }"
+        :class="{ 'ml-1': index > 0 }"
         :aria-label="$gettext(indicator.label)"
         :aria-describedby="getIndicatorDescriptionId(indicator)"
         appearance="raw"
         :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
         no-hover
-        @click="indicator.handler(resource)"
+        @click="(e: MouseEvent) => indicator.handler?.(resource, e)"
       >
         <oc-icon :name="indicator.icon" size="small" :fill-type="indicator.fillType" />
       </oc-button>
@@ -26,7 +26,7 @@
         tabindex="-1"
         size="small"
         class="oc-status-indicators-indicator"
-        :class="{ 'oc-ml-xs': index > 0 }"
+        :class="{ 'ml-1': index > 0 }"
         :name="indicator.icon"
         :fill-type="indicator.fillType"
         :accessible-label="$gettext(indicator.label)"

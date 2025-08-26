@@ -1,7 +1,10 @@
 <template>
-  <main id="files" class="oc-flex oc-height-1-1">
-    <div v-if="dragareaEnabled" class="dragarea" />
-    <router-view tabindex="0" class="files-wrapper oc-width-expand oc-height-1-1 oc-flex-wrap" />
+  <main id="files" class="flex oc-height-1-1">
+    <div
+      v-if="dragareaEnabled"
+      class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
+    />
+    <router-view tabindex="0" class="files-wrapper oc-width-expand oc-height-1-1 flex-wrap" />
   </main>
 </template>
 <script lang="ts">
@@ -44,7 +47,6 @@ main {
 }
 
 .dragarea {
-  background-color: rgba(60, 130, 225, 0.21);
   pointer-events: none;
   top: 0;
   left: 0;
@@ -52,8 +54,6 @@ main {
   bottom: 0;
   position: absolute;
   z-index: 9;
-  border-radius: 14px;
-  border: 2px dashed var(--oc-role-outline);
 }
 
 #files {

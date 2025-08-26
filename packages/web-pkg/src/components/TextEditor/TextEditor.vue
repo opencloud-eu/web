@@ -152,20 +152,27 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .md-editor-preview > * {
+    @apply break-keep;
+  }
+}
+</style>
 <style lang="scss">
 #text-editor-component {
   .md-editor-preview-wrapper,
   .md-editor-resize-operate {
+    // overwrite vendor styling
     background-color: var(--oc-role-surface-container);
   }
 }
 
+// overwrite md-editor styles
 .md-editor {
   height: 100%;
-
-  &-preview > * {
-    word-break: break-word !important;
-  }
 
   &-code-head {
     justify-content: end !important;
@@ -179,7 +186,7 @@ export default defineComponent({
   .cm-line:has(.ͼ1h) {
     max-height: 60px;
     overflow: auto;
-    margin-right: var(--oc-space-medium);
+    margin-right: calc(var(--spacing) * 4);
   }
 }
 </style>

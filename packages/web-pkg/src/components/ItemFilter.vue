@@ -1,5 +1,5 @@
 <template>
-  <div class="item-filter oc-flex" :class="`item-filter-${filterName}`">
+  <div class="item-filter flex" :class="`item-filter-${filterName}`">
     <oc-filter-chip
       :filter-label="filterLabel"
       :selected-item-names="selectedItems.map((i) => i[displayNameAttribute])"
@@ -12,30 +12,30 @@
           v-if="showOptionFilter && filterableAttributes.length"
           ref="filterInputRef"
           v-model="filterTerm"
-          class="item-filter-input oc-mb-m oc-mt-s"
+          class="item-filter-input mb-4 mt-2"
           autocomplete="off"
           :label="optionFilterLabel === '' ? $gettext('Filter list') : optionFilterLabel"
         />
         <div ref="itemFilterListRef">
           <oc-list class="item-filter-list">
-            <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
+            <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
               <oc-button
-                class="item-filter-list-item oc-flex oc-flex-middle oc-width-1-1"
+                class="item-filter-list-item flex items-center oc-width-1-1"
                 :class="{
                   'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
-                  'oc-flex-left': allowMultiple,
-                  'oc-flex-between': !allowMultiple
+                  'justify-start': allowMultiple,
+                  'justify-between': !allowMultiple
                 }"
                 justify-content="space-between"
                 appearance="raw"
                 :data-test-value="item[displayNameAttribute as keyof Item]"
                 @click="toggleItemSelection(item)"
               >
-                <div class="oc-flex oc-flex-middle oc-text-truncate">
+                <div class="flex items-center truncate">
                   <oc-checkbox
                     v-if="allowMultiple"
                     size="large"
-                    class="item-filter-checkbox oc-mr-s"
+                    class="item-filter-checkbox mr-2"
                     :label="$gettext('Toggle selection')"
                     :model-value="isItemSelected(item)"
                     :label-hidden="true"
@@ -45,11 +45,11 @@
                   <div>
                     <slot name="image" :item="item" />
                   </div>
-                  <div class="oc-text-truncate">
+                  <div class="truncate">
                     <slot name="item" :item="item" />
                   </div>
                 </div>
-                <div class="oc-flex">
+                <div class="flex">
                   <oc-icon v-if="!allowMultiple && isItemSelected(item)" name="check" />
                 </div>
               </oc-button>

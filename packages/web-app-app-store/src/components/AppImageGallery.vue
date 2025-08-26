@@ -1,24 +1,33 @@
 <template>
   <div class="app-image-wrapper">
-    <div v-if="app.badge" class="app-image-ribbon" :class="[`app-image-ribbon-${app.badge.color}`]">
-      <span>{{ app.badge.label }}</span>
+    <div
+      v-if="app.badge"
+      class="app-image-ribbon text-right"
+      :class="[`app-image-ribbon-${app.badge.color}`]"
+    >
+      <span class="text-xs font-bold text-center leading-6" :class="ribbonColorClasses">{{
+        app.badge.label
+      }}</span>
     </div>
     <div class="app-image">
       <oc-image v-if="currentImage?.url" :src="currentImage?.url" />
-      <div v-else class="fallback-icon">
+      <div v-else class="fallback-icon bg-white flex items-center justify-center">
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
-    <ul v-if="hasPagination" class="app-image-navigation">
+    <ul
+      v-if="hasPagination"
+      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2"
+    >
       <li>
-        <oc-button data-testid="prev-image" class="oc-p-xs" appearance="raw" @click="previousImage">
+        <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
           <oc-icon name="arrow-left-s" />
         </oc-button>
       </li>
       <li v-for="(image, index) in images" :key="`gallery-page-${index}`">
         <oc-button
           data-testid="set-image"
-          class="oc-p-s"
+          class="p-2"
           appearance="raw"
           @click="setImageIndex(index)"
         >
@@ -30,7 +39,7 @@
         </oc-button>
       </li>
       <li>
-        <oc-button data-testid="next-image" class="oc-p-xs" appearance="raw" @click="nextImage">
+        <oc-button data-testid="next-image" class="p-1" appearance="raw" @click="nextImage">
           <oc-icon name="arrow-right-s" />
         </oc-button>
       </li>
@@ -74,11 +83,23 @@ export default defineComponent({
       currentImageIndex.value = index
     }
 
+    const ribbonColorClasses = computed(() => {
+      switch (props.app.badge?.color) {
+        case 'primary':
+          return ['bg-role-primary', 'text-role-on-primary']
+        case 'danger':
+          return ['bg-role-error', 'text-role-on-error']
+        default:
+          return ['bg-role-primary', 'text-role-on-primary']
+      }
+    })
+
     return {
       currentImage,
       currentImageIndex,
       images,
       hasPagination,
+      ribbonColorClasses,
       nextImage,
       previousImage,
       setImageIndex
@@ -99,29 +120,11 @@ export default defineComponent({
     overflow: hidden;
     width: 7rem;
     height: 7rem;
-    text-align: right;
-
-    &-primary {
-      span {
-        color: var(--oc-role-on-primary);
-        background-color: var(--oc-role-primary);
-      }
-    }
-    &-danger {
-      span {
-        color: var(--oc-role-on-error);
-        background-color: var(--oc-role-error);
-      }
-    }
 
     span {
       position: absolute;
       top: 1.8rem;
       right: -2.2rem;
-      font-size: 0.7rem;
-      font-weight: bold;
-      text-align: center;
-      line-height: 2rem;
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       width: 10rem;
@@ -142,10 +145,6 @@ export default defineComponent({
     .fallback-icon {
       width: 100%;
       aspect-ratio: 3/2;
-      background-color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 
@@ -154,13 +153,6 @@ export default defineComponent({
     width: 100%;
     position: absolute;
     bottom: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: var(--oc-space-small) 0;
-    margin: 0;
-    background-color: rgba(255, 255, 255, 0.8);
   }
 }
 </style>

@@ -1,15 +1,18 @@
 <template>
   <div
-    class="oc-text-input-password-wrapper"
+    class="oc-text-input-password-wrapper flex flex-row border rounded-sm"
     :class="{
-      'oc-text-input-password-wrapper-danger': hasError,
-      'oc-text-input-password-wrapper-focused': hasFocus
+      'oc-text-input-password-wrapper-danger text-role-on-error focus:text-role-on-error border-role-error':
+        hasError,
+      'border-role-surface outline-2 outline-role-outline': hasFocus,
+      'border-role-outline': !hasFocus
     }"
   >
     <input
       v-bind="$attrs"
       ref="passwordInput"
       v-model="password"
+      class="grow-2 border-0 focus:border-0 focus:outline-0"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -19,7 +22,7 @@
       v-if="password && !disabled"
       v-oc-tooltip="showPassword ? $gettext('Hide password') : $gettext('Show password')"
       :aria-label="showPassword ? $gettext('Hide password') : $gettext('Show password')"
-      class="oc-text-input-show-password-toggle oc-px-s"
+      class="oc-text-input-show-password-toggle px-2"
       appearance="raw"
       size="small"
       @click="showPassword = !showPassword"
@@ -30,7 +33,7 @@
       v-if="password && !disabled"
       v-oc-tooltip="$gettext('Copy password')"
       :aria-label="$gettext('Copy password')"
-      class="oc-text-input-copy-password-button oc-px-s"
+      class="oc-text-input-copy-password-button px-2"
       appearance="raw"
       size="small"
       @click="copyPasswordToClipboard"
@@ -41,7 +44,7 @@
       v-if="generatePasswordMethod && !disabled"
       v-oc-tooltip="$gettext('Generate password')"
       :aria-label="$gettext('Generate password')"
-      class="oc-text-input-generate-password-button oc-px-s"
+      class="oc-text-input-generate-password-button px-2"
       appearance="raw"
       size="small"
       @click="generatePassword"
@@ -50,15 +53,15 @@
     </oc-button>
   </div>
   <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
-    <div class="oc-flex oc-text-small oc-text-input-password-policy-rule-wrapper oc-pt-s">
+    <div class="oc-text-input-password-policy-rule-wrapper flex flex-row flex-wrap text-sm pt-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
-        class="oc-flex oc-flex-middle oc-text-input-password-policy-rule"
+        class="flex items-center oc-text-input-password-policy-rule"
       >
         <oc-icon
           size="small"
-          class="oc-mr-xs"
+          class="mr-1"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
           :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"
         />
@@ -172,38 +175,7 @@ watch(password, (value) => {
 
 <style lang="scss">
 .oc-text-input-password {
-  &-wrapper {
-    display: flex;
-    flex-direction: row;
-    padding: 0;
-    border-radius: 5px;
-    border: 1px solid var(--oc-role-outline);
-
-    &-focused {
-      border: 1px solid var(--oc-role-surface);
-      outline: 2px solid var(--oc-role-outline);
-    }
-
-    input {
-      flex-grow: 2;
-      border: none !important;
-
-      &:focus {
-        outline: none !important;
-        border: none !important;
-      }
-    }
-
-    &-danger,
-    &-danger:focus {
-      border-color: var(--oc-role-error) !important;
-      color: var(--oc-role-error) !important;
-    }
-  }
-
   &-policy-rule-wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
     column-gap: var(--oc-space-small);
   }
 }

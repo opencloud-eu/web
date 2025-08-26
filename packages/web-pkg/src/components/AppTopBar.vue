@@ -1,8 +1,10 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar oc-flex">
-      <span class="oc-app-top-bar-inner oc-pl-m oc-pr-xs oc-flex oc-flex-middle oc-flex-between">
-        <div class="open-file-bar oc-flex">
+    <div class="oc-app-top-bar flex">
+      <span
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg"
+      >
+        <div class="open-file-bar flex">
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
@@ -18,7 +20,7 @@
             :is-resource-clickable="false"
           />
         </div>
-        <div class="oc-flex main-actions">
+        <div class="flex main-actions">
           <template v-if="dropDownMenuSections.length">
             <oc-button
               id="oc-openfile-contextmenu-trigger"
@@ -26,7 +28,7 @@
               :aria-label="contextMenuLabel"
               appearance="raw-inverse"
               color-role="chrome"
-              class="oc-p-xs"
+              class="p-1"
             >
               <oc-icon name="more-2" />
             </oc-button>
@@ -45,13 +47,13 @@
               />
             </oc-drop>
           </template>
-          <span v-if="hasAutosave" class="oc-flex oc-flex-middle">
+          <span v-if="hasAutosave" class="flex items-center">
             <oc-icon
               v-oc-tooltip="autoSaveTooltipText"
               :accessible-label="autoSaveTooltipText"
               name="refresh"
               color="white"
-              class="ox-p-xs oc-mx-xs"
+              class="ox-p-xs mx-1"
             />
           </span>
           <template v-if="mainActions.length && resource">
@@ -64,7 +66,7 @@
                     .map((action) => {
                       return {
                         ...action,
-                        class: 'oc-p-xs app-topbar-action',
+                        class: 'p-1 app-topbar-action',
                         hideLabel: true
                       }
                     })
@@ -81,7 +83,7 @@
             id="app-top-bar-close"
             appearance="raw-inverse"
             color-role="chrome"
-            class="oc-p-xs"
+            class="p-1"
             :aria-label="$gettext('Close')"
             @click="$emit('close')"
           >
@@ -182,7 +184,25 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-app-top-bar-inner .oc-resource-indicators .text,
+  .app-topbar-action,
+  .app-topbar-action:hover:not(:disabled),
+  #app-top-bar-resource .oc-resource-name span {
+    @apply text-role-on-chrome;
+  }
+}
+
+/* must not be inside a layer to overwrite the icon styles */
+.app-topbar-action svg,
+.app-topbar-action:hover:not(:disabled) svg,
+#app-top-bar-resource svg {
+  fill: var(--oc-role-on-chrome) !important;
+}
+</style>
 <style lang="scss">
 .oc-app-top-bar {
   align-self: center;
@@ -197,40 +217,13 @@ export default defineComponent({
 
 .oc-app-top-bar-inner {
   align-self: center;
-  background-color: var(--oc-role-chrome);
-  border-radius: 10px;
-  border: 1px solid var(--oc-role-on-chrome);
   display: inline-flex;
   gap: 25px;
   height: 40px;
-  margin: 10px auto;
   width: 100%;
 
   @media (min-width: $oc-breakpoint-small-default) {
     flex-basis: 250px;
-    margin: 0;
-  }
-
-  .oc-resource-indicators {
-    .text {
-      color: var(--oc-role-on-chrome);
-    }
-  }
-}
-
-.app-topbar-action {
-  color: var(--oc-role-on-chrome) !important;
-
-  svg {
-    fill: var(--oc-role-on-chrome) !important;
-  }
-
-  &:hover:not(:disabled) {
-    color: var(--oc-role-on-surface) !important;
-
-    svg {
-      fill: var(--oc-role-on-surface) !important;
-    }
   }
 }
 
@@ -245,18 +238,6 @@ export default defineComponent({
     @media (min-width: $oc-breakpoint-small-default) {
       widows: initial;
     }
-
-    svg,
-    .oc-resource-name span {
-      fill: var(--oc-role-on-chrome) !important;
-      color: var(--oc-role-on-chrome) !important;
-    }
-  }
-
-  .oc-resource-icon:hover,
-  .oc-resource-name:hover {
-    cursor: default;
-    text-decoration: none;
   }
 }
 </style>

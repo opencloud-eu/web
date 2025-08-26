@@ -6,11 +6,12 @@
       type="radio"
       name="radio"
       :class="classes"
+      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
     />
-    <label :for="id" :class="labelClasses" v-text="label" />
+    <label :for="id" :class="labelClasses" class="ml-1" v-text="label" />
   </span>
 </template>
 
@@ -59,14 +60,22 @@ const {
 
 const model = defineModel<boolean | unknown>()
 
-const classes = computed(() => ['oc-radio', 'oc-radio-' + getSizeClass(size)])
+const classes = computed(() => ['oc-radio', 'oc-radio-' + getSizeClass(size), 'm-0'])
 
 const labelClasses = computed(() => ({
   'oc-invisible-sr': hideLabel,
   'oc-cursor-pointer': !disabled
 }))
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-radio {
+    @apply align-middle;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-form-check-size($factor) {
   height: $oc-size-form-check-default * $factor;
@@ -77,27 +86,19 @@ const labelClasses = computed(() => ({
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  border: 1px solid var(--oc-role-outline-variant);
-  border-radius: 50%;
   box-sizing: border-box;
   background-position: 50% 50%;
   background-repeat: no-repeat;
 
   display: inline-block;
-  margin: 0;
   overflow: hidden;
 
   transition: 0.2s ease-in-out;
   transition-property: background-color, border;
-  vertical-align: middle;
   width: 1rem;
 
   &:not(:disabled) {
     cursor: pointer;
-  }
-
-  &:checked {
-    background-color: var(--oc-role-secondary-container) !important;
   }
 
   &.oc-radio-s {
@@ -111,9 +112,5 @@ const labelClasses = computed(() => ({
   &.oc-radio-l {
     @include oc-form-check-size(1.5);
   }
-}
-
-label > .oc-radio + span {
-  margin-left: var(--oc-space-xsmall);
 }
 </style>

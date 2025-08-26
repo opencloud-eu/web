@@ -1,36 +1,36 @@
 <template>
   <div
-    class="space-header oc-p-m"
-    :class="{ 'oc-flex': !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
+    class="space-header p-4"
+    :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image"
+      class="space-header-image mr-6"
       :class="{ 'space-header-image-expanded': imageExpanded || isMobileWidth }"
     >
       <div
         v-if="imagesLoading.includes(space.id)"
-        class="oc-height-1-1 oc-flex oc-flex-middle oc-flex-center"
+        class="oc-height-1-1 flex items-center justify-center"
       >
         <oc-spinner :aria-label="$gettext('Space image is loading')" />
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer"
+        class="oc-cursor-pointer rounded-lg"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"
       />
     </div>
     <div class="space-header-infos">
-      <div class="oc-flex oc-mb-s oc-flex-middle oc-flex-between">
-        <div class="oc-flex oc-flex-middle space-header-infos-heading">
-          <h2 class="space-header-name">{{ space.name }}</h2>
+      <div class="flex mb-2 items-center justify-between">
+        <div class="flex items-center space-header-infos-heading">
+          <h2 class="space-header-name break-all">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
             :aria-label="$gettext('Show context menu')"
             appearance="raw"
-            class="oc-ml-s oc-p-xs"
+            class="ml-2 p-1"
           >
             <oc-icon name="more-2" />
           </oc-button>
@@ -59,36 +59,36 @@
           <oc-icon name="group" fill-type="line" size="small" />
           <span
             v-if="memberCount"
-            class="space-header-people-count oc-text-small"
+            class="space-header-people-count text-sm whitespace-nowrap"
             v-text="memberCountString"
           />
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
         </oc-button>
       </div>
-      <p v-if="space.description" class="oc-mt-rm oc-text-bold">{{ space.description }}</p>
+      <p v-if="space.description" class="mt-0 font-semibold">{{ space.description }}</p>
       <div
         v-if="readmesLoading.includes(space.id)"
-        class="space-header-readme-loading oc-flex oc-flex-middle oc-flex-center"
+        class="space-header-readme-loading flex items-center justify-center"
       >
         <oc-spinner :aria-label="$gettext('Space description is loading')" />
       </div>
       <div
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
-        class="markdown-container oc-flex"
+        class="markdown-container flex"
       >
         <text-editor
           class="markdown-container-content"
           is-read-only
           :current-content="markdownContent"
         />
-        <div class="markdown-container-edit oc-ml-s">
+        <div class="markdown-container-edit ml-2">
           <oc-button
             type="router-link"
             size="small"
             :aria-label="$gettext('Edit description')"
             appearance="raw"
-            class="oc-p-xs"
+            class="p-1"
             :to="editReadMeContentLink"
           >
             <oc-icon name="pencil" size="small" fill-type="line" />
@@ -97,7 +97,7 @@
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
-        class="markdown-collapse oc-text-center oc-mt-s"
+        class="markdown-collapse text-center mt-2"
       >
         <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
           <span>{{ toggleMarkdownCollapsedText }}</span>
@@ -322,23 +322,15 @@ const openSideBarSharePanel = () => {
     width: 280px;
     min-width: 280px;
     aspect-ratio: 16 / 9;
-    margin-right: var(--oc-space-large);
     max-height: 158px;
-
-    &-default {
-      height: 100%;
-      border-radius: 10px;
-    }
 
     &-expanded {
       width: 100%;
-      margin: 0;
       max-height: 100%;
       max-width: 100%;
     }
 
     img {
-      border-radius: 10px;
       height: 100%;
       width: 100%;
       max-height: 100%;
@@ -351,23 +343,6 @@ const openSideBarSharePanel = () => {
 
     &-heading {
       max-width: 100%;
-    }
-  }
-
-  &-name {
-    font-size: 1.5rem;
-    word-break: break-all;
-  }
-
-  &-people-count {
-    white-space: nowrap;
-  }
-
-  .markdown-container {
-    &-content {
-      .md-editor-preview-wrapper {
-        padding: 0;
-      }
     }
   }
 

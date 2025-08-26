@@ -1,29 +1,29 @@
 <template>
   <div id="oc-files-sharing-sidebar" class="oc-position-relative">
-    <div class="oc-flex">
-      <div v-if="canShare({ space: resource, resource })" class="oc-flex oc-py-s">
-        <h3 class="oc-text-bold oc-text-medium oc-m-rm" v-text="$gettext('Add members')" />
-        <oc-contextual-helper v-if="helpersEnabled" class="oc-pl-xs" v-bind="spaceAddMemberHelp" />
+    <div class="flex">
+      <div v-if="canShare({ space: resource, resource })" class="flex py-2">
+        <h3 class="font-semibold text-base m-0" v-text="$gettext('Add members')" />
+        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
-      <copy-private-link :resource="resource" />
+      <copy-private-link :resource="resource" class="ml-auto" />
     </div>
     <invite-collaborator-form
       v-if="canShare({ space: resource, resource })"
       key="new-collaborator"
       :save-button-label="$gettext('Add')"
       :invite-label="$gettext('Search')"
-      class="oc-my-s"
+      class="my-2"
     />
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="oc-flex oc-flex-middle oc-flex-between oc-position-relative"
+        class="flex items-center justify-between oc-position-relative"
       >
-        <div class="oc-flex">
-          <h4 class="oc-text-bold oc-my-rm" v-text="$gettext('Members')" />
+        <div class="flex">
+          <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
-            class="open-filter-btn oc-ml-s"
+            class="open-filter-btn ml-2"
             :aria-label="$gettext('Filter members')"
             appearance="raw"
             :aria-expanded="isFilterOpen"
@@ -34,19 +34,22 @@
         </div>
       </div>
       <div
-        class="oc-flex oc-flex-between space-members-filter-container"
-        :class="{ 'space-members-filter-container-expanded': isFilterOpen }"
+        class="flex justify-between space-members-filter-container"
+        :class="{
+          'space-members-filter-container-expanded': isFilterOpen,
+          'mb-4': isFilterOpen
+        }"
       >
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter oc-mr-s oc-width-1-1"
+          class="space-members-filter mr-2 oc-width-1-1"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />
         <oc-button
           v-oc-tooltip="$gettext('Close filter')"
-          class="close-filter-btn oc-mt-m raw-hover-surface"
+          class="close-filter-btn mt-4 raw-hover-surface"
           :aria-label="$gettext('Close filter')"
           appearance="raw"
           @click="toggleFilter"
@@ -58,7 +61,7 @@
       <ul
         id="files-collaborators-list"
         ref="collaboratorList"
-        class="oc-list oc-list-divider oc-m-rm"
+        class="oc-list oc-list-divider m-0"
         :aria-label="$gettext('Space members')"
       >
         <li v-for="collaborator in filteredSpaceMembers" :key="collaborator.id">
@@ -240,25 +243,24 @@ watch(filterTerm, async () => {
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-<style lang="scss">
-#oc-files-sharing-sidebar {
-  .copy-private-link {
-    margin-left: auto;
+@layer utilities {
+  .space-members-filter label {
+    @apply text-sm;
+  }
+  .space-members-filter input:focus {
+    @apply border border-role-outline;
   }
 }
-
+</style>
+<style lang="scss">
 .space-members-filter {
   overflow: hidden;
 
-  label {
-    font-size: var(--oc-font-size-small);
-  }
-
   input:focus {
     // use inner focus border because an outline would be cut off by the hidden overflow
-    outline: 0px !important;
-    border: 1px solid var(--oc-role-outline) !important;
     box-shadow: inset 0px 0px 0px 1px var(--oc-role-outline);
   }
 
@@ -277,7 +279,6 @@ watch(filterTerm, async () => {
         max-height 0.25s ease-in-out,
         margin-bottom 0.25s ease-in-out,
         visibility 0s;
-      margin-bottom: var(--oc-space-medium);
     }
   }
 }

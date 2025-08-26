@@ -1,26 +1,22 @@
 <template>
-  <div class="oc-ml-s">
-    <oc-text-input
-      v-model="filterTerm"
-      class="oc-mr-s oc-mt-m"
-      :label="$gettext('Filter members')"
-    />
+  <div class="ml-2">
+    <oc-text-input v-model="filterTerm" class="mr-2 mt-4" :label="$gettext('Filter members')" />
     <div ref="membersListRef" data-testid="space-members">
       <div v-if="!filteredPermissions.length">
-        <h3 class="oc-text-bold oc-text-medium" v-text="$gettext('No members found')" />
+        <h3 class="font-semibold text-base" v-text="$gettext('No members found')" />
       </div>
       <div v-for="(role, i) in availableRoles" :key="i">
         <div
           v-if="getPermissionsForRole(role).length"
-          class="oc-mb-m"
+          class="mb-4"
           :data-testid="`space-members-role-${role.displayName}`"
         >
-          <h3 class="oc-text-bold oc-text-medium" v-text="role.displayName" />
+          <h3 class="font-semibold text-base" v-text="role.displayName" />
           <members-role-section :permissions="getPermissionsForRole(role)" />
         </div>
       </div>
       <div v-if="permissionsWithoutRole.length" class="space-members-custom">
-        <h3 class="oc-text-bold oc-text-medium" v-text="$gettext('Custom role')" />
+        <h3 class="font-semibold text-base" v-text="$gettext('Custom role')" />
         <members-role-section :permissions="permissionsWithoutRole" />
       </div>
     </div>

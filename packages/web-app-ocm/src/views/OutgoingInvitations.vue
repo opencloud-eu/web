@@ -1,12 +1,12 @@
 <template>
   <div class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-middle oc-px-m oc-pt-s">
+      <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-shared" />
-        <h2 class="oc-px-s" v-text="$gettext('Invite users')"></h2>
-        <oc-contextual-helper class="oc-pl-xs" v-bind="helperContent" />
+        <h2 class="px-2" v-text="$gettext('Invite users')"></h2>
+        <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="oc-flex oc-flex-middle oc-flex-center oc-p-m">
+      <div class="flex items-center justify-center p-4">
         <oc-button
           :aria-label="
             $gettext('Generate invitation link that can be shared with one or more invitees')
@@ -32,7 +32,7 @@
             <oc-text-input
               id="invite_token_description"
               v-model="formInput.description"
-              class="oc-mb-s"
+              class="mb-2"
               :error-message="descriptionErrorMessage"
               :label="$gettext('Add a description (optional)')"
               :clear-button-enabled="true"
@@ -57,16 +57,16 @@
         </no-content-message>
         <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
           <template #token="rowData">
-            <div class="invite-code-wrapper oc-flex">
-              <div class="oc-text-truncate">
-                <span class="oc-text-truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
+            <div class="invite-code-wrapper flex">
+              <div class="truncate max-w-full">
+                <span class="truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
               </div>
               <oc-button
                 id="oc-sciencemesh-copy-token"
                 v-oc-tooltip="$gettext('Copy invite token')"
                 :aria-label="$gettext('Copy invite token')"
                 appearance="raw"
-                class="oc-ml-s"
+                class="ml-2"
                 @click="copyToken(rowData)"
               >
                 <oc-icon name="file-copy" />

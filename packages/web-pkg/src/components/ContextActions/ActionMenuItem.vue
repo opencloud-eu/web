@@ -4,7 +4,7 @@
       v-oc-tooltip="showTooltip || action.hideLabel ? action.label(actionOptions) : ''"
       :type="componentType"
       v-bind="componentProps"
-      :class="[action.class, 'action-menu-item', 'oc-width-1-1', ...buttonClasses]"
+      :class="[action.class, 'action-menu-item', 'align-middle', 'oc-width-1-1', ...buttonClasses]"
       :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
       data-testid="action-handler"
       :size="size"
@@ -34,14 +34,14 @@
       />
       <span
         v-if="!action.hideLabel"
-        class="oc-files-context-action-label oc-flex"
+        class="oc-files-context-action-label flex"
         data-testid="action-label"
       >
         <span v-text="action.label(actionOptions)" />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
-        class="oc-files-context-action-shortcut"
+        class="oc-files-context-action-shortcut text-sm"
         v-text="action.shortcut"
       />
     </oc-button>
@@ -167,16 +167,11 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.action-menu-item {
-  vertical-align: middle;
-}
-
 .oc-files-context-action-label {
   flex-direction: column;
 }
 
 .oc-files-context-action-shortcut {
   justify-content: right !important;
-  font-size: var(--oc-font-size-small);
 }
 </style>

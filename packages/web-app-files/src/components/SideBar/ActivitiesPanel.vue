@@ -2,13 +2,13 @@
   <oc-loader v-if="isLoading" />
   <template v-else>
     <p v-if="!activities.length" v-text="$gettext('No activities')" />
-    <div v-else class="oc-ml-s">
+    <div v-else class="ml-2">
       <oc-list class="oc-timeline">
         <li v-for="activity in activities" :key="activity.id">
-          <div class="oc-flex oc-flex-middle">
+          <div class="flex items-center">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
-              class="oc-mr-xs"
+              class="mr-1"
               stacked
               gap-size="small"
               :width="16.8"
@@ -27,12 +27,12 @@
             <span v-html="getHtmlFromActivity(activity)" />
           </div>
           <span
-            class="oc-text-muted oc-text-small oc-mt-s"
+            class="text-role-on-surface-variant text-sm mt-2"
             v-text="getTimeFromActivity(activity)"
           />
         </li>
       </oc-list>
-      <p class="oc-text-muted oc-text-small" v-text="activitiesFooterText" />
+      <p class="text-role-on-surface-variant text-sm" v-text="activitiesFooterText" />
     </div>
   </template>
 </template>

@@ -2,7 +2,7 @@
   <div id="user-group-select-form">
     <oc-select
       :model-value="selectedOptions"
-      class="oc-mb-s"
+      class="mb-2"
       :multiple="true"
       :options="groupOptions"
       option-label="displayName"
@@ -13,9 +13,9 @@
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayName, id }">
-        <span class="oc-flex oc-flex-center">
+        <span class="flex justify-center">
           <avatar-image
-            class="oc-flex oc-align-self-center oc-mr-s"
+            class="flex oc-align-self-center mr-2"
             :width="16.8"
             :userid="id"
             :user-name="displayName"
@@ -24,10 +24,10 @@
         </span>
       </template>
       <template #option="{ displayName, id }">
-        <div class="oc-flex">
-          <span class="oc-flex oc-flex-center">
+        <div class="flex">
+          <span class="flex justify-center">
             <avatar-image
-              class="oc-flex oc-align-self-center oc-mr-s"
+              class="flex oc-align-self-center mr-2"
               :width="16.8"
               :userid="id"
               :user-name="displayName"

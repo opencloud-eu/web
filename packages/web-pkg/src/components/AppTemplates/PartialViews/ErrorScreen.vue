@@ -1,7 +1,7 @@
 <template>
-  <div class="oc-text-center oc-flex oc-flex-center oc-flex-middle oc-height-1-1">
+  <div class="text-center flex justify-center items-center oc-height-1-1">
     <oc-icon size="xxlarge" name="error-warning" fill-type="line" />
-    <p v-if="message" class="oc-text-xlarge">{{ message }}</p>
+    <p v-if="message" class="text-xl">{{ message }}</p>
   </div>
 </template>
 

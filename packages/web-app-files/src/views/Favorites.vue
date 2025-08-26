@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex">
+  <div class="flex">
     <files-view-wrapper>
       <app-bar ref="appBarRef" :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
       <app-loading-spinner v-if="areResourcesLoading" />
@@ -41,7 +41,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 oc-my-s" />
+            <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
           </template>
         </component>
       </template>

@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-flex">
-    <files-view-wrapper class="oc-flex-column">
+  <div class="flex">
+    <files-view-wrapper class="flex-col">
       <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen">
         <template #navigation>
           <SharesNavigation />
@@ -8,12 +8,10 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div
-          class="shared-with-me-filters oc-flex oc-flex-between oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m"
-        >
-          <div class="oc-flex oc-flex-wrap">
-            <div class="oc-mr-m oc-flex oc-flex-middle">
-              <oc-icon name="filter-2" class="oc-mr-xs" />
+        <div class="shared-with-me-filters flex justify-between flex-wrap items-end mx-4 mb-4">
+          <div class="flex flex-wrap">
+            <div class="mr-4 flex items-center">
+              <oc-icon name="filter-2" class="mr-1" />
               <span v-text="$gettext('Filter:')" />
             </div>
             <item-filter-inline
@@ -30,12 +28,12 @@
               :option-filter-label="$gettext('Filter share types')"
               :show-option-filter="true"
               id-attribute="key"
-              class="share-type-filter oc-ml-s"
+              class="share-type-filter ml-2"
               display-name-attribute="label"
               filter-name="shareType"
             >
               <template #item="{ item }">
-                <span class="oc-ml-s" v-text="item.label" />
+                <span class="ml-2" v-text="item.label" />
               </template>
             </item-filter>
             <item-filter
@@ -46,7 +44,7 @@
               :option-filter-label="$gettext('Filter shared by')"
               :show-option-filter="true"
               id-attribute="id"
-              class="shared-by-filter oc-ml-s"
+              class="shared-by-filter ml-2"
               display-name-attribute="displayName"
               filter-name="sharedBy"
             >
@@ -54,7 +52,7 @@
                 <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
               </template>
               <template #item="{ item }">
-                <span class="oc-ml-s" v-text="item.displayName" />
+                <span class="ml-2" v-text="item.displayName" />
               </template>
             </item-filter>
           </div>

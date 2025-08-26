@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-location-search oc-position-small oc-position-center-right oc-mt-rm" @click.stop>
+  <div class="oc-location-search oc-position-center-right ml-4 mb-4 mt-0 mr-[34px]" @click.stop>
     <div v-if="currentSelection">
       <oc-filter-chip
         :is-toggle="false"
@@ -17,14 +17,14 @@
               <oc-button
                 appearance="raw"
                 size="medium"
-                class="search-bar-filter-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-                :class="{ 'oc-secondary-container': option.id === currentSelection.id }"
+                class="search-bar-filter-item flex items-center oc-width-1-1 py-1 px-2"
+                :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"
                 @click="onOptionSelected(option)"
               >
                 <span>{{ option.title }}</span>
-                <div v-if="option.id === currentSelection.id" class="oc-flex">
+                <div v-if="option.id === currentSelection.id" class="flex">
                   <oc-icon name="check" />
                 </div>
               </oc-button>
@@ -133,7 +133,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-location-search {
   z-index: 9999;
-  margin-right: 34px !important;
   float: right;
   .oc-drop {
     width: 180px;

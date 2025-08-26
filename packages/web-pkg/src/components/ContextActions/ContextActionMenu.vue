@@ -14,7 +14,7 @@
           :action="action"
           :appearance="appearance"
           :action-options="actionOptions"
-          class="context-menu oc-files-context-action oc-rounded oc-menu-item-hover"
+          class="context-menu oc-files-context-action rounded-sm oc-menu-item-hover"
         />
       </template>
       <template v-for="drop in section.dropItems">
@@ -69,43 +69,38 @@ export default defineComponent({
         return classes
       }
       if (index < this.menuSections.length - 1) {
-        classes.push('oc-pb-s')
+        classes.push('pb-2')
       }
       if (index > 0) {
-        classes.push('oc-pt-s')
+        classes.push('pt-2')
       }
       if (index < this.menuSections.length - 1) {
-        classes.push('oc-files-context-actions-border')
+        classes.push('border-b')
       }
       return classes
     }
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-files-context-actions > li {
+    @apply px-0;
+  }
+}
+</style>
 <style lang="scss">
 .oc-files-context-actions {
-  text-align: left;
-  white-space: normal;
-
   > li {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-
     a,
     button,
     span {
       display: inline-flex;
-      font-weight: normal !important;
       justify-content: flex-start;
-      vertical-align: top;
       width: 100%;
-      text-align: left;
     }
-  }
-
-  &-border {
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
   }
 }
 </style>

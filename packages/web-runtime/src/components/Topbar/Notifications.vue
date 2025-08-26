@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-notifications">
+  <div id="oc-notifications" class="flex">
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
       id="oc-notifications-drop"
@@ -10,7 +10,7 @@
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
     >
-      <div class="oc-flex oc-flex-right oc-flex-middle oc-mb-s">
+      <div class="flex justify-end items-center mb-2">
         <oc-button
           v-if="notifications.length"
           class="oc-notifications-mark-all"
@@ -18,12 +18,14 @@
           no-hover
           @click="deleteNotificationsTask.perform(notifications.map((n) => n.notification_id))"
         >
-          <span class="oc-text-small" v-text="$gettext('Mark all as read')" />
+          <span class="text-sm" v-text="$gettext('Mark all as read')" />
         </oc-button>
       </div>
       <div class="oc-position-relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1" />
+          <div
+            class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1 bg-role-surface"
+          />
           <oc-spinner class="oc-notifications-loading-spinner" size="large" />
         </div>
         <span
@@ -35,7 +37,7 @@
           <li v-for="(el, index) in notifications" :key="index" class="oc-notifications-item">
             <component
               :is="el.computedLink ? 'router-link' : 'div'"
-              class="oc-flex oc-flex-middle"
+              class="flex items-center"
               :to="el.computedLink"
             >
               <user-avatar
@@ -51,11 +53,11 @@
                 </div>
                 <div
                   v-if="el.link && el.object_type !== 'local_share'"
-                  class="oc-notifications-link"
+                  class="oc-notifications-link truncate"
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
-                <div v-if="el.datetime" class="oc-text-small oc-text-muted oc-mt-xs">
+                <div v-if="el.datetime" class="text-sm text-role-on-surface-variant mt-1">
                   <span
                     v-oc-tooltip="formatDate(el.datetime)"
                     tabindex="0"
@@ -64,7 +66,7 @@
                 </div>
               </div>
             </component>
-            <hr v-if="index + 1 !== notifications.length" class="oc-my-s" />
+            <hr v-if="index + 1 !== notifications.length" class="my-2" />
           </li>
         </oc-list>
       </div>
@@ -267,7 +269,15 @@ export default {
   }
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-notifications-item > a {
+    @apply text-role-on-surface;
+  }
+}
+</style>
 <style lang="scss" scoped>
 #oc-notifications-drop {
   width: 400px;
@@ -278,19 +288,12 @@ export default {
 }
 
 .oc-notifications {
-  &-item {
-    > a {
-      color: var(--oc-role-on-surface);
-    }
-  }
-
   &-loading {
     * {
       position: absolute;
     }
 
     &-background {
-      background-color: var(--oc-role-surface);
       opacity: 0.6;
     }
 
@@ -302,16 +305,7 @@ export default {
     }
   }
 
-  &-actions {
-    button:not(:last-child) {
-      margin-right: var(--oc-space-small);
-    }
-  }
-
   &-link {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
     width: 300px;
   }
 }

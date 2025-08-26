@@ -1,6 +1,6 @@
 <template>
   <div id="group-list">
-    <div class="group-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
+    <div class="group-filters flex justify-end flex-wrap items-end mx-4 mb-4">
       <oc-text-input
         id="groups-filter"
         v-model="filterTerm"
@@ -53,7 +53,7 @@
         />
       </template>
       <template #displayName="rowData">
-        <div class="oc-flex oc-flex-middle">
+        <div class="flex items-center">
           {{ rowData.item.displayName }}
           <oc-icon
             v-if="rowData.item.groupTypes?.includes('ReadOnly')"
@@ -61,7 +61,7 @@
             name="lock"
             size="small"
             fill-type="line"
-            class="oc-ml-s"
+            class="ml-2"
             :accessible-label="readOnlyLabel"
           />
         </div>
@@ -74,7 +74,7 @@
           v-oc-tooltip="$gettext('Show details')"
           :aria-label="$gettext('Show details')"
           appearance="raw"
-          class="oc-ml-xs quick-action-button oc-p-xs groups-table-btn-details"
+          class="ml-1 quick-action-button p-1 groups-table-btn-details"
           @click="showDetails(item)"
         >
           <oc-icon name="information" fill-type="line" />
@@ -84,7 +84,7 @@
           v-oc-tooltip="$gettext('Edit')"
           :aria-label="$gettext('Edit')"
           appearance="raw"
-          class="oc-ml-xs quick-action-button oc-p-xs groups-table-btn-edit"
+          class="ml-1 quick-action-button p-1 groups-table-btn-edit"
           @click="showEditPanel(item)"
         >
           <oc-icon name="pencil" fill-type="line" />
@@ -103,9 +103,9 @@
       </template>
       <template #footer>
         <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="oc-text-center oc-width-1-1 oc-my-s">
-          <p class="oc-text-muted">{{ footerTextTotal }}</p>
-          <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
+        <div class="text-center oc-width-1-1 my-2">
+          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+          <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
         </div>
       </template>
     </oc-table>

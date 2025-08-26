@@ -1,5 +1,7 @@
 <template>
-  <span class="oc-recipient">
+  <span
+    class="oc-recipient bg-role-surface-container flex align-center justify-center border border-role-outline rounded-md"
+  >
     <slot name="avatar">
       <oc-avatar-item
         :width="16.8"
@@ -10,7 +12,7 @@
         data-testid="recipient-icon"
       />
     </slot>
-    <p class="oc-recipient-name" data-testid="recipient-name" v-text="recipient.name" />
+    <p class="oc-recipient-name m-0" data-testid="recipient-name" v-text="recipient.name" />
     <!-- @slot Append content (actions, additional info, etc.)  -->
     <slot name="append" />
   </span>
@@ -38,27 +40,22 @@ export interface Slots {
 const { recipient } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-recipient {
+    @apply p-1;
+  }
+}
+</style>
 <style lang="scss">
 .oc-recipient {
-  align-items: center;
-  background-color: var(--oc-role-surface-container);
-  border: 1px solid var(--oc-role-outline);
-  border-radius: 6px;
-  display: flex;
   gap: var(--oc-space-xsmall);
-  justify-content: flex-start;
-  padding: var(--oc-space-xsmall);
   width: auto;
 
   &-icon > svg {
     fill: var(--oc-role-on-surface);
-  }
-
-  &-name {
-    color: var(--oc-role-on-surface);
-    margin: 0;
-    padding: 0;
   }
 }
 </style>

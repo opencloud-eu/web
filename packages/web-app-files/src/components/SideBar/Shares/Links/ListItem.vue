@@ -1,10 +1,10 @@
 <template>
-  <div class="oc-width-1-1 oc-flex oc-flex-middle oc-flex-between files-links-details">
-    <div class="oc-flex oc-flex-middle">
+  <div class="oc-width-1-1 flex items-center justify-between files-links-details">
+    <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
-      <div class="files-links-name-wrapper oc-pl-s">
-        <span class="files-links-name oc-text-truncate" v-text="linkShare.displayName" />
-        <div class="oc-flex oc-flex-nowrap oc-flex-middle">
+      <div class="files-links-name-wrapper pl-2">
+        <span class="files-links-name truncate" v-text="linkShare.displayName" />
+        <div class="flex flex-nowrap items-center">
           <link-role-dropdown
             v-if="isModifiable"
             :model-value="currentLinkType"
@@ -21,13 +21,13 @@
         </div>
       </div>
     </div>
-    <div class="oc-flex oc-flex-middle">
-      <div class="oc-flex">
+    <div class="flex items-center">
+      <div class="flex">
         <oc-icon
           v-if="linkShare.hasPassword"
           v-oc-tooltip="$gettext('This link is password-protected')"
           name="lock-password"
-          class="oc-files-file-link-has-password oc-ml-xs oc-p-xs"
+          class="oc-files-file-link-has-password ml-1 p-1"
           fill-type="line"
           :aria-label="$gettext('This link is password-protected')"
         />
@@ -35,15 +35,15 @@
       <expiration-date-indicator
         v-if="linkShare.expirationDateTime"
         :expiration-date="DateTime.fromISO(linkShare.expirationDateTime)"
-        class="oc-ml-xs"
+        class="ml-1"
       />
-      <copy-link :link-share="linkShare" class="oc-ml-xs" />
+      <copy-link :link-share="linkShare" class="ml-1" />
       <edit-dropdown
         :can-rename="canRename"
         :is-modifiable="isModifiable"
         :is-password-removable="isPasswordRemovable"
         :link-share="linkShare"
-        class="oc-ml-xs"
+        class="ml-1"
         @remove-public-link="$emit('removePublicLink', $event)"
         @update-link="$emit('updateLink', $event)"
         @show-password-modal="showPasswordModal"

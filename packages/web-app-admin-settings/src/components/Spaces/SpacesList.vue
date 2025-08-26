@@ -1,6 +1,6 @@
 <template>
   <div id="space-list">
-    <div class="space-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
+    <div class="space-filters flex justify-end flex-wrap items-end mx-4 mb-4">
       <oc-text-input
         id="spaces-filter"
         v-model="filterTerm"
@@ -72,7 +72,7 @@
         />
       </template>
       <template #status="{ item }">
-        <span class="oc-flex oc-flex-middle">
+        <span class="flex items-center">
           <oc-icon
             v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
             :name="item.disabled ? 'stop-circle' : 'play-circle'"
@@ -87,7 +87,7 @@
             v-oc-tooltip="spaceDetailsLabel"
             :aria-label="spaceDetailsLabel"
             appearance="raw"
-            class="oc-ml-xs quick-action-button oc-p-xs spaces-table-btn-details"
+            class="ml-1 quick-action-button p-1 spaces-table-btn-details"
             @click.stop.prevent="showDetailsForSpace(item)"
           >
             <oc-icon name="information" fill-type="line" />
@@ -107,9 +107,9 @@
       </template>
       <template #footer>
         <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="oc-text-center oc-width-1-1 oc-my-s">
-          <p class="oc-text-muted">{{ footerTextTotal }}</p>
-          <p v-if="filterTerm" class="oc-text-muted">{{ footerTextFilter }}</p>
+        <div class="text-center oc-width-1-1 my-2">
+          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+          <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
         </div>
       </template>
     </oc-table>
@@ -572,18 +572,22 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .spaces-table .oc-table-header-cell-actions,
+  .spaces-table .oc-table-data-cell-actions {
+    @apply whitespace-nowrap;
+  }
+}
+</style>
 <style lang="scss">
 #spaces-filter {
   width: 16rem;
 }
 
 .spaces-table {
-  .oc-table-header-cell-actions,
-  .oc-table-data-cell-actions {
-    white-space: nowrap;
-  }
-
   .oc-table-header-cell-manager,
   .oc-table-data-cell-manager,
   .oc-table-header-cell-remainingQuota,

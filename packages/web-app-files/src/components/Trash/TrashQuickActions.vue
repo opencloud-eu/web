@@ -1,12 +1,12 @@
 <template>
-  <div v-if="!isEmbedModeEnabled" class="oc-flex">
+  <div v-if="!isEmbedModeEnabled" class="flex">
     <oc-button
       v-for="action in filteredActions"
       :key="action.label()"
       v-oc-tooltip="action.label()"
       :aria-label="action.label()"
       appearance="raw"
-      class="oc-ml-xs quick-action-button oc-p-xs"
+      class="ml-1 quick-action-button p-1"
       :class="`files-quick-action-${action.name}`"
       :disabled="action.isDisabled({ resources: [space] })"
       @click="action.handler({ resources: [space] })"

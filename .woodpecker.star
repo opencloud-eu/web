@@ -217,6 +217,10 @@ event = {
     "tag": {
         "event": "tag",
     },
+    "cron": {
+        "event": "cron",
+        "branch": "main",
+    },
 }
 
 def main(ctx):
@@ -340,6 +344,7 @@ def pnpmCache(ctx):
                  cacheBrowsers(),
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -372,6 +377,7 @@ def pnpmlint(ctx, lintType):
         "steps": steps,
         "when": [
             event["tag"],
+            event["cron"],
             {
                 "event": ["push", "manual"],
                 "branch": config["branches"],
@@ -457,6 +463,7 @@ def buildCacheWeb(ctx):
                  rebuildBuildArtifactCache(ctx, "web-dist", "dist"),
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -502,6 +509,7 @@ def unitTests(ctx):
                  ],
         "when": [
             event["base"],
+            event["cron"],
             event["tag"],
             {
                 "event": "pull_request",
@@ -528,6 +536,7 @@ def e2eTests(ctx):
     }
 
     e2e_trigger = [
+        event["cron"],
         {
             "event": ["push", "manual"],
             "branch": config["branches"],
@@ -575,12 +584,8 @@ def e2eTests(ctx):
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
                     restoreBrowsersCache() + \
-                    restoreBuildArtifactCache(ctx, "web-dist", "dist")
-
-            if ctx.build.event == "cron":
-                steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-            else:
-                steps += restoreOpenCloudCache()
+                    restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
+                    restoreOpenCloudCache()
 
             if "app-provider-onlyOffice" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
@@ -687,6 +692,7 @@ def notifyMatrix():
             },
         ],
         "when": [
+            event["cron"],
             event["pull_request"],
             {
                 "event": ["push", "manual"],
@@ -930,20 +936,17 @@ def checkForExistingOpenCloudCache(ctx):
     ]
 
 def cacheOpenCloudPipeline(ctx):
-    if ctx.build.event == "cron":
-        steps = getOpenCloudlatestCommitId(ctx) + \
-                buildOpenCloud() + \
-                rebuildBuildArtifactCache(ctx, "opencloud", "opencloud")
-    else:
-        steps = checkForExistingOpenCloudCache(ctx) + \
-                buildOpenCloud() + \
-                cacheOpenCloud()
+    steps = checkForExistingOpenCloudCache(ctx) + \
+            buildOpenCloud() + \
+            cacheOpenCloud()
+
     return [{
         "name": "cache-opencloud",
         "skip_clone": True,
         "steps": steps,
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1115,6 +1118,7 @@ def checkStarlark():
         ],
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1142,6 +1146,7 @@ def licenseCheck():
             },
         ],
         "when": [
+            event["cron"],
             event["pull_request"],
             event["tag"],
             event["main_branch"],
@@ -1295,6 +1300,7 @@ def purgeCache(name, flush_path, flush_age):
         "name": name,
         "skip_clone": True,
         "when": [
+            event["cron"],
             event["pull_request"],
             event["main_branch"],
         ],
@@ -1614,11 +1620,8 @@ def e2eTestsOnKeycloak(ctx):
             restoreBrowsersCache() + \
             ldapService() + \
             keycloakService() + \
-            restoreBuildArtifactCache(ctx, "web-dist", "dist")
-    if ctx.build.event == "cron":
-        steps += restoreBuildArtifactCache(ctx, "opencloud", "opencloud")
-    else:
-        steps += restoreOpenCloudCache()
+            restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
+            restoreOpenCloudCache()
 
     # configs to setup opencloud with keycloak and ldap
     environment = {
@@ -1687,6 +1690,7 @@ def e2eTestsOnKeycloak(ctx):
         "services": postgresService(),
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],
@@ -1743,6 +1747,7 @@ def e2eMobileTests(ctx):
         "services": postgresService(),
         "when": [
             event["base"],
+            event["cron"],
             event["pull_request"],
             event["tag"],
         ],

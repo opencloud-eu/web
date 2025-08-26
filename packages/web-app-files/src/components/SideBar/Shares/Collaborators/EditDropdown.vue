@@ -1,9 +1,9 @@
 <template>
-  <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center">
     <oc-button
       :id="editShareBtnId"
       v-oc-tooltip="dropButtonTooltip"
-      class="collaborator-edit-dropdown-options-btn raw-hover-surface oc-p-xs"
+      class="collaborator-edit-dropdown-options-btn raw-hover-surface p-1"
       :aria-label="
         isLocked ? dropButtonTooltip : $gettext('Open context menu with share editing options')
       "
@@ -21,18 +21,18 @@
       close-on-click
     >
       <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="shareEditOptions">
-        <li v-for="(option, i) in options" :key="i" class="oc-rounded oc-menu-item-hover">
+        <li v-for="(option, i) in options" :key="i" class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="option" />
         </li>
-        <li v-if="sharedParentRoute" class="oc-rounded oc-menu-item-hover">
+        <li v-if="sharedParentRoute" class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
       <oc-list
         v-if="canRemove"
-        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove oc-pt-s"
+        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2 mt-2 border-t"
       >
-        <li class="oc-rounded oc-menu-item-hover">
+        <li class="rounded-sm oc-menu-item-hover">
           <context-menu-item :option="removeShareOption" />
         </li>
       </oc-list>
@@ -286,12 +286,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.collaborator-edit-dropdown-options-list {
-  &-remove {
-    margin-top: var(--oc-space-small) !important;
-    border-top: 0.5px solid var(--oc-role-outline-variant) !important;
-  }
-}
 .share-access-details-drop {
   dl {
     display: grid;
@@ -304,7 +298,6 @@ export default defineComponent({
   }
   dd {
     grid-column-start: 2;
-    margin-left: var(--oc-space-medium);
   }
 }
 </style>

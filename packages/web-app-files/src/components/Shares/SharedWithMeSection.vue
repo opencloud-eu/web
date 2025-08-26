@@ -1,15 +1,11 @@
 <template>
   <div>
-    <h2 class="oc-px-m oc-py-s oc-invisible-sr">
+    <h2 class="px-4 py-2 oc-invisible-sr">
       {{ title }}
-      <span class="oc-text-medium">({{ items.length }})</span>
+      <span class="text-base">({{ items.length }})</span>
     </h2>
 
-    <no-content-message
-      v-if="!items.length"
-      class="files-empty oc-flex-stretch"
-      icon="share-forward"
-    >
+    <no-content-message v-if="!items.length" class="files-empty" icon="share-forward">
       <template #message>
         <span>{{ emptyMessage }}</span>
       </template>
@@ -33,7 +29,7 @@
       <template #syncEnabled="{ resource }">
         <div
           :key="resource.getDomSelector()"
-          class="oc-text-nowrap oc-flex oc-flex-middle oc-flex-right"
+          class="whitespace-nowrap flex items-center justify-end"
         >
           <oc-icon
             v-if="resource.shareRoles?.length"
@@ -56,7 +52,7 @@
             v-oc-tooltip="$gettext('Synced with your devices')"
             :accessible-label="$gettext('Synced with your devices')"
             name="loop-right"
-            class="sync-enabled oc-ml-s"
+            class="sync-enabled ml-2"
             size="small"
           />
         </div>
@@ -71,14 +67,14 @@
         <oc-button
           v-oc-tooltip="hideShareAction.label({ space: null, resources: [resource] })"
           appearance="raw"
-          :class="['oc-p-xs', hideShareAction.class, 'raw-hover-surface']"
+          :class="['p-1', hideShareAction.class, 'raw-hover-surface']"
           @click.stop="hideShareAction.handler({ space: null, resources: [resource] })"
         >
           <oc-icon :name="resource.hidden ? 'eye' : 'eye-off'" fill-type="line" />
         </oc-button>
       </template>
       <template #footer>
-        <div v-if="showMoreToggle && hasMore" class="oc-width-1-1 oc-text-center oc-mt">
+        <div v-if="showMoreToggle && hasMore" class="oc-width-1-1 text-center mt-4">
           <oc-button
             id="files-shared-with-me-show-all"
             appearance="raw"
@@ -91,7 +87,7 @@
             <oc-icon :name="'arrow-' + (showMore ? 'up' : 'down') + '-s'" fill-type="line" />
           </oc-button>
         </div>
-        <list-info v-else class="oc-width-1-1 oc-my-s" />
+        <list-info v-else class="oc-width-1-1 my-2" />
       </template>
     </resource-table>
   </div>

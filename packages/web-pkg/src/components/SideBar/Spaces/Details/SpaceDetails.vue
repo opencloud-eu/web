@@ -1,6 +1,6 @@
 <template>
-  <div id="oc-space-details-sidebar">
-    <div class="oc-space-details-sidebar-image oc-text-center">
+  <div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <div class="oc-space-details-sidebar-image text-center">
       <oc-spinner
         v-if="imagesLoading.includes(resource.id)"
         :aria-label="$gettext('Space image is loading')"
@@ -8,16 +8,11 @@
       <div v-else-if="spaceImage" class="oc-position-relative">
         <img :src="spaceImage" alt="" />
       </div>
-      <oc-icon
-        v-else
-        name="layout-grid"
-        size="xxlarge"
-        class="space-default-image oc-px-m oc-py-m"
-      />
+      <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
-      class="oc-flex oc-flex-middle oc-space-details-sidebar-members oc-mb-s oc-text-small"
+      class="flex items-center oc-space-details-sidebar-members mb-2 text-sm"
     >
       <oc-button
         v-if="hasMemberShares"
@@ -45,11 +40,11 @@
         no-hover
         @click="expandSharesPanel"
       >
-        <span class="oc-text-small" v-text="$gettext('Show')" />
+        <span class="text-sm" v-text="$gettext('Show')" />
       </oc-button>
     </div>
     <dl
-      class="details-list oc-m-rm"
+      class="details-list m-0"
       :aria-label="$gettext('Overview of the information about the selected space')"
     >
       <dt>{{ $gettext('Last activity') }}</dt>
@@ -239,12 +234,6 @@ const expandSharesPanel = () => {
 }
 </script>
 <style lang="scss" scoped>
-#oc-space-details-sidebar {
-  background-color: var(--oc-role-surface-container);
-  border-radius: 5px;
-  padding: var(--oc-space-medium);
-}
-
 .oc-space-details-sidebar {
   &-members {
     gap: var(--oc-space-small);

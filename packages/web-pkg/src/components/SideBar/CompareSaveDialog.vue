@@ -1,8 +1,8 @@
 <template>
-  <div class="compare-save-dialog oc-width-1-1 oc-flex oc-flex-between oc-flex-middle">
-    <span v-if="saved" class="state-indicator oc-flex oc-flex-middle">
+  <div class="compare-save-dialog oc-width-1-1 flex justify-between items-center">
+    <span v-if="saved" class="state-indicator flex items-center">
       <oc-icon name="checkbox-circle" />
-      <span class="oc-ml-s" v-text="$gettext('Changes saved')" />
+      <span class="ml-2" v-text="$gettext('Changes saved')" />
     </span>
     <span v-else class="state-indicator">{{ unsavedChangesText }}</span>
     <div>
@@ -88,8 +88,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .compare-save-dialog {
   flex-flow: row wrap;
-}
-.state-indicator {
-  line-height: 2rem;
 }
 </style>

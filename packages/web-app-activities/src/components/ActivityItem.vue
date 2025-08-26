@@ -1,22 +1,22 @@
 <template>
-  <div class="oc-flex oc-flex-middle activity-item">
-    <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center activity-item">
+    <div class="flex items-center text-left">
       <oc-avatar :width="36" :user-name="activity.template.variables?.user?.displayName" />
-      <span class="oc-ml-s" v-text="activity.template.variables?.user?.displayName" />
+      <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
     </div>
-    <div>activity unknown</div>
-    <div class="oc-text-truncate">
+    <div class="text-left">activity unknown</div>
+    <div class="truncate text-left">
       <resource-list-item v-if="resource" :resource="resource" :is-resource-clickable="false" />
       <div
         v-if="resourceNotAccessible"
         v-oc-tooltip="$gettext('The resource is unavailable, it may have been deleted.')"
-        class="oc-text-muted oc-flex oc-flex-middle oc-p-xs"
+        class="text-role-on-surface-variant flex items-center p-1"
       >
         <oc-icon name="eye-off" />
-        <span class="oc-ml-s" v-text="activity.template.variables?.resource?.name" />
+        <span class="ml-2" v-text="activity.template.variables?.resource?.name" />
       </div>
     </div>
-    <div><span v-text="recordedDateTime" /></div>
+    <div class="text-right"><span v-text="recordedDateTime" /></div>
   </div>
 </template>
 
@@ -90,21 +90,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.activity-item {
-  .oc-resource-name {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 100%;
-    overflow: hidden;
-  }
-}
-
 .activity-item > * {
   flex: 1;
-  text-align: left;
-}
-
-.activity-item > *:last-child {
-  text-align: right !important;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div id="oc-file-versions-sidebar">
-    <div v-if="versions.length" class="oc-ml-s">
+    <div v-if="versions.length" class="ml-2">
       <oc-list class="oc-timeline">
         <li v-for="(item, index) in versions" :key="index" class="version-item">
           <div class="version-details">
             <span
               v-oc-tooltip="formatVersionDate(item)"
-              class="version-date oc-font-semibold"
+              class="version-date font-semibold"
               data-testid="file-versions-file-last-modified-date"
               >{{ formatVersionDateRelative(item) }}</span
             >
@@ -21,10 +21,10 @@
             appearance="raw"
             justify-content="left"
             :aria-label="$gettext('Restore')"
-            class="version-action-item oc-width-1-1 oc-rounded oc-button-justify-content-left oc-button-gap-m oc-py-s oc-px-m"
+            class="version-action-item oc-width-1-1 rounded-sm oc-button-justify-content-left oc-button-gap-m py-2 px-4"
             @click="revertToVersion(item)"
           >
-            <oc-icon name="history" class="oc-icon-m oc-mr-s -oc-mt-xs" fill-type="line" />
+            <oc-icon name="history" class="oc-icon-m mr-2 -mt-1" fill-type="line" />
             {{ $gettext('Restore') }}
           </oc-button>
           <oc-button
@@ -32,10 +32,10 @@
             justify-content="left"
             appearance="raw"
             :aria-label="$gettext('Download')"
-            class="version-action-item oc-width-1-1 oc-rounded c-button-gap-m oc-py-s oc-px-m"
+            class="version-action-item oc-width-1-1 rounded-sm c-button-gap-m py-2 px-4"
             @click="downloadVersion(item)"
           >
-            <oc-icon name="file-download" class="oc-icon-m oc-mr-s" fill-type="line" />
+            <oc-icon name="file-download" class="oc-icon-m mr-2" fill-type="line" />
             {{ $gettext('Download') }}
           </oc-button>
         </li>

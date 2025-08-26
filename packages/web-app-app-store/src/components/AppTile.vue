@@ -1,23 +1,25 @@
 <template>
-  <li class="app-tile oc-card oc-card-default oc-card-rounded">
+  <li
+    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col border"
+  >
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
     </router-link>
-    <div class="app-tile-body oc-card-body oc-p">
+    <div class="app-tile-body oc-card-body flex flex-col justify-between p-4">
       <div class="app-tile-content">
-        <div class="oc-flex oc-flex-middle">
-          <h3 class="oc-my-s oc-text-truncate mark-element app-tile-title">
+        <div class="flex items-center">
+          <h3 class="my-2 truncate mark-element app-tile-title">
             <router-link
               :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
             >
               {{ app.name }}
             </router-link>
           </h3>
-          <span class="oc-ml-s oc-text-muted oc-text-small oc-mt-xs">
+          <span class="ml-2 text-role-on-surface-variant text-sm mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>
-        <p class="oc-my-s mark-element">{{ app.subtitle }}</p>
+        <p class="my-2 mark-element">{{ app.subtitle }}</p>
       </div>
       <app-tags :app="app" @click="emitSearchTerm" />
       <app-actions :app="app" />
@@ -60,25 +62,11 @@ export default defineComponent({
 <style lang="scss">
 .app-tile {
   overflow: hidden;
-  background-color: var(--oc-role-surface-container) !important;
   box-shadow: none;
   height: 100%;
-  display: flex;
-  flex-flow: column;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-tile-body {
-    display: flex;
-    flex-flow: column;
-    justify-content: space-between;
     height: 100%;
-  }
-
-  .app-tile-title {
-    .mark-highlight {
-      font-weight: unset !important;
-      color: var(--oc-role-on-surface);
-    }
   }
 }
 </style>

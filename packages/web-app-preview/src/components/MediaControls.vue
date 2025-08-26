@@ -1,7 +1,7 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="oc-surface-container oc-p-s oc-width-large oc-flex oc-flex-middle oc-flex-center oc-flex-around oc-rounded"
+      class="bg-role-surface-container p-2 oc-width-large flex items-center justify-center justify-around rounded-sm"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
@@ -12,7 +12,7 @@
       >
         <oc-icon size="large" name="arrow-drop-left" />
       </oc-button>
-      <p v-if="!isFolderLoading" class="oc-m-rm preview-controls-action-count">
+      <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
         <span class="oc-invisible-sr" v-text="screenreaderFileCount" />
       </p>
@@ -25,12 +25,12 @@
       >
         <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
-      <div class="oc-flex">
+      <div class="flex">
         <oc-button
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen raw-hover-surface oc-p-xs"
+          class="preview-controls-fullscreen raw-hover-surface p-1"
           appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
@@ -43,11 +43,11 @@
           />
         </oc-button>
       </div>
-      <div v-if="showImageControls" class="oc-flex oc-flex-middle">
-        <div class="oc-flex">
+      <div v-if="showImageControls" class="flex items-center">
+        <div class="flex">
           <oc-button
             v-oc-tooltip="imageShrinkDescription"
-            class="preview-controls-image-shrink raw-hover-surface oc-p-xs"
+            class="preview-controls-image-shrink raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageShrinkDescription"
             @click="imageShrink"
@@ -56,7 +56,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageZoomDescription"
-            class="preview-controls-image-zoom raw-hover-surface oc-p-xs"
+            class="preview-controls-image-zoom raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageZoomDescription"
             @click="imageZoom"
@@ -64,10 +64,10 @@
             <oc-icon fill-type="line" name="zoom-in" />
           </oc-button>
         </div>
-        <div class="oc-ml-m">
+        <div class="ml-4">
           <oc-button
             v-oc-tooltip="imageRotateLeftDescription"
-            class="preview-controls-rotate-left raw-hover-surface oc-p-xs"
+            class="preview-controls-rotate-left raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateLeftDescription"
             @click="imageRotateLeft"
@@ -76,7 +76,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="imageRotateRightDescription"
-            class="preview-controls-rotate-right raw-hover-surface oc-p-xs"
+            class="preview-controls-rotate-right raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateRightDescription"
             @click="imageRotateRight"
@@ -84,10 +84,10 @@
             <oc-icon fill-type="line" name="clockwise" />
           </oc-button>
         </div>
-        <div class="oc-ml-m">
+        <div class="ml-4">
           <oc-button
             v-oc-tooltip="imageResetDescription"
-            class="preview-controls-image-reset raw-hover-surface oc-p-xs"
+            class="preview-controls-image-reset raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageResetDescription"
             @click="$emit('resetImage')"
@@ -99,7 +99,7 @@
       <oc-button
         v-if="showDeleteButton"
         v-oc-tooltip="resourceDeleteDescription"
-        class="preview-controls-delete raw-hover-surface oc-p-xs"
+        class="preview-controls-delete raw-hover-surface p-1"
         appearance="raw"
         :aria-label="resourceDeleteDescription"
         @click="$emit('deleteResource')"

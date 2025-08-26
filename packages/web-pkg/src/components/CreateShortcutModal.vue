@@ -12,10 +12,10 @@
     @click="onClickUrlInput"
   >
     <template #label>
-      <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
+      <div class="flex items-center create-shortcut-modal-label mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
-          <span class="oc-text-error" aria-hidden="true">*</span>
+          <span class="text-role-on-error" aria-hidden="true">*</span>
         </label>
         <oc-contextual-helper
           :text="
@@ -24,14 +24,14 @@
             )
           "
           :title="$gettext('Webpage or file')"
-          class="oc-ml-xs"
+          class="ml-1"
         />
       </div>
     </template>
   </oc-text-input>
   <oc-drop
     ref="dropRef"
-    class="oc-pt-s"
+    class="pt-2"
     padding-size="remove"
     drop-id="create-shortcut-modal-contextmenu"
     mode="manual"
@@ -43,7 +43,7 @@
   >
     <oc-list>
       <li
-        class="oc-p-xs selectable-item selectable-item-url"
+        class="p-1 selectable-item selectable-item-url"
         :class="{
           active: isDropItemActive(0)
         }"
@@ -58,17 +58,19 @@
           <span v-text="dropItemUrl" />
         </oc-button>
       </li>
-      <li v-if="searchTask.isRunning" class="oc-p-xs oc-flex oc-flex-center">
+      <li v-if="searchTask.isRunning" class="p-1 flex justify-center">
         <oc-spinner />
       </li>
       <template v-if="searchResult?.values?.length">
-        <li class="create-shortcut-modal-search-separator oc-text-muted oc-text-small oc-pl-xs">
+        <li
+          class="create-shortcut-modal-search-separator text-role-on-surface-variant text-sm pl-1"
+        >
           <span v-text="$gettext('Link to a file')" />
         </li>
         <li
           v-for="(value, index) in searchResult.values"
           :key="index"
-          class="oc-p-xs selectable-item"
+          class="p-1 selectable-item"
           :class="{
             active: isDropItemActive(index + 1)
           }"
@@ -85,7 +87,7 @@
       </template>
     </oc-list>
   </oc-drop>
-  <div v-if="inputFilename" class="oc-flex oc-width-1-1 oc-mt-m">
+  <div v-if="inputFilename" class="flex oc-width-1-1 mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
@@ -95,15 +97,15 @@
       :fix-message-line="true"
     >
       <template #label>
-        <div class="oc-flex oc-flex-middle create-shortcut-modal-label">
+        <div class="flex items-center create-shortcut-modal-label mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
-            <span class="oc-text-error" aria-hidden="true">*</span>
+            <span class="text-role-on-error" aria-hidden="true">*</span>
           </label>
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
             :title="$gettext('Shortcut name')"
-            class="oc-ml-xs"
+            class="ml-1"
           />
         </div>
       </template>
@@ -467,25 +469,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.create-shortcut-modal {
-  &-url-extension {
-    margin-bottom: calc(var(--oc-space-xsmall) + 1.3125rem);
-  }
-
-  &-search-separator:hover {
-    background: none !important;
-  }
-
-  &-label {
-    margin-bottom: 0.2rem;
-  }
-}
-
 #create-shortcut-modal-contextmenu {
   width: 458px;
-
-  .oc-resource-name {
-    text-decoration: none !important;
-  }
 }
 </style>

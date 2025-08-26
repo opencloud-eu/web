@@ -1,11 +1,11 @@
 <template>
-  <div class="app-tags">
+  <div class="app-tags flex">
     <oc-tag
       v-for="tag in app.tags"
       :key="`app-tag-${app.id}-${tag}`"
       data-testid="tag-button"
       size="small"
-      class="oc-text-nowrap"
+      class="whitespace-nowrap"
       type="button"
       @click="emitClick(tag)"
     >
@@ -41,7 +41,6 @@ export default defineComponent({
 
 <style lang="scss">
 .app-tags {
-  display: flex;
   gap: 0.5rem;
 }
 </style>

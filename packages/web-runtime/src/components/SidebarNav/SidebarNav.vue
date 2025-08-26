@@ -1,6 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
+    class="bg-role-surface-container flex flex-col rounded-l-xl"
     :class="{
       'oc-app-navigation-collapsed': closed,
       'oc-app-navigation-expanded': !closed
@@ -9,7 +10,7 @@
     <oc-button
       appearance="raw"
       :class="toggleSidebarButtonClass"
-      class="toggle-sidebar-button oc-pb-s oc-pt-m"
+      class="toggle-sidebar-button pb-2 pt-4"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
       no-hover
@@ -18,18 +19,15 @@
       <oc-icon
         size="large"
         fill-type="line"
-        class="raw-hover-surface oc-rounded"
+        class="raw-hover-surface rounded-sm"
         :name="toggleSidebarButtonIcon"
       />
     </oc-button>
-    <nav
-      class="oc-sidebar-nav oc-mb-m oc-mt-s oc-px-xs"
-      :aria-label="$gettext('Sidebar navigation menu')"
-    >
+    <nav class="oc-sidebar-nav mb-4 mt-2 px-1" :aria-label="$gettext('Sidebar navigation menu')">
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
-        class="oc-ml-s"
+        class="ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm"
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
@@ -51,7 +49,10 @@
     </nav>
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
-      <div v-if="!closed" class="versions oc-pb-m oc-pl-m oc-text-xsmall oc-text-muted">
+      <div
+        v-if="!closed"
+        class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"
+      >
         <span v-text="backendVersion" />
         <span v-text="webVersion" />
       </div>
@@ -150,9 +151,7 @@ export default defineComponent({
   },
   computed: {
     toggleSidebarButtonClass() {
-      return this.closed
-        ? 'toggle-sidebar-button-collapsed'
-        : 'toggle-sidebar-button-expanded oc-pr-s'
+      return this.closed ? 'toggle-sidebar-button-collapsed' : 'toggle-sidebar-button-expanded pr-2'
     },
 
     toggleSidebarButtonIcon() {
@@ -174,20 +173,13 @@ export default defineComponent({
 <style lang="scss">
 #nav-highlighter {
   position: absolute;
-  border-radius: 5px;
-  background: var(--oc-role-secondary-container);
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
-  color: var(--oc-role-on-surface);
   svg {
     fill: var(--oc-role-on-surface);
   }
 }
 
 #web-nav-sidebar {
-  background-color: var(--oc-role-surface-container);
-  border-radius: 15px 0 0 15px;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
   z-index: 4;
@@ -207,14 +199,6 @@ export default defineComponent({
 
   .toggle-sidebar-button-expanded {
     justify-content: flex-end !important;
-  }
-
-  .versions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    flex-grow: 1;
   }
 }
 

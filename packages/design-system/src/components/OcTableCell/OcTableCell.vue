@@ -38,38 +38,36 @@ const cellClasses = computed(() => {
   return classes
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-table-cell {
+    @apply px-2;
+  }
+  .oc-table-cell-align-left {
+    @apply text-left;
+  }
+  .oc-table-cell-align-center {
+    @apply text-center;
+  }
+  .oc-table-cell-align-right {
+    @apply text-right;
+  }
+  .oc-table-cell-align-top {
+    @apply align-top;
+  }
+  .oc-table-cell-align-middle {
+    @apply align-middle;
+  }
+  .oc-table-cell-align-bottom {
+    @apply align-bottom;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table-cell {
-  /* padding is not configurable until we need it */
-  padding: 0 var(--oc-space-small);
   position: relative;
-
-  &-align {
-    &-left {
-      text-align: left;
-    }
-
-    &-center {
-      text-align: center;
-    }
-
-    &-right {
-      text-align: right;
-    }
-
-    &-top {
-      vertical-align: top;
-    }
-
-    &-middle {
-      vertical-align: middle;
-    }
-
-    &-bottom {
-      vertical-align: bottom;
-    }
-  }
 
   &-width {
     &-shrink {

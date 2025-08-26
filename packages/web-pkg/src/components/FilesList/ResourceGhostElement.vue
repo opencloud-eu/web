@@ -1,11 +1,20 @@
 <template>
-  <div id="ghost-element" class="ghost-element">
-    <div class="ghost-element-layer1 oc-rounded">
-      <resource-icon class="oc-p-xs" :resource="previewItems[0]" />
-      <div v-if="showSecondLayer" class="ghost-element-layer2 oc-rounded" />
-      <div v-if="showThirdLayer" class="ghost-element-layer3 oc-rounded" />
+  <div id="ghost-element" class="ghost-element pt-1 pl-4 bg-transparent">
+    <div class="ghost-element-layer1 rounded-sm bg-role-surface-container-high">
+      <resource-icon class="p-1" :resource="previewItems[0]" />
+      <div
+        v-if="showSecondLayer"
+        class="ghost-element-layer2 rounded-sm bg-role-surface-container-high"
+      />
+      <div
+        v-if="showThirdLayer"
+        class="ghost-element-layer3 rounded-sm bg-role-surface-container-high"
+      />
     </div>
-    <span class="badge">{{ itemCount }}</span>
+    <span
+      class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content"
+      >{{ itemCount }}</span
+    >
   </div>
 </template>
 
@@ -46,11 +55,9 @@ export default defineComponent({
 <style lang="scss">
 .ghost-element-layer1 {
   position: relative;
-  background-color: var(--oc-role-surface-container-high);
 
   .ghost-element-layer2 {
     position: absolute;
-    background-color: var(--oc-role-surface-container-high);
     filter: brightness(0.82);
     top: 3px;
     left: 3px;
@@ -60,7 +67,6 @@ export default defineComponent({
   }
   .ghost-element-layer3 {
     position: absolute;
-    background-color: var(--oc-role-surface-container-high);
     filter: brightness(0.72);
     top: 6px;
     left: 6px;
@@ -70,9 +76,6 @@ export default defineComponent({
   }
 }
 .ghost-element {
-  background-color: transparent;
-  padding-top: var(--oc-space-xsmall);
-  padding-left: 5px;
   z-index: var(--oc-z-index-modal);
   position: absolute;
   .icon-wrapper {
@@ -82,18 +85,8 @@ export default defineComponent({
     position: absolute;
     top: -2px;
     right: -8px;
-    padding: var(--oc-space-xsmall);
-    line-height: var(--oc-space-small);
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;
     min-width: var(--oc-space-small);
     height: var(--oc-space-small);
-    text-align: center;
-
-    font-size: 12px;
-    background: red;
-    color: white;
   }
 }
 </style>

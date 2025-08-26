@@ -2,12 +2,12 @@
   <div>
     <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="oc-label">
       {{ label }}
-      <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+      <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
     </label>
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
       v-bind="contextualHelper?.data"
-      class="oc-pl-xs"
+      class="pl-1"
     />
     <vue-select
       ref="selectRef"
@@ -17,11 +17,10 @@
       :searchable="searchable"
       :clearable="clearable"
       :multiple="multiple"
-      class="oc-select"
+      class="oc-select bg-transparent"
       :class="{
         'oc-select-position-fixed': positionFixed
       }"
-      style="background: transparent"
       :dropdown-should-open="selectDropdownShouldOpen"
       :map-keydown="selectMapKeydown"
       v-bind="additionalAttributes"
@@ -45,17 +44,17 @@
       <template #selected-option-container="{ option, deselect }">
         <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly" name="lock" class="oc-mr-xs" size="small" />
+            <oc-icon v-if="readOnly" name="lock" class="mr-1" size="small" />
             {{ getOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="oc-flex oc-flex-middle oc-ml-s oc-mr-xs">
+          <span v-if="multiple" class="flex items-center ml-2 mr-1">
             <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
             <oc-button
               v-else
               appearance="raw"
               :title="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
               :aria-label="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
-              class="vs__deselect oc-mx-rm"
+              class="vs__deselect mx-0"
               no-hover
               @mousedown.stop.prevent
               @click="deselect(option)"
@@ -72,7 +71,7 @@
 
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message text-sm"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
         'oc-text-input-danger': !!errorMessage
@@ -84,7 +83,7 @@
         size="small"
         fill-type="line"
         aria-hidden="true"
-        class="oc-mr-xs"
+        class="mr-1"
       />
 
       <span
@@ -320,7 +319,8 @@ const setKeyboardOutline = async () => {
   const highlightedOption = optionEls[unref(selectRef).typeAheadPointer]
   if (highlightedOption) {
     await nextTick()
-    highlightedOption.classList.add('keyboard-outline')
+    highlightedOption.classList.add('outline-2')
+    highlightedOption.classList.add('outline-role-outline-variant')
   }
 }
 
@@ -434,7 +434,6 @@ const messageId = computed(() => {
   return `${id}-message`
 })
 </script>
-
 <script lang="ts">
 // @ts-ignore
 import VueSelect from 'vue-select'
@@ -442,7 +441,15 @@ import VueSelect from 'vue-select'
 // importing VueSelect in script setup leads to an anomymousstub in unit tests
 export default { components: { VueSelect } }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-select {
+    @apply py-[1px] normal-case;
+  }
+}
+</style>
 <style lang="scss">
 .vs--disabled {
   cursor: not-allowed;
@@ -463,8 +470,6 @@ export default { components: { VueSelect } }
 }
 
 .oc-select {
-  line-height: normal;
-  padding: 1px 0;
   color: var(--oc-role-on-surface);
 
   &-position-fixed {
@@ -474,6 +479,7 @@ export default { components: { VueSelect } }
     }
   }
 
+  // overwrite vue-select styles
   .vs {
     &__search {
       color: var(--oc-role-on-surface);
@@ -485,12 +491,10 @@ export default { components: { VueSelect } }
       -webkit-appearance: none;
       color: var(--oc-role-on-surface);
       background-color: var(--oc-role-surface);
-      border-radius: 0;
-      border-radius: 5px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--oc-role-outline);
       box-sizing: border-box;
       line-height: inherit;
-      margin: 0;
       max-width: 100%;
       outline: none;
       padding: 2px;
@@ -498,6 +502,8 @@ export default { components: { VueSelect } }
       transition-timing-function: ease-in-out;
       transition-property: color, background-color;
       width: 100%;
+      background-color: var(--oc-role-surface);
+      margin-top: -1px;
     }
 
     &__selected-readonly {
@@ -509,20 +515,10 @@ export default { components: { VueSelect } }
       padding: 0 5px;
     }
 
-    &__dropdown-menu {
-      padding: 0;
-      background-color: var(--oc-role-surface);
-      margin-top: -1px;
-    }
-
     &__clear,
     &__open-indicator,
     &__deselect {
       fill: var(--oc-role-on-surface);
-    }
-
-    &__deselect {
-      margin: 0 var(--oc-space-small);
     }
 
     &__dropdown-option,
@@ -530,8 +526,7 @@ export default { components: { VueSelect } }
       color: var(--oc-role-on-surface);
       white-space: normal;
       padding: 6px 0.6rem;
-      border-radius: 5px;
-      line-height: var(--vs-line-height);
+      border-radius: var(--radius-sm);
 
       &--highlight,
       &--selected {
@@ -549,7 +544,7 @@ export default { components: { VueSelect } }
       justify-content: center;
       gap: var(--oc-space-xsmall);
       cursor: pointer;
-      padding: 0 var(--oc-space-xsmall) 0 var(--oc-space-xsmall);
+      padding: 0 4px 0 4px;
 
       svg {
         overflow: visible;
@@ -593,11 +588,6 @@ export default { components: { VueSelect } }
       border: 1px solid var(--oc-role-surface);
       outline: 2px solid var(--oc-role-outline);
     }
-  }
-
-  .keyboard-outline {
-    outline: 2px var(--oc-role-outline-variant) solid !important;
-    outline-offset: -2px;
   }
 }
 

@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="oc-link-resolve oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
-  >
-    <div class="oc-card oc-text-center oc-width-large">
+  <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
+    <div class="oc-card text-center oc-width-large bg-role-surface-container rounded-xl">
       <template v-if="loading">
         <div class="oc-card-header">
-          <h2 key="private-link-loading" class="oc-link-resolve-loading">
+          <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
             <span v-text="$gettext('Resolving private link…')" />
           </h2>
         </div>
@@ -15,12 +13,12 @@
       </template>
       <template v-else-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="private-link-error">
+          <h2 key="private-link-error" class="m-0">
             <span v-text="$gettext('An error occurred while resolving the private link')" />
           </h2>
         </div>
         <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="oc-text-xlarge">{{ errorMessage }}</p>
+          <p class="text-xl">{{ errorMessage }}</p>
         </div>
       </template>
     </div>
@@ -29,7 +27,7 @@
       type="router-link"
       appearance="filled"
       target="_blank"
-      class="oc-mt-m oc-text-center oc-width-medium"
+      class="mt-4 text-center oc-width-medium"
       :to="sharedWithMeRoute"
     >
       <span class="text" v-text="openSharedWithMeLabel" />
@@ -190,16 +188,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.oc-link-resolve {
-  .oc-card {
-    background: var(--oc-role-surface-container);
-    border-radius: 15px;
-  }
-
-  .oc-card-header h2 {
-    margin: 0;
-  }
-}
-</style>

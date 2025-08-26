@@ -1,10 +1,17 @@
 <template>
-  <li class="oc-sidebar-nav-item oc-pb-xs oc-px-s" :aria-current="active ? 'page' : null">
+  <li class="oc-sidebar-nav-item pb-1 px-2" :aria-current="active ? 'page' : null">
     <oc-button
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
       color-role="secondaryContainer"
-      :class="['oc-sidebar-nav-item-link', 'oc-oc-width-1-1', { active: active }]"
+      :justify-content="'space-between'"
+      :class="[
+        'oc-sidebar-nav-item-link',
+        'oc-oc-width-1-1',
+        'whitespace-nowrap',
+        'p-2',
+        { active: active }
+      ]"
       :data-nav-id="index"
       :data-nav-name="navName"
       :aria-label="
@@ -12,9 +19,9 @@
       "
       v-bind="attrs"
     >
-      <span class="oc-flex">
+      <span class="flex">
         <oc-icon :name="icon" :fill-type="fillType" />
-        <span class="oc-ml-m text" :class="{ 'text-invisible': collapsed }" v-text="name" />
+        <span class="ml-4 text" :class="{ 'text-invisible': collapsed }" v-text="name" />
       </span>
     </oc-button>
   </li>
@@ -86,29 +93,16 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss">
 .oc-sidebar-nav-item-link {
   position: relative;
-  align-items: center !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  padding: var(--oc-space-small) !important;
-  border-radius: 5px;
-  white-space: nowrap;
   user-select: none;
 
-  .oc-tag {
-    background-color: var(--oc-role-tertiary-container);
-    color: var(--oc-role-on-tertiary-container);
-    svg {
-      fill: var(--oc-role-on-tertiary-container);
-    }
-  }
   .text {
     opacity: 1;
     transition: all 0.3s;
   }
+
   .text-invisible {
     opacity: 0 !important;
     transition: 0s;
@@ -117,13 +111,10 @@ export default defineComponent({
   &.active {
     overflow: hidden;
   }
-  &:focus,
-  &:hover {
-    text-decoration: none !important;
-  }
 
   &:focus:not(.active),
   &:hover:not(.active) {
+    // must not be a tailwind layer because we're overwriting colors from the button mixin
     background: var(--oc-role-surface-container-highest) !important;
   }
 

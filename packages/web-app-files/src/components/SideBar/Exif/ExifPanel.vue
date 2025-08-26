@@ -1,6 +1,6 @@
 <template>
-  <div id="files-sidebar-panel-exif" class="oc-rounded">
-    <dl class="exif-data-list">
+  <div id="files-sidebar-panel-exif" class="rounded-sm p-4 bg-role-surface-container">
+    <dl class="exif-data-list details-list m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
       <dt v-text="$gettext('Device make')" />
@@ -27,7 +27,7 @@
           v-oc-tooltip="copyLocationToClipboardLabel"
           size="small"
           appearance="raw"
-          class="oc-ml-s"
+          class="ml-2"
           :aria-label="copyLocationToClipboardLabel"
           no-hover
           @click="copyLocationToClipboard"
@@ -158,28 +158,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-#files-sidebar-panel-exif {
-  background-color: var(--oc-role-surface-container);
-  padding: var(--oc-space-medium);
-}
-
 .exif-data-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  margin: 0;
-
-  dt:not(:last-of-type),
-  dd:not(:last-of-type) {
-    margin-bottom: var(--oc-space-small);
-  }
-
-  dt {
-    font-weight: bold;
-    white-space: nowrap;
-  }
-
-  dd {
-    margin-inline-start: var(--oc-space-medium);
-  }
 }
 </style>

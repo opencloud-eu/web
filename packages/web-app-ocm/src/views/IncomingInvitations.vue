@@ -1,18 +1,18 @@
 <template>
   <div id="incoming" class="sciencemesh-app">
     <div>
-      <div class="oc-flex oc-flex-middle oc-px-m oc-pt-s">
+      <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-received" />
-        <h2 class="oc-px-s" v-text="$gettext('Accept invitations')" />
-        <oc-contextual-helper class="oc-pl-xs" v-bind="helperContent" />
+        <h2 class="px-2" v-text="$gettext('Accept invitations')" />
+        <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="oc-flex oc-flex-column oc-flex-middle oc-flex-center oc-p-m">
+      <div class="flex flex-col items-center justify-center p-4">
         <div class="oc-width-1-2">
           <oc-text-input
             v-model="token"
             :label="$gettext('Enter invite token')"
             :clear-button-enabled="true"
-            class="oc-mb-s"
+            class="mb-2"
             @update:model-value="decodeInviteToken"
           />
           <div
@@ -30,7 +30,7 @@
         <oc-button
           size="small"
           :disabled="acceptInvitationButtonDisabled"
-          class="oc-mt-s"
+          class="mt-2"
           @click="acceptInvite"
         >
           <oc-icon name="add" />

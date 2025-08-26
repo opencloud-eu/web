@@ -7,15 +7,15 @@
     <div
       v-if="isOpen"
       ref="bottomDrawerRef"
-      class="oc-bottom-drawer-background"
+      class="oc-bottom-drawer-background bg-black/40"
       role="button"
       @click="onBackgroundClicked"
     >
       <focus-trap>
-        <div :id="drawerId" class="oc-bottom-drawer">
-          <div class="oc-card">
-            <div class="oc-card-header">
-              <div class="oc-flex oc-flex-between oc-flex-middle">
+        <div :id="drawerId" class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm">
+          <div class="oc-card bg-transparent">
+            <div class="oc-card-header border-b-0 px-4 pt-4">
+              <div class="flex justify-between items-center">
                 <oc-button
                   v-if="isNestedElement"
                   appearance="raw"
@@ -25,7 +25,7 @@
                 >
                   <oc-icon name="arrow-left" fill-type="line" />
                 </oc-button>
-                <span class="oc-text-bold" v-text="title" />
+                <span class="font-semibold" v-text="title" />
                 <oc-button
                   appearance="raw"
                   class="raw-hover-surface oc-bottom-drawer-close-button"
@@ -36,7 +36,7 @@
                 </oc-button>
               </div>
             </div>
-            <div ref="bottomDrawerCardBodyRef" class="oc-card-body">
+            <div ref="bottomDrawerCardBodyRef" class="oc-card-body px-4 pb-4 pt-2">
               <slot />
             </div>
           </div>
@@ -237,10 +237,24 @@ const getElement = () => {
 
 defineExpose({ show, hide, getElement })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-bottom-drawer .oc-card-body ul:not(:last-child) {
+    @apply mb-2;
+  }
+}
+
+@layer utilities {
+  .oc-bottom-drawer ul {
+    /* overwrite default list styling */
+    @apply p-2 bg-role-surface rounded-lg;
+  }
+}
+</style>
 <style lang="scss">
 .oc-bottom-drawer-background {
-  background-color: #0006;
   height: 100%;
   width: 100% !important;
   left: 0;
@@ -257,39 +271,11 @@ defineExpose({ show, hide, getElement })
   max-height: 66vh;
   width: 100%;
   overflow-y: auto;
-  background-color: var(--oc-role-surface-container-high);
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
   transition: all 0.2s;
 
   &.active {
     bottom: 0;
     transition: all 0.2s;
-  }
-
-  .oc-card {
-    background-color: unset !important;
-
-    &-header {
-      padding-top: var(--oc-space-medium);
-      padding-left: var(--oc-space-medium);
-      padding-right: var(--oc-space-medium);
-      border-bottom: 0 !important;
-    }
-
-    &-body {
-      padding: var(--oc-space-medium);
-      padding-top: var(--oc-space-small);
-
-      ul:not(:last-child) {
-        margin-bottom: var(--oc-space-small) !important;
-      }
-
-      ul {
-        background-color: var(--oc-role-surface) !important;
-        border-radius: 10px;
-      }
-    }
   }
 }
 </style>

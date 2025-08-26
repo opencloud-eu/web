@@ -1,7 +1,11 @@
 <template>
   <div class="oc-progress-pie" :data-fill="fill">
     <div class="oc-progress-pie-container" />
-    <label v-if="showLabel" class="oc-progress-pie-label oc-text-muted" v-text="label" />
+    <label
+      v-if="showLabel"
+      class="oc-progress-pie-label text-role-on-surface-variant"
+      v-text="label"
+    />
   </div>
 </template>
 
@@ -40,13 +44,20 @@ const label = computed(() => {
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-progress-pie {
+    @apply m-4;
+  }
+}
+</style>
 <style lang="scss">
 $default-size: 64px;
 
 .oc-progress-pie {
   height: $default-size;
-  margin: 15px;
   position: relative;
   width: $default-size;
 

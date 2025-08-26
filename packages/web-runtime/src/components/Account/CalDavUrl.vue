@@ -18,7 +18,7 @@
       <oc-table-tr class="account-page-info-caldav-url">
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
         <oc-table-td>
-          <span class="oc-text-truncate">{{ configStore.serverUrl }}</span>
+          <span class="truncate">{{ configStore.serverUrl }}</span>
         </oc-table-td>
         <oc-table-td>
           <oc-button
@@ -29,7 +29,7 @@
             @click="copyCalDavUrlToClipboard"
           >
             <oc-icon :name="copyCalDavUrlIcon" size="small" />
-            <span class="oc-ml-2xs">{{ $gettext('Copy CalDAV URL') }}</span>
+            <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
           </oc-button>
         </oc-table-td>
       </oc-table-tr>
@@ -47,7 +47,7 @@
             @click="copyCalDavUsernameToClipboard"
           >
             <oc-icon :name="copyCalDavUsernameIcon" size="small" />
-            <span class="oc-ml-2xs">{{ $gettext('Copy CalDAV username') }}</span>
+            <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
           </oc-button>
         </oc-table-td>
       </oc-table-tr>

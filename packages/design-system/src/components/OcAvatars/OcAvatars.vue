@@ -191,7 +191,15 @@ onMounted(() => {
   })
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-avatars-stacked > * + * {
+    @apply -ml-4;
+  }
+}
+</style>
 <style lang="scss">
 .oc-avatars {
   display: inline-flex;
@@ -208,10 +216,6 @@ onMounted(() => {
       z-index: 1000 !important;
       transform: scale(1.1);
     }
-  }
-
-  &-stacked > * + * {
-    margin-left: -15px;
   }
 
   &-gap {

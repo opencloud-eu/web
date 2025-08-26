@@ -136,7 +136,6 @@ defineSlots<Slots>()
 const buttonClass = computed(() => {
   const classes = [
     'oc-button',
-    'oc-rounded',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
     `oc-button-gap-${getSizeClass(gapSize)}`,
@@ -171,23 +170,42 @@ const onClick = (event: MouseEvent) => {
 }
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
+    @apply py-1.5 px-2.5;
+  }
+  .oc-button-s {
+    @apply text-sm;
+  }
+  .oc-button-m {
+    @apply text-base;
+  }
+  .oc-button-l {
+    @apply text-lg;
+  }
+  .oc-button {
+    @apply rounded-sm;
+  }
+  .oc-button-group {
+    @apply rounded-sm outline outline-role-secondary outline-offset-[-1px];
+  }
+  .oc-button-group .oc-button {
+    @apply rounded-none first:rounded-l-sm last:rounded-r-sm outline-0;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-button-gap($factor) {
   gap: math.round(calc($oc-space-small * $factor / 2)) * 2;
 }
 
-@mixin oc-button-line-height($factor) {
-  line-height: $oc-size-icon-default * $factor;
-}
-
 @mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
-    border-style: none;
-    font-size: var(--oc-font-size-medium);
-    font-weight: normal;
     min-height: 0;
-    padding: 0;
 
     background-color: transparent;
     color: $color;
@@ -236,16 +254,9 @@ const onClick = (event: MouseEvent) => {
 }
 
 .oc-button {
-  @include oc-button-line-height(1);
-
   align-items: center;
-  border: 0;
   box-sizing: border-box;
   display: inline-flex;
-  font-weight: 400;
-  padding: 0.5rem 0.8rem;
-  text-align: left;
-  text-decoration: none;
 
   &-justify-content {
     &-left {
@@ -295,113 +306,100 @@ const onClick = (event: MouseEvent) => {
     }
   }
 
-  &:hover {
-    cursor: pointer;
-  }
-
-  &-s {
-    @include oc-button-line-height(0.7);
-
-    font-size: var(--oc-font-size-small);
-    min-height: 1.2rem;
-  }
-
-  &-m {
-    @include oc-button-line-height(1);
-
-    font-size: var(--oc-font-size-medium);
-    min-height: $global-control-height;
-  }
-
-  &-l {
-    @include oc-button-line-height(1.5);
-
-    font-size: var(--oc-font-size-xlarge);
-    min-height: 2rem;
-  }
-
-  &-primary {
-    @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
-  }
-  &-primary-container {
-    @include oc-button-color-role(
-      var(--oc-role-primary-container),
-      var(--oc-role-on-primary-container)
-    );
-  }
-  &-primary-fixed {
-    @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
-  }
-  &-secondary {
-    @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
-  }
-  &-secondary-container {
-    @include oc-button-color-role(
-      var(--oc-role-secondary-container),
-      var(--oc-role-on-secondary-container)
-    );
-  }
-  &-secondary-fixed {
-    @include oc-button-color-role(
-      var(--oc-role-secondary-fixed),
-      var(--oc-role-on-secondary-fixed)
-    );
-  }
-  &-tertiary {
-    @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
-  }
-  &-tertiary-container {
-    @include oc-button-color-role(
-      var(--oc-role-tertiary-container),
-      var(--oc-role-on-tertiary-container)
-    );
-  }
-  &-tertiary-fixed {
-    @include oc-button-color-role(var(--oc-role-tertiary-fixed), var(--oc-role-on-tertiary-fixed));
-  }
-  &-surface {
-    @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
-  }
-  &-surface-container {
-    @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
-  }
-  &-chrome {
-    @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
-  }
-
-  &:hover:not(.no-hover, .oc-button-raw-inverse, .oc-button-raw, .active, .selected, [disabled]) {
-    filter: brightness(85%);
-  }
-
-  &-outline:hover:not(.no-hover, [disabled]) {
-    background-color: var(--oc-role-surface-container);
-    filter: none !important;
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.6;
-  }
-
-  &-group {
-    display: inline-flex;
-    flex-flow: row wrap;
-    outline: 1px solid var(--oc-role-secondary);
-    outline-offset: -1px;
-    border-radius: 5px;
-
-    .oc-button {
-      border-radius: 0;
-      outline: 0;
-
-      &:first-of-type {
-        border-radius: 5px 0 0 5px;
-      }
-
-      &:last-of-type {
-        border-radius: 0 5px 5px 0;
-      }
+  @layer components {
+    &:hover {
+      cursor: pointer;
     }
+
+    &-s {
+      min-height: 1.2rem;
+    }
+
+    &-m {
+      min-height: $global-control-height;
+    }
+
+    &-l {
+      min-height: 2rem;
+    }
+
+    &-primary {
+      @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
+    }
+    &-primary-container {
+      @include oc-button-color-role(
+        var(--oc-role-primary-container),
+        var(--oc-role-on-primary-container)
+      );
+    }
+    &-primary-fixed {
+      @include oc-button-color-role(var(--oc-role-primary-fixed), var(--oc-role-on-primary-fixed));
+    }
+    &-secondary {
+      @include oc-button-color-role(var(--oc-role-secondary), var(--oc-role-on-secondary));
+    }
+    &-secondary-container {
+      @include oc-button-color-role(
+        var(--oc-role-secondary-container),
+        var(--oc-role-on-secondary-container)
+      );
+    }
+    &-secondary-fixed {
+      @include oc-button-color-role(
+        var(--oc-role-secondary-fixed),
+        var(--oc-role-on-secondary-fixed)
+      );
+    }
+    &-tertiary {
+      @include oc-button-color-role(var(--oc-role-tertiary), var(--oc-role-on-tertiary));
+    }
+    &-tertiary-container {
+      @include oc-button-color-role(
+        var(--oc-role-tertiary-container),
+        var(--oc-role-on-tertiary-container)
+      );
+    }
+    &-tertiary-fixed {
+      @include oc-button-color-role(
+        var(--oc-role-tertiary-fixed),
+        var(--oc-role-on-tertiary-fixed)
+      );
+    }
+    &-surface {
+      @include oc-button-color-role(var(--oc-role-surface), var(--oc-role-on-surface));
+    }
+    &-surface-container {
+      @include oc-button-color-role(var(--oc-role-surface-container), var(--oc-role-on-surface));
+    }
+    &-chrome {
+      @include oc-button-color-role(var(--oc-role-chrome), var(--oc-role-on-chrome));
+    }
+
+    &:hover:not(.no-hover, .oc-button-raw-inverse, .oc-button-raw, .active, .selected, [disabled]) {
+      filter: brightness(85%);
+    }
+
+    &-outline:hover:not(.no-hover, [disabled]) {
+      background-color: var(--oc-role-surface-container);
+      filter: none !important;
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    &-group {
+      display: inline-flex;
+      flex-flow: row wrap;
+    }
+  }
+}
+.quick-action-button,
+.raw-hover-surface {
+  &:hover {
+    // overwrite default hover with an inverted one for buttons on backgrounds that have the default hover color
+    background-color: var(--oc-role-surface) !important;
   }
 }
 </style>

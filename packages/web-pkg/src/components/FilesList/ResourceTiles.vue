@@ -1,10 +1,10 @@
 <template>
-  <div id="tiles-view" class="oc-px-m oc-pt-l">
-    <div class="oc-flex oc-flex-middle oc-mb-s oc-pb-s oc-tiles-controls">
+  <div id="tiles-view" class="px-4 pt-6">
+    <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
-        class="oc-ml-s"
+        class="ml-2"
         size="large"
         :label="selectAllCheckboxLabel"
         :label-hidden="true"
@@ -25,13 +25,14 @@
             <oc-list>
               <li v-for="(option, index) in sortFields" :key="index">
                 <oc-button
-                  appearance="raw"
-                  :class="{ 'oc-secondary-container': currentSortField === option }"
+                  :appearance="currentSortField === option ? 'filled' : 'raw-inverse'"
+                  :color-role="currentSortField === option ? 'secondaryContainer' : 'surface'"
+                  :no-hover="currentSortField === option"
                   class="oc-tiles-sort-filter-chip-item"
                   @click="selectSorting(option)"
                 >
                   <span>{{ option.label }}</span>
-                  <div v-if="option === currentSortField" class="oc-flex">
+                  <div v-if="option === currentSortField" class="flex">
                     <oc-icon name="check" />
                   </div>
                 </oc-button>
@@ -63,7 +64,7 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click="emitTileClick(resource)"
+          @click.stop="(e: MouseEvent) => handleClickWithModifier(e, resource)"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -77,7 +78,7 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="oc-flex-inline oc-p-s"
+              class="inline-flex p-2"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
               @click.stop.prevent="toggleTile([resource, $event])"
@@ -128,7 +129,7 @@
     <Teleport v-if="dragItem" to="body">
       <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
-    <div class="oc-tiles-footer">
+    <div class="oc-tiles-footer p-1 text-sm">
       <slot name="footer" />
     </div>
   </div>
@@ -180,6 +181,7 @@ import {
   routeToContextQuery,
   useRouter
 } from '../../composables'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 
@@ -223,6 +225,7 @@ const router = useRouter()
 const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
+const { interceptModifierClick } = useInterceptModifierClick()
 const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
 const {
   isEnabled: isEmbedModeEnabled,
@@ -291,7 +294,12 @@ const getRoute = (resource: Resource) => {
 
   return action.route({ space: s, resources: [resource] })
 }
-const emitTileClick = (resource: Resource) => {
+
+const emitTileClick = (resource: Resource, event?: MouseEvent) => {
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
+    return
+  }
+
   if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
     return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
       resource: JSON.parse(JSON.stringify(resource)),
@@ -299,8 +307,12 @@ const emitTileClick = (resource: Resource) => {
     })
   }
 
+  if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+    toggleSelection(resource)
+  }
+
   if (resource.type !== 'space' && resource.type !== 'folder') {
-    resourceRouteResolver.createFileAction(resource)
+    resourceRouteResolver.createFileAction(resource as Resource)
   }
 }
 
@@ -310,6 +322,11 @@ const showContextMenuOnBtnClick = (
   index: string
 ) => {
   const { dropdown, event } = data
+
+  if (event && interceptModifierClick(event as MouseEvent, item)) {
+    return
+  }
+
   if (dropdown?.tippy === undefined) {
     return
   }
@@ -401,6 +418,10 @@ const showContextMenu = (
   item: Resource,
   reference: ComponentPublicInstance<unknown>
 ) => {
+  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
+    return
+  }
+
   event.preventDefault()
   const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
     'resource-tiles-btn-action-dropdown'
@@ -415,9 +436,22 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent]) => {
+const handleClickWithModifier = (event: MouseEvent, item: Resource) => {
+  if (interceptModifierClick(event, item)) {
+    toggleSelection(item)
+    return
+  }
+
+  emitTileClick(item, event)
+}
+
+const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
   const resource = data[0]
   const eventData = data[1]
+
+  if (event && interceptModifierClick(event as MouseEvent, resource)) {
+    return
+  }
 
   if (eventData && eventData.metaKey) {
     return eventBus.publish('app.files.list.clicked.meta', resource)
@@ -496,10 +530,10 @@ const setDropStyling = (
   }
   const el = unref(tileRefs).tiles[resource.id]
   if (leaving) {
-    el.$el.classList.remove('oc-tiles-item-drop-highlight')
+    el.$el.classList.remove('bg-role-secondary-container')
     return
   }
-  el.$el.classList.add('oc-tiles-item-drop-highlight')
+  el.$el.classList.add('bg-role-secondary-container')
 }
 const dragSelection = computed(() => {
   return selectedIds.filter((id) => id !== unref(dragItem).id)
@@ -599,11 +633,26 @@ onMounted(() => {
   window.addEventListener('resize', updateViewWidth)
   updateViewWidth()
 })
+
+eventBus.subscribe('app.files.list.clicked.default', (resource) => {
+  if (isResourceClickable(resource as Resource)) {
+    emitSelect([(resource as Resource).id])
+  }
+})
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-tiles-sort-filter-chip .oc-filter-chip-label {
+    @apply text-sm;
+  }
+}
+</style>
 <style lang="scss">
 .oc-tiles {
   column-gap: 1rem;
@@ -612,21 +661,7 @@ onBeforeUnmount(() => {
   justify-content: flex-start;
   row-gap: 1rem;
 
-  &-item-drop-highlight {
-    background-color: var(--oc-role-secondary-container) !important;
-  }
-
-  &-footer {
-    font-size: var(--oc-font-size-default);
-    line-height: 1.4;
-    padding: var(--oc-space-xsmall);
-  }
-
   &-sort-filter-chip {
-    .oc-filter-chip-label {
-      font-size: var(--oc-font-size-default);
-    }
-
     &-item {
       justify-content: space-between !important;
     }
@@ -635,14 +670,5 @@ onBeforeUnmount(() => {
 
 .ghost-tile {
   display: list-item;
-
-  div {
-    opacity: 0;
-    box-shadow: none;
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    outline: 0.5px solid var(--oc-role-outline-variant);
-  }
 }
 </style>

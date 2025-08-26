@@ -185,11 +185,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-modal.save-as-modal .oc-modal-body {
+    @apply p-0;
+  }
+  .oc-modal.save-as-modal .oc-modal-body-message {
+    @apply m-0;
+  }
+}
+</style>
 <style lang="scss">
 .oc-modal.save-as-modal {
   max-width: 80vw;
-  border: none;
   overflow: hidden;
 
   .oc-modal-title {
@@ -197,11 +207,8 @@ export default defineComponent({
   }
 
   .oc-modal-body {
-    padding: 0;
-
     &-message {
       height: 60vh;
-      margin: 0;
     }
   }
 }

@@ -6,12 +6,13 @@
       type="checkbox"
       name="checkbox"
       :class="classes"
+      class="m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary"
       :value="option"
       :disabled="disabled"
       :aria-label="labelHidden ? label : null"
       @keydown.enter="keydownEnter"
     />
-    <label v-if="!labelHidden" :for="id" :class="labelClasses" v-text="label" />
+    <label v-if="!labelHidden" :for="id" :class="labelClasses" class="ml-1" v-text="label" />
   </span>
 </template>
 
@@ -72,9 +73,15 @@ const model = defineModel<boolean | unknown[]>()
 
 const classes = computed(() => [
   'oc-checkbox',
-  'oc-rounded',
+  'rounded-sm',
   'oc-checkbox-' + getSizeClass(size),
-  { 'oc-checkbox-checked': isChecked.value }
+  { 'oc-checkbox-checked': isChecked.value },
+  { 'bg-white': isChecked.value },
+  'm-0.5',
+  'checked:bg-white',
+  'disabled:bg-role-surface-container-low',
+  'indeterminate:bg-white',
+  'bg-transparent'
 ])
 
 const labelClasses = computed(() => ({
@@ -94,7 +101,15 @@ const keydownEnter = (event: KeyboardEvent) => {
   emit('click', event)
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-checkbox {
+    @apply align-middle;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-form-check-size($factor) {
   height: $oc-size-form-check-default * $factor;
@@ -108,12 +123,8 @@ const keydownEnter = (event: KeyboardEvent) => {
 
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-  border: 2px solid var(--oc-role-outline);
   display: inline-block;
   overflow: hidden;
-  vertical-align: middle;
-  background-color: transparent;
-  outline: none;
 
   &-s {
     @include oc-form-check-size(0.7);
@@ -131,16 +142,6 @@ const keydownEnter = (event: KeyboardEvent) => {
     cursor: pointer;
   }
 
-  &:focus-visible {
-    outline: var(--oc-role-secondary) auto 1px;
-  }
-
-  &-checked,
-  :checked,
-  &:indeterminate {
-    background-color: white;
-  }
-
   &-checked,
   :checked {
     @include svg-fill($internal-form-checkbox-image, '#000', '#000');
@@ -151,7 +152,6 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &:disabled {
-    background-color: $form-radio-disabled-background;
     cursor: default;
     opacity: 0.4;
   }
@@ -167,9 +167,5 @@ const keydownEnter = (event: KeyboardEvent) => {
       $form-radio-disabled-icon-color
     );
   }
-}
-
-label > .oc-checkbox + span {
-  margin-left: var(--oc-space-xsmall);
 }
 </style>

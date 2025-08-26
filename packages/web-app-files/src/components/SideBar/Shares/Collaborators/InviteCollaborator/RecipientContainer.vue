@@ -1,7 +1,7 @@
 <template>
   <oc-recipient
     :data-testid="`recipient-container-${formattedRecipient.name}`"
-    class="files-share-invite-recipient"
+    class="files-share-invite-recipient wrap-anywhere"
     :recipient="formattedRecipient"
   >
     <template #avatar>
@@ -111,10 +111,6 @@ export default defineComponent({
 
 <style lang="scss">
 .files-share-invite-recipient {
-  margin: 4px 2px 0;
-  padding: 0 0.25em;
-  overflow-wrap: anywhere;
-
   .oc-recipient-avatar {
     min-width: 16.8px;
   }

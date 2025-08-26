@@ -1,24 +1,26 @@
 <template>
-  <div class="app-details oc-card oc-card-default oc-card-rounded">
-    <div class="oc-p-xs">
-      <router-link :to="{ name: `${APPID}-list` }" class="oc-flex oc-flex-middle app-details-back">
+  <div
+    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container border"
+  >
+    <div class="p-1">
+      <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
         <oc-icon name="arrow-left-s" fill-type="line" />
         <span v-text="$gettext('Back to list')" />
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body oc-p">
-      <div class="oc-flex oc-flex-middle">
-        <h2 class="oc-my-s oc-text-truncate app-details-title">{{ app.name }}</h2>
-        <span class="oc-ml-s oc-text-muted oc-text-small oc-mt-s">
+    <div class="app-content oc-card-body bg-role-surface-container flex flex-col p-4">
+      <div class="flex items-center">
+        <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
+        <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
           v{{ app.mostRecentVersion.version }}
         </span>
       </div>
-      <p class="oc-my-rm">{{ app.subtitle }}</p>
+      <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
         <text-editor
-          class="oc-my-s"
+          class="my-2"
           :is-read-only="true"
           :markdown-mode="true"
           :current-content="app.description"
@@ -97,21 +99,11 @@ export default defineComponent({
 
 <style lang="scss">
 .app-details {
-  background-color: var(--oc-role-surface-container);
   box-shadow: none;
   max-width: 600px;
-  margin: 0 auto;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {
-    display: flex;
-    flex-flow: column;
     gap: 1rem;
-  }
-
-  #text-editor-preview-component-preview,
-  .app-content {
-    background-color: var(--oc-role-surface-container) !important;
   }
 }
 </style>

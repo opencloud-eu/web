@@ -16,7 +16,7 @@
         :key="thumbnail"
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
-        class="oc-resource-thumbnail"
+        class="oc-resource-thumbnail rounded-xs"
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
@@ -28,12 +28,12 @@
         :resource="resource"
       />
     </resource-link>
-    <div class="oc-resource-details oc-text-overflow" :class="{ 'oc-pl-s': isIconDisplayed }">
+    <div class="oc-resource-details oc-text-overflow" :class="{ 'pl-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
         :is-resource-clickable="isResourceClickable"
         :link="link"
-        class="oc-text-overflow"
+        class="oc-text-overflow hover:outline-offset-0 focus:outline-offset-0"
         @click="emitClick"
       >
         <resource-name
@@ -47,16 +47,16 @@
           :is-extension-displayed="isExtensionDisplayed"
         />
       </resource-link>
-      <div class="oc-resource-indicators">
+      <div class="oc-resource-indicators flex">
         <component
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
           :style="parentFolderStyle"
-          class="parent-folder oc-text-truncate"
+          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
         >
-          <oc-icon v-bind="parentFolderLinkIconAttrs" />
-          <span class="text oc-text-truncate" v-text="parentFolderName" />
+          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
+          <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
         </component>
       </div>
     </div>
@@ -232,7 +232,6 @@ export default defineComponent({
   }
 
   &-thumbnail {
-    border-radius: 2px;
     object-fit: cover;
     height: $oc-size-icon-default * 1.5;
     max-height: $oc-size-icon-default * 1.5;
@@ -242,53 +241,6 @@ export default defineComponent({
 
   &-details {
     display: block;
-
-    a {
-      text-decoration: none;
-    }
-
-    a:hover,
-    a:focus {
-      outline-offset: 0;
-    }
-  }
-
-  &-indicators {
-    display: flex;
-
-    a {
-      &:hover {
-        background-color: var(--oc-role-surface-container);
-        border-radius: 2px;
-      }
-
-      .text {
-        &:hover {
-          color: var(--oc-role-on-surface);
-          text-decoration: underline;
-        }
-      }
-    }
-
-    .parent-folder {
-      display: flex;
-      align-items: center;
-
-      padding: 0 2px 0 2px;
-      margin: 0 8px 0 -2px;
-
-      .oc-icon {
-        padding-right: 3px;
-      }
-
-      .text {
-        font-size: 0.8125rem;
-      }
-
-      &:hover {
-        background: transparent;
-      }
-    }
   }
 }
 </style>

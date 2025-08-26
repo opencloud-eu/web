@@ -1,7 +1,7 @@
 <template>
   <div class="account-table">
     <slot name="header" :title="title">
-      <h2 class="account-table-title oc-flex oc-flex-middle" :class="subtitle ? 'oc-mb-s' : ''">
+      <h2 class="account-table-title flex items-center" :class="subtitle ? 'mb-2' : ''">
         {{ title }}
         <oc-tag
           v-if="newTag"
@@ -9,11 +9,11 @@
           color="primary"
           appearance="filled"
           size="small"
-          class="oc-ml-s account-table-new-tag"
+          class="ml-2 account-table-new-tag"
           v-text="$gettext('NEW')"
         />
       </h2>
-      <p v-if="subtitle" class="oc-text-small oc-mt-rm oc-mb-m" v-text="subtitle" />
+      <p v-if="subtitle" class="text-sm mt-0 mb-4" v-text="subtitle" />
     </slot>
     <oc-table-simple>
       <colgroup>
@@ -72,34 +72,35 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .account-table td {
+    @apply py-2 md:py-0;
+  }
+  .account-table tr {
+    @apply pb-1 md:pb-0 border-b;
+  }
+}
+</style>
 <style lang="scss">
 @media (max-width: $oc-breakpoint-small-max) {
   .account-table {
     tr {
       display: block;
-      padding-bottom: var(--oc-space-xsmall);
       height: 100% !important;
     }
 
     td {
       display: block !important;
       width: 100% !important;
-      padding-top: var(--oc-space-small);
-      padding-bottom: var(--oc-space-small);
-    }
-
-    h2 {
-      font-size: var(--oc-font-size-large);
-      font-weight: var(--oc-font-weight-default);
     }
   }
 }
 
 .account-table {
   tr {
-    border-top: 0;
-    border-bottom: 0.5px solid var(--oc-role-outline-variant);
     height: var(--oc-size-height-table-row);
   }
 

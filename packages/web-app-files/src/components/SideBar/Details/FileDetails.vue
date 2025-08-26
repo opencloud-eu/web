@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-file-details-sidebar" class="oc-rounded">
+  <div id="oc-file-details-sidebar" class="rounded-sm p-4 bg-role-surface-container">
     <div v-if="hasContent">
       <div
         v-if="isPreviewLoading || preview"
@@ -7,14 +7,14 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-preview flex items-center justify-center mb-4 p-2"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
       <div
         v-else
-        class="details-icon-wrapper oc-width-1-1 oc-flex oc-flex-middle oc-flex-center oc-mb"
+        class="details-icon-wrapper oc-width-1-1 flex items-center justify-center mb-4 p-2"
       >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
@@ -22,13 +22,13 @@
         v-if="!publicLinkContextReady && shareIndicators.length"
         key="file-shares"
         data-testid="sharingInfo"
-        class="oc-flex oc-flex-middle oc-my-m"
+        class="flex items-center my-4"
       >
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
-        <p class="oc-my-rm oc-mx-s" v-text="detailSharingInformation" />
+        <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
       <dl
-        class="details-list oc-m-rm"
+        class="details-list m-0"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
         <template v-if="hasDeletionDate">
@@ -73,7 +73,7 @@
         <template v-if="ownerDisplayName && ownerDisplayName !== sharedByDisplayNames">
           <dt>{{ $gettext('Owner') }}</dt>
           <dd data-testid="ownerDisplayName">
-            <p class="oc-m-rm">
+            <p class="m-0">
               {{ ownerDisplayName }}
               <span v-if="ownedByCurrentUser" v-translate>(me)</span>
             </p>
@@ -109,7 +109,7 @@
             <oc-contextual-helper
               v-if="contextualHelper?.isEnabled"
               v-bind="contextualHelper?.data"
-              class="oc-pl-xs"
+              class="pl-1"
             ></oc-contextual-helper>
           </dt>
           <dd data-testid="tags">
@@ -133,7 +133,8 @@ import {
   useResourcesStore,
   formatDateFromJSDate,
   useResourceContents,
-  useLoadPreview
+  useLoadPreview,
+  useInterceptModifierClick
 } from '@opencloud-eu/web-pkg'
 import upperFirst from 'lodash-es/upperFirst'
 import {
@@ -173,7 +174,7 @@ const { $gettext, current: currentLanguage } = language
 
 const resourcesStore = useResourcesStore()
 const { ancestorMetaData, currentFolder } = storeToRefs(resourcesStore)
-
+const { interceptModifierClick } = useInterceptModifierClick()
 const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
@@ -229,7 +230,8 @@ const shareIndicators = computed(() => {
     space: unref(space),
     resource: unref(resource),
     ancestorMetaData: unref(ancestorMetaData),
-    user: unref(user)
+    user: unref(user),
+    interceptModifierClick
   }).filter(({ category }) => category === 'sharing')
 })
 
@@ -332,15 +334,8 @@ watch(
 )
 </script>
 <style lang="scss" scoped>
-#oc-file-details-sidebar {
-  background-color: var(--oc-role-surface-container);
-  padding: var(--oc-space-medium);
-}
-
 .details-preview,
 .details-icon-wrapper {
-  padding: 10px;
-
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -355,12 +350,5 @@ watch(
   max-height: 192px !important;
   max-width: 192px !important;
   width: 192px !important;
-}
-
-.details-list {
-  dd:last-of-type,
-  dt:last-of-type {
-    margin-bottom: 0 !important;
-  }
 }
 </style>

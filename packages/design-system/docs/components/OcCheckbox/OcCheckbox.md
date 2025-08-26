@@ -31,13 +31,13 @@ The checkbox can be displayed in three different sizes: `small`, `medium`, and `
 ::: livecode
 
 ```html
-<div class="oc-mb-s">
+<div class="mb-2">
   <oc-checkbox label="Small checkbox" size="small" />
 </div>
-<div class="oc-mb-s">
+<div class="mb-2">
   <oc-checkbox label="Medium checkbox" size="medium" />
 </div>
-<div class="oc-mb-s">
+<div class="mb-2">
   <oc-checkbox label="Large checkbox" size="large" />
 </div>
 ```

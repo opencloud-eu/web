@@ -1,14 +1,15 @@
 <template>
   <div
-    class="oc-filter-chip oc-flex"
+    class="oc-filter-chip flex"
     :class="{ 'oc-filter-chip-toggle': isToggle, 'oc-filter-chip-raw': raw }"
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill"
-      :class="{ 'oc-filter-chip-button-selected': filterActive }"
-      appearance="raw-inverse"
-      color-role="surface"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full"
+      :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
+      :appearance="buttonAppearance"
+      :color-role="buttonColorRole"
+      :no-hover="filterActive || !hasActiveState"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
@@ -17,7 +18,7 @@
         size="small"
       />
       <span
-        class="oc-text-truncate oc-filter-chip-label"
+        class="truncate oc-filter-chip-label"
         v-text="!!selectedItemNames.length ? selectedItemNames[0] : filterLabel"
       />
       <span v-if="selectedItemNames.length > 1" v-text="` +${selectedItemNames.length - 1}`" />
@@ -40,9 +41,11 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear oc-px-xs"
-      appearance="raw"
+      class="oc-filter-chip-clear px-1 rounded-r-full"
+      appearance="filled"
+      color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
+      :no-hover="filterActive"
       @click="emit('clearFilter')"
     >
       <oc-icon name="close" size="small" />
@@ -151,6 +154,26 @@ const hideDrop = () => {
   unref(dropRef)?.hide()
 }
 
+const buttonAppearance = computed(() => {
+  if (unref(filterActive)) {
+    return 'filled'
+  }
+  if (raw) {
+    return 'raw-inverse'
+  }
+  return 'outline'
+})
+
+const buttonColorRole = computed(() => {
+  if (unref(filterActive)) {
+    return 'secondaryContainer'
+  }
+  if (raw) {
+    return 'surface'
+  }
+  return 'secondary'
+})
+
 defineExpose({ hideDrop })
 </script>
 
@@ -158,45 +181,15 @@ defineExpose({ hideDrop })
 .oc-filter-chip {
   &-button.oc-pill {
     align-items: center;
-    border: 1px solid var(--oc-role-outline);
     box-sizing: border-box;
     display: inline-flex;
     gap: var(--oc-space-xsmall);
-    text-decoration: none;
-    font-size: var(--oc-font-size-xsmall);
-    line-height: 1rem;
     max-width: 150px;
-    padding: var(--oc-space-xsmall) var(--oc-space-small) !important;
     height: 100%;
-  }
-  &-button-selected.oc-pill,
-  &-button-selected.oc-pill:hover {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
-    border-top-left-radius: 99px !important;
-    border-bottom-left-radius: 99px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-    border: 0;
-  }
-  &-clear,
-  &-clear:hover {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-top-right-radius: 99px !important;
-    border-bottom-right-radius: 99px !important;
   }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
     margin-left: 1px;
-  }
-}
-.oc-filter-chip-raw {
-  .oc-filter-chip-button {
-    background-color: transparent !important;
-    border: none !important;
   }
 }
 .oc-filter-check-icon-active {

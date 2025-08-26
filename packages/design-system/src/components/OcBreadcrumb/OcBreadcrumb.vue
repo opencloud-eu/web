@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list oc-flex oc-m-rm oc-p-rm">
+    <ol class="oc-breadcrumb-list flex m-0 p-0">
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -13,8 +13,8 @@
         :aria-hidden="item.isTruncationPlaceholder"
         :class="[
           'oc-breadcrumb-list-item',
-          'oc-flex',
-          'oc-flex-middle',
+          'flex',
+          'items-center',
           {
             'oc-invisible-sr':
               hiddenItems.indexOf(item) !== -1 ||
@@ -31,21 +31,30 @@
           v-if="item.to"
           :aria-current="getAriaCurrent(index)"
           :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
+          class="first:text-base text-xl text-role-on-surface"
         >
-          <span class="oc-breadcrumb-item-text oc-breadcrumb-item-navigable">{{ item.text }}</span>
+          <span
+            class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]"
+            >{{ item.text }}</span
+          >
         </router-link>
         <oc-button
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
-          appearance="raw"
-          class="oc-flex"
+          appearance="raw-inverse"
+          color-role="surface"
+          class="flex first:text-base text-xl"
           no-hover
           @click="item.onClick"
         >
           <span
             :class="[
               'oc-breadcrumb-item-text',
-              'oc-breadcrumb-item-navigable',
+              'hover:underline',
+              'align-sub',
+              'truncate',
+              'inline-block',
+              'leading-[1.2]',
               {
                 'oc-breadcrumb-item-text-last': index === displayItems.length - 1
               }
@@ -55,7 +64,7 @@
         </oc-button>
         <span
           v-else
-          class="oc-breadcrumb-item-text"
+          class="oc-breadcrumb-item-text first:text-base text-xl align-sub truncate inline-block leading-[1.2]"
           :aria-current="getAriaCurrent(index)"
           tabindex="-1"
           v-text="item.text"
@@ -64,7 +73,7 @@
           v-if="index !== displayItems.length - 1"
           color="var(--oc-role-on-surface)"
           name="arrow-right-s"
-          class="oc-mx-xs"
+          class="mx-1 align-sub"
           fill-type="line"
         />
         <template v-if="showContextActions && index === displayItems.length - 1">
@@ -74,8 +83,9 @@
             :aria-label="contextMenuLabel"
             appearance="raw"
             no-hover
+            class="mx-1"
           >
-            <oc-icon name="more-2" color="var(--oc-role-on-surface)" />
+            <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
           </oc-button>
           <oc-drop
             drop-id="oc-breadcrumb-contextmenu"
@@ -101,8 +111,8 @@
       <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
-  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current">
-    <span class="oc-text-truncate" aria-current="page" v-text="currentFolder.text" />
+  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current flex w-0 flex-1">
+    <span class="truncate" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 
@@ -299,7 +309,18 @@ const dropItemStyling = (
   leaving ? classList.remove(className) : classList.add(className)
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-breadcrumb-item-dragover {
+    @apply bg-role-secondary-container;
+  }
+  .oc-breadcrumb-list > :nth-child(n + 2)::before {
+    @apply text-role-on-surface rounded-sm;
+  }
+}
+</style>
 <style lang="scss">
 .oc-breadcrumb {
   overflow: visible;
@@ -309,23 +330,10 @@ const dropItemStyling = (
       border 0s 0.08s,
       border-color 0s,
       border-width 0.06s;
-    background-color: var(--oc-role-secondary-container);
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
-    border-radius: 5px;
   }
   &-item-text {
     max-width: 200px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-    &-last {
-      vertical-align: text-bottom;
-    }
-  }
-
-  &-item-navigable:hover {
-    text-decoration: underline;
   }
 
   &-mobile-current,
@@ -344,11 +352,6 @@ const dropItemStyling = (
       display: none !important;
     }
 
-    #oc-breadcrumb-contextmenu-trigger > span {
-      vertical-align: middle;
-      border: 3px solid transparent;
-    }
-
     #oc-breadcrumb-contextmenu li button {
       display: inline-flex;
     }
@@ -358,33 +361,7 @@ const dropItemStyling = (
     }
 
     > :nth-child(n + 2)::before {
-      color: var(--oc-role-on-surface);
       display: inline-block;
-    }
-
-    > :last-child > span {
-      color: var(--oc-role-on-surface);
-    }
-  }
-
-  /* stylelint-disable */
-  &-list-item {
-    a:first-of-type,
-    button:first-of-type,
-    span:first-of-type {
-      font-size: var(--oc-font-size-medium);
-      color: var(--oc-role-on-surface);
-      display: inline-block;
-      vertical-align: sub;
-      line-height: normal;
-    }
-  }
-
-  &-lead &-list-item {
-    a,
-    button,
-    span {
-      font-size: var(--oc-font-size-large);
     }
   }
 }

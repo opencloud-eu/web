@@ -15,14 +15,14 @@
       @update:model-value="onUpdate"
     >
       <template #selected-option="{ displayValue }">
-        <oc-icon v-if="$attrs['read-only']" name="lock" class="oc-mr-xs" size="small" />
+        <oc-icon v-if="$attrs['read-only']" name="lock" class="mr-1" size="small" />
         <span v-text="displayValue" />
       </template>
       <template #search="{ attributes, events }">
         <input class="vs__search" v-bind="attributes" v-on="events" />
       </template>
       <template #option="{ displayValue, error }">
-        <div class="oc-flex oc-flex-between">
+        <div class="flex justify-between">
           <span v-text="displayValue" />
         </div>
         <div v-if="error" class="oc-text-input-danger">{{ error }}</div>

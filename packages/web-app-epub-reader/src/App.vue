@@ -1,24 +1,26 @@
 <template>
-  <div class="epub-reader oc-flex">
-    <oc-list class="epub-reader-chapters-list oc-pl-s oc-visible@l">
+  <div class="epub-reader flex">
+    <oc-list class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r">
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
-        class="epub-reader-chapters-list-item oc-py-s"
+        class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"
         :class="{ active: currentChapter.id === chapter.id }"
       >
-        <oc-button class="oc-text-truncate" appearance="raw" no-hover @click="showChapter(chapter)">
-          <span
-            v-oc-tooltip="chapter.label"
-            class="oc-text-truncate oc-mr-s"
-            v-text="chapter.label"
-          />
+        <oc-button
+          class="max-w-full"
+          :class="{ 'font-semibold': currentChapter.id === chapter.id }"
+          appearance="raw"
+          no-hover
+          @click="showChapter(chapter)"
+        >
+          <span v-oc-tooltip="chapter.label" class="truncate mr-2" v-text="chapter.label" />
         </oc-button>
       </li>
     </oc-list>
     <div class="oc-width-1-1 oc-height-1-1">
-      <div class="epub-reader-controls oc-flex oc-flex-middle oc-m-s">
-        <div class="epub-reader-controls-font-size oc-flex oc-button-group">
+      <div class="epub-reader-controls flex items-center m-2">
+        <div class="epub-reader-controls-font-size flex oc-button-group">
           <oc-button
             v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"
             :aria-label="$gettext('Decrease font size')"
@@ -51,7 +53,7 @@
         </div>
         <oc-select
           v-model="currentChapter"
-          class="epub-reader-controls-chapters-select oc-width-1-1 oc-px-s oc-hidden@l"
+          class="epub-reader-controls-chapters-select oc-width-1-1 px-2 oc-hidden@l"
           :label="$gettext('Chapter')"
           :label-hidden="true"
           :options="chapters"
@@ -59,8 +61,8 @@
           @update:model-value="showChapter"
         />
       </div>
-      <div class="oc-flex oc-flex-center oc-width-1-1 oc-height-1-1">
-        <div class="oc-flex oc-flex-middle oc-mx-l">
+      <div class="flex justify-center oc-width-1-1 oc-height-1-1">
+        <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-left"
             :aria-label="$gettext('Navigate to previous page')"
@@ -71,9 +73,9 @@
             <oc-icon name="arrow-left-s" fill-type="line" size="xlarge" />
           </oc-button>
         </div>
-        <div id="reader" ref="bookContainer" class="oc-flex oc-flex-center" />
+        <div id="reader" ref="bookContainer" class="flex justify-center" />
 
-        <div class="oc-flex oc-flex-middle oc-mx-l">
+        <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-right"
             :aria-label="$gettext('Navigate to next page')"
@@ -279,20 +281,8 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    background: var(--oc-role-surface-container);
-    border-right: 0.5px solid var(--oc-role-outline-variant);
     width: 240px;
     overflow-y: auto;
-
-    &-item:not(:last-child) {
-      border-bottom: 0.5px solid var(--oc-role-outline-variant);
-    }
-
-    &-item.active {
-      .oc-button {
-        font-weight: var(--oc-font-weight-semibold);
-      }
-    }
   }
 
   &-controls-font-size {

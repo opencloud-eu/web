@@ -32,10 +32,6 @@
         height: 100%;
       }
       .splash-banner {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
         padding: 0.5rem;
         height: 100%;
       }
@@ -69,11 +65,14 @@
     </style>
   </head>
   <body>
-    <div id="splash-incompatible" class="splash-banner splash-hide">
-      <div class="oc-card oc-border oc-rounded oc-width-large oc-text-center">
+    <div
+      id="splash-incompatible"
+      class="splash-banner splash-hide flex flex-col justify-center items-center"
+    >
+      <div class="oc-card border oc-rounded oc-width-large text-center">
         <div class="oc-card-header">
-          <div class="oc-flex oc-flex-middle oc-flex-center">
-            <span class="oc-mr-s oc-icon oc-icon-m oc-icon-warning">
+          <div class="flex items-center justify-center">
+            <span class="mr-2 oc-icon oc-icon-m oc-icon-warning">
               <svg
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"

@@ -1,17 +1,14 @@
 <template>
-  <div class="files-search-result oc-flex">
+  <div class="files-search-result flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
       />
-      <div
-        v-if="displayFilter"
-        class="files-search-result-filter oc-flex oc-flex-wrap oc-mx-m oc-mb-m oc-mt-xs"
-      >
-        <div class="oc-mr-m oc-flex oc-flex-middle">
-          <oc-icon name="filter-2" class="oc-mr-xs" />
+      <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
+        <div class="mr-4 flex items-center">
+          <oc-icon name="filter-2" class="mr-1" />
           <span v-text="$gettext('Filter:')" />
         </div>
         <item-filter
@@ -21,17 +18,17 @@
           :filter-label="$gettext('Type')"
           :filterable-attributes="['label']"
           :items="availableMediaTypeValues"
-          class="files-search-filter-file-type oc-mr-s"
+          class="files-search-filter-file-type mr-2"
           display-name-attribute="label"
           filter-name="mediaType"
         >
           <template #image="{ item }">
             <div
-              class="file-category-option-wrapper oc-flex oc-flex-middle"
+              class="file-category-option-wrapper flex items-center"
               :data-test-id="`media-type-${item.id.toLowerCase()}`"
             >
               <resource-icon :resource="getFakeResourceForIcon(item)" />
-              <span class="oc-ml-s">{{ item.label }}</span>
+              <span class="ml-2">{{ item.label }}</span>
             </div>
           </template>
         </item-filter>
@@ -44,14 +41,14 @@
           :items="availableTags"
           :option-filter-label="$gettext('Filter tags')"
           :show-option-filter="true"
-          class="files-search-filter-tags oc-mr-s"
+          class="files-search-filter-tags mr-2"
           display-name-attribute="label"
           filter-name="tags"
         >
           <template #image="{ item }">
-            <div class="tag-option-wrapper oc-flex oc-flex-middle">
+            <div class="tag-option-wrapper flex items-center">
               <oc-icon name="price-tag-3" size="small" />
-              <span class="oc-ml-s">{{ item.label }}</span>
+              <span class="ml-2">{{ item.label }}</span>
             </div>
           </template>
         </item-filter>
@@ -63,7 +60,7 @@
           :items="availableLastModifiedValues"
           :show-option-filter="false"
           :close-on-click="true"
-          class="files-search-filter-last-modified oc-mr-s"
+          class="files-search-filter-last-modified mr-2"
           display-name-attribute="label"
           filter-name="lastModified"
         >
@@ -76,7 +73,7 @@
           v-if="fullTextSearchEnabled"
           :filter-label="$gettext('Title only')"
           filter-name="titleOnly"
-          class="files-search-filter-title-only oc-mr-s"
+          class="files-search-filter-title-only mr-2"
         />
       </div>
       <app-loading-spinner v-if="loading" />
@@ -88,7 +85,7 @@
           icon-fill-type="line"
         >
           <template #message>
-            <p class="oc-text-muted">
+            <p class="text-role-on-surface-variant">
               <span v-if="!!$route.query.term" v-text="$gettext('No results found')" />
               <span v-else v-text="$gettext('Search for files')" />
             </p>
@@ -115,7 +112,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="files-search-resource-highlights oc-text-truncate oc-display-inline-block"
+              class="files-search-resource-highlights truncate oc-display-inline-block text-sm"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->
@@ -130,10 +127,10 @@
             <pagination :pages="paginationPages" :current-page="paginationPage" />
             <div
               v-if="searchResultExceedsLimit"
-              class="oc-text-center oc-width-1-1 oc-my-s"
+              class="text-center oc-width-1-1 my-2"
               v-text="searchResultExceedsLimitText"
             />
-            <list-info v-else-if="paginatedResources.length > 0" class="oc-width-1-1 oc-my-s" />
+            <list-info v-else-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
           </template>
         </resource-table>
       </template>
@@ -523,14 +520,12 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.files-search-resource-highlights {
-  font-size: 0.8125rem;
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-  mark {
-    background: #fff74c;
-    font-style: normal;
-    font-weight: var(--oc-font-weight-semibold);
+@layer utilities {
+  .files-search-resource-highlights mark {
+    @apply font-semibold bg-yellow-200;
   }
 }
 </style>

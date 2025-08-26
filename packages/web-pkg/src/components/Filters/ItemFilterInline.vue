@@ -1,17 +1,23 @@
 <template>
   <div>
-    <div class="item-inline-filter oc-flex-inline" :class="`item-inline-filter-${filterName}`">
+    <div
+      class="item-inline-filter inline-flex border border-role-secondary rounded-full"
+      :class="`item-inline-filter-${filterName}`"
+    >
       <oc-button
         v-for="(option, index) in filterOptions"
         :id="option.name"
         :key="index"
-        class="item-inline-filter-option"
-        :class="{ 'item-inline-filter-option-selected': activeOption === option.name }"
-        appearance="raw-inverse"
-        color-role="surface"
+        class="item-inline-filter-option py-1 px-2 text-xs first:rounded-l-full last:rounded-r-full"
+        :class="{
+          'item-inline-filter-option-selected': activeOption === option.name
+        }"
+        :appearance="activeOption === option.name ? 'filled' : 'raw-inverse'"
+        :color-role="activeOption === option.name ? 'secondaryContainer' : 'surface'"
+        :no-hover="activeOption === option.name"
         @click="toggleFilter(option)"
       >
-        <span class="oc-text-truncate item-inline-filter-option-label" v-text="option.label" />
+        <span class="truncate item-inline-filter-option-label" v-text="option.label" />
       </oc-button>
     </div>
   </div>
@@ -80,33 +86,8 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .item-inline-filter {
-  border-radius: 99px;
-  border: 1px solid var(--oc-role-outline);
-
   button {
-    text-decoration: none;
-    font-size: var(--oc-font-size-xsmall);
-    line-height: 1rem;
     height: 24px;
-    padding: var(--oc-space-xsmall) var(--oc-space-small) !important;
-  }
-
-  button:first-child {
-    border-top-left-radius: 99px !important;
-    border-bottom-left-radius: 99px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-  }
-  button:last-child {
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-top-right-radius: 99px !important;
-    border-bottom-right-radius: 99px !important;
-  }
-
-  &-option-selected {
-    background-color: var(--oc-role-secondary-container) !important;
-    color: var(--oc-role-on-secondary-container) !important;
   }
 }
 </style>

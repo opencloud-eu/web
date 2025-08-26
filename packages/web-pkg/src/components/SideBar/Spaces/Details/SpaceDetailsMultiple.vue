@@ -1,12 +1,12 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar">
-    <div class="spaces-preview oc-mb-l">
+  <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <div class="spaces-preview text-center mb-6 rounded-sm">
       <div class="spaces-preview-body">
         <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
         <p class="preview-text" v-text="selectedSpacesString" />
       </div>
     </div>
-    <oc-definition-list :aria-label="detailsTableLabel" :items="items" />
+    <oc-definition-list :aria-label="detailsTableLabel" :items="items" class="m-0" />
   </div>
 </template>
 <script setup lang="ts">
@@ -79,19 +79,3 @@ const items = computed(() => [
   { term: $gettext('Disabled:'), definition: unref(totalDisabledSpaces).toString() }
 ])
 </script>
-<style lang="scss" scoped>
-#oc-spaces-details-multiple-sidebar {
-  background-color: var(--oc-role-surface-container);
-  border-radius: 5px;
-  padding: var(--oc-space-medium);
-}
-
-.details-list {
-  margin: 0;
-}
-
-.spaces-preview {
-  text-align: center;
-  border-radius: 5px;
-}
-</style>

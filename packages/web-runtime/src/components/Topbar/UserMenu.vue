@@ -11,7 +11,7 @@
     >
       <user-avatar
         v-if="onPremisesSamAccountName"
-        class="oc-topbar-avatar oc-topbar-personal-avatar oc-flex-inline oc-flex-center oc-flex-middle"
+        class="oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center"
         :user-id="user.id"
         :user-name="user.displayName"
         background-color="var(--oc-role-on-chrome)"
@@ -19,7 +19,7 @@
       />
       <oc-avatar-item
         v-else
-        class="oc-topbar-avatar oc-topbar-unauthenticated-avatar oc-flex-inline oc-flex-center oc-flex-middle"
+        class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"
         :name="$gettext('User Menu login')"
         :width="32"
         icon="user"
@@ -40,48 +40,44 @@
     >
       <oc-list class="user-menu-list">
         <template v-if="!onPremisesSamAccountName">
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
               :to="accountPageRoute"
               appearance="raw"
             >
-              <oc-icon name="settings-4" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="settings-4" fill-type="line" class="p-1" />
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
               type="router-link"
               :to="loginLink"
             >
-              <oc-icon name="login-box" fill-type="line" class="oc-p-xs" />
+              <oc-icon name="login-box" fill-type="line" class="p-1" />
               <span v-text="$gettext('Log in')" />
             </oc-button>
           </li>
         </template>
         <template v-else>
-          <li class="profile-info-wrapper oc-pl-s">
+          <li class="profile-info-wrapper flex items-center pl-2">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"
               color="var(--oc-role-on-chrome)"
               background-color="var(--oc-role-chrome)"
             />
-            <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.mail }">
+            <span class="profile-info-wrapper" :class="{ 'py-1': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
-              <span v-if="user.mail" class="oc-text-small" v-text="user.mail" />
-              <quota-information
-                v-if="quotaEnabled"
-                :quota="quota"
-                class="oc-text-small oc-mt-xs"
-              />
+              <span v-if="user.mail" class="text-sm" v-text="user.mail" />
+              <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
             </span>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
@@ -92,7 +88,7 @@
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li>
+          <li class="flex items-center">
             <oc-button id="oc-topbar-account-logout" appearance="raw" @click="logout">
               <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
@@ -100,11 +96,15 @@
           </li>
         </template>
       </oc-list>
-      <div v-if="showFooter" class="imprint-footer oc-py-s oc-mt-m oc-text-center">
+      <div
+        v-if="showFooter"
+        class="imprint-footer py-2 mt-4 mb-2 ml-2 text-center bg-role-surface-container"
+      >
         <oc-button
           v-if="imprintUrl"
           type="a"
-          appearance="raw"
+          appearance="raw-inverse"
+          color-role="surface"
           :href="imprintUrl"
           target="_blank"
           no-hover
@@ -113,13 +113,27 @@
         </oc-button>
         <template v-if="privacyUrl">
           <span>·</span>
-          <oc-button type="a" appearance="raw" :href="privacyUrl" target="_blank" no-hover>
+          <oc-button
+            type="a"
+            appearance="raw-inverse"
+            color-role="surface"
+            :href="privacyUrl"
+            target="_blank"
+            no-hover
+          >
             <span v-text="$gettext('Privacy')" />
           </oc-button>
         </template>
         <template v-if="accessibilityUrl">
           <span>·</span>
-          <oc-button type="a" appearance="raw" :href="accessibilityUrl" target="_blank" no-hover>
+          <oc-button
+            type="a"
+            appearance="raw-inverse"
+            color-role="surface"
+            :href="accessibilityUrl"
+            target="_blank"
+            no-hover
+          >
             <span v-text="$gettext('Accessibility')" />
           </oc-button>
         </template>
@@ -213,9 +227,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .user-menu-list li {
-  align-items: center;
-  display: flex;
-
   &.profile-info-wrapper {
     gap: var(--oc-space-medium);
     min-height: 3rem;
@@ -223,14 +234,6 @@ export default defineComponent({
 }
 
 .imprint-footer {
-  background-color: var(--oc-role-surface-container);
-  margin-left: calc(var(--oc-space-small) * -1);
   width: calc(100% + var(--oc-space-small) * 2);
-  margin-bottom: calc(var(--oc-space-small) * -1) !important;
-
-  a {
-    font-size: var(--oc-font-size-medium) !important;
-    color: var(--oc-role-on-surface);
-  }
 }
 </style>

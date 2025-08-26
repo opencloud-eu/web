@@ -1,5 +1,14 @@
 <template>
-  <div :class="['oc-loader', { 'oc-loader-flat': flat }]" :aria-label="ariaLabel" />
+  <div
+    :class="[
+      'oc-loader',
+      'bg-role-surface-container',
+      'after:bg-role-secondary',
+      { 'oc-loader-flat rounded-none': flat },
+      { 'rounded-[500px]': !flat }
+    ]"
+    :aria-label="ariaLabel"
+  />
 </template>
 
 <script setup lang="ts">
@@ -17,30 +26,30 @@ export interface Props {
 
 const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-loader {
+    @apply my-5 align-baseline;
+  }
+}
+</style>
 <style lang="scss">
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: var(--oc-role-surface-container);
-  border: 0;
-  border-radius: 500px;
   display: block;
   height: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
   overflow: hidden;
-  vertical-align: baseline;
   width: 100%;
   position: relative;
 
   &-flat {
-    border-radius: 0 !important;
     height: 5px !important;
   }
 
   &::after {
-    background: var(--oc-role-secondary);
     content: '';
     height: 100%;
     width: 0;

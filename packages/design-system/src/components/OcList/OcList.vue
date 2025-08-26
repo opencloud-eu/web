@@ -1,5 +1,5 @@
 <template>
-  <ul class="oc-list oc-my-rm oc-mx-rm" :class="{ 'oc-list-raw': raw }">
+  <ul class="oc-list" :class="{ 'oc-list-raw': raw }">
     <slot />
   </ul>
 </template>
@@ -24,34 +24,33 @@ const { raw = false } = defineProps<Props>()
 
 defineSlots<Slots>()
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-<style lang="scss">
-ul.oc-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  &-divider > :nth-child(n + 2) {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-    margin-top: var(--oc-space-small);
-    padding-top: var(--oc-space-small);
+@layer components {
+  ul.oc-list,
+  ul.oc-list.oc-timeline {
+    @apply m-0 p-0;
   }
-  &-raw {
-    list-style-type: none;
-    a {
-      text-decoration: none !important;
-      &:hover {
-        color: inherit;
-      }
-    }
+  ul.oc-list-divider > :nth-child(n + 2) {
+    @apply mt-2 pt-2 border-t;
+  }
+  ul.oc-list.oc-timeline li {
+    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%];
+  }
+  ul.oc-list.oc-timeline::before,
+  ul.oc-list.oc-timeline li::before {
+    @apply bg-role-outline-variant;
+  }
+  ul.oc-list-raw a:hover {
+    @apply text-inherit;
   }
 }
-
+</style>
+<style lang="scss">
 ul.oc-list.oc-timeline {
   position: relative;
   list-style: none;
-  padding: 0;
-  margin: 0;
 
   &::before {
     content: '';
@@ -60,14 +59,10 @@ ul.oc-list.oc-timeline {
     top: 0;
     bottom: 0;
     width: 1.5px;
-    background-color: var(--oc-role-outline-variant);
   }
 
   li {
-    display: flex;
-    flex-direction: column;
     position: relative;
-    padding: 10px 20px 10px 30px;
     width: 100%;
     box-sizing: border-box;
 
@@ -75,8 +70,6 @@ ul.oc-list.oc-timeline {
       content: '';
       width: 10px;
       height: 10px;
-      background-color: var(--oc-role-outline-variant);
-      border-radius: 50%;
       position: absolute;
       left: -4px;
       top: 50%;

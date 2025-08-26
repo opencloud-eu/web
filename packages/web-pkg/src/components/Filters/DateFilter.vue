@@ -1,5 +1,5 @@
 <template>
-  <div class="date-filter oc-flex" :class="`date-filter-${filterName}`">
+  <div class="date-filter flex" :class="`date-filter-${filterName}`">
     <oc-filter-chip
       ref="filterChip"
       :filter-label="filterLabel"
@@ -10,9 +10,13 @@
     >
       <template #default>
         <oc-list class="date-filter-list" :class="{ 'date-filter-list-hidden': dateRangeClicked }">
-          <li v-for="(item, index) in displayedItems" :key="index" class="oc-my-xs">
+          <li
+            v-for="(item, index) in displayedItems"
+            :key="index"
+            class="my-1 first:mt-0 last:mb-0"
+          >
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 oc-p-xs"
+              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -21,19 +25,19 @@
               :data-testid="item[displayNameAttribute as keyof Item]"
               @click="toggleItemSelection(item)"
             >
-              <div class="oc-flex oc-flex-middle oc-text-truncate">
-                <div class="oc-text-truncate oc-ml-s">
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
-              <div class="oc-flex">
+              <div class="flex">
                 <oc-icon v-if="isItemSelected(item)" name="check" />
               </div>
             </oc-button>
           </li>
-          <li class="oc-my-xs">
+          <li class="my-1">
             <oc-button
-              class="date-filter-list-item oc-flex oc-flex-between oc-flex-middle oc-width-1-1 oc-p-xs"
+              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
               :class="{
                 'date-filter-list-item-active': dateRangeApplied
               }"
@@ -42,22 +46,22 @@
               data-testid="custom-date-range"
               @click="dateRangeClicked = true"
             >
-              <div class="oc-flex oc-flex-middle oc-text-truncate">
-                <div class="oc-text-truncate oc-ml-s">
+              <div class="flex items-center truncate">
+                <div class="truncate ml-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>
-              <div class="oc-flex">
+              <div class="flex">
                 <oc-icon v-if="dateRangeApplied" name="check" />
               </div>
             </oc-button>
           </li>
         </oc-list>
         <div
-          class="date-filter-range-panel oc-py-s"
+          class="date-filter-range-panel py-2 bg-role-surface"
           :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
         >
-          <div class="oc-flex oc-flex-middle oc-flex-between oc-mb-m">
+          <div class="flex items-center justify-between mb-4">
             <oc-button
               appearance="raw"
               class="date-filter-range-panel-back"
@@ -76,7 +80,7 @@
               <oc-icon name="close" />
             </oc-button>
           </div>
-          <div class="oc-mt-s">
+          <div class="mt-2">
             <oc-datepicker
               :label="$gettext('From')"
               :is-clearable="true"
@@ -91,7 +95,7 @@
               @date-changed="(value) => setDateRangeDate(value, 'to')"
             />
           </div>
-          <div class="date-filter-apply-btn">
+          <div class="date-filter-apply-btn text-end">
             <oc-button size="small" :disabled="!dateRangeValid" @click="applyDateRangeFilter">
               {{ $gettext('Apply') }}
             </oc-button>
@@ -313,23 +317,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .date-filter .oc-date-picker label {
+    @apply text-sm;
+  }
+}
+</style>
 <style lang="scss">
 .date-filter {
   overflow: hidden;
 
   &-list {
-    li {
-      &:first-child {
-        margin-top: 0 !important;
-      }
-      &:last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
     &-item {
-      line-height: 1.5;
       gap: 8px;
     }
 
@@ -340,10 +342,6 @@ export default defineComponent({
     }
   }
 
-  &-apply-btn {
-    text-align: end;
-  }
-
   &-range-panel {
     transform: translateX(100%);
     transition:
@@ -352,7 +350,6 @@ export default defineComponent({
     visibility: hidden;
     position: absolute;
     width: calc(100% - var(--oc-space-medium));
-    background: #fff;
     top: 0;
 
     &-active {
@@ -367,10 +364,6 @@ export default defineComponent({
 
   .oc-card {
     overflow: hidden;
-  }
-
-  .oc-date-picker label {
-    font-size: var(--oc-font-size-small);
   }
 }
 </style>

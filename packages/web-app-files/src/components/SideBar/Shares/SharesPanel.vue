@@ -2,9 +2,9 @@
   <div>
     <oc-loader v-if="sharesLoading" :aria-label="$gettext('Loading list of shares')" />
     <template v-else>
-      <space-members v-if="showSpaceMembers" class="oc-surface-container oc-p-m oc-mb-s" />
-      <file-shares v-else class="oc-surface-container oc-p-m oc-mb-s" />
-      <file-links v-if="showLinks" class="oc-surface-container oc-p-m" />
+      <space-members v-if="showSpaceMembers" class="bg-role-surface-container p-4 mb-2" />
+      <file-shares v-else class="bg-role-surface-container p-4 mb-2" />
+      <file-links v-if="showLinks" class="bg-role-surface-container p-4" />
     </template>
   </div>
 </template>

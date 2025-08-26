@@ -1,16 +1,19 @@
 <template>
-  <div id="web-content">
+  <div id="web-content" class="flex flex-col flex-nowrap">
     <div id="global-progress-bar">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
-    <div id="web-content-header">
-      <div v-if="isIE11" class="oc-surface-container oc-text-center oc-py-m">
-        <p class="oc-m-rm" v-text="ieDeprecationWarning" />
+    <div id="web-content-header" class="shrink basis-auto grow-0">
+      <div v-if="isIE11" class="bg-role-surface-container text-center py-4">
+        <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
       <top-bar :applications-list="Object.values(apps)" />
     </div>
-    <div id="web-content-main" class="oc-px-s oc-pb-s">
-      <div class="app-container oc-flex">
+    <div
+      id="web-content-main"
+      class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
+    >
+      <div class="app-container flex bg-role-surface-container rounded-xl">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav
@@ -26,7 +29,7 @@
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
-            class="app-content oc-width-1-1"
+            class="app-content oc-width-1-1 bg-role-surface rounded-l-xl"
             :name="name"
           />
         </template>
@@ -35,7 +38,7 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div class="snackbars">
+    <div class="snackbars mx-auto sm:m-0">
       <message-bar />
       <upload-info />
     </div>
@@ -196,9 +199,6 @@ onBeforeUnmount(() => {
 </script>
 <style lang="scss">
 #web-content {
-  display: flex;
-  flex-flow: column;
-  flex-wrap: nowrap;
   height: 100dvh;
 
   #global-progress-bar {
@@ -208,35 +208,15 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
-  #web-content-header,
   #web-content-main {
-    flex-shrink: 1;
-    flex-basis: auto;
-  }
-
-  #web-content-header {
-    flex-grow: 0;
-  }
-
-  #web-content-main {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: flex-start;
     overflow-y: hidden;
 
     .app-container {
       height: 100%;
-      background: var(--oc-role-surface-container);
-      border-radius: 15px;
       overflow: hidden;
       width: 100%;
 
       .app-content {
-        background: var(--oc-role-surface);
-        border-top-left-radius: 15px;
-        border-bottom-left-radius: 15px;
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
       }
     }
@@ -251,7 +231,6 @@ onBeforeUnmount(() => {
     @media (max-width: 640px) {
       left: 0;
       right: 0;
-      margin: 0 auto;
       width: 100%;
       max-width: 500px;
     }

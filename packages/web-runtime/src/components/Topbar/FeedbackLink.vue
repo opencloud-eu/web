@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex">
+  <div class="flex">
     <oc-button
       v-oc-tooltip="descriptionOrFallback"
       type="a"

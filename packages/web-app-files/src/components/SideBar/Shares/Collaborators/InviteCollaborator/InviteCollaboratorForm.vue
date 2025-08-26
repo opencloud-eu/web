@@ -1,6 +1,6 @@
 <template>
   <div id="new-collaborators-form" data-testid="new-collaborators-form">
-    <div :class="['oc-flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
+    <div :class="['flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -11,10 +11,10 @@
         :reduce="(option: AccountType) => option.description"
       >
         <template #option="{ description }">
-          <span class="option oc-text-xsmall" v-text="description" />
+          <span class="option text-xs" v-text="description" />
         </template>
         <template #selected-option="{ description }">
-          <span class="option oc-text-xsmall" v-text="description" />
+          <span class="option text-xs" v-text="description" />
         </template>
       </oc-select>
       <oc-select
@@ -70,12 +70,14 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-                    :class="{ 'oc-secondary-container': option.id === currentShareRoleType.id }"
+                    class="invite-form-share-role-type-item flex items-center oc-width-1-1 py-1 px-2"
+                    :class="{
+                      'bg-role-secondary-container': option.id === currentShareRoleType.id
+                    }"
                     @click="selectShareRoleType(option)"
                   >
                     <span>{{ option.longLabel }}</span>
-                    <div v-if="option.id === currentShareRoleType.id" class="oc-flex">
+                    <div v-if="option.id === currentShareRoleType.id" class="flex">
                       <oc-icon name="check" />
                     </div>
                   </oc-button>
@@ -86,7 +88,7 @@
         </template>
       </oc-select>
     </div>
-    <div class="oc-flex oc-flex-between oc-flex-wrap oc-mb-l oc-mt-s">
+    <div class="flex justify-between flex-wrap mb-6 mt-2">
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
@@ -94,16 +96,16 @@
         :is-external="isExternalShareRoleType"
         @option-change="collaboratorRoleChanged"
       />
-      <div class="oc-flex oc-flex-middle">
+      <div class="flex items-center">
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="files-collaborators-collaborator-expiration oc-ml-xs oc-p-xs"
+          class="files-collaborators-collaborator-expiration ml-1 p-1"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="oc-ml-xs raw-hover-surface oc-p-xs"
+          class="ml-1 raw-hover-surface p-1"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >
@@ -121,7 +123,7 @@
               class="collaborator-edit-dropdown-options-list"
               :aria-label="'shareEditOptions'"
             >
-              <li class="oc-rounded oc-menu-item-hover">
+              <li class="rounded-sm oc-menu-item-hover">
                 <expiration-datepicker
                   v-if="!saving"
                   :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
@@ -134,7 +136,7 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
-          class="oc-ml-s"
+          class="ml-2 px-7"
           data-testid="new-collaborators-form-create-button"
           :disabled="!$_isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"
@@ -145,7 +147,7 @@
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
       </div>
-      <div class="oc-width-1-1 oc-mt-s">
+      <div class="oc-width-1-1 mt-2">
         <oc-checkbox
           v-if="isRunningOnEos"
           v-model="notifyEnabled"
@@ -617,18 +619,21 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  #new-collaborators-form-create-button .oc-spinner {
+    @apply ml-2;
+  }
+  .invite-form-share-role-type .oc-filter-chip-button {
+    @apply pr-0;
+  }
+}
+</style>
 <style lang="scss">
 .role-selection-dropdown {
   max-width: 150px;
-}
-
-#new-collaborators-form-create-button {
-  padding-left: 30px;
-  padding-right: 30px;
-
-  .oc-spinner {
-    margin-left: -0.5rem;
-  }
 }
 
 .new-collaborators-form-cern > .cern-files-share-invite-input {
@@ -641,17 +646,12 @@ export default defineComponent({
 
 #new-collaborators-form {
   .invite-form-share-role-type {
-    .oc-filter-chip-button.oc-pill {
-      padding: 0 !important;
-    }
-
     .oc-drop {
       width: 180px;
     }
   }
 
   .vs__actions {
-    padding: 0 !important;
     cursor: inherit;
     flex-wrap: nowrap;
   }

@@ -1,6 +1,6 @@
 <template>
   <nav id="mobile-nav">
-    <oc-button id="mobile-nav-button" class="oc-p-xs" appearance="raw" aria-current="page">
+    <oc-button id="mobile-nav-button" class="p-1" appearance="raw" aria-current="page">
       {{ activeNavItem.name }}
       <oc-icon name="arrow-drop-down" />
     </oc-button>
@@ -21,14 +21,16 @@
         >
           <oc-button
             type="router-link"
-            appearance="raw"
+            :appearance="item.active ? 'filled' : 'raw-inverse'"
+            :color-role="item.active ? 'secondaryContainer' : 'surface'"
+            :no-hover="item.active"
             :to="item.route"
-            class="oc-display-block oc-p-s"
-            :class="{ 'oc-secondary-container router-link-active': item.active }"
+            class="oc-display-block p-2"
+            :class="{ 'router-link-active': item.active }"
           >
-            <span class="oc-flex">
+            <span class="flex">
               <oc-icon :name="item.icon" />
-              <span class="oc-ml-m text" v-text="item.name" />
+              <span class="ml-4 text" v-text="item.name" />
             </span>
           </oc-button>
         </li>

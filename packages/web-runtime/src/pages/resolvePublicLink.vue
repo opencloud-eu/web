@@ -1,23 +1,21 @@
 <template>
-  <div
-    class="oc-link-resolve oc-height-viewport oc-flex oc-flex-column oc-flex-center oc-flex-middle"
-  >
-    <div class="oc-card oc-text-center oc-width-large">
+  <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
+    <div class="oc-card text-center oc-width-large bg-role-surface-container rounded-xl">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">
         <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="public-link-error">
+          <h2 key="public-link-error" class="m-0">
             <span v-text="$gettext('An error occurred while loading the public link')" />
           </h2>
         </div>
         <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="oc-text-xlarge">{{ errorMessage }}</p>
+          <p class="text-xl">{{ errorMessage }}</p>
         </div>
       </template>
       <template v-else-if="isPasswordRequired">
         <form @submit.prevent="resolvePublicLinkTask.perform(true)">
           <div class="oc-card-header">
-            <h2>
+            <h2 class="m-0">
               <span v-text="$gettext('This resource is password-protected')" />
             </h2>
           </div>
@@ -28,7 +26,7 @@
               :error-message="wrongPasswordMessage"
               :label="passwordFieldLabel"
               type="password"
-              class="oc-mb-s"
+              class="mb-2"
             />
             <oc-button
               appearance="filled"
@@ -43,7 +41,7 @@
       </template>
       <template v-else>
         <div class="oc-card-header">
-          <h2 key="public-link-loading">
+          <h2 key="public-link-loading" class="m-0">
             <span v-text="$gettext('Loading public link…')" />
           </h2>
         </div>
@@ -51,8 +49,8 @@
           <oc-spinner :aria-hidden="true" />
         </div>
       </template>
-      <div class="oc-card-footer oc-pt-rm">
-        <p>{{ footerSlogan }}</p>
+      <div class="oc-card-footer pt-0">
+        <p class="m-0">{{ footerSlogan }}</p>
       </div>
     </div>
   </div>
@@ -316,18 +314,8 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-link-resolve {
-  .oc-card {
-    background: var(--oc-role-surface-container);
-    border-radius: 15px;
-  }
-
   .oc-text-input-message {
     justify-content: center;
-  }
-
-  .oc-card-header h2,
-  .oc-card-footer p {
-    margin: 0;
   }
 }
 </style>

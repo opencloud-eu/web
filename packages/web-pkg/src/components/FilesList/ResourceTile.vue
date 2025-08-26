@@ -1,10 +1,13 @@
 <template>
   <div
     ref="observerTarget"
-    class="oc-tile-card oc-card"
+    class="oc-tile-card oc-card flex flex-col"
     :data-item-id="resource.id"
     :class="{
-      'oc-tile-card-selected': isResourceSelected,
+      'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
+        isResourceSelected,
+      'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
+        !isResourceSelected,
       'oc-tile-card-disabled': isResourceDisabled && !isProjectSpaceResource(resource),
       'state-trashed': isResourceDisabled && isProjectSpaceResource(resource)
     }"
@@ -13,7 +16,7 @@
     <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
     <template v-else>
       <resource-link
-        class="oc-card-media-top oc-flex oc-flex-center oc-flex-middle oc-m-rm"
+        class="oc-card-media-top flex justify-center items-center m-0"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -21,30 +24,36 @@
         @click="$emit('click')"
       >
         <div class="oc-tile-card-selection">
-          <div v-if="isLoading" class="oc-tile-card-loading-spinner oc-m-s">
+          <div v-if="isLoading" class="oc-tile-card-loading-spinner m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
           <slot v-else name="selection" :item="resource" />
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator oc-position-absolute"
+          class="resource-disabled-indicator oc-position-absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />
         </oc-tag>
         <div
           v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview oc-flex oc-flex-middle oc-flex-center"
+          class="oc-tile-card-preview flex items-center justify-center text-center"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
-            <oc-image v-if="resource.thumbnail" class="tile-preview" :src="resource.thumbnail" />
+            <oc-image
+              v-if="resource.thumbnail"
+              class="tile-preview rounded-t-sm"
+              :class="{ 'rounded-sm': isResourceSelected }"
+              :src="resource.thumbnail"
+              @click="toggleTile([resource, $event])"
+            />
             <resource-icon
               v-else
               :resource="resource"
               :size="resourceIconSize"
-              class="tile-default-image oc-pt-xs"
+              class="tile-default-image pt-1"
             >
               <template v-if="showStatusIcon" #status>
                 <oc-icon v-bind="statusIconAttrs" size="xsmall" />
@@ -53,19 +62,19 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body oc-p-s">
-        <div class="oc-flex oc-flex-between oc-flex-middle">
-          <div class="oc-flex oc-flex-middle oc-text-truncate resource-name-wrapper">
+      <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
             <resource-list-item
               :resource="resource"
               :is-icon-displayed="false"
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click="$emit('click')"
+              @click.stop="$emit('click')"
             />
           </div>
-          <div class="oc-flex oc-flex-middle">
+          <div class="flex items-center">
             <!-- Slot for indicators !-->
             <slot name="indicators" :item="resource" class="resource-indicators" />
             <!-- Slot for individual actions -->
@@ -74,7 +83,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="oc-text-left oc-my-rm oc-text-truncate">
+        <p v-if="resourceDescription" class="text-left my-0 truncate">
           <small v-text="resourceDescription" />
         </p>
       </div>
@@ -93,6 +102,7 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { useToggleTile } from '../../composables/selection'
 
 const {
   resource,
@@ -130,6 +140,7 @@ defineSlots<{
   selection?: (props: { item: Resource }) => unknown
 }>()
 
+const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 
 const observerTarget = customRef((track, trigger) => {
@@ -194,17 +205,22 @@ if (!lazy) {
   emit('itemVisible')
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-<style lang="scss">
-.oc-tile-card.oc-card {
-  background-color: var(--oc-role-surface-container);
+@layer utilities {
+  .oc-tile-card-selection input {
+    background-color: var(--oc-role-surface-container);
+  }
+  .oc-tile-card:hover .tile-preview {
+    @apply rounded-sm;
+  }
 }
+</style>
+<style lang="scss">
 .oc-tile-card {
   box-shadow: none;
   height: 100%;
-  display: flex;
-  flex-flow: column;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   &-disabled {
     pointer-events: none;
@@ -240,8 +256,6 @@ if (!lazy) {
     width: 100%;
 
     .oc-tag {
-      color: var(--oc-role-on-surface);
-
       &.resource-disabled-indicator {
         z-index: 1;
       }
@@ -252,8 +266,6 @@ if (!lazy) {
       height: 100%;
       object-fit: cover;
       width: 100%;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
     }
   }
 
@@ -262,18 +274,7 @@ if (!lazy) {
     .oc-tile-card-preview {
       width: calc(100% - var(--oc-space-medium));
       height: calc(100% - var(--oc-space-medium));
-
-      .tile-preview {
-        border-radius: 5px !important;
-      }
     }
-  }
-  &:hover {
-    background-color: var(--oc-role-surface-container-highest);
-  }
-  &-selected {
-    background-color: var(--oc-role-secondary-container) !important;
-    outline: 2px solid var(--oc-role-outline);
   }
 
   &-selection {
@@ -281,21 +282,15 @@ if (!lazy) {
     position: absolute;
     top: 0;
     left: 0;
-
-    input {
-      background-color: var(--oc-role-surface-container);
-    }
   }
 
   &-preview {
     position: absolute;
     height: 100%;
     width: 100%;
-    text-align: center;
   }
 
   .resource-name-wrapper {
-    color: var(--oc-role-on-surface);
     max-width: 70%;
     overflow: hidden;
   }

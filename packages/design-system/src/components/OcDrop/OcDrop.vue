@@ -18,7 +18,7 @@
     v-else
     :id="dropId"
     ref="drop"
-    class="oc-drop oc-box-shadow-medium oc-rounded"
+    class="oc-drop oc-box-shadow-medium rounded-sm"
     @click="onClick"
   >
     <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
@@ -32,7 +32,7 @@
 import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getSizeClass, SizeType, uniqueId } from '../../helpers'
+import { getTailwindSizeClass, SizeType, uniqueId } from '../../helpers'
 import {
   ComponentPublicInstance,
   computed,
@@ -226,7 +226,7 @@ const triggerMapping = computed(() => {
 })
 
 const paddingClass = computed(() => {
-  return `oc-p-${getSizeClass(paddingSize)}`
+  return `p-${getTailwindSizeClass(paddingSize)}`
 })
 
 watch(
@@ -340,22 +340,19 @@ watch(
 
 <style lang="scss">
 .tippy-box[data-theme~='none'] {
+  // overwrite tippy styles
   background-color: transparent;
   font-size: inherit;
   line-height: inherit;
 
   .tippy-content {
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
-    padding: var(--oc-space-small);
+    padding: calc(var(--spacing) * 2);
   }
 }
 
 .oc-drop {
   max-width: 100%;
   width: 300px;
-
-  .oc-card {
-    border-radius: var(--oc-space-small) !important;
-  }
 }
 </style>

@@ -11,34 +11,35 @@
             v-if="field.sortable"
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
-            class="oc-button-sort oc-width-1-1"
+            justify-content="left"
+            class="oc-button-sort oc-width-1-1 hover:underline"
             gap-size="small"
             no-hover
             @click="handleSort(field)"
           >
-            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content">
+            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content align-middle">
               <slot :name="field.name + 'Header'" />
             </span>
             <span
               v-else
-              class="oc-table-thead-content header-text"
+              class="oc-table-thead-content align-middle header-text"
               v-text="extractFieldTitle(field)"
             />
             <oc-icon
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
               :class="{ 'oc-invisible-sr': sortBy !== field.name }"
-              class="oc-p-xs oc-rounded"
+              class="p-1 rounded-sm"
               size="small"
             />
           </oc-button>
           <div v-else>
-            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content">
+            <span v-if="field.headerType === 'slot'" class="oc-table-thead-content align-middle">
               <slot :name="field.name + 'Header'" />
             </span>
             <span
               v-else
-              class="oc-table-thead-content header-text"
+              class="oc-table-thead-content align-middle header-text"
               v-text="extractFieldTitle(field)"
             />
           </div>
@@ -53,6 +54,7 @@
         v-bind="extractTbodyTrProps(item, trIndex)"
         :data-item-id="item[idKey as keyof Item]"
         :draggable="dragDrop"
+        class="border-t"
         @click="$emit(constants.EVENT_TROW_CLICKED, [item, $event])"
         @contextmenu="
           $emit(
@@ -88,9 +90,12 @@
         </oc-td>
       </oc-tr>
     </oc-tbody>
-    <tfoot v-if="$slots.footer" class="oc-table-footer">
+    <tfoot v-if="$slots.footer" class="oc-table-footer border-t">
       <tr class="oc-table-footer-row">
-        <td :colspan="fullColspan" class="oc-table-footer-cell">
+        <td
+          :colspan="fullColspan"
+          class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant"
+        >
           <!-- @slot Footer of the table -->
           <slot name="footer" />
         </td>
@@ -107,7 +112,7 @@ import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { getSizeClass, Item as BaseItem, FieldType, SizeType } from '../../helpers'
+import { Item as BaseItem, FieldType, SizeType, getTailwindSizeClass } from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -199,34 +204,42 @@ export interface Emits {
    * @docs Emitted when an item has been dropped onto a row.
    */
   (e: 'itemDropped', selector: string, event: DragEvent): void
+
   /**
    * @docs Emitted when an item has been dragged onto a row.
    */
   (e: 'itemDragged', item: Item, event: DragEvent): void
+
   /**
    * @docs Emitted when a table header has been clicked.
    */
   (e: 'theadClicked', event: MouseEvent): void
+
   /**
    * @docs Emitted when a table row has been clicked.
    */
   (e: 'highlight', args: [Item, MouseEvent]): void
+
   /**
    * @docs Emitted when a table row has been mounted.
    */
   (e: 'rowMounted', item: Item, element: HTMLElement): void
+
   /**
    * @docs Emitted when a table row has been right-clicked.
    */
   (e: 'contextmenuClicked', element: HTMLElement, event: MouseEvent, item: Item): void
+
   /**
    * @docs Emitted when a column has been sorted.
    */
   (e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void
+
   /**
    * @docs Emitted when an element has entered a drop zone inside the table.
    */
   (e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void
+
   /**
    * @docs Emitted when an item has been scrolled into the view.
    */
@@ -343,11 +356,11 @@ const extractThProps = (field: FieldType, index: number) => {
   }
 
   if (index === 0) {
-    props.class += ` oc-pl-${getSizeClass(paddingX)} `
+    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` oc-pr-${getSizeClass(paddingX)}`
+    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
   }
 
   extractSortThProps(props, field)
@@ -378,11 +391,11 @@ const extractTdProps = (field: FieldType, index: number, item: Item) => {
   }
 
   if (index === 0) {
-    props.class += ` oc-pl-${getSizeClass(paddingX)} `
+    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` oc-pr-${getSizeClass(paddingX)}`
+    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
   }
 
   if (Object.prototype.hasOwnProperty.call(field, 'accessibleLabelCallback')) {
@@ -485,7 +498,24 @@ const handleSort = (field: FieldType) => {
   })
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-table-accentuated,
+  .oc-table-highlighted,
+  .oc-table .highlightedDropTarget {
+    @apply bg-role-secondary-container;
+  }
+  .oc-table-sticky .oc-table-header-cell {
+    @apply bg-role-surface;
+  }
+  .oc-table-hover tr:not(.oc-table-footer-row, .oc-table-header-row, .oc-table-highlighted):hover,
+  .oc-button-sort .oc-icon:hover {
+    @apply bg-role-surface-container;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table {
   border-collapse: collapse;
@@ -497,24 +527,7 @@ const handleSort = (field: FieldType) => {
   }
 
   tr {
-    outline: none;
     height: var(--oc-size-height-table-row);
-  }
-
-  tr + tr {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-  }
-
-  &-hover tr:not(&-footer-row, &-header-row):hover {
-    background-color: var(--oc-role-surface-container);
-  }
-
-  &-highlighted {
-    background-color: var(--oc-role-secondary-container) !important;
-  }
-
-  &-accentuated {
-    background-color: var(--oc-role-secondary-container);
   }
 
   &-disabled {
@@ -529,40 +542,11 @@ const handleSort = (field: FieldType) => {
     .oc-table-header-cell {
       position: sticky;
       z-index: 1;
-      background-color: var(--oc-role-surface);
     }
-  }
-
-  .highlightedDropTarget {
-    background-color: var(--oc-role-secondary-container);
   }
 
   &-thead-content {
-    vertical-align: middle;
     display: inline-table;
-  }
-
-  &-footer {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-
-    &-cell {
-      color: var(--oc-role-on-surface-variant);
-      font-size: 0.875rem;
-      line-height: 1.4;
-      padding: var(--oc-space-xsmall);
-    }
-  }
-}
-.oc-button-sort {
-  display: flex;
-  justify-content: start;
-  &:hover {
-    text-decoration: underline;
-  }
-  .oc-icon {
-    &:hover {
-      background-color: var(--oc-role-surface-container);
-    }
   }
 }
 </style>

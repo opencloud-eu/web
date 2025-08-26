@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-notification oc-mb-s" :class="classes">
+  <div class="oc-notification mb-2" :class="classes">
     <slot />
   </div>
 </template>
@@ -27,7 +27,15 @@ defineSlots<Slots>()
 
 const classes = computed(() => `oc-notification-${position}`)
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-notification-top-center {
+    @apply mx-auto;
+  }
+}
+</style>
 <style lang="scss">
 .oc-notification {
   box-sizing: border-box;
@@ -45,8 +53,6 @@ const classes = computed(() => `oc-notification-${position}`)
     top: var(--oc-space-small);
     left: 0;
     right: 0;
-    margin-left: auto;
-    margin-right: auto;
   }
   &-top-right {
     position: fixed;

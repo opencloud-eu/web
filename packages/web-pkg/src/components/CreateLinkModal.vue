@@ -1,18 +1,18 @@
 <template>
-  <div class="oc-flex oc-button-justify-content-space-between oc-pb-s">
-    <div v-if="isAdvancedMode" class="oc-flex oc-flex-middle">
-      <oc-icon class="oc-mr-s" :name="selectedTypeIcon" fill-type="line" />
+  <div class="flex oc-button-justify-content-space-between pb-2">
+    <div v-if="isAdvancedMode" class="flex items-center">
+      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
         :model-value="selectedType"
         :available-link-type-options="availableLinkTypes"
         @update:model-value="updateSelectedLinkType"
       />
     </div>
-    <div v-else class="oc-flex oc-flex-middle">
-      <oc-icon class="oc-mr-s" :name="selectedTypeIcon" fill-type="line" />
-      <div class="oc-flex oc-flex-column">
-        <span class="oc-text-bold" v-text="selectedTypeDisplayName" />
-        <span class="oc-text-small" v-text="selectedTypeDescription" />
+    <div v-else class="flex items-center">
+      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
+      <div class="flex flex-col">
+        <span class="font-semibold" v-text="selectedTypeDisplayName" />
+        <span class="text-sm" v-text="selectedTypeDescription" />
       </div>
     </div>
     <oc-button
@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="link-modal-password oc-mb-m">
+  <div class="link-modal-password mb-4 ml-[30px]">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -41,27 +41,27 @@
       class="link-modal-password-input"
       @update:model-value="updatePassword"
     />
-    <div v-else-if="password.value" class="link-modal-password-text oc-text-small oc-text-muted">
+    <div
+      v-else-if="password.value"
+      class="link-modal-password-text text-sm text-role-on-surface-variant"
+    >
       <span v-text="$gettext('Password:')" />
       <span v-text="password.value" />
     </div>
     <oc-datepicker
       v-if="isAdvancedMode"
-      class="oc-mt-s"
+      class="mt-2"
       :min-date="DateTime.now()"
       :label="$gettext('Expiry date')"
       @date-changed="onExpiryDateChanged"
     />
   </div>
-  <div class="link-modal-actions oc-flex oc-flex-right oc-flex-middle oc-mt-s">
-    <oc-button
-      class="link-modal-cancel oc-modal-body-actions-cancel oc-ml-s"
-      @click="$emit('cancel')"
-    >
+  <div class="link-modal-actions flex justify-end items-center mt-2">
+    <oc-button class="link-modal-cancel oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>
     <div
-      class="link-modal-confirm-button-group oc-ml-s"
+      class="link-modal-confirm-button-group ml-2"
       :class="{ 'oc-button-group': password.value }"
     >
       <oc-button
@@ -74,7 +74,7 @@
       </oc-button>
       <oc-button
         v-if="password.value"
-        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger"
+        class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger p-1"
         appearance="filled"
         :disabled="confirmButtonDisabled"
       >
@@ -90,7 +90,7 @@
         close-on-click
       >
         <oc-list class="oc-modal-body-actions-confirm-secondary-menu">
-          <li class="oc-rounded oc-menu-item-hover">
+          <li class="rounded-sm oc-menu-item-hover">
             <oc-button
               class="oc-modal-body-actions-confirm-password action-menu-item"
               appearance="raw"
@@ -341,22 +341,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.link-modal-password {
-  margin-left: calc(var(--oc-space-small) + 22px);
-}
-
-.link-modal-confirm-button-group {
-  outline: 0;
-}
-
-.oc-modal-body-actions-confirm-secondary-trigger {
-  background: var(--oc-role-secondary);
-  padding: var(--oc-space-xsmall);
-}
-
-.role-dropdown-list span {
-  line-height: 1.3;
-}
-</style>

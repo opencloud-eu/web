@@ -1,9 +1,9 @@
 <template>
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
-    <ol class="oc-pagination-list">
+    <ol class="oc-pagination-list flex items-center flex-wrap m-0">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-prev"
+          class="oc-pagination-list-item-prev flex mr-2"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -11,13 +11,18 @@
         </router-link>
       </li>
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
-        <component :is="pageComponent(page)" :class="pageClass(page)" v-bind="bindPageProps(page)">
+        <component
+          :is="pageComponent(page)"
+          :class="pageClass(page)"
+          class="hover:bg-role-secondary hover:text-role-on-secondary"
+          v-bind="bindPageProps(page)"
+        >
           {{ page }}
         </component>
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-next"
+          class="oc-pagination-list-item-next flex ml-2"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
@@ -131,10 +136,23 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = ['oc-pagination-list-item-page']
+  const classes = [
+    'oc-pagination-list-item-page',
+    'py-1',
+    'px-2',
+    'text-role-on-surface',
+    'rounded-sm'
+  ]
 
   if (isCurrentPage(page)) {
-    classes.push('oc-pagination-list-item-current')
+    classes.push(
+      ...[
+        'oc-pagination-list-item-current',
+        'font-bold',
+        'bg-role-secondary',
+        'text-role-on-secondary'
+      ]
+    )
   } else if (page === '...') {
     classes.push('oc-pagination-list-item-ellipsis')
   } else {
@@ -156,49 +174,19 @@ const bindPageLink = (page: Page) => {
 <style lang="scss">
 .oc-pagination {
   &-list {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
     gap: var(--oc-space-small);
     list-style: none;
-    margin: 0;
-    padding: 0;
 
     &-item {
       &-page {
-        border-radius: 4px;
-        color: var(--oc-role-on-surface);
-        padding: var(--oc-space-xsmall) var(--oc-space-small);
         transition: background-color $transition-duration-short ease-in-out;
-
-        &:not(span):hover {
-          background-color: var(--oc-role-secondary);
-          color: var(--oc-role-on-secondary);
-          text-decoration: none;
-        }
-      }
-
-      &-current {
-        background-color: var(--oc-role-secondary);
-        color: var(--oc-role-on-secondary);
-        font-weight: bold;
       }
 
       &-prev,
       &-next {
-        display: flex;
-
         > .oc-icon > svg {
           fill: var(--oc-role-on-surface);
         }
-      }
-
-      &-prev {
-        margin-right: var(--oc-space-small);
-      }
-
-      &-next {
-        margin-left: var(--oc-space-small);
       }
     }
   }

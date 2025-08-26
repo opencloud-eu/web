@@ -1,8 +1,8 @@
 <template>
-  <div class="oc-flex oc-flex-middle">
+  <div class="flex items-center">
     <div
       v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group oc-visible@s oc-mr-s"
+      class="viewmode-switch-buttons oc-button-group oc-visible@s mr-2"
     >
       <oc-button
         v-for="viewMode in viewModes"
@@ -25,7 +25,7 @@
       data-testid="files-view-options-btn"
       :aria-label="viewOptionsButtonLabel"
       appearance="raw"
-      class="oc-my-s oc-p-xs"
+      class="my-2 mx-1 p-1 align-middle"
     >
       <oc-icon name="settings-3" fill-type="line" />
     </oc-button>
@@ -38,7 +38,7 @@
       padding-size="medium"
     >
       <oc-list>
-        <li v-if="hasHiddenFiles" class="files-view-options-list-item">
+        <li v-if="hasHiddenFiles" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="hiddenFilesShownModel"
             data-testid="files-switch-hidden-files"
@@ -46,7 +46,7 @@
             @update:checked="updateHiddenFilesShownModel"
           />
         </li>
-        <li v-if="hasFileExtensions" class="files-view-options-list-item">
+        <li v-if="hasFileExtensions" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="fileExtensionsShownModel"
             data-testid="files-switch-files-extensions-files"
@@ -54,7 +54,7 @@
             @update:checked="updateFileExtensionsShownModel"
           />
         </li>
-        <li v-if="hasPagination" class="files-view-options-list-item">
+        <li v-if="hasPagination" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-page-size
             v-if="!queryParamsLoading"
             :selected="queryItemAsString(itemsPerPageCurrent)"
@@ -65,7 +65,7 @@
             @change="setItemsPerPage"
           />
         </li>
-        <li v-if="isProjectsLocation" class="files-view-options-list-item">
+        <li v-if="isProjectsLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="disabledSpacesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -73,7 +73,7 @@
             @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
-        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item">
+        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
           <oc-switch
             v-model:checked="emptyTrashesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -83,7 +83,7 @@
         </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
-          class="files-view-options-list-item oc-flex oc-flex-between oc-flex-middle"
+          class="files-view-options-list-item mt-2 mb-4 last:mb-0 flex justify-between items-center"
         >
           <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
           <input
@@ -92,7 +92,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range"
+            class="oc-range bg-role-surface-container-high rounded-sm outline-0"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -298,42 +298,23 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+/* Can't use @layer here: Tailwind only accepts plain class selectors, not `> *`. */
+.files-view-options-list-item > * {
+  @apply flex justify-between;
+}
+</style>
 
 <style lang="scss" scoped>
 .viewmode-switch-buttons {
   flex-flow: initial;
 }
 
-#files-view-options-btn {
-  vertical-align: middle;
-  border: 3px solid transparent;
-
-  &:hover {
-    border-radius: 3px;
-  }
-}
-
-.files-view-options-list-item {
-  &:not(:last-child) {
-    margin-bottom: var(--oc-space-medium);
-  }
-
-  & > * {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  & + & {
-    margin-top: var(--oc-space-small);
-  }
-}
-
 .oc-range {
   -webkit-appearance: none;
-  border-radius: 0.3rem;
-  background: var(--oc-role-surface-container-high);
   height: 0.5rem;
-  outline: none;
   width: 100%;
   max-width: 50%;
 

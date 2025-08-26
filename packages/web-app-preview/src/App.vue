@@ -7,13 +7,13 @@
   <div
     v-else
     ref="preview"
-    class="oc-flex oc-width-1-1 oc-height-1-1"
+    class="flex oc-width-1-1 oc-height-1-1"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
-    <div class="stage" :class="{ lightbox: isFullScreenModeActivated }">
-      <div class="stage_media">
+    <div class="stage flex flex-col text-center" :class="{ lightbox: isFullScreenModeActivated }">
+      <div class="stage_media flex justify-center items-center grow">
         <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="oc-width-1-1">
           <div class="oc-position-center">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
@@ -21,7 +21,7 @@
         </div>
         <div
           v-else-if="activeMediaFileCached.isError"
-          class="oc-width-1-1 oc-flex oc-flex-column oc-flex-middle oc-flex-center"
+          class="oc-width-1-1 flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
           <p>
@@ -50,7 +50,7 @@
         />
       </div>
       <media-controls
-        class="stage_controls"
+        class="stage_controls mx-auto my-4"
         :files="filteredFiles"
         :active-index="activeIndex"
         :is-full-screen-mode-activated="isFullScreenModeActivated"
@@ -493,25 +493,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .stage {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   height: 100%;
-  text-align: center;
 
   &_media {
-    flex-grow: 1;
     overflow: hidden;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   &_controls {
     height: auto;
-    margin: 10px auto;
   }
 }
 </style>

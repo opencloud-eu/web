@@ -19,7 +19,7 @@ describe('NoContentMessage', () => {
         <p class="test message">This is a test message</p>
         `
       })
-      const messageDiv = wrapper.findAll('.oc-text-muted').at(0)
+      const messageDiv = wrapper.findAll('.text-role-on-surface-variant').at(0)
       const slotEl = messageDiv.find('p')
 
       expect(messageDiv.exists()).toBeTruthy()
@@ -34,7 +34,7 @@ describe('NoContentMessage', () => {
         <button class="test action">Click here</button>
         `
       })
-      const actionDiv = wrapper.findAll('.oc-text-muted').at(1)
+      const actionDiv = wrapper.findAll('.text-role-on-surface-variant').at(1)
       const slotEl = actionDiv.find('button')
 
       expect(slotEl.exists()).toBeTruthy()

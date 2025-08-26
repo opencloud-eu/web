@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-dropzone">
+  <div class="oc-dropzone flex justify-center items-center border-dashed border-role-outline">
     <!-- @slot Message inside of the dropzone -->
     <slot />
   </div>
@@ -8,18 +8,27 @@
 <script setup lang="ts">
 defineOptions({ name: 'OcDropzone' })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-dropzone {
+    @apply p-4 text-center;
+  }
+}
+</style>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-dropzone {
+    @apply text-2xl;
+  }
+}
+</style>
 <style lang="scss">
 .oc-dropzone {
-  align-items: center;
-  border: 1px dashed var(--oc-role-outline);
-  display: flex;
-  font-size: 1.5rem;
-  justify-content: center;
-  line-height: 1.5;
   opacity: 0.9;
-  padding: var(--oc-space-medium);
-  text-align: center;
 
   * {
     pointer-events: none;

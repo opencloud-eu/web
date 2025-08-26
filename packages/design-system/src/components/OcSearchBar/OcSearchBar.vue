@@ -1,8 +1,7 @@
 <template>
-  <oc-grid
-    direction="column"
+  <div
     :role="isFilter ? undefined : 'search'"
-    class="oc-search oc-flex-middle"
+    class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
     <div class="oc-width-expand oc-position-relative">
@@ -19,7 +18,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="oc-position-small oc-position-center-right oc-mt-rm"
+        class="oc-position-center-right mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
@@ -34,7 +33,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
-        class="oc-search-button oc-ml-m"
+        class="oc-search-button ml-4 rounded-l-none"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -46,20 +45,19 @@
     <oc-button
       v-if="showCancelButton"
       :appearance="cancelButtonAppearance"
-      class="oc-ml-m"
+      class="ml-4"
       no-hover
       @click="onCancel"
     >
       <span v-text="$gettext('Cancel')" />
     </oc-button>
-  </oc-grid>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, unref, useSlots, watch } from 'vue'
+import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import OcButton from '../OcButton/OcButton.vue'
-import OcGrid from '../OcGrid/OcGrid.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
 import { AppearanceType } from '../../helpers'
@@ -182,19 +180,14 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { $gettext } = useGettext()
-const slots = useSlots()
-
-const inputIconRightPadding = computed(() => {
-  if (Object.hasOwn(slots, 'locationFilter')) {
-    return '125px'
-  }
-  return '48px'
-})
 
 const inputClass = computed(() => {
-  const classes = ['oc-search-input', 'oc-input']
+  const classes = ['oc-search-input', 'oc-input', 'p-4', 'rounded-4xl']
   if (!buttonHidden) {
-    classes.push('oc-search-input-button')
+    classes.push(...['oc-search-input-button', 'rounded-r-none'])
+  }
+  if (small) {
+    classes.push(...['pl-12', 'leading-7'])
   }
   return classes
 })
@@ -221,8 +214,6 @@ const onCancel = () => {
   min-width: $form-width-medium;
 
   &-button {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
     // Prevent double borders
     // from input and button
     transform: translateX(-1px);
@@ -241,9 +232,6 @@ const onCancel = () => {
   }
 
   &-input {
-    border-radius: 25px !important;
-    border: none;
-    padding: var(--oc-space-medium) !important;
     height: 2.3rem;
 
     &:focus {
@@ -256,21 +244,9 @@ const onCancel = () => {
     }
   }
 
-  &-input-icon {
-    padding-left: var(--oc-space-xlarge) !important;
-    padding-right: v-bind(inputIconRightPadding) !important;
-  }
-
-  &-input-button {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-  }
-
   &-small {
     .oc-search-input {
       height: 30px;
-      line-height: 28px;
-      padding-left: var(--oc-space-xlarge);
     }
 
     .oc-icon {

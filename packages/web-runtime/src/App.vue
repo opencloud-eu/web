@@ -1,5 +1,5 @@
 <template>
-  <div id="web">
+  <div id="web" class="bg-role-chrome">
     <oc-hidden-announcer :announcement="announcement" level="polite" />
     <skip-to target="web-content-main">
       <span v-text="$gettext('Skip to main')" />
@@ -134,23 +134,19 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-body {
-  margin: 0;
-}
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  #web .mark-highlight {
+    @apply font-semibold;
+  }
+}
+</style>
+<style lang="scss">
 #web {
-  background-color: var(--oc-role-chrome);
   height: 100dvh;
   max-height: 100dvh;
   overflow-y: hidden;
-
-  .mark-highlight {
-    font-weight: 600;
-  }
-}
-
-iframe {
-  border: 0;
 }
 </style>

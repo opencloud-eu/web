@@ -1,7 +1,7 @@
 <template>
-  <div v-if="showActions" class="create-and-upload-actions oc-flex-inline oc-mr-s">
+  <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2">
     <template v-if="createFileActionsAvailable">
-      <span v-oc-tooltip="newButtonTooltip">
+      <div v-oc-tooltip="newButtonTooltip">
         <oc-button
           id="new-file-menu-btn"
           key="new-file-menu-btn-enabled"
@@ -13,7 +13,7 @@
           <oc-icon name="add" />
           <span v-if="!limitedScreenSpace" v-text="$gettext('New')" />
         </oc-button>
-      </span>
+      </div>
       <oc-drop
         :title="$gettext('New file')"
         drop-id="new-file-menu-drop"
@@ -23,7 +23,11 @@
         close-on-click
         padding-size="small"
       >
-        <oc-list id="create-list" :class="areFileExtensionsShown ? 'expanded-list' : null">
+        <oc-list
+          id="create-list"
+          :class="areFileExtensionsShown ? 'expanded-list' : null"
+          class="py-2 first:pt-0 last:pb-0"
+        >
           <li class="create-list-folder oc-menu-item-hover">
             <oc-button
               id="new-folder-btn"
@@ -40,6 +44,7 @@
         <oc-list
           v-for="(group, groupIndex) in createFileActionsGroups"
           :key="`file-creation-group-${groupIndex}`"
+          class="py-2 first:pt-0 last:pb-0 border-t"
         >
           <li
             v-for="(fileAction, fileActionIndex) in group"
@@ -57,14 +62,14 @@
               <span class="create-list-file-item-text">{{ fileAction.label() }}</span>
               <span
                 v-if="areFileExtensionsShown && fileAction.ext"
-                class="create-list-file-item-extension"
+                class="create-list-file-item-extension ml-auto text-sm"
               >
                 {{ fileAction.ext }}
               </span>
             </oc-button>
           </li>
         </oc-list>
-        <oc-list>
+        <oc-list class="py-2 first:pt-0 last:pb-0 border-t">
           <li class="create-list-shortcut oc-menu-item-hover">
             <oc-button
               id="new-shortcut-btn"
@@ -77,7 +82,7 @@
               <span v-text="$gettext('Shortcut')" />
               <span
                 v-if="areFileExtensionsShown"
-                class="create-list-file-item-extension"
+                class="create-list-file-item-extension ml-auto text-sm"
                 v-text="'url'"
               />
             </oc-button>
@@ -131,7 +136,11 @@
           <resource-upload btn-class="oc-width-1-1" :is-folder="true" />
         </li>
       </oc-list>
-      <oc-list v-if="extensionActions.length" id="extension-list">
+      <oc-list
+        v-if="extensionActions.length"
+        id="extension-list"
+        class="py-2 first:pt-0 last:pb-0 border-t"
+      >
         <li
           v-for="(action, key) in extensionActions"
           :key="`${key}-${actionKeySuffix}`"
@@ -159,7 +168,7 @@
         v-oc-tooltip="pasteHereButtonTooltip"
         :disabled="isPasteHereButtonDisabled"
         :aria-label="$gettext('Paste here')"
-        class="paste-files-btn"
+        class="paste-files-btn whitespace-nowrap"
         @click="pasteFileAction"
       >
         <oc-icon fill-type="line" name="clipboard" />
@@ -476,21 +485,6 @@ const folderIconResource = computed(() => {
 #upload-menu-drop,
 #new-file-menu-drop {
   min-width: 230px;
-
-  ul:not(:first-child) {
-    border-top: 0.5px solid var(--oc-role-outline-variant);
-    padding-top: var(--oc-space-small);
-  }
-
-  ul:not(:last-child) {
-    padding-bottom: var(--oc-space-small);
-  }
-}
-
-.create-list-file-item-extension {
-  font-weight: 400 !important;
-  font-size: var(--oc-font-size-small);
-  margin-left: auto;
 }
 
 .expanded-list {
@@ -507,15 +501,6 @@ const folderIconResource = computed(() => {
 
 #clipboard-btns {
   flex-flow: inherit;
-
-  :nth-child(1) {
-    border-right: 0px !important;
-    white-space: nowrap;
-  }
-
-  :nth-child(2) {
-    border-left: 0px !important;
-  }
 }
 
 #clipboard-btns.disabled {

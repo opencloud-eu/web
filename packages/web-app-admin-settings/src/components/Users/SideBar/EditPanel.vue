@@ -1,12 +1,12 @@
 <template>
-  <div id="user-edit-panel" class="oc-mt-xl">
+  <div id="user-edit-panel" class="mt-12">
     <UserInfoBox :user="user" />
-    <form id="user-edit-form" class="oc-surface-container oc-p-m" autocomplete="off">
+    <form id="user-edit-form" class="bg-role-surface-container p-4 rounded-sm" autocomplete="off">
       <div>
         <oc-text-input
           id="userName-input"
           v-model="editUser.onPremisesSamAccountName"
-          class="oc-mb-s"
+          class="mb-2"
           :label="$gettext('User name')"
           :error-message="formData.userName.errorMessage"
           :fix-message-line="true"
@@ -17,7 +17,7 @@
         <oc-text-input
           id="displayName-input"
           v-model="editUser.displayName"
-          class="oc-mb-s"
+          class="mb-2"
           :label="$gettext('First and last name')"
           :error-message="formData.displayName.errorMessage"
           :fix-message-line="true"
@@ -28,7 +28,7 @@
         <oc-text-input
           id="email-input"
           v-model="editUser.mail"
-          class="oc-mb-s"
+          class="mb-2"
           :label="$gettext('Email')"
           :error-message="formData.email.errorMessage"
           :error-message-debounced-time="1000"
@@ -41,7 +41,7 @@
         <oc-text-input
           id="password-input"
           :model-value="editUser.passwordProfile?.password"
-          class="oc-mb-s"
+          class="mb-2"
           :label="$gettext('Password')"
           type="password"
           :fix-message-line="true"
@@ -49,7 +49,7 @@
           :read-only="isInputFieldReadOnly('user.passwordProfile')"
           @update:model-value="onUpdatePassword"
         />
-        <div class="oc-mb-s">
+        <div class="mb-2">
           <oc-select
             id="role-input"
             :model-value="selectedRoleValue"
@@ -63,7 +63,7 @@
           />
           <div class="oc-text-input-message"></div>
         </div>
-        <div class="oc-mb-s" v-if="!isLoginToggleHidden">
+        <div class="mb-2" v-if="!isLoginToggleHidden">
           <oc-select
             id="login-input"
             :disabled="isLoginInputDisabled"
@@ -82,7 +82,7 @@
           id="quota-select-form"
           :key="'quota-select-' + user.id"
           :disabled="isQuotaInputDisabled"
-          class="oc-mb-s"
+          class="mb-2"
           :label="$gettext('Personal quota')"
           :total-quota="editUser.drive?.quota?.total || 0"
           :max-quota="maxQuota"
@@ -97,7 +97,7 @@
           @selected-option-change="changeSelectedQuotaOption"
         />
         <group-select
-          class="oc-mb-s"
+          class="mb-2"
           :read-only="isInputFieldReadOnly('user.memberOf')"
           :selected-groups="editUser.memberOf"
           :group-options="groupOptions"
@@ -105,7 +105,7 @@
         />
       </div>
       <compare-save-dialog
-        class="edit-compare-save-dialog oc-mb-l"
+        class="edit-compare-save-dialog mb-6"
         :original-object="compareSaveDialogOriginalObject"
         :compare-object="editUser"
         :confirm-button-disabled="invalidFormData"
@@ -490,11 +490,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-#user-edit-panel {
-  #user-edit-form {
-    border-radius: 5px;
-  }
-}
-</style>

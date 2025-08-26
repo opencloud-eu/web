@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex">
+  <div class="flex">
     <files-view-wrapper>
       <app-bar :is-side-bar-open="isSideBarOpen">
         <template #navigation>
@@ -8,9 +8,9 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div v-if="shareTypes.length > 1" class="oc-flex oc-m-m">
-          <div class="oc-mr-m oc-flex oc-flex-middle">
-            <oc-icon name="filter-2" class="oc-mr-xs" />
+        <div v-if="shareTypes.length > 1" class="flex m-4">
+          <div class="mr-4 flex items-center">
+            <oc-icon name="filter-2" class="mr-1" />
             <span v-text="$gettext('Filter:')" />
           </div>
           <item-filter
@@ -21,12 +21,12 @@
             :option-filter-label="$gettext('Filter share types')"
             :show-option-filter="true"
             id-attribute="key"
-            class="share-type-filter oc-mx-s"
+            class="share-type-filter mx-2"
             display-name-attribute="label"
             filter-name="shareType"
           >
             <template #item="{ item }">
-              <span class="oc-ml-s" v-text="item.label" />
+              <span class="ml-2" v-text="item.label" />
             </template>
           </item-filter>
         </div>
@@ -63,7 +63,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="filteredItems.length > 0" class="oc-width-1-1 oc-my-s" />
+            <list-info v-if="filteredItems.length > 0" class="oc-width-1-1 my-2" />
           </template>
         </resource-table>
       </template>

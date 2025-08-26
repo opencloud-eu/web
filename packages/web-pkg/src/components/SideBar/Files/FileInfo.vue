@@ -1,14 +1,14 @@
 <template>
-  <div class="file_info oc-flex oc-flex-between oc-p-s">
-    <div class="oc-flex oc-flex-middle">
+  <div class="file_info flex justify-between p-2">
+    <div class="flex items-center">
       <resource-icon
         v-if="isSubPanelActive"
         :resource="resource"
         size="large"
-        class="file_info__icon oc-mr-s oc-position-relative"
+        class="file_info__icon mr-2 oc-position-relative"
       />
       <div class="file_info__body oc-text-overflow">
-        <h3 data-testid="files-info-name" class="oc-font-semibold">
+        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -46,23 +46,17 @@ const name = computed(() => {
   return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .file_info button {
+    @apply whitespace-nowrap;
+  }
+}
+</style>
 <style lang="scss">
 .file_info {
-  button {
-    white-space: nowrap;
-  }
-
-  &__body {
-    text-align: left;
-
-    h3 {
-      font-size: var(--oc-font-size-medium);
-      margin: 0;
-      word-break: break-all;
-    }
-  }
-
   &__favorite {
     .oc-star {
       display: inline-block;

@@ -8,14 +8,14 @@
     @show="renderChild = true"
     @hide="renderChild = false"
   >
-    <oc-list class="oc-flex oc-flex-column oc-p-s">
+    <oc-list class="flex flex-col p-2">
       <oc-button justify-content="left" appearance="raw" no-hover aria-expanded="false">
         <oc-icon size="small" name="rectangle" fill-type="line" />
         Simple button
       </oc-button>
       <oc-button
         id="toggle-bottom-drawer-child"
-        class="oc-mt-s"
+        class="mt-2"
         justify-content="left"
         appearance="raw"
         no-hover
@@ -34,7 +34,7 @@
     :is-nested-element="true"
     :nested-parent-ref="parent"
   >
-    <oc-list class="oc-flex oc-flex-column oc-p-s">
+    <oc-list class="flex flex-col p-2">
       <oc-button justify-content="left" appearance="raw" no-hover aria-expanded="false">
         <oc-icon size="small" name="rectangle" fill-type="line" />
         Simple button

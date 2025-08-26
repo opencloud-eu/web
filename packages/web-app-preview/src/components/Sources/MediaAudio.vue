@@ -1,9 +1,9 @@
 <template>
-  <div class="audio-container oc-flex oc-flex-column">
+  <div class="audio-container flex flex-col">
     <audio :key="`media-audio-${file.id}`" controls preload="preload" :autoplay="isAutoPlayEnabled">
       <source :src="file.url" :type="file.mimeType" />
     </audio>
-    <p v-if="audioText" class="oc-text-muted oc-text-small" v-text="audioText"></p>
+    <p v-if="audioText" class="text-role-on-surface-variant text-sm" v-text="audioText"></p>
   </div>
 </template>
 <script lang="ts">

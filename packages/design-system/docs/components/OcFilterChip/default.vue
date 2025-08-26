@@ -12,12 +12,12 @@
         appearance="raw"
         size="medium"
         justify-content="space-between"
-        class="oc-flex oc-flex-middle oc-width-1-1 oc-py-xs oc-px-s"
-        :class="{ 'oc-secondary-container': option.id === selectedOption?.id }"
+        class="flex items-center oc-width-1-1 py-1 px-2"
+        :class="{ 'bg-role-secondary-container': option.id === selectedOption?.id }"
         @click="selectOption(option)"
       >
         <span>{{ option.label }}</span>
-        <div v-if="option.id === selectedOption?.id" class="oc-flex">
+        <div v-if="option.id === selectedOption?.id" class="flex">
           <oc-icon name="check" />
         </div>
       </oc-button>

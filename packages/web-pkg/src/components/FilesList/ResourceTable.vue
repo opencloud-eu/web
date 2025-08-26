@@ -37,7 +37,7 @@
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template v-if="!isLocationPicker && !isFilePicker" #selectHeader>
-      <div class="resource-table-select-all">
+      <div class="resource-table-select-all flex justify-center items-center">
         <oc-checkbox
           id="resource-table-select-all"
           v-oc-tooltip="{ content: selectAllCheckboxLabel, placement: 'bottom' }"
@@ -53,7 +53,7 @@
     <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
       <oc-spinner
         v-if="isResourceInDeleteQueue(item.id)"
-        class="resource-table-activity-indicator"
+        class="resource-table-activity-indicator ml-1"
         size="medium"
         :aria-label="$gettext('File is being processed')"
       />
@@ -67,12 +67,18 @@
         :disabled="isResourceDisabled(item)"
         :model-value="isResourceSelected(item)"
         :outline="isLatestSelectedItem(item)"
-        @click.stop="toggleSelection(item.id)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (!interceptModifierClick(e, item)) {
+              toggleSelection(item.id)
+            }
+          }
+        "
       />
     </template>
     <template #name="{ item }">
       <div
-        class="resource-table-resource-wrapper"
+        class="resource-table-resource-wrapper flex items-center"
         :class="[{ 'resource-table-resource-wrapper-limit-max-width': hasRenameAction(item) }]"
       >
         <slot name="image" :resource="item" />
@@ -95,9 +101,16 @@
         />
         <oc-button
           v-if="hasRenameAction(item)"
-          class="resource-table-edit-name raw-hover-surface oc-p-xs"
+          class="resource-table-edit-name raw-hover-surface p-1 ml-1"
           appearance="raw"
-          @click="openRenameDialog(item)"
+          @click.stop="
+            (e: MouseEvent) => {
+              if (interceptModifierClick(e, item)) {
+                return
+              }
+              openRenameDialog(item)
+            }
+          "
         >
           <oc-icon name="edit-2" fill-type="line" size="small" />
         </oc-button>
@@ -121,19 +134,19 @@
       >
         <oc-tag
           v-oc-tooltip="getTagToolTip(tag)"
-          class="resource-table-tag oc-ml-xs"
+          class="resource-table-tag ml-1"
           :rounded="true"
           size="small"
         >
           <oc-icon name="price-tag-3" size="small" />
-          <span class="oc-text-truncate">{{ tag }}</span>
+          <span class="truncate">{{ tag }}</span>
         </oc-tag>
       </component>
       <oc-tag
         v-if="item.tags.length > 2"
         size="small"
-        class="resource-table-tag-more"
-        @click="openTagsSidebar"
+        class="resource-table-tag-more align-text-bottom"
+        @click="openTagsSidebar()"
       >
         + {{ item.tags.length - 2 }}
       </oc-tag>
@@ -178,7 +191,7 @@
       <p
         v-oc-tooltip="formatDate(item.ddate)"
         tabindex="0"
-        class="oc-m-rm"
+        class="m-0"
         v-text="formatDateRelative(item.ddate)"
       />
     </template>
@@ -187,10 +200,17 @@
         appearance="raw-inverse"
         class="resource-table-shared-by"
         no-hover
-        @click="openSharingSidebar(item)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (interceptModifierClick(e, item)) {
+              return
+            }
+            openSharingSidebar(item, e)
+          }
+        "
       >
         <oc-avatars
-          class="resource-table-people"
+          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
           :is-tooltip-displayed="true"
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
@@ -213,10 +233,17 @@
         appearance="raw-inverse"
         class="resource-table-shared-with"
         no-hover
-        @click="openSharingSidebar(item)"
+        @click.stop="
+          (e: MouseEvent) => {
+            if (interceptModifierClick(e, item)) {
+              return
+            }
+            openSharingSidebar(item, e)
+          }
+        "
       >
         <oc-avatars
-          class="resource-table-people"
+          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
           :items="getSharedWithAvatarItems(item)"
           :stacked="true"
           :max-displayed="3"
@@ -237,7 +264,10 @@
       </oc-button>
     </template>
     <template #actions="{ item }">
-      <div v-if="showContextDrop(item)" class="resource-table-actions">
+      <div
+        v-if="showContextDrop(item)"
+        class="resource-table-actions flex items-center justify-end flex-row flex-nowrap"
+      >
         <!-- @slot Add quick actions before the `context-menu / three dot` button in the actions column -->
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
@@ -320,6 +350,7 @@ import {
 } from '../../helpers'
 import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
+import { useInterceptModifierClick } from '../../composables/keyboardActions'
 
 import { useResourceRouteResolver } from '../../composables/filesList/useResourceRouteResolver'
 import { ClipboardActions } from '../../helpers/clipboardActions'
@@ -569,6 +600,7 @@ export default defineComponent({
     const capabilityStore = useCapabilityStore()
     const { getMatchingSpace } = useGetMatchingSpace()
     const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
+    const { interceptModifierClick } = useInterceptModifierClick()
     const folderLinkUtils = useFolderLink({
       space: ref(props.space),
       targetRouteCallback: computed(() => props.targetRouteCallback)
@@ -729,6 +761,8 @@ export default defineComponent({
       isEmbedModeEnabled,
       emitSelect,
       toggleSelection,
+      eventBus,
+      interceptModifierClick,
       areFileExtensionsShown,
       latestSelectedId,
       isResourceClickable,
@@ -1028,8 +1062,17 @@ export default defineComponent({
     openTagsSidebar() {
       eventBus.publish(SideBarEventTopics.open)
     },
-    openSharingSidebar(file: Resource) {
-      let panelToOpen
+    handleFileClick(e: MouseEvent, resource: Resource) {
+      if (this.interceptModifierClick(e, resource)) {
+        return
+      }
+      this.$emit('fileClick', { space: this.getMatchingSpace(resource), resources: [resource] })
+    },
+    openSharingSidebar(file: Resource, event?: MouseEvent) {
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, file)) {
+        return
+      }
+      let panelToOpen: unknown
       if (file.type === 'space') {
         panelToOpen = 'space-share'
       } else {
@@ -1096,11 +1139,16 @@ export default defineComponent({
       this.toggleSelection(file.id)
     },
     showContextMenuOnBtnClick(data: ContextMenuBtnClickEventData, item: Resource) {
+      const { dropdown, event } = data
+
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, item)) {
+        return
+      }
+
       if (this.isResourceDisabled(item)) {
         return false
       }
 
-      const { dropdown, event } = data
       if (dropdown?.tippy === undefined) {
         return
       }
@@ -1110,8 +1158,10 @@ export default defineComponent({
       displayPositionedDropdown(dropdown.tippy, event, this.contextMenuButton)
     },
     showContextMenu(row: ComponentPublicInstance<unknown>, event: MouseEvent, item: Resource) {
+      if (event instanceof MouseEvent && this.interceptModifierClick(event, item)) {
+        return
+      }
       event.preventDefault()
-
       if (this.isResourceDisabled(item)) {
         return false
       }
@@ -1208,9 +1258,11 @@ export default defineComponent({
           .map((resource) => resource.id)
       )
     },
-    emitFileClick(resource: Resource) {
+    emitFileClick(resource: Resource, event?: MouseEvent) {
+      if (this.interceptModifierClick(event, resource)) {
+        return
+      }
       const space = this.getMatchingSpace(resource)
-
       /**
        * Triggered when a default action is triggered on a file
        * @property {object} resource resource for which the event is triggered
@@ -1304,9 +1356,6 @@ export default defineComponent({
   }
 
   &-resource-wrapper {
-    display: flex;
-    align-items: center;
-
     &-limit-max-width {
       max-width: calc(100% - var(--oc-space-medium));
     }
@@ -1324,28 +1373,11 @@ export default defineComponent({
 
   &-tag-more {
     cursor: pointer;
-    border: 0 !important;
-    vertical-align: text-bottom;
   }
 
   &-edit-name,
   &-activity-indicator {
     display: inline-flex;
-    margin-left: var(--oc-space-xsmall);
-  }
-
-  &-actions,
-  &-people {
-    align-items: center;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-  }
-
-  &-select-all {
-    align-items: center;
-    display: flex;
-    justify-content: center;
   }
 }
 

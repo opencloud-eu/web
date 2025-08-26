@@ -1,13 +1,13 @@
 <template>
   <div
-    class="oc-fade-in oc-flex oc-flex-wrap oc-notification-message oc-box-shadow-medium oc-rounded oc-p-m"
+    class="oc-fade-in flex flex-wrap oc-notification-message oc-box-shadow-medium rounded-sm break-keep bg-role-surface"
     :class="classes"
   >
-    <div class="oc-flex oc-flex-wrap oc-flex-middle oc-flex-1" :role="role" :aria-live="ariaLive">
-      <div class="oc-flex oc-flex-middle oc-flex-between oc-width-1-1">
-        <div class="oc-flex oc-flex-middle">
-          <oc-icon name="information" fill-type="line" class="oc-mr-s" />
-          <div class="oc-notification-message-title">
+    <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
+      <div class="flex items-center justify-between oc-width-1-1">
+        <div class="flex items-center">
+          <oc-icon name="information" fill-type="line" class="mr-2" />
+          <div class="oc-notification-message-title text-lg">
             {{ title }}
           </div>
         </div>
@@ -15,15 +15,15 @@
           <oc-icon name="close" />
         </oc-button>
       </div>
-      <div v-if="message || errorLogContent" class="oc-flex oc-flex-between oc-width-1-1 oc-mt-s">
+      <div v-if="message || errorLogContent" class="flex justify-between oc-width-1-1 mt-2">
         <span
           v-if="message"
-          class="oc-notification-message-content oc-text-muted oc-mr-s"
+          class="oc-notification-message-content text-role-on-surface-variant mr-2"
           v-text="message"
         />
         <oc-button
           v-if="errorLogContent"
-          class="oc-notification-message-error-log-toggle-button"
+          class="oc-notification-message-error-log-toggle-button break-keep"
           gap-size="none"
           appearance="raw"
           @click="showErrorLog = !showErrorLog"
@@ -32,7 +32,7 @@
           <oc-icon :name="showErrorLog ? 'arrow-up-s' : 'arrow-down-s'" />
         </oc-button>
       </div>
-      <oc-error-log v-if="showErrorLog" class="oc-mt-m" :content="errorLogContent" />
+      <oc-error-log v-if="showErrorLog" class="mt-4" :content="errorLogContent" />
     </div>
   </div>
 </template>
@@ -98,20 +98,17 @@ onMounted(() => {
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-notification-message {
+    @apply p-4 mt-2;
+  }
+}
+</style>
 <style lang="scss">
 .oc-notification-message {
-  background-color: var(--oc-role-surface) !important;
-  margin-top: var(--oc-space-small);
   position: relative;
-  word-break: break-word;
-
-  &-title {
-    font-size: 1.15rem;
-  }
-
-  &-error-log-toggle-button {
-    word-break: keep-all;
-  }
 }
 </style>

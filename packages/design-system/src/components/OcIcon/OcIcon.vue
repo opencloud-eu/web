@@ -1,7 +1,7 @@
 <template>
   <component
     :is="type"
-    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size)]"
+    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size), 'box-content']"
   >
     <inline-svg
       :src="nameWithFillType"
@@ -101,7 +101,15 @@ const transformSvgElement = (svg: SVGElement) => {
   return svg
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-icon {
+    @apply align-baseline;
+  }
+}
+</style>
 <style lang="scss">
 @mixin oc-icon-size($factor) {
   height: $oc-size-icon-default * $factor;
@@ -113,7 +121,6 @@ const transformSvgElement = (svg: SVGElement) => {
 .oc-icon {
   // SVG wrapper
   display: inline-block;
-  vertical-align: baseline;
 
   svg {
     display: block;

@@ -23,28 +23,32 @@ export interface Props {
 
 const { items } = defineProps<Props>()
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .details-list dt,
+  .details-list dd {
+    @apply mb-2 flex items-center;
+  }
+
+  .details-list dd {
+    @apply ml-4 font-normal;
+  }
+
+  .details-list dt {
+    @apply font-semibold whitespace-nowrap;
+  }
+
+  .details-list dd:last-of-type,
+  .details-list dt:last-of-type {
+    @apply mb-0;
+  }
+}
+</style>
 <style lang="scss">
 .details-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  dt,
-  dd {
-    margin-bottom: var(--oc-space-small);
-    display: flex;
-    align-items: center;
-  }
-  dt {
-    font-weight: bold;
-    white-space: nowrap;
-  }
-  dd {
-    margin-inline-start: var(--oc-space-medium);
-  }
-
-  dd:last-of-type,
-  dt:last-of-type {
-    margin-bottom: 0 !important;
-  }
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <div class="oc-flex user-info oc-mb-l">
-    <user-avatar class="oc-mb-m" :width="80" :user-id="user.id" :user-name="user.displayName" />
+  <div class="flex user-info mb-6">
+    <user-avatar class="mb-4" :width="80" :user-id="user.id" :user-name="user.displayName" />
     <span v-text="user.onPremisesSamAccountName"></span>
-    <span class="oc-text-muted user-info-display-name" v-text="user.displayName"></span>
+    <span class="text-role-on-surface-variant text-2xl" v-text="user.displayName"></span>
   </div>
 </template>
 <script lang="ts">
@@ -24,9 +24,5 @@ export default defineComponent({
 .user-info {
   align-items: center;
   flex-direction: column;
-}
-
-.user-info-display-name {
-  font-size: 1.5rem;
 }
 </style>

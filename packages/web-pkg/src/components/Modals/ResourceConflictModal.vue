@@ -1,6 +1,6 @@
 <template>
-  <span class="oc-display-inline-block oc-mb-m" v-text="message" />
-  <div class="oc-my-m">
+  <span class="oc-display-inline-block mb-4" v-text="message" />
+  <div class="my-4">
     <oc-checkbox
       v-if="conflictCount > 1"
       v-model="checkboxValue"
@@ -9,19 +9,15 @@
       :aria-label="checkboxLabel"
     />
   </div>
-  <div class="oc-flex oc-flex-right oc-flex-middle oc-mt-m">
+  <div class="flex justify-end items-center mt-4">
     <div class="oc-modal-body-actions-grid">
-      <oc-button class="oc-modal-body-actions-cancel oc-ml-s" @click="onCancel">
+      <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
         {{ $gettext('Skip') }}
       </oc-button>
-      <oc-button class="oc-modal-body-actions-secondary oc-ml-s" @click="onConfirmSecondary">
+      <oc-button class="oc-modal-body-actions-secondary ml-2" @click="onConfirmSecondary">
         {{ confirmSecondaryText }}
       </oc-button>
-      <oc-button
-        class="oc-modal-body-actions-confirm oc-ml-s"
-        appearance="filled"
-        @click="onConfirm"
-      >
+      <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
         {{ $gettext('Keep both') }}
       </oc-button>
     </div>

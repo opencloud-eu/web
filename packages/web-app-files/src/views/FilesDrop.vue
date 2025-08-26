@@ -3,18 +3,18 @@
   <div
     v-else
     id="files-drop-container"
-    class="oc-height-1-1 oc-flex oc-flex-column oc-flex-between"
+    class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline"
   >
-    <div v-if="dragareaEnabled" class="dragarea" />
+    <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20 rounded-xl" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
-    <div class="oc-p oc-height-1-1 oc-text-center">
-      <div key="loaded-drop" class="oc-flex oc-flex-column">
+    <div class="p-4 oc-height-1-1 text-center">
+      <div key="loaded-drop" class="flex flex-col">
         <div class="oc-width-1-1 oc-width-xxlarge@m">
           <h2 v-text="title" />
           <resource-upload
             id="files-drop-zone"
             ref="fileUpload"
-            class="oc-flex oc-flex-middle oc-flex-center oc-placeholder"
+            class="flex items-center justify-center oc-placeholder"
             :btn-label="$gettext('Drop files here to upload or click to select file')"
           />
           <div id="previews" hidden />
@@ -23,12 +23,12 @@
           <h2>
             <span v-text="$gettext('An error occurred while loading the public link')" />
           </h2>
-          <p class="oc-rm-m oc-m-rm" v-text="errorMessage" />
+          <p class="m-0" v-text="errorMessage" />
         </div>
-        <div v-else class="oc-flex oc-flex-center oc-width-1-1">
+        <div v-else class="flex justify-center oc-width-1-1">
           <p
             id="files-drop-info-message"
-            class="oc-m-rm oc-pt-xl oc-text-small"
+            class="m-0 pt-12 text-sm"
             v-text="
               $gettext(
                 'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="oc-mt-xxl">
+      <div class="mt-24">
         <p v-text="themeSlogan" />
       </div>
     </div>
@@ -258,9 +258,6 @@ export default defineComponent({
 #files-drop {
   &-container {
     position: relative;
-    background: transparent;
-    border: 1px dashed var(--oc-role-outline-variant);
-    margin: var(--oc-space-xlarge);
   }
 
   &-info-message {
@@ -271,7 +268,6 @@ export default defineComponent({
 }
 
 .dragarea {
-  background-color: rgba(60, 130, 225, 0.21);
   pointer-events: none;
   top: 0;
   left: 0;
@@ -279,7 +275,5 @@ export default defineComponent({
   bottom: 0;
   position: absolute;
   z-index: 9;
-  border-radius: 14px;
-  border: 0;
 }
 </style>

@@ -3,16 +3,16 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-flex oc-flex-middle">
+    <div class="flex items-center">
       <input
         :id="id"
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-invisible oc-file-input"
+        class="oc-invisible oc-file-input p-0"
         type="file"
         :multiple="multiple"
         :accept="fileTypes"
@@ -22,23 +22,23 @@
       <oc-button
         ref="inputBtnRef"
         :class="{
-          'oc-file-input-danger': !!errorMessage
+          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         :disabled="disabled"
         color-role="secondary"
         appearance="outline"
-        class="oc-file-input-button oc-text-input-btn oc-pr-s"
+        class="oc-file-input-button oc-text-input-btn pr-2"
         @click="addFiles"
       >
         {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
       </oc-button>
-      <div class="oc-file-input-files oc-rounded oc-ml-s">
-        <div v-if="fileNames" class="oc-py-xs oc-px-s oc-text-small oc-flex oc-flex-middle">
+      <div class="oc-file-input-files rounded-sm ml-2 bg-role-surface-container">
+        <div v-if="fileNames" class="py-1 px-2 text-sm flex items-center">
           {{ fileNames }}
           <oc-button
             v-if="clearButtonEnabled && fileNames"
             appearance="raw"
-            class="oc-file-input-clear raw-hover-surface oc-p-xs oc-ml-xs"
+            class="oc-file-input-clear raw-hover-surface p-1 ml-1"
             :aria-label="$gettext('Clear input')"
             @click="onClear"
           >
@@ -49,17 +49,17 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-file-input-message oc-text-small oc-flex oc-flex-middle"
+      class="oc-file-input-message flex items-center text-sm mt-1"
       :class="{
-        'oc-file-input-description': !!descriptionMessage,
-        'oc-file-input-danger': !!errorMessage
+        'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
       }"
     >
       <oc-icon
         v-if="!!errorMessage"
         name="error-warning"
         size="small"
-        class="oc-mr-xs"
+        class="mr-1"
         fill-type="line"
         aria-hidden="true"
       />
@@ -67,8 +67,8 @@
       <span
         :id="messageId"
         :class="{
-          'oc-file-input-description': !!descriptionMessage,
-          'oc-file-input-danger': !!errorMessage
+          'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
         }"
         v-text="messageText"
       />
@@ -238,28 +238,10 @@ const onFocus = async () => {
 
 <style scoped lang="scss">
 .oc-file-input {
-  border: 0;
-  padding: 0;
   width: 0;
   height: 0;
 
-  &-files {
-    background-color: var(--oc-role-surface-container);
-  }
-
-  &-danger,
-  &-danger:focus {
-    color: var(--oc-role-error) !important;
-  }
-
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
-
   &-message {
-    display: flex;
-    align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
   }
 }

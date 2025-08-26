@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-color-input-wrapper oc-position-relative">
@@ -12,10 +12,11 @@
         v-bind="additionalAttributes"
         type="color"
         :aria-invalid="ariaInvalid"
-        class="oc-color-input oc-input oc-rounded"
+        class="oc-color-input oc-input rounded-sm py-0.5 focus:border focus:border-role-outline focus:outline-2 focus:outline-role-outline"
         :class="{
-          'oc-color-input-danger': !!errorMessage,
-          'clear-action-visible': showClearButton
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+            !!errorMessage,
+          'pr-6': showClearButton
         }"
         :value="modelValue"
         :disabled="disabled"
@@ -24,7 +25,7 @@
       />
       <oc-button
         v-if="showClearButton"
-        class="oc-mr-xs oc-position-center-right oc-color-input-btn-clear"
+        class="mr-1 oc-position-center-right oc-color-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -34,10 +35,11 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-color-input-message oc-text-small"
+      class="oc-color-input-message flex items-center text-sm mt-1"
       :class="{
-        'oc-color-input-description': !!descriptionMessage,
-        'oc-color-input-danger': !!errorMessage
+        'oc-color-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          !!errorMessage
       }"
     >
       <oc-icon
@@ -46,14 +48,16 @@
         size="small"
         fill-type="line"
         aria-hidden="true"
-        class="oc-mr-xs"
+        class="mr-1"
       />
 
       <span
         :id="messageId"
         :class="{
-          'oc-color-input-description': !!descriptionMessage,
-          'oc-color-input-danger': !!errorMessage
+          'oc-color-input-description text-role-on-surface-variant flex items-center':
+            !!descriptionMessage,
+          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+            !!errorMessage
         }"
         v-text="messageText"
       />
@@ -195,8 +199,6 @@ const onInput = (value: string) => {
 
 <style lang="scss">
 .oc-color-input-message.oc-color-input-description {
-  display: flex;
-  align-items: center;
   position: relative;
 
   .oc-icon {
@@ -207,37 +209,12 @@ const onInput = (value: string) => {
 }
 
 .oc-color-input {
-  padding-top: calc(var(--oc-space-xsmall) - 2px) !important;
-  padding-bottom: calc(var(--oc-space-xsmall) - 2px) !important;
-
   &-wrapper {
     max-width: 5rem !important;
   }
 
-  &:focus {
-    border: 1px solid var(--oc-role-surface) !important;
-    outline: 2px solid var(--oc-role-outline) !important;
-  }
-
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
-
-  &-danger,
-  &-danger:focus {
-    border-color: var(--oc-role-error) !important;
-    color: var(--oc-role-error) !important;
-  }
-
   &-message {
-    display: flex;
-    align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
-  }
-
-  &.clear-action-visible {
-    padding-right: ($oc-size-icon-default * 0.7) + 7px;
   }
 }
 </style>

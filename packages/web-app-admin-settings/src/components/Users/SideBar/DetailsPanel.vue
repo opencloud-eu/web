@@ -1,16 +1,20 @@
 <template>
-  <div v-if="noUsers" class="oc-flex user-info oc-text-center oc-mt-xl">
+  <div v-if="noUsers" class="flex user-info text-center mt-12">
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
-  <div v-if="multipleUsers" id="oc-users-details-multiple-sidebar" class="oc-flex user-info">
+  <div
+    v-if="multipleUsers"
+    id="oc-users-details-multiple-sidebar"
+    class="flex user-info p-4 bg-role-surface-container rounded-sm"
+  >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
-  <div v-if="user" id="oc-user-details-sidebar">
+  <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <UserInfoBox :user="user" />
     <dl
-      class="details-list oc-m-rm"
+      class="details-list m-0"
       :aria-label="$gettext('Overview of the information about the selected user')"
     >
       <dt>{{ $gettext('User name') }}</dt>
@@ -23,7 +27,7 @@
       <dd>
         <span v-if="user.appRoleAssignments" v-text="roleDisplayName" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -44,7 +48,7 @@
       <dd>
         <span v-if="showUserQuota" v-text="quotaDisplayValue" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -59,7 +63,7 @@
       <dd>
         <span v-if="user.memberOf.length" v-text="groupsDisplayValue" />
         <span v-else>
-          <span class="oc-mr-xs">-</span>
+          <span class="mr-1">-</span>
           <oc-contextual-helper
             :text="$gettext('No groups assigned.')"
             :title="$gettext('Groups')"
@@ -156,23 +160,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#oc-user-details-sidebar,
-#oc-users-details-multiple-sidebar {
-  background-color: var(--oc-role-surface-container);
-  border-radius: 5px;
-  padding: var(--oc-space-medium);
-}
-
-.details-table {
-  text-align: left;
-
-  tr {
-    height: 1.5rem;
-  }
-
-  th {
-    font-weight: 600;
-  }
-}
-</style>

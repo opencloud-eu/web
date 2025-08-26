@@ -1,16 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`TrashOverview > view states > should render trash list 1`] = `
-"<div class="oc-flex">
-  <div data-v-39c970be="" class="files-view-wrapper oc-width-expand">
-    <div data-v-39c970be="" id="files-view">
+"<div class="flex">
+  <div data-v-39c970be="" class="files-view-wrapper oc-width-expand focus:outline-0">
+    <div data-v-39c970be="" id="files-view" class="outline-0">
       <app-bar-stub viewmodedefault="resource-table" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
-      <div class="trash-bin-filters oc-flex oc-flex-right oc-flex-wrap oc-flex-bottom oc-mx-m oc-mb-m">
+      <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
         <div class=""><label class="oc-label" for="trash-filter">Search
             <!--v-if-->
           </label>
           <div class="oc-position-relative">
-            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input oc-rounded" type="text" value="">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text" value="">
             <!--v-if-->
           </div>
           <!--v-if-->
@@ -18,11 +18,11 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
         </div>
       </div>
       <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" id="files-space-table" selection="">
-        <thead class="oc-thead">
+        <thead class="oc-thead border-b">
           <tr class="oc-table-header-row">
-            <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name oc-pl-m" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1">
+            <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-expand oc-th oc-table-header-cell oc-table-header-cell-name pl-4" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button oc-button-m oc-button-justify-content-left oc-button-gap-s oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover oc-button-sort oc-width-1-1 hover:underline">
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-table-thead-content header-text">Name</span> <span class="oc-icon oc-icon-s oc-p-xs oc-rounded"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+                <!-- @slot Content of the button --> <span class="oc-table-thead-content align-middle header-text">Name</span> <span class="oc-icon oc-icon-s box-content p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -33,31 +33,31 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
     }" aria-hidden="true" focusable="false"></svg></span>
               </button></th>
             <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-indicators" style="top: 0px;">
-              <div><span class="oc-table-thead-content header-text">Status</span></div>
+              <div><span class="oc-table-thead-content align-middle header-text">Status</span></div>
             </th>
-            <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions oc-pr-m" style="top: 0px;">
-              <div><span class="oc-table-thead-content header-text">Actions</span></div>
+            <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-shrink oc-th oc-table-header-cell oc-table-header-cell-actions pr-4" style="top: 0px;">
+              <div><span class="oc-table-thead-content align-middle header-text">Actions</span></div>
             </th>
           </tr>
         </thead>
         <tbody class="has-item-context-menu">
-          <tr class="oc-tbody-tr oc-tbody-tr-1" data-item-id="1" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+          <tr class="oc-tbody-tr oc-tbody-tr-1 border-t" data-item-id="1" draggable="false">
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
-          <tr class="oc-tbody-tr oc-tbody-tr-2" data-item-id="2" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+          <tr class="oc-tbody-tr oc-tbody-tr-2 border-t" data-item-id="2" draggable="false">
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
-          <tr class="oc-tbody-tr oc-tbody-tr-3" data-item-id="3" draggable="false">
-            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer"></span></td>
+          <tr class="oc-tbody-tr oc-tbody-tr-3 border-t" data-item-id="3" draggable="false">
+            <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="3"><span class="shimmer bg-role-shadow"></span></td>
           </tr>
         </tbody>
-        <tfoot class="oc-table-footer">
+        <tfoot class="oc-table-footer border-t">
           <tr class="oc-table-footer-row">
-            <td colspan="3" class="oc-table-footer-cell">
+            <td colspan="3" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
-              <div class="oc-text-center oc-width-1-1 oc-my-s">
-                <p class="oc-text-muted">3 trash bins in total</p>
+              <div class="text-center oc-width-1-1 my-2">
+                <p class="text-role-on-surface-variant">3 trash bins in total</p>
                 <!--v-if-->
               </div>
             </td>

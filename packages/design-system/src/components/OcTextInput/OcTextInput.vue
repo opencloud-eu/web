@@ -3,27 +3,22 @@
     <slot name="label">
       <label class="oc-label" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="oc-text-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-position-relative">
-      <oc-icon
-        v-if="readOnly"
-        name="lock"
-        size="small"
-        class="oc-mt-s oc-ml-s oc-position-absolute"
-      />
+      <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 oc-position-absolute" />
       <component
         :is="inputComponent"
         :id="id"
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-text-input oc-input oc-rounded"
+        class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface"
         :class="{
-          'oc-text-input-danger': !!showErrorMessage,
-          'oc-pl-l': !!readOnly,
-          'clear-action-visible': showClearButton
+          'oc-text-input-danger border-role-error': !!showErrorMessage,
+          'pl-6': !!readOnly,
+          'pr-6': showClearButton
         }"
         :type="type"
         :value="modelValue"
@@ -38,7 +33,7 @@
       <oc-button
         v-if="showClearButton"
         :aria-label="clearButtonAccessibleLabelValue"
-        class="oc-pr-s oc-position-center-right oc-text-input-btn-clear"
+        class="pr-2 oc-position-center-right oc-text-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -48,10 +43,11 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-text-input-message oc-text-small"
+      class="oc-text-input-message flex align-center text-sm mt-1"
       :class="{
-        'oc-text-input-description': showDescriptionMessage,
-        'oc-text-input-danger': showErrorMessage
+        'oc-text-input-description text-role-on-surface-variant': showDescriptionMessage,
+        'oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          showErrorMessage
       }"
     >
       <template v-if="showErrorMessage">
@@ -61,19 +57,19 @@
           size="small"
           fill-type="line"
           aria-hidden="true"
-          class="oc-mr-xs"
+          class="mr-1"
         />
         <span
           v-if="showErrorMessage"
           :id="messageId"
-          class="oc-text-input-danger"
+          class="oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error"
           v-text="errorMessage"
         />
       </template>
       <span
         v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="oc-text-input-description"
+        class="oc-text-input-description text-role-on-surface-variant flex items-center"
         v-text="descriptionMessage"
       />
     </div>
@@ -347,39 +343,23 @@ watch(
   }
 )
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-text-input:focus {
+    @apply outline-2 outline-role-outline;
+  }
+}
+</style>
 <style lang="scss">
 .oc-text-input-message.oc-text-input-description {
-  display: flex;
-  align-items: center;
   position: relative;
 }
 
 .oc-text-input {
-  &:focus {
-    border: 1px solid var(--oc-role-surface) !important;
-    outline: 2px solid var(--oc-role-outline) !important;
-  }
-
-  &-description {
-    color: var(--oc-role-on-surface-variant);
-  }
-
-  &-danger,
-  &-danger:focus {
-    border-color: var(--oc-role-error) !important;
-    color: var(--oc-role-error) !important;
-  }
-
   &-message {
-    display: flex;
-    align-items: center;
-    margin-top: var(--oc-space-xsmall);
     min-height: $oc-font-size-default * 1.5;
-  }
-
-  &.clear-action-visible {
-    padding-right: ($oc-size-icon-default * 0.7) + 7px;
   }
 }
 </style>
