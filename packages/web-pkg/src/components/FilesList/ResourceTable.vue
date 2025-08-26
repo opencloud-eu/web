@@ -1482,7 +1482,7 @@ export default defineComponent({
   #files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith,
   #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
   #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
-    @apply hidden xl:table-cell;
+    @apply hidden lg:table-cell;
   }
 }
 </style>
