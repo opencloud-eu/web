@@ -318,7 +318,7 @@ const dropItemStyling = (
 
 @layer components {
   .oc-breadcrumb-item-dragover {
-    @apply bg-role-secondary-container;
+    @apply bg-role-secondary-container rounded-xs;
   }
 
   .oc-breadcrumb-list #oc-breadcrumb-contextmenu li button {
