@@ -30,44 +30,46 @@
 import { stringify } from 'qs'
 import {
   computed,
-  unref,
   nextTick,
-  ref,
-  watch,
+  onBeforeUnmount,
   onMounted,
+  ref,
+  unref,
   useTemplateRef,
-  onBeforeUnmount
+  watch
 } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import {
   GraphSharePermission,
-  Resource,
-  SpaceResource,
   isProjectSpaceResource,
   isPublicSpaceResource,
-  isShareSpaceResource
+  isShareSpaceResource,
+  Resource,
+  SpaceResource,
+  urlJoin
 } from '@opencloud-eu/web-client'
-import { urlJoin } from '@opencloud-eu/web-client'
 import {
-  isSameResource,
-  useCapabilityStore,
-  useConfigStore,
-  useMessages,
-  useRequest,
-  useAppProviderService,
-  useRoute,
-  queryItemAsString,
-  useRouteQuery,
   getSharedDriveItem,
+  isSameResource,
+  queryItemAsString,
   setCurrentUserShareSpacePermissions,
-  useSpacesStore,
+  useAppProviderService,
+  useCapabilityStore,
   useClientService,
-  useSharesStore,
+  useConfigStore,
+  useFolderLink,
+  useMessages,
   useModals,
-  useRouter
+  useRequest,
+  useRoute,
+  useRouteQuery,
+  useRouter,
+  useSharesStore,
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
+import FilePickerModal from '@opencloud-eu/web-pkg/src/components/Modals/FilePickerModal.vue'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -91,6 +93,7 @@ const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient } = useClientService()
 const { dispatchModal } = useModals()
 const { webdav } = useClientService()
+const { getParentFolderLink } = useFolderLink()
 
 const viewModeQuery = useRouteQuery('view_mode')
 const viewModeQueryValue = computed(() => {
@@ -292,6 +295,25 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
       })
       return
     }
+
+    if (message.MessageId === 'UI_InsertGraphic') {
+      dispatchModal({
+        elementClass: 'file-picker-modal',
+        title: $gettext('Insert graphic'),
+        customComponent: FilePickerModal,
+        hideActions: true,
+        customComponentAttrs: () => ({
+          parentFolderLink: getParentFolderLink(resource),
+          allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
+          callbackFn: ({ resource }) => {
+            postMessageToCollabora('Action_InsertGraphic', {
+              url: resource.downloadURL
+            })
+          }
+        }),
+        focusTrapInitial: false
+      })
+    }
   } catch (e) {
     console.debug('Error parsing Collabora PostMessage', e)
   }
@@ -321,6 +343,7 @@ const postMessageToCollabora = (messageId: string, values?: { [key: string]: unk
     console.error('Collabora iframe not found')
     return
   }
+
   return unref(appIframeRef).contentWindow.postMessage(
     JSON.stringify({
       MessageId: messageId,
