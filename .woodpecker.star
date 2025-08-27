@@ -237,7 +237,7 @@ def main(ctx):
         print("Errors detected. Review messages above.")
         return []
 
-    after = pipelinesDependsOn(afterPipelines(ctx), pnpmCache(ctx))
+    after = pipelinesDependsOn(afterPipelines(ctx), pnpmCache(ctx)) + designSystemDocs(ctx)
 
     pipelines = release + before + stages + after
 
@@ -256,8 +256,7 @@ def beforePipelines(ctx):
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx)) + \
-           designSystemDocs(ctx)
+           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -1198,7 +1197,6 @@ def designSystemDocs(ctx):
             },
         ],
         "when": [
-            event["pull_request"],
             event["main_branch"],
         ],
         "workspace": web_workspace,
