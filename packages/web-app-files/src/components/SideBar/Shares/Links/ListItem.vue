@@ -2,7 +2,7 @@
   <div class="oc-width-1-1 flex items-center justify-between files-links-details">
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
-      <div class="files-links-name-wrapper pl-2">
+      <div class="files-links-name-wrapper grid pl-2">
         <span class="files-links-name truncate" v-text="linkShare.displayName" />
         <div class="flex flex-nowrap items-center">
           <link-role-dropdown
@@ -163,8 +163,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.files-links-name-wrapper {
-  display: grid;
-}
-</style>

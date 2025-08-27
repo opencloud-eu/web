@@ -311,12 +311,18 @@ export default defineComponent({
 })
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .tags-select .vs__actions {
+    @apply !hidden;
+  }
+}
+</style>
+
 <style lang="scss">
 .tags-select {
-  .vs__actions {
-    display: none !important;
-  }
-
   &-tag {
     height: 1.5rem;
 

@@ -77,10 +77,13 @@ export default defineComponent({
 
 @layer utilities {
   .account-table td {
-    @apply py-2 md:py-0;
+    @apply block md:table-cell py-2 md:py-0;
+  }
+  .account-table td > .checkbox-cell-wrapper {
+    @apply md:flex md:justify-end md:items-center;
   }
   .account-table tr {
-    @apply pb-1 md:pb-0 border-b;
+    @apply block md:table-row pb-1 md:pb-0 border-b;
   }
 }
 </style>
@@ -88,12 +91,10 @@ export default defineComponent({
 @media (max-width: $oc-breakpoint-small-max) {
   .account-table {
     tr {
-      display: block;
       height: 100% !important;
     }
 
     td {
-      display: block !important;
       width: 100% !important;
     }
   }
@@ -106,9 +107,6 @@ export default defineComponent({
 
   @media (min-width: $oc-breakpoint-medium-default) {
     td > .checkbox-cell-wrapper {
-      display: flex;
-      justify-content: end;
-      align-items: center;
       min-height: var(--oc-size-height-table-row);
     }
   }

@@ -108,6 +108,16 @@ export default defineComponent({
 })
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .app-image-ribbon span {
+    @apply block;
+  }
+}
+</style>
+
 <style lang="scss">
 .app-image-wrapper {
   position: relative;
@@ -128,7 +138,6 @@ export default defineComponent({
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       width: 10rem;
-      display: block;
     }
   }
 

@@ -69,7 +69,13 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const tagClasses = computed(() => {
-  const classes = ['oc-tag', `oc-tag-${getSizeClass(size)}`, 'border']
+  const classes = [
+    'oc-tag',
+    'inline-flex',
+    'items-center',
+    `oc-tag-${getSizeClass(size)}`,
+    'border'
+  ]
 
   type === 'router-link' || type === 'a'
     ? classes.push('oc-tag-link')
@@ -118,9 +124,7 @@ function $_ocTag_click(event: MouseEvent) {
 </style>
 <style lang="scss">
 .oc-tag {
-  align-items: center;
   box-sizing: border-box;
-  display: inline-flex;
   gap: var(--oc-space-xsmall);
 
   &-m {

@@ -466,6 +466,40 @@ export default defineComponent({
   .users-table .oc-table-data-cell-actions {
     @apply whitespace-nowrap;
   }
+
+  /* Hidden by default, visible from xl and up */
+  .users-table .oc-table-header-cell-role,
+  .users-table .oc-table-data-cell-role,
+  .users-table .oc-table-header-cell-accountEnabled,
+  .users-table .oc-table-data-cell-accountEnabled,
+  .users-table .oc-table-header-cell-mail,
+  .users-table .oc-table-data-cell-mail {
+    @apply hidden xl:table-cell;
+  }
+
+  /* DisplayName visible from lg and up */
+  .users-table .oc-table-header-cell-displayName,
+  .users-table .oc-table-data-cell-displayName {
+    @apply hidden lg:table-cell;
+  }
+
+  /* Squashed variant */
+  .users-table-squashed .oc-table-header-cell-role,
+  .users-table-squashed .oc-table-data-cell-role,
+  .users-table-squashed .oc-table-header-cell-accountEnabled,
+  .users-table-squashed .oc-table-data-cell-accountEnabled {
+    @apply hidden 2xl:table-cell;
+  }
+
+  .users-table-squashed .oc-table-header-cell-displayName,
+  .users-table-squashed .oc-table-data-cell-displayName {
+    @apply hidden xl:table-cell;
+  }
+
+  .users-table-squashed .oc-table-header-cell-mail,
+  .users-table-squashed .oc-table-data-cell-mail {
+    @apply hidden lg:table-cell;
+  }
 }
 </style>
 <style lang="scss">

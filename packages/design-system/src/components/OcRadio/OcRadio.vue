@@ -60,7 +60,12 @@ const {
 
 const model = defineModel<boolean | unknown>()
 
-const classes = computed(() => ['oc-radio', 'oc-radio-' + getSizeClass(size), 'm-0'])
+const classes = computed(() => [
+  'oc-radio',
+  'oc-radio-' + getSizeClass(size),
+  'm-0',
+  'inline-block'
+])
 
 const labelClasses = computed(() => ({
   'oc-invisible-sr': hideLabel,
@@ -90,7 +95,6 @@ const labelClasses = computed(() => ({
   background-position: 50% 50%;
   background-repeat: no-repeat;
 
-  display: inline-block;
   overflow: hidden;
 
   transition: 0.2s ease-in-out;

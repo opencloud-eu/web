@@ -53,7 +53,7 @@
     <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
       <oc-spinner
         v-if="isResourceInDeleteQueue(item.id)"
-        class="resource-table-activity-indicator ml-1"
+        class="resource-table-activity-indicator inline-flex ml-1"
         size="medium"
         :aria-label="$gettext('File is being processed')"
       />
@@ -101,7 +101,7 @@
         />
         <oc-button
           v-if="hasRenameAction(item)"
-          class="resource-table-edit-name raw-hover-surface p-1 ml-1"
+          class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
           appearance="raw"
           @click.stop="
             (e: MouseEvent) => {
@@ -1345,6 +1345,147 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  /* ---------------- SPACES TABLE ---------------- */
+  /* Mdate, Manager, RemainingQuota, Members, Status: visible from lg */
+  .spaces-table .oc-table-header-cell-mdate,
+  .spaces-table .oc-table-data-cell-mdate {
+    @apply hidden md:table-cell;
+  }
+
+  /* Manager, RemainingQuota, Members, Status: visible from lg */
+  .spaces-table .oc-table-header-cell-manager,
+  .spaces-table .oc-table-data-cell-manager,
+  .spaces-table .oc-table-header-cell-remainingQuota,
+  .spaces-table .oc-table-data-cell-remainingQuota,
+  .spaces-table .oc-table-header-cell-members,
+  .spaces-table .oc-table-data-cell-members,
+  .spaces-table .oc-table-header-cell-status,
+  .spaces-table .oc-table-data-cell-status {
+    @apply hidden lg:table-cell;
+  }
+
+  /* TotalQuota, UsedQuota: visible from xl */
+  .spaces-table .oc-table-header-cell-totalQuota,
+  .spaces-table .oc-table-data-cell-totalQuota,
+  .spaces-table .oc-table-header-cell-usedQuota,
+  .spaces-table .oc-table-data-cell-usedQuota {
+    @apply hidden xl:table-cell;
+  }
+
+  /* Squashed variant */
+  .spaces-table-squashed .oc-table-header-cell-status,
+  .spaces-table-squashed .oc-table-data-cell-status,
+  .spaces-table-squashed .oc-table-header-cell-manager,
+  .spaces-table-squashed .oc-table-data-cell-manager,
+  .spaces-table-squashed .oc-table-header-cell-totalQuota,
+  .spaces-table-squashed .oc-table-data-cell-totalQuota,
+  .spaces-table-squashed .oc-table-header-cell-usedQuota,
+  .spaces-table-squashed .oc-table-data-cell-usedQuota,
+  .spaces-table-squashed .oc-table-header-cell-members,
+  .spaces-table-squashed .oc-table-data-cell-members {
+    @apply hidden lg:table-cell;
+  }
+
+  .spaces-table-squashed .oc-table-header-cell-mdate,
+  .spaces-table-squashed .oc-table-data-cell-mdate,
+  .spaces-table-squashed .oc-table-header-cell-remainingQuota,
+  .spaces-table-squashed .oc-table-data-cell-remainingQuota {
+    @apply hidden xl:table-cell;
+  }
+
+  /* ---------------- FILES TABLE ---------------- */
+  /* Size, SharedWith, SharedBy, Status: visible from sm */
+  .files-table .oc-table-header-cell-size,
+  .files-table .oc-table-data-cell-size,
+  .files-table .oc-table-header-cell-sharedWith,
+  .files-table .oc-table-data-cell-sharedWith,
+  .files-table .oc-table-header-cell-sharedBy,
+  .files-table .oc-table-data-cell-sharedBy,
+  .files-table .oc-table-header-cell-status,
+  .files-table .oc-table-data-cell-status {
+    @apply hidden sm:table-cell;
+  }
+
+  /* Mdate, Sdate, Ddate: visible from md */
+  .files-table .oc-table-header-cell-mdate,
+  .files-table .oc-table-data-cell-mdate,
+  .files-table .oc-table-header-cell-sdate,
+  .files-table .oc-table-data-cell-sdate,
+  .files-table .oc-table-header-cell-ddate,
+  .files-table .oc-table-data-cell-ddate {
+    @apply hidden md:table-cell;
+  }
+
+  /* Tags, Indicators: visible from lg */
+  .files-table .oc-table-header-cell-tags,
+  .files-table .oc-table-data-cell-tags,
+  .files-table .oc-table-header-cell-indicators,
+  .files-table .oc-table-data-cell-indicators {
+    @apply hidden lg:table-cell;
+  }
+
+  /* SharedBy: visible from xl */
+  .files-table .oc-table-header-cell-sharedBy,
+  .files-table .oc-table-data-cell-sharedBy,
+  .files-table .oc-table-header-cell-tags,
+  .files-table .oc-table-data-cell-tags,
+  .files-table .oc-table-header-cell-indicators,
+  .files-table .oc-table-data-cell-indicators {
+    @apply hidden lg:table-cell;
+  }
+
+  /* Squashed variant */
+  .files-table-squashed .oc-table-header-cell-size,
+  .files-table-squashed .oc-table-data-cell-size,
+  .files-table-squashed .oc-table-header-cell-sharedWith,
+  .files-table-squashed .oc-table-data-cell-sharedWith,
+  .files-table-squashed .oc-table-header-cell-sharedBy,
+  .files-table-squashed .oc-table-data-cell-sharedBy,
+  .files-table-squashed .oc-table-header-cell-status,
+  .files-table-squashed .oc-table-data-cell-status {
+    @apply hidden md:table-cell;
+  }
+
+  .files-table-squashed .oc-table-header-cell-mdate,
+  .files-table-squashed .oc-table-data-cell-mdate,
+  .files-table-squashed .oc-table-header-cell-sdate,
+  .files-table-squashed .oc-table-data-cell-sdate,
+  .files-table-squashed .oc-table-header-cell-ddate,
+  .files-table-squashed .oc-table-data-cell-ddate {
+    @apply hidden lg:table-cell;
+  }
+
+  .files-table-squashed .oc-table-header-cell-sharedBy,
+  .files-table-squashed .oc-table-data-cell-sharedBy,
+  .files-table-squashed .oc-table-header-cell-tags,
+  .files-table-squashed .oc-table-data-cell-tags,
+  .files-table-squashed .oc-table-header-cell-indicators,
+  .files-table-squashed .oc-table-data-cell-indicators {
+    @apply hidden xl:table-cell;
+  }
+
+  /* ---------------- SHARED WITH ME VIEW ---------------- */
+  /* Show SharedBy, SyncEnabled from sm */
+  #files-shared-with-me-view .files-table .oc-table-header-cell-sharedBy,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedBy,
+  #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
+    @apply sm:table-cell;
+  }
+
+  /* Hide SharedWith, SyncEnabled below xl */
+  #files-shared-with-me-view .files-table .oc-table-header-cell-sharedWith,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith,
+  #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
+    @apply hidden lg:table-cell;
+  }
+}
+</style>
 <style lang="scss">
 .oc-table.condensed > tbody > tr {
   height: 0 !important;
@@ -1373,189 +1514,6 @@ export default defineComponent({
 
   &-tag-more {
     cursor: pointer;
-  }
-
-  &-edit-name,
-  &-activity-indicator {
-    display: inline-flex;
-  }
-}
-
-.spaces-table {
-  .oc-table-header-cell-mdate,
-  .oc-table-data-cell-mdate,
-  .oc-table-header-cell-manager,
-  .oc-table-data-cell-manager,
-  .oc-table-header-cell-remainingQuota,
-  .oc-table-data-cell-remainingQuota,
-  .oc-table-header-cell-members,
-  .oc-table-data-cell-members,
-  .oc-table-header-cell-status,
-  .oc-table-data-cell-status {
-    display: none;
-
-    @media only screen and (min-width: 960px) {
-      display: table-cell;
-    }
-  }
-
-  .oc-table-header-cell-totalQuota,
-  .oc-table-data-cell-totalQuota,
-  .oc-table-header-cell-usedQuota,
-  .oc-table-data-cell-usedQuota {
-    display: none;
-
-    @media only screen and (min-width: 1200px) {
-      display: table-cell;
-    }
-  }
-
-  &-squashed {
-    /**
-     * squashed = right sidebar is open.
-     * same media queries as above but +440px width of the right sidebar
-     * (because the right sidebar steals 440px from the file list)
-     */
-    .oc-table-header-cell-status,
-    .oc-table-data-cell-status,
-    .oc-table-header-cell-manager,
-    .oc-table-data-cell-manager,
-    .oc-table-header-cell-totalQuota,
-    .oc-table-data-cell-totalQuota,
-    .oc-table-header-cell-usedQuota,
-    .oc-table-data-cell-usedQuota,
-    .oc-table-header-cell-members,
-    .oc-table-data-cell-members {
-      display: none;
-
-      @media only screen and (min-width: 1400px) {
-        display: table-cell;
-      }
-    }
-
-    .oc-table-header-cell-mdate,
-    .oc-table-data-cell-mdate,
-    .oc-table-header-cell-remainingQuota,
-    .oc-table-data-cell-remainingQuota,
-    .oc-table-header-cell-mdate,
-    .oc-table-data-cell-mdate {
-      display: none;
-
-      @media only screen and (min-width: 1600px) {
-        display: table-cell;
-      }
-    }
-  }
-}
-
-// Hide files table columns
-.files-table {
-  .oc-table-header-cell-size,
-  .oc-table-data-cell-size,
-  .oc-table-header-cell-sharedWith,
-  .oc-table-data-cell-sharedWith,
-  .oc-table-header-cell-sharedBy,
-  .oc-table-data-cell-sharedBy,
-  .oc-table-header-cell-status,
-  .oc-table-data-cell-status {
-    display: none;
-
-    @media only screen and (min-width: 640px) {
-      display: table-cell;
-    }
-  }
-
-  .oc-table-header-cell-mdate,
-  .oc-table-data-cell-mdate,
-  .oc-table-header-cell-sdate,
-  .oc-table-data-cell-sdate,
-  .oc-table-header-cell-ddate,
-  .oc-table-data-cell-ddate {
-    display: none;
-
-    @media only screen and (min-width: 960px) {
-      display: table-cell;
-    }
-  }
-
-  .oc-table-header-cell-sharedBy,
-  .oc-table-data-cell-sharedBy,
-  .oc-table-header-cell-tags,
-  .oc-table-data-cell-tags,
-  .oc-table-header-cell-indicators,
-  .oc-table-data-cell-indicators {
-    display: none;
-
-    @media only screen and (min-width: 1200px) {
-      display: table-cell;
-    }
-  }
-
-  &-squashed {
-    /**
-     * squashed = right sidebar is open.
-     * same media queries as above but +440px width of the right sidebar
-     * (because the right sidebar steals 440px from the file list)
-     */
-    .oc-table-header-cell-size,
-    .oc-table-data-cell-size,
-    .oc-table-header-cell-sharedWith,
-    .oc-table-data-cell-sharedWith,
-    .oc-table-header-cell-sharedBy,
-    .oc-table-data-cell-sharedBy,
-    .oc-table-header-cell-status,
-    .oc-table-data-cell-status {
-      display: none;
-
-      @media only screen and (min-width: 1080px) {
-        display: table-cell;
-      }
-    }
-
-    .oc-table-header-cell-mdate,
-    .oc-table-data-cell-mdate,
-    .oc-table-header-cell-sdate,
-    .oc-table-data-cell-sdate,
-    .oc-table-header-cell-ddate,
-    .oc-table-data-cell-ddate {
-      display: none;
-
-      @media only screen and (min-width: 1400px) {
-        display: table-cell;
-      }
-    }
-
-    .oc-table-header-cell-sharedBy,
-    .oc-table-data-cell-sharedBy,
-    .oc-table-header-cell-tags,
-    .oc-table-data-cell-tags,
-    .oc-table-header-cell-indicators,
-    .oc-table-data-cell-indicators {
-      display: none;
-
-      @media only screen and (min-width: 1640px) {
-        display: table-cell;
-      }
-    }
-  }
-}
-
-// shared with me: on tablets hide shared with column and display sharedBy column instead
-#files-shared-with-me-view .files-table .oc-table-header-cell-sharedBy,
-#files-shared-with-me-view .files-table .oc-table-data-cell-sharedBy,
-#files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
-#files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
-  @media only screen and (min-width: 640px) {
-    display: table-cell;
-  }
-}
-
-#files-shared-with-me-view .files-table .oc-table-header-cell-sharedWith,
-#files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith,
-#files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
-#files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
-  @media only screen and (max-width: 1199px) {
-    display: none;
   }
 }
 

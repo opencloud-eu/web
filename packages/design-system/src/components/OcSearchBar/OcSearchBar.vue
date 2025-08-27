@@ -135,10 +135,12 @@ export interface Emits {
    * @docs Emitted when the search button has been clicked.
    */
   (e: 'advancedSearch', event: MouseEvent): void
+
   /**
    * @docs Emitted when the user has typed.
    */
   (e: 'keyup', event: KeyboardEvent): void
+
   /**
    * @docs Emitted when the user has performed a search.
    */
@@ -209,6 +211,16 @@ const onCancel = () => {
 }
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-search-icon {
+    @apply inline-flex justify-center items-center;
+  }
+}
+</style>
+
 <style lang="scss">
 .oc-search {
   min-width: $form-width-medium;
@@ -221,10 +233,7 @@ const onCancel = () => {
   }
 
   &-icon {
-    align-items: center;
     bottom: 0;
-    display: inline-flex;
-    justify-content: center;
     left: 0;
     position: absolute;
     top: 0;

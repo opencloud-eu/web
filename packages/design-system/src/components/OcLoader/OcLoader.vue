@@ -2,6 +2,8 @@
   <div
     :class="[
       'oc-loader',
+      'block',
+      'after:block',
       'bg-role-surface-container',
       'after:bg-role-secondary',
       { 'oc-loader-flat rounded-none': flat },
@@ -39,7 +41,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  display: block;
   height: 15px;
   overflow: hidden;
   width: 100%;
@@ -53,7 +54,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
     content: '';
     height: 100%;
     width: 0;
-    display: block;
     position: absolute;
 
     animation: {

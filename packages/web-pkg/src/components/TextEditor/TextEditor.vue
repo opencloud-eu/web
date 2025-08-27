@@ -159,6 +159,12 @@ export default defineComponent({
   .md-editor-preview > * {
     @apply break-keep;
   }
+  .md-editor-code-flag {
+    @apply hidden;
+  }
+  .md-editor-code-head {
+    @apply !justify-end;
+  }
 }
 </style>
 <style lang="scss">
@@ -173,14 +179,6 @@ export default defineComponent({
 // overwrite md-editor styles
 .md-editor {
   height: 100%;
-
-  &-code-head {
-    justify-content: end !important;
-  }
-
-  &-code-flag {
-    display: none;
-  }
 
   .cm-line:has(.ͼy),
   .cm-line:has(.ͼ1h) {

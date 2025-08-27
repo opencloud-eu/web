@@ -1,5 +1,5 @@
 <template>
-  <dl class="details-list">
+  <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
     <!-- eslint-disable-next-line vue/no-v-for-template-key -->
     <template v-for="item in items" :key="item.term">
       <dt>{{ item.term }}</dt>
@@ -44,11 +44,5 @@ const { items } = defineProps<Props>()
   .details-list dt:last-of-type {
     @apply mb-0;
   }
-}
-</style>
-<style lang="scss">
-.details-list {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
 }
 </style>

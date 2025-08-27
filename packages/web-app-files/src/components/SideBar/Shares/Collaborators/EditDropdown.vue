@@ -285,19 +285,29 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .share-access-details-drop dl {
+    @apply grid;
+  }
+
+  .share-access-details-drop dt {
+    @apply col-start-1;
+  }
+
+  .share-access-details-drop dd {
+    @apply col-start-2;
+  }
+}
+</style>
 <style lang="scss">
 .share-access-details-drop {
   dl {
-    display: grid;
     grid-template-columns: max-content auto;
     column-gap: var(--oc-space-medium);
     row-gap: var(--oc-space-xsmall);
-  }
-  dt {
-    grid-column-start: 1;
-  }
-  dd {
-    grid-column-start: 2;
   }
 }
 </style>
