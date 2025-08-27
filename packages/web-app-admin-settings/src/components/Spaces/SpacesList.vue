@@ -9,7 +9,7 @@
       />
     </div>
     <oc-table
-      class="spaces-table"
+      class="settings-spaces-table"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -576,48 +576,56 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  #space-list .spaces-table .oc-table-header-cell-actions,
-  #space-list .spaces-table .oc-table-data-cell-actions {
+  .settings-spaces-table .oc-table-header-cell-actions,
+  .settings-spaces-table .oc-table-data-cell-actions {
     @apply whitespace-nowrap;
   }
 
   /* Status, Members, Mdate: hidden by default, visible from md */
-  #space-list .oc-table-header-cell-status,
-  #space-list .oc-table-data-cell-status,
-  #space-list .oc-table-header-cell-members,
-  #space-list .oc-table-data-cell-members,
-  #space-list .oc-table-header-cell-mdate,
-  #space-list .oc-table-data-cell-mdate {
+  .oc-table-header-cell-status,
+  .oc-table-data-cell-status,
+  .oc-table-header-cell-members,
+  .oc-table-data-cell-members,
+  .oc-table-header-cell-mdate,
+  .oc-table-data-cell-mdate {
     @apply hidden md:table-cell;
   }
 
   /* Manager, TotalQuota, UsedQuota, RemainingQuota: hidden by default, visible from lg */
-  #space-list .spaces-table .oc-table-header-cell-manager,
-  #space-list .spaces-table .oc-table-data-cell-manager,
-  #space-list .spaces-table .oc-table-header-cell-totalQuota,
-  #space-list .spaces-table .oc-table-data-cell-totalQuota,
-  #space-list .spaces-table .oc-table-header-cell-usedQuota,
-  #space-list .spaces-table .oc-table-data-cell-usedQuota,
-  #space-list .spaces-table .oc-table-header-cell-remainingQuota,
-  #space-list .spaces-table .oc-table-data-cell-remainingQuota {
+  .settings-spaces-table .oc-table-header-cell-manager,
+  .settings-spaces-table .oc-table-data-cell-manager,
+  .settings-spaces-table .oc-table-header-cell-totalQuota,
+  .settings-spaces-table .oc-table-data-cell-totalQuota,
+  .settings-spaces-table .oc-table-header-cell-usedQuota,
+  .settings-spaces-table .oc-table-data-cell-usedQuota,
+  .settings-spaces-table .oc-table-header-cell-remainingQuota,
+  .settings-spaces-table .oc-table-data-cell-remainingQuota {
     @apply hidden lg:table-cell;
   }
 
   /* Squashed variant */
-  #space-list .spaces-table-squashed .oc-table-header-cell-manager,
-  #space-list .spaces-table-squashed .oc-table-data-cell-manager,
-  #space-list .spaces-table-squashed .oc-table-header-cell-totalQuota,
-  #space-list .spaces-table-squashed .oc-table-data-cell-totalQuota,
-  #space-list .spaces-table-squashed .oc-table-header-cell-usedQuota,
-  #space-list .spaces-table-squashed .oc-table-data-cell-usedQuota {
+  .settings-spaces-table-squashed .oc-table-header-cell-manager,
+  .settings-spaces-table-squashed .oc-table-data-cell-manager,
+  .settings-spaces-table-squashed .oc-table-header-cell-status,
+  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-members,
+  .settings-spaces-table-squashed .oc-table-data-cell-members,
+  .settings-spaces-table-squashed .oc-table-header-cell-totalQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-totalQuota,
+  .settings-spaces-table-squashed .oc-table-header-cell-usedQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-usedQuota {
     @apply hidden;
   }
 
-  /* RemainingQuota + mdate visible from xl */
-  #space-list .spaces-table-squashed .oc-table-header-cell-remainingQuota,
-  #space-list .spaces-table-squashed .oc-table-data-cell-remainingQuota,
-  #space-list .spaces-table-squashed .oc-table-header-cell-mdate,
-  #space-list .spaces-table-squashed .oc-table-data-cell-mdate {
+  /* RemainingQuota, Status, Members, Mdate visible from xl */
+  .settings-spaces-table-squashed .oc-table-header-cell-remainingQuota,
+  .settings-spaces-table-squashed .oc-table-data-cell-remainingQuota,
+  .settings-spaces-table-squashed .oc-table-header-cell-status,
+  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-members,
+  .settings-spaces-table-squashed .oc-table-data-cell-members,
+  .settings-spaces-table-squashed .oc-table-header-cell-mdate,
+  .settings-spaces-table-squashed .oc-table-data-cell-mdate {
     @apply hidden xl:table-cell;
   }
 }

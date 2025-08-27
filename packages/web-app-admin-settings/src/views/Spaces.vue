@@ -42,7 +42,7 @@
             </template>
           </no-content-message>
           <div v-else>
-            <spaces-list :class="{ 'spaces-table-squashed': isSideBarOpen }">
+            <spaces-list :class="{ 'settings-spaces-table-squashed': isSideBarOpen }">
               <template #contextMenu>
                 <context-actions :items="selectedSpaces" />
               </template>
