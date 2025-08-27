@@ -1387,14 +1387,14 @@ export default defineComponent({
   .spaces-table-squashed .oc-table-data-cell-usedQuota,
   .spaces-table-squashed .oc-table-header-cell-members,
   .spaces-table-squashed .oc-table-data-cell-members {
-    @apply hidden xl:table-cell;
+    @apply hidden lg:table-cell;
   }
 
   .spaces-table-squashed .oc-table-header-cell-mdate,
   .spaces-table-squashed .oc-table-data-cell-mdate,
   .spaces-table-squashed .oc-table-header-cell-remainingQuota,
   .spaces-table-squashed .oc-table-data-cell-remainingQuota {
-    @apply hidden 2xl:table-cell;
+    @apply hidden xl:table-cell;
   }
 
   /* ---------------- FILES TABLE ---------------- */
@@ -1447,7 +1447,7 @@ export default defineComponent({
   .files-table-squashed .oc-table-data-cell-sharedBy,
   .files-table-squashed .oc-table-header-cell-status,
   .files-table-squashed .oc-table-data-cell-status {
-    @apply hidden lg:table-cell;
+    @apply hidden md:table-cell;
   }
 
   .files-table-squashed .oc-table-header-cell-mdate,
@@ -1456,7 +1456,7 @@ export default defineComponent({
   .files-table-squashed .oc-table-data-cell-sdate,
   .files-table-squashed .oc-table-header-cell-ddate,
   .files-table-squashed .oc-table-data-cell-ddate {
-    @apply hidden xl:table-cell;
+    @apply hidden lg:table-cell;
   }
 
   .files-table-squashed .oc-table-header-cell-sharedBy,
@@ -1465,7 +1465,7 @@ export default defineComponent({
   .files-table-squashed .oc-table-data-cell-tags,
   .files-table-squashed .oc-table-header-cell-indicators,
   .files-table-squashed .oc-table-data-cell-indicators {
-    @apply hidden 2xl:table-cell;
+    @apply hidden xl:table-cell;
   }
 
   /* ---------------- SHARED WITH ME VIEW ---------------- */
