@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-08-26
+## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-08-27
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
 - refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
 - refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
 - refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
