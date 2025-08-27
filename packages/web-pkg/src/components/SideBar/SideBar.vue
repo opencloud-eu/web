@@ -4,11 +4,11 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px]"
+    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px]"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
-      'app-sidebar-full-width w-full': fullWidthSideBar
+      'app-sidebar-full-width w-full min-w-full': fullWidthSideBar
     }"
   >
     <oc-spinner v-if="loading" />
@@ -290,15 +290,11 @@ onBeforeUnmount(() => {
 #app-sidebar {
   position: relative;
   overflow: hidden;
-  min-width: 440px;
 
   &:focus,
   &:focus-visible {
     box-shadow: none;
   }
-}
-.app-sidebar-full-width {
-  min-width: 100% !important;
 }
 
 @media only screen and (max-width: $oc-breakpoint-small-default) {

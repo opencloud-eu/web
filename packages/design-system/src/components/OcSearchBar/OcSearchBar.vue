@@ -223,8 +223,6 @@ const onCancel = () => {
 
 <style lang="scss">
 .oc-search {
-  min-width: $form-width-medium;
-
   &-button {
     // Prevent double borders
     // from input and button

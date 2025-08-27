@@ -4,7 +4,7 @@
     :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image mr-6 w-[280px]"
+      class="space-header-image mr-6 w-xs min-w-xs"
       :class="{ 'space-header-image-expanded w-full max-w-full': imageExpanded || isMobileWidth }"
     >
       <div
@@ -321,7 +321,6 @@ const openSideBarSharePanel = () => {
 <style lang="scss">
 .space-header {
   &-image {
-    min-width: 280px;
     aspect-ratio: 16 / 9;
     max-height: 158px;
 

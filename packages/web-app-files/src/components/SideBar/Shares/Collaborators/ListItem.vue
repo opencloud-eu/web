@@ -422,10 +422,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.sharee-avatar {
-  min-width: 36px;
-}
-
 .files-collaborators-collaborator-navigation {
   align-items: center;
   justify-content: end;

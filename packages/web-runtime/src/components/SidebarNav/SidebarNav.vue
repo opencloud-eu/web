@@ -3,8 +3,8 @@
     id="web-nav-sidebar"
     class="bg-role-surface-container flex flex-col rounded-l-xl"
     :class="{
-      'oc-app-navigation-collapsed max-w-[62px]': closed,
-      'oc-app-navigation-expanded max-w-[230px]': !closed
+      'oc-app-navigation-collapsed max-w-[62px] min-w-[62px]': closed,
+      'oc-app-navigation-expanded max-w-[230px] min-w-[230px]': !closed
     }"
   >
     <oc-button
@@ -200,13 +200,5 @@ export default defineComponent({
   .toggle-sidebar-button-expanded {
     justify-content: flex-end !important;
   }
-}
-
-.oc-app-navigation-expanded {
-  min-width: 230px !important;
-}
-
-.oc-app-navigation-collapsed {
-  min-width: 62px !important;
 }
 </style>
