@@ -3,8 +3,8 @@
     id="web-nav-sidebar"
     class="bg-role-surface-container flex flex-col rounded-l-xl"
     :class="{
-      'oc-app-navigation-collapsed max-w-[62px] min-w-[62px]': closed,
-      'oc-app-navigation-expanded max-w-[230px] min-w-[230px]': !closed
+      'max-w-[62px] min-w-[62px]': closed,
+      'max-w-[230px] min-w-[230px]': !closed
     }"
   >
     <oc-button

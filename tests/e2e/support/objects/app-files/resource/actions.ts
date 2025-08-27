@@ -29,7 +29,7 @@ export const resourceNameSelector =
   ':is(#files-files-table, .oc-tiles-item, #files-shared-with-me-accepted-section, .files-table) [data-test-resource-name="%s"]'
 // following breadcrumb selectors is passed to buildXpathLiteral function as the content to be inserted might contain quotes
 const breadcrumbResourceNameSelector =
-  '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()="%s"]'
+  '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
 const addNewResourceButton = `#new-file-menu-btn`
