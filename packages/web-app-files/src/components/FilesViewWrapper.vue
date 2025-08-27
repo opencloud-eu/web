@@ -1,5 +1,5 @@
 <template>
-  <div class="files-view-wrapper grid grid-cols-1 focus:outline-0">
+  <div class="files-view-wrapper grid grid-cols-1 flex-1 focus:outline-0">
     <div id="files-view" v-bind="$attrs" class="outline-0">
       <slot />
     </div>
