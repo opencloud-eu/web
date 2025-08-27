@@ -2,7 +2,7 @@
 
 exports[`OcBreadcrumb > displays all items 1`] = `
 "<nav id="oc-breadcrumbs-2" class="oc-breadcrumb oc-breadcrumb-default" aria-label="Breadcrumbs">
-  <ol class="oc-breadcrumb-list flex m-0 p-0">
+  <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
     <li data-key="0" class="oc-breadcrumb-list-item flex items-center">
       <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">First folder</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
@@ -28,17 +28,17 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <!--v-if-->
     </li>
   </ol>
-  <oc-button-stub arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation">
+  <oc-button-stub arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation sm:hidden block">
     <oc-icon-stub accessiblelabel="" color="" filltype="line" name="arrow-left-s" size="large" type="span"></oc-icon-stub>
   </oc-button-stub>
 </nav>
 
-<div class="oc-breadcrumb-mobile-current flex w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div class="oc-breadcrumb-mobile-current sm:hidden flex justify-center items-center w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
 `;
 
 exports[`OcBreadcrumb > sets correct variation 1`] = `
 "<nav id="oc-breadcrumbs-1" class="oc-breadcrumb oc-breadcrumb-lead" aria-label="Breadcrumbs">
-  <ol class="oc-breadcrumb-list flex m-0 p-0">
+  <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
     <li data-key="0" class="oc-breadcrumb-list-item flex items-center">
       <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">First folder</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
@@ -64,10 +64,10 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <!--v-if-->
     </li>
   </ol>
-  <oc-button-stub arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation">
+  <oc-button-stub arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation sm:hidden block">
     <oc-icon-stub accessiblelabel="" color="" filltype="line" name="arrow-left-s" size="large" type="span"></oc-icon-stub>
   </oc-button-stub>
 </nav>
 
-<div class="oc-breadcrumb-mobile-current flex w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div class="oc-breadcrumb-mobile-current sm:hidden flex justify-center items-center w-0 flex-1"><span class="truncate" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
 `;

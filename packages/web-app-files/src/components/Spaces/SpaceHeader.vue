@@ -308,16 +308,18 @@ const openSideBarSharePanel = () => {
 }
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .space-header-squashed .space-header-image {
+    @apply hidden lg:block;
+  }
+}
+</style>
+
 <style lang="scss">
 .space-header {
-  &-squashed {
-    .space-header-image {
-      @media only screen and (max-width: 1200px) {
-        display: none;
-      }
-    }
-  }
-
   &-image {
     width: 280px;
     min-width: 280px;

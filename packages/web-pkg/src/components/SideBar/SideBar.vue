@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel bg-role-surface rounded-r-xl"
+        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -29,12 +29,12 @@
       >
         <div
           v-if="[activePanelName, oldPanelName].includes(panel.name)"
-          class="sidebar-panel__header header pt-2 px-2"
+          class="sidebar-panel__header header grid grid-cols-[auto_1fr_auto] items-center pt-2 px-2"
         >
           <oc-button
             v-if="!panel.isRoot?.(panelContext)"
             v-oc-tooltip="accessibleLabelBack"
-            class="header__back p-1"
+            class="header__back col-start-1 p-1"
             appearance="raw"
             :aria-label="accessibleLabelBack"
             @click="closePanel"
@@ -42,13 +42,13 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title text-center my-0 text-lg">
+          <h2 class="header__title col-start-2 text-center my-0 text-lg">
             {{ panel.title(panelContext) }}
           </h2>
 
           <oc-button
             appearance="raw"
-            class="header__close p-1"
+            class="header__close col-start-3 p-1"
             :aria-label="$gettext('Close file sidebar')"
             @click="closeSidebar"
           >
@@ -101,7 +101,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
-              class="text-left px-2"
+              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -316,8 +316,6 @@ onBeforeUnmount(() => {
   max-width: 100%;
   height: 100%;
   max-height: 100%;
-  display: grid;
-  grid-template-rows: auto auto 1fr;
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -352,28 +350,6 @@ onBeforeUnmount(() => {
     right: 100px;
   }
 
-  &__header {
-    &.header {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-    }
-
-    & .header {
-      &__back {
-        grid-column-start: 1;
-      }
-
-      &__title {
-        grid-column-start: 2;
-      }
-
-      &__close {
-        grid-column-start: 3;
-      }
-    }
-  }
-
   &__body {
     overflow-y: auto;
     overflow-x: hidden;
@@ -382,8 +358,6 @@ onBeforeUnmount(() => {
   &__navigation {
     > button {
       width: 100%;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
       height: 50px;
     }
   }

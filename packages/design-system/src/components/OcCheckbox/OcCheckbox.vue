@@ -81,7 +81,8 @@ const classes = computed(() => [
   'checked:bg-white',
   'disabled:bg-role-surface-container-low',
   'indeterminate:bg-white',
-  'bg-transparent'
+  'bg-transparent',
+  'inline-block'
 ])
 
 const labelClasses = computed(() => ({
@@ -123,7 +124,6 @@ const keydownEnter = (event: KeyboardEvent) => {
 
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-  display: inline-block;
   overflow: hidden;
 
   &-s {

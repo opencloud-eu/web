@@ -12,7 +12,7 @@ const groupTrSelector = 'tr'
 const groupIdSelector = `[data-item-id="%s"] .groups-table-btn-action-dropdown`
 const groupCheckboxSelector = `[data-item-id="%s"]:not(.oc-table-highlighted) input[type=checkbox]`
 const deleteBtnContextMenu = '.context-menu .oc-groups-actions-delete-trigger'
-const deleteBtnBatchAction = '#oc-appbar-batch-actions'
+const deleteBtnBatchAction = '.oc-groups-actions-delete-trigger'
 const editPanel = '.sidebar-panel__body-EditPanel:visible'
 const closeEditPanel = '.sidebar-panel__header .header__close'
 const userInput = '#%s-input'

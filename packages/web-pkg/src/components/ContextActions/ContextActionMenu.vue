@@ -89,17 +89,14 @@ export default defineComponent({
   .oc-files-context-actions > li {
     @apply px-0;
   }
-}
-</style>
-<style lang="scss">
-.oc-files-context-actions {
-  > li {
-    a,
-    button,
-    span {
-      display: inline-flex;
-      justify-content: flex-start;
-      width: 100%;
+
+  .oc-files-context-actions {
+    > li {
+      a,
+      button,
+      span {
+        @apply inline-flex justify-start w-full;
+      }
     }
   }
 }

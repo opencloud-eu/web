@@ -3,7 +3,7 @@
     <span
       ref="avatarsRef"
       v-oc-tooltip="tooltip"
-      class="oc-avatars"
+      class="oc-avatars inline-flex"
       aria-hidden="true"
       :class="avatarsClasses"
     >
@@ -202,7 +202,6 @@ onMounted(() => {
 </style>
 <style lang="scss">
 .oc-avatars {
-  display: inline-flex;
   box-sizing: border-box;
   flex-flow: row nowrap;
   width: fit-content;

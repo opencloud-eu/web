@@ -7,7 +7,7 @@
     :role="accessibleLabel === '' ? null : 'img'"
   >
     <span
-      class="oc-avatar-item rounded-[50%]"
+      class="oc-avatar-item inline-flex items-center justify-center rounded-[50%]"
       :style="{
         backgroundColor,
         '--icon-color': iconColor,
@@ -102,13 +102,10 @@ const pickBackgroundColor = () => {
 
 <style lang="scss">
 .oc-avatar-item {
-  align-items: center;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 18px;
-  display: inline-flex;
   height: var(--width);
-  justify-content: center;
   width: var(--width);
 
   .oc-icon > svg {

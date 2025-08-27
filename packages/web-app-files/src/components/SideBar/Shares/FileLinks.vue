@@ -57,7 +57,7 @@
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
       </h4>
       <div
-        class="files-links-indirect-list"
+        class="files-links-indirect-list grid [grid-template-rows:0fr]"
         :class="{
           'files-links-indirect-list-open': !indirectLinkListCollapsed,
           'mt-4': !indirectLinkListCollapsed
@@ -331,8 +331,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .files-links-indirect-list {
-  display: grid;
-  grid-template-rows: 0fr;
   transition: all 0.25s ease-out;
 
   ul {

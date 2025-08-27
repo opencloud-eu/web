@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list flex m-0 p-0">
+    <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -106,12 +106,15 @@
       type="router-link"
       :aria-label="$gettext('Navigate one level up')"
       :to="parentFolderTo"
-      class="oc-breadcrumb-mobile-navigation"
+      class="oc-breadcrumb-mobile-navigation sm:hidden block"
     >
       <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
-  <div v-if="displayItems.length > 1" class="oc-breadcrumb-mobile-current flex w-0 flex-1">
+  <div
+    v-if="displayItems.length > 1"
+    class="oc-breadcrumb-mobile-current sm:hidden flex justify-center items-center w-0 flex-1"
+  >
     <span class="truncate" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
@@ -309,6 +312,7 @@ const dropItemStyling = (
   leaving ? classList.remove(className) : classList.add(className)
 }
 </script>
+
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
 
@@ -316,8 +320,17 @@ const dropItemStyling = (
   .oc-breadcrumb-item-dragover {
     @apply bg-role-secondary-container;
   }
+
+  .oc-breadcrumb-list #oc-breadcrumb-contextmenu li button {
+    @apply inline-flex;
+  }
+
+  .oc-breadcrumb-list > li button {
+    @apply inline;
+  }
+
   .oc-breadcrumb-list > :nth-child(n + 2)::before {
-    @apply text-role-on-surface rounded-sm;
+    @apply inline-block text-role-on-surface rounded-sm;
   }
 }
 </style>
@@ -332,37 +345,14 @@ const dropItemStyling = (
       border-width 0.06s;
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
   }
+
   &-item-text {
     max-width: 200px;
   }
 
-  &-mobile-current,
-  &-mobile-navigation {
-    @media (min-width: $oc-breakpoint-small-default) {
-      display: none !important;
-    }
-  }
-
   &-list {
     list-style: none;
-    align-items: baseline;
     flex-wrap: nowrap;
-
-    @media (max-width: $oc-breakpoint-xsmall-max) {
-      display: none !important;
-    }
-
-    #oc-breadcrumb-contextmenu li button {
-      display: inline-flex;
-    }
-
-    > li button {
-      display: inline;
-    }
-
-    > :nth-child(n + 2)::before {
-      display: inline-block;
-    }
   }
 }
 </style>

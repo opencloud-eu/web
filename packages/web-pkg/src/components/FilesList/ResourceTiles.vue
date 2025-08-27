@@ -42,7 +42,7 @@
         </oc-filter-chip>
       </div>
     </div>
-    <oc-list class="oc-tiles">
+    <oc-list class="oc-tiles grid justify-start">
       <li
         v-for="resource in resources"
         :key="resource.id"
@@ -122,7 +122,7 @@
       <li
         v-for="index in ghostTilesCount"
         :key="`ghost-tile-${index}`"
-        class="ghost-tile"
+        class="ghost-tile list-item"
         :aria-hidden="true"
       />
     </oc-list>
@@ -656,9 +656,7 @@ onBeforeUnmount(() => {
 <style lang="scss">
 .oc-tiles {
   column-gap: 1rem;
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
-  justify-content: flex-start;
   row-gap: 1rem;
 
   &-sort-filter-chip {
@@ -666,9 +664,5 @@ onBeforeUnmount(() => {
       justify-content: space-between !important;
     }
   }
-}
-
-.ghost-tile {
-  display: list-item;
 }
 </style>

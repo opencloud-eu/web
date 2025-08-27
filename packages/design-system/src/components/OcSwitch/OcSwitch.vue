@@ -3,7 +3,7 @@
     <span :id="labelId" v-text="label" />
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn border border-role-outline rounded-3xl"
+      class="oc-switch-btn block border border-role-outline rounded-3xl"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"
@@ -62,13 +62,10 @@ const toggle = () => {
 </style>
 <style lang="scss">
 .oc-switch {
-  align-items: center;
-  display: inline-flex;
   gap: var(--oc-space-small);
 
   &-btn {
     cursor: pointer;
-    display: block;
     height: 18px;
     position: relative;
     transition: background-color 0.25s;

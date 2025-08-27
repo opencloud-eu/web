@@ -2,7 +2,7 @@ import { Page } from '@playwright/test'
 import util from 'util'
 import { locatorUtils } from '../../../utils'
 
-const spaceTrSelector = '.spaces-table tbody > tr'
+const spaceTrSelector = '.settings-spaces-table tbody > tr'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const contextMenuSelector = `[data-item-id="%s"] .spaces-table-btn-action-dropdown`
 const spaceCheckboxSelector = `[data-item-id="%s"] input[type=checkbox]`
