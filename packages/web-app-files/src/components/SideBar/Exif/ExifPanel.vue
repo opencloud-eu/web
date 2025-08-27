@@ -1,5 +1,5 @@
 <template>
-  <div id="files-sidebar-panel-exif" class="oc-rounded p-4 bg-role-surface-container">
+  <div id="files-sidebar-panel-exif" class="rounded-sm p-4 bg-role-surface-container">
     <dl class="exif-data-list details-list grid grid-cols-[auto_minmax(0,1fr)] m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
