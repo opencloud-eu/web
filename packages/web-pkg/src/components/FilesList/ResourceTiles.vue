@@ -1,5 +1,5 @@
 <template>
-  <div id="tiles-view" class="px-4 pt-6">
+  <div id="tiles-view" class="px-4 pt-2">
     <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
         id="tiles-view-select-all"
