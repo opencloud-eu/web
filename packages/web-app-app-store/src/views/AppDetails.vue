@@ -1,6 +1,6 @@
 <template>
   <div
-    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container"
+    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container border"
   >
     <div class="p-1">
       <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
@@ -101,7 +101,6 @@ export default defineComponent({
 .app-details {
   box-shadow: none;
   max-width: 600px;
-  outline: 0.5px solid var(--oc-role-outline-variant);
 
   .app-content {
     gap: 1rem;

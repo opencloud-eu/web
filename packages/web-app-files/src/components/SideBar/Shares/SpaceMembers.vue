@@ -261,7 +261,6 @@ watch(filterTerm, async () => {
 
   input:focus {
     // use inner focus border because an outline would be cut off by the hidden overflow
-    outline: 0px !important;
     box-shadow: inset 0px 0px 0px 1px var(--oc-role-outline);
   }
 

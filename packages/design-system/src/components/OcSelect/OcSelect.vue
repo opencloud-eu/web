@@ -319,7 +319,8 @@ const setKeyboardOutline = async () => {
   const highlightedOption = optionEls[unref(selectRef).typeAheadPointer]
   if (highlightedOption) {
     await nextTick()
-    highlightedOption.classList.add('keyboard-outline')
+    highlightedOption.classList.add('outline-2')
+    highlightedOption.classList.add('outline-role-outline-variant')
   }
 }
 
@@ -587,11 +588,6 @@ export default { components: { VueSelect } }
       border: 1px solid var(--oc-role-surface);
       outline: 2px solid var(--oc-role-outline);
     }
-  }
-
-  .keyboard-outline {
-    outline: 2px var(--oc-role-outline-variant) solid !important;
-    outline-offset: -2px;
   }
 }
 

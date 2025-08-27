@@ -527,7 +527,6 @@ const handleSort = (field: FieldType) => {
   }
 
   tr {
-    outline: none;
     height: var(--oc-size-height-table-row);
   }
 
