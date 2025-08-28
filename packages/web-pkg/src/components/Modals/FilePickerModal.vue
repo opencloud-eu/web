@@ -1,10 +1,10 @@
 <template>
-  <div class="oc-height-1-1" tabindex="0">
+  <div class="h-full" tabindex="0">
     <app-loading-spinner v-if="isLoading" />
     <iframe
       v-show="!isLoading"
       ref="iframeRef"
-      class="w-full oc-height-1-1"
+      class="size-full"
       :title="iframeTitle"
       :src="iframeSrc"
       tabindex="0"

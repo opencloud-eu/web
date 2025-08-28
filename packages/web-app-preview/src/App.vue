@@ -7,7 +7,7 @@
   <div
     v-else
     ref="preview"
-    class="flex w-full oc-height-1-1"
+    class="flex size-full"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"

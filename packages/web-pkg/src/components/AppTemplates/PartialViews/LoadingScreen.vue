@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center flex justify-center items-center oc-height-1-1">
+  <div class="text-center flex justify-center items-center h-full">
     <oc-spinner size="xlarge" />
     <p v-translate class="oc-invisible">Loading app</p>
   </div>

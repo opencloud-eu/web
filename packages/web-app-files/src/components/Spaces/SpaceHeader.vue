@@ -7,10 +7,7 @@
       class="space-header-image mr-6 w-xs min-w-xs"
       :class="{ 'space-header-image-expanded w-full max-w-full': imageExpanded || isMobileWidth }"
     >
-      <div
-        v-if="imagesLoading.includes(space.id)"
-        class="oc-height-1-1 flex items-center justify-center"
-      >
+      <div v-if="imagesLoading.includes(space.id)" class="h-full flex items-center justify-center">
         <oc-spinner :aria-label="$gettext('Space image is loading')" />
       </div>
       <img

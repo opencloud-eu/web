@@ -24,7 +24,7 @@
       </div>
       <div class="oc-position-relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div class="oc-notifications-loading-background w-full oc-height-1-1 bg-role-surface" />
+          <div class="oc-notifications-loading-background size-full bg-role-surface" />
           <oc-spinner class="oc-notifications-loading-spinner" size="large" />
         </div>
         <span

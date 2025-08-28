@@ -1,10 +1,10 @@
 <template>
-  <main id="files" class="flex oc-height-1-1">
+  <main id="files" class="flex h-full">
     <div
       v-if="dragareaEnabled"
       class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
     />
-    <router-view tabindex="0" class="files-wrapper flex-1 oc-height-1-1 flex-wrap" />
+    <router-view tabindex="0" class="files-wrapper flex-1 h-full flex-wrap" />
   </main>
 </template>
 <script lang="ts">

@@ -1,9 +1,9 @@
 <template>
-  <main class="flex oc-height-1-1 app-content w-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex w-full oc-height-1-1 flex-wrap">
+  <main class="flex app-content size-full rounded-l-xl">
+    <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <div id="admin-settings-view-wrapper" class="flex-1 w-full oc-height-1-1 flex-wrap">
+        <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap">
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"

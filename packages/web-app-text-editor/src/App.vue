@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-text-editor w-full oc-height-1-1"
+    class="oc-text-editor size-full"
     :class="{ 'oc-text-editor-readonly': isReadOnly, 'p-4': isReadOnly }"
   >
     <text-editor-component

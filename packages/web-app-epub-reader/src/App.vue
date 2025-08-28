@@ -20,7 +20,7 @@
         </oc-button>
       </li>
     </oc-list>
-    <div class="w-full oc-height-1-1">
+    <div class="size-full">
       <div class="epub-reader-controls flex items-center m-2">
         <div class="epub-reader-controls-font-size flex oc-button-group">
           <oc-button
@@ -63,7 +63,7 @@
           @update:model-value="showChapter"
         />
       </div>
-      <div class="flex justify-center w-full oc-height-1-1">
+      <div class="flex justify-center size-full">
         <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-left"
