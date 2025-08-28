@@ -1,6 +1,6 @@
 <template>
   <div class="space-image-modal">
-    <div v-if="imageUrl" class="space-image-modal max-h-[400px]">
+    <div v-if="imageUrl" class="space-image-modal-image-container max-h-[400px]">
       <img ref="imageRef" :src="imageUrl" />
       <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
         <oc-icon class="mr-1" name="information" size="small" fill-type="line" />

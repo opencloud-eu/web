@@ -97,7 +97,7 @@
       </oc-tr>
     </oc-tbody>
     <tfoot v-if="$slots.footer" class="oc-table-footer border-t">
-      <tr class="oc-table-footer-row">
+      <tr class="oc-table-footer-row h-10.5">
         <td
           :colspan="fullColspan"
           class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant"

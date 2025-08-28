@@ -52,7 +52,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
           </tr>
         </tbody>
         <tfoot class="oc-table-footer border-t">
-          <tr class="oc-table-footer-row">
+          <tr class="oc-table-footer-row h-10.5">
             <td colspan="3" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->

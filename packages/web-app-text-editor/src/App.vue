@@ -36,9 +36,14 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-.oc-text-editor-readonly {
-  //Fixes in readonly mode vertical scrolling is not available
-  overflow: auto;
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .oc-text-editor-readonly {
+    /* Fixes in readonly mode vertical scrolling is not available */
+    @apply overflow-auto;
+    height: calc(100vh - 52px);
+  }
 }
 </style>
