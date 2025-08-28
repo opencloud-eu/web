@@ -7,7 +7,7 @@
     <div
       v-if="isOpen"
       ref="bottomDrawerRef"
-      class="oc-bottom-drawer-background bg-black/40 w-full"
+      class="oc-bottom-drawer-background bg-black/40 size-full"
       role="button"
       @click="onBackgroundClicked"
     >
@@ -258,7 +258,6 @@ defineExpose({ show, hide, getElement })
 </style>
 <style lang="scss">
 .oc-bottom-drawer-background {
-  height: 100%;
   left: 0;
   top: 0;
   position: fixed;

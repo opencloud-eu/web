@@ -53,7 +53,7 @@
         />
       </div>
       <media-controls
-        class="stage_controls mx-auto my-4"
+        class="stage_controls mx-auto my-4 h-auto"
         :files="filteredFiles"
         :active-index="activeIndex"
         :is-full-screen-mode-activated="isFullScreenModeActivated"
@@ -498,10 +498,6 @@ export default defineComponent({
 .stage {
   &_media {
     overflow: hidden;
-  }
-
-  &_controls {
-    height: auto;
   }
 }
 </style>

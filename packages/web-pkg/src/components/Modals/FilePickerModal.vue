@@ -133,18 +133,12 @@ export default defineComponent({
     @apply p-0;
   }
   .oc-modal.open-with-app-modal .oc-modal-body-message {
-    @apply m-0;
+    @apply m-0 h-[60vh];
   }
 }
 </style>
 <style lang="scss">
 .oc-modal.open-with-app-modal {
   overflow: hidden;
-
-  .oc-modal-body {
-    &-message {
-      height: 60vh;
-    }
-  }
 }
 </style>

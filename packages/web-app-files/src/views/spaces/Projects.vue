@@ -26,7 +26,7 @@
         <no-content-message
           v-if="!spaces.length"
           id="files-spaces-empty"
-          class="files-empty"
+          class="files-empty h-[75vh]"
           icon="layout-grid"
         >
           <template #message>
@@ -467,10 +467,6 @@ const openSidebarSharePanel = (space: SpaceResource) => {
 </script>
 
 <style lang="scss">
-#files-spaces-empty {
-  height: 75vh;
-}
-
 .table-preview {
   object-fit: cover;
 }

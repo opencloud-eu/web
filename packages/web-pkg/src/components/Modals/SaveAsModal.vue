@@ -200,18 +200,12 @@ export default defineComponent({
   }
 
   .oc-modal.save-as-modal .oc-modal-body-message {
-    @apply m-0;
+    @apply m-0 h-[60vh];
   }
 }
 </style>
 <style lang="scss">
 .oc-modal.save-as-modal {
   overflow: hidden;
-
-  .oc-modal-body {
-    &-message {
-      height: 60vh;
-    }
-  }
 }
 </style>

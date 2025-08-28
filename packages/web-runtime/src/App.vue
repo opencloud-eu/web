@@ -1,5 +1,5 @@
 <template>
-  <div id="web" class="bg-role-chrome">
+  <div id="web" class="bg-role-chrome h-dvh">
     <oc-hidden-announcer :announcement="announcement" level="polite" />
     <skip-to target="web-content-main">
       <span v-text="$gettext('Skip to main')" />
@@ -145,7 +145,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #web {
-  height: 100dvh;
   max-height: 100dvh;
   overflow-y: hidden;
 }

@@ -34,7 +34,7 @@
         <no-content-message
           v-if="!connections?.length"
           id="accepted-invitations-empty"
-          class="files-empty"
+          class="files-empty h-full"
           icon="contacts-book"
         >
           <template #message>
@@ -182,9 +182,6 @@ export default defineComponent({
     @media (max-width: $oc-breakpoint-medium-default) {
       visibility: none;
     }
-  }
-  #accepted-invitations-empty {
-    height: 100%;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="sciencemesh">
-    <div class="flex flex-col sciencemesh-wrapper">
-      <div class="grid grid-cols-1 md:grid-cols-2 sciencemesh-top">
+    <div class="flex flex-col sciencemesh-wrapper h-full">
+      <div class="grid grid-cols-1 md:grid-cols-2 sciencemesh-top h-auto">
         <div
           id="sciencemesh-invite"
           class="m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container rounded-xl"
@@ -125,14 +125,10 @@ export default defineComponent({
 .sciencemesh {
   overflow: auto;
 }
-.sciencemesh-wrapper {
-  height: 100%;
-}
 .sciencemesh-top {
   max-height: 360px;
   @media (max-width: $oc-breakpoint-large-default) {
     flex-direction: column;
-    height: auto;
     max-height: unset;
   }
 }

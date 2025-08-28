@@ -101,7 +101,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
-              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full"
+              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full h-12"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -344,12 +344,6 @@ onBeforeUnmount(() => {
   &__body {
     overflow-y: auto;
     overflow-x: hidden;
-  }
-
-  &__navigation {
-    > button {
-      height: 50px;
-    }
   }
 }
 </style>

@@ -189,7 +189,9 @@ const inputClass = computed(() => {
     classes.push(...['oc-search-input-button', 'rounded-r-none'])
   }
   if (small) {
-    classes.push(...['pl-12', 'leading-7'])
+    classes.push(...['leading-7', 'h-8'])
+  } else {
+    classes.push('h-10')
   }
   return classes
 })
@@ -231,8 +233,6 @@ const onCancel = () => {
   }
 
   &-input {
-    height: 2.3rem;
-
     &:focus {
       background-image: none;
     }
@@ -240,12 +240,6 @@ const onCancel = () => {
     &::-ms-clear,
     &::-ms-reveal {
       display: none;
-    }
-  }
-
-  &-small {
-    .oc-search-input {
-      height: 30px;
     }
   }
 }

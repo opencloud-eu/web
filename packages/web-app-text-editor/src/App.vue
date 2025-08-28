@@ -1,7 +1,9 @@
 <template>
   <div
     class="oc-text-editor size-full"
-    :class="{ 'oc-text-editor-readonly': isReadOnly, 'p-4': isReadOnly }"
+    :class="{
+      'oc-text-editor-readonly p-4': isReadOnly
+    }"
   >
     <text-editor-component
       :resource="resource"
@@ -37,7 +39,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-text-editor-readonly {
   //Fixes in readonly mode vertical scrolling is not available
-  height: calc(100vh - 52px);
   overflow: auto;
 }
 </style>

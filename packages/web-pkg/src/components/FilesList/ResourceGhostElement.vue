@@ -12,7 +12,7 @@
       />
     </div>
     <span
-      class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content min-w-2"
+      class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       >{{ itemCount }}</span
     >
   </div>
@@ -85,7 +85,6 @@ export default defineComponent({
     position: absolute;
     top: -2px;
     right: -8px;
-    height: var(--oc-space-small);
   }
 }
 </style>

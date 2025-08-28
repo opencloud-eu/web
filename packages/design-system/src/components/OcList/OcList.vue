@@ -46,7 +46,7 @@ defineSlots<Slots>()
     width: 1.5px;
   }
   ul.oc-list.oc-timeline li::before {
-    width: 10px;
+    @apply size-2.5;
   }
   ul.oc-list-raw a:hover {
     @apply text-inherit;
@@ -72,7 +72,6 @@ ul.oc-list.oc-timeline {
 
     &::before {
       content: '';
-      height: 10px;
       position: absolute;
       left: -4px;
       top: 50%;

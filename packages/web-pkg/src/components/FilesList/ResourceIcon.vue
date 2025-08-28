@@ -62,7 +62,7 @@ export default defineComponent({
       required: true
     },
     /**
-     * The size of the icon. Defaults to small.
+     * The size of the icon. Defaults to large.
      * `xsmall, small, medium, large, xlarge, xxlarge`
      */
     size: {
@@ -147,15 +147,16 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-span.oc-resource-icon {
-  &-file svg {
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  span.oc-resource-icon-file svg {
     height: 70%;
   }
-}
-
-span.oc-resource-icon-space-disabled {
-  filter: grayscale(100%);
-  opacity: 80%;
+  span.oc-resource-icon-space-disabled {
+    filter: grayscale(100%);
+    opacity: 80%;
+  }
 }
 </style>

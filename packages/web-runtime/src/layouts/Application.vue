@@ -1,5 +1,5 @@
 <template>
-  <div id="web-content" class="flex flex-col flex-nowrap">
+  <div id="web-content" class="flex flex-col flex-nowrap h-dvh">
     <div id="global-progress-bar" class="w-full">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
@@ -199,8 +199,6 @@ onBeforeUnmount(() => {
 </script>
 <style lang="scss">
 #web-content {
-  height: 100dvh;
-
   #global-progress-bar {
     z-index: 10;
     position: absolute;

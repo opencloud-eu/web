@@ -324,8 +324,6 @@ export default defineComponent({
 <style lang="scss">
 .tags-select {
   &-tag {
-    height: 1.5rem;
-
     &-link {
       pointer-events: visible;
     }

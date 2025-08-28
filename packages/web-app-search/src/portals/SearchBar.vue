@@ -17,7 +17,8 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg"
+      small
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -552,14 +553,12 @@ export default defineComponent({
 #files-global-search {
   .oc-search-input {
     transition: 0s;
-    height: 2.3rem;
   }
 
   #files-global-search-bar {
     @media (max-width: 639px) {
       visibility: hidden;
       position: absolute;
-      height: 48px;
       left: 0;
       right: 0;
       top: 0;

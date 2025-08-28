@@ -83,24 +83,12 @@ export default defineComponent({
     @apply md:flex md:justify-end md:items-center py-2 md:py-0 w-full md:w-auto;
   }
   .account-table tr {
-    @apply block md:table-row pb-1 md:pb-0 border-b;
+    @apply block md:table-row pb-1 md:pb-0 border-b h-full md:h-10.5;
   }
 }
 </style>
 <style lang="scss">
-@media (max-width: $oc-breakpoint-small-max) {
-  .account-table {
-    tr {
-      height: 100% !important;
-    }
-  }
-}
-
 .account-table {
-  tr {
-    height: var(--oc-size-height-table-row);
-  }
-
   @media (min-width: $oc-breakpoint-medium-default) {
     td > .checkbox-cell-wrapper {
       min-height: var(--oc-size-height-table-row);

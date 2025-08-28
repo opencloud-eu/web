@@ -1488,13 +1488,12 @@ export default defineComponent({
   .resource-table-resource-wrapper-limit-max-width {
     max-width: calc(100% - 4 * var(--spacing));
   }
+  .oc-table.condensed > tbody > tr {
+    @apply h-0;
+  }
 }
 </style>
 <style lang="scss">
-.oc-table.condensed > tbody > tr {
-  height: 0 !important;
-}
-
 .resource-table {
   &-resource-cut {
     opacity: 0.7;

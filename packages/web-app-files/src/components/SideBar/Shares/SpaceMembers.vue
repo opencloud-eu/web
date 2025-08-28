@@ -17,7 +17,7 @@
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="flex items-center justify-between oc-position-relative"
+        class="flex items-center justify-between oc-position-relative h-10"
       >
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
@@ -281,9 +281,5 @@ watch(filterTerm, async () => {
         visibility 0s;
     }
   }
-}
-
-#files-collaborators-headline {
-  height: 40px;
 }
 </style>
