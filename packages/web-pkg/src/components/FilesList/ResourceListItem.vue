@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-resource inline-flex justify-start items-center oc-text-overflow"
+    class="oc-resource inline-flex justify-start items-center oc-text-overflow overflow-visible"
     :class="{ 'oc-resource-no-interaction': !isResourceClickable }"
   >
     <resource-link
@@ -218,8 +218,6 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-resource {
-  overflow: visible !important;
-
   &-no-interaction {
     pointer-events: none;
   }

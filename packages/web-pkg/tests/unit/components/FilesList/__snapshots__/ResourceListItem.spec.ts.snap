@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcResource > displays parent folder name default if calculated name is empty 1`] = `
-"<div class="oc-resource inline-flex justify-start items-center oc-text-overflow"><button target="_self" type="button" class="oc-button oc-button-m oc-button-justify-content-left oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover inline-flex oc-resource-link inline-flex oc-resource-icon-link" draggable="false">
+"<div class="oc-resource inline-flex justify-start items-center oc-text-overflow overflow-visible"><button target="_self" type="button" class="oc-button oc-button-m oc-button-justify-content-left oc-button-gap-undefined oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover inline-flex oc-resource-link inline-flex oc-resource-icon-link" draggable="false">
     <!--v-if-->
     <!-- @slot Content of the button --> <span class="oc-icon oc-icon-l box-content oc-resource-icon inline-flex items-center oc-resource-icon-file"><svg data-testid="inline-svg-stub" src="icons/resource-type-pdf-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

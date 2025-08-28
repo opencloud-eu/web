@@ -130,18 +130,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 }
 
 /*
- * Show the overflow in Edge.
- */
-
-.oc-input { overflow: visible; }
-
-/*
- * Remove the default vertical scrollbar in IE 10+.
- */
-
-.oc-textarea { overflow: auto; }
-
-/*
  * Remove the inner padding and cancel buttons in Chrome on OS X and Safari on OS X.
  */
 
@@ -212,7 +200,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   box-sizing: border-box;
   color: var(--oc-role-on-surface);
   display: inline-block;
-  overflow: visible;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-property: color, background-color;
@@ -329,9 +316,6 @@ select.oc-form-width-xsmall { width: ($form-width-xsmall + 25px); }
 
   /* 1 */
   display: inline-block;
-
-  /* 2 */
-  overflow: hidden;
 }
 
 /*

@@ -7,7 +7,7 @@
       drop-id="notifications-dropdown"
       toggle="#oc-notifications-bell"
       mode="click"
-      class="w-md max-w-full max-h-[400px]"
+      class="w-md max-w-full max-h-[400px] overflow-y-auto overflow-x-hidden"
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
     >
@@ -278,11 +278,6 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-#oc-notifications-drop {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .oc-notifications {
   &-loading {
     * {

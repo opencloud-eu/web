@@ -316,7 +316,7 @@ const openSideBarSharePanel = () => {
     @apply hidden lg:block;
   }
   .space-header .markdown-container.collapsed {
-    @apply max-h-[100px];
+    @apply max-h-[100px] overflow-hidden;
   }
 }
 </style>
@@ -336,7 +336,6 @@ const openSideBarSharePanel = () => {
   }
 
   .markdown-container.collapsed {
-    overflow: hidden;
     -webkit-mask-image: linear-gradient(180deg, #000 90%, transparent);
   }
 }

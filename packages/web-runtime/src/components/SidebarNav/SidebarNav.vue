@@ -1,7 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="bg-role-surface-container flex flex-col rounded-l-xl"
+    class="bg-role-surface-container flex flex-col rounded-l-xl overflow-hidden"
     :class="{
       'max-w-[62px] min-w-[62px]': closed,
       'max-w-[230px] min-w-[230px]': !closed
@@ -10,7 +10,7 @@
     <oc-button
       appearance="raw"
       :class="toggleSidebarButtonClass"
-      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5"
+      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
       no-hover
@@ -180,7 +180,6 @@ export default defineComponent({
 }
 
 #web-nav-sidebar {
-  overflow: hidden;
   transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
   z-index: 4;
 
@@ -190,10 +189,6 @@ export default defineComponent({
 
   .toggle-sidebar-button {
     transition: all 0.2s ease-out;
-
-    &:hover {
-      overflow: hidden;
-    }
   }
 
   .toggle-sidebar-button-expanded {

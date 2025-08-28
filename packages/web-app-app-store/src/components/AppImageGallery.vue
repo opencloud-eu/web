@@ -2,7 +2,7 @@
   <div class="app-image-wrapper">
     <div
       v-if="app.badge"
-      class="app-image-ribbon text-right size-[7rem]"
+      class="app-image-ribbon text-right size-[7rem] overflow-hidden"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
       <span class="text-xs font-bold text-center leading-6 w-[10rem]" :class="ribbonColorClasses">{{
@@ -127,7 +127,6 @@ export default defineComponent({
     top: 0;
     right: 0;
     z-index: 1;
-    overflow: hidden;
 
     span {
       position: absolute;
