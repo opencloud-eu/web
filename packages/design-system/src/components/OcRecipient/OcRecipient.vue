@@ -1,6 +1,6 @@
 <template>
   <span
-    class="oc-recipient bg-role-surface-container flex align-center justify-center border border-role-outline rounded-md"
+    class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md"
   >
     <slot name="avatar">
       <oc-avatar-item
