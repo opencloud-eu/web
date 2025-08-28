@@ -1,8 +1,8 @@
 <template>
-  <main id="files" class="flex oc-height-1-1">
+  <main id="files" class="flex oc-height-1-1 relative">
     <div
       v-if="dragareaEnabled"
-      class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
+      class="dragarea absolute right-0 top-0 left-0 bottom-0 bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
     />
     <router-view tabindex="0" class="files-wrapper flex-1 oc-height-1-1 flex-wrap" />
   </main>
@@ -48,15 +48,6 @@ main {
 
 .dragarea {
   pointer-events: none;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  position: absolute;
   z-index: 9;
-}
-
-#files {
-  position: relative;
 }
 </style>

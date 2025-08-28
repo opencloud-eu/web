@@ -10,12 +10,12 @@
   >
     <div
       v-if="!indeterminate"
-      class="oc-progress-current w-full"
+      class="oc-progress-current absolute w-full"
       :style="{ width: progressValue, backgroundColor: color }"
     ></div>
     <div v-else class="oc-progress-indeterminate">
-      <div class="oc-progress-indeterminate-first" :style="{ backgroundColor: color }" />
-      <div class="oc-progress-indeterminate-second" :style="{ backgroundColor: color }" />
+      <div class="oc-progress-indeterminate-first absolute" :style="{ backgroundColor: color }" />
+      <div class="oc-progress-indeterminate-second absolute" :style="{ backgroundColor: color }" />
     </div>
   </div>
 </template>
@@ -64,7 +64,7 @@ const {
 } = defineProps<Props>()
 
 const classes = computed(() => {
-  return `oc-progress oc-progress-${size} block`
+  return `oc-progress oc-progress-${size} block relative`
 })
 
 const progressValue = computed(() => {
@@ -83,7 +83,6 @@ $progress-height-small: 5px !default;
 .oc-progress {
   height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
-  position: relative;
   overflow-x: hidden;
 
   &-small {
@@ -92,13 +91,11 @@ $progress-height-small: 5px !default;
 
   &-current {
     height: 100%;
-    position: absolute;
     transition: width 0.5s;
   }
 
   &-indeterminate div {
     height: 100%;
-    position: absolute;
   }
 
   &-indeterminate-first {

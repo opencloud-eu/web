@@ -4,7 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px]"
+    class="relative border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px]"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full"
+        class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -288,7 +288,6 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 #app-sidebar {
-  position: relative;
   overflow: hidden;
 
   &:focus,
@@ -307,8 +306,6 @@ onBeforeUnmount(() => {
   $root: &;
   overflow: hidden;
   max-height: 100%;
-  top: 0;
-  position: absolute;
   transform: translateX(100%);
   transition:
     transform 0.4s ease,

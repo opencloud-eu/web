@@ -11,6 +11,7 @@
     <input
       id="space-image-upload-input"
       ref="spaceImageInput"
+      class="absolute left-[-99999px]"
       type="file"
       name="file"
       multiple
@@ -188,10 +189,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-#space-image-upload-input {
-  position: absolute;
-  left: -99999px;
-}
-</style>

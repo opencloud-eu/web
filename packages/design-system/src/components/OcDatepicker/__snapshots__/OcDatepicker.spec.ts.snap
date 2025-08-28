@@ -4,7 +4,7 @@ exports[`OcDatePicker > renders 1`] = `
 "<div class="oc-date-picker"><label class="oc-label" for="oc-textinput-1">Datepicker label
     <!--v-if-->
   </label>
-  <div class="oc-position-relative">
+  <div class="relative">
     <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
     <!--v-if-->
   </div>
