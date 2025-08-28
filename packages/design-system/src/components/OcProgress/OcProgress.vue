@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-progress block overflow-x-hidden"
+    class="oc-progress block relative overflow-x-hidden"
     :class="{ 'h-4': size === 'default', 'h-1': size === 'small', 'h-0.5': size === 'xsmall' }"
     :aria-valuemax="max"
     :aria-valuenow="value"
@@ -11,12 +11,18 @@
   >
     <div
       v-if="!indeterminate"
-      class="oc-progress-current size-full"
+      class="oc-progress-current absolute size-full"
       :style="{ width: progressValue, backgroundColor: color }"
     ></div>
     <div v-else class="oc-progress-indeterminate">
-      <div class="oc-progress-indeterminate-first h-full" :style="{ backgroundColor: color }" />
-      <div class="oc-progress-indeterminate-second h-full" :style="{ backgroundColor: color }" />
+      <div
+        class="oc-progress-indeterminate-first absolute h-full"
+        :style="{ backgroundColor: color }"
+      />
+      <div
+        class="oc-progress-indeterminate-second absolute h-full"
+        :style="{ backgroundColor: color }"
+      />
     </div>
   </div>
 </template>
@@ -75,16 +81,8 @@ const progressValue = computed(() => {
 
 <style lang="scss">
 .oc-progress {
-  // Add the correct vertical alignment in Chrome, Firefox, and Opera.
-  position: relative;
-
   &-current {
-    position: absolute;
     transition: width 0.5s;
-  }
-
-  &-indeterminate div {
-    position: absolute;
   }
 
   &-indeterminate-first {

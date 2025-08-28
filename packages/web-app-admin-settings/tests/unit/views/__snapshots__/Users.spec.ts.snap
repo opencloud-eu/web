@@ -5,7 +5,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
+        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
@@ -39,7 +39,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
               <div class="w-3xs"><label class="oc-label" for="users-filter">Search
                   <!--v-if-->
                 </label>
-                <div class="oc-position-relative">
+                <div class="relative">
                   <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text">
                   <!--v-if-->
                 </div>
@@ -65,7 +65,7 @@ exports[`Users view > list view > renders list initially 1`] = `
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
+        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
@@ -99,7 +99,7 @@ exports[`Users view > list view > renders list initially 1`] = `
               <div class="w-3xs"><label class="oc-label" for="users-filter">Search
                   <!--v-if-->
                 </label>
-                <div class="oc-position-relative">
+                <div class="relative">
                   <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text">
                   <!--v-if-->
                 </div>

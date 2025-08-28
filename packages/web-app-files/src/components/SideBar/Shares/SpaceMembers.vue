@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-files-sharing-sidebar" class="oc-position-relative">
+  <div id="oc-files-sharing-sidebar" class="relative">
     <div class="flex">
       <div v-if="canShare({ space: resource, resource })" class="flex py-2">
         <h3 class="font-semibold text-base m-0" v-text="$gettext('Add members')" />
@@ -17,7 +17,7 @@
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="flex items-center justify-between oc-position-relative h-10"
+        class="flex items-center justify-between relative h-10"
       >
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />

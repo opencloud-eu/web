@@ -2,8 +2,8 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
-    class="px-4 bg-role-surface rounded-t-xl"
-    :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky': isSticky }"
+    class="px-4 bg-role-surface rounded-t-xl [display:inherit]"
+    :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky sticky': isSticky }"
   >
     <div class="files-topbar py-2">
       <h1 class="oc-invisible-sr" v-text="pageTitle" />
@@ -348,12 +348,7 @@ export default defineComponent({
 #files-app-bar {
   box-sizing: border-box;
   z-index: 2;
-  position: inherit;
   top: 0;
-
-  &.files-app-bar-sticky {
-    position: sticky;
-  }
 
   .files-app-bar-controls {
     @media (max-width: $oc-breakpoint-xsmall-max) {

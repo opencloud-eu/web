@@ -1,14 +1,14 @@
 <template>
-  <div id="ghost-element" class="ghost-element pt-1 pl-4 bg-transparent">
-    <div class="ghost-element-layer1 rounded-sm bg-role-surface-container-high">
+  <div id="ghost-element" class="ghost-element absolute pt-1 pl-4 bg-transparent">
+    <div class="ghost-element-layer1 relative rounded-sm bg-role-surface-container-high">
       <resource-icon class="p-1" :resource="previewItems[0]" />
       <div
         v-if="showSecondLayer"
-        class="ghost-element-layer2 rounded-sm bg-role-surface-container-high"
+        class="ghost-element-layer2 absolute top-[3px] left-[3px] right-[-3px] bottom-[-3px] rounded-sm bg-role-surface-container-high"
       />
       <div
         v-if="showThirdLayer"
-        class="ghost-element-layer3 rounded-sm bg-role-surface-container-high"
+        class="ghost-element-layer3absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high"
       />
     </div>
     <span
@@ -52,39 +52,32 @@ export default defineComponent({
 })
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .ghost-element .badge {
+    @apply absolute top-[-2px] right-[-8px];
+  }
+  .ghost-element .icon-wrapper {
+    @apply relative;
+  }
+}
+</style>
 <style lang="scss">
 .ghost-element-layer1 {
-  position: relative;
-
   .ghost-element-layer2 {
-    position: absolute;
     filter: brightness(0.82);
-    top: 3px;
-    left: 3px;
-    right: -3px;
-    bottom: -3px;
     z-index: -1;
   }
+
   .ghost-element-layer3 {
-    position: absolute;
     filter: brightness(0.72);
-    top: 6px;
-    left: 6px;
-    right: -6px;
-    bottom: -6px;
     z-index: -2;
   }
 }
+
 .ghost-element {
   z-index: var(--oc-z-index-modal);
-  position: absolute;
-  .icon-wrapper {
-    position: relative;
-  }
-  .badge {
-    position: absolute;
-    top: -2px;
-    right: -8px;
-  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-files-file-link" class="oc-position-relative rounded-sm">
+  <div id="oc-files-file-link" class="relative rounded-sm">
     <div class="flex items-center">
       <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
       <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />

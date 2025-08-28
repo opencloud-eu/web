@@ -2,7 +2,7 @@
 
 exports[`Projects view > different files view states > lists all available project spaces 1`] = `
 "<div class="flex w-full">
-  <div data-v-39c970be="" class="files-view-wrapper grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto">
+  <div data-v-39c970be="" class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto">
     <div data-v-39c970be="" id="files-view" class="outline-0">
       <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="spaces-list">
@@ -10,7 +10,7 @@ exports[`Projects view > different files view states > lists all available proje
           <div class=""><label class="oc-label" for="spaces-filter">Search
               <!--v-if-->
             </label>
-            <div class="oc-position-relative">
+            <div class="relative">
               <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text" value="">
               <!--v-if-->
             </div>

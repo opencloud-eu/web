@@ -6,7 +6,7 @@
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-color-input-wrapper oc-position-relative max-m-5">
+    <div class="oc-color-input-wrapper relative max-m-5">
       <input
         :id="id"
         v-bind="additionalAttributes"
@@ -25,7 +25,7 @@
       />
       <oc-button
         v-if="showClearButton"
-        class="mr-1 oc-position-center-right oc-color-input-btn-clear"
+        class="mr-1 right-0 oc-color-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"

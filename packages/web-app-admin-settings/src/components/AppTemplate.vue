@@ -8,7 +8,7 @@
             id="admin-settings-app-bar"
             ref="appBarRef"
             class="oc-app-bar py-2 px-4 bg-role-surface"
-            :class="{ 'admin-settings-app-bar-sticky': isSticky }"
+            :class="{ 'admin-settings-app-bar-sticky sticky': isSticky }"
           >
             <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
               <oc-breadcrumb
@@ -215,16 +215,20 @@ export default defineComponent({
 })
 </script>
 
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  #admin-settings-app-bar {
+    display: inherit;
+    @apply top-0;
+  }
+}
+</style>
 <style lang="scss">
 #admin-settings-app-bar {
   box-sizing: border-box;
   z-index: 2;
-  position: inherit;
-  top: 0;
-
-  &.admin-settings-app-bar-sticky {
-    position: sticky;
-  }
 }
 
 .admin-settings-app-bar-controls {

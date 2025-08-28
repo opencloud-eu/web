@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`NotificationBell > should match snapshot 1`] = `
-"<button data-v-25fb4be0="" type="button" aria-label="Notifications" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse no-hover inline-flex" id="oc-notifications-bell">
+"<button data-v-25fb4be0="" type="button" aria-label="Notifications" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse no-hover inline-flex relative" id="oc-notifications-bell">
   <!--v-if-->
   <!-- @slot Content of the button -->
   <oc-icon-stub data-v-25fb4be0="" class="oc-cursor-pointer flex items-center" name="notification-3" fill-type="line"></oc-icon-stub>

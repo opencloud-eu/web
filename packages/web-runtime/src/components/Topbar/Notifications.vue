@@ -22,7 +22,7 @@
           <span class="text-sm" v-text="$gettext('Mark all as read')" />
         </oc-button>
       </div>
-      <div class="oc-position-relative">
+      <div class="relative">
         <div v-if="loading" class="oc-notifications-loading">
           <div class="oc-notifications-loading-background size-full bg-role-surface" />
           <oc-spinner class="oc-notifications-loading-spinner" size="large" />

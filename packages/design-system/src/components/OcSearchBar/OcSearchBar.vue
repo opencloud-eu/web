@@ -4,7 +4,7 @@
     class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
-    <div class="flex-1 oc-position-relative">
+    <div class="flex-1 relative">
       <input
         v-model="model"
         :class="inputClass"
@@ -18,7 +18,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="oc-position-center-right mx-4 mb-4 mt-0"
+        class="right-0 mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"

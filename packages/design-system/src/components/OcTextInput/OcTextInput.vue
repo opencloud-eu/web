@@ -6,7 +6,7 @@
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-position-relative">
+    <div class="relative">
       <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 oc-position-absolute" />
       <component
         :is="inputComponent"
@@ -33,7 +33,7 @@
       <oc-button
         v-if="showClearButton"
         :aria-label="clearButtonAccessibleLabelValue"
-        class="pr-2 oc-position-center-right oc-text-input-btn-clear"
+        class="pr-2 right-0 oc-text-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
