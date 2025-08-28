@@ -90,7 +90,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview flex items-center py-1 px-2 text-sm"
+                class="preview flex items-center py-1 px-2 text-sm min-h-10"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -585,8 +585,6 @@ export default defineComponent({
         position: relative;
 
         &.preview {
-          min-height: 44px;
-
           &.disabled {
             pointer-events: none;
             opacity: 0.7;

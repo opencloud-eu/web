@@ -13,7 +13,7 @@ exports[`Spaces view > loading states > should render spaces list after loading 
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
             </div>
           </div>
-          <div class="admin-settings-app-bar-actions flex items-center mt-1">
+          <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">
             <!--v-if-->
           </div>
         </div>

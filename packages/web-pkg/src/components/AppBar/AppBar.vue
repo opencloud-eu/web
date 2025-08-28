@@ -9,7 +9,7 @@
       <h1 class="oc-invisible-sr" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
-        class="flex items-center files-app-bar-controls"
+        class="flex items-center files-app-bar-controls min-h-13"
         :class="{
           'justify-between': breadcrumbs.length || hasSharesNavigation,
           'justify-end': !breadcrumbs.length && !hasSharesNavigation
@@ -44,7 +44,7 @@
           />
         </div>
       </div>
-      <div class="files-app-bar-actions flex items-center justify-end mt-1">
+      <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10">
         <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
@@ -356,8 +356,6 @@ export default defineComponent({
   }
 
   .files-app-bar-controls {
-    min-height: 52px;
-
     @media (max-width: $oc-breakpoint-xsmall-max) {
       justify-content: space-between;
     }
@@ -365,11 +363,6 @@ export default defineComponent({
 
   .files-app-bar-actions {
     gap: var(--oc-space-small);
-    min-height: 3rem;
-  }
-
-  #files-breadcrumb {
-    min-height: 2rem;
   }
 }
 </style>

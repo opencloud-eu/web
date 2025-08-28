@@ -10,7 +10,7 @@
     <oc-button
       appearance="raw"
       :class="toggleSidebarButtonClass"
-      class="toggle-sidebar-button pb-2 pt-4"
+      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
       no-hover
@@ -189,7 +189,6 @@ export default defineComponent({
   }
 
   .toggle-sidebar-button {
-    min-height: 3rem;
     transition: all 0.2s ease-out;
 
     &:hover {

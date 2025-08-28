@@ -29,7 +29,10 @@
                 />
               </div>
             </div>
-            <div v-if="showAppBar" class="admin-settings-app-bar-actions flex items-center mt-1">
+            <div
+              v-if="showAppBar"
+              class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10"
+            >
               <slot
                 name="topbarActions"
                 :limited-screen-space="limitedScreenSpace"
@@ -232,10 +235,6 @@ export default defineComponent({
   @media (max-width: $oc-breakpoint-xsmall-max) {
     justify-content: space-between;
   }
-}
-
-.admin-settings-app-bar-actions {
-  min-height: 3rem;
 }
 
 @media only screen and (max-width: $oc-breakpoint-small-default) {

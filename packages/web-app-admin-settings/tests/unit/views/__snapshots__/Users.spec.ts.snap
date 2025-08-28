@@ -13,7 +13,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
             </div>
           </div>
-          <div class="admin-settings-app-bar-actions flex items-center mt-1">
+          <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">
             <div>
               <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="mr-2"></oc-button-stub>
             </div>
@@ -73,7 +73,7 @@ exports[`Users view > list view > renders list initially 1`] = `
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
             </div>
           </div>
-          <div class="admin-settings-app-bar-actions flex items-center mt-1">
+          <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">
             <div>
               <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="mr-2"></oc-button-stub>
             </div>
