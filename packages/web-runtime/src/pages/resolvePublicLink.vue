@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
+  <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
     <div class="oc-card text-center w-lg bg-role-surface-container rounded-xl">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
       <template v-if="errorMessage">

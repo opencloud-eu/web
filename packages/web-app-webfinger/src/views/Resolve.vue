@@ -1,5 +1,5 @@
 <template>
-  <main class="webfinger-resolve oc-height-viewport flex flex-col justify-center items-center">
+  <main class="webfinger-resolve h-screen flex flex-col justify-center items-center">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
     <div class="oc-card oc-card-body text-center w-lg text-lg bg-role-surface-container rounded-xl">
       <template v-if="hasError">
