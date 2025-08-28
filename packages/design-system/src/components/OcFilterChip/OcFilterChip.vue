@@ -5,7 +5,7 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px]"
       :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
@@ -41,7 +41,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-r-full"
+      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px]"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
@@ -183,7 +183,6 @@ defineExpose({ hideDrop })
     box-sizing: border-box;
     gap: var(--oc-space-xsmall);
     max-width: 150px;
-    height: 100%;
   }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {

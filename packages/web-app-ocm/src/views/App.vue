@@ -15,7 +15,7 @@
           <incoming-invitations @highlight-new-connections="highlightNewConnections" />
         </div>
       </div>
-      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container rounded-xl">
+      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container rounded-xl m-2">
         <connections-panel
           v-model:connections="connections"
           :highlighted-connections="highlightedConnections.map((c) => c.id)"

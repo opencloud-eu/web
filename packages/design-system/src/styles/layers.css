@@ -160,7 +160,7 @@
   }
 
   .oc-tooltip .tippy-content {
-    @apply text-sm;
+    @apply text-sm break-all;
   }
 }
 

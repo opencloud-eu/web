@@ -22,7 +22,7 @@
         <p class="my-2 mark-element">{{ app.subtitle }}</p>
       </div>
       <app-tags :app="app" @click="emitSearchTerm" />
-      <app-actions :app="app" />
+      <app-actions :app="app" class="mt-4" />
     </div>
   </li>
 </template>
