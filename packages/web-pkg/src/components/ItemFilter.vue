@@ -20,7 +20,7 @@
           <oc-list class="item-filter-list">
             <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
               <oc-button
-                class="item-filter-list-item flex items-center oc-width-1-1"
+                class="item-filter-list-item flex items-center w-full"
                 :class="{
                   'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
                   'justify-start': allowMultiple,

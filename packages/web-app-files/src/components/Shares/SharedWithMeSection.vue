@@ -74,7 +74,7 @@
         </oc-button>
       </template>
       <template #footer>
-        <div v-if="showMoreToggle && hasMore" class="oc-width-1-1 text-center mt-4">
+        <div v-if="showMoreToggle && hasMore" class="w-full text-center mt-4">
           <oc-button
             id="files-shared-with-me-show-all"
             appearance="raw"
@@ -87,7 +87,7 @@
             <oc-icon :name="'arrow-' + (showMore ? 'up' : 'down') + '-s'" fill-type="line" />
           </oc-button>
         </div>
-        <list-info v-else class="oc-width-1-1 my-2" />
+        <list-info v-else class="w-full my-2" />
       </template>
     </resource-table>
   </div>

@@ -2,12 +2,13 @@
   <portal to="app.runtime.header.left">
     <div class="oc-app-top-bar flex">
       <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg"
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg w-full"
       >
         <div class="open-file-bar flex">
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
+            class="max-w-2xs md:max-w-sm"
             :is-thumbnail-displayed="false"
             :is-extension-displayed="areFileExtensionsShown"
             :path-prefix="getPathPrefix(resource)"
@@ -218,7 +219,6 @@ export default defineComponent({
 .oc-app-top-bar-inner {
   gap: 25px;
   height: 40px;
-  width: 100%;
 
   @media (min-width: $oc-breakpoint-small-default) {
     flex-basis: 250px;
@@ -227,12 +227,6 @@ export default defineComponent({
 
 .open-file-bar {
   #app-top-bar-resource {
-    max-width: 360px;
-
-    @media (max-width: $oc-breakpoint-medium-default) {
-      max-width: 240px;
-    }
-
     @media (min-width: $oc-breakpoint-small-default) {
       widows: initial;
     }

@@ -63,20 +63,16 @@ const cellClasses = computed(() => {
   .oc-table-cell-align-bottom {
     @apply align-bottom;
   }
+  .oc-table-cell-width-shrink {
+    @apply w-px;
+  }
+  .oc-table-cell-width-expand {
+    @apply min-w-38;
+  }
 }
 </style>
 <style lang="scss">
 .oc-table-cell {
   position: relative;
-
-  &-width {
-    &-shrink {
-      width: 1px;
-    }
-
-    &-expand {
-      min-width: 150px;
-    }
-  }
 }
 </style>

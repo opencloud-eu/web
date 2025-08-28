@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-width-1-1 oc-height-1-1">
+  <div class="w-full oc-height-1-1">
     <app-loading-spinner />
   </div>
 </template>

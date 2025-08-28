@@ -4,7 +4,7 @@
       :id="toggleId"
       appearance="raw"
       gap-size="medium"
-      class="oc-width-1-1 flex justify-between oc-width-1-1"
+      class="w-full flex justify-between"
       aria-expanded="false"
     >
       <oc-icon :name="menuSectionDrop.icon" size="medium" fill-type="line" />
@@ -20,7 +20,7 @@
       :is-nested-element="true"
       :nested-parent-ref="parentDropRef"
       mode="hover"
-      class="oc-width-auto oc-files-context-action-drop"
+      class="w-auto oc-files-context-action-drop"
       padding-size="small"
       position="auto-start"
       close-on-click

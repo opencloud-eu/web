@@ -10,7 +10,7 @@
         v-if="appMenuExtensions.length && !isEmbedModeEnabled"
         :menu-items="appMenuExtensions"
       />
-      <router-link v-if="!hideLogo" :to="homeLink" class="oc-width-1-1 oc-logo-href">
+      <router-link v-if="!hideLogo" :to="homeLink" class="w-full oc-logo-href">
         <oc-image
           :src="currentTheme.logo"
           :alt="sidebarLogoAlt"

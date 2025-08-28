@@ -11,7 +11,8 @@
       :style="{
         backgroundColor,
         '--icon-color': iconColor,
-        '--width': avatarWidth
+        width: avatarWidth,
+        height: avatarWidth
       }"
     >
       <oc-icon v-if="hasIcon" :name="icon" :size="iconSize" :fill-type="iconFillType" />
@@ -105,8 +106,6 @@ const pickBackgroundColor = () => {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 18px;
-  height: var(--width);
-  width: var(--width);
 
   .oc-icon > svg {
     fill: var(--icon-color) !important;

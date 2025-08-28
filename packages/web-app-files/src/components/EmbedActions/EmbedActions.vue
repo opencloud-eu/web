@@ -1,6 +1,6 @@
 <template>
   <section
-    class="files-embed-actions oc-width-1-1 flex items-center justify-between my-2 text-role-on-chrome"
+    class="files-embed-actions w-full flex items-center justify-between my-2 text-role-on-chrome"
   >
     <oc-text-input
       v-if="chooseFileName"
@@ -166,7 +166,15 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .files-embed-actions-file-name input {
+    @apply w-auto md:w-sm;
+  }
+}
+</style>
 <style lang="scss">
 .files-embed-actions {
   // Prevent .snackbar from overlapping the actions
@@ -176,16 +184,6 @@ export default defineComponent({
 
   &-file-name {
     gap: var(--oc-space-small);
-
-    input {
-      width: 400px;
-    }
-
-    @media (max-width: $oc-breakpoint-medium-default) {
-      input {
-        width: auto;
-      }
-    }
   }
 }
 </style>

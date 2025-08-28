@@ -1,5 +1,5 @@
 <template>
-  <div class="compare-save-dialog oc-width-1-1 flex justify-between items-center">
+  <div class="compare-save-dialog w-full flex justify-between items-center">
     <span v-if="saved" class="state-indicator flex items-center">
       <oc-icon name="checkbox-circle" />
       <span class="ml-2" v-text="$gettext('Changes saved')" />

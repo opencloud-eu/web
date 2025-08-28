@@ -12,10 +12,7 @@
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
-      <div
-        v-else
-        class="details-icon-wrapper oc-width-1-1 flex items-center justify-center mb-4 p-2"
-      >
+      <div v-else class="details-icon-wrapper w-full flex items-center justify-center mb-4 p-2">
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
       <div
@@ -113,7 +110,7 @@
             ></oc-contextual-helper>
           </dt>
           <dd data-testid="tags">
-            <tags-select :resource="resource" class="oc-width-1"></tags-select>
+            <tags-select :resource="resource" class="w-full" />
           </dd>
         </template>
       </dl>
@@ -343,12 +340,5 @@ watch(
 
 .details-preview {
   height: 230px;
-}
-
-.details-icon > svg {
-  height: 192px !important;
-  max-height: 192px !important;
-  max-width: 192px !important;
-  width: 192px !important;
 }
 </style>

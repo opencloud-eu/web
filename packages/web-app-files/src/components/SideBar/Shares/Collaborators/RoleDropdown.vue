@@ -7,7 +7,7 @@
     <div v-else v-oc-tooltip="dropButtonTooltip" class="max-w-full">
       <oc-button
         :id="roleButtonId"
-        class="files-recipient-role-select-btn"
+        class="files-recipient-role-select-btn max-w-full"
         appearance="raw"
         gap-size="none"
         :disabled="isLocked"
@@ -33,7 +33,7 @@
       :toggle="'#' + roleButtonId"
       mode="click"
       padding-size="small"
-      class="files-recipient-role-drop"
+      class="files-recipient-role-drop w-md"
       offset="0"
       close-on-click
     >
@@ -297,20 +297,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.files-recipient {
-  &-role-drop {
-    @media (max-width: $oc-breakpoint-medium-default) {
-      width: 100%;
-    }
-    @media (min-width: $oc-breakpoint-medium-default) {
-      width: 400px;
-    }
-  }
-
-  &-role-select-btn {
-    max-width: 100%;
-  }
-}
 .files-recipient-role-drop-btn {
   justify-content: space-between !important;
 }

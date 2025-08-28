@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-application-icon inline-flex items-center justify-center rounded-sm"
+    class="oc-application-icon inline-flex items-center justify-center rounded-sm w-8 h-8"
     :style="iconStyle"
   >
     <oc-icon :name="icon" :color="iconColor" size="medium" />
@@ -60,21 +60,9 @@ const iconStyle = computed(() => {
 
 <style lang="scss">
 .oc-application-icon {
-  width: 28px;
-  height: 28px;
-
   .oc-icon {
-    height: 18px !important;
-    max-height: 18px !important;
-    max-width: 18px !important;
-    width: 18px !important;
-
     svg {
       fill: var(--oc-role-on-secondary) !important;
-      height: 18px !important;
-      max-height: 18px !important;
-      max-width: 18px !important;
-      width: 18px !important;
     }
   }
 }

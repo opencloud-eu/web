@@ -1,5 +1,5 @@
 <template>
-  <oc-table class="oc-width-1-1" :data="data" :fields="fields" padding-x="remove">
+  <oc-table class="w-full" :data="data" :fields="fields" padding-x="remove">
     <template #version="{ item }">
       v{{ item.version }}
       <oc-tag v-if="item.version === app.mostRecentVersion.version" size="small" class="ml-2">

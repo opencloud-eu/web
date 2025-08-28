@@ -6,7 +6,7 @@
         :aria-label="$gettext('Space image is loading')"
       />
       <div v-else-if="spaceImage" class="oc-position-relative mb-2">
-        <img :src="spaceImage" alt="" />
+        <img :src="spaceImage" alt="" class="size-full" />
       </div>
       <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />
     </div>
@@ -241,9 +241,7 @@ const expandSharesPanel = () => {
 
   &-image img {
     aspect-ratio: 16 / 9;
-    height: 100%;
     object-fit: cover;
-    width: 100%;
   }
 }
 </style>

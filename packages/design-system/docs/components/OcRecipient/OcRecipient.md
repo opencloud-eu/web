@@ -19,7 +19,7 @@ The most basic use case involves a `recipient` object with a `name` property.
 ::: livecode
 
 ```html
-<div class="oc-width-1-4">
+<div class="w-[25%]">
   <oc-recipient :recipient="{ name: 'Admin' }" />
 </div>
 ```
@@ -33,7 +33,7 @@ The component can show an avatar in front of the recipient's name.
 ::: livecode
 
 ```html{5-7}
-<div class="oc-width-1-4">
+<div class="w-[25%]">
 	<oc-recipient
 		:recipient="{
 			name: 'Admin',
@@ -54,7 +54,7 @@ The component provides an `append` slot to add additional content.
 ::: livecode
 
 ```html{3-5}
-<div class="oc-width-1-4">
+<div class="w-[25%]">
 	<oc-recipient :recipient="{ name: 'Admin' }">
 		<template #append>
 			<span class="text-sm">Additional content</span>

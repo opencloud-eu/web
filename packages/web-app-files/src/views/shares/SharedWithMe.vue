@@ -59,7 +59,7 @@
           <div>
             <oc-text-input
               v-model="filterTerm"
-              class="search-filter"
+              class="search-filter w-3xs"
               :label="$gettext('Search')"
               autocomplete="off"
             />
@@ -301,9 +301,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.search-filter {
-  width: 16rem;
-}
-</style>

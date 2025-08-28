@@ -103,7 +103,7 @@
   .oc-drop li a,
   .oc-drop li button:not([role='switch']),
   .oc-drop li .item-has-switch {
-    @apply p-2;
+    @apply p-2 w-full;
   }
 
   .oc-bottom-drawer li,
@@ -141,7 +141,7 @@
   .oc-input,
   .oc-select,
   .oc-textarea {
-    @apply bg-role-surface;
+    @apply bg-role-surface w-full max-w-full;
   }
 
   .oc-input:disabled,

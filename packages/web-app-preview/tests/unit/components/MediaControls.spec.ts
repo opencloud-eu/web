@@ -8,7 +8,6 @@ const selectors = {
   controlsNext: '.preview-controls-next',
   controlsFullScreen: '.preview-controls-fullscreen',
   controlsImageShrink: '.preview-controls-image-shrink',
-  controlsImageOriginalSize: '.preview-controls-image-original-size',
   controlsImageZoom: '.preview-controls-image-zoom',
   controlsRotateLeft: '.preview-controls-rotate-left',
   controlsRotateRight: '.preview-controls-rotate-right',

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex oc-width-1-1">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -60,7 +60,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="oc-width-1-1 my-2" />
+            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </resource-table>
       </template>

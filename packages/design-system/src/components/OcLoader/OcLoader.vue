@@ -6,6 +6,8 @@
       'after:block',
       'bg-role-surface-container',
       'after:bg-role-secondary',
+      'w-full',
+      'after:w-0',
       { 'oc-loader-flat rounded-none': flat },
       { 'rounded-[500px]': !flat }
     ]"
@@ -43,7 +45,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   -moz-appearance: none;
   height: 15px;
   overflow: hidden;
-  width: 100%;
   position: relative;
 
   &-flat {
@@ -53,7 +54,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
   &::after {
     content: '';
     height: 100%;
-    width: 0;
     position: absolute;
 
     animation: {

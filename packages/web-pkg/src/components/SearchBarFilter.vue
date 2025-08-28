@@ -17,7 +17,7 @@
               <oc-button
                 appearance="raw"
                 size="medium"
-                class="search-bar-filter-item flex items-center oc-width-1-1 py-1 px-2"
+                class="search-bar-filter-item flex items-center w-full py-1 px-2"
                 :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"
@@ -129,14 +129,19 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-location-search .oc-drop {
+    @apply w-45;
+  }
+}
+</style>
 <style lang="scss">
 .oc-location-search {
   z-index: 9999;
   float: right;
-  .oc-drop {
-    width: 180px;
-  }
 }
 .search-bar-filter-item {
   justify-content: space-between !important;

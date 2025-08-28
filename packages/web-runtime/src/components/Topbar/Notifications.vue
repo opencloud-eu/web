@@ -7,6 +7,7 @@
       drop-id="notifications-dropdown"
       toggle="#oc-notifications-bell"
       mode="click"
+      class="w-md max-w-full"
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
     >
@@ -23,9 +24,7 @@
       </div>
       <div class="oc-position-relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div
-            class="oc-notifications-loading-background oc-width-1-1 oc-height-1-1 bg-role-surface"
-          />
+          <div class="oc-notifications-loading-background w-full oc-height-1-1 bg-role-surface" />
           <oc-spinner class="oc-notifications-loading-spinner" size="large" />
         </div>
         <span
@@ -53,7 +52,7 @@
                 </div>
                 <div
                   v-if="el.link && el.object_type !== 'local_share'"
-                  class="oc-notifications-link truncate"
+                  class="oc-notifications-link truncate w-sm"
                 >
                   <a :href="el.link" target="_blank" v-text="el.link" />
                 </div>
@@ -280,8 +279,6 @@ export default {
 </style>
 <style lang="scss" scoped>
 #oc-notifications-drop {
-  width: 400px;
-  max-width: 100%;
   max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -303,10 +300,6 @@ export default {
       transform: translate(-50%, -50%);
       opacity: 1;
     }
-  }
-
-  &-link {
-    width: 300px;
   }
 }
 </style>

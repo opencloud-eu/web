@@ -195,12 +195,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   /* 3 */
   color: $form-color;
 
-  /* 1 */
-  max-width: 100%;
-
-  /* 2 */
-  width: 100%;
-
   @if (meta.mixin-exists(hook-form)) { @include hook-form(); }
 }
 
@@ -218,12 +212,10 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
   box-sizing: border-box;
   color: var(--oc-role-on-surface);
   display: inline-block;
-  max-width: 100%;
   overflow: visible;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-property: color, background-color;
-  width: 100%;
 }
 
 /*

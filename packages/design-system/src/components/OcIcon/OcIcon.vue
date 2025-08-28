@@ -125,57 +125,59 @@ const transformSvgElement = (svg: SVGElement) => {
 .oc-icon {
   // SVG wrapper
 
-  &,
-  > svg {
-    @include oc-icon-size(1);
-  }
-
-  &-xs {
-    &,
-    > svg {
-      @include oc-icon-size(0.5);
-    }
-  }
-
-  &-s {
-    &,
-    > svg {
-      @include oc-icon-size(0.7);
-    }
-  }
-
-  &-m {
+  @layer components {
     &,
     > svg {
       @include oc-icon-size(1);
     }
-  }
 
-  &-l {
-    &,
-    > svg {
-      @include oc-icon-size(1.5);
+    &-xs {
+      &,
+      > svg {
+        @include oc-icon-size(0.5);
+      }
     }
-  }
 
-  &-xl {
-    &,
-    > svg {
-      @include oc-icon-size(2);
+    &-s {
+      &,
+      > svg {
+        @include oc-icon-size(0.7);
+      }
     }
-  }
 
-  &-xxl {
-    &,
-    > svg {
-      @include oc-icon-size(4);
+    &-m {
+      &,
+      > svg {
+        @include oc-icon-size(1);
+      }
     }
-  }
 
-  &-xxxl {
-    &,
-    > svg {
-      @include oc-icon-size(8);
+    &-l {
+      &,
+      > svg {
+        @include oc-icon-size(1.5);
+      }
+    }
+
+    &-xl {
+      &,
+      > svg {
+        @include oc-icon-size(2);
+      }
+    }
+
+    &-xxl {
+      &,
+      > svg {
+        @include oc-icon-size(4);
+      }
+    }
+
+    &-xxxl {
+      &,
+      > svg {
+        @include oc-icon-size(8);
+      }
     }
   }
 }

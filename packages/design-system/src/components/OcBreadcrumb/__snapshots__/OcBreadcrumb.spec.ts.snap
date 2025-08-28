@@ -4,26 +4,26 @@ exports[`OcBreadcrumb > displays all items 1`] = `
 "<nav id="oc-breadcrumbs-2" class="oc-breadcrumb oc-breadcrumb-default" aria-label="Breadcrumbs">
   <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
     <li data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">First folder</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center oc-invisible-sr">
-      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">...</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">Subfolder</span></oc-button-stub>
+      <oc-button-stub appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">Deep</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-key="4" class="oc-breadcrumb-list-item flex items-center"><span class="oc-breadcrumb-item-text first:text-base text-xl align-sub truncate inline-block leading-[1.2]" tabindex="-1">Deeper ellipsize in responsive mode</span>
+    <li data-key="4" class="oc-breadcrumb-list-item flex items-center"><span class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1">Deeper ellipsize in responsive mode</span>
       <!--v-if-->
       <!--v-if-->
     </li>
@@ -40,26 +40,26 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
 "<nav id="oc-breadcrumbs-1" class="oc-breadcrumb oc-breadcrumb-lead" aria-label="Breadcrumbs">
   <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
     <li data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">First folder</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center oc-invisible-sr">
-      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">...</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">Subfolder</span></oc-button-stub>
+      <oc-button-stub appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span class="oc-breadcrumb-item-text hover:underline align-sub truncate inline-block leading-[1.2]">Deep</span></router-link-stub>
+      <router-link-stub tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-key="4" class="oc-breadcrumb-list-item flex items-center"><span class="oc-breadcrumb-item-text first:text-base text-xl align-sub truncate inline-block leading-[1.2]" tabindex="-1">Deeper ellipsize in responsive mode</span>
+    <li data-key="4" class="oc-breadcrumb-list-item flex items-center"><span class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1">Deeper ellipsize in responsive mode</span>
       <!--v-if-->
       <!--v-if-->
     </li>

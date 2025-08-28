@@ -6,7 +6,7 @@
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-color-input-wrapper oc-position-relative">
+    <div class="oc-color-input-wrapper oc-position-relative max-m-5">
       <input
         :id="id"
         v-bind="additionalAttributes"
@@ -209,10 +209,6 @@ const onInput = (value: string) => {
 }
 
 .oc-color-input {
-  &-wrapper {
-    max-width: 5rem !important;
-  }
-
   &-message {
     min-height: $oc-font-size-default * 1.5;
   }

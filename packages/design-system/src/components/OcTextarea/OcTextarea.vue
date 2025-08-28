@@ -6,7 +6,7 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline"
+      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline w-full max-w-full"
       :class="{
         'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
           !!errorMessage
@@ -100,8 +100,6 @@ defineExpose({ focus })
 <style lang="scss">
 .oc-textarea {
   box-sizing: border-box;
-  max-width: 100%;
-  width: 100%;
   overflow: auto;
 
   &:disabled {

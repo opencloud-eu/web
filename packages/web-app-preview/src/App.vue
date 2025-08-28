@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isFolderLoading" class="oc-width-1-1">
+  <div v-if="isFolderLoading" class="w-full">
     <div class="oc-position-center">
       <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
     </div>
@@ -7,21 +7,24 @@
   <div
     v-else
     ref="preview"
-    class="flex oc-width-1-1 oc-height-1-1"
+    class="flex w-full oc-height-1-1"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
-    <div class="stage flex flex-col text-center" :class="{ lightbox: isFullScreenModeActivated }">
-      <div class="stage_media flex justify-center items-center grow">
-        <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="oc-width-1-1">
+    <div
+      class="stage size-full flex flex-col text-center"
+      :class="{ lightbox: isFullScreenModeActivated }"
+    >
+      <div class="stage_media size-full flex justify-center items-center grow">
+        <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="w-full">
           <div class="oc-position-center">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
           </div>
         </div>
         <div
           v-else-if="activeMediaFileCached.isError"
-          class="oc-width-1-1 flex flex-col items-center justify-center"
+          class="w-full flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
           <p>
@@ -493,13 +496,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .stage {
-  width: 100%;
-  height: 100%;
-
   &_media {
     overflow: hidden;
-    width: 100%;
-    height: 100%;
   }
 
   &_controls {

@@ -5,7 +5,7 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px]"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40"
       :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
@@ -13,7 +13,7 @@
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
-        :class="filterActive ? 'oc-filter-check-icon-active' : 'oc-filter-check-icon-inactive'"
+        :class="filterActive ? 'oc-filter-check-icon-active' : 'oc-filter-check-icon-inactive w-0'"
         name="check"
         size="small"
       />
@@ -182,7 +182,6 @@ defineExpose({ hideDrop })
   &-button.oc-pill {
     box-sizing: border-box;
     gap: var(--oc-space-xsmall);
-    max-width: 150px;
   }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
@@ -196,7 +195,6 @@ defineExpose({ hideDrop })
 .oc-filter-check-icon-inactive {
   transition: all 0.25 ease-in;
   transform: scale(0) !important;
-  width: 0 !important;
 }
 
 // the focussed button needs to stay above the other to correctly display the focus outline

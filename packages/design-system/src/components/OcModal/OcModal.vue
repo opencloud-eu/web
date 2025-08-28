@@ -1,11 +1,13 @@
 <template>
-  <div class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap">
+  <div
+    class="oc-modal-background bg-black/40 flex items-center justify-center flex-row flex-wrap size-full"
+  >
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border border-role-outline rounded-sm focus:outline-0"
+        class="border border-role-outline rounded-sm focus:outline-0 w-full max-w-xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -326,16 +328,12 @@ export default {
 .oc-modal {
   box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
-  max-width: 500px;
   overflow: auto;
-  width: 100%;
 
   &-background {
-    height: 100%;
     left: 0;
     position: fixed;
     top: 0;
-    width: 100%;
     z-index: var(--oc-z-index-modal);
   }
 }
