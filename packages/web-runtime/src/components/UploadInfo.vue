@@ -100,7 +100,7 @@
     </div>
     <div
       v-if="infoExpanded"
-      class="upload-info-items px-4 pb-4"
+      class="upload-info-items px-4 pb-4 max-h-[50vh]"
       :class="{ 'has-errors': showErrorLog }"
     >
       <ul class="oc-list">
@@ -704,17 +704,15 @@ export default defineComponent({
   #upload-info .oc-resource-details {
     @apply pl-1;
   }
+  #upload-info .upload-info-items.has-errors {
+    max-height: calc(50vh - 100px);
+  }
 }
 </style>
 <style lang="scss">
 #upload-info {
   .upload-info-items {
-    max-height: 50vh;
     overflow-y: auto;
-  }
-
-  .upload-info-items.has-errors {
-    max-height: calc(50vh - 100px) !important;
   }
 }
 </style>

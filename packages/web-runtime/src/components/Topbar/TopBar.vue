@@ -14,7 +14,7 @@
         <oc-image
           :src="currentTheme.logo"
           :alt="sidebarLogoAlt"
-          class="oc-logo-image align-middle ml-1"
+          class="oc-logo-image align-middle ml-1 max-h-[26px]"
         />
       </router-link>
     </div>
@@ -233,7 +233,6 @@ export default {
   }
 
   .oc-logo-image {
-    max-height: 26px;
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;

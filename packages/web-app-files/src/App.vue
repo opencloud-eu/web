@@ -1,5 +1,5 @@
 <template>
-  <main id="files" class="flex h-full">
+  <main id="files" class="flex h-full max-h-full">
     <div
       v-if="dragareaEnabled"
       class="dragarea bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
@@ -42,10 +42,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-main {
-  max-height: 100%;
-}
-
 .dragarea {
   pointer-events: none;
   top: 0;

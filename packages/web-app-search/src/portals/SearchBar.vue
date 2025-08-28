@@ -532,6 +532,9 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #files-global-search-options {
+    max-height: calc(100vh - 60px);
+  }
   #files-global-search .oc-search-input {
     @apply inline sm:block;
   }
@@ -573,7 +576,6 @@ export default defineComponent({
 
   #files-global-search-options {
     overflow-y: auto;
-    max-height: calc(100vh - 60px);
 
     .preview-component button,
     .preview-component a {

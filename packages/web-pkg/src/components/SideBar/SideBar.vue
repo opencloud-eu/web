@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full"
+        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -306,7 +306,6 @@ onBeforeUnmount(() => {
 .sidebar-panel {
   $root: &;
   overflow: hidden;
-  max-height: 100%;
   top: 0;
   position: absolute;
   transform: translateX(100%);

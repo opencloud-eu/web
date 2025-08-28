@@ -37,7 +37,7 @@
     >
       <template #content>
         <div v-if="imageUrl">
-          <img ref="imageRef" class="avatar-upload-modal-image" :src="imageUrl" />
+          <img ref="imageRef" class="avatar-upload-modal-image max-h-[400px]" :src="imageUrl" />
           <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
             <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
             <span
@@ -223,10 +223,6 @@ const destroyCropper = () => {
 
 <style lang="scss">
 .avatar-upload {
-  &-modal-image {
-    max-height: 400px;
-  }
-
   // overwrite vendor styling
   .cropper-crop-box,
   .cropper-view-box {
