@@ -12,7 +12,7 @@
             :aria-label="getSortLabel(field.name)"
             appearance="raw"
             justify-content="left"
-            class="oc-button-sort oc-width-1-1 hover:underline"
+            class="oc-button-sort w-full hover:underline"
             gap-size="small"
             no-hover
             @click="handleSort(field)"
@@ -508,6 +508,9 @@ const handleSort = (field: FieldType) => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .oc-table {
+    @apply w-full;
+  }
   .oc-table-accentuated,
   .oc-table-highlighted,
   .oc-table .highlightedDropTarget {
@@ -526,7 +529,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-  width: 100%;
 
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;

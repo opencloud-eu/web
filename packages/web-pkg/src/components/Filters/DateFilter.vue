@@ -16,7 +16,7 @@
             class="my-1 first:mt-0 last:mb-0"
           >
             <oc-button
-              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center w-full p-1"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -37,7 +37,7 @@
           </li>
           <li class="my-1">
             <oc-button
-              class="date-filter-list-item flex justify-between items-center oc-width-1-1 p-1"
+              class="date-filter-list-item flex justify-between items-center w-full p-1"
               :class="{
                 'date-filter-list-item-active': dateRangeApplied
               }"
@@ -58,7 +58,7 @@
           </li>
         </oc-list>
         <div
-          class="date-filter-range-panel py-2 bg-role-surface"
+          class="date-filter-range-panel p-2 bg-role-surface"
           :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
         >
           <div class="flex items-center justify-between mb-4">
@@ -349,7 +349,6 @@ export default defineComponent({
       visibility 0.4s 0s;
     visibility: hidden;
     position: absolute;
-    width: calc(100% - var(--oc-space-medium));
     top: 0;
 
     &-active {

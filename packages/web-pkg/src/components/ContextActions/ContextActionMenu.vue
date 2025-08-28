@@ -90,14 +90,10 @@ export default defineComponent({
     @apply px-0;
   }
 
-  .oc-files-context-actions {
-    > li {
-      a,
-      button,
-      span {
-        @apply inline-flex justify-start w-full;
-      }
-    }
+  .oc-files-context-actions > li a,
+  .oc-files-context-actions > li button,
+  .oc-files-context-actions > li span {
+    @apply inline-flex justify-start w-full;
   }
 }
 </style>

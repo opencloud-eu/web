@@ -5,6 +5,7 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
+    class="max-w-[80%]"
     :style="`transform: rotate(${currentImageRotation}deg)`"
   />
 </template>
@@ -119,7 +120,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 img {
   object-fit: contain;
-  max-width: 80%;
   max-height: 80%;
   cursor: move;
 }

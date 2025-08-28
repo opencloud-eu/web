@@ -4,6 +4,7 @@
       <oc-text-input
         id="spaces-filter"
         v-model="filterTerm"
+        class="w-3xs"
         :label="$gettext('Search')"
         autocomplete="off"
       />
@@ -107,7 +108,7 @@
       </template>
       <template #footer>
         <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="text-center oc-width-1-1 my-2">
+        <div class="text-center w-full my-2">
           <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
           <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
         </div>
@@ -628,10 +629,5 @@ export default defineComponent({
   .settings-spaces-table-squashed .oc-table-data-cell-mdate {
     @apply hidden xl:table-cell;
   }
-}
-</style>
-<style lang="scss">
-#spaces-filter {
-  width: 16rem;
 }
 </style>

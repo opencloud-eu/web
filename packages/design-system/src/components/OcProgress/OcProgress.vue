@@ -10,7 +10,7 @@
   >
     <div
       v-if="!indeterminate"
-      class="oc-progress-current"
+      class="oc-progress-current w-full"
       :style="{ width: progressValue, backgroundColor: color }"
     ></div>
     <div v-else class="oc-progress-indeterminate">
@@ -83,7 +83,6 @@ $progress-height-small: 5px !default;
 .oc-progress {
   height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
-  width: 100%;
   position: relative;
   overflow-x: hidden;
 

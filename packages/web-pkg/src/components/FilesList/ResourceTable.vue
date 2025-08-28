@@ -134,7 +134,7 @@
       >
         <oc-tag
           v-oc-tooltip="getTagToolTip(tag)"
-          class="resource-table-tag ml-1"
+          class="resource-table-tag ml-1 max-w-20"
           :rounded="true"
           size="small"
         >
@@ -1484,6 +1484,10 @@ export default defineComponent({
   #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
     @apply hidden lg:table-cell;
   }
+
+  .resource-table-resource-wrapper-limit-max-width {
+    max-width: calc(100% - 4 * var(--spacing));
+  }
 }
 </style>
 <style lang="scss">
@@ -1497,19 +1501,11 @@ export default defineComponent({
   }
 
   &-resource-wrapper {
-    &-limit-max-width {
-      max-width: calc(100% - var(--oc-space-medium));
-    }
-
     &:hover > .resource-table-edit-name {
       svg {
         fill: var(--oc-role-on-surface);
       }
     }
-  }
-
-  &-tag {
-    max-width: 80px;
   }
 
   &-tag-more {

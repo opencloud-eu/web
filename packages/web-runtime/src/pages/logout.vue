@@ -2,7 +2,7 @@
   <div class="oc-height-viewport flex flex-col justify-center items-center">
     <div class="oc-login-card">
       <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-      <div class="oc-login-card-body oc-width-medium p-6">
+      <div class="oc-login-card-body w-sm p-6">
         <h2 class="oc-login-card-title" v-text="cardTitle" />
         <p v-text="cardHint" />
       </div>
@@ -14,7 +14,7 @@
     </div>
     <oc-button
       id="exitAnchor"
-      class="mt-4 oc-width-medium"
+      class="mt-4 w-sm"
       size="large"
       appearance="filled"
       color-role="primary"

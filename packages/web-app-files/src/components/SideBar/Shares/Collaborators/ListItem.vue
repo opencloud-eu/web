@@ -5,8 +5,8 @@
     }`"
     class="files-collaborators-collaborator py-1"
   >
-    <div class="oc-width-1-1 flex items-center files-collaborators-collaborator-details">
-      <div class="oc-width-2-3 flex items-center">
+    <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
+      <div class="flex items-center">
         <div>
           <template v-if="isShareDenied">
             <oc-avatar-item
@@ -34,7 +34,7 @@
             />
           </template>
         </div>
-        <div class="files-collaborators-collaborator-name-wrapper pl-2">
+        <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
             <span
               aria-hidden="true"
@@ -67,7 +67,7 @@
                   :existing-share-permissions="share.permissions"
                   :is-locked="isLocked"
                   :is-external="isExternalShare"
-                  class="files-collaborators-collaborator-role"
+                  class="files-collaborators-collaborator-role max-w-full"
                   mode="edit"
                   @option-change="shareRoleChanged"
                 />
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center oc-width-1-3 files-collaborators-collaborator-navigation">
+      <div class="flex items-center files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
           class="files-collaborators-collaborator-expiration ml-1 p-1"
@@ -422,20 +422,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.sharee-avatar {
-  min-width: 36px;
-}
-
 .files-collaborators-collaborator-navigation {
   align-items: center;
   justify-content: end;
-}
-
-.files-collaborators-collaborator-role {
-  max-width: 100%;
-}
-
-.files-collaborators-collaborator-name-wrapper {
-  max-width: 100%;
 }
 </style>

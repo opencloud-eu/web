@@ -108,11 +108,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.files-share-invite-recipient {
-  .oc-recipient-avatar {
-    min-width: 16.8px;
-  }
-}
-</style>

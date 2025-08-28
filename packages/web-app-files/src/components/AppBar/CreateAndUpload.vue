@@ -18,20 +18,20 @@
         :title="$gettext('New file')"
         drop-id="new-file-menu-drop"
         toggle="#new-file-menu-btn"
-        class="oc-width-auto"
+        class="w-auto min-w-3xs"
         mode="click"
         close-on-click
         padding-size="small"
       >
         <oc-list
           id="create-list"
-          :class="areFileExtensionsShown ? 'expanded-list' : null"
+          :class="areFileExtensionsShown ? 'min-w-xs' : null"
           class="py-2 first:pt-0 last:pb-0"
         >
           <li class="create-list-folder oc-menu-item-hover">
             <oc-button
               id="new-folder-btn"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               appearance="raw"
               @click="createNewFolderAction"
@@ -53,7 +53,7 @@
           >
             <oc-button
               appearance="raw"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               :class="['new-file-btn-' + fileAction.ext]"
               @click="fileAction.handler"
@@ -73,7 +73,7 @@
           <li class="create-list-shortcut oc-menu-item-hover">
             <oc-button
               id="new-shortcut-btn"
-              class="oc-width-1-1"
+              class="w-full"
               justify-content="left"
               appearance="raw"
               @click="createNewShortcutAction"
@@ -123,17 +123,17 @@
       drop-id="upload-menu-drop"
       toggle="#upload-menu-btn"
       mode="click"
-      class="oc-width-auto"
+      class="w-auto min-w-3xs"
       close-on-click
       padding-size="small"
       @show-drop="showDrop"
     >
       <oc-list id="upload-list">
         <li class="oc-menu-item-hover">
-          <resource-upload btn-class="oc-width-1-1" />
+          <resource-upload btn-class="w-full" />
         </li>
         <li class="oc-menu-item-hover">
-          <resource-upload btn-class="oc-width-1-1" :is-folder="true" />
+          <resource-upload btn-class="w-full" :is-folder="true" />
         </li>
       </oc-list>
       <oc-list
@@ -150,7 +150,7 @@
           class="oc-menu-item-hover"
         >
           <oc-button
-            class="oc-width-1-1"
+            class="w-full"
             :class="action.class"
             appearance="raw"
             justify-content="left"
@@ -482,15 +482,6 @@ const folderIconResource = computed(() => {
 })
 </script>
 <style lang="scss">
-#upload-menu-drop,
-#new-file-menu-drop {
-  min-width: 230px;
-}
-
-.expanded-list {
-  min-width: 280px !important;
-}
-
 #create-list,
 #upload-list,
 #new-file-menu-drop {

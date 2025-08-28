@@ -1,6 +1,6 @@
 <template>
   <div class="oc-link-resolve oc-height-viewport flex flex-col justify-center items-center">
-    <div class="oc-card text-center oc-width-large bg-role-surface-container rounded-xl">
+    <div class="oc-card text-center w-lg bg-role-surface-container rounded-xl">
       <template v-if="loading">
         <div class="oc-card-header">
           <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
@@ -27,7 +27,7 @@
       type="router-link"
       appearance="filled"
       target="_blank"
-      class="mt-4 text-center oc-width-medium"
+      class="mt-4 text-center w-sm"
       :to="sharedWithMeRoute"
     >
       <span class="text" v-text="openSharedWithMeLabel" />

@@ -19,6 +19,7 @@
       mode="click"
       padding-size="small"
       close-on-click
+      class="w-xs"
       @show-drop="updateAppIcons"
     >
       <div class="oc-display-block oc-position-relative">
@@ -125,10 +126,6 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.oc-drop {
-  width: 280px;
-}
-
 .applications-list li {
   a,
   button {

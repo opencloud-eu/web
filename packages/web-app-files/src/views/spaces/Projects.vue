@@ -1,5 +1,5 @@
 <template>
-  <div class="flex oc-width-1-1">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -66,7 +66,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="tile-preview rounded-t-sm"
+                  class="tile-preview rounded-t-sm w-full"
                   :src="resource.thumbnail"
                   alt=""
                 />
@@ -111,7 +111,7 @@
             </template>
             <template #footer>
               <pagination :pages="totalPages" :current-page="currentPage" />
-              <div class="text-center oc-width-1-1 my-2">
+              <div class="text-center w-full my-2">
                 <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
                 <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
               </div>

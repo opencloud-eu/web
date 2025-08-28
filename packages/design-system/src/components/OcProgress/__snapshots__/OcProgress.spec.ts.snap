@@ -2,6 +2,6 @@
 
 exports[`OcProgress > sets correct classes 1`] = `
 "<div class="oc-progress oc-progress-small block" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
-  <div class="oc-progress-current" style="width: 30%; background-color: var(--oc-role-secondary);"></div>
+  <div class="oc-progress-current w-full" style="width: 30%; background-color: var(--oc-role-secondary);"></div>
 </div>"
 `;

@@ -1,6 +1,6 @@
 <template>
   <div id="new-collaborators-form" data-testid="new-collaborators-form">
-    <div :class="['flex', 'oc-width-1-1', { 'new-collaborators-form-cern': isRunningOnEos }]">
+    <div :class="['flex', 'w-full', { 'grid grid-cols-2': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -20,7 +20,7 @@
       <oc-select
         id="files-share-invite-input"
         ref="ocSharingAutocomplete"
-        :class="['oc-width-1-1', { 'cern-files-share-invite-input': isRunningOnEos }]"
+        :class="['w-full', { 'cern-files-share-invite-input': isRunningOnEos }]"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
         :loading="searchInProgress"
@@ -70,7 +70,7 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item flex items-center oc-width-1-1 py-1 px-2"
+                    class="invite-form-share-role-type-item flex items-center w-full py-1 px-2"
                     :class="{
                       'bg-role-secondary-container': option.id === currentShareRoleType.id
                     }"
@@ -92,7 +92,7 @@
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
-        class="role-selection-dropdown"
+        class="max-w-40"
         :is-external="isExternalShareRoleType"
         @option-change="collaboratorRoleChanged"
       />
@@ -147,7 +147,7 @@
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
       </div>
-      <div class="oc-width-1-1 mt-2">
+      <div class="w-full mt-2">
         <oc-checkbox
           v-if="isRunningOnEos"
           v-model="notifyEnabled"
@@ -629,28 +629,13 @@ export default defineComponent({
   .invite-form-share-role-type .oc-filter-chip-button {
     @apply pr-0;
   }
+  #new-collaborators-form .invite-form-share-role-type .oc-drop {
+    @apply w-3xs;
+  }
 }
 </style>
 <style lang="scss">
-.role-selection-dropdown {
-  max-width: 150px;
-}
-
-.new-collaborators-form-cern > .cern-files-share-invite-input {
-  width: 75%;
-}
-
-.new-collaborators-form-cern > .cern-account-type-input {
-  width: 30%;
-}
-
 #new-collaborators-form {
-  .invite-form-share-role-type {
-    .oc-drop {
-      width: 180px;
-    }
-  }
-
   .vs__actions {
     cursor: inherit;
     flex-wrap: nowrap;

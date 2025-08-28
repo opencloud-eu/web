@@ -337,7 +337,15 @@ watch(
   { immediate: true }
 )
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .oc-drop {
+    @apply w-xs max-w-full;
+  }
+}
+</style>
 <style lang="scss">
 .tippy-box[data-theme~='none'] {
   // overwrite tippy styles
@@ -349,10 +357,5 @@ watch(
     // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
     padding: calc(var(--spacing) * 2);
   }
-}
-
-.oc-drop {
-  max-width: 100%;
-  width: 300px;
 }
 </style>

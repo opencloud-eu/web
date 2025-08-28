@@ -57,7 +57,7 @@
         </no-content-message>
         <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
           <template #token="rowData">
-            <div class="invite-code-wrapper flex">
+            <div class="invite-code-wrapper w-3xs flex">
               <div class="truncate max-w-full">
                 <span class="truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
               </div>
@@ -338,9 +338,6 @@ export default defineComponent({
 
 <style lang="scss">
 .sciencemesh-app {
-  .invite-code-wrapper {
-    width: 200px;
-  }
   #invite-tokens-empty {
     height: 100%;
   }

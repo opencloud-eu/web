@@ -23,11 +23,11 @@ describe('OcSidebarNav', () => {
   })
   it('expands the navbar in open state', () => {
     const { wrapper } = getWrapper({ closed: false })
-    expect(wrapper.find('.oc-app-navigation-expanded').exists).toBeTruthy()
+    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('true')
   })
   it('collapses the navbar in closed state', () => {
     const { wrapper } = getWrapper({ closed: true })
-    expect(wrapper.find('.oc-app-navigation-collapsed').exists).toBeTruthy()
+    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('false')
   })
   it('emits "update:nav-bar-closed" upon button click', async () => {
     const { wrapper } = getWrapper()

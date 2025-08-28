@@ -3,7 +3,7 @@
     <span
       ref="avatarsRef"
       v-oc-tooltip="tooltip"
-      class="oc-avatars inline-flex"
+      class="oc-avatars inline-flex w-fit"
       aria-hidden="true"
       :class="avatarsClasses"
     >
@@ -204,7 +204,6 @@ onMounted(() => {
 .oc-avatars {
   box-sizing: border-box;
   flex-flow: row nowrap;
-  width: fit-content;
 
   &-hover-effect {
     > * {

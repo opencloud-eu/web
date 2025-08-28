@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-notification mb-2" :class="classes">
+  <div class="oc-notification mb-2 w-md max-w-full" :class="classes">
     <slot />
   </div>
 </template>
@@ -39,8 +39,6 @@ const classes = computed(() => `oc-notification-${position}`)
 <style lang="scss">
 .oc-notification {
   box-sizing: border-box;
-  max-width: 100%;
-  width: 400px;
   z-index: 1040;
 
   &-top-left {

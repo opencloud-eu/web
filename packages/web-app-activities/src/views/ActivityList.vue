@@ -1,5 +1,5 @@
 <template>
-  <oc-list class="activity-list">
+  <oc-list class="activity-list max-w-5xl">
     <li v-for="(activityItems, date) in activitiesDateCategorized" :key="date" class="mb-6">
       <h2
         class="font-semibold text-role-on-surface-variant activity-list-date text-base capitalize"
@@ -64,9 +64,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.activity-list {
-  max-width: 1000px;
-}
-</style>

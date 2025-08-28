@@ -12,7 +12,7 @@
         appearance="raw"
         size="medium"
         justify-content="space-between"
-        class="flex items-center oc-width-1-1 py-1 px-2"
+        class="flex items-center w-full py-1 px-2"
         :class="{ 'bg-role-secondary-container': option.id === selectedOption?.id }"
         @click="selectOption(option)"
       >

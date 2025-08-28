@@ -34,7 +34,7 @@
       drop-id="files-view-options-drop"
       toggle="#files-view-options-btn"
       mode="click"
-      class="oc-width-auto"
+      class="w-auto"
       padding-size="medium"
     >
       <oc-list>
@@ -92,7 +92,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high rounded-sm outline-0"
+            class="oc-range bg-role-surface-container-high rounded-sm outline-0 w-full max-w-[50%]"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -315,8 +315,6 @@ export default defineComponent({
 .oc-range {
   -webkit-appearance: none;
   height: 0.5rem;
-  width: 100%;
-  max-width: 50%;
 
   &:hover {
     opacity: 1;

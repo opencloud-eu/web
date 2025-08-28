@@ -1,7 +1,7 @@
 <template>
   <div class="preview-details" :class="{ lightbox: isFullScreenModeActivated }">
     <div
-      class="bg-role-surface-container p-2 oc-width-large flex items-center justify-center justify-around rounded-sm"
+      class="bg-role-surface-container p-2 w-lg flex items-center justify-center justify-around rounded-sm"
     >
       <oc-button
         v-oc-tooltip="previousDescription"
@@ -230,9 +230,5 @@ export default defineComponent({
 .preview-details.lightbox {
   z-index: 1000;
   opacity: 0.9;
-}
-
-.preview-controls-image-original-size {
-  width: 42px;
 }
 </style>

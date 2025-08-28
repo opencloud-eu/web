@@ -17,9 +17,9 @@
     </slot>
     <oc-table-simple>
       <colgroup>
-        <col style="width: 30%" />
-        <col style="width: 40%" />
-        <col style="width: 30%" />
+        <col class="w-auto md:w-[30%]" />
+        <col class="w-auto md:w-[40%]" />
+        <col class="w-auto md:w-[30%]" />
       </colgroup>
       <oc-table-head :class="{ 'oc-invisible-sr': !showHead }">
         <oc-table-tr>
@@ -80,7 +80,7 @@ export default defineComponent({
     @apply block md:table-cell py-2 md:py-0;
   }
   .account-table td > .checkbox-cell-wrapper {
-    @apply md:flex md:justify-end md:items-center;
+    @apply md:flex md:justify-end md:items-center py-2 md:py-0 w-full md:w-auto;
   }
   .account-table tr {
     @apply block md:table-row pb-1 md:pb-0 border-b;
@@ -93,10 +93,6 @@ export default defineComponent({
     tr {
       height: 100% !important;
     }
-
-    td {
-      width: 100% !important;
-    }
   }
 }
 
@@ -108,12 +104,6 @@ export default defineComponent({
   @media (min-width: $oc-breakpoint-medium-default) {
     td > .checkbox-cell-wrapper {
       min-height: var(--oc-size-height-table-row);
-    }
-  }
-
-  @media (max-width: $oc-breakpoint-medium-default) {
-    col {
-      width: auto !important;
     }
   }
 }

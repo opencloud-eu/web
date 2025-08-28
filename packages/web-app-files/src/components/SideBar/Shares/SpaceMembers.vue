@@ -43,7 +43,7 @@
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter mr-2 oc-width-1-1"
+          class="space-members-filter mr-2 w-full"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />

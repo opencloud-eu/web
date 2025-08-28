@@ -36,11 +36,17 @@ defineSlots<Slots>()
     @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%];
+    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%] w-full;
   }
   ul.oc-list.oc-timeline::before,
   ul.oc-list.oc-timeline li::before {
     @apply bg-role-outline-variant;
+  }
+  ul.oc-list.oc-timeline::before {
+    width: 1.5px;
+  }
+  ul.oc-list.oc-timeline li::before {
+    width: 10px;
   }
   ul.oc-list-raw a:hover {
     @apply text-inherit;
@@ -58,17 +64,14 @@ ul.oc-list.oc-timeline {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 1.5px;
   }
 
   li {
     position: relative;
-    width: 100%;
     box-sizing: border-box;
 
     &::before {
       content: '';
-      width: 10px;
       height: 10px;
       position: absolute;
       left: -4px;

@@ -1,6 +1,8 @@
 <template>
   <div class="epub-reader flex">
-    <oc-list class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r">
+    <oc-list
+      class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r w-xs"
+    >
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
@@ -18,7 +20,7 @@
         </oc-button>
       </li>
     </oc-list>
-    <div class="oc-width-1-1 oc-height-1-1">
+    <div class="w-full oc-height-1-1">
       <div class="epub-reader-controls flex items-center m-2">
         <div class="epub-reader-controls-font-size flex oc-button-group">
           <oc-button
@@ -34,7 +36,7 @@
           </oc-button>
           <oc-button
             v-oc-tooltip="$gettext('Reset font size')"
-            class="epub-reader-controls-font-size-reset"
+            class="epub-reader-controls-font-size-reset w-[58px]"
             @click="resetFontSize"
           >
             {{ `${currentFontSizePercentage}%` }}
@@ -53,7 +55,7 @@
         </div>
         <oc-select
           v-model="currentChapter"
-          class="epub-reader-controls-chapters-select oc-width-1-1 px-2 oc-hidden@l"
+          class="epub-reader-controls-chapters-select w-full px-2 oc-hidden@l"
           :label="$gettext('Chapter')"
           :label-hidden="true"
           :options="chapters"
@@ -61,7 +63,7 @@
           @update:model-value="showChapter"
         />
       </div>
-      <div class="flex justify-center oc-width-1-1 oc-height-1-1">
+      <div class="flex justify-center w-full oc-height-1-1">
         <div class="flex items-center mx-6">
           <oc-button
             class="epub-reader-navigate-left"
@@ -281,16 +283,11 @@ export default defineComponent({
 <style lang="scss">
 .epub-reader {
   &-chapters-list {
-    width: 240px;
     overflow-y: auto;
   }
 
   &-controls-font-size {
     flex-wrap: nowrap;
-
-    &-reset {
-      width: 58px; //prevent jumpy behaviour
-    }
   }
 }
 </style>

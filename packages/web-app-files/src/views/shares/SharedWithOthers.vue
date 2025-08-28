@@ -63,7 +63,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="filteredItems.length > 0" class="oc-width-1-1 my-2" />
+            <list-info v-if="filteredItems.length > 0" class="w-full my-2" />
           </template>
         </resource-table>
       </template>

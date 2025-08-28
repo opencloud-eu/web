@@ -4,7 +4,7 @@
     class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
-    <div class="oc-width-expand oc-position-relative">
+    <div class="flex-1 oc-position-relative">
       <input
         v-model="model"
         :class="inputClass"
@@ -223,21 +223,11 @@ const onCancel = () => {
 
 <style lang="scss">
 .oc-search {
-  min-width: $form-width-medium;
-
   &-button {
     // Prevent double borders
     // from input and button
     transform: translateX(-1px);
     z-index: 0;
-  }
-
-  &-icon {
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 40px;
   }
 
   &-input {
@@ -256,14 +246,6 @@ const onCancel = () => {
   &-small {
     .oc-search-input {
       height: 30px;
-    }
-
-    .oc-icon {
-      &,
-      svg {
-        height: 18px;
-        width: 18px;
-      }
     }
   }
 }
