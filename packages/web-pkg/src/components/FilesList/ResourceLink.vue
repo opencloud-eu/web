@@ -5,7 +5,7 @@
     v-if="isResourceClickable"
     :target="linkTarget"
     :draggable="false"
-    class="oc-resource-link inline-flex"
+    class="oc-resource-link inline-flex max-w-full"
     no-hover
     @dragstart.prevent.stop
     @click="emitClick"

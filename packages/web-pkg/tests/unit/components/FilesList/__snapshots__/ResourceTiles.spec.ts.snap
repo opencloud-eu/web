@@ -18,13 +18,13 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul class="oc-list oc-tiles grid justify-start">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
           <div class="flex justify-between items-center">
             <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-              <div class="oc-resource inline-flex justify-start items-center oc-text-overflow overflow-visible">
+              <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
                 <!--v-if-->
-                <div class="oc-resource-details block oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-text-overflow hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
                   <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
@@ -57,13 +57,13 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
+      <div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full oc-card-media-top flex justify-center items-center m-0 w-full" no-hover="" tabindex="-1"></a>
         <div class="oc-card-body p-2">
           <div class="flex justify-between items-center">
             <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-              <div class="oc-resource inline-flex justify-start items-center oc-text-overflow overflow-visible">
+              <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
                 <!--v-if-->
-                <div class="oc-resource-details block oc-text-overflow"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex oc-text-overflow hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
                   <div class="oc-resource-indicators flex">
                     <!--v-if-->
                   </div>
