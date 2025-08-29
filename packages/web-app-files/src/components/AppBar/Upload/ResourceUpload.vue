@@ -18,7 +18,7 @@
       :id="inputId"
       ref="input"
       v-bind="inputAttrs"
-      class="upload-input-target"
+      class="upload-input-target absolute left-[99999px]"
       type="file"
       :aria-labelledby="uploadLabelId"
       :name="isFolder ? 'file' : 'folder'"
@@ -153,10 +153,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.upload-input-target {
-  position: absolute;
-  left: -99999px;
-}
-</style>

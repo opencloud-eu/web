@@ -57,7 +57,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel p-2 bg-role-surface">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -85,7 +85,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-7">From
                 <!--v-if-->
               </label>
-              <div class="oc-position-relative">
+              <div class="relative">
                 <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
@@ -97,7 +97,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-8">To
                 <!--v-if-->
               </label>
-              <div class="oc-position-relative">
+              <div class="relative">
                 <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel p-2 bg-role-surface">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -204,7 +204,7 @@ exports[`DateFilter > renders all items 1`] = `
             <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-3">From
                 <!--v-if-->
               </label>
-              <div class="oc-position-relative">
+              <div class="relative">
                 <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>
@@ -216,7 +216,7 @@ exports[`DateFilter > renders all items 1`] = `
             <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-4">To
                 <!--v-if-->
               </label>
-              <div class="oc-position-relative">
+              <div class="relative">
                 <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
                 <!--v-if-->
               </div>

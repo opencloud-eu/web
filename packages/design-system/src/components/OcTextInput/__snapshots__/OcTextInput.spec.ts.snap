@@ -4,7 +4,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
 "<div class=""><label class="oc-label" for="oc-textinput-20">test
     <!--v-if-->
   </label>
-  <div class="oc-position-relative">
+  <div class="relative">
     <!--v-if-->
     <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-20" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex oc-text-input-show-password-toggle px-2">
         <!--v-if-->
@@ -57,7 +57,7 @@ exports[`OcTextInput > password input field > password policy > displays success
 "<div class=""><label class="oc-label" for="oc-textinput-21">test
     <!--v-if-->
   </label>
-  <div class="oc-position-relative">
+  <div class="relative">
     <!--v-if-->
     <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-21" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex oc-text-input-show-password-toggle px-2">
         <!--v-if-->
