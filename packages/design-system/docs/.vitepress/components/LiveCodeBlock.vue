@@ -5,6 +5,7 @@
         @click="() => (previewActive = true)"
         appearance="raw"
         :class="{ active: previewActive }"
+        class="py-2 px-4"
         no-hover
         >Preview</oc-button
       >
@@ -12,6 +13,7 @@
         @click="() => (previewActive = false)"
         appearance="raw"
         :class="{ active: !previewActive }"
+        class="py-2 px-4"
         no-hover
         >Code</oc-button
       >

@@ -1,4 +1,6 @@
+import './tailwind.css'
 import DefaultTheme from 'vitepress/theme-without-fonts'
+import './../../../src/styles/layers.css'
 import { createGettext } from 'vue3-gettext'
 import * as components from './../../../src/components'
 import * as directives from './../../../src/directives'
