@@ -32,7 +32,7 @@
     "required": false,
     "description": "The size of the progress bar.",
     "default": "default",
-    "type": "'default' | 'small'"
+    "type": "'default' | 'small' | 'xsmall'"
   },
   {
     "name": "value",
