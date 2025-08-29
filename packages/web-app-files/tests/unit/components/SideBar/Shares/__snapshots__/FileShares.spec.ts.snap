@@ -61,7 +61,7 @@ exports[`FileShares > current space > loads space members if a space is given an
   <div class="flex items-center justify-between">
     <h4 class="font-semibold my-2">Space members</h4>
   </div>
-  <ul id="space-collaborators-list" class="oc-list oc-list-divider oc-overflow-hidden m-0" aria-label="Space members">
+  <ul id="space-collaborators-list" class="oc-list oc-list-divider overflow-hidden m-0" aria-label="Space members">
     <li>
       <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="false" removable="false" resourcename="[Function]" deniable="false" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
     </li>

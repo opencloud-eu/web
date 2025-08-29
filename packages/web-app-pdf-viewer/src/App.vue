@@ -1,5 +1,5 @@
 <template>
-  <object class="pdf-viewer size-full" :data="url" :type="objectType" />
+  <object class="pdf-viewer size-full overflow-hidden" :data="url" :type="objectType" />
 </template>
 
 <script lang="ts">
@@ -23,9 +23,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.pdf-viewer {
-  overflow: hidden;
-}
-</style>

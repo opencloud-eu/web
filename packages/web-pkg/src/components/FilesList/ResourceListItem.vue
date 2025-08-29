@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-resource inline-flex justify-start items-center oc-text-overflow"
+    class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
     :class="{ 'oc-resource-no-interaction': !isResourceClickable }"
   >
     <resource-link
@@ -28,12 +28,12 @@
         :resource="resource"
       />
     </resource-link>
-    <div class="oc-resource-details block oc-text-overflow" :class="{ 'pl-2': isIconDisplayed }">
+    <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
         :is-resource-clickable="isResourceClickable"
         :link="link"
-        class="oc-text-overflow hover:outline-offset-0 focus:outline-offset-0"
+        class="hover:outline-offset-0 focus:outline-offset-0"
         @click="emitClick"
       >
         <resource-name
@@ -218,8 +218,6 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-resource {
-  overflow: visible !important;
-
   &-no-interaction {
     pointer-events: none;
   }

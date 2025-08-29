@@ -13,7 +13,7 @@
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
-    <div v-if="isHidden" class="oc-tile-card-lazy-shimmer h-30"></div>
+    <div v-if="isHidden" class="oc-tile-card-lazy-shimmer h-30 overflow-hidden"></div>
     <template v-else>
       <resource-link
         class="oc-card-media-top flex justify-center items-center m-0 w-full"
@@ -65,7 +65,9 @@
       </resource-link>
       <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
         <div class="flex justify-between items-center">
-          <div class="flex items-center truncate resource-name-wrapper text-role-on-surface">
+          <div
+            class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden"
+          >
             <resource-list-item
               :resource="resource"
               :is-icon-displayed="false"
@@ -280,14 +282,9 @@ if (!lazy) {
     position: absolute;
   }
 
-  .resource-name-wrapper {
-    overflow: hidden;
-  }
-
   &-lazy-shimmer {
     opacity: 0.2;
     position: relative;
-    overflow: hidden;
   }
 
   &-lazy-shimmer::after {

@@ -4,7 +4,7 @@ exports[`OcBottomDrawer > renders when toggle is clicked 1`] = `
 "<div drawerid="button-drawer" toggle="#button-drawer-toggle" title="Bottom Drawer" closeonclick="false"><button id="button-drawer-toggle">Toggle Drawer</button>
   <div>
     <div class="oc-bottom-drawer-background bg-black/40 size-full" role="button">
-      <div id="button-drawer" class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] active">
+      <div id="button-drawer" class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto active">
         <div class="oc-card bg-transparent">
           <div class="oc-card-header border-b-0 px-4 pt-4">
             <div class="flex justify-between items-center">

@@ -1,7 +1,7 @@
 <template>
   <nav
     :id="id"
-    :class="`oc-breadcrumb oc-breadcrumb-${variation}`"
+    :class="`oc-breadcrumb oc-breadcrumb-${variation} overflow-visible`"
     :aria-label="$gettext('Breadcrumbs')"
   >
     <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
@@ -335,7 +335,6 @@ const dropItemStyling = (
 </style>
 <style lang="scss">
 .oc-breadcrumb {
-  overflow: visible;
   &-item-dragover {
     transition:
       background 0.06s,

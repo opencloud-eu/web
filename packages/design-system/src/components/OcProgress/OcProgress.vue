@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-progress block"
+    class="oc-progress block overflow-x-hidden"
     :class="{ 'h-4': size === 'default', 'h-1': size === 'small', 'h-0.5': size === 'xsmall' }"
     :aria-valuemax="max"
     :aria-valuenow="value"
@@ -77,7 +77,6 @@ const progressValue = computed(() => {
 .oc-progress {
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
   position: relative;
-  overflow-x: hidden;
 
   &-current {
     position: absolute;

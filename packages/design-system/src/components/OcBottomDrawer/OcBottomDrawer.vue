@@ -14,7 +14,7 @@
       <focus-trap>
         <div
           :id="drawerId"
-          class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh]"
+          class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto"
         >
           <div class="oc-card bg-transparent">
             <div class="oc-card-header border-b-0 px-4 pt-4">
@@ -269,7 +269,6 @@ defineExpose({ show, hide, getElement })
   bottom: -100%;
   left: 0;
   right: 0;
-  overflow-y: auto;
   transition: all 0.2s;
 
   &.active {

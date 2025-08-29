@@ -1,5 +1,5 @@
 <template>
-  <div id="web" class="bg-role-chrome h-dvh max-h-dvh">
+  <div id="web" class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden">
     <oc-hidden-announcer :announcement="announcement" level="polite" />
     <skip-to target="web-content-main">
       <span v-text="$gettext('Skip to main')" />
@@ -141,10 +141,5 @@ export default defineComponent({
   #web .mark-highlight {
     @apply font-semibold;
   }
-}
-</style>
-<style lang="scss">
-#web {
-  overflow-y: hidden;
 }
 </style>

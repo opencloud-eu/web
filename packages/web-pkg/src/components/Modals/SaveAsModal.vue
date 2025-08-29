@@ -190,6 +190,7 @@ export default defineComponent({
 
 @layer utilities {
   .oc-modal.save-as-modal {
+    @apply overflow-hidden;
     max-width: 80vw;
   }
   .oc-modal.save-as-modal .oc-modal-title {
@@ -202,10 +203,5 @@ export default defineComponent({
   .oc-modal.save-as-modal .oc-modal-body-message {
     @apply m-0 h-[60vh];
   }
-}
-</style>
-<style lang="scss">
-.oc-modal.save-as-modal {
-  overflow: hidden;
 }
 </style>

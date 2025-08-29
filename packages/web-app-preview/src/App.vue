@@ -16,7 +16,7 @@
       class="stage size-full flex flex-col text-center"
       :class="{ lightbox: isFullScreenModeActivated }"
     >
-      <div class="stage_media size-full flex justify-center items-center grow">
+      <div class="stage_media size-full flex justify-center items-center grow overflow-hidden">
         <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="w-full">
           <div class="oc-position-center">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
@@ -493,11 +493,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.stage {
-  &_media {
-    overflow: hidden;
-  }
-}
-</style>

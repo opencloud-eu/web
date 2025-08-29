@@ -4,7 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px]"
+    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full"
+        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -61,7 +61,7 @@
           <slot v-else name="subHeader" />
         </div>
         <div
-          class="sidebar-panel__body flex flex-col p-2"
+          class="sidebar-panel__body flex flex-col p-2 overflow-y-auto overflow-x-hidden"
           :class="[`sidebar-panel__body-${panel.name}`]"
         >
           <div
@@ -289,7 +289,6 @@ onBeforeUnmount(() => {
 <style lang="scss">
 #app-sidebar {
   position: relative;
-  overflow: hidden;
 
   &:focus,
   &:focus-visible {
@@ -305,7 +304,6 @@ onBeforeUnmount(() => {
 
 .sidebar-panel {
   $root: &;
-  overflow: hidden;
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -338,11 +336,6 @@ onBeforeUnmount(() => {
     visibility: visible;
     transition: right 0.4s 0s;
     right: 100px;
-  }
-
-  &__body {
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 }
 </style>

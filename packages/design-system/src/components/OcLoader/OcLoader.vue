@@ -9,6 +9,7 @@
       'w-full',
       'after:w-0',
       'after:h-full',
+      'overflow-hidden',
       { 'oc-loader-flat rounded-none h-1': flat },
       { 'rounded-[500px] h-4': !flat }
     ]"
@@ -44,7 +45,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  overflow: hidden;
   position: relative;
 
   &::after {

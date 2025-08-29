@@ -1,19 +1,19 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcProgress > sets correct classes for size { size: 'default', expectedSize: 'h-4' } 1`] = `
-"<div class="oc-progress block h-4" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
+"<div class="oc-progress block overflow-x-hidden h-4" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
   <div class="oc-progress-current size-full" style="width: 30%; background-color: var(--oc-role-secondary);"></div>
 </div>"
 `;
 
 exports[`OcProgress > sets correct classes for size { size: 'small', expectedSize: 'h-1' } 1`] = `
-"<div class="oc-progress block h-1" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
+"<div class="oc-progress block overflow-x-hidden h-1" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
   <div class="oc-progress-current size-full" style="width: 30%; background-color: var(--oc-role-secondary);"></div>
 </div>"
 `;
 
 exports[`OcProgress > sets correct classes for size { size: 'xsmall', expectedSize: 'h-0.5' } 1`] = `
-"<div class="oc-progress block h-0.5" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
+"<div class="oc-progress block overflow-x-hidden h-0.5" aria-valuemax="10" aria-valuenow="3" aria-busy="true" aria-valuemin="0" role="progressbar" style="background-color: var(--oc-role-surface-container);">
   <div class="oc-progress-current size-full" style="width: 30%; background-color: var(--oc-role-secondary);"></div>
 </div>"
 `;

@@ -11,7 +11,7 @@
     @mouseleave="$emit('mouseleave', $event)"
   >
     <oc-td v-if="isHidden" :colspan="lazyColspan">
-      <span class="shimmer inline-block bg-role-shadow" />
+      <span class="shimmer inline-block bg-role-shadow overflow-hidden" />
     </oc-td>
     <slot v-else />
   </tr>
@@ -78,7 +78,6 @@ if (!lazy) {
   bottom: 12px;
   left: var(--oc-space-small);
   opacity: 0.1;
-  overflow: hidden;
   position: absolute;
   right: var(--oc-space-small);
   top: 12px;

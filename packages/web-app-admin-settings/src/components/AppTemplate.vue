@@ -3,7 +3,7 @@
     <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap">
+        <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
@@ -216,10 +216,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-#admin-settings-view-wrapper {
-  overflow-y: auto;
-}
-
 #admin-settings-app-bar {
   box-sizing: border-box;
   z-index: 2;

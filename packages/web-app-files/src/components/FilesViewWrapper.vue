@@ -1,5 +1,5 @@
 <template>
-  <div class="files-view-wrapper grid grid-cols-1 flex-1 focus:outline-0 h-full">
+  <div class="files-view-wrapper grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto">
     <div id="files-view" v-bind="$attrs" class="outline-0">
       <slot />
     </div>
@@ -29,7 +29,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .files-view-wrapper {
   position: relative;
-  overflow-y: auto;
   grid-template-rows: max-content max-content 1fr;
   gap: 0 0;
   grid-template-areas:

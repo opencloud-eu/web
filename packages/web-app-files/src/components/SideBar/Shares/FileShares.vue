@@ -69,7 +69,7 @@
       </div>
       <ul
         id="space-collaborators-list"
-        class="oc-list oc-list-divider oc-overflow-hidden m-0"
+        class="oc-list oc-list-divider overflow-hidden m-0"
         :aria-label="spaceMemberLabel"
       >
         <li v-for="(collaborator, i) in displaySpaceMembers" :key="i">
