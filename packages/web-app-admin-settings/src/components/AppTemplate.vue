@@ -1,16 +1,16 @@
 <template>
-  <main class="flex oc-height-1-1 app-content w-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex w-full oc-height-1-1 flex-wrap">
+  <main class="flex app-content size-full rounded-l-xl">
+    <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <div id="admin-settings-view-wrapper" class="flex-1 w-full oc-height-1-1 flex-wrap">
+        <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap">
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
             class="oc-app-bar py-2 px-4 bg-role-surface"
             :class="{ 'admin-settings-app-bar-sticky': isSticky }"
           >
-            <div class="admin-settings-app-bar-controls flex justify-between items-center">
+            <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
               <oc-breadcrumb
                 v-if="!isMobileWidth"
                 id="admin-settings-breadcrumb"
@@ -29,7 +29,10 @@
                 />
               </div>
             </div>
-            <div v-if="showAppBar" class="admin-settings-app-bar-actions flex items-center mt-1">
+            <div
+              v-if="showAppBar"
+              class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10"
+            >
               <slot
                 name="topbarActions"
                 :limited-screen-space="limitedScreenSpace"
@@ -229,15 +232,9 @@ export default defineComponent({
 }
 
 .admin-settings-app-bar-controls {
-  height: 52px;
-
   @media (max-width: $oc-breakpoint-xsmall-max) {
     justify-content: space-between;
   }
-}
-
-.admin-settings-app-bar-actions {
-  min-height: 3rem;
 }
 
 @media only screen and (max-width: $oc-breakpoint-small-default) {

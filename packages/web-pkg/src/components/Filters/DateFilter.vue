@@ -9,7 +9,10 @@
       @hide-drop="onHideDrop"
     >
       <template #default>
-        <oc-list class="date-filter-list" :class="{ 'date-filter-list-hidden': dateRangeClicked }">
+        <oc-list
+          class="date-filter-list"
+          :class="{ 'date-filter-list-hidden min-h-[225px]': dateRangeClicked }"
+        >
           <li
             v-for="(item, index) in displayedItems"
             :key="index"
@@ -336,7 +339,6 @@ export default defineComponent({
     }
 
     &-hidden {
-      min-height: 225px;
       visibility: hidden;
       transition: visibility 0.4s 0s;
     }

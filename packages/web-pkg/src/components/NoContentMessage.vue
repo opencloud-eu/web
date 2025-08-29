@@ -19,11 +19,11 @@ const { icon, iconFillType = 'fill' } = defineProps<{
 }>()
 </script>
 <style>
-.no-content-message {
-  height: 75vh;
-}
+@reference '@opencloud-eu/design-system/tailwind';
 
-.space-frontpage .no-content-message {
-  height: 55vh;
+@layer components {
+  .no-content-message {
+    height: 75vh;
+  }
 }
 </style>

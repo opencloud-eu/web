@@ -16,7 +16,7 @@
         :key="thumbnail"
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
-        class="oc-resource-thumbnail rounded-xs"
+        class="oc-resource-thumbnail rounded-xs size-8"
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
@@ -230,10 +230,6 @@ export default defineComponent({
 
   &-thumbnail {
     object-fit: cover;
-    height: $oc-size-icon-default * 1.5;
-    max-height: $oc-size-icon-default * 1.5;
-    width: $oc-size-icon-default * 1.5;
-    max-width: $oc-size-icon-default * 1.5;
   }
 }
 </style>

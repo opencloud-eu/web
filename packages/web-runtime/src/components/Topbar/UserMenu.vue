@@ -64,7 +64,7 @@
           </li>
         </template>
         <template v-else>
-          <li class="profile-info-wrapper flex items-center pl-2">
+          <li class="profile-info-wrapper flex items-center pl-2 min-h-10.5">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"
@@ -226,7 +226,6 @@ export default defineComponent({
 .user-menu-list li {
   &.profile-info-wrapper {
     gap: var(--oc-space-medium);
-    min-height: 3rem;
   }
 }
 </style>

@@ -12,7 +12,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 2</span>
       </button></li>
   </ul>
-  <div class="w-full oc-height-1-1">
+  <div class="size-full">
     <div class="epub-reader-controls flex items-center m-2">
       <div class="epub-reader-controls-font-size flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-undefined oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex epub-reader-controls-font-size-decrease">
           <!--v-if-->
@@ -83,7 +83,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         <!--v-if-->
       </div>
     </div>
-    <div class="flex justify-center w-full oc-height-1-1">
+    <div class="flex justify-center size-full">
       <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw inline-flex epub-reader-navigate-left">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon oc-icon-xl box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {

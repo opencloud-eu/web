@@ -1,7 +1,9 @@
 <template>
   <div
-    class="oc-text-editor w-full oc-height-1-1"
-    :class="{ 'oc-text-editor-readonly': isReadOnly, 'p-4': isReadOnly }"
+    class="oc-text-editor size-full"
+    :class="{
+      'oc-text-editor-readonly p-4': isReadOnly
+    }"
   >
     <text-editor-component
       :resource="resource"
@@ -34,10 +36,14 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-.oc-text-editor-readonly {
-  //Fixes in readonly mode vertical scrolling is not available
-  height: calc(100vh - 52px);
-  overflow: auto;
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .oc-text-editor-readonly {
+    /* Fixes in readonly mode vertical scrolling is not available */
+    @apply overflow-auto;
+    height: calc(100vh - 52px);
+  }
 }
 </style>

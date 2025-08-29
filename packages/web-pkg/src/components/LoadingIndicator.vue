@@ -4,7 +4,7 @@
       :max="100"
       :indeterminate="currentProgress === null"
       :value="currentProgress"
-      size="small"
+      size="xsmall"
     />
   </div>
 </template>
@@ -52,8 +52,6 @@ export default defineComponent({
 <style lang="scss">
 #oc-loading-indicator {
   .oc-progress {
-    height: 2px;
-
     &-indeterminate-first {
       animation-duration: 4s;
     }

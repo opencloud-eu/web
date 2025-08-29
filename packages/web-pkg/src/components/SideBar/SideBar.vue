@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full"
+        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -101,7 +101,7 @@
               :data-testid="`sidebar-panel-${panelSelect.name}-select`"
               appearance="raw-inverse"
               color-role="surface"
-              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full"
+              class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full h-12"
               @click="openPanel(panelSelect.name)"
             >
               <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -306,7 +306,6 @@ onBeforeUnmount(() => {
 .sidebar-panel {
   $root: &;
   overflow: hidden;
-  max-height: 100%;
   top: 0;
   position: absolute;
   transform: translateX(100%);
@@ -344,12 +343,6 @@ onBeforeUnmount(() => {
   &__body {
     overflow-y: auto;
     overflow-x: hidden;
-  }
-
-  &__navigation {
-    > button {
-      height: 50px;
-    }
   }
 }
 </style>

@@ -17,7 +17,7 @@
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="flex items-center justify-between oc-position-relative"
+        class="flex items-center justify-between oc-position-relative h-10"
       >
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
@@ -34,9 +34,9 @@
         </div>
       </div>
       <div
-        class="flex justify-between space-members-filter-container"
+        class="flex justify-between space-members-filter max-h-0"
         :class="{
-          'space-members-filter-container-expanded': isFilterOpen,
+          'space-members-filter-container-expanded max-h-15': isFilterOpen,
           'mb-4': isFilterOpen
         }"
       >
@@ -265,7 +265,6 @@ watch(filterTerm, async () => {
   }
 
   &-container {
-    max-height: 0px;
     visibility: hidden;
     transition:
       max-height 0.25s ease-in-out,
@@ -273,7 +272,6 @@ watch(filterTerm, async () => {
       visibility 0.25s ease-in-out;
 
     &-expanded {
-      max-height: 60px;
       visibility: visible;
       transition:
         max-height 0.25s ease-in-out,
@@ -281,9 +279,5 @@ watch(filterTerm, async () => {
         visibility 0s;
     }
   }
-}
-
-#files-collaborators-headline {
-  height: 40px;
 }
 </style>

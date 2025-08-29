@@ -1,6 +1,7 @@
 <template>
   <div
-    :class="classes"
+    class="oc-progress block"
+    :class="{ 'h-4': size === 'default', 'h-1': size === 'small', 'h-0.5': size === 'xsmall' }"
     :aria-valuemax="max"
     :aria-valuenow="value"
     aria-busy="true"
@@ -10,12 +11,12 @@
   >
     <div
       v-if="!indeterminate"
-      class="oc-progress-current w-full"
+      class="oc-progress-current size-full"
       :style="{ width: progressValue, backgroundColor: color }"
     ></div>
     <div v-else class="oc-progress-indeterminate">
-      <div class="oc-progress-indeterminate-first" :style="{ backgroundColor: color }" />
-      <div class="oc-progress-indeterminate-second" :style="{ backgroundColor: color }" />
+      <div class="oc-progress-indeterminate-first h-full" :style="{ backgroundColor: color }" />
+      <div class="oc-progress-indeterminate-second h-full" :style="{ backgroundColor: color }" />
     </div>
   </div>
 </template>
@@ -46,7 +47,7 @@ export interface Props {
    * @docs The size of the progress bar.
    * @default default
    */
-  size?: 'default' | 'small'
+  size?: 'default' | 'small' | 'xsmall'
   /**
    * @docs The current value of the progress bar.
    * @default 0
@@ -63,10 +64,6 @@ const {
   value = 0
 } = defineProps<Props>()
 
-const classes = computed(() => {
-  return `oc-progress oc-progress-${size} block`
-})
-
 const progressValue = computed(() => {
   if (!max) {
     return '-'
@@ -77,27 +74,17 @@ const progressValue = computed(() => {
 </script>
 
 <style lang="scss">
-$progress-height: 15px !default;
-$progress-height-small: 5px !default;
-
 .oc-progress {
-  height: $progress-height;
   // Add the correct vertical alignment in Chrome, Firefox, and Opera.
   position: relative;
   overflow-x: hidden;
 
-  &-small {
-    height: $progress-height-small;
-  }
-
   &-current {
-    height: 100%;
     position: absolute;
     transition: width 0.5s;
   }
 
   &-indeterminate div {
-    height: 100%;
     position: absolute;
   }
 

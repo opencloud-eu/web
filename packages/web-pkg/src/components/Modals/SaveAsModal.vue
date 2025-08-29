@@ -1,10 +1,10 @@
 <template>
-  <div class="oc-height-1-1" tabindex="0">
+  <div class="h-full" tabindex="0">
     <app-loading-spinner v-if="isLoading" />
     <iframe
       v-show="!isLoading"
       ref="iframeRef"
-      class="w-full oc-height-1-1"
+      class="size-full"
       :title="iframeTitle"
       :src="iframeSrc"
       tabindex="0"
@@ -200,18 +200,12 @@ export default defineComponent({
   }
 
   .oc-modal.save-as-modal .oc-modal-body-message {
-    @apply m-0;
+    @apply m-0 h-[60vh];
   }
 }
 </style>
 <style lang="scss">
 .oc-modal.save-as-modal {
   overflow: hidden;
-
-  .oc-modal-body {
-    &-message {
-      height: 60vh;
-    }
-  }
 }
 </style>

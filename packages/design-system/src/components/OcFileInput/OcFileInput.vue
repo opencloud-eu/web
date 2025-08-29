@@ -49,7 +49,7 @@
     </div>
     <div
       v-if="showMessageLine"
-      class="oc-file-input-message flex items-center text-sm mt-1"
+      class="oc-file-input-message flex items-center text-sm mt-1 min-h-4.5"
       :class="{
         'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
         'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
@@ -235,11 +235,3 @@ const onFocus = async () => {
   emit('focus', unref(inputBtnRef))
 }
 </script>
-
-<style scoped lang="scss">
-.oc-file-input {
-  &-message {
-    min-height: $oc-font-size-default * 1.5;
-  }
-}
-</style>

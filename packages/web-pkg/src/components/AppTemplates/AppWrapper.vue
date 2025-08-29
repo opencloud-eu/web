@@ -1,5 +1,5 @@
 <template>
-  <main :id="applicationId" class="app-wrapper oc-height-1-1" @keydown.esc="closeApp">
+  <main :id="applicationId" class="app-wrapper h-full" @keydown.esc="closeApp">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
     <app-top-bar
       v-if="!loading && !loadingError && resource"
@@ -13,8 +13,8 @@
     />
     <loading-screen v-if="loading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
-    <div v-else class="flex w-full oc-height-1-1" :class="{ 'app-sidebar-open': isSideBarOpen }">
-      <slot class="app-wrapper-content oc-height-1-1" v-bind="slotAttrs" />
+    <div v-else class="flex size-full" :class="{ 'app-sidebar-open': isSideBarOpen }">
+      <slot class="app-wrapper-content h-full" v-bind="slotAttrs" />
       <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
     </div>
   </main>

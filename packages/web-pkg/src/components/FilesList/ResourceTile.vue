@@ -1,7 +1,7 @@
 <template>
   <div
     ref="observerTarget"
-    class="oc-tile-card oc-card flex flex-col"
+    class="oc-tile-card oc-card flex flex-col h-full"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
@@ -13,7 +13,7 @@
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
-    <div v-if="isHidden" class="oc-tile-card-lazy-shimmer"></div>
+    <div v-if="isHidden" class="oc-tile-card-lazy-shimmer h-30"></div>
     <template v-else>
       <resource-link
         class="oc-card-media-top flex justify-center items-center m-0 w-full"
@@ -45,7 +45,7 @@
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm w-full"
+              class="tile-preview rounded-t-sm size-full"
               :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
               @click="toggleTile([resource, $event])"
@@ -224,7 +224,6 @@ if (!lazy) {
 <style lang="scss">
 .oc-tile-card {
   box-shadow: none;
-  height: 100%;
 
   &-disabled {
     pointer-events: none;
@@ -266,7 +265,6 @@ if (!lazy) {
 
     .tile-preview {
       aspect-ratio: 16/9;
-      height: 100%;
       object-fit: cover;
     }
   }
@@ -287,7 +285,6 @@ if (!lazy) {
   }
 
   &-lazy-shimmer {
-    height: 120px;
     opacity: 0.2;
     position: relative;
     overflow: hidden;

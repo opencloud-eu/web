@@ -4,18 +4,18 @@
     :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image mr-6 w-xs min-w-xs"
-      :class="{ 'space-header-image-expanded w-full max-w-full': imageExpanded || isMobileWidth }"
+      class="space-header-image mr-6 min-w-xs"
+      :class="{
+        'space-header-image-expanded w-full max-w-full max-h-full': imageExpanded || isMobileWidth,
+        'w-xs max-h-[158px]': !imageExpanded
+      }"
     >
-      <div
-        v-if="imagesLoading.includes(space.id)"
-        class="oc-height-1-1 flex items-center justify-center"
-      >
+      <div v-if="imagesLoading.includes(space.id)" class="h-full flex items-center justify-center">
         <oc-spinner :aria-label="$gettext('Space image is loading')" />
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer rounded-lg size-full"
+        class="oc-cursor-pointer rounded-lg size-full max-h-full"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"
@@ -315,6 +315,9 @@ const openSideBarSharePanel = () => {
   .space-header-squashed .space-header-image {
     @apply hidden lg:block;
   }
+  .space-header .markdown-container.collapsed {
+    @apply max-h-[100px];
+  }
 }
 </style>
 
@@ -322,14 +325,8 @@ const openSideBarSharePanel = () => {
 .space-header {
   &-image {
     aspect-ratio: 16 / 9;
-    max-height: 158px;
-
-    &-expanded {
-      max-height: 100%;
-    }
 
     img {
-      max-height: 100%;
       object-fit: cover;
     }
   }
@@ -339,7 +336,6 @@ const openSideBarSharePanel = () => {
   }
 
   .markdown-container.collapsed {
-    max-height: 100px;
     overflow: hidden;
     -webkit-mask-image: linear-gradient(180deg, #000 90%, transparent);
   }

@@ -19,7 +19,7 @@
       v-text="noSharePermsMessage"
     />
     <template v-if="hasSharees">
-      <div id="files-collaborators-headline" class="flex items-center justify-between">
+      <div id="files-collaborators-headline" class="flex items-center justify-between h-10">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
       <portal-target
@@ -453,9 +453,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-#files-collaborators-headline {
-  height: 40px;
-}
-</style>

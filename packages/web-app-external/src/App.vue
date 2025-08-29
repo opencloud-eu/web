@@ -1,15 +1,15 @@
 <template>
-  <div v-if="isLoading" class="oc-height-1-1 w-full flex justify-center items-center">
+  <div v-if="isLoading" class="size-full flex justify-center items-center">
     <oc-spinner size="large" />
   </div>
   <iframe
     v-else-if="appUrl && method === 'GET'"
     :src="appUrl"
-    class="w-full oc-height-1-1"
+    class="size-full"
     :title="iFrameTitle"
     allowfullscreen
   />
-  <div v-if="appUrl && method === 'POST' && formParameters" class="oc-height-1-1 w-full">
+  <div v-if="appUrl && method === 'POST' && formParameters" class="size-full">
     <form :action="appUrl" target="app-iframe" method="post">
       <input ref="subm" type="submit" :value="formParameters" class="oc-hidden" />
       <div v-for="(item, key, index) in formParameters" :key="index">
@@ -19,7 +19,7 @@
     <iframe
       ref="appIframe"
       name="app-iframe"
-      class="w-full oc-height-1-1"
+      class="size-full"
       :title="iFrameTitle"
       allowfullscreen
     />

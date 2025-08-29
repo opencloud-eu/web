@@ -3,11 +3,11 @@
   <div
     v-else
     id="files-drop-container"
-    class="oc-height-1-1 flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline"
+    class="h-full flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline"
   >
     <div v-if="dragareaEnabled" class="dragarea bg-sky-600/20 rounded-xl" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
-    <div class="p-4 oc-height-1-1 text-center">
+    <div class="p-4 h-full text-center">
       <div key="loaded-drop" class="flex flex-col">
         <h2 v-text="title" />
         <resource-upload

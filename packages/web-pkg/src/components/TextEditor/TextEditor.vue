@@ -1,5 +1,5 @@
 <template>
-  <div id="text-editor-container" class="oc-height-1-1">
+  <div id="text-editor-container" class="h-full">
     <md-preview
       v-if="isReadOnly"
       id="text-editor-preview-component"
