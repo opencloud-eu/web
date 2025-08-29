@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
 - refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
 - refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
 - refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
