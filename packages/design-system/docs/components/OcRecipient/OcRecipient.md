@@ -20,7 +20,7 @@ The most basic use case involves a `recipient` object with a `name` property.
 
 ```html
 <div class="w-[25%]">
-  <oc-recipient :recipient="{ name: 'Admin' }" />
+  <oc-recipient :recipient="{ name: 'Admin', icon: { name: 'user', label: 'User' } }" />
 </div>
 ```
 
@@ -39,7 +39,8 @@ The component can show an avatar in front of the recipient's name.
 			name: 'Admin',
 			hasAvatar: true,
 			avatar: 'https://picsum.photos/50/50?image=550',
-			isLoadingAvatar: false
+			isLoadingAvatar: false,
+			icon: { name: 'user', label: 'User' }
 		}"
 	/>
 </div>
@@ -55,7 +56,7 @@ The component provides an `append` slot to add additional content.
 
 ```html{3-5}
 <div class="w-[25%]">
-	<oc-recipient :recipient="{ name: 'Admin' }">
+	<oc-recipient :recipient="{ name: 'Admin', icon: { name: 'user', label: 'User' } }">
 		<template #append>
 			<span class="text-sm">Additional content</span>
 		</template>

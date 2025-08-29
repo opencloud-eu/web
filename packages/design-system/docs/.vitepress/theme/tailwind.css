@@ -1,0 +1,4 @@
+@import '@opencloud-eu/design-system/tailwind';
+
+/* we need to manually include the component styles because they live a few levels above */
+@source "./../../../src/components";
