@@ -63,7 +63,7 @@
           />
           <div class="oc-text-input-message"></div>
         </div>
-        <div class="mb-2" v-if="!isLoginToggleHidden">
+        <div class="mb-2" v-if="!graphUsersEditLoginAllowedDisabled">
           <oc-select
             id="login-input"
             :disabled="isLoginInputDisabled"
@@ -175,7 +175,7 @@ export default defineComponent({
     const eventBus = useEventBus()
     const { showErrorMessage } = useMessages()
     const { $gettext } = useGettext()
-
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const editUser: MaybeRef<User> = ref()
     const formData = ref({
       displayName: {
@@ -201,12 +201,6 @@ export default defineComponent({
     const isInputFieldReadOnly = (key: string) => {
       return capabilityStore.graphUsersReadOnlyAttributes.includes(key)
     }
-    const isLoginToggleHidden = computed(() => {
-      const list = (capabilityStore.graphUsersReadOnlyAttributes ?? []).map((s: string) =>
-        s.trim().toLowerCase()
-      )
-      return list.includes('user.accountenabled') || list.includes('accountenabled')
-    })
 
     const onUpdateUserAppRoleAssignments = (user: User, editUser: User) => {
       const client = clientService.graphAuthenticated
@@ -304,7 +298,7 @@ export default defineComponent({
       maxQuota: capabilityRefs.spacesMaxQuota,
       isInputFieldReadOnly,
       isLoginInputDisabled,
-      isLoginToggleHidden,
+      graphUsersEditLoginAllowedDisabled,
       editUser,
       formData,
       groupOptions,

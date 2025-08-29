@@ -39,7 +39,7 @@
         </span>
       </dd>
 
-      <template v-if="!isLoginToggleHidden">
+      <template v-if="!graphUsersEditLoginAllowedDisabled">
         <dt>{{ $gettext('Login') }}</dt>
         <dd>{{ loginDisplayValue }}</dd>
       </template>
@@ -79,6 +79,7 @@ import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'DetailsPanel',
@@ -105,16 +106,11 @@ export default defineComponent({
     const currentLanguage = computed(() => language.current)
 
     const capabilityStore = useCapabilityStore()
-    const isLoginToggleHidden = computed(() => {
-      const list = (capabilityStore.graphUsersReadOnlyAttributes ?? []).map((s: string) =>
-        s.trim().toLowerCase()
-      )
-      return list.includes('user.accountenabled') || list.includes('accountenabled')
-    })
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 
     return {
       currentLanguage,
-      isLoginToggleHidden
+      graphUsersEditLoginAllowedDisabled
     }
   },
   computed: {

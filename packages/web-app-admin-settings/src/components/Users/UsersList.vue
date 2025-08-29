@@ -149,6 +149,7 @@ import Mark from 'mark.js'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { useAdminUsersFlags } from '../../composables/useAdminUsersFlags'
+import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'UsersList',
@@ -175,7 +176,8 @@ export default defineComponent({
 
     const lastSelectedUserIndex = ref(0)
     const lastSelectedUserId = ref(null)
-
+    const capabilityStore = useCapabilityStore()
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const { isLoginToggleHidden } = useAdminUsersFlags()
     const userSettingsStore = useUserSettingsStore()
     const { users, selectedUsers } = storeToRefs(userSettingsStore)

@@ -164,10 +164,10 @@ import { useGettext } from 'vue3-gettext'
 import { format } from 'util'
 import { omit } from 'lodash-es'
 import { storeToRefs } from 'pinia'
-import { useAdminUsersFlags } from '../composables/useAdminUsersFlags'
 
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
+import { store } from '../../../../tests/e2e/support'
 
 export default defineComponent({
   name: 'UsersView',
@@ -184,6 +184,7 @@ export default defineComponent({
     const route = useRoute()
     const capabilityStore = useCapabilityStore()
     const capabilityRefs = storeToRefs(capabilityStore)
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const clientService = useClientService()
     const configStore = useConfigStore()
 
@@ -196,7 +197,6 @@ export default defineComponent({
 
     const { actions: createUserActions } = useUserActionsCreateUser()
     const createUserAction = computed(() => unref(createUserActions)[0])
-    const { isLoginToggleHidden } = useAdminUsersFlags()
 
     const { actions: deleteActions } = useUserActionsDelete()
     const { actions: removeFromGroupsActions } = useUserActionsRemoveFromGroups({
@@ -390,15 +390,13 @@ export default defineComponent({
     })
 
     const batchActions = computed(() => {
-      const list = [
+      return [
         ...unref(deleteActions),
         ...unref(editQuotaActions),
         ...unref(addToGroupsActions),
         ...unref(removeFromGroupsActions),
-        ...(!isLoginToggleHidden.value ? unref(editLoginActions) : [])
-      ]
-
-      return list.filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
+        ...(!graphUsersEditLoginAllowedDisabled.value ? unref(editLoginActions) : [])
+      ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
     })
 
     const updateSpaceQuota = ({ spaceId, quota }: { spaceId: string; quota: Quota }) => {
