@@ -63,7 +63,7 @@
           />
           <div class="oc-text-input-message"></div>
         </div>
-        <div class="mb-2">
+        <div class="mb-2" v-if="!graphUsersEditLoginAllowedDisabled">
           <oc-select
             id="login-input"
             :disabled="isLoginInputDisabled"
@@ -175,7 +175,7 @@ export default defineComponent({
     const eventBus = useEventBus()
     const { showErrorMessage } = useMessages()
     const { $gettext } = useGettext()
-
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const editUser: MaybeRef<User> = ref()
     const formData = ref({
       displayName: {
@@ -298,6 +298,7 @@ export default defineComponent({
       maxQuota: capabilityRefs.spacesMaxQuota,
       isInputFieldReadOnly,
       isLoginInputDisabled,
+      graphUsersEditLoginAllowedDisabled,
       editUser,
       formData,
       groupOptions,

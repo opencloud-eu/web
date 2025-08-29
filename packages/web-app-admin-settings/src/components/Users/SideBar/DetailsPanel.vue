@@ -38,8 +38,12 @@
           />
         </span>
       </dd>
-      <dt>{{ $gettext('Login') }}</dt>
-      <dd>{{ loginDisplayValue }}</dd>
+
+      <template v-if="!graphUsersEditLoginAllowedDisabled">
+        <dt>{{ $gettext('Login') }}</dt>
+        <dd>{{ loginDisplayValue }}</dd>
+      </template>
+
       <dt>{{ $gettext('Quota') }}</dt>
       <dd>
         <span v-if="showUserQuota" v-text="quotaDisplayValue" />
@@ -73,8 +77,9 @@
 import { computed, defineComponent, PropType } from 'vue'
 import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
-import { formatFileSize } from '@opencloud-eu/web-pkg'
+import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'DetailsPanel',
@@ -98,12 +103,14 @@ export default defineComponent({
   },
   setup() {
     const language = useGettext()
-    const currentLanguage = computed(() => {
-      return language.current
-    })
+    const currentLanguage = computed(() => language.current)
+
+    const capabilityStore = useCapabilityStore()
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 
     return {
-      currentLanguage
+      currentLanguage,
+      graphUsersEditLoginAllowedDisabled
     }
   },
   computed: {
