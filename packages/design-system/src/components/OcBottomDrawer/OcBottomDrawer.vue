@@ -7,14 +7,14 @@
     <div
       v-if="isOpen"
       ref="bottomDrawerRef"
-      class="oc-bottom-drawer-background bg-black/40 w-full"
+      class="oc-bottom-drawer-background bg-black/40 size-full"
       role="button"
       @click="onBackgroundClicked"
     >
       <focus-trap>
         <div
           :id="drawerId"
-          class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full"
+          class="oc-bottom-drawer bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh]"
         >
           <div class="oc-card bg-transparent">
             <div class="oc-card-header border-b-0 px-4 pt-4">
@@ -258,7 +258,6 @@ defineExpose({ show, hide, getElement })
 </style>
 <style lang="scss">
 .oc-bottom-drawer-background {
-  height: 100%;
   left: 0;
   top: 0;
   position: fixed;
@@ -270,7 +269,6 @@ defineExpose({ show, hide, getElement })
   bottom: -100%;
   left: 0;
   right: 0;
-  max-height: 66vh;
   overflow-y: auto;
   transition: all 0.2s;
 

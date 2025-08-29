@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-login oc-height-viewport" :style="backgroundImgStyle">
+  <div class="oc-login h-screen" :style="backgroundImgStyle">
     <h1 class="oc-invisible-sr" v-text="pageTitle" />
     <router-view />
     <img

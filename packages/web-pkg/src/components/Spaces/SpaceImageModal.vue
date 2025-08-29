@@ -1,6 +1,6 @@
 <template>
   <div class="space-image-modal">
-    <div v-if="imageUrl" class="space-image-modal-image-container">
+    <div v-if="imageUrl" class="space-image-modal-image-container max-h-[400px]">
       <img ref="imageRef" :src="imageUrl" />
       <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
         <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
@@ -161,10 +161,6 @@ onMounted(async () => {
 
 <style lang="scss">
 .space-image-modal {
-  &-image-container {
-    max-height: 400px;
-  }
-
   // overwrite vendor styling
   .cropper-crop-box,
   .cropper-view-box {

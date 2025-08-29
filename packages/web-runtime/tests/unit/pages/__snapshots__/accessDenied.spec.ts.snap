@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`access denied page > renders component 1`] = `
-"<div class="oc-height-viewport flex flex-col justify-center items-center">
+"<div class="h-screen flex flex-col justify-center items-center">
   <div class="oc-login-card"><img class="oc-login-logo" src="themes/opencloud/assets/logo.svg" alt="" aria-hidden="true">
     <div class="oc-login-card-body w-sm p-6">
       <h2 class="oc-login-card-title">Not logged in</h2>

@@ -36,7 +36,7 @@
               appearance="raw"
               @click="createNewFolderAction"
             >
-              <resource-icon :resource="folderIconResource" size="medium" />
+              <resource-icon :resource="folderIconResource" size="medium" class="h-full" />
               <span v-text="$gettext('Folder')" />
             </oc-button>
           </li>
@@ -58,7 +58,7 @@
               :class="['new-file-btn-' + fileAction.ext]"
               @click="fileAction.handler"
             >
-              <resource-icon :resource="getIconResource(fileAction)" size="medium" />
+              <resource-icon :resource="getIconResource(fileAction)" size="medium" class="h-full" />
               <span class="create-list-file-item-text">{{ fileAction.label() }}</span>
               <span
                 v-if="areFileExtensionsShown && fileAction.ext"
@@ -482,14 +482,6 @@ const folderIconResource = computed(() => {
 })
 </script>
 <style lang="scss">
-#create-list,
-#upload-list,
-#new-file-menu-drop {
-  .oc-icon-m svg {
-    height: 100% !important;
-  }
-}
-
 #clipboard-btns {
   flex-flow: inherit;
 }

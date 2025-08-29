@@ -713,6 +713,9 @@ importers:
 
   packages/web-app-text-editor:
     dependencies:
+      '@opencloud-eu/design-system':
+        specifier: workspace:^
+        version: link:../design-system
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -8043,7 +8046,7 @@ snapshots:
       '@cucumber/ci-environment': 10.0.1
       '@cucumber/cucumber-expressions': 18.0.1
       '@cucumber/gherkin': 32.2.0
-      '@cucumber/gherkin-streams': 5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)
+      '@cucumber/gherkin-streams': 5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0))(@cucumber/messages@27.2.0)
       '@cucumber/gherkin-utils': 9.2.0
       '@cucumber/html-formatter': 21.13.0(@cucumber/messages@27.2.0)
       '@cucumber/junit-xml-formatter': 0.7.1(@cucumber/messages@27.2.0)
@@ -8080,7 +8083,7 @@ snapshots:
       yaml: 2.8.1
       yup: 1.6.1
 
-  '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)':
+  '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0))(@cucumber/messages@27.2.0)':
     dependencies:
       '@cucumber/gherkin': 32.2.0
       '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)

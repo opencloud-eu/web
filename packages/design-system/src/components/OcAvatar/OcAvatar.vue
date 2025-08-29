@@ -132,9 +132,5 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
 <style lang="scss">
 .oc-avatar {
   user-select: none;
-
-  .avatarImg {
-    height: auto;
-  }
 }
 </style>

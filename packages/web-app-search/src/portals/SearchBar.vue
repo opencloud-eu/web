@@ -17,7 +17,8 @@
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg"
+      small
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -89,7 +90,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview flex items-center py-1 px-2 text-sm"
+                class="preview flex items-center py-1 px-2 text-sm min-h-10"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -531,6 +532,9 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #files-global-search-options {
+    max-height: calc(100vh - 60px);
+  }
   #files-global-search .oc-search-input {
     @apply inline sm:block;
   }
@@ -552,14 +556,12 @@ export default defineComponent({
 #files-global-search {
   .oc-search-input {
     transition: 0s;
-    height: 2.3rem;
   }
 
   #files-global-search-bar {
     @media (max-width: 639px) {
       visibility: hidden;
       position: absolute;
-      height: 48px;
       left: 0;
       right: 0;
       top: 0;
@@ -574,7 +576,6 @@ export default defineComponent({
 
   #files-global-search-options {
     overflow-y: auto;
-    max-height: calc(100vh - 60px);
 
     .preview-component button,
     .preview-component a {
@@ -586,8 +587,6 @@ export default defineComponent({
         position: relative;
 
         &.preview {
-          min-height: 44px;
-
           &.disabled {
             pointer-events: none;
             opacity: 0.7;

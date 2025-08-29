@@ -8,7 +8,7 @@ exports[`OcDatePicker > renders 1`] = `
     <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="date" value="">
     <!--v-if-->
   </div>
-  <div class="oc-text-input-message flex align-center text-sm mt-1">
+  <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
     <!--v-if-->
   </div>
   <!--v-if-->

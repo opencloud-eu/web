@@ -115,10 +115,10 @@ function $_ocTag_click(event: MouseEvent) {
     @apply p-1 text-xs;
   }
   .oc-tag-m {
-    @apply py-1 px-2 text-sm;
+    @apply py-1 px-2 text-sm min-h-6;
   }
   .oc-tag-l {
-    @apply py-2 px-4 text-lg;
+    @apply py-2 px-4 text-lg min-h-8;
   }
 }
 </style>
@@ -126,14 +126,6 @@ function $_ocTag_click(event: MouseEvent) {
 .oc-tag {
   box-sizing: border-box;
   gap: var(--oc-space-xsmall);
-
-  &-m {
-    min-height: 2.125rem;
-  }
-
-  &-l {
-    min-height: 2.75rem;
-  }
 
   &-link,
   &-button {

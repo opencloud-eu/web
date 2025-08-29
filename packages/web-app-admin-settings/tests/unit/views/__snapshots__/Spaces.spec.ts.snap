@@ -2,18 +2,18 @@
 
 exports[`Spaces view > loading states > should render spaces list after loading has been finished 1`] = `
 "<div>
-  <main class="flex oc-height-1-1 app-content w-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex w-full oc-height-1-1 flex-wrap">
-      <div id="admin-settings-view-wrapper" class="flex-1 w-full oc-height-1-1 flex-wrap">
+  <main class="flex app-content size-full rounded-l-xl">
+    <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
+      <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface admin-settings-app-bar-sticky">
-          <div class="admin-settings-app-bar-controls flex justify-between items-center">
+          <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
             <div class="flex">
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
             </div>
           </div>
-          <div class="admin-settings-app-bar-actions flex items-center mt-1">
+          <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">
             <!--v-if-->
           </div>
         </div>

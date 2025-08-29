@@ -2,7 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
-    class="grid items-center px-4"
+    class="grid items-center px-4 h-13"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left flex items-center flex-start">
@@ -14,7 +14,7 @@
         <oc-image
           :src="currentTheme.logo"
           :alt="sidebarLogoAlt"
-          class="oc-logo-image align-middle ml-1"
+          class="oc-logo-image align-middle ml-1 max-h-[26px]"
         />
       </router-link>
     </div>
@@ -221,7 +221,6 @@ export default {
     column-gap: 10px;
     grid-template-columns: v-bind(logoWidth) 9fr 1fr;
     grid-template-rows: 1;
-    height: 52px;
     justify-content: center;
   }
 
@@ -234,7 +233,6 @@ export default {
   }
 
   .oc-logo-image {
-    max-height: 26px;
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;

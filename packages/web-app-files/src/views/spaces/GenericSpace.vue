@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full" :class="{ 'space-frontpage': isSpaceFrontpage }">
+  <div class="flex w-full">
     <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
     <files-view-wrapper>
       <app-bar
@@ -27,7 +27,12 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <not-found-message v-if="folderNotFound" :space="space" class="files-not-found" />
+        <not-found-message
+          v-if="folderNotFound"
+          :space="space"
+          class="files-not-found"
+          :class="{ 'h-[55vh]': isSpaceFrontpage }"
+        />
         <template v-else>
           <space-header
             v-if="hasSpaceHeader"
@@ -39,6 +44,7 @@
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
             class="files-empty"
+            :class="{ 'h-[55vh]': isSpaceFrontpage }"
             icon="folder"
           >
             <template #message>

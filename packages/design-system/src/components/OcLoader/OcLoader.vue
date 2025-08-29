@@ -8,8 +8,9 @@
       'after:bg-role-secondary',
       'w-full',
       'after:w-0',
-      { 'oc-loader-flat rounded-none': flat },
-      { 'rounded-[500px]': !flat }
+      'after:h-full',
+      { 'oc-loader-flat rounded-none h-1': flat },
+      { 'rounded-[500px] h-4': !flat }
     ]"
     :aria-label="ariaLabel"
   />
@@ -43,17 +44,11 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  height: 15px;
   overflow: hidden;
   position: relative;
 
-  &-flat {
-    height: 5px !important;
-  }
-
   &::after {
     content: '';
-    height: 100%;
     position: absolute;
 
     animation: {

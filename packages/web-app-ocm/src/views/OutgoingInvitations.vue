@@ -48,7 +48,7 @@
         <no-content-message
           v-if="!sortedTokens.length"
           id="invite-tokens-empty"
-          class="files-empty"
+          class="files-empty h-full"
           icon="user-shared"
         >
           <template #message>
@@ -335,11 +335,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.sciencemesh-app {
-  #invite-tokens-empty {
-    height: 100%;
-  }
-}
-</style>

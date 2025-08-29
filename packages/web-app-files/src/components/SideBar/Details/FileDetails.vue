@@ -7,7 +7,7 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview flex items-center justify-center mb-4 p-2"
+        class="details-preview flex items-center justify-center mb-4 p-2 h-[230px]"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
@@ -336,9 +336,5 @@ watch(
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-}
-
-.details-preview {
-  height: 230px;
 }
 </style>

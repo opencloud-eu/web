@@ -1,7 +1,7 @@
 <template>
   <table v-bind="extractTableProps()" class="has-item-context-menu">
     <oc-thead v-if="hasHeader">
-      <oc-tr class="oc-table-header-row">
+      <oc-tr class="oc-table-header-row h-10.5">
         <oc-th
           v-for="(field, index) in fields"
           :key="`oc-thead-${field.name}`"
@@ -60,7 +60,7 @@
         v-bind="extractTbodyTrProps(item, trIndex)"
         :data-item-id="item[idKey as keyof Item]"
         :draggable="dragDrop"
-        class="border-t"
+        class="border-t h-10.5"
         @click="$emit(constants.EVENT_TROW_CLICKED, [item, $event])"
         @contextmenu="
           $emit(
@@ -97,7 +97,7 @@
       </oc-tr>
     </oc-tbody>
     <tfoot v-if="$slots.footer" class="oc-table-footer border-t">
-      <tr class="oc-table-footer-row">
+      <tr class="oc-table-footer-row h-10.5">
         <td
           :colspan="fullColspan"
           class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant"
@@ -532,10 +532,6 @@ const handleSort = (field: FieldType) => {
 
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;
-  }
-
-  tr {
-    height: var(--oc-size-height-table-row);
   }
 
   &-disabled {

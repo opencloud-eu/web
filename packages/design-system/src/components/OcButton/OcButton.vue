@@ -179,13 +179,13 @@ const onClick = (event: MouseEvent) => {
     @apply py-1.5 px-2.5;
   }
   .oc-button-s {
-    @apply text-sm;
+    @apply text-sm min-h-3;
   }
   .oc-button-m {
-    @apply text-base;
+    @apply text-base min-h-4;
   }
   .oc-button-l {
-    @apply text-lg;
+    @apply text-lg min-h-7;
   }
   .oc-button {
     @apply rounded-sm;
@@ -206,8 +206,6 @@ const onClick = (event: MouseEvent) => {
 @mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
-    min-height: 0;
-
     background-color: transparent;
     color: $color;
     .oc-icon > svg {
@@ -309,18 +307,6 @@ const onClick = (event: MouseEvent) => {
   @layer components {
     &:hover {
       cursor: pointer;
-    }
-
-    &-s {
-      min-height: 1.2rem;
-    }
-
-    &-m {
-      min-height: $global-control-height;
-    }
-
-    &-l {
-      min-height: 2rem;
     }
 
     &-primary {

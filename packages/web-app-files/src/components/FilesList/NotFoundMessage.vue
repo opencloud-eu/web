@@ -1,7 +1,7 @@
 <template>
   <div
     id="files-list-not-found-message"
-    class="text-center items-center flex justify-center flex-col"
+    class="text-center items-center flex justify-center flex-col h-[75vh]"
   >
     <oc-icon name="cloud" type="div" size="xxlarge" />
     <div class="text-role-on-surface-variant text-xl">
@@ -87,8 +87,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-#files-list-not-found-message {
-  height: 75vh;
-}
-</style>
