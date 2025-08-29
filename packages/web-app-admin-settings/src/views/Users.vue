@@ -167,7 +167,6 @@ import { storeToRefs } from 'pinia'
 
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
-import { store } from '../../../../tests/e2e/support'
 
 export default defineComponent({
   name: 'UsersView',
