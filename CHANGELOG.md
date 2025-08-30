@@ -1,5 +1,46 @@
 # Changelog
 
+## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-08-30
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
+
+### 📈 Enhancement
+
+- refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
+- refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
+- refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
+- refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
+- refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
+- refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
+- refactor: text-align and vertical-align to tailwind [[#1094](https://github.com/opencloud-eu/web/pull/1094)]
+- refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
+- refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
+- refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
+- feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
+
+### 🐛 Bug Fixes
+
+- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
+- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
+### 📦️ Dependencies
+
+- chore: adjust display css props to tailwind [[#1114](https://github.com/opencloud-eu/web/pull/1114)]
+- fix(deps): update typescript-eslint monorepo to v8.41.0 [[#1117](https://github.com/opencloud-eu/web/pull/1117)]
+- chore(deps): update pnpm to v10.15.0 [[#1095](https://github.com/opencloud-eu/web/pull/1095)]
+- fix(deps): update dependency @vavt/cm-extension to v1.11.0 [[#1113](https://github.com/opencloud-eu/web/pull/1113)]
+- fix(deps): update dependency @vueuse/core to v13.7.0 [[#1087](https://github.com/opencloud-eu/web/pull/1087)]
+- fix(deps): update dependency zod to v4.1.3 [[#1070](https://github.com/opencloud-eu/web/pull/1070)]
+- fix(deps): update dependency @sentry/vue to v10.5.0 [[#1068](https://github.com/opencloud-eu/web/pull/1068)]
+- fix(deps): update typescript-eslint monorepo to v8.40.0 [[#1075](https://github.com/opencloud-eu/web/pull/1075)]
+- chore(deps): update apache/tika docker tag to v3.2.2.0 [[#1066](https://github.com/opencloud-eu/web/pull/1066)]
+- chore(deps): update dependency vite-plugin-static-copy to v3.1.2 [security] [[#1106](https://github.com/opencloud-eu/web/pull/1106)]
+- [full-ci] bump-opencloud-3.3.0. run all tests [[#1074](https://github.com/opencloud-eu/web/pull/1074)]
+
 ## [3.3.0](https://github.com/opencloud-eu/web/releases/tag/v3.3.0) - 2025-08-11
 
 ### ❤️ Thanks to all contributors! ❤️
