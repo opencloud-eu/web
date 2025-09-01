@@ -18,7 +18,7 @@
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
       small
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute left-0 right-0 top-0 sm:relative"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute inset-0 sm:relative"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"

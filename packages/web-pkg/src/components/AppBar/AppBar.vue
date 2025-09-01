@@ -3,7 +3,7 @@
     id="files-app-bar"
     ref="filesAppBar"
     class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0"
-    :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky sticky': isSticky }"
+    :class="{ 'files-app-bar-squashed': isSideBarOpen, sticky: isSticky }"
   >
     <div class="files-topbar py-2">
       <h1 class="oc-invisible-sr" v-text="pageTitle" />

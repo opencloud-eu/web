@@ -34,7 +34,7 @@
         </div>
       </div>
       <div
-        class="flex justify-between space-members-filter max-h-0"
+        class="flex justify-between space-members-filter-container max-h-0"
         :class="{
           'space-members-filter-container-expanded max-h-15': isFilterOpen,
           'mb-4': isFilterOpen

@@ -4,7 +4,7 @@
     :class="{
       fixed: position !== 'default',
       'top-2 left-2': position === 'top-left',
-      'top-2 left-0 right-0 mx-auto': position === 'top-center',
+      'top-2 inset-x-0 mx-auto': position === 'top-center',
       'top-2 right-2': position === 'top-right'
     }"
   >

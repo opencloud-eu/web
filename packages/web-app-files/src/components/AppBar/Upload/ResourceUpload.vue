@@ -18,7 +18,7 @@
       :id="inputId"
       ref="input"
       v-bind="inputAttrs"
-      class="upload-input-target absolute left-[99999px]"
+      class="absolute left-[99999px]"
       type="file"
       :aria-labelledby="uploadLabelId"
       :name="isFolder ? 'file' : 'folder'"

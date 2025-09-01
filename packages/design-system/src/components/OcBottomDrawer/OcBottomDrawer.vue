@@ -14,7 +14,7 @@
       <focus-trap>
         <div
           :id="drawerId"
-          class="oc-bottom-drawer fixed left-0 right-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%]"
+          class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%]"
         >
           <div class="oc-card bg-transparent">
             <div class="oc-card-header border-b-0 px-4 pt-4">

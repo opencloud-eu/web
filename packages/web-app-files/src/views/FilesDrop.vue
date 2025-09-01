@@ -5,10 +5,7 @@
     id="files-drop-container"
     class="h-full flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline relative"
   >
-    <div
-      v-if="dragareaEnabled"
-      class="dragarea absolute top-0 left-0 bottom-0 right-0 bg-sky-600/20 rounded-xl"
-    />
+    <div v-if="dragareaEnabled" class="dragarea absolute inset-0 bg-sky-600/20 rounded-xl" />
     <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
     <div class="p-4 h-full text-center">
       <div key="loaded-drop" class="flex flex-col">

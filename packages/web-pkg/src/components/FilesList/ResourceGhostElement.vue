@@ -8,7 +8,7 @@
       />
       <div
         v-if="showThirdLayer"
-        class="ghost-element-layer3absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high"
+        class="ghost-element-layer3 absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high"
       />
     </div>
     <span
@@ -52,15 +52,6 @@ export default defineComponent({
 })
 </script>
 
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .ghost-element .icon-wrapper {
-    @apply relative;
-  }
-}
-</style>
 <style lang="scss">
 .ghost-element-layer1 {
   .ghost-element-layer2 {
