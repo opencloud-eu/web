@@ -3,22 +3,23 @@
   --vp-c-brand-1: var(--oc-role-secondary);
 }
 
+// re-apply some basic styling we removed during the build to avoid conflicts with tailwind
 .title span {
   font-size: 14px;
 }
 
-// some vitepress styles need to be overwritten to properly display our components
-button.oc-button-passive-outline:focus:not(:focus-visible) {
-  outline: 1px solid var(--oc-role-outline) !important;
+#VPSidebarNav .VPLink p {
+  padding: 0;
+  margin: 4px 0;
 }
-.oc-modal-title > h2 {
-  border: 0 !important;
+
+.vp-doc :where(p, li, div):not(.live-code-block :where(p, li, div)) {
+  font-size: 16px;
 }
-ol.oc-pagination-list {
-  list-style: none !important;
-}
-p.oc-recipient-name {
-  line-height: unset !important;
+
+html * {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 @font-face {

@@ -5,6 +5,7 @@
         @click="() => (previewActive = true)"
         appearance="raw"
         :class="{ active: previewActive }"
+        class="py-2 px-4"
         no-hover
         >Preview</oc-button
       >
@@ -12,6 +13,7 @@
         @click="() => (previewActive = false)"
         appearance="raw"
         :class="{ active: !previewActive }"
+        class="py-2 px-4"
         no-hover
         >Code</oc-button
       >
@@ -85,14 +87,27 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped>
-.live-code-block-header {
-  border-bottom: 1px solid var(--vp-c-divider);
-  button {
-    border-radius: 0;
+<style lang="scss">
+.live-code-block {
+  // some vitepress styles need to be overwritten to properly display our components
+  .oc-modal-title > h2 {
+    border: 0 !important;
   }
-  button.active {
-    border-bottom: 2px solid var(--vp-c-brand-1);
+  ol.oc-pagination-list {
+    list-style: none !important;
+  }
+  p.oc-recipient-name {
+    line-height: unset !important;
+  }
+
+  &-header {
+    border-bottom: 1px solid var(--vp-c-divider);
+    button {
+      border-radius: 0;
+    }
+    button.active {
+      border-bottom: 2px solid var(--vp-c-brand-1);
+    }
   }
 }
 </style>

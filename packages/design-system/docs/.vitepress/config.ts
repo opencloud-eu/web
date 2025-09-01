@@ -4,6 +4,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 import Container from 'markdown-it-container'
 import path from 'path'
 import { generateJsonMetaData } from './generateJsonMetaData'
+import tailwindcss from '@tailwindcss/vite'
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
 const stripScssMarker = '/* STYLES STRIP IMPORTS MARKER */'
@@ -26,6 +27,19 @@ export default defineConfig({
       }
     },
     css: {
+      postcss: {
+        plugins: [
+          {
+            postcssPlugin: 'remove-base-css',
+            Once(root, { result }) {
+              if (result.opts.from?.endsWith('theme-default/styles/base.css')) {
+                // remove the default VitePress base css because it would overwrite all Tailwind layers
+                root.removeAll()
+              }
+            }
+          }
+        ]
+      },
       preprocessorOptions: {
         scss: {
           additionalData: `
@@ -37,6 +51,7 @@ export default defineConfig({
       }
     },
     plugins: [
+      tailwindcss(),
       generateJsonMetaData(),
       {
         name: '@opencloud-eu/vite-plugin-strip-css',
