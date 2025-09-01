@@ -172,6 +172,7 @@ export interface Capabilities {
         create_disabled?: boolean
         delete_disabled?: boolean
         read_only_attributes?: string[]
+        edit_login_allowed_disabled?: boolean
       }
     }
   }

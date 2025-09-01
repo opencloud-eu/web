@@ -44,7 +44,8 @@ const defaultValues = {
       change_password_self_disabled: true,
       create_disabled: false,
       delete_disabled: false,
-      read_only_attributes: [] as string[]
+      read_only_attributes: [] as string[],
+      edit_login_allowed_disabled: false
     }
   },
   notifications: {
@@ -91,6 +92,9 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   )
   const graphUsersReadOnlyAttributes = computed(
     () => unref(capabilities).graph.users.read_only_attributes
+  )
+  const graphUsersEditLoginAllowedDisabled = computed(
+    () => unref(capabilities).graph.users.edit_login_allowed_disabled
   )
 
   const filesAppProviders = computed(() => unref(capabilities).files.app_providers)
@@ -155,6 +159,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     graphUsersCreateDisabled,
     graphUsersDeleteDisabled,
     graphUsersChangeSelfPasswordDisabled,
+    graphUsersEditLoginAllowedDisabled,
     graphUsersReadOnlyAttributes,
     filesAppProviders,
     filesFavorites,
