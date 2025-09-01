@@ -156,11 +156,7 @@
   /* sidebar */
   .sidebar-actions-panel li a,
   .sidebar-actions-panel li button {
-    @apply p-2;
-  }
-
-  .sidebar-actions-panel li a {
-    @apply mb-1 align-top gap-2.5;
+    @apply p-2 mb-1;
   }
 
   .oc-tooltip .tippy-content {
