@@ -21,7 +21,7 @@ PLUGINS_S3 = "plugins/s3:1.5"
 PLUGINS_S3_CACHE = "plugins/s3-cache:1"
 PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
-OPENLDAP = "bitnami/openldap:2.6"
+OPENLDAP = "bitnamilegacy/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
