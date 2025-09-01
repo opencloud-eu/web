@@ -16,7 +16,7 @@ exports[`Epub reader app > renders correctly 1`] = `
     <div class="epub-reader-controls flex items-center m-2">
       <div class="epub-reader-controls-font-size flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 inline-flex epub-reader-controls-font-size-decrease">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -24,7 +24,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-icon oc-icon-xs box-content"><svg data-testid="inline-svg-stub" src="icons/subtract-fill.svg" transform-source="(svg) => {
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="oc-icon box-content size-3"><svg data-testid="inline-svg-stub" src="icons/subtract-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -32,13 +32,13 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-3"></svg></span>
         </button> <button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 inline-flex epub-reader-controls-font-size-reset w-[58px]">
           <!--v-if-->
           <!-- @slot Content of the button --> 100%
         </button> <button type="button" aria-label="Increase font size" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 inline-flex epub-reader-controls-font-size-increase">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -46,7 +46,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span class="oc-icon oc-icon-xs box-content"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="oc-icon box-content size-3"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -54,7 +54,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-3"></svg></span>
         </button></div>
       <div class="epub-reader-controls-chapters-select w-full px-2 oc-hidden@l" options="[object Object],[object Object]" modelvalue="[object Object]">
         <!--v-if-->
@@ -64,7 +64,7 @@ exports[`Epub reader app > renders correctly 1`] = `
             <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> Chapter 1 <!--v-if--></span><input class="vs__search" readonly="" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
             <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                   <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                </svg></button><span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+                </svg></button><span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -72,7 +72,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
               <div class="vs__spinner" style="display: none;">Loading...</div>
             </div>
           </div>
@@ -86,7 +86,7 @@ exports[`Epub reader app > renders correctly 1`] = `
     <div class="flex justify-center size-full">
       <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex epub-reader-navigate-left">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-xl box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content size-12"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -94,12 +94,12 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-12"></svg></span>
         </button></div>
       <div id="reader" class="flex justify-center"></div>
       <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to next page" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex epub-reader-navigate-right">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon oc-icon-xl box-content"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content size-12"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -107,7 +107,7 @@ exports[`Epub reader app > renders correctly 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-12"></svg></span>
         </button></div>
     </div>
   </div>

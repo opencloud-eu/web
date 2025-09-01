@@ -1,7 +1,12 @@
 <template>
   <component
     :is="type"
-    :class="[{ 'oc-button-reset': type === 'button' }, 'oc-icon', sizeClass(size), 'box-content']"
+    :class="[
+      'oc-icon',
+      'box-content',
+      tailwindSize,
+      { 'bg-transparent min-h-0': type === 'button' }
+    ]"
   >
     <inline-svg
       :src="nameWithFillType"
@@ -10,6 +15,7 @@
       :aria-labelledby="accessibleLabel === '' ? null : svgTitleId"
       :focusable="accessibleLabel === '' ? 'false' : null"
       :style="color !== '' ? { fill: color } : {}"
+      :class="tailwindSize"
       @loaded="emit('loaded')"
     />
   </component>
@@ -18,7 +24,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import InlineSvg from 'vue-inline-svg'
-import { FillType, getSizeClass, SizeType, uniqueId, getIconUrlPrefix } from '../../helpers'
+import { FillType, SizeType, uniqueId, getIconUrlPrefix } from '../../helpers'
 
 InlineSvg.name = 'inline-svg'
 
@@ -81,15 +87,15 @@ const nameWithFillType = computed(() => {
   return `${path}${name}-${lowerFillType}.svg`
 })
 
-const sizeClass = (c: string) => {
-  return prefix(getSizeClass(c))
-}
-
-const prefix = (string: string) => {
-  if (string !== null) {
-    return `oc-icon-${string}`
-  }
-}
+const tailwindSize = computed(() => ({
+  'size-3': size === 'xsmall',
+  'size-4': size === 'small',
+  'size-5.5': size === 'medium',
+  'size-8': size === 'large',
+  'size-12': size === 'xlarge',
+  'size-22': size === 'xxlarge',
+  'size-42': size === 'xxxlarge'
+}))
 
 const transformSvgElement = (svg: SVGElement) => {
   if (accessibleLabel !== '') {
@@ -111,74 +117,6 @@ const transformSvgElement = (svg: SVGElement) => {
 
   .oc-icon svg {
     @apply block;
-  }
-}
-</style>
-<style lang="scss">
-@mixin oc-icon-size($factor) {
-  height: $oc-size-icon-default * $factor;
-  max-height: $oc-size-icon-default * $factor;
-  max-width: $oc-size-icon-default * $factor;
-  width: $oc-size-icon-default * $factor;
-}
-
-.oc-icon {
-  // SVG wrapper
-
-  @layer components {
-    &,
-    > svg {
-      @include oc-icon-size(1);
-    }
-
-    &-xs {
-      &,
-      > svg {
-        @include oc-icon-size(0.5);
-      }
-    }
-
-    &-s {
-      &,
-      > svg {
-        @include oc-icon-size(0.7);
-      }
-    }
-
-    &-m {
-      &,
-      > svg {
-        @include oc-icon-size(1);
-      }
-    }
-
-    &-l {
-      &,
-      > svg {
-        @include oc-icon-size(1.5);
-      }
-    }
-
-    &-xl {
-      &,
-      > svg {
-        @include oc-icon-size(2);
-      }
-    }
-
-    &-xxl {
-      &,
-      > svg {
-        @include oc-icon-size(4);
-      }
-    }
-
-    &-xxxl {
-      &,
-      > svg {
-        @include oc-icon-size(8);
-      }
-    }
   }
 }
 </style>

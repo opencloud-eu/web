@@ -3,7 +3,7 @@
 exports[`CreateSpace component > should show the "New Space" button 1`] = `
 "<button type="button" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 inline-flex" id="new-space-menu-btn">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon oc-icon-m box-content"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -11,6 +11,6 @@ exports[`CreateSpace component > should show the "New Space" button 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span>New Space</span>
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span>New Space</span>
 </button>"
 `;

@@ -23,7 +23,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
         <div id="user-list" class="">
           <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
             <div class="flex items-center">
-              <div class="mr-4 flex items-center"><span class="oc-icon oc-icon-m box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
+              <div class="mr-4 flex items-center"><span class="oc-icon box-content size-5.5 mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -31,7 +31,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span>Filter:</span></div>
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span>Filter:</span></div>
               <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
               <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
             </div>
@@ -83,7 +83,7 @@ exports[`Users view > list view > renders list initially 1`] = `
         <div id="user-list" class="">
           <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
             <div class="flex items-center">
-              <div class="mr-4 flex items-center"><span class="oc-icon oc-icon-m box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
+              <div class="mr-4 flex items-center"><span class="oc-icon box-content size-5.5 mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -91,7 +91,7 @@ exports[`Users view > list view > renders list initially 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span> <span>Filter:</span></div>
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span>Filter:</span></div>
               <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
               <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
             </div>
@@ -147,7 +147,7 @@ exports[`Users view > list view > renders list initially 1`] = `
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-displayName mark-element">Admin</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-mail">admin@example.org</td>
                   <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-role">Admin</td>
-                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="flex items-center"><span class="oc-icon oc-icon-m box-content mr-2"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
+                  <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="flex items-center"><span class="oc-icon box-content size-5.5 mr-2"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -155,7 +155,7 @@ exports[`Users view > list view > renders list initially 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span><span>Allowed</span></span></td>
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span><span>Allowed</span></span></td>
                   <td class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
                     <oc-button-stub arialabel="Show details" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="ml-1 quick-action-button p-1 users-table-btn-details"></oc-button-stub>
                     <oc-button-stub arialabel="Edit" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="ml-1 quick-action-button p-1 users-table-btn-edit"></oc-button-stub>

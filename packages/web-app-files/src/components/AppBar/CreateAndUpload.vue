@@ -481,6 +481,16 @@ const folderIconResource = computed(() => {
   return { isFolder: true, extension: '' } as Resource
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .create-and-upload-actions .oc-drop .oc-icon svg {
+    /* reset the resource icon height because the ResourceIcon component messes with it */
+    @apply h-5.5;
+  }
+}
+</style>
 <style lang="scss">
 #clipboard-btns {
   flex-flow: inherit;
