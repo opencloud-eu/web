@@ -59,14 +59,14 @@ describe('OcSelect', () => {
       )
     })
     it('displays with a custom label function', () => {
-      const options = [{ customLabel: 'label1' }, { customLabel: 'label2' }]
+      const options = [{ nested: { customLabel: 'label1' } }, { nested: { customLabel: 'label2' } }]
       const wrapper = getWrapper<(typeof options)[0]>({
         options,
         modelValue: options[0],
-        getOptionLabel: (o) => o.customLabel
+        getOptionLabel: (o) => o.nested.customLabel
       })
       expect(wrapper.findAll(selectors.selectedOptions).at(0).text()).toEqual(
-        options[0].customLabel
+        options[0].nested.customLabel
       )
     })
     it('can be cleared if multi-select is allowed', () => {
