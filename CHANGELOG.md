@@ -29,6 +29,7 @@
 
 ### 📦️ Dependencies
 
+- use bitnamilegacy [[#1133](https://github.com/opencloud-eu/web/pull/1133)]
 - chore: adjust display css props to tailwind [[#1114](https://github.com/opencloud-eu/web/pull/1114)]
 - fix(deps): update typescript-eslint monorepo to v8.41.0 [[#1117](https://github.com/opencloud-eu/web/pull/1117)]
 - chore(deps): update pnpm to v10.15.0 [[#1095](https://github.com/opencloud-eu/web/pull/1095)]
