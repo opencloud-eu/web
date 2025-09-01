@@ -123,7 +123,11 @@
 
   /* inputs */
   .oc-input {
-    @apply p-1.5 align-middle leading-4 border border-role-outline rounded-sm outline-0;
+    @apply p-1.5 align-middle leading-4 border border-role-outline rounded-sm outline-0 overflow-visible;
+  }
+
+  .oc-textarea {
+    @apply overflow-auto;
   }
 
   .oc-select optgroup {

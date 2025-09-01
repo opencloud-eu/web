@@ -54,7 +54,7 @@
       ref="optionsDropRef"
       mode="manual"
       target="#files-global-search-bar"
-      class="w-[93vw] sm:w-2xs md:w-lg"
+      class="w-[93vw] sm:w-2xs md:w-lg overflow-y-auto"
       padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
@@ -575,8 +575,6 @@ export default defineComponent({
   }
 
   #files-global-search-options {
-    overflow-y: auto;
-
     .preview-component button,
     .preview-component a {
       gap: initial;

@@ -63,7 +63,7 @@
           'mt-4': !indirectLinkListCollapsed
         }"
       >
-        <ul class="oc-list oc-list-divider" :aria-label="$gettext('Public links')">
+        <ul class="oc-list oc-list-divider overflow-hidden" :aria-label="$gettext('Public links')">
           <li v-for="link in indirectLinks" :key="link.id">
             <list-item
               :is-folder-share="resource.isFolder"
@@ -332,10 +332,6 @@ export default defineComponent({
 <style lang="scss">
 .files-links-indirect-list {
   transition: all 0.25s ease-out;
-
-  ul {
-    overflow: hidden;
-  }
 
   &-open {
     grid-template-rows: 1fr;

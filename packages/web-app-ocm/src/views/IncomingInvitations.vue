@@ -142,6 +142,7 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .sciencemesh-app {
+  // overwrite vendor styles
   .vs__selected,
   .options-wrapper {
     max-width: 100%;

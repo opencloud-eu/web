@@ -1,6 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <main v-else id="account" class="pt-4 pb-6 flex justify-center">
+  <main v-else id="account" class="pt-4 pb-6 flex justify-center overflow-y-auto">
     <div class="account-page px-4 lg:px-0 w-full lg:w-7xl">
       <h1 id="account-page-title" class="mb-0 border-b" v-text="$gettext('My Account')" />
       <account-table
@@ -816,8 +816,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#account {
-  overflow-y: auto;
-}
-</style>

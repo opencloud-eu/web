@@ -10,7 +10,7 @@
         'w-full',
         'whitespace-nowrap',
         'p-2',
-        { active: active }
+        { 'active overflow-hidden': active }
       ]"
       :data-nav-id="index"
       :data-nav-name="navName"
@@ -106,10 +106,6 @@ export default defineComponent({
   .text-invisible {
     opacity: 0 !important;
     transition: 0s;
-  }
-
-  &.active {
-    overflow: hidden;
   }
 
   &:focus:not(.active),

@@ -43,7 +43,7 @@
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter mr-2 w-full"
+          class="space-members-filter mr-2 w-full overflow-hidden"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />
@@ -257,8 +257,6 @@ watch(filterTerm, async () => {
 </style>
 <style lang="scss">
 .space-members-filter {
-  overflow: hidden;
-
   input:focus {
     // use inner focus border because an outline would be cut off by the hidden overflow
     box-shadow: inset 0px 0px 0px 1px var(--oc-role-outline);

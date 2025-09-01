@@ -1,7 +1,7 @@
 <template>
   <div class="epub-reader flex">
     <oc-list
-      class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r w-xs"
+      class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r w-xs overflow-y-auto"
     >
       <li
         v-for="chapter in chapters"
@@ -282,10 +282,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .epub-reader {
-  &-chapters-list {
-    overflow-y: auto;
-  }
-
   &-controls-font-size {
     flex-wrap: nowrap;
   }

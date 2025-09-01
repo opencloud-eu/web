@@ -1,5 +1,5 @@
 <template>
-  <main id="activities" class="p-4">
+  <main id="activities" class="p-4 overflow-auto">
     <router-view />
   </main>
 </template>
@@ -11,9 +11,3 @@ export default defineComponent({
   name: 'LayoutContainer'
 })
 </script>
-
-<style lang="scss">
-#activities {
-  overflow: auto;
-}
-</style>
