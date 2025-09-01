@@ -22,19 +22,6 @@ html * {
   -webkit-font-smoothing: antialiased;
 }
 
-// some vitepress styles need to be overwritten to properly display our components
-.live-code-block {
-  .oc-modal-title > h2 {
-    border: 0 !important;
-  }
-  ol.oc-pagination-list {
-    list-style: none !important;
-  }
-  p.oc-recipient-name {
-    line-height: unset !important;
-  }
-}
-
 @font-face {
   font-family: OpenCloud;
   src: url('./../../../src/assets/fonts/OpenCloud500-Regular.woff2') format('woff2');
