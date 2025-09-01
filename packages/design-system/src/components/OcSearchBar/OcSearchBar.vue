@@ -18,7 +18,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="right-0 mx-4 mb-4 mt-0"
+        class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"

@@ -12,7 +12,7 @@
       />
     </div>
     <span
-      class="badge p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
+      class="badge absolute top-[-2px] right-[-8px] p-1 text-sm text-center leading-2 bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       >{{ itemCount }}</span
     >
   </div>
@@ -56,9 +56,6 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .ghost-element .badge {
-    @apply absolute top-[-2px] right-[-8px];
-  }
   .ghost-element .icon-wrapper {
     @apply relative;
   }

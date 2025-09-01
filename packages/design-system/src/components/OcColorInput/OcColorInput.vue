@@ -25,7 +25,7 @@
       />
       <oc-button
         v-if="showClearButton"
-        class="mr-1 right-0 oc-color-input-btn-clear"
+        class="mr-1 absolute top-[50%] transform-[translateY(-50%)] right-0 oc-color-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"

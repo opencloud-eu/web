@@ -31,7 +31,7 @@
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
-      <oc-list>
+      <oc-list class="relative">
         <sidebar-nav-item
           v-for="(link, index) in navItems"
           :ref="(el) => (navItemRefs[index] = el as NavItemRef)"
@@ -170,15 +170,6 @@ export default defineComponent({
 })
 </script>
 
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #web-nav-sidebar s .oc-list {
-    @apply relative;
-  }
-}
-</style>
 <style lang="scss">
 #nav-highlighter {
   transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);

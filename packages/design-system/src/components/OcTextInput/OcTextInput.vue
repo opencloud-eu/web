@@ -33,7 +33,7 @@
       <oc-button
         v-if="showClearButton"
         :aria-label="clearButtonAccessibleLabelValue"
-        class="pr-2 right-0 oc-text-input-btn-clear"
+        class="pr-2 absolute top-[50%] transform-[translateY(-50%)] right-0 oc-text-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"

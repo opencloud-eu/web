@@ -13,7 +13,7 @@
       v-if="notificationCount"
       :key="notificationCount"
       :class="{ shake: animate }"
-      class="badge absolute p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
+      class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       v-text="notificationCountLabel"
     />
   </oc-button>
@@ -61,15 +61,6 @@ export default {
 }
 </script>
 
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #oc-notifications-bell .badge {
-    @apply absolute top-[-6px] right-[-9px];
-  }
-}
-</style>
 <style lang="scss" scoped>
 #oc-notifications-bell {
   .badge {
