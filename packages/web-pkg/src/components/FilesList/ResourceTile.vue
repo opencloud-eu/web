@@ -31,7 +31,7 @@
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator oc-position-absolute text-role-on-surface"
+          class="resource-disabled-indicator absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />

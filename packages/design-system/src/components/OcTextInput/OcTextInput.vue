@@ -7,7 +7,7 @@
       </label>
     </slot>
     <div class="relative">
-      <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 oc-position-absolute" />
+      <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 absolute" />
       <component
         :is="inputComponent"
         :id="id"
