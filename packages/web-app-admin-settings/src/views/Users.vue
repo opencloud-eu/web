@@ -184,6 +184,7 @@ export default defineComponent({
     const route = useRoute()
     const capabilityStore = useCapabilityStore()
     const capabilityRefs = storeToRefs(capabilityStore)
+    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const clientService = useClientService()
     const configStore = useConfigStore()
 
@@ -394,7 +395,7 @@ export default defineComponent({
         ...unref(editQuotaActions),
         ...unref(addToGroupsActions),
         ...unref(removeFromGroupsActions),
-        ...unref(editLoginActions)
+        ...(!graphUsersEditLoginAllowedDisabled.value ? unref(editLoginActions) : [])
       ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
     })
 
