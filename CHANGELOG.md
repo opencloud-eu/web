@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @individual-it, @kulmann, @tammi-23
 
+### ✨ Features
+
+- feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
+
 ### 📈 Enhancement
 
 - refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
