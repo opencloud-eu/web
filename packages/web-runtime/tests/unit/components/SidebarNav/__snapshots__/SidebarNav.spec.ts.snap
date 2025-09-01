@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcSidebarNav > renders navItems into a list 1`] = `
-"<div id="web-nav-sidebar" class="bg-role-surface-container flex flex-col rounded-l-xl max-w-[230px] min-w-[230px]"><button type="button" aria-label="Toggle sidebar" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover inline-flex toggle-sidebar-button-expanded pr-2 toggle-sidebar-button pb-2 pt-4 min-h-10.5" aria-expanded="true">
+"<div id="web-nav-sidebar" class="bg-role-surface-container flex flex-col rounded-l-xl overflow-hidden max-w-[230px] min-w-[230px]"><button type="button" aria-label="Toggle sidebar" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover inline-flex toggle-sidebar-button-expanded pr-2 toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden" aria-expanded="true">
     <!--v-if-->
     <!-- @slot Content of the button --> <span class="oc-icon oc-icon-l box-content raw-hover-surface rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-drop-left-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

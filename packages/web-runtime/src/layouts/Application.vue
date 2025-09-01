@@ -11,9 +11,11 @@
     </div>
     <div
       id="web-content-main"
-      class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2"
+      class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2 overflow-y-hidden"
     >
-      <div class="app-container flex bg-role-surface-container rounded-xl size-full">
+      <div
+        class="app-container flex bg-role-surface-container rounded-xl size-full overflow-hidden"
+      >
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav
@@ -206,11 +208,7 @@ onBeforeUnmount(() => {
   }
 
   #web-content-main {
-    overflow-y: hidden;
-
     .app-container {
-      overflow: hidden;
-
       .app-content {
         transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
       }

@@ -6,7 +6,7 @@
       type="radio"
       name="radio"
       :class="classes"
-      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 w-1"
+      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 w-1 overflow-hidden"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -94,8 +94,6 @@ const labelClasses = computed(() => ({
   box-sizing: border-box;
   background-position: 50% 50%;
   background-repeat: no-repeat;
-
-  overflow: hidden;
 
   transition: 0.2s ease-in-out;
   transition-property: background-color, border;

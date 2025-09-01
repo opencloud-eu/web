@@ -1,16 +1,19 @@
 <template>
-  <div class="sciencemesh">
+  <div class="sciencemesh overflow-auto">
     <div class="flex flex-col sciencemesh-wrapper h-full">
       <div
         class="grid grid-cols-1 md:grid-cols-2 sciencemesh-top h-auto max-h-auto md:max-h-[360px]"
       >
         <div
           id="sciencemesh-invite"
-          class="m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container rounded-xl"
+          class="m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container rounded-xl overflow-auto"
         >
           <outgoing-invitations />
         </div>
-        <div id="sciencemesh-accept-invites" class="m-2 p-2 bg-role-surface-container rounded-xl">
+        <div
+          id="sciencemesh-accept-invites"
+          class="m-2 p-2 bg-role-surface-container rounded-xl overflow-auto"
+        >
           <incoming-invitations @highlight-new-connections="highlightNewConnections" />
         </div>
       </div>
@@ -124,22 +127,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.sciencemesh {
-  overflow: auto;
-}
 .sciencemesh-top {
   @media (max-width: $oc-breakpoint-large-default) {
     flex-direction: column;
   }
 }
-#sciencemesh-invite,
-#sciencemesh-accept-invites {
-  overflow: auto;
-}
 #sciencemesh-connections {
   flex: 1;
-}
-#sciencemesh-invite {
-  overflow: auto;
 }
 </style>

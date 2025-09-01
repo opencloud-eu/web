@@ -1,5 +1,5 @@
 <template>
-  <div class="date-filter flex" :class="`date-filter-${filterName}`">
+  <div class="date-filter flex overflow-hidden" :class="`date-filter-${filterName}`">
     <oc-filter-chip
       ref="filterChip"
       :filter-label="filterLabel"
@@ -331,8 +331,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .date-filter {
-  overflow: hidden;
-
   &-list {
     &-item {
       gap: 8px;
@@ -356,15 +354,7 @@ export default defineComponent({
     &-active {
       visibility: unset;
       transform: translateX(0);
-
-      .oc-card {
-        overflow: unset;
-      }
     }
-  }
-
-  .oc-card {
-    overflow: hidden;
   }
 }
 </style>

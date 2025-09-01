@@ -36,7 +36,7 @@
       mode="click"
       close-on-click
       padding-size="small"
-      class="oc-overflow-hidden"
+      class="overflow-hidden"
     >
       <oc-list class="user-menu-list">
         <template v-if="!onPremisesSamAccountName">
