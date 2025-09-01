@@ -130,11 +130,6 @@ export default defineComponent({
   a,
   button {
     gap: var(--oc-space-medium) !important;
-
-    .active-check {
-      position: absolute;
-      right: 1rem;
-    }
   }
 }
 </style>

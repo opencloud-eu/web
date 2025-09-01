@@ -3,7 +3,7 @@
     <span :id="labelId" v-text="label" />
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn block border border-role-outline rounded-3xl w-8 before:size-3 h-4.5"
+      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"
@@ -50,13 +50,17 @@ const toggle = () => {
 
 @layer components {
   .oc-switch-btn::before {
-    @apply bg-role-on-secondary-container;
+    @apply bg-role-on-secondary-container absolute;
+    left: 1px;
+    top: 2px;
   }
   .oc-switch-btn[aria-checked='false'] {
     @apply bg-role-surface-container;
+    left: 2px;
   }
   .oc-switch-btn[aria-checked='true'] {
     @apply bg-role-secondary-container;
+    left: 1px;
   }
 }
 </style>
@@ -66,30 +70,24 @@ const toggle = () => {
 
   &-btn {
     cursor: pointer;
-    position: relative;
     transition: background-color 0.25s;
 
     &::before {
       box-shadow: rgb(0 0 0 / 25%) 0px 0px 2px 1px;
       border-radius: 50%;
       content: '';
-      left: 1px;
-      position: absolute;
-      top: 2px;
       transition: transform 0.25s;
     }
 
     &[aria-checked='false'] {
       &::before {
         transform: translateX(0);
-        left: 2px;
       }
     }
 
     &[aria-checked='true'] {
       &::before {
         transform: translateX(calc(100% + 2px));
-        left: 1px;
       }
     }
   }

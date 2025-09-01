@@ -2,7 +2,7 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
-    class="px-4 bg-role-surface rounded-t-xl [display:inherit]"
+    class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, 'files-app-bar-sticky sticky': isSticky }"
   >
     <div class="files-topbar py-2">
@@ -348,7 +348,6 @@ export default defineComponent({
 #files-app-bar {
   box-sizing: border-box;
   z-index: 2;
-  top: 0;
 
   .files-app-bar-controls {
     @media (max-width: $oc-breakpoint-xsmall-max) {

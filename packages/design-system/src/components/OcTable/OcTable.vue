@@ -516,8 +516,11 @@ const handleSort = (field: FieldType) => {
   .oc-table .highlightedDropTarget {
     @apply bg-role-secondary-container;
   }
+  .oc-table-sticky {
+    @apply relative;
+  }
   .oc-table-sticky .oc-table-header-cell {
-    @apply bg-role-surface;
+    @apply bg-role-surface sticky;
   }
   .oc-table-hover tr:not(.oc-table-footer-row, .oc-table-header-row, .oc-table-highlighted):hover,
   .oc-button-sort .oc-icon:hover {
@@ -541,10 +544,7 @@ const handleSort = (field: FieldType) => {
   }
 
   &-sticky {
-    position: relative;
-
     .oc-table-header-cell {
-      position: sticky;
       z-index: 1;
     }
   }

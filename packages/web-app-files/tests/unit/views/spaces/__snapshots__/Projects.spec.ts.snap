@@ -47,10 +47,10 @@ exports[`Projects view > different files view states > lists all available proje
       </thead>
       <tbody class="has-item-context-menu">
         <tr class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
-          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer inline-block bg-role-shadow overflow-hidden"></span></td>
+          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0"></span></td>
         </tr>
         <tr class="oc-tbody-tr oc-tbody-tr-1 border-t h-10.5" data-item-id="1" draggable="false">
-          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer inline-block bg-role-shadow overflow-hidden"></span></td>
+          <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" colspan="4"><span class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0"></span></td>
         </tr>
       </tbody>
       <tfoot class="oc-table-footer border-t">

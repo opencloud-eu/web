@@ -39,7 +39,7 @@ exports[`OcModal > displays loading state 1`] = `
         <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr"><button type="button" disabled="" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex oc-modal-body-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> Cancel
-          </button> <button type="button" disabled="" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex oc-modal-body-actions-confirm ml-2"><span class="oc-spinner oc-spinner-s inline-block after:block after:bg-transparent text-role-on-surface after:border after:border-current after:rounded-full after:size-full spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
+          </button> <button type="button" disabled="" class="oc-button oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-secondary oc-button-outline oc-button-secondary-outline inline-flex oc-modal-body-actions-confirm ml-2"><span class="oc-spinner oc-spinner-s inline-block after:block after:bg-transparent text-role-on-surface relative after:relative after:border after:border-current after:rounded-full after:size-full spinner" aria-label="" tabindex="-1" role="img"></span> <!-- @slot Content of the button --> Confirm</button></div>
       </div>
     </div>
   </focus-trap-stub>

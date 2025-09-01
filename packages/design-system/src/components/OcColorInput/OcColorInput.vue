@@ -37,7 +37,7 @@
       v-if="showMessageLine"
       class="oc-color-input-message flex items-center text-sm mt-1 min-h-4.5"
       :class="{
-        'oc-color-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-color-input-description text-role-on-surface-variant relative': !!descriptionMessage,
         'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
           !!errorMessage
       }"
@@ -196,15 +196,3 @@ const onInput = (value: string) => {
   emit('update:modelValue', value)
 }
 </script>
-
-<style lang="scss">
-.oc-color-input-message.oc-color-input-description {
-  position: relative;
-
-  .oc-icon {
-    position: absolute;
-    left: var(--oc-space-xsmall);
-    top: var(--oc-space-xsmall);
-  }
-}
-</style>

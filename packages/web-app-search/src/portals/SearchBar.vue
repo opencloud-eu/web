@@ -18,7 +18,7 @@
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
       small
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute left-0 right-0 top-0 sm:relative"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -561,10 +561,6 @@ export default defineComponent({
   #files-global-search-bar {
     @media (max-width: 639px) {
       visibility: hidden;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
       z-index: 9;
 
       input,
@@ -582,8 +578,6 @@ export default defineComponent({
 
     ul {
       li {
-        position: relative;
-
         &.preview {
           &.disabled {
             pointer-events: none;

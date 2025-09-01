@@ -14,7 +14,7 @@
       <focus-trap>
         <div
           :id="drawerId"
-          class="oc-bottom-drawer fixed left-0 right-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto"
+          class="oc-bottom-drawer fixed left-0 right-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%]"
         >
           <div class="oc-card bg-transparent">
             <div class="oc-card-header border-b-0 px-4 pt-4">
@@ -254,6 +254,9 @@ defineExpose({ show, hide, getElement })
     /* overwrite default list styling */
     @apply p-2 bg-role-surface rounded-lg;
   }
+  .oc-bottom-drawer.active {
+    @apply bottom-0;
+  }
 }
 </style>
 <style lang="scss">
@@ -262,11 +265,9 @@ defineExpose({ show, hide, getElement })
 }
 
 .oc-bottom-drawer {
-  bottom: -100%;
   transition: all 0.2s;
 
   &.active {
-    bottom: 0;
     transition: all 0.2s;
   }
 }

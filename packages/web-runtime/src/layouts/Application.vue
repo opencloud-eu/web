@@ -40,7 +40,9 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div class="snackbars absolute right-[20px] bottom-[20px] mx-auto sm:m-0">
+    <div
+      class="snackbars absolute inset-x-0 sm:left-auto sm:right-[20px] bottom-[20px] mx-auto sm:m-0"
+    >
       <message-bar />
       <upload-info />
     </div>
@@ -215,11 +217,6 @@ onBeforeUnmount(() => {
 
   .snackbars {
     z-index: calc(var(--oc-z-index-modal) + 1);
-
-    @media (max-width: 640px) {
-      left: 0;
-      right: 0;
-    }
   }
 }
 </style>

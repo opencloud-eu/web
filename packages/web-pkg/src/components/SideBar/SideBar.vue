@@ -285,7 +285,21 @@ onBeforeUnmount(() => {
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .sidebar-panel.is-root-panel {
+    right: 100px;
+  }
+}
+
+@layer utilities {
+  .sidebar-panel.is-active-root-panel {
+    @apply right-0;
+  }
+}
+</style>
 <style lang="scss">
 #app-sidebar {
   &:focus,
@@ -323,7 +337,6 @@ onBeforeUnmount(() => {
   }
 
   &.is-active-root-panel {
-    right: 0 !important;
     transition: right 0.4s 0s;
   }
 
@@ -331,7 +344,6 @@ onBeforeUnmount(() => {
     transform: translateX(0);
     visibility: visible;
     transition: right 0.4s 0s;
-    right: 100px;
   }
 }
 </style>

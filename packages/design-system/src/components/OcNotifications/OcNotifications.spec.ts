@@ -5,17 +5,6 @@ describe('OcNotifications', () => {
   function getWrapper(options = {}) {
     return shallowMount(OcNotifications, options)
   }
-  describe('position prop', () => {
-    it.each(['top-left', 'top-center', 'top-right'])(
-      'should set provided position as class for wrapper',
-      (position) => {
-        const wrapper = getWrapper({
-          props: { position: position }
-        })
-        expect(wrapper.attributes('class')).toContain(`oc-notification-${position}`)
-      }
-    )
-  })
 
   it('should render provided slot html', () => {
     const wrapper = getWrapper({

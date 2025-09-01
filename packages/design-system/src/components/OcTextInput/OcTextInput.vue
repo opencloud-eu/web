@@ -45,7 +45,7 @@
       v-if="showMessageLine"
       class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5"
       :class="{
-        'oc-text-input-description text-role-on-surface-variant': showDescriptionMessage,
+        'oc-text-input-description text-role-on-surface-variant relative': showDescriptionMessage,
         'oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error':
           showErrorMessage
       }"
@@ -69,7 +69,7 @@
       <span
         v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="oc-text-input-description text-role-on-surface-variant flex items-center"
+        class="oc-text-input-description text-role-on-surface-variant flex items-center relative"
         v-text="descriptionMessage"
       />
     </div>
@@ -350,10 +350,5 @@ watch(
   .oc-text-input:focus {
     @apply outline-2 outline-role-outline;
   }
-}
-</style>
-<style lang="scss">
-.oc-text-input-message.oc-text-input-description {
-  position: relative;
 }
 </style>

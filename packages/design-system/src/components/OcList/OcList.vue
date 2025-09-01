@@ -32,11 +32,19 @@ defineSlots<Slots>()
   ul.oc-list.oc-timeline {
     @apply m-0 p-0;
   }
+  ul.oc-list.oc-timeline {
+    @apply relative before:absolute before:inset-0;
+  }
   ul.oc-list-divider > :nth-child(n + 2) {
     @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%] w-full;
+    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%] w-full relative;
+  }
+  ul.oc-list.oc-timeline li:before {
+    @apply absolute;
+    left: -4px;
+    top: 50%;
   }
   ul.oc-list.oc-timeline::before,
   ul.oc-list.oc-timeline li::before {
@@ -55,26 +63,17 @@ defineSlots<Slots>()
 </style>
 <style lang="scss">
 ul.oc-list.oc-timeline {
-  position: relative;
   list-style: none;
 
   &::before {
     content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
   }
 
   li {
-    position: relative;
     box-sizing: border-box;
 
     &::before {
       content: '';
-      position: absolute;
-      left: -4px;
-      top: 50%;
       transform: translateY(-50%);
       z-index: 1;
     }
