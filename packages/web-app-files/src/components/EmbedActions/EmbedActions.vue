@@ -1,11 +1,11 @@
 <template>
   <section
-    class="files-embed-actions w-full flex items-center justify-between my-2 text-role-on-chrome"
+    class="files-embed-actions w-full flex items-center justify-between my-2 text-role-on-chrome gap-2"
   >
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
-      class="files-embed-actions-file-name flex flex-row items-center ml-0 md:ml-[230px]"
+      class="files-embed-actions-file-name flex flex-row items-center ml-0 md:ml-[230px] gap-2"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
     />
@@ -180,10 +180,5 @@ export default defineComponent({
   // Prevent .snackbar from overlapping the actions
   z-index: calc(var(--oc-z-index-modal) + 2);
   flex-wrap: wrap;
-  gap: var(--oc-space-small);
-
-  &-file-name {
-    gap: var(--oc-space-small);
-  }
 }
 </style>

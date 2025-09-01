@@ -5,7 +5,7 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1"
       :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
@@ -185,7 +185,6 @@ defineExpose({ hideDrop })
 .oc-filter-chip {
   &-button.oc-pill {
     box-sizing: border-box;
-    gap: var(--oc-space-xsmall);
   }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {

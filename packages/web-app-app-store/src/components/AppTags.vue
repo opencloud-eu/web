@@ -1,5 +1,5 @@
 <template>
-  <div class="app-tags flex">
+  <div class="app-tags flex gap-1">
     <oc-tag
       v-for="tag in app.tags"
       :key="`app-tag-${app.id}-${tag}`"
@@ -38,9 +38,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-tags {
-  gap: 0.5rem;
-}
-</style>

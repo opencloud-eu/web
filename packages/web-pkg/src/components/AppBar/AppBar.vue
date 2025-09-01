@@ -44,7 +44,7 @@
           />
         </div>
       </div>
-      <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10">
+      <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
         <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
@@ -353,10 +353,6 @@ export default defineComponent({
     @media (max-width: $oc-breakpoint-xsmall-max) {
       justify-content: space-between;
     }
-  }
-
-  .files-app-bar-actions {
-    gap: var(--oc-space-small);
   }
 }
 </style>

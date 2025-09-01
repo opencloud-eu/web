@@ -542,7 +542,7 @@ export default { components: { VueSelect } }
     &__actions {
       flex-flow: row wrap;
       justify-content: center;
-      gap: var(--oc-space-xsmall);
+      gap: var(--spacing);
       cursor: pointer;
       padding: 0 4px 0 4px;
 

@@ -5,7 +5,12 @@
       v-oc-tooltip="tooltip"
       class="oc-avatars inline-flex w-fit"
       aria-hidden="true"
-      :class="[...avatarsClasses, { '[&>*]:hover:transform-[scale(1.1)]': hasHoverEffect }]"
+      :class="{
+        'oc-avatars-stacked': stacked,
+        'oc-avatars-hover-effect': hasHoverEffect,
+        '[&>*]:hover:transform-[scale(1.1)]': hasHoverEffect,
+        ...getTailwindGapClass(gapSize)
+      }"
     >
       <slot name="userAvatars" :avatars="avatars" :width="width">
         <template v-if="avatars.length > 0">
@@ -43,7 +48,8 @@ import OcAvatarLink from '../OcAvatarLink/OcAvatarLink.vue'
 import OcAvatarGroup from '../OcAvatarGroup/OcAvatarGroup.vue'
 import OcAvatarFederated from '../OcAvatarFederated/OcAvatarFederated.vue'
 import OcAvatarGuest from '../OcAvatarGuest/OcAvatarGuest.vue'
-import { getSizeClass, SizeType } from '../../helpers'
+import { SizeType } from '../../helpers'
+import { getTailwindGapClass } from '../../helpers/tailwind'
 
 type Item = {
   displayName?: string
@@ -171,14 +177,6 @@ const hasHoverEffect = computed(() => {
   return stacked && hoverEffect && unref(items).length > 1
 })
 
-const avatarsClasses = computed(() => {
-  return [
-    `oc-avatars-gap-${getSizeClass(gapSize)}`,
-    ...(stacked ? ['oc-avatars-stacked'] : []),
-    ...(unref(hasHoverEffect) ? ['oc-avatars-hover-effect'] : [])
-  ]
-})
-
 onMounted(() => {
   if (!unref(avatarsRef) || !unref(hasHoverEffect)) {
     return
@@ -212,28 +210,6 @@ onMounted(() => {
 
     > *:hover {
       z-index: 1000 !important;
-    }
-  }
-
-  &-gap {
-    &-xs {
-      gap: var(--oc-space-xsmall);
-    }
-
-    &-s {
-      gap: var(--oc-space-small);
-    }
-
-    &-m {
-      gap: var(--oc-space-medium);
-    }
-
-    &-l {
-      gap: var(--oc-space-large);
-    }
-
-    &-xl {
-      gap: var(--oc-space-xlarge);
     }
   }
 }

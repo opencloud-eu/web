@@ -53,7 +53,7 @@
     </oc-button>
   </div>
   <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
-    <div class="oc-text-input-password-policy-rule-wrapper flex flex-row flex-wrap text-sm pt-2">
+    <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
@@ -172,11 +172,3 @@ watch(password, (value) => {
   emit('passwordChallengeCompleted')
 })
 </script>
-
-<style lang="scss">
-.oc-text-input-password {
-  &-policy-rule-wrapper {
-    column-gap: var(--oc-space-small);
-  }
-}
-</style>

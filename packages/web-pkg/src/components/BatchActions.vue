@@ -49,7 +49,7 @@ export default defineComponent({
 
 @layer utilities {
   #oc-appbar-batch-actions .action-menu-item {
-    @apply p-2;
+    @apply p-2 gap-1;
   }
 
   .oc-appbar-batch-actions-squashed .oc-files-context-action-label {
@@ -59,10 +59,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #oc-appbar-batch-actions {
-  .action-menu-item {
-    gap: var(--oc-space-xsmall) !important;
-  }
-
   li {
     float: left !important;
   }

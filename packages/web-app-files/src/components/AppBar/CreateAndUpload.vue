@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2">
+  <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2 gap-2">
     <template v-if="createFileActionsAvailable">
       <div v-oc-tooltip="newButtonTooltip">
         <oc-button
@@ -492,9 +492,5 @@ const folderIconResource = computed(() => {
   button {
     opacity: 1;
   }
-}
-
-.create-and-upload-actions {
-  gap: var(--oc-space-small);
 }
 </style>

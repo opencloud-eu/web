@@ -160,7 +160,7 @@
   }
 
   .sidebar-actions-panel li a {
-    @apply mb-1 align-top;
+    @apply mb-1 align-top gap-2.5;
   }
 
   .oc-tooltip .tippy-content {

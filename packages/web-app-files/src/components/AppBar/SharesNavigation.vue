@@ -112,10 +112,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-#shares-navigation {
-  a {
-    gap: var(--oc-space-small);
-  }
-}
-</style>

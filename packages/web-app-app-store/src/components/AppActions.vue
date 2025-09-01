@@ -1,5 +1,5 @@
 <template>
-  <oc-list class="app-actions flex justify-start">
+  <oc-list class="app-actions flex justify-start gap-2">
     <action-menu-item
       v-for="action in actions"
       :key="`app-action-${action.name}`"
@@ -44,9 +44,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-actions {
-  gap: 1rem;
-}
-</style>

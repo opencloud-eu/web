@@ -19,7 +19,7 @@
             class="my-1 first:mt-0 last:mb-0"
           >
             <oc-button
-              class="date-filter-list-item flex justify-between items-center w-full p-1"
+              class="date-filter-list-item flex justify-between items-center w-full p-1 gap-2"
               :class="{
                 'date-filter-list-item-active': isItemSelected(item)
               }"
@@ -335,10 +335,6 @@ export default defineComponent({
 <style lang="scss">
 .date-filter {
   &-list {
-    &-item {
-      gap: 8px;
-    }
-
     &-hidden {
       visibility: hidden;
       transition: visibility 0.4s 0s;

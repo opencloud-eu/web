@@ -9,7 +9,7 @@
       </router-link>
     </div>
     <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body bg-role-surface-container flex flex-col p-4">
+    <div class="app-content oc-card-body bg-role-surface-container flex flex-col p-4 gap-2">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
@@ -100,9 +100,5 @@ export default defineComponent({
 <style lang="scss">
 .app-details {
   box-shadow: none;
-
-  .app-content {
-    gap: 1rem;
-  }
 }
 </style>

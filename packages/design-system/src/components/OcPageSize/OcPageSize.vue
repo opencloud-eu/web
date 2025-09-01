@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-page-size flex items-center">
+  <div class="oc-page-size flex items-center gap-1">
     <label
       class="oc-page-size-label"
       :for="selectId"
@@ -63,8 +63,6 @@ const emitChange = (value: string | boolean) => {
 
 <style lang="scss">
 .oc-page-size {
-  gap: var(--oc-space-xsmall);
-
   &-select,
   &-select .vs__dropdown-menu {
     min-width: var(--oc-size-width-xsmall);

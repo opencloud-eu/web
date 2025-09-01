@@ -3,7 +3,7 @@
     :is="type"
     v-bind="additionalAttributes"
     :aria-label="ariaLabel"
-    :class="buttonClass"
+    :class="[...buttonClass, getTailwindGapClass(gapSize)]"
     class="inline-flex"
     v-on="handlers"
   >
@@ -18,6 +18,7 @@ import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { AppearanceType, getSizeClass, SizeType } from '../../helpers'
 import { kebabCase } from 'lodash-es'
+import { getTailwindGapClass } from '../../helpers/tailwind'
 
 export interface Props {
   /**
@@ -139,7 +140,6 @@ const buttonClass = computed(() => {
     'oc-button',
     `oc-button-${getSizeClass(size)}`,
     `oc-button-justify-content-${justifyContent}`,
-    `oc-button-gap-${getSizeClass(gapSize)}`,
     `oc-button-${kebabCase(colorRole)}`,
     `oc-button-${appearance}`,
     `oc-button-${kebabCase(colorRole)}-${appearance}`
@@ -199,10 +199,6 @@ const onClick = (event: MouseEvent) => {
 }
 </style>
 <style lang="scss">
-@mixin oc-button-gap($factor) {
-  gap: math.round(calc($oc-space-small * $factor / 2)) * 2;
-}
-
 @mixin oc-button-color-role($color, $on-color) {
   &-raw,
   &-raw-inverse {
@@ -279,28 +275,6 @@ const onClick = (event: MouseEvent) => {
 
     &-space-evenly {
       justify-content: space-evenly;
-    }
-  }
-
-  &-gap {
-    &-xs {
-      @include oc-button-gap(0.5);
-    }
-
-    &-s {
-      @include oc-button-gap(0.7);
-    }
-
-    &-m {
-      @include oc-button-gap(1);
-    }
-
-    &-l {
-      @include oc-button-gap(1.5);
-    }
-
-    &-xl {
-      @include oc-button-gap(2);
     }
   }
 
