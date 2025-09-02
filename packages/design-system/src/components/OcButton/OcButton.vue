@@ -3,7 +3,11 @@
     :is="type"
     v-bind="additionalAttributes"
     :aria-label="ariaLabel"
-    :class="[...buttonClass, getTailwindGapClass(gapSize)]"
+    :class="[
+      ...buttonClass,
+      getTailwindGapClass(gapSize),
+      getTailwindJustifyContentClass(justifyContent)
+    ]"
     class="inline-flex"
     v-on="handlers"
   >
@@ -18,7 +22,7 @@ import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { AppearanceType, getSizeClass, JustifyContentType, SizeType } from '../../helpers'
 import { kebabCase } from 'lodash-es'
-import { getTailwindGapClass } from '../../helpers/tailwind'
+import { getTailwindGapClass, getTailwindJustifyContentClass } from '../../helpers/tailwind'
 
 export interface Props {
   /**
@@ -139,7 +143,6 @@ const buttonClass = computed(() => {
   const classes = [
     'oc-button',
     `oc-button-${getSizeClass(size)}`,
-    `oc-button-justify-content-${justifyContent}`,
     `oc-button-${kebabCase(colorRole)}`,
     `oc-button-${appearance}`,
     `oc-button-${kebabCase(colorRole)}-${appearance}`
@@ -251,32 +254,6 @@ const onClick = (event: MouseEvent) => {
 .oc-button {
   align-items: center;
   box-sizing: border-box;
-
-  &-justify-content {
-    &-left {
-      justify-content: left;
-    }
-
-    &-center {
-      justify-content: center;
-    }
-
-    &-right {
-      justify-content: right;
-    }
-
-    &-space-between {
-      justify-content: space-between;
-    }
-
-    &-space-around {
-      justify-content: space-around;
-    }
-
-    &-space-evenly {
-      justify-content: space-evenly;
-    }
-  }
 
   @layer components {
     &:hover {

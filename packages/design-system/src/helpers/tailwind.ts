@@ -14,7 +14,7 @@ export const getTailwindGapClass = (gapSize: SizeType | 'none') => {
   }
 }
 
-export const getTailwindJustifyClass = (value: JustifyContentType) => {
+export const getTailwindJustifyContentClass = (value: JustifyContentType) => {
   return {
     'justify-start': value === 'left',
     'justify-center': value === 'center',
