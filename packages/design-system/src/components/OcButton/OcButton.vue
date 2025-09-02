@@ -4,11 +4,21 @@
     v-bind="additionalAttributes"
     :aria-label="ariaLabel"
     :class="[
-      ...buttonClass,
-      getTailwindGapClass(gapSize),
-      getTailwindJustifyContentClass(justifyContent)
+      `oc-button-${kebabCase(colorRole)}`,
+      `oc-button-${appearance}`,
+      `oc-button-${kebabCase(colorRole)}-${appearance}`,
+      {
+        ...getTailwindGapClass(gapSize),
+        ...getTailwindJustifyContentClass(justifyContent),
+        // size
+        'text-sm min-h-3': size === 'small',
+        'text-base min-h-4': size === 'medium',
+        'text-lg min-h-7': size === 'large',
+        // hover
+        'no-hover': noHover
+      }
     ]"
-    class="inline-flex"
+    class="oc-button inline-flex"
     v-on="handlers"
   >
     <oc-spinner v-if="showSpinner" size="small" class="spinner" />
@@ -20,7 +30,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
-import { AppearanceType, getSizeClass, JustifyContentType, SizeType } from '../../helpers'
+import { AppearanceType, JustifyContentType, SizeType } from '../../helpers'
 import { kebabCase } from 'lodash-es'
 import { getTailwindGapClass, getTailwindJustifyContentClass } from '../../helpers/tailwind'
 
@@ -139,20 +149,6 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
-const buttonClass = computed(() => {
-  const classes = [
-    'oc-button',
-    `oc-button-${getSizeClass(size)}`,
-    `oc-button-${kebabCase(colorRole)}`,
-    `oc-button-${appearance}`,
-    `oc-button-${kebabCase(colorRole)}-${appearance}`
-  ]
-  if (noHover) {
-    classes.push('no-hover')
-  }
-  return classes
-})
-
 const additionalAttributes = computed(() => {
   return {
     ...(href && { href }),
@@ -180,15 +176,6 @@ const onClick = (event: MouseEvent) => {
 @layer components {
   .oc-button:not(.oc-button-raw, .oc-button-raw-inverse) {
     @apply py-1.5 px-2.5;
-  }
-  .oc-button-s {
-    @apply text-sm min-h-3;
-  }
-  .oc-button-m {
-    @apply text-base min-h-4;
-  }
-  .oc-button-l {
-    @apply text-lg min-h-7;
   }
   .oc-button {
     @apply rounded-sm;
@@ -253,7 +240,6 @@ const onClick = (event: MouseEvent) => {
 
 .oc-button {
   align-items: center;
-  box-sizing: border-box;
 
   @layer components {
     &:hover {
