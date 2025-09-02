@@ -33,7 +33,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
-        class="oc-search-button ml-4 rounded-l-none"
+        class="oc-search-button ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -226,9 +226,6 @@ const onCancel = () => {
 <style lang="scss">
 .oc-search {
   &-button {
-    // Prevent double borders
-    // from input and button
-    transform: translateX(-1px);
     z-index: 0;
   }
 

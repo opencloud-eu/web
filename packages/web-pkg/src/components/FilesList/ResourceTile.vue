@@ -15,7 +15,7 @@
   >
     <div
       v-if="isHidden"
-      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0"
+      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)]"
     />
     <template v-else>
       <resource-link
@@ -287,7 +287,6 @@ if (!lazy) {
       rgba(#4c5f79, 0)
     );
     content: '';
-    transform: translateX(-100%);
   }
 
   @keyframes shimmer {

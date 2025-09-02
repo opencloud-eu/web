@@ -26,7 +26,7 @@
         <div v-if="loading" class="oc-notifications-loading">
           <div class="oc-notifications-loading-background size-full bg-role-surface absolute" />
           <oc-spinner
-            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%]"
+            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)]"
             size="large"
           />
         </div>
@@ -288,7 +288,6 @@ export default {
     }
 
     &-spinner {
-      transform: translate(-50%, -50%);
       opacity: 1;
     }
   }

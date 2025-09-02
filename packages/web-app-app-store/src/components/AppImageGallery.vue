@@ -6,7 +6,7 @@
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
       <span
-        class="text-xs font-bold text-center leading-6 w-[10rem] block absolute top-[1.8rem] right-[-2.2rem]"
+        class="text-xs font-bold text-center leading-6 w-[10rem] block absolute top-[1.8rem] right-[-2.2rem] transform-[rotate(45deg)]"
         :class="ribbonColorClasses"
         >{{ app.badge.label }}</span
       >
@@ -114,11 +114,6 @@ export default defineComponent({
 .app-image-wrapper {
   .app-image-ribbon {
     z-index: 1;
-
-    span {
-      transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-    }
   }
 
   .app-image {

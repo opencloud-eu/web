@@ -62,7 +62,10 @@
         </oc-list>
         <div
           class="date-filter-range-panel absolute top-0 p-2 bg-role-surface"
-          :class="{ 'date-filter-range-panel-active': dateRangeClicked }"
+          :class="{
+            'date-filter-range-panel-active transform-[translateX(0)]': dateRangeClicked,
+            'transform-[translateX(100%)]': !dateRangeClicked
+          }"
         >
           <div class="flex items-center justify-between mb-4">
             <oc-button
@@ -343,7 +346,6 @@ export default defineComponent({
   }
 
   &-range-panel {
-    transform: translateX(100%);
     transition:
       transform 0.4s ease,
       visibility 0.4s 0s;
@@ -351,7 +353,6 @@ export default defineComponent({
 
     &-active {
       visibility: unset;
-      transform: translateX(0);
     }
   }
 }

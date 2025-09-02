@@ -5,7 +5,7 @@
     />
     <label
       v-if="showLabel"
-      class="oc-progress-pie-label absolute top-[50%] left-[50%] text-role-on-surface-variant"
+      class="oc-progress-pie-label absolute top-[50%] left-[50%] text-role-on-surface-variant transform-[translate(-50%, -50%)]"
       v-text="label"
     />
   </div>
@@ -87,10 +87,6 @@ $default-size: 64px;
       clip: rect(0, calc($default-size / 2), $default-size, 0);
       content: '';
     }
-  }
-
-  &-label {
-    transform: translate(-50%, -50%);
   }
 }
 

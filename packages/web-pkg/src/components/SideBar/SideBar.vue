@@ -289,6 +289,9 @@ onBeforeUnmount(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .sidebar-panel {
+    transform: translateX(100%);
+  }
   .sidebar-panel.is-root-panel {
     right: 100px;
   }
@@ -297,6 +300,11 @@ onBeforeUnmount(() => {
 @layer utilities {
   .sidebar-panel.is-active-root-panel {
     @apply right-0;
+  }
+  .sidebar-panel.is-active-root-panel,
+  .sidebar-panel.is-active-sub-panel,
+  .sidebar-panel.is-root-panel {
+    transform: translateX(0);
   }
 }
 </style>
@@ -316,7 +324,6 @@ onBeforeUnmount(() => {
 
 .sidebar-panel {
   $root: &;
-  transform: translateX(100%);
   transition:
     transform 0.4s ease,
     visibility 0.4s 0s;
@@ -333,7 +340,6 @@ onBeforeUnmount(() => {
   &.is-active-root-panel,
   &.is-active-sub-panel {
     visibility: unset;
-    transform: translateX(0);
   }
 
   &.is-active-root-panel {
@@ -341,7 +347,6 @@ onBeforeUnmount(() => {
   }
 
   &.is-root-panel {
-    transform: translateX(0);
     visibility: visible;
     transition: right 0.4s 0s;
   }

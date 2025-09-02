@@ -12,7 +12,7 @@
     <span
       v-if="notificationCount"
       :key="notificationCount"
-      :class="{ shake: animate }"
+      :class="{ 'shake transform-[translate3d(0, 0, 0)]': animate }"
       class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       v-text="notificationCountLabel"
     />
@@ -70,7 +70,6 @@ export default {
 
 .shake {
   animation: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
-  transform: translate3d(0, 0, 0);
 }
 
 @keyframes shake {

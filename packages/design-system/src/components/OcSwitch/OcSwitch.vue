@@ -62,6 +62,12 @@ const toggle = () => {
     @apply bg-role-secondary-container;
     left: 1px;
   }
+  .oc-switch-btn[aria-checked='false']::before {
+    transform: translateX(0);
+  }
+  .oc-switch-btn[aria-checked='true']::before {
+    transform: translateX(calc(100% + 2px));
+  }
 }
 </style>
 <style lang="scss">
@@ -77,18 +83,6 @@ const toggle = () => {
       border-radius: 50%;
       content: '';
       transition: transform 0.25s;
-    }
-
-    &[aria-checked='false'] {
-      &::before {
-        transform: translateX(0);
-      }
-    }
-
-    &[aria-checked='true'] {
-      &::before {
-        transform: translateX(calc(100% + 2px));
-      }
     }
   }
 }

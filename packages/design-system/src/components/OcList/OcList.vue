@@ -55,6 +55,7 @@ defineSlots<Slots>()
   }
   ul.oc-list.oc-timeline li::before {
     @apply size-2.5;
+    transform: translateY(-50%);
   }
   ul.oc-list-raw a:hover {
     @apply text-inherit;
@@ -74,7 +75,6 @@ ul.oc-list.oc-timeline {
 
     &::before {
       content: '';
-      transform: translateY(-50%);
       z-index: 1;
     }
   }
