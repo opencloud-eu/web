@@ -11,7 +11,10 @@
       <template #default>
         <oc-list
           class="date-filter-list"
-          :class="{ 'date-filter-list-hidden min-h-[225px]': dateRangeClicked }"
+          :class="{
+            'date-filter-list-hidden min-h-[225px] transition-[visibility] duration-[0.4s,0s]':
+              dateRangeClicked
+          }"
         >
           <li
             v-for="(item, index) in displayedItems"
@@ -330,6 +333,11 @@ export default defineComponent({
   .date-filter .oc-date-picker label {
     @apply text-sm;
   }
+  .date-filter-range-panel {
+    transition:
+      transform 0.4s ease,
+      visibility 0.4s 0s;
+  }
 }
 </style>
 <style lang="scss">
@@ -337,14 +345,10 @@ export default defineComponent({
   &-list {
     &-hidden {
       visibility: hidden;
-      transition: visibility 0.4s 0s;
     }
   }
 
   &-range-panel {
-    transition:
-      transform 0.4s ease,
-      visibility 0.4s 0s;
     visibility: hidden;
 
     &-active {

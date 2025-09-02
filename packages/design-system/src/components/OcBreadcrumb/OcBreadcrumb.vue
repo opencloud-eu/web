@@ -317,7 +317,7 @@ const dropItemStyling = (
 
 @layer components {
   .oc-breadcrumb-item-dragover {
-    @apply bg-role-secondary-container rounded-xs;
+    @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100;
   }
 
   .oc-breadcrumb-list #oc-breadcrumb-contextmenu li button {
@@ -336,11 +336,6 @@ const dropItemStyling = (
 <style lang="scss">
 .oc-breadcrumb {
   &-item-dragover {
-    transition:
-      background 0.06s,
-      border 0s 0.08s,
-      border-color 0s,
-      border-width 0.06s;
     box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
   }
 

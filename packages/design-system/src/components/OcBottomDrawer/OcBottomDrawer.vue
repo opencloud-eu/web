@@ -14,7 +14,7 @@
       <focus-trap>
         <div
           :id="drawerId"
-          class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%]"
+          class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%] transition-all duration-200"
         >
           <div class="oc-card bg-transparent">
             <div class="oc-card-header border-b-0 px-4 pt-4">
@@ -262,13 +262,5 @@ defineExpose({ show, hide, getElement })
 <style lang="scss">
 .oc-bottom-drawer-background {
   z-index: calc(var(--oc-z-index-modal) + 2);
-}
-
-.oc-bottom-drawer {
-  transition: all 0.2s;
-
-  &.active {
-    transition: all 0.2s;
-  }
 }
 </style>

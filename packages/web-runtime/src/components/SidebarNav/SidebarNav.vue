@@ -1,7 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="bg-role-surface-container flex flex-col rounded-l-xl overflow-hidden"
+    class="bg-role-surface-container flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
     :class="{
       'max-w-[62px] min-w-[62px]': closed,
       'max-w-[230px] min-w-[230px]': !closed
@@ -10,7 +10,7 @@
     <oc-button
       appearance="raw"
       :class="toggleSidebarButtonClass"
-      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden"
+      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden transition-all duration-200 ease-out"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
       no-hover
@@ -27,7 +27,7 @@
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
-        class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm"
+        class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm transition-transform duration-200 ease-[cubic-bezier(0.51, 0.06, 0.56, 1.37)]"
         v-bind="highlighterAttrs"
         :aria-hidden="true"
       />
@@ -172,19 +172,13 @@ export default defineComponent({
 
 <style lang="scss">
 #nav-highlighter {
-  transition: transform 0.2s cubic-bezier(0.51, 0.06, 0.56, 1.37);
   svg {
     fill: var(--oc-role-on-surface);
   }
 }
 
 #web-nav-sidebar {
-  transition: all 0.35s cubic-bezier(0.34, 0.11, 0, 1.12);
   z-index: 4;
-
-  .toggle-sidebar-button {
-    transition: all 0.2s ease-out;
-  }
 
   .toggle-sidebar-button-expanded {
     justify-content: flex-end !important;

@@ -22,9 +22,10 @@
         class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden"
         :inert="activePanelName !== panel.name"
         :class="{
-          'is-root-panel': panel.isRoot?.(panelContext),
+          'is-root-panel transition-[right] duration-[0.4s,0s]': panel.isRoot?.(panelContext),
           'is-active-sub-panel': hasActiveSubPanel && activeSubPanelName === panel.name, // only one specific sub panel can be active
-          'is-active-root-panel': hasActiveRootPanel && panel.isRoot?.(panelContext) // all root panels are active if no sub panel is active
+          'is-active-root-panel transition-[right] duration-[0.4s,0s]':
+            hasActiveRootPanel && panel.isRoot?.(panelContext) // all root panels are active if no sub panel is active
         }"
       >
         <div
@@ -291,6 +292,9 @@ onBeforeUnmount(() => {
 @layer components {
   .sidebar-panel {
     transform: translateX(100%);
+    transition:
+      transform 0.4s ease,
+      visibility 0.4s 0s;
   }
   .sidebar-panel.is-root-panel {
     right: 100px;
@@ -324,9 +328,6 @@ onBeforeUnmount(() => {
 
 .sidebar-panel {
   $root: &;
-  transition:
-    transform 0.4s ease,
-    visibility 0.4s 0s;
   // visibility is here to prevent focusing panel child elements,
   // the transition delay keeps care that it will only apply if the element is visible or not.
   // hidden: if element is off screen
@@ -342,13 +343,8 @@ onBeforeUnmount(() => {
     visibility: unset;
   }
 
-  &.is-active-root-panel {
-    transition: right 0.4s 0s;
-  }
-
   &.is-root-panel {
     visibility: visible;
-    transition: right 0.4s 0s;
   }
 }
 </style>

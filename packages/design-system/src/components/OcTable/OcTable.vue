@@ -511,6 +511,9 @@ const handleSort = (field: FieldType) => {
   .oc-table {
     @apply w-full;
   }
+  .oc-table-hover tr {
+    @apply transition-colors duration-200 ease-in-out;
+  }
   .oc-table-accentuated,
   .oc-table-highlighted,
   .oc-table .highlightedDropTarget {
@@ -532,10 +535,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-
-  &-hover tr {
-    transition: background-color $transition-duration-short ease-in-out;
-  }
 
   &-disabled {
     opacity: 0.7;

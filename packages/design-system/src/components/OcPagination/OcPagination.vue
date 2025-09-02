@@ -13,8 +13,8 @@
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
         <component
           :is="pageComponent(page)"
+          class="oc-pagination-list-item-page py-1 px-2 text-role-on-surface rounded-sm hover:bg-role-secondary hover:text-role-on-secondary transition-colors duration-200 ease-in-out"
           :class="pageClass(page)"
-          class="hover:bg-role-secondary hover:text-role-on-secondary"
           v-bind="bindPageProps(page)"
         >
           {{ page }}
@@ -136,13 +136,7 @@ const bindPageProps = (page: Page) => {
 }
 
 const pageClass = (page: Page) => {
-  const classes = [
-    'oc-pagination-list-item-page',
-    'py-1',
-    'px-2',
-    'text-role-on-surface',
-    'rounded-sm'
-  ]
+  const classes = []
 
   if (isCurrentPage(page)) {
     classes.push(
@@ -177,10 +171,6 @@ const bindPageLink = (page: Page) => {
     list-style: none;
 
     &-item {
-      &-page {
-        transition: background-color $transition-duration-short ease-in-out;
-      }
-
       &-prev,
       &-next {
         > .oc-icon > svg {

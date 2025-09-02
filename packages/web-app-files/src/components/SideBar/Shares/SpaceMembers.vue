@@ -253,6 +253,18 @@ watch(filterTerm, async () => {
   .space-members-filter input:focus {
     @apply border border-role-outline;
   }
+  .space-members-filter-container {
+    transition:
+      max-height 0.25s ease-in-out,
+      margin-bottom 0.25s ease-in-out,
+      visibility 0.25s ease-in-out;
+  }
+  .space-members-filter-container-expanded {
+    transition:
+      max-height 0.25s ease-in-out,
+      margin-bottom 0.25s ease-in-out,
+      visibility 0s;
+  }
 }
 </style>
 <style lang="scss">
@@ -264,17 +276,9 @@ watch(filterTerm, async () => {
 
   &-container {
     visibility: hidden;
-    transition:
-      max-height 0.25s ease-in-out,
-      margin-bottom 0.25s ease-in-out,
-      visibility 0.25s ease-in-out;
 
     &-expanded {
       visibility: visible;
-      transition:
-        max-height 0.25s ease-in-out,
-        margin-bottom 0.25s ease-in-out,
-        visibility 0s;
     }
   }
 }
