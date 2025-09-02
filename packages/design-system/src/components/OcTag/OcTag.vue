@@ -1,13 +1,31 @@
 <template>
-  <component :is="type" :class="tagClasses" :to="to" @click="$_ocTag_click">
+  <component
+    :is="type"
+    class="oc-tag inline-flex items-center border gap-1"
+    :class="{
+      // rounded
+      'rounded-full px-2': rounded,
+      'rounded-lg': !rounded,
+      // size
+      'p-1 text-xs': size === 'small',
+      'py-1 px-2 text-sm min-h-6': size === 'medium',
+      'py-2 px-4 text-lg min-h-8': size === 'large',
+      // appearance
+      [`bg-role-surface text-role-${color} border-role-${color}`]: appearance === 'outline',
+      [`bg-role-${color} text-role-on-${color} border-role-on-${color}`]: appearance === 'filled',
+      // transition for links and buttons
+      'ease-in-out duration-200 transition-colors [&_svg]:ease-in-out [&_svg]:duration-200 [&_svg]:transition-colors':
+        ['link', 'button'].includes(type)
+    }"
+    :to="to"
+    @click="$_ocTag_click"
+  >
     <!-- @slot Content of the tag -->
     <slot />
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { getSizeClass } from '../../helpers'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface Props {
@@ -68,72 +86,7 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
-const tagClasses = computed(() => {
-  const classes = [
-    'oc-tag',
-    'inline-flex',
-    'items-center',
-    `oc-tag-${getSizeClass(size)}`,
-    `gap-1`,
-    'border'
-  ]
-
-  type === 'router-link' || type === 'a'
-    ? classes.push('oc-tag-link')
-    : classes.push(`oc-tag-${type}`)
-  classes.push(`oc-tag-color-${color}`)
-  classes.push(`oc-tag-appearance-${appearance}`)
-  if (rounded) {
-    classes.push('rounded-full')
-  } else {
-    classes.push('rounded-lg')
-  }
-  if (appearance === 'filled') {
-    classes.push(`bg-role-${color}`)
-    classes.push(`text-role-on-${color}`)
-    classes.push(`border-role-on-${color}`)
-  } else {
-    classes.push('bg-role-surface')
-    classes.push(`text-role-${color}`)
-    classes.push(`border-role-${color}`)
-  }
-
-  return classes
-})
-
 function $_ocTag_click(event: MouseEvent) {
   emit('click', event)
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .oc-tag-rounded {
-    @apply px-2;
-  }
-  .oc-tag-s {
-    @apply p-1 text-xs;
-  }
-  .oc-tag-m {
-    @apply py-1 px-2 text-sm min-h-6;
-  }
-  .oc-tag-l {
-    @apply py-2 px-4 text-lg min-h-8;
-  }
-}
-</style>
-<style lang="scss">
-.oc-tag {
-  box-sizing: border-box;
-
-  &-link,
-  &-button {
-    transition: color $transition-duration-short ease-in-out;
-
-    .oc-icon > svg {
-      transition: fill $transition-duration-short ease-in-out;
-    }
-  }
-}
-</style>
