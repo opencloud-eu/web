@@ -13,17 +13,20 @@
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
-    <div v-if="isHidden" class="oc-tile-card-lazy-shimmer h-30 overflow-hidden"></div>
+    <div
+      v-if="isHidden"
+      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)]"
+    />
     <template v-else>
       <resource-link
-        class="oc-card-media-top flex justify-center items-center m-0 w-full"
+        class="oc-card-media-top flex justify-center items-center m-0 w-full relative"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
         tabindex="-1"
         @click="$emit('click')"
       >
-        <div class="oc-tile-card-selection">
+        <div class="oc-tile-card-selection absolute top-0 left-0">
           <div v-if="isLoading" class="oc-tile-card-loading-spinner m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
@@ -31,14 +34,14 @@
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator oc-position-absolute text-role-on-surface"
+          class="resource-disabled-indicator absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />
         </oc-tag>
         <div
           v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview flex items-center justify-center text-center size-full"
+          class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
           :class="{ 'p-2': isResourceSelected }"
           :aria-label="tooltipLabelIcon"
         >
@@ -54,7 +57,7 @@
               v-else
               :resource="resource"
               :size="resourceIconSize"
-              class="tile-default-image pt-1"
+              class="tile-default-image pt-1 relative"
             >
               <template v-if="showStatusIcon" #status>
                 <oc-icon v-bind="statusIconAttrs" size="xsmall" />
@@ -250,12 +253,7 @@ if (!lazy) {
     }
   }
 
-  .tile-default-image {
-    position: relative;
-  }
-
   .oc-card-media-top {
-    position: relative;
     aspect-ratio: 16/9;
     justify-content: center;
 
@@ -273,18 +271,10 @@ if (!lazy) {
 
   &-selection {
     z-index: 1;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  &-preview {
-    position: absolute;
   }
 
   &-lazy-shimmer {
     opacity: 0.2;
-    position: relative;
   }
 
   &-lazy-shimmer::after {
@@ -296,13 +286,7 @@ if (!lazy) {
       rgba(#4c5f79, 0.5) 60%,
       rgba(#4c5f79, 0)
     );
-    bottom: 0;
     content: '';
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translateX(-100%);
   }
 
   @keyframes shimmer {

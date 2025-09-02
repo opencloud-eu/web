@@ -22,10 +22,13 @@
           <span class="text-sm" v-text="$gettext('Mark all as read')" />
         </oc-button>
       </div>
-      <div class="oc-position-relative">
+      <div class="relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div class="oc-notifications-loading-background size-full bg-role-surface" />
-          <oc-spinner class="oc-notifications-loading-spinner" size="large" />
+          <div class="oc-notifications-loading-background size-full bg-role-surface absolute" />
+          <oc-spinner
+            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)]"
+            size="large"
+          />
         </div>
         <span
           v-if="!notifications.length"
@@ -280,18 +283,11 @@ export default {
 <style lang="scss" scoped>
 .oc-notifications {
   &-loading {
-    * {
-      position: absolute;
-    }
-
     &-background {
       opacity: 0.6;
     }
 
     &-spinner {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       opacity: 1;
     }
   }

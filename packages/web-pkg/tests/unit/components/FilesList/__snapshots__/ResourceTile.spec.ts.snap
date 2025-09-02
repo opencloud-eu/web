@@ -2,11 +2,11 @@
 
 exports[`OcTile component > renders default space correctly 1`] = `
 "<div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest">
-  <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full" tabindex="-1">
-    <div class="oc-tile-card-selection"></div>
+  <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative" tabindex="-1">
+    <div class="oc-tile-card-selection absolute top-0 left-0"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full">
-      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
+    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute">
+      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1 relative"></resource-icon-stub>
     </div>
   </resource-link-stub>
   <div class="oc-card-body p-2">
@@ -27,11 +27,11 @@ exports[`OcTile component > renders default space correctly 1`] = `
 
 exports[`OcTile component > renders disabled space correctly 1`] = `
 "<div class="oc-tile-card oc-card flex flex-col h-full bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest oc-tile-card-disabled">
-  <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full" tabindex="-1">
-    <div class="oc-tile-card-selection"></div>
+  <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative" tabindex="-1">
+    <div class="oc-tile-card-selection absolute top-0 left-0"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full">
-      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1"></resource-icon-stub>
+    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute">
+      <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1 relative"></resource-icon-stub>
     </div>
   </resource-link-stub>
   <div class="oc-card-body p-2">

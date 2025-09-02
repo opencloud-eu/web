@@ -5,7 +5,7 @@
       v-oc-tooltip="tooltip"
       class="oc-avatars inline-flex w-fit"
       aria-hidden="true"
-      :class="avatarsClasses"
+      :class="[...avatarsClasses, { '[&>*]:hover:transform-[scale(1.1)]': hasHoverEffect }]"
     >
       <slot name="userAvatars" :avatars="avatars" :width="width">
         <template v-if="avatars.length > 0">
@@ -212,7 +212,6 @@ onMounted(() => {
 
     > *:hover {
       z-index: 1000 !important;
-      transform: scale(1.1);
     }
   }
 

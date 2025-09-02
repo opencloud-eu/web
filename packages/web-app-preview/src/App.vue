@@ -1,6 +1,6 @@
 <template>
   <div v-if="isFolderLoading" class="w-full">
-    <div class="oc-position-center">
+    <div class="absolute top-[50%] left-[50%]">
       <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
     </div>
   </div>
@@ -18,7 +18,7 @@
     >
       <div class="stage_media size-full flex justify-center items-center grow overflow-hidden">
         <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="w-full">
-          <div class="oc-position-center">
+          <div class="absolute top-[50%] left-[50%]">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
           </div>
         </div>

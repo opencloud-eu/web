@@ -4,7 +4,7 @@
     class="oc-search flex items-center"
     :class="{ 'oc-search-small': small }"
   >
-    <div class="flex-1 oc-position-relative">
+    <div class="flex-1 relative">
       <input
         v-model="model"
         :class="inputClass"
@@ -18,7 +18,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="oc-position-center-right mx-4 mb-4 mt-0"
+        class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
@@ -33,7 +33,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
       <oc-button
-        class="oc-search-button ml-4 rounded-l-none"
+        class="oc-search-button ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -226,9 +226,6 @@ const onCancel = () => {
 <style lang="scss">
 .oc-search {
   &-button {
-    // Prevent double borders
-    // from input and button
-    transform: translateX(-1px);
     z-index: 0;
   }
 

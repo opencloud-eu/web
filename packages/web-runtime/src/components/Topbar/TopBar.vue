@@ -2,7 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
-    class="grid items-center px-4 h-13"
+    class="sticky grid items-center px-4 h-13"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left flex items-center flex-start">
@@ -214,7 +214,6 @@ export default {
   grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
   grid-template-columns: 30% 30% 40%;
   grid-template-rows: 52px auto;
-  position: sticky;
   z-index: 5;
 
   @media (min-width: $oc-breakpoint-small-default) {

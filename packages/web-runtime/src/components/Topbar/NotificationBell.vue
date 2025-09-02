@@ -2,6 +2,7 @@
   <oc-button
     id="oc-notifications-bell"
     v-oc-tooltip="notificationsLabel"
+    class="relative"
     appearance="raw-inverse"
     color-role="chrome"
     :aria-label="notificationsLabel"
@@ -11,8 +12,8 @@
     <span
       v-if="notificationCount"
       :key="notificationCount"
-      :class="{ shake: animate }"
-      class="badge p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
+      :class="{ 'shake transform-[translate3d(0, 0, 0)]': animate }"
+      class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       v-text="notificationCountLabel"
     />
   </oc-button>
@@ -62,18 +63,15 @@ export default {
 
 <style lang="scss" scoped>
 #oc-notifications-bell {
-  position: relative;
   .badge {
-    position: absolute;
-    top: -6px;
-    right: -9px;
     box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
   }
 }
+
 .shake {
   animation: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
-  transform: translate3d(0, 0, 0);
 }
+
 @keyframes shake {
   10%,
   20%,

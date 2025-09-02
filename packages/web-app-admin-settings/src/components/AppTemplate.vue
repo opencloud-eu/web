@@ -7,8 +7,8 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar py-2 px-4 bg-role-surface"
-            :class="{ 'admin-settings-app-bar-sticky': isSticky }"
+            class="oc-app-bar py-2 px-4 bg-role-surface top-0"
+            :class="{ sticky: isSticky }"
           >
             <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
               <oc-breadcrumb
@@ -219,12 +219,6 @@ export default defineComponent({
 #admin-settings-app-bar {
   box-sizing: border-box;
   z-index: 2;
-  position: inherit;
-  top: 0;
-
-  &.admin-settings-app-bar-sticky {
-    position: sticky;
-  }
 }
 
 .admin-settings-app-bar-controls {

@@ -103,12 +103,7 @@ onMounted(() => {
 
 @layer components {
   .oc-notification-message {
-    @apply p-4 mt-2;
+    @apply relative p-4 mt-2;
   }
-}
-</style>
-<style lang="scss">
-.oc-notification-message {
-  position: relative;
 }
 </style>

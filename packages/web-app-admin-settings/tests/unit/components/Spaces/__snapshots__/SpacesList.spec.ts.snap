@@ -6,7 +6,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
     <div class="w-3xs"><label class="oc-label" for="spaces-filter">Search
         <!--v-if-->
       </label>
-      <div class="oc-position-relative">
+      <div class="relative">
         <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface" type="text" value="">
         <!--v-if-->
       </div>

@@ -71,7 +71,7 @@
 
   /* card spacing FIXME: they should be in a dedicated component */
   .oc-card {
-    @apply bg-role-surface text-role-on-surface rounded-sm;
+    @apply bg-role-surface text-role-on-surface rounded-sm relative;
   }
 
   .oc-card-body {

@@ -37,7 +37,7 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 
 @layer components {
   .oc-loader {
-    @apply my-5 align-baseline;
+    @apply my-5 align-baseline relative after:absolute;
   }
 }
 </style>
@@ -45,11 +45,9 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 .oc-loader {
   -webkit-appearance: none;
   -moz-appearance: none;
-  position: relative;
 
   &::after {
     content: '';
-    position: absolute;
 
     animation: {
       duration: 1.4s;

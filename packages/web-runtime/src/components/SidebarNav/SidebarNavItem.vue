@@ -7,6 +7,7 @@
       :justify-content="'space-between'"
       :class="[
         'oc-sidebar-nav-item-link',
+        'relative',
         'w-full',
         'whitespace-nowrap',
         'p-2',
@@ -95,7 +96,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .oc-sidebar-nav-item-link {
-  position: relative;
   user-select: none;
 
   .text {

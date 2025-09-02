@@ -6,7 +6,7 @@
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="oc-color-input-wrapper oc-position-relative max-m-5">
+    <div class="oc-color-input-wrapper relative max-m-5">
       <input
         :id="id"
         v-bind="additionalAttributes"
@@ -25,7 +25,7 @@
       />
       <oc-button
         v-if="showClearButton"
-        class="mr-1 oc-position-center-right oc-color-input-btn-clear"
+        class="mr-1 absolute top-[50%] transform-[translateY(-50%)] right-0 oc-color-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -37,7 +37,7 @@
       v-if="showMessageLine"
       class="oc-color-input-message flex items-center text-sm mt-1 min-h-4.5"
       :class="{
-        'oc-color-input-description text-role-on-surface-variant': !!descriptionMessage,
+        'oc-color-input-description text-role-on-surface-variant relative': !!descriptionMessage,
         'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
           !!errorMessage
       }"
@@ -196,15 +196,3 @@ const onInput = (value: string) => {
   emit('update:modelValue', value)
 }
 </script>
-
-<style lang="scss">
-.oc-color-input-message.oc-color-input-description {
-  position: relative;
-
-  .oc-icon {
-    position: absolute;
-    left: var(--oc-space-xsmall);
-    top: var(--oc-space-xsmall);
-  }
-}
-</style>

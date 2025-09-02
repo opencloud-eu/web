@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`FileShares > collaborators list > renders sharedWithLabel and sharee list 1`] = `
-"<div id="oc-files-sharing-sidebar" class="oc-position-relative">
+"<div id="oc-files-sharing-sidebar" class="relative">
   <div class="flex justify-between items-center">
     <div class="flex">
       <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>
@@ -38,7 +38,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
 `;
 
 exports[`FileShares > current space > loads space members if a space is given and the current user is member 1`] = `
-"<div id="oc-files-sharing-sidebar" class="oc-position-relative">
+"<div id="oc-files-sharing-sidebar" class="relative">
   <div class="flex justify-between items-center">
     <div class="flex">
       <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>

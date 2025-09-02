@@ -1,9 +1,11 @@
 <template>
   <div class="oc-progress-pie after:block after:size-full" :data-fill="fill">
-    <div class="oc-progress-pie-container before:block after:block size-full after:size-full" />
+    <div
+      class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full"
+    />
     <label
       v-if="showLabel"
-      class="oc-progress-pie-label text-role-on-surface-variant"
+      class="oc-progress-pie-label absolute top-[50%] left-[50%] text-role-on-surface-variant transform-[translate(-50%, -50%)]"
       v-text="label"
     />
   </div>
@@ -49,7 +51,7 @@ const label = computed(() => {
 
 @layer components {
   .oc-progress-pie {
-    @apply m-4;
+    @apply m-4 relative;
   }
 }
 </style>
@@ -58,7 +60,6 @@ $default-size: 64px;
 
 .oc-progress-pie {
   height: $default-size;
-  position: relative;
   width: $default-size;
 
   *,
@@ -77,9 +78,6 @@ $default-size: 64px;
 
   &-container {
     clip: rect(0, $default-size, $default-size, calc($default-size / 2));
-    left: 0;
-    position: absolute;
-    top: 0;
 
     &::before,
     &::after {
@@ -88,17 +86,7 @@ $default-size: 64px;
       border-radius: 50%;
       clip: rect(0, calc($default-size / 2), $default-size, 0);
       content: '';
-      left: 0;
-      position: absolute;
-      top: 0;
     }
-  }
-
-  &-label {
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 

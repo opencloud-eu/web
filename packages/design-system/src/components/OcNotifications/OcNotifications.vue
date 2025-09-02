@@ -1,12 +1,18 @@
 <template>
-  <div class="oc-notification mb-2 w-md max-w-full" :class="classes">
+  <div
+    class="oc-notification mb-2 w-md max-w-full"
+    :class="{
+      fixed: position !== 'default',
+      'top-2 left-2': position === 'top-left',
+      'top-2 inset-x-0 mx-auto': position === 'top-center',
+      'top-2 right-2': position === 'top-right'
+    }"
+  >
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 export interface Props {
   /**
    * @docs The position of the notification.
@@ -24,38 +30,11 @@ export interface Slots {
 
 const { position = 'default' } = defineProps<Props>()
 defineSlots<Slots>()
-
-const classes = computed(() => `oc-notification-${position}`)
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
 
-@layer components {
-  .oc-notification-top-center {
-    @apply mx-auto;
-  }
-}
-</style>
 <style lang="scss">
 .oc-notification {
   box-sizing: border-box;
   z-index: 1040;
-
-  &-top-left {
-    position: fixed;
-    top: var(--oc-space-small);
-    left: var(--oc-space-small);
-  }
-  &-top-center {
-    position: fixed;
-    top: var(--oc-space-small);
-    left: 0;
-    right: 0;
-  }
-  &-top-right {
-    position: fixed;
-    top: var(--oc-space-small);
-    right: var(--oc-space-small);
-  }
 }
 </style>
