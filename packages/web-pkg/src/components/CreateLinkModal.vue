@@ -1,5 +1,5 @@
 <template>
-  <div class="flex oc-button-justify-content-space-between pb-2">
+  <div class="flex justify-between pb-2">
     <div v-if="isAdvancedMode" class="flex items-center">
       <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
