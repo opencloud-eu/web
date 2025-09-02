@@ -40,9 +40,7 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div
-      class="snackbars absolute inset-x-0 sm:left-auto sm:right-[20px] bottom-[20px] mx-auto sm:m-0"
-    >
+    <div class="snackbars absolute inset-x-[20px] sm:left-auto bottom-[20px]">
       <message-bar />
       <upload-info />
     </div>
