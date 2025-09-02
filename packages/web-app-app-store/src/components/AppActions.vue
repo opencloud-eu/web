@@ -1,5 +1,5 @@
 <template>
-  <oc-list class="app-actions flex justify-start gap-2">
+  <oc-list class="app-actions flex justify-start gap-3">
     <action-menu-item
       v-for="action in actions"
       :key="`app-action-${action.name}`"
