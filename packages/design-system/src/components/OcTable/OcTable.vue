@@ -118,7 +118,7 @@ import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { Item as BaseItem, FieldType, SizeType, getTailwindSizeClass } from '../../helpers'
+import { Item as BaseItem, FieldType, SizeType } from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -351,6 +351,26 @@ const extractTableProps = () => {
   }
 }
 
+const getTailwindXPadding = (side: 'right' | 'left') => {
+  // we can't interpolate tailwind classes, they might be missing in the bundle then
+  switch (paddingX) {
+    case 'remove':
+      return side === 'right' ? 'pr-0' : 'pl-0'
+    case 'xsmall':
+      return side === 'right' ? 'pr-1' : 'pl-1'
+    case 'small':
+      return side === 'right' ? 'pr-2' : 'pl-2'
+    case 'medium':
+      return side === 'right' ? 'pr-4' : 'pl-4'
+    case 'large':
+      return side === 'right' ? 'pr-6' : 'pl-6'
+    case 'xlarge':
+      return side === 'right' ? 'pr-12' : 'pl-12'
+    case 'xxlarge':
+      return side === 'right' ? 'pr-24' : 'pl-24'
+  }
+}
+
 const extractThProps = (field: FieldType, index: number) => {
   const props = extractCellProps(field)
   props.class = `oc-table-header-cell oc-table-header-cell-${field.name}`
@@ -362,11 +382,11 @@ const extractThProps = (field: FieldType, index: number) => {
   }
 
   if (index === 0) {
-    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
+    props.class += ` ${getTailwindXPadding('left')} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
+    props.class += ` ${getTailwindXPadding('right')}`
   }
 
   extractSortThProps(props, field)
@@ -397,11 +417,11 @@ const extractTdProps = (field: FieldType, index: number, item: Item) => {
   }
 
   if (index === 0) {
-    props.class += ` pl-${getTailwindSizeClass(paddingX)} `
+    props.class += ` ${getTailwindXPadding('left')} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` pr-${getTailwindSizeClass(paddingX)}`
+    props.class += ` ${getTailwindXPadding('right')}`
   }
 
   if (Object.prototype.hasOwnProperty.call(field, 'accessibleLabelCallback')) {
