@@ -26,7 +26,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
     <div id="oc-drop-6" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1 gap-2" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -36,7 +36,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1 gap-2" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -145,7 +145,7 @@ exports[`DateFilter > renders all items 1`] = `
     <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1 gap-2" data-testid="today">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="today">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
@@ -155,7 +155,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </div>
             </button></li>
-          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1 gap-2" data-testid="yesterday">
+          <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button oc-button-m oc-button-justify-content-space-between oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="yesterday">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <div class="flex items-center truncate">
