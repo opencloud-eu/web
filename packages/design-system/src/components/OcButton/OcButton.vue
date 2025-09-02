@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
-import { AppearanceType, getSizeClass, SizeType } from '../../helpers'
+import { AppearanceType, getSizeClass, JustifyContentType, SizeType } from '../../helpers'
 import { kebabCase } from 'lodash-es'
 import { getTailwindGapClass } from '../../helpers/tailwind'
 
@@ -65,7 +65,7 @@ export interface Props {
    * @docs The alignment of the button content.
    * @default center
    */
-  justifyContent?: 'left' | 'center' | 'right' | 'space-around' | 'space-between' | 'space-evenly'
+  justifyContent?: JustifyContentType
   /**
    * @docs Determines if a spinner should be shown inside the button.
    * @default false

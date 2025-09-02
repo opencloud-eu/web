@@ -1,4 +1,5 @@
 import { SizeType } from './types'
+import { JustifyContentType } from './types'
 
 export const getTailwindGapClass = (gapSize: SizeType | 'none') => {
   return {
@@ -10,5 +11,16 @@ export const getTailwindGapClass = (gapSize: SizeType | 'none') => {
     'gap-5': gapSize === 'xlarge',
     'gap-6': gapSize === 'xxlarge',
     'gap-7': gapSize === 'xxxlarge'
+  }
+}
+
+export const getTailwindJustifyClass = (value: JustifyContentType) => {
+  return {
+    'justify-start': value === 'left',
+    'justify-center': value === 'center',
+    'justify-end': value === 'right',
+    'justify-around': value === 'space-around',
+    'justify-between': value === 'space-between',
+    'justify-evenly': value === 'space-evenly'
   }
 }
