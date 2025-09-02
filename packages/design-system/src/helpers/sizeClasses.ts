@@ -11,6 +11,7 @@ const sizeClassMappings = {
   remove: 'rm'
 }
 
+/** @deprecated use Tailwind classes instead */
 export function getSizeClass(size: string) {
   return sizeClassMappings[size as keyof typeof sizeClassMappings]
 }

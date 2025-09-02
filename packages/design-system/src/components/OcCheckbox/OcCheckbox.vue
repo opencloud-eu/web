@@ -7,8 +7,7 @@
       name="checkbox"
       class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden"
       :class="{
-        'oc-checkbox-checked': isChecked,
-        'bg-white': isChecked,
+        'oc-checkbox-checked bg-white': isChecked,
         'size-3': size === 'small',
         'size-4': size === 'medium',
         'size-5': size === 'large'
