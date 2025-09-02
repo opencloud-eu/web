@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-files-sharing-sidebar" class="oc-position-relative">
+  <div id="oc-files-sharing-sidebar" class="relative">
     <div class="flex justify-between items-center">
       <div class="flex">
         <h3 v-translate class="font-semibold text-base m-0">Share with people</h3>

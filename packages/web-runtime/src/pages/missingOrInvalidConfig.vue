@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-login-card oc-position-center">
+  <div class="oc-login-card absolute top-[50%] left-[50%]">
     <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
     <div class="oc-login-card-body p-6">
       <h1 class="oc-login-card-title" v-text="$gettext('Missing or invalid config')" />

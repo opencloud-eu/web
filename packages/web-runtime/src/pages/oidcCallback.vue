@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-login-card oc-position-center">
+  <div class="oc-login-card absolute top-[50%] left-[50%]">
     <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
     <div v-show="error" class="oc-login-card-body p-6">
       <h2 v-translate class="oc-login-card-title">Authentication failed</h2>

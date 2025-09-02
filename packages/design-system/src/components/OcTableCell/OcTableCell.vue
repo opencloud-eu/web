@@ -43,7 +43,7 @@ const cellClasses = computed(() => {
 
 @layer components {
   .oc-table-cell {
-    @apply px-2;
+    @apply px-2 relative;
   }
   .oc-table-cell-align-left {
     @apply text-left;
@@ -69,10 +69,5 @@ const cellClasses = computed(() => {
   .oc-table-cell-width-expand {
     @apply min-w-38;
   }
-}
-</style>
-<style lang="scss">
-.oc-table-cell {
-  position: relative;
 }
 </style>

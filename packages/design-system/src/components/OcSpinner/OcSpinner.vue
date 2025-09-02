@@ -33,7 +33,9 @@ const spinnerClass = computed(() => {
     'inline-block',
     'after:block',
     'after:bg-transparent',
-    'text-role-on-surface'
+    'text-role-on-surface',
+    'relative',
+    'after:relative'
   ]
 })
 </script>
@@ -56,7 +58,6 @@ const spinnerClass = computed(() => {
   &,
   &::after {
     box-sizing: border-box;
-    position: relative;
   }
 
   @layer components {

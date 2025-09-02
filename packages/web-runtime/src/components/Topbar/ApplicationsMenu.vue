@@ -22,7 +22,7 @@
       class="w-xs"
       @show-drop="updateAppIcons"
     >
-      <div class="oc-display-block oc-position-relative">
+      <div class="oc-display-block relative">
         <oc-list class="applications-list">
           <li v-for="(n, nid) in sortedMenuItems" :key="`apps-menu-${nid}`">
             <oc-button
@@ -130,11 +130,6 @@ export default defineComponent({
   a,
   button {
     gap: var(--oc-space-medium) !important;
-
-    .active-check {
-      position: absolute;
-      right: 1rem;
-    }
   }
 }
 </style>

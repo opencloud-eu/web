@@ -63,7 +63,7 @@
           />
           <div class="oc-text-input-message"></div>
         </div>
-        <div class="mb-2" v-if="!graphUsersEditLoginAllowedDisabled">
+        <div v-if="!graphUsersEditLoginAllowedDisabled" class="mb-2">
           <oc-select
             id="login-input"
             :disabled="isLoginInputDisabled"

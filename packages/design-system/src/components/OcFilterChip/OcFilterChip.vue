@@ -13,7 +13,11 @@
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
-        :class="filterActive ? 'oc-filter-check-icon-active' : 'oc-filter-check-icon-inactive w-0'"
+        :class="{
+          'transform-[scale(1)] ease-in': filterActive,
+          'transform-[scale(0)] ease-out w-0': !filterActive
+        }"
+        class="transition-all duration-250"
         name="check"
         size="small"
       />
@@ -187,14 +191,6 @@ defineExpose({ hideDrop })
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
     margin-left: 1px;
   }
-}
-.oc-filter-check-icon-active {
-  transition: all 0.25s ease-in;
-  transform: scale(1) !important;
-}
-.oc-filter-check-icon-inactive {
-  transition: all 0.25 ease-in;
-  transform: scale(0) !important;
 }
 
 // the focussed button needs to stay above the other to correctly display the focus outline

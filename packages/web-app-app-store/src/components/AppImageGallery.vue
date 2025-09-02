@@ -1,13 +1,15 @@
 <template>
-  <div class="app-image-wrapper">
+  <div class="app-image-wrapper relative">
     <div
       v-if="app.badge"
-      class="app-image-ribbon text-right size-[7rem] overflow-hidden"
+      class="app-image-ribbon text-right size-[7rem] overflow-hidden absolute top-0 right-0"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
-      <span class="text-xs font-bold text-center leading-6 w-[10rem]" :class="ribbonColorClasses">{{
-        app.badge.label
-      }}</span>
+      <span
+        class="text-xs font-bold text-center leading-6 w-[10rem] block absolute top-[1.8rem] right-[-2.2rem] transform-[rotate(45deg)]"
+        :class="ribbonColorClasses"
+        >{{ app.badge.label }}</span
+      >
     </div>
     <div class="app-image w-full">
       <oc-image v-if="currentImage?.url" :src="currentImage?.url" class="w-full max-w-full" />
@@ -17,7 +19,7 @@
     </div>
     <ul
       v-if="hasPagination"
-      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2 w-full"
+      class="app-image-navigation bg-white/80 flex justify-center items-center flex-row m-0 py-2 w-full absolute bottom-0"
     >
       <li>
         <oc-button data-testid="prev-image" class="p-1" appearance="raw" @click="previousImage">
@@ -108,33 +110,10 @@ export default defineComponent({
 })
 </script>
 
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .app-image-ribbon span {
-    @apply block;
-  }
-}
-</style>
-
 <style lang="scss">
 .app-image-wrapper {
-  position: relative;
-
   .app-image-ribbon {
-    position: absolute;
-    top: 0;
-    right: 0;
     z-index: 1;
-
-    span {
-      position: absolute;
-      top: 1.8rem;
-      right: -2.2rem;
-      transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-    }
   }
 
   .app-image {
@@ -150,8 +129,6 @@ export default defineComponent({
 
   .app-image-navigation {
     list-style: none;
-    position: absolute;
-    bottom: 0;
   }
 }
 </style>

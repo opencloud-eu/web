@@ -4,7 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden"
+    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden relative"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden"
+        class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel': panel.isRoot?.(panelContext),
@@ -285,11 +285,31 @@ onBeforeUnmount(() => {
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
+@layer components {
+  .sidebar-panel {
+    transform: translateX(100%);
+  }
+  .sidebar-panel.is-root-panel {
+    right: 100px;
+  }
+}
+
+@layer utilities {
+  .sidebar-panel.is-active-root-panel {
+    @apply right-0;
+  }
+  .sidebar-panel.is-active-root-panel,
+  .sidebar-panel.is-active-sub-panel,
+  .sidebar-panel.is-root-panel {
+    transform: translateX(0);
+  }
+}
+</style>
 <style lang="scss">
 #app-sidebar {
-  position: relative;
-
   &:focus,
   &:focus-visible {
     box-shadow: none;
@@ -304,9 +324,6 @@ onBeforeUnmount(() => {
 
 .sidebar-panel {
   $root: &;
-  top: 0;
-  position: absolute;
-  transform: translateX(100%);
   transition:
     transform 0.4s ease,
     visibility 0.4s 0s;
@@ -323,19 +340,15 @@ onBeforeUnmount(() => {
   &.is-active-root-panel,
   &.is-active-sub-panel {
     visibility: unset;
-    transform: translateX(0);
   }
 
   &.is-active-root-panel {
-    right: 0 !important;
     transition: right 0.4s 0s;
   }
 
   &.is-root-panel {
-    transform: translateX(0);
     visibility: visible;
     transition: right 0.4s 0s;
-    right: 100px;
   }
 }
 </style>

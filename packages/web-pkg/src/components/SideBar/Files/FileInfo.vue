@@ -5,7 +5,7 @@
         v-if="isSubPanelActive"
         :resource="resource"
         size="large"
-        class="file_info__icon mr-2 oc-position-relative"
+        class="file_info__icon mr-2 relative"
       />
       <div class="file_info__body">
         <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">

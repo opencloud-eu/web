@@ -5,7 +5,7 @@
         v-if="imagesLoading.includes(resource.id)"
         :aria-label="$gettext('Space image is loading')"
       />
-      <div v-else-if="spaceImage" class="oc-position-relative mb-2">
+      <div v-else-if="spaceImage" class="relative mb-2">
         <img :src="spaceImage" alt="" class="size-full" />
       </div>
       <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />

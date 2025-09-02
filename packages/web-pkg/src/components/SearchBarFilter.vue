@@ -1,5 +1,8 @@
 <template>
-  <div class="oc-location-search oc-position-center-right ml-4 mb-4 mt-0 mr-[34px]" @click.stop>
+  <div
+    class="oc-location-search absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px]"
+    @click.stop
+  >
     <div v-if="currentSelection">
       <oc-filter-chip
         :is-toggle="false"

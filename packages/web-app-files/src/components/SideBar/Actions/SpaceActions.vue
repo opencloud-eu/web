@@ -7,6 +7,7 @@
       name="file"
       tabindex="-1"
       accept="image/jpeg, image/png"
+      class="absolute left-[-99999px]"
       @change="showModalImageSpace"
     />
     <oc-list id="oc-spaces-actions-sidebar" class="sidebar-actions-panel">
@@ -84,10 +85,3 @@ const actions = computed(() =>
   ].filter((item) => item.isVisible(unref(actionOptions)))
 )
 </script>
-
-<style lang="scss">
-#space-image-upload-input {
-  position: absolute;
-  left: -99999px;
-}
-</style>
