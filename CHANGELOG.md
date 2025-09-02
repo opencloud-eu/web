@@ -10,16 +10,9 @@
 
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### 🐛 Bug Fixes
-
-- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
-- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
-- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
-- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
-- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
-
 ### 📈 Enhancement
 
+- chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
 - refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
 - refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
 - refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
@@ -32,6 +25,14 @@
 - refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
+
+### 🐛 Bug Fixes
+
+- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
+- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
+- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
 
 ### 📦️ Dependencies
 
