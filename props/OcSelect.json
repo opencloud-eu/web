@@ -49,6 +49,13 @@
     "type": "string"
   },
   {
+    "name": "getOptionLabel",
+    "required": false,
+    "description": "The getOptionLabel function of the options object. Takes precedence over the `optionLabel` prop.",
+    "default": "function",
+    "type": "(option: unknown) => string"
+  },
+  {
     "name": "searchable",
     "required": false,
     "description": "Determines if the options of the select are searchable.",
