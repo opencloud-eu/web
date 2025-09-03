@@ -64,14 +64,14 @@
           </li>
         </template>
         <template v-else>
-          <li class="profile-info-wrapper flex items-center pl-2 min-h-10.5">
+          <li class="flex items-center pl-2 min-h-10.5 gap-4">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"
               color="var(--oc-role-on-chrome)"
               background-color="var(--oc-role-chrome)"
             />
-            <span class="profile-info-wrapper" :class="{ 'py-1': !user.mail }">
+            <span :class="{ 'py-1': !user.mail }">
               <span class="oc-display-block" v-text="user.displayName" />
               <span v-if="user.mail" class="text-sm" v-text="user.mail" />
               <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
@@ -221,11 +221,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.user-menu-list li {
-  &.profile-info-wrapper {
-    gap: var(--oc-space-medium);
-  }
-}
-</style>

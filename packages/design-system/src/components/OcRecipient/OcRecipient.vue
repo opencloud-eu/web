@@ -45,14 +45,12 @@ defineSlots<Slots>()
 
 @layer components {
   .oc-recipient {
-    @apply p-1 w-auto;
+    @apply p-1 w-auto gap-1;
   }
 }
 </style>
 <style lang="scss">
 .oc-recipient {
-  gap: var(--oc-space-xsmall);
-
   &-icon > svg {
     fill: var(--oc-role-on-surface);
   }

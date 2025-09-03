@@ -102,15 +102,6 @@
   a,
   .item-has-switch,
   button:not([role='switch']) {
-    gap: var(--oc-space-small);
     justify-content: flex-start;
-  }
-}
-
-.sidebar-actions-panel {
-  > li a,
-  > li a:hover {
-    display: inline-flex;
-    gap: 10px;
   }
 }

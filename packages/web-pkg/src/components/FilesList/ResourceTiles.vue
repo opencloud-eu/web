@@ -42,7 +42,7 @@
         </oc-filter-chip>
       </div>
     </div>
-    <oc-list class="oc-tiles grid justify-start">
+    <oc-list class="oc-tiles grid justify-start gap-3">
       <li
         v-for="resource in resources"
         :key="resource.id"
@@ -655,9 +655,7 @@ onBeforeUnmount(() => {
 </style>
 <style lang="scss">
 .oc-tiles {
-  column-gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
-  row-gap: 1rem;
 
   &-sort-filter-chip {
     &-item {

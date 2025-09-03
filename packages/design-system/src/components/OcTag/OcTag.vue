@@ -74,6 +74,7 @@ const tagClasses = computed(() => {
     'inline-flex',
     'items-center',
     `oc-tag-${getSizeClass(size)}`,
+    `gap-1`,
     'border'
   ]
 
@@ -125,7 +126,6 @@ function $_ocTag_click(event: MouseEvent) {
 <style lang="scss">
 .oc-tag {
   box-sizing: border-box;
-  gap: var(--oc-space-xsmall);
 
   &-link,
   &-button {

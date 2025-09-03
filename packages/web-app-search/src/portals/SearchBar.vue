@@ -541,7 +541,7 @@ export default defineComponent({
 
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
-    @apply p-0 w-auto;
+    @apply p-0 w-auto gap-0;
   }
   #files-global-search .oc-search-input {
     background-color: var(--oc-role-surface);
@@ -571,11 +571,6 @@ export default defineComponent({
   }
 
   #files-global-search-options {
-    .preview-component button,
-    .preview-component a {
-      gap: initial;
-    }
-
     ul {
       li {
         &.preview {

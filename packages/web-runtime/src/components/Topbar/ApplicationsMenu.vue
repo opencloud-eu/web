@@ -29,6 +29,7 @@
               :key="n.url ? 'apps-menu-external-link' : 'apps-menu-internal-link'"
               :appearance="isMenuItemActive(n) ? 'filled' : 'raw-inverse'"
               :color-role="isMenuItemActive(n) ? 'secondaryContainer' : 'surface'"
+              gap-size="large"
               :class="{ 'router-link-active': isMenuItemActive(n), active: isMenuItemActive(n) }"
               :data-test-id="n.id"
               v-bind="getAdditionalAttributes(n)"
@@ -125,11 +126,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.applications-list li {
-  a,
-  button {
-    gap: var(--oc-space-medium) !important;
-  }
-}
-</style>
