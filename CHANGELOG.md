@@ -10,12 +10,9 @@
 
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### ✅ Tests
-
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
 ### 📈 Enhancement
 
+- refactor: gaps to tailwind [[#1136](https://github.com/opencloud-eu/web/pull/1136)]
 - chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
 - refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
 - refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
@@ -29,6 +26,10 @@
 - refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
+
+### ✅ Tests
+
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
 
 ### 🐛 Bug Fixes
 
