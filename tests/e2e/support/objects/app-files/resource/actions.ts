@@ -445,6 +445,8 @@ const createDocumentFile = async (
     page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
     editor.close(page)
   ])
+  await page.reload()
+  await page.locator(util.format(resourceNameSelector, name)).waitFor()
 }
 
 export const fillContentOfDocument = async ({
