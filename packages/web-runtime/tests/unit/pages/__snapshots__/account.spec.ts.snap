@@ -13,13 +13,13 @@ exports[`account page > account information section > displays basic user inform
       <col class="w-auto md:w-[30%]">
     </colgroup>
     <thead class="oc-thead border-b oc-invisible-sr">
-      <tr>
+      <tr data-v-98c4aba8="">
         <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Information name</th>
         <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Information value</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="account-page-info-profile-picture">
+      <tr data-v-98c4aba8="" class="account-page-info-profile-picture">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Profile picture</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Max. 10MB, JPG, PNG</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
@@ -39,24 +39,24 @@ exports[`account page > account information section > displays basic user inform
           </div>
         </td>
       </tr>
-      <tr class="account-page-info-username">
+      <tr data-v-98c4aba8="" class="account-page-info-username">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Username</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">some-username</td>
       </tr>
-      <tr class="account-page-info-displayname">
+      <tr data-v-98c4aba8="" class="account-page-info-displayname">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">First and last name</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">some-displayname</td>
       </tr>
-      <tr class="account-page-info-email">
+      <tr data-v-98c4aba8="" class="account-page-info-email">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Email</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">some-email</td>
       </tr>
       <!--v-if-->
-      <tr class="account-page-info-groups">
+      <tr data-v-98c4aba8="" class="account-page-info-groups">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Group memberships</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
       </tr>
-      <tr class="account-page-logout-all-devices">
+      <tr data-v-98c4aba8="" class="account-page-logout-all-devices">
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Logout from active devices</td>
         <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button oc-button-m oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw no-hover gap-2 inline-flex" data-testid="account-page-logout-url-btn">
             <!--v-if-->
@@ -102,14 +102,14 @@ exports[`account page > public link context > should render a limited view 1`] =
           <col class="w-auto md:w-[30%]">
         </colgroup>
         <thead class="oc-thead border-b oc-invisible-sr">
-          <tr>
+          <tr data-v-98c4aba8="">
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Preference name</th>
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Preference description</th>
             <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th">Preference value</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="account-page-info-language">
+          <tr data-v-98c4aba8="" class="account-page-info-language">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Language</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">
               <div class="flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
@@ -154,7 +154,7 @@ exports[`account page > public link context > should render a limited view 1`] =
             </td>
           </tr>
           <!--v-if-->
-          <tr class="account-page-info-theme">
+          <tr data-v-98c4aba8="" class="account-page-info-theme">
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td">Theme</td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td"><span>Select your favorite theme</span></td>
             <td class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-td" data-testid="theme">

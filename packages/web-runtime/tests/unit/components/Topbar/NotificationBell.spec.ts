@@ -31,7 +31,7 @@ describe('NotificationBell', () => {
     const { wrapper } = getWrapper()
     wrapper.setProps({ notificationCount: 10 })
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.shake').exists()).toBe(true)
+    expect(wrapper.find('.animate-shake').exists()).toBe(true)
   })
 })
 function getWrapper({ mountType = mount, mocks = {} } = {}) {

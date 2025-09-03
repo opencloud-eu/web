@@ -12,7 +12,7 @@
     <span
       v-if="notificationCount"
       :key="notificationCount"
-      :class="{ 'shake transform-[translate3d(0, 0, 0)]': animate }"
+      :class="{ 'animate-shake transform-[translate3d(0, 0, 0)]': animate }"
       class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2"
       v-text="notificationCountLabel"
     />
@@ -65,25 +65,6 @@ export default {
 #oc-notifications-bell {
   .badge {
     box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
-  }
-}
-
-.shake {
-  animation: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
-}
-
-@keyframes shake {
-  10%,
-  20%,
-  50%,
-  60% {
-    transform: translate3d(-1px, 0, 0);
-  }
-  30%,
-  40%,
-  70%,
-  80% {
-    transform: translate3d(1px, 0, 0);
   }
 }
 </style>

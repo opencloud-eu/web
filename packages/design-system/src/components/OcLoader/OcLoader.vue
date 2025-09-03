@@ -10,6 +10,7 @@
       'after:w-0',
       'after:h-full',
       'overflow-hidden',
+      'after:animate-loading-bar',
       { 'oc-loader-flat rounded-none h-1': flat },
       { 'rounded-[500px] h-4': !flat }
     ]"
@@ -38,39 +39,6 @@ const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 @layer components {
   .oc-loader {
     @apply my-5 align-baseline relative after:absolute;
-  }
-}
-</style>
-<style lang="scss">
-.oc-loader {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  &::after {
-    content: '';
-
-    animation: {
-      duration: 1.4s;
-      iteration-count: infinite;
-      name: oc-loader;
-    }
-  }
-}
-
-@keyframes oc-loader {
-  0% {
-    left: 0;
-    width: 0;
-  }
-
-  50% {
-    left: 0;
-    width: 66%;
-  }
-
-  100% {
-    left: 100%;
-    width: 10%;
   }
 }
 </style>
