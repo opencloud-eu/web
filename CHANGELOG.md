@@ -10,6 +10,10 @@
 
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### ✅ Tests
+
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
+
 ### 📈 Enhancement
 
 - chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
