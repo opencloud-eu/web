@@ -18,7 +18,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
-        <div id="space-context-drop" class="oc-drop oc-box-shadow-medium rounded-sm" options="[object Object]">
+        <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
           <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex">
@@ -59,7 +59,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
-        <div id="space-context-drop" class="oc-drop oc-box-shadow-medium rounded-sm" options="[object Object]">
+        <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
           <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex">
@@ -103,7 +103,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
-        <div id="space-context-drop" class="oc-drop oc-box-shadow-medium rounded-sm" options="[object Object]">
+        <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
           <div class="oc-card oc-card-body p-2"></div>
         </div>
       </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex">

@@ -168,7 +168,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-              <div id="context-menu-drop-1" class="oc-drop oc-box-shadow-medium rounded-sm">
+              <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
                 <div class="oc-card oc-card-body p-2"></div>
               </div>
             </button></div>
@@ -226,7 +226,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-              <div id="context-menu-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm">
+              <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
                 <div class="oc-card oc-card-body p-2"></div>
               </div>
             </button></div>

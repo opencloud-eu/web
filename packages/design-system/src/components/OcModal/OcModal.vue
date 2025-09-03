@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border border-role-outline rounded-sm focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto"
+        class="border border-role-outline rounded-sm focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -326,8 +326,6 @@ export default {
 
 <style lang="scss">
 .oc-modal {
-  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
-
   &-background {
     z-index: var(--oc-z-index-modal);
   }

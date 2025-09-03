@@ -1,7 +1,7 @@
 <template>
   <div
     ref="observerTarget"
-    class="oc-tile-card oc-card flex flex-col h-full"
+    class="oc-tile-card oc-card flex flex-col h-full shadow-none"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
@@ -228,8 +228,6 @@ if (!lazy) {
 </style>
 <style lang="scss">
 .oc-tile-card {
-  box-shadow: none;
-
   &-disabled {
     pointer-events: none;
     opacity: 0.7;

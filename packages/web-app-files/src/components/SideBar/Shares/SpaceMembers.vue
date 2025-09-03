@@ -251,7 +251,7 @@ watch(filterTerm, async () => {
     @apply text-sm;
   }
   .space-members-filter input:focus {
-    @apply border border-role-outline;
+    @apply border border-role-outline outline-0 inset-ring-1 ring-role-outline;
   }
   .space-members-filter-container {
     transition:
@@ -269,11 +269,6 @@ watch(filterTerm, async () => {
 </style>
 <style lang="scss">
 .space-members-filter {
-  input:focus {
-    // use inner focus border because an outline would be cut off by the hidden overflow
-    box-shadow: inset 0px 0px 0px 1px var(--oc-role-outline);
-  }
-
   &-container {
     visibility: hidden;
 

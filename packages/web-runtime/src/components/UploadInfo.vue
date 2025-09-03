@@ -2,7 +2,7 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="rounded-sm oc-box-shadow-medium bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg"
+    class="rounded-sm shadow-md/20 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg"
   >
     <div
       class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-sm bg-role-surface-container"

@@ -23,7 +23,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
-    <div id="oc-drop-6" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
+    <div id="oc-drop-6" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="today">
@@ -142,7 +142,7 @@ exports[`DateFilter > renders all items 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
-    <div id="oc-drop-2" class="oc-drop oc-box-shadow-medium rounded-sm oc-filter-chip-drop">
+    <div id="oc-drop-2" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
       <div class="oc-card oc-card-body p-2">
         <ul class="oc-list date-filter-list">
           <li class="my-1 first:mt-0 last:mb-0"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button inline-flex date-filter-list-item flex justify-between items-center w-full p-1" data-testid="today">
