@@ -18,7 +18,7 @@
         'no-hover': noHover
       }
     ]"
-    class="oc-button inline-flex"
+    class="oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default"
     v-on="handlers"
   >
     <oc-spinner v-if="showSpinner" size="small" class="spinner" />
@@ -242,10 +242,6 @@ const onClick = (event: MouseEvent) => {
   align-items: center;
 
   @layer components {
-    &:hover {
-      cursor: pointer;
-    }
-
     &-primary {
       @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));
     }
@@ -305,11 +301,6 @@ const onClick = (event: MouseEvent) => {
     &-outline:hover:not(.no-hover, [disabled]) {
       background-color: var(--oc-role-surface-container);
       filter: none !important;
-    }
-
-    &:disabled {
-      cursor: default;
-      opacity: 0.6;
     }
   }
 }

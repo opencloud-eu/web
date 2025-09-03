@@ -96,7 +96,7 @@
           :parent-folder-link-icon-additional-attributes="
             getParentFolderLinkIconAdditionalAttributes(item)
           "
-          :class="{ 'resource-table-resource-cut': isResourceCut(item) }"
+          :class="{ 'opacity-70': isResourceCut(item) }"
           @click="emitFileClick(item)"
         />
         <oc-button
@@ -1495,10 +1495,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .resource-table {
-  &-resource-cut {
-    opacity: 0.7;
-  }
-
   &-resource-wrapper {
     &:hover > .resource-table-edit-name {
       svg {

@@ -8,8 +8,9 @@
         isResourceSelected,
       'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
         !isResourceSelected,
-      'oc-tile-card-disabled': isResourceDisabled && !isProjectSpaceResource(resource),
-      'state-trashed': isResourceDisabled && isProjectSpaceResource(resource)
+      'oc-tile-card-disabled opacity-70': isResourceDisabled && !isProjectSpaceResource(resource),
+      'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80  [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
+        isResourceDisabled && isProjectSpaceResource(resource)
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
@@ -230,7 +231,6 @@ if (!lazy) {
 .oc-tile-card {
   &-disabled {
     pointer-events: none;
-    opacity: 0.7;
     filter: grayscale(0.6);
 
     // Show tooltip on status indicators without handler
@@ -241,14 +241,6 @@ if (!lazy) {
 
   &-loading-spinner {
     z-index: 99;
-  }
-
-  &.state-trashed {
-    .tile-image,
-    .tile-default-image > svg {
-      filter: grayscale(100%);
-      opacity: 80%;
-    }
   }
 
   .oc-card-media-top {

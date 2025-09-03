@@ -80,7 +80,7 @@
                 <img
                   v-else-if="resource.thumbnail"
                   class="table-preview mr-2 rounded-sm"
-                  :class="{ 'table-preview-disabled': resource.disabled }"
+                  :class="{ 'opacity-80 grayscale': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
                   width="33"
@@ -469,18 +469,5 @@ const openSidebarSharePanel = (space: SpaceResource) => {
 <style lang="scss">
 .table-preview {
   object-fit: cover;
-}
-
-.table-preview-disabled {
-  filter: grayscale(100%);
-  opacity: 80%;
-}
-
-.state-trashed {
-  .tile-preview,
-  .tile-default-image > svg {
-    filter: grayscale(100%);
-    opacity: 80%;
-  }
 }
 </style>

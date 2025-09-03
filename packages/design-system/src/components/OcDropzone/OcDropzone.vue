@@ -1,5 +1,7 @@
 <template>
-  <div class="oc-dropzone flex justify-center items-center border-dashed border-role-outline">
+  <div
+    class="oc-dropzone flex justify-center items-center border-dashed border-role-outline opacity-90 [&_*]:pointer-events-none"
+  >
     <!-- @slot Message inside of the dropzone -->
     <slot />
   </div>
@@ -23,15 +25,6 @@ defineOptions({ name: 'OcDropzone' })
 @layer components {
   .oc-dropzone {
     @apply text-2xl;
-  }
-}
-</style>
-<style lang="scss">
-.oc-dropzone {
-  opacity: 0.9;
-
-  * {
-    pointer-events: none;
   }
 }
 </style>
