@@ -10,7 +10,7 @@
         !isResourceSelected,
       'oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none':
         isResourceDisabled && !isProjectSpaceResource(resource),
-      'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80  [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
+      'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80 [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
         isResourceDisabled && isProjectSpaceResource(resource)
     }"
     @contextmenu="$emit('contextmenu', $event)"
