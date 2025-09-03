@@ -1,7 +1,7 @@
 <template>
   <div
     class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
-    :class="{ 'oc-resource-no-interaction': !isResourceClickable }"
+    :class="{ 'pointer-events-none': !isResourceClickable }"
   >
     <resource-link
       v-if="isIconDisplayed"
@@ -218,10 +218,6 @@ export default defineComponent({
 
 <style lang="scss">
 .oc-resource {
-  &-no-interaction {
-    pointer-events: none;
-  }
-
   &-thumbnail {
     object-fit: cover;
   }

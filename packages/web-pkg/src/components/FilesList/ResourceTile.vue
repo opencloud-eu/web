@@ -8,7 +8,7 @@
         isResourceSelected,
       'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
         !isResourceSelected,
-      'oc-tile-card-disabled opacity-70 grayscale-60':
+      'oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none':
         isResourceDisabled && !isProjectSpaceResource(resource),
       'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80  [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
         isResourceDisabled && isProjectSpaceResource(resource)
@@ -226,19 +226,14 @@ if (!lazy) {
   .oc-tile-card:hover .oc-tile-card-preview {
     @apply p-2;
   }
+  /* Show tooltip on status indicators without handler */
+  .oc-tile-card-disabled span.oc-status-indicators-indicator {
+    pointer-events: all;
+  }
 }
 </style>
 <style lang="scss">
 .oc-tile-card {
-  &-disabled {
-    pointer-events: none;
-
-    // Show tooltip on status indicators without handler
-    span.oc-status-indicators-indicator {
-      pointer-events: all;
-    }
-  }
-
   &-loading-spinner {
     z-index: 99;
   }

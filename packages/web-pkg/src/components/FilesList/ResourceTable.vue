@@ -1491,6 +1491,10 @@ export default defineComponent({
   .oc-table.condensed > tbody > tr {
     @apply h-0;
   }
+  /* Show tooltip on status indicators without handler */
+  .oc-table-data-cell-indicators span.oc-status-indicators-indicator {
+    pointer-events: all;
+  }
 }
 </style>
 <style lang="scss">
@@ -1505,13 +1509,6 @@ export default defineComponent({
 
   &-tag-more {
     cursor: pointer;
-  }
-}
-
-// Show tooltip on status indicators without handler
-.oc-table-data-cell-indicators {
-  span.oc-status-indicators-indicator {
-    pointer-events: all;
   }
 }
 </style>
