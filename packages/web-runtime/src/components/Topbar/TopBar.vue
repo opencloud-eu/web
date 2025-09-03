@@ -2,10 +2,10 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
-    class="sticky grid items-center px-4 h-13"
+    class="sticky grid items-center px-4 h-13 sm:gap-2.5"
     :aria-label="$gettext('Top bar')"
   >
-    <div class="oc-topbar-left flex items-center flex-start">
+    <div class="oc-topbar-left flex items-center flex-start gap-2.5 sm:gap-5">
       <applications-menu
         v-if="appMenuExtensions.length && !isEmbedModeEnabled"
         :menu-items="appMenuExtensions"
@@ -21,7 +21,7 @@
     <div v-if="!contentOnLeftPortal" class="oc-topbar-center flex justify-end sm:justify-center">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
-    <div class="oc-topbar-right flex items-center justify-end">
+    <div class="oc-topbar-right flex items-center justify-end gap-5">
       <portal-target name="app.runtime.header.right" multiple />
     </div>
     <template v-if="!isEmbedModeEnabled">
@@ -217,7 +217,6 @@ export default {
   z-index: 5;
 
   @media (min-width: $oc-breakpoint-small-default) {
-    column-gap: 10px;
     grid-template-columns: v-bind(logoWidth) 9fr 1fr;
     grid-template-rows: 1;
     justify-content: center;
@@ -240,11 +239,7 @@ export default {
   }
 
   .oc-topbar-left {
-    gap: 10px;
     grid-area: logo;
-    @media (min-width: $oc-breakpoint-small-default) {
-      gap: 20px;
-    }
   }
 
   .oc-topbar-center {
@@ -252,7 +247,6 @@ export default {
   }
 
   .oc-topbar-right {
-    gap: 20px;
     grid-area: right;
   }
 }

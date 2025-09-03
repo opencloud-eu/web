@@ -1,6 +1,6 @@
 <template>
   <div
-    class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto"
+    class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0"
   >
     <div id="files-view" v-bind="$attrs" class="outline-0">
       <slot />
@@ -31,7 +31,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .files-view-wrapper {
   grid-template-rows: max-content max-content 1fr;
-  gap: 0 0;
   grid-template-areas:
     'header'
     'upload'

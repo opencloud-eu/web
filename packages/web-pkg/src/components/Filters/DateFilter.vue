@@ -335,10 +335,6 @@ export default defineComponent({
 <style lang="scss">
 .date-filter {
   &-list {
-    &-item {
-      gap: 8px;
-    }
-
     &-hidden {
       visibility: hidden;
       transition: visibility 0.4s 0s;

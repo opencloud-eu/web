@@ -100,9 +100,5 @@ export default defineComponent({
 <style lang="scss">
 .app-details {
   box-shadow: none;
-
-  .app-content {
-    gap: 1rem;
-  }
 }
 </style>

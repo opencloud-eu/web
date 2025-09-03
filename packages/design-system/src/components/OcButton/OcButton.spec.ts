@@ -76,7 +76,7 @@ describe('OcButton', () => {
       ${'size'}                      | ${'oc-button-m'}
       ${'color role'}                | ${'oc-button-secondary'}
       ${'justify content'}           | ${'oc-button-justify-content-center'}
-      ${'gap size'}                  | ${'oc-button-gap-m'}
+      ${'gap size'}                  | ${'gap-2'}
       ${'appearance'}                | ${'oc-button-outline'}
       ${'color role and appearance'} | ${'oc-button-secondary-outline'}
     `('should have attribute "$name" as "$expected"', ({ expected }) => {

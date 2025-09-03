@@ -19,7 +19,10 @@
         <span v-text="$gettext('No apps found matching your search')" />
       </template>
     </no-content-message>
-    <oc-list v-else class="app-tiles">
+    <oc-list
+      v-else
+      class="app-tiles grid [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] gap-4"
+    >
       <app-tile
         v-for="app in filteredApps"
         :key="`app-${app.repository.name}-${app.id}`"
@@ -109,19 +112,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .app-list .app-tiles {
-    @apply grid [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))];
-  }
-}
-</style>
-<style lang="scss">
-.app-list {
-  .app-tiles {
-    gap: 2rem;
-  }
-}
-</style>

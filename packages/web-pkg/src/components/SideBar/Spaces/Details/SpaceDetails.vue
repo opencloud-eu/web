@@ -12,7 +12,7 @@
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
-      class="flex items-center oc-space-details-sidebar-members mb-2 text-sm"
+      class="flex items-center oc-space-details-sidebar-members mb-2 text-sm gap-2"
     >
       <oc-button
         v-if="hasMemberShares"
@@ -235,10 +235,6 @@ const expandSharesPanel = () => {
 </script>
 <style lang="scss" scoped>
 .oc-space-details-sidebar {
-  &-members {
-    gap: var(--oc-space-small);
-  }
-
   &-image img {
     aspect-ratio: 16 / 9;
     object-fit: cover;
