@@ -90,7 +90,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70"
+                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -572,7 +572,6 @@ export default defineComponent({
         &.preview {
           &.disabled {
             pointer-events: none;
-            filter: grayscale(0.6);
           }
         }
       }
