@@ -45,6 +45,7 @@
               id="oc-topbar-account-manage"
               type="router-link"
               :to="accountPageRoute"
+              justify-content="left"
               appearance="raw"
             >
               <oc-icon name="settings-4" fill-type="line" class="p-1" />
@@ -55,6 +56,7 @@
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
+              justify-content="left"
               type="router-link"
               :to="loginLink"
             >
@@ -81,6 +83,7 @@
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
+              justify-content="left"
               :to="accountPageRoute"
               appearance="raw"
             >
@@ -89,7 +92,12 @@
             </oc-button>
           </li>
           <li class="flex items-center">
-            <oc-button id="oc-topbar-account-logout" appearance="raw" @click="logout">
+            <oc-button
+              id="oc-topbar-account-logout"
+              appearance="raw"
+              justify-content="left"
+              @click="logout"
+            >
               <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
             </oc-button>

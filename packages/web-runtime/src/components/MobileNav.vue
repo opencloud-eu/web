@@ -23,6 +23,7 @@
             type="router-link"
             :appearance="item.active ? 'filled' : 'raw-inverse'"
             :color-role="item.active ? 'secondaryContainer' : 'surface'"
+            justify-content="left"
             :no-hover="item.active"
             :to="item.route"
             class="block p-2"

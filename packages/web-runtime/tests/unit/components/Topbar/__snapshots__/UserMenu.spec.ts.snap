@@ -9,12 +9,12 @@ exports[`User Menu component > when no quota and email is set > the user menu do
         <!--v-if--></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -34,12 +34,12 @@ exports[`User Menu component > when no quota and no email is set > the user menu
         <!--v-if--></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -65,12 +65,12 @@ exports[`User Menu component > when quota and no email is set > renders a naviga
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -95,12 +95,12 @@ exports[`User Menu component > when quota is above 80% and below 90% > renders a
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -125,12 +125,12 @@ exports[`User Menu component > when quota is above 90% > renders a danger quota 
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -155,12 +155,12 @@ exports[`User Menu component > when quota is below 80% > renders a primary quota
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -185,12 +185,12 @@ exports[`User Menu component > when quota is not defined > renders no percentag 
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -215,12 +215,12 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
         </div></span>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" justify-content="left" to="[object Object]" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-logout" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-logout" appearance="raw" justify-content="left">
           <oc-icon-stub name="logout-box-r" fill-type="line"></oc-icon-stub> <span>Log out</span>
         </oc-button-stub>
       </li>
@@ -238,12 +238,12 @@ exports[`User Menu component > when user is not logged in > renders a navigation
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" appearance="raw">
+        <oc-button-stub id="oc-topbar-account-manage" type="router-link" to="[object Object]" justify-content="left" appearance="raw">
           <oc-icon-stub name="settings-4" fill-type="line" class="p-1"></oc-icon-stub> <span>Preferences</span>
         </oc-button-stub>
       </li>
       <li class="flex items-center">
-        <oc-button-stub id="oc-topbar-account-login" appearance="raw" type="router-link" to="[object Object]">
+        <oc-button-stub id="oc-topbar-account-login" appearance="raw" justify-content="left" type="router-link" to="[object Object]">
           <oc-icon-stub name="login-box" fill-type="line" class="p-1"></oc-icon-stub> <span>Log in</span>
         </oc-button-stub>
       </li>
