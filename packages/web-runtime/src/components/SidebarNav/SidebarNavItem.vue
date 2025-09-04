@@ -11,6 +11,7 @@
         'w-full',
         'whitespace-nowrap',
         'p-2',
+        'opacity-100',
         { 'active overflow-hidden': active }
       ]"
       :data-nav-id="index"
@@ -22,7 +23,7 @@
     >
       <span class="flex">
         <oc-icon :name="icon" :fill-type="fillType" />
-        <span class="ml-4 text" :class="{ 'text-invisible': collapsed }" v-text="name" />
+        <span class="ml-4 text" :class="{ 'text-invisible opacity-0': collapsed }" v-text="name" />
       </span>
     </oc-button>
   </li>
@@ -97,14 +98,6 @@ export default defineComponent({
 <style lang="scss">
 .oc-sidebar-nav-item-link {
   user-select: none;
-
-  .text {
-    opacity: 1;
-  }
-
-  .text-invisible {
-    opacity: 0 !important;
-  }
 
   &:focus:not(.active),
   &:hover:not(.active) {

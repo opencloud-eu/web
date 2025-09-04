@@ -4,11 +4,11 @@
       <resource-icon class="p-1" :resource="previewItems[0]" />
       <div
         v-if="showSecondLayer"
-        class="ghost-element-layer2 absolute top-[3px] left-[3px] right-[-3px] bottom-[-3px] rounded-sm bg-role-surface-container-high"
+        class="ghost-element-layer2 absolute top-[3px] left-[3px] right-[-3px] bottom-[-3px] rounded-sm bg-role-surface-container-high brightness-82"
       />
       <div
         v-if="showThirdLayer"
-        class="ghost-element-layer3 absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high"
+        class="ghost-element-layer3 absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high brightness-72"
       />
     </div>
     <span
@@ -55,12 +55,10 @@ export default defineComponent({
 <style lang="scss">
 .ghost-element-layer1 {
   .ghost-element-layer2 {
-    filter: brightness(0.82);
     z-index: -1;
   }
 
   .ghost-element-layer3 {
-    filter: brightness(0.72);
     z-index: -2;
   }
 }

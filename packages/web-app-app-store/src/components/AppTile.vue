@@ -1,6 +1,6 @@
 <template>
   <li
-    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col border h-full overflow-hidden"
+    class="app-tile oc-card oc-card-default oc-card-rounded bg-role-surface-container flex flex-col border h-full overflow-hidden shadow-none"
   >
     <router-link :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }">
       <app-image-gallery :app="app" />
@@ -58,9 +58,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-tile {
-  box-shadow: none;
-}
-</style>

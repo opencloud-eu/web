@@ -76,7 +76,6 @@ const toggle = () => {
     cursor: pointer;
 
     &::before {
-      box-shadow: rgb(0 0 0 / 25%) 0px 0px 2px 1px;
       border-radius: 50%;
       content: '';
     }

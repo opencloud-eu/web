@@ -1,15 +1,17 @@
 <template>
   <div
     ref="observerTarget"
-    class="oc-tile-card oc-card flex flex-col h-full"
+    class="oc-tile-card oc-card flex flex-col h-full shadow-none"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
         isResourceSelected,
       'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
         !isResourceSelected,
-      'oc-tile-card-disabled': isResourceDisabled && !isProjectSpaceResource(resource),
-      'state-trashed': isResourceDisabled && isProjectSpaceResource(resource)
+      'oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none':
+        isResourceDisabled && !isProjectSpaceResource(resource),
+      'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80 [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
+        isResourceDisabled && isProjectSpaceResource(resource)
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
@@ -224,33 +226,16 @@ if (!lazy) {
   .oc-tile-card:hover .oc-tile-card-preview {
     @apply p-2;
   }
+  /* Show tooltip on status indicators without handler */
+  .oc-tile-card-disabled span.oc-status-indicators-indicator {
+    pointer-events: all;
+  }
 }
 </style>
 <style lang="scss">
 .oc-tile-card {
-  box-shadow: none;
-
-  &-disabled {
-    pointer-events: none;
-    opacity: 0.7;
-    filter: grayscale(0.6);
-
-    // Show tooltip on status indicators without handler
-    span.oc-status-indicators-indicator {
-      pointer-events: all;
-    }
-  }
-
   &-loading-spinner {
     z-index: 99;
-  }
-
-  &.state-trashed {
-    .tile-image,
-    .tile-default-image > svg {
-      filter: grayscale(100%);
-      opacity: 80%;
-    }
   }
 
   .oc-card-media-top {

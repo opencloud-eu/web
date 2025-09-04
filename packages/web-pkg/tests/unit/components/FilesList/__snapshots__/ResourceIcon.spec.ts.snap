@@ -1,71 +1,71 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size large 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="large" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size large 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="large" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size medium 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="medium" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size medium 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="medium" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size small 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="small" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size small 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="small" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size xlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size xlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size xsmall 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xsmall" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size xsmall 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xsmall" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size xxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size xxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file in size xxxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file in size xxxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size large 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="large" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size large 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="large" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size medium 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="medium" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size medium 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="medium" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size small 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="small" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size small 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="small" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xsmall 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xsmall" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xsmall 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xsmall" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xxlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xxlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xxxlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xxxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with extension "not-a-real-extension" in size xxxlarge 1`] = `"<oc-icon name="resource-type-madeup-extension" color="red" size="xxxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size large 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="large" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size large 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="large" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size medium 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="medium" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size medium 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="medium" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size small 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="small" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size small 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="small" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xsmall 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xsmall" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xsmall 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xsmall" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xxxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-file"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type file with mimetype "not-a-real-mimetype" in size xxxlarge 1`] = `"<oc-icon name="resource-type-file" color="var(--oc-role-on-surface)" size="xxxlarge" class="oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%]"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size large 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="large" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size large 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="large" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size medium 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="medium" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size medium 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="medium" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size small 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="small" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size small 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="small" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size xlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size xlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size xsmall 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xsmall" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size xsmall 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xsmall" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xxlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxxlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xxxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-folder"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxxlarge 1`] = `"<oc-icon name="resource-type-folder" color="var(--oc-color-icon-folder)" size="xxxlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size large 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="large" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size large 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="large" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size medium 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="medium" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size medium 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="medium" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size small 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="small" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size small 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="small" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xsmall 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xsmall" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xsmall 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xsmall" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xxlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xxlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xxlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xxxlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xxxlarge" class="oc-resource-icon inline-flex items-center oc-resource-icon-space"></oc-icon>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xxxlarge 1`] = `"<oc-icon name="layout-grid" color="var(--oc-role-secondary)" size="xxxlarge" class="oc-resource-icon inline-flex items-center"></oc-icon>"`;

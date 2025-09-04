@@ -401,7 +401,9 @@ const extractTbodyTrProps = (item: Item, index: number) => {
       'oc-tbody-tr',
       `oc-tbody-tr-${domSelector(item) || index}`,
       isHighlighted(item) ? 'oc-table-highlighted' : undefined,
-      isDisabled(item) ? 'oc-table-disabled' : undefined
+      ...(isDisabled(item)
+        ? ['oc-table-disabled', 'opacity-70', 'pointer-events-none', 'grayscale-60']
+        : [])
     ].filter(Boolean)
   }
 }
@@ -555,12 +557,6 @@ const handleSort = (field: FieldType) => {
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
-
-  &-disabled {
-    opacity: 0.7;
-    filter: grayscale(0.6);
-    pointer-events: none;
-  }
 
   &-sticky {
     .oc-table-header-cell {

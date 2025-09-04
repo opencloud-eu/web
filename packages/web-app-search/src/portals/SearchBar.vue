@@ -90,7 +90,7 @@
                 :class="{
                   active: isPreviewElementActive(providerSearchResultValue.id)
                 }"
-                class="preview flex items-center py-1 px-2 text-sm min-h-10"
+                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60 [&.disabled]:pointer-events-none"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -562,20 +562,6 @@ export default defineComponent({
       input,
       input:not(:placeholder-shown) {
         z-index: var(--oc-z-index-modal);
-      }
-    }
-  }
-
-  #files-global-search-options {
-    ul {
-      li {
-        &.preview {
-          &.disabled {
-            pointer-events: none;
-            opacity: 0.7;
-            filter: grayscale(0.6);
-          }
-        }
       }
     }
   }

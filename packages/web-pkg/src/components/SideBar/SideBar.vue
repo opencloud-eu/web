@@ -4,7 +4,7 @@
     ref="appSideBar"
     data-testid="app-sidebar"
     tabindex="-1"
-    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden relative"
+    class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden relative focus:shadow-none focus-visible:shadow-none"
     :class="{
       'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
@@ -313,13 +313,6 @@ onBeforeUnmount(() => {
 }
 </style>
 <style lang="scss">
-#app-sidebar {
-  &:focus,
-  &:focus-visible {
-    box-shadow: none;
-  }
-}
-
 @media only screen and (max-width: $oc-breakpoint-small-default) {
   .files-wrapper {
     flex-wrap: nowrap !important;

@@ -4,7 +4,12 @@
     :name="icon.name"
     :color="icon.color"
     :size="size"
-    :class="['oc-resource-icon', 'inline-flex', 'items-center', iconTypeClass]"
+    :class="[
+      'oc-resource-icon',
+      'inline-flex',
+      'items-center',
+      { 'opacity-80 grayscale': isDisabledSpace, '[&_svg]:h-[70%]': !isSpace && !isFolder }
+    ]"
   />
 </template>
 
@@ -126,37 +131,12 @@ export default defineComponent({
       }
     })
 
-    const iconTypeClass = computed(() => {
-      if (unref(isDisabledSpace)) {
-        return 'oc-resource-icon-space-disabled'
-      }
-      if (unref(isSpace)) {
-        return 'oc-resource-icon-space'
-      }
-      if (unref(isFolder)) {
-        return 'oc-resource-icon-folder'
-      }
-      return 'oc-resource-icon-file'
-    })
-
     return {
       icon,
-      iconTypeClass
+      isSpace,
+      isFolder,
+      isDisabledSpace
     }
   }
 })
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  span.oc-resource-icon-file svg {
-    height: 70%;
-  }
-  span.oc-resource-icon-space-disabled {
-    filter: grayscale(100%);
-    opacity: 80%;
-  }
-}
-</style>

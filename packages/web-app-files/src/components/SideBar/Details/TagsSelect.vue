@@ -318,15 +318,8 @@ export default defineComponent({
   .tags-select .vs__actions {
     @apply !hidden;
   }
-}
-</style>
-
-<style lang="scss">
-.tags-select {
-  &-tag {
-    &-link {
-      pointer-events: visible;
-    }
+  .tags-select-tag-link {
+    pointer-events: visible;
   }
 }
 </style>

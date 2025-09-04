@@ -14,13 +14,7 @@
   >
     <slot />
   </oc-bottom-drawer>
-  <div
-    v-else
-    :id="dropId"
-    ref="drop"
-    class="oc-drop oc-box-shadow-medium rounded-sm"
-    @click="onClick"
-  >
+  <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
     <div
       v-if="$slots.default"
       :class="['oc-card oc-card-body', getTailwindPaddingClass(paddingSize)]"
@@ -351,10 +345,5 @@ watch(
   background-color: transparent;
   font-size: inherit;
   line-height: inherit;
-
-  .tippy-content {
-    // note: needed so that the box shadow from `oc-box-shadow-medium` doesn't get suppressed
-    padding: calc(var(--spacing) * 2);
-  }
 }
 </style>
