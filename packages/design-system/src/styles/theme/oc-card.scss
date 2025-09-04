@@ -3,11 +3,6 @@
 // trying to get away with as little as possible
 // and shifting towards using our margin/padding helper classes
 
-.oc-card {
-  box-sizing: border-box;
-  transition: box-shadow 0.1s ease-in-out;
-}
-
 .oc-card-header {
   display: flow-root;
 }

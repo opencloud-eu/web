@@ -1,7 +1,7 @@
 <template>
   <span
     :class="spinnerClass"
-    class="after:border after:border-current after:rounded-full after:size-full"
+    class="after:border after:border-current after:rounded-full after:size-full animate-spin"
     :aria-label="ariaLabel"
     tabindex="-1"
     role="img"
@@ -50,7 +50,6 @@ const spinnerClass = computed(() => {
   @include oc-spinner-size(1);
 
   &::after {
-    animation: ball-clip-rotate 1s linear infinite;
     border-bottom-color: transparent;
     content: '';
   }

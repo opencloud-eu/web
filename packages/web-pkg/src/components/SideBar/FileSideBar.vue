@@ -469,24 +469,5 @@ export default defineComponent({
 <style lang="scss">
 .files-side-bar {
   z-index: 3;
-
-  ._clipboard-success-animation {
-    animation-name: _clipboard-success-animation;
-    animation-duration: 0.8s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: both;
-  }
-}
-
-@keyframes _clipboard-success-animation {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 </style>

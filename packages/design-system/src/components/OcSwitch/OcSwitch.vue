@@ -74,13 +74,11 @@ const toggle = () => {
 .oc-switch {
   &-btn {
     cursor: pointer;
-    transition: background-color 0.25s;
 
     &::before {
       box-shadow: rgb(0 0 0 / 25%) 0px 0px 2px 1px;
       border-radius: 50%;
       content: '';
-      transition: transform 0.25s;
     }
   }
 }

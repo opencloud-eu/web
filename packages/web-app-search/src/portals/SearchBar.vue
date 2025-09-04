@@ -536,7 +536,7 @@ export default defineComponent({
     max-height: calc(100vh - 60px);
   }
   #files-global-search .oc-search-input {
-    @apply inline sm:block;
+    @apply inline sm:block transition-none;
   }
 
   #files-global-search-options .preview-component button,
@@ -554,10 +554,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 #files-global-search {
-  .oc-search-input {
-    transition: 0s;
-  }
-
   #files-global-search-bar {
     @media (max-width: 639px) {
       visibility: hidden;

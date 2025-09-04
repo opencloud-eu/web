@@ -12,7 +12,7 @@
   >
     <oc-td v-if="isHidden" :colspan="lazyColspan">
       <span
-        class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)]"
+        class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"
       />
     </oc-td>
     <slot v-else />
@@ -75,12 +75,10 @@ if (!lazy) {
 }
 </script>
 
-<style lang="scss">
-.shimmer {
-  opacity: 0.1;
-
-  &::after {
-    animation: shimmer 2s infinite;
+<style lang="scss" scoped>
+// needs to be scss because of the linear-gradient
+@layer components {
+  .shimmer::after {
     background-image: linear-gradient(
       90deg,
       rgba(#fff, 0) 0,
@@ -88,13 +86,6 @@ if (!lazy) {
       rgba(#fff, 0.5) 60%,
       rgba(#fff, 0)
     );
-    content: '';
-  }
-
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
   }
 }
 </style>
