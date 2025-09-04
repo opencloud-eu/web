@@ -27,6 +27,7 @@ Feature: Upload
       | textfile.txt      | keep both |
     And "Alice" creates the following resources
       | resource           | type    | content      |
+      | PARENT             | folder  |              |
       | PARENT/parent.txt  | txtFile | some text    |
       | PARENT/example.txt | txtFile | example text |
     And "Alice" uploads the following resources via drag-n-drop

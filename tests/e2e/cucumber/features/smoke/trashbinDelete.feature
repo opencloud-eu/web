@@ -15,6 +15,7 @@ Feature: Trashbin delete
     Given "Alice" creates the following resources
       | resource     | type   |
       | FOLDER       | folder |
+      | PARENT       | folder |
       | PARENT/CHILD | folder |
     And "Alice" uploads the following resources
       | resource               | to           |

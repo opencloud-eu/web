@@ -32,5 +32,6 @@ Feature: Token renewal using refresh token
     And "Alice" opens the "files" app
     And "Alice" creates the following resources
       | resource          | type    | content   |
+      | PARENT            | folder  |           |
       | PARENT/parent.txt | txtFile | some text |
     And "Alice" logs out

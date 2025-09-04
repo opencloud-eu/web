@@ -146,7 +146,8 @@ Feature: spaces.personal
     And "Alice" navigates to the project space "team.1"
     And "Alice" creates the following resources
       | resource            | type    | content             |
-      | parent/textfile.txt | txtFile | some random content |
+      | parent              | folder  |                      |
+      | parent/textfile.txt | txtFile | some random content  |
     When "Alice" uploads the following resources
       | resource     | to     | option  |
       | textfile.txt | parent | replace |

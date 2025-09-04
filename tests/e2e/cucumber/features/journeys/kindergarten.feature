@@ -23,6 +23,10 @@ Feature: Kindergarten can use web to organize a day
     And "Alice" navigates to the personal space page
     And "Alice" creates the following resources
       | resource                             | type   |
+      | groups                               | folder |
+      | groups/Kindergarten Koalas           | folder |
+      | groups/Pre-Schools Pirates           | folder |
+      | groups/Teddy Bear Daycare            | folder |
       | groups/Kindergarten Koalas/meal plan | folder |
       | groups/Pre-Schools Pirates/meal plan | folder |
       | groups/Teddy Bear Daycare/meal plan  | folder |
