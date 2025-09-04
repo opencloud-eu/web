@@ -46,31 +46,3 @@ const name = computed(() => {
   return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .file_info button {
-    @apply whitespace-nowrap;
-  }
-
-  .file_info .file_info__favorite .oc-star {
-    @apply inline-block;
-  }
-}
-</style>
-<style lang="scss">
-.file_info {
-  &__favorite {
-    .oc-star {
-      &-shining svg {
-        fill: #ffba0a !important;
-
-        path:not([fill='none']) {
-          stroke: var(--oc-role-secondary);
-        }
-      }
-    }
-  }
-}
-</style>

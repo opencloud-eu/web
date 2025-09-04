@@ -168,12 +168,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-#nav-highlighter {
-  svg {
-    fill: var(--oc-role-on-surface);
-  }
-}
-
 #web-nav-sidebar {
   z-index: 4;
 }

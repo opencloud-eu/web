@@ -10,12 +10,17 @@
       class="oc-avatar-item inline-flex items-center justify-center rounded-[50%]"
       :style="{
         backgroundColor,
-        '--icon-color': iconColor,
         width: avatarWidth,
         height: avatarWidth
       }"
     >
-      <oc-icon v-if="hasIcon" :name="icon" :size="iconSize" :fill-type="iconFillType" />
+      <oc-icon
+        v-if="hasIcon"
+        :name="icon"
+        :color="iconColor"
+        :size="iconSize"
+        :fill-type="iconFillType"
+      />
     </span>
   </div>
 </template>
@@ -106,9 +111,5 @@ const pickBackgroundColor = () => {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 18px;
-
-  .oc-icon > svg {
-    fill: var(--icon-color) !important;
-  }
 }
 </style>
