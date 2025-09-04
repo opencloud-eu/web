@@ -17,7 +17,7 @@
           <incoming-invitations @highlight-new-connections="highlightNewConnections" />
         </div>
       </div>
-      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container rounded-xl m-2">
+      <div id="sciencemesh-connections" class="p-2 bg-role-surface-container rounded-xl m-2 flex-1">
         <connections-panel
           v-model:connections="connections"
           :highlighted-connections="highlightedConnections.map((c) => c.id)"
@@ -125,14 +125,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.sciencemesh-top {
-  @media (max-width: $oc-breakpoint-large-default) {
-    flex-direction: column;
-  }
-}
-#sciencemesh-connections {
-  flex: 1;
-}
-</style>

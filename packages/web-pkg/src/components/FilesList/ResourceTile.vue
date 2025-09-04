@@ -240,7 +240,6 @@ if (!lazy) {
 
   .oc-card-media-top {
     aspect-ratio: 16/9;
-    justify-content: center;
 
     .oc-tag {
       &.resource-disabled-indicator {

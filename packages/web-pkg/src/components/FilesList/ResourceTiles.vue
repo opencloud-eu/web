@@ -28,6 +28,7 @@
                   :appearance="currentSortField === option ? 'filled' : 'raw-inverse'"
                   :color-role="currentSortField === option ? 'secondaryContainer' : 'surface'"
                   :no-hover="currentSortField === option"
+                  justify-content="space-between"
                   class="oc-tiles-sort-filter-chip-item"
                   @click="selectSorting(option)"
                 >
@@ -656,11 +657,5 @@ onBeforeUnmount(() => {
 <style lang="scss">
 .oc-tiles {
   grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
-
-  &-sort-filter-chip {
-    &-item {
-      justify-content: space-between !important;
-    }
-  }
 }
 </style>

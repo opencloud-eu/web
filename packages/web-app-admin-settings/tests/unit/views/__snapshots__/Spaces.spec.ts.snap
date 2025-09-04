@@ -3,7 +3,7 @@
 exports[`Spaces view > loading states > should render spaces list after loading has been finished 1`] = `
 "<div>
   <main class="flex app-content size-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
+    <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
         <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface top-0 sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">

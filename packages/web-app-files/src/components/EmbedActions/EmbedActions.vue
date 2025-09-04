@@ -1,6 +1,6 @@
 <template>
   <section
-    class="files-embed-actions w-full flex items-center justify-between my-2 text-role-on-chrome gap-2"
+    class="files-embed-actions w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
   >
     <oc-text-input
       v-if="chooseFileName"
@@ -179,6 +179,5 @@ export default defineComponent({
 .files-embed-actions {
   // Prevent .snackbar from overlapping the actions
   z-index: calc(var(--oc-z-index-modal) + 2);
-  flex-wrap: wrap;
 }
 </style>

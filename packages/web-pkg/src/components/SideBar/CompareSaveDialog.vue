@@ -1,5 +1,5 @@
 <template>
-  <div class="compare-save-dialog w-full flex justify-between items-center">
+  <div class="compare-save-dialog w-full flex flex-row flex-wrap justify-between items-center">
     <span v-if="saved" class="state-indicator flex items-center">
       <oc-icon name="checkbox-circle" />
       <span class="ml-2" v-text="$gettext('Changes saved')" />
@@ -85,8 +85,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.compare-save-dialog {
-  flex-flow: row wrap;
-}
-</style>

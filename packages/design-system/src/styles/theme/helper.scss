@@ -88,14 +88,3 @@
     border-top-right-radius: 5px;
   }
 }
-
-
-
-.oc-bottom-drawer li,
-.oc-drop li {
-  a,
-  .item-has-switch,
-  button:not([role='switch']) {
-    justify-content: flex-start;
-  }
-}

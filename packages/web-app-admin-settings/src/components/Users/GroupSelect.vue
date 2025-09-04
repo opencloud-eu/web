@@ -15,7 +15,7 @@
       <template #selected-option="{ displayName, id }">
         <span class="flex justify-center">
           <avatar-image
-            class="flex oc-align-self-center mr-2"
+            class="flex self-center mr-2"
             :width="16.8"
             :userid="id"
             :user-name="displayName"
@@ -27,7 +27,7 @@
         <div class="flex">
           <span class="flex justify-center">
             <avatar-image
-              class="flex oc-align-self-center mr-2"
+              class="flex self-center mr-2"
               :width="16.8"
               :userid="id"
               :user-name="displayName"

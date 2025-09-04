@@ -5,7 +5,7 @@
     v-model="inputValue"
     :option="o"
     :label="o"
-    class="oc-display-block"
+    class="block"
   />
   <p>Selection: {{ inputValue || 'None' }}</p>
 </template>

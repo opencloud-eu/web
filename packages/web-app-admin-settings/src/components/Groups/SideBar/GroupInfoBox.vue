@@ -44,9 +44,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.gr-info {
-  align-items: center;
-  flex-direction: column;
-}
-</style>

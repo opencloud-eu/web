@@ -34,14 +34,14 @@
       />
       <span
         v-if="!action.hideLabel"
-        class="oc-files-context-action-label flex"
+        class="oc-files-context-action-label flex flex-col"
         data-testid="action-label"
       >
         <span v-text="action.label(actionOptions)" />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
-        class="oc-files-context-action-shortcut text-sm"
+        class="oc-files-context-action-shortcut text-sm flex-row-reverse"
         v-text="action.shortcut"
       />
     </oc-button>
@@ -166,12 +166,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.oc-files-context-action-label {
-  flex-direction: column;
-}
-
-.oc-files-context-action-shortcut {
-  justify-content: right !important;
-}
-</style>

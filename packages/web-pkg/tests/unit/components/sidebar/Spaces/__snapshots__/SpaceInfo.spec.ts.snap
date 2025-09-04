@@ -4,7 +4,7 @@ exports[`SpaceInfo > shows space info 1`] = `
 "<div class="space_info grid items-center p-2">
   <div class="space_info__body flex items-center text-sm">
     <div class="mr-2">
-      <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="medium" type="span" class="oc-display-block"></oc-icon-stub>
+      <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="medium" type="span" class="block"></oc-icon-stub>
     </div>
     <div>
       <h3 data-testid="space-info-name" class="font-semibold m-0 text-base"> space</h3> <span data-testid="space-info-subtitle"></span>

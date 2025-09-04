@@ -44,7 +44,7 @@
             <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" />
             <span class="text-left">
               <span
-                class="role-dropdown-list-option-label font-semibold oc-display-block w-full leading-4"
+                class="role-dropdown-list-option-label font-semibold block w-full leading-4"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"
               />
               <span class="text-sm leading-4">{{
@@ -105,11 +105,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.role-dropdown-list {
-  button {
-    justify-content: space-between !important;
-  }
-}
-</style>

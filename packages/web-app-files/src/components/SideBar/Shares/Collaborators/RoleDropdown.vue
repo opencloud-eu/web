@@ -49,6 +49,7 @@
             :class="{
               selected: isSelectedRole(role)
             }"
+            justify-content="space-between"
             :appearance="isSelectedRole(role) ? 'filled' : 'raw-inverse'"
             :color-role="isSelectedRole(role) ? 'secondaryContainer' : 'surface'"
             @click="selectRole(role)"
@@ -295,9 +296,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.files-recipient-role-drop-btn {
-  justify-content: space-between !important;
-}
-</style>

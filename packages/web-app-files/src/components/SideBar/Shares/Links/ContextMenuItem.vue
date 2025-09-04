@@ -2,6 +2,7 @@
   <oc-button
     appearance="raw"
     class="p-2 action-menu-item"
+    justify-content="left"
     :type="option.to ? 'router-link' : 'button'"
     :to="option.to"
     @click="option.method"

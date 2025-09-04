@@ -94,6 +94,7 @@
             <oc-button
               class="oc-modal-body-actions-confirm-password action-menu-item"
               appearance="raw"
+              justify-content="left"
               @click="$emit('confirm', { copyPassword: true })"
             >
               {{ $gettext('Copy link and password') }}

@@ -22,7 +22,7 @@
     </oc-list>
     <div class="size-full">
       <div class="epub-reader-controls flex items-center m-2">
-        <div class="epub-reader-controls-font-size flex oc-button-group">
+        <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group">
           <oc-button
             v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"
             :aria-label="$gettext('Decrease font size')"
@@ -280,10 +280,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.epub-reader {
-  &-controls-font-size {
-    flex-wrap: nowrap;
-  }
-}
-</style>

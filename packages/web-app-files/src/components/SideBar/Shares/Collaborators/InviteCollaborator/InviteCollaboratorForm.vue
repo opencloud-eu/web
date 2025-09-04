@@ -70,7 +70,7 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
-                    class="invite-form-share-role-type-item flex items-center w-full py-1 px-2"
+                    class="invite-form-share-role-type-item flex justify-between items-center w-full py-1 px-2"
                     :class="{
                       'bg-role-secondary-container': option.id === currentShareRoleType.id
                     }"
@@ -633,15 +633,10 @@ export default defineComponent({
     @apply w-3xs;
   }
 }
-</style>
-<style lang="scss">
-#new-collaborators-form {
-  .vs__actions {
-    cursor: inherit;
-    flex-wrap: nowrap;
-  }
-}
-.invite-form-share-role-type-item {
-  justify-content: space-between !important;
+
+/* overwrite vue-select vendor styling */
+#new-collaborators-form .vs__actions {
+  @apply flex-nowrap;
+  cursor: inherit;
 }
 </style>

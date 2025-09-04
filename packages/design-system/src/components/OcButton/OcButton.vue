@@ -178,7 +178,7 @@ const onClick = (event: MouseEvent) => {
     @apply py-1.5 px-2.5;
   }
   .oc-button {
-    @apply rounded-sm;
+    @apply rounded-sm items-center;
   }
   .oc-button-group {
     @apply inline-flex flex-row flex-wrap rounded-sm outline outline-role-secondary outline-offset-[-1px];
@@ -239,8 +239,6 @@ const onClick = (event: MouseEvent) => {
 }
 
 .oc-button {
-  align-items: center;
-
   @layer components {
     &-primary {
       @include oc-button-color-role(var(--oc-role-primary), var(--oc-role-on-primary));

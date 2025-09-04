@@ -22,13 +22,14 @@
       class="w-xs"
       @show-drop="updateAppIcons"
     >
-      <div class="oc-display-block relative">
+      <div class="block relative">
         <oc-list class="applications-list">
           <li v-for="(n, nid) in sortedMenuItems" :key="`apps-menu-${nid}`">
             <oc-button
               :key="n.url ? 'apps-menu-external-link' : 'apps-menu-internal-link'"
               :appearance="isMenuItemActive(n) ? 'filled' : 'raw-inverse'"
               :color-role="isMenuItemActive(n) ? 'secondaryContainer' : 'surface'"
+              justify-content="left"
               gap-size="large"
               :class="{ 'router-link-active': isMenuItemActive(n), active: isMenuItemActive(n) }"
               :data-test-id="n.id"
