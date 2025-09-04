@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: enable feedback link and fix button color [[#1145](https://github.com/opencloud-eu/web/pull/1145)]
 - refactor: gaps to tailwind [[#1136](https://github.com/opencloud-eu/web/pull/1136)]
 - chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
 - refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
