@@ -100,22 +100,16 @@ export default defineComponent({
 
   .text {
     opacity: 1;
-    transition: all 0.3s;
   }
 
   .text-invisible {
     opacity: 0 !important;
-    transition: 0s;
   }
 
   &:focus:not(.active),
   &:hover:not(.active) {
     // must not be a tailwind layer because we're overwriting colors from the button mixin
     background: var(--oc-role-surface-container-highest) !important;
-  }
-
-  .oc-icon svg {
-    transition: all 0.3s;
   }
 }
 </style>

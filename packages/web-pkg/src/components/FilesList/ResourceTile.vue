@@ -15,7 +15,7 @@
   >
     <div
       v-if="isHidden"
-      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)]"
+      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-20 after:animate-shimmer"
     />
     <template v-else>
       <resource-link
@@ -273,25 +273,16 @@ if (!lazy) {
     z-index: 1;
   }
 
-  &-lazy-shimmer {
-    opacity: 0.2;
-  }
-
-  &-lazy-shimmer::after {
-    animation: shimmer 2s infinite;
-    background-image: linear-gradient(
-      90deg,
-      rgba(#4c5f79, 0) 0,
-      rgba(#4c5f79, 0.2) 20%,
-      rgba(#4c5f79, 0.5) 60%,
-      rgba(#4c5f79, 0)
-    );
-    content: '';
-  }
-
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
+  @layer components {
+    // needs to be scss because of the linear-gradient
+    &-lazy-shimmer::after {
+      background-image: linear-gradient(
+        90deg,
+        rgba(#4c5f79, 0) 0,
+        rgba(#4c5f79, 0.2) 20%,
+        rgba(#4c5f79, 0.5) 60%,
+        rgba(#4c5f79, 0)
+      );
     }
   }
 }

@@ -7,8 +7,8 @@
       aria-hidden="true"
       :class="{
         'oc-avatars-stacked': stacked,
-        'oc-avatars-hover-effect': hasHoverEffect,
-        '[&>*]:hover:transform-[scale(1.1)]': hasHoverEffect,
+        'oc-avatars-hover-effect [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
+          hasHoverEffect,
         ...getTailwindGapClass(gapSize)
       }"
     >
@@ -204,10 +204,6 @@ onMounted(() => {
   flex-flow: row nowrap;
 
   &-hover-effect {
-    > * {
-      transition: transform 0.2s ease-out;
-    }
-
     > *:hover {
       z-index: 1000 !important;
     }

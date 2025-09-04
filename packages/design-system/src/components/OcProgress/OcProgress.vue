@@ -11,7 +11,7 @@
   >
     <div
       v-if="!indeterminate"
-      class="oc-progress-current absolute size-full"
+      class="absolute size-full transition-[width] duration-500"
       :style="{ width: progressValue, backgroundColor: color }"
     ></div>
     <div v-else class="oc-progress-indeterminate">
@@ -81,10 +81,6 @@ const progressValue = computed(() => {
 
 <style lang="scss">
 .oc-progress {
-  &-current {
-    transition: width 0.5s;
-  }
-
   &-indeterminate-first {
     animation-duration: 2s;
     animation-name: indeterminate-first;
