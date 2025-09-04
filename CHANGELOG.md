@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- refactor: remaining flex props, display and fill to tailwind [[#1146](https://github.com/opencloud-eu/web/pull/1146)]
 - refactor: box-shadow, opacity, filter and pointer-event to tailwind [[#1142](https://github.com/opencloud-eu/web/pull/1142)]
 - refactor: transitions and animations to tailwind [[#1141](https://github.com/opencloud-eu/web/pull/1141)]
 - feat: enable feedback link and fix button color [[#1145](https://github.com/opencloud-eu/web/pull/1145)]
