@@ -45,6 +45,7 @@
               id="oc-topbar-account-manage"
               type="router-link"
               :to="accountPageRoute"
+              justify-content="left"
               appearance="raw"
             >
               <oc-icon name="settings-4" fill-type="line" class="p-1" />
@@ -55,6 +56,7 @@
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
+              justify-content="left"
               type="router-link"
               :to="loginLink"
             >
@@ -72,7 +74,7 @@
               background-color="var(--oc-role-chrome)"
             />
             <span :class="{ 'py-1': !user.mail }">
-              <span class="oc-display-block" v-text="user.displayName" />
+              <span class="block" v-text="user.displayName" />
               <span v-if="user.mail" class="text-sm" v-text="user.mail" />
               <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
             </span>
@@ -81,6 +83,7 @@
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
+              justify-content="left"
               :to="accountPageRoute"
               appearance="raw"
             >
@@ -89,7 +92,12 @@
             </oc-button>
           </li>
           <li class="flex items-center">
-            <oc-button id="oc-topbar-account-logout" appearance="raw" @click="logout">
+            <oc-button
+              id="oc-topbar-account-logout"
+              appearance="raw"
+              justify-content="left"
+              @click="logout"
+            >
               <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
             </oc-button>

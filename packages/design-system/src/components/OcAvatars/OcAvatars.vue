@@ -3,7 +3,7 @@
     <span
       ref="avatarsRef"
       v-oc-tooltip="tooltip"
-      class="oc-avatars inline-flex w-fit"
+      class="oc-avatars inline-flex w-fit flex-nowrap flex-row"
       aria-hidden="true"
       :class="{
         'oc-avatars-stacked': stacked,
@@ -200,9 +200,6 @@ onMounted(() => {
 </style>
 <style lang="scss">
 .oc-avatars {
-  box-sizing: border-box;
-  flex-flow: row nowrap;
-
   &-hover-effect {
     > *:hover {
       z-index: 1000 !important;

@@ -26,17 +26,17 @@ exports[`SharesNavigation component > renders a shares navigation for both mobil
     <oc-drop-stub title="Navigation" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#shares_navigation_mobile" enforcedroponmobile="false">
       <oc-list-stub raw="false">
         <li>
-          <oc-button-stub to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile bg-role-secondary-container">
+          <oc-button-stub to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile bg-role-secondary-container">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="share-forward" size="medium" type="span"></oc-icon-stub> <span>Shared with me</span>
           </oc-button-stub>
         </li>
         <li>
-          <oc-button-stub to="/files/shares/with-others/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile">
+          <oc-button-stub to="/files/shares/with-others/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="reply" size="medium" type="span"></oc-icon-stub> <span>Shared with others</span>
           </oc-button-stub>
         </li>
         <li>
-          <oc-button-stub to="/files/shares/via-link/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile">
+          <oc-button-stub to="/files/shares/via-link/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="shares-nav-mobile">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="link" size="medium" type="span"></oc-icon-stub> <span>Shared via link</span>
           </oc-button-stub>
         </li>

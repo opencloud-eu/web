@@ -4,6 +4,7 @@
       data-testid="recipient-datepicker-btn"
       class="files-collaborators-expiration-button p-2 action-menu-item"
       appearance="raw"
+      justify-content="left"
       gap-size="none"
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
       @click="showDatePickerModal"

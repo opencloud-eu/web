@@ -14,6 +14,7 @@
     appearance="raw"
     class="p-2 action-menu-item"
     :class="option.class"
+    justify-content="left"
     :type="option.to ? 'router-link' : 'button'"
     :to="option.to"
     v-bind="option.additionalAttributes || {}"

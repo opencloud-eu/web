@@ -31,6 +31,7 @@
             <oc-button
               type="router-link"
               class="shares-nav-mobile"
+              justify-content="left"
               :to="navItem.to"
               :class="{ 'bg-role-secondary-container': navItem.active }"
               appearance="raw"

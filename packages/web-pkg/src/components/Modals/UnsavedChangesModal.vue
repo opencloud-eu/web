@@ -1,6 +1,6 @@
 <template>
   <span
-    class="oc-display-inline-block mb-4"
+    class="inline-block mb-4"
     v-text="$gettext('Your changes were not saved. Do you want to save them?')"
   />
   <div class="my-4"></div>

@@ -7,7 +7,7 @@
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
-          <oc-icon name="arrow-drop-left" fill-type="line" />
+          <oc-icon name="arrow-drop-left" fill-type="line" color="var(--oc-role-on-surface)" />
         </router-link>
       </li>
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
@@ -26,7 +26,7 @@
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
-          <oc-icon name="arrow-drop-right" fill-type="line" />
+          <oc-icon name="arrow-drop-right" fill-type="line" color="var(--oc-role-on-surface)" />
         </router-link>
       </li>
     </ol>
@@ -169,15 +169,6 @@ const bindPageLink = (page: Page) => {
 .oc-pagination {
   &-list {
     list-style: none;
-
-    &-item {
-      &-prev,
-      &-next {
-        > .oc-icon > svg {
-          fill: var(--oc-role-on-surface);
-        }
-      }
-    }
   }
 }
 </style>

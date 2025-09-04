@@ -1,6 +1,6 @@
 <template>
   <main class="flex app-content size-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex size-full flex-wrap">
+    <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <app-loading-spinner v-if="loading" />
       <template v-else>
         <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
@@ -217,19 +217,6 @@ export default defineComponent({
 
 <style lang="scss">
 #admin-settings-app-bar {
-  box-sizing: border-box;
   z-index: 2;
-}
-
-.admin-settings-app-bar-controls {
-  @media (max-width: $oc-breakpoint-xsmall-max) {
-    justify-content: space-between;
-  }
-}
-
-@media only screen and (max-width: $oc-breakpoint-small-default) {
-  .admin-settings-wrapper {
-    flex-wrap: nowrap !important;
-  }
 }
 </style>

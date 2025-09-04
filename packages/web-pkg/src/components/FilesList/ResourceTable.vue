@@ -112,7 +112,7 @@
             }
           "
         >
-          <oc-icon name="edit-2" fill-type="line" size="small" />
+          <oc-icon name="edit-2" fill-type="line" size="small" color="var(--oc-role-on-surface)" />
         </oc-button>
       </div>
       <slot name="additionalResourceContent" :resource="item" />
@@ -1499,14 +1499,6 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .resource-table {
-  &-resource-wrapper {
-    &:hover > .resource-table-edit-name {
-      svg {
-        fill: var(--oc-role-on-surface);
-      }
-    }
-  }
-
   &-tag-more {
     cursor: pointer;
   }

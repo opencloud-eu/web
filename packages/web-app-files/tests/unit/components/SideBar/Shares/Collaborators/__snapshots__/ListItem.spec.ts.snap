@@ -1,27 +1,27 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Collaborator ListItem component > share inheritance indicators > show when sharedParentRoute is given 1`] = `
-"<div data-v-ccf14be2="" data-testid="collaborator-user-item-einstein" class="files-collaborators-collaborator py-1">
-  <div data-v-ccf14be2="" class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
-    <div data-v-ccf14be2="" class="flex items-center">
-      <div data-v-ccf14be2="">
-        <user-avatar-stub data-v-ccf14be2="" userid="3" username="einstein" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
+"<div data-testid="collaborator-user-item-einstein" class="files-collaborators-collaborator py-1">
+  <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
+    <div class="flex items-center">
+      <div>
+        <user-avatar-stub userid="3" username="einstein" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
-      <div data-v-ccf14be2="" class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
-        <div data-v-ccf14be2="" class="truncate"><span data-v-ccf14be2="" aria-hidden="true" class="files-collaborators-collaborator-name">einstein</span> <span data-v-ccf14be2="" class="oc-invisible-sr">Share receiver name: einstein</span>
+      <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
+        <div class="truncate"><span aria-hidden="true" class="files-collaborators-collaborator-name">einstein</span> <span class="oc-invisible-sr">Share receiver name: einstein</span>
           <!--v-if-->
         </div>
-        <div data-v-ccf14be2="">
-          <div data-v-ccf14be2="" class="flex flex-nowrap items-center">
-            <role-dropdown-stub data-v-ccf14be2="" existingsharerole="undefined" existingsharepermissions="" domselector="1" mode="edit" showicon="false" islocked="false" isexternal="false" class="files-collaborators-collaborator-role max-w-full"></role-dropdown-stub>
+        <div>
+          <div class="flex flex-nowrap items-center">
+            <role-dropdown-stub existingsharerole="undefined" existingsharepermissions="" domselector="1" mode="edit" showicon="false" islocked="false" isexternal="false" class="files-collaborators-collaborator-role max-w-full"></role-dropdown-stub>
           </div>
         </div>
       </div>
     </div>
-    <div data-v-ccf14be2="" class="flex items-center files-collaborators-collaborator-navigation">
+    <div class="flex items-center justify-end files-collaborators-collaborator-navigation">
       <!--v-if-->
-      <oc-icon-stub data-v-ccf14be2="" name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
-      <edit-dropdown-stub data-v-ccf14be2="" accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="files-collaborators-collaborator-edit ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
+      <oc-icon-stub name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
+      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="files-collaborators-collaborator-edit ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
     </div>
   </div>
 </div>"

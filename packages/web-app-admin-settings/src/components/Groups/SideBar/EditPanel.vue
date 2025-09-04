@@ -150,11 +150,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#group-edit-panel {
-  .group-info {
-    align-items: center;
-    flex-direction: column;
-  }
-}
-</style>

@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center files-collaborators-collaborator-navigation">
+      <div class="flex items-center justify-end files-collaborators-collaborator-navigation">
         <expiration-date-indicator
           v-if="hasExpirationDate"
           class="files-collaborators-collaborator-expiration ml-1 p-1"
@@ -420,10 +420,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.files-collaborators-collaborator-navigation {
-  align-items: center;
-  justify-content: end;
-}
-</style>

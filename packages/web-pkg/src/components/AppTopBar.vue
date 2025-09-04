@@ -1,8 +1,8 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar flex">
-      <span
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg w-full h-10 gap-6"
+    <div class="oc-app-top-bar self-center flex">
+      <div
+        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between basis-auto sm:basis-xs md:basis-sm bg-role-chrome border border-role-on-chrome rounded-lg w-full h-10 gap-6"
       >
         <div class="open-file-bar flex">
           <resource-list-item
@@ -91,7 +91,7 @@
             <oc-icon name="close" />
           </oc-button>
         </div>
-      </span>
+      </div>
     </div>
   </portal>
 </template>
@@ -206,19 +206,12 @@ export default defineComponent({
 </style>
 <style lang="scss">
 .oc-app-top-bar {
-  align-self: center;
   grid-column: 1 / 4;
   grid-row: secondRow;
 
   @media (min-width: $oc-breakpoint-small-default) {
     grid-column: 2;
     grid-row: 1;
-  }
-}
-
-.oc-app-top-bar-inner {
-  @media (min-width: $oc-breakpoint-small-default) {
-    flex-basis: 250px;
   }
 }
 

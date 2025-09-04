@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center activity-item">
+  <div class="flex items-center activity-item [&>*]:flex-1">
     <div class="flex items-center text-left">
       <oc-avatar :width="36" :user-name="activity.template.variables?.user?.displayName" />
       <span class="ml-2" v-text="activity.template.variables?.user?.displayName" />
@@ -88,9 +88,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.activity-item > * {
-  flex: 1;
-}
-</style>

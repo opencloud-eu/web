@@ -3,7 +3,7 @@
     class="oc-application-icon inline-flex items-center justify-center rounded-sm w-8 h-8"
     :style="iconStyle"
   >
-    <oc-icon :name="icon" :color="iconColor" size="medium" />
+    <oc-icon :name="icon" color="var(--oc-role-on-secondary)" size="medium" />
   </div>
 </template>
 
@@ -31,9 +31,6 @@ export interface Props {
 
 const { icon, colorPrimary } = defineProps<Props>()
 
-const iconColor = computed(() => {
-  return 'rgba(255,255,255,0.7)'
-})
 const primaryColor = computed(() => {
   return getHexFromCssVar(colorPrimary || '')
 })
@@ -57,13 +54,3 @@ const iconStyle = computed(() => {
   }
 })
 </script>
-
-<style lang="scss">
-.oc-application-icon {
-  .oc-icon {
-    svg {
-      fill: var(--oc-role-on-secondary) !important;
-    }
-  }
-}
-</style>

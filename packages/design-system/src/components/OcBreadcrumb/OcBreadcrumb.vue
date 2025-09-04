@@ -4,7 +4,7 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation} overflow-visible`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0">
+    <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0 flex-nowrap">
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -337,7 +337,6 @@ const dropItemStyling = (
 .oc-breadcrumb {
   &-list {
     list-style: none;
-    flex-wrap: nowrap;
   }
 }
 </style>
