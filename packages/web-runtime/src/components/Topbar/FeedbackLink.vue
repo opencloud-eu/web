@@ -6,7 +6,7 @@
       :href="hrefOrFallback"
       target="_blank"
       appearance="raw-inverse"
-      color-role="surface"
+      color-role="chrome"
       :aria-label="ariaLabelOrFallback"
       aria-describedby="oc-feedback-link-description"
       no-hover
@@ -41,18 +41,13 @@ export default defineComponent({
   },
   computed: {
     hrefOrFallback() {
-      return this.href || 'https://opencloud.eu'
+      return this.href || 'https://opencloud.eu/feedback-web'
     },
     ariaLabelOrFallback() {
-      return this.ariaLabel || this.$gettext('OpenCloud feedback survey')
+      return this.ariaLabel || this.$gettext('Share improvement ideas')
     },
     descriptionOrFallback() {
-      return (
-        this.description ||
-        this.$gettext(
-          "Provide your feedback: We'd like to improve the web design and would be happy to hear your feedback. Thank you! Your OpenCloud team."
-        )
-      )
+      return this.description || this.$gettext('Share improvement ideas')
     }
   }
 })
