@@ -6,9 +6,9 @@ exports[`OcTextInput > password input field > password policy > displays error s
   </label>
   <div class="relative">
     <!--v-if-->
-    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-20" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex oc-text-input-show-password-toggle px-2">
+    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-20" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex oc-text-input-show-password-toggle px-2">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -16,10 +16,10 @@ exports[`OcTextInput > password input field > password policy > displays error s
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
-      </button> <button type="button" aria-label="Copy password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex oc-text-input-copy-password-button px-2">
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+      </button> <button type="button" aria-label="Copy password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex oc-text-input-copy-password-button px-2">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/file-copy-fill.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/file-copy-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -27,13 +27,13 @@ exports[`OcTextInput > password input field > password policy > displays error s
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
       <!--v-if-->
     </div>
     <portal to="app.design-system.password-policy">
       <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
-        <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon oc-icon-s box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/close-circle-fill.svg" transform-source="(svg) => {
+        <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon box-content size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/close-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -41,7 +41,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" style="fill: var(--oc-role-error);"></svg></span> <span class="oc-text-input-danger">8+ letters</span>
+    }" aria-hidden="true" focusable="false" style="fill: var(--oc-role-error);" class="size-4"></svg></span> <span class="oc-text-input-danger">8+ letters</span>
           <!--v-if-->
         </div>
       </div>
@@ -59,9 +59,9 @@ exports[`OcTextInput > password input field > password policy > displays success
   </label>
   <div class="relative">
     <!--v-if-->
-    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-21" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex oc-text-input-show-password-toggle px-2">
+    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-21" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex oc-text-input-show-password-toggle px-2">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -69,10 +69,10 @@ exports[`OcTextInput > password input field > password policy > displays success
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
-      </button> <button type="button" aria-label="Copy password" class="oc-button oc-button-s oc-button-justify-content-center oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 inline-flex oc-text-input-copy-password-button px-2">
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+      </button> <button type="button" aria-label="Copy password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex oc-text-input-copy-password-button px-2">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon oc-icon-s box-content"><svg data-testid="inline-svg-stub" src="icons/file-copy-fill.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/file-copy-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -80,13 +80,13 @@ exports[`OcTextInput > password input field > password policy > displays success
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
       <!--v-if-->
     </div>
     <portal to="app.design-system.password-policy">
       <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
-        <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon oc-icon-s box-content mr-1"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-fill.svg" transform-source="(svg) => {
+        <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon box-content size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -94,7 +94,7 @@ exports[`OcTextInput > password input field > password policy > displays success
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-surface);"></svg></span> <span class="">8+ letters</span>
+    }" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-surface);" class="size-4"></svg></span> <span class="">8+ letters</span>
           <!--v-if-->
         </div>
       </div>

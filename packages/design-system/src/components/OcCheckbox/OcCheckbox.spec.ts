@@ -45,9 +45,9 @@ describe('OcCheckbox', () => {
   })
   describe('input size', () => {
     it.each([
-      { size: 'small', class: 'oc-checkbox-s' },
-      { size: 'medium', class: 'oc-checkbox-m' },
-      { size: 'large', class: 'oc-checkbox-l' }
+      { size: 'small', class: 'size-3' },
+      { size: 'medium', class: 'size-4' },
+      { size: 'large', class: 'size-5' }
     ])('valid size options', (item) => {
       const wrapper = getWrapperWithProps({ size: item.size as 'small' | 'medium' | 'large' })
       const checkboxElement = wrapper.find<HTMLInputElement>(checkboxSelector)

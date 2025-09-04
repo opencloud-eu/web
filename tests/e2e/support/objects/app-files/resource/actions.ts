@@ -1,7 +1,7 @@
 import { Download, Locator, Page, Response, expect } from '@playwright/test'
 import util from 'util'
 import path from 'path'
-import { resourceExists, waitForResources } from './utils'
+import { waitForResources } from './utils'
 import { editor, sidebar } from '../utils'
 import { environment, utils } from '../../../../support'
 import { config } from '../../../../config'
@@ -543,15 +543,6 @@ export const createResources = async (args: createResourceArgs): Promise<void> =
   const resource = paths.pop()
 
   for (const path of paths) {
-    const resourcesExists = await resourceExists({
-      page: page,
-      name: path
-    })
-
-    if (!resourcesExists) {
-      await page.locator(addNewResourceButton).click()
-      await createNewFolder({ page, resource: path })
-    }
     await clickResource({ page, path })
   }
   await createNewFileOrFolder({ page, name: resource, type, content })

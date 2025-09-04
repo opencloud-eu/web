@@ -11,6 +11,7 @@ Feature: access breadcrumb
     And "Alice" logs in
     And "Alice" creates the following resources
       | resource                       | type   |
+      | parent                         | folder |
       | parent/folder%2Fwith%2FSlashes | folder |
     And "Alice" opens folder "parent/folder%2Fwith%2FSlashes"
     And "Alice" creates the following resources

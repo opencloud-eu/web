@@ -92,7 +92,7 @@ export default defineComponent({
 
   .oc-files-context-actions > li a,
   .oc-files-context-actions > li button,
-  .oc-files-context-actions > li span {
+  .oc-files-context-actions > li span:not(.oc-icon) {
     @apply inline-flex justify-start w-full;
   }
 }

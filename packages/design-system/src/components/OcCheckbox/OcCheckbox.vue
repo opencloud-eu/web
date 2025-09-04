@@ -5,8 +5,13 @@
       v-model="model"
       type="checkbox"
       name="checkbox"
-      :class="classes"
-      class="m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary"
+      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden"
+      :class="{
+        'oc-checkbox-checked bg-white': isChecked,
+        'size-3': size === 'small',
+        'size-4': size === 'medium',
+        'size-5': size === 'large'
+      }"
       :value="option"
       :disabled="disabled"
       :aria-label="labelHidden ? label : null"
@@ -19,7 +24,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { isEqual } from 'lodash-es'
-import { getSizeClass, uniqueId } from '../../helpers'
+import { uniqueId } from '../../helpers'
 
 export interface Props {
   /**
@@ -71,21 +76,6 @@ const emit = defineEmits<Emits>()
 
 const model = defineModel<boolean | unknown[]>()
 
-const classes = computed(() => [
-  'oc-checkbox',
-  'rounded-sm',
-  'oc-checkbox-' + getSizeClass(size),
-  { 'oc-checkbox-checked': isChecked.value },
-  { 'bg-white': isChecked.value },
-  'm-0.5',
-  'checked:bg-white',
-  'disabled:bg-role-surface-container-low',
-  'indeterminate:bg-white',
-  'bg-transparent',
-  'inline-block',
-  'overflow-hidden'
-])
-
 const labelClasses = computed(() => ({
   'oc-cursor-pointer': !disabled
 }))
@@ -113,30 +103,12 @@ const keydownEnter = (event: KeyboardEvent) => {
 }
 </style>
 <style lang="scss">
-@mixin oc-form-check-size($factor) {
-  height: $oc-size-form-check-default * $factor;
-  width: $oc-size-form-check-default * $factor;
-}
-
 .oc-checkbox {
-  @include oc-form-check-size(1);
   -webkit-appearance: none;
   -moz-appearance: none;
 
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-
-  &-s {
-    @include oc-form-check-size(0.7);
-  }
-
-  &-m {
-    @include oc-form-check-size(1);
-  }
-
-  &-l {
-    @include oc-form-check-size(1.5);
-  }
 
   &:hover {
     cursor: pointer;

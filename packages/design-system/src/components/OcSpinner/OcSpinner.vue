@@ -1,7 +1,15 @@
 <template>
   <span
-    :class="spinnerClass"
-    class="after:border after:border-current after:rounded-full after:size-full animate-spin"
+    class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin"
+    :class="{
+      'size-2': size === 'xsmall',
+      'size-4': size === 'small',
+      'size-5': size === 'medium',
+      'size-8': size === 'large',
+      'size-10': size === 'xlarge',
+      'size-12': size === 'xxlarge',
+      'size-16': size === 'xxxlarge'
+    }"
     :aria-label="ariaLabel"
     tabindex="-1"
     role="img"
@@ -9,8 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { getSizeClass, SizeType } from '../../helpers'
+import { SizeType } from '../../helpers'
 
 export interface Props {
   /**
@@ -25,30 +32,10 @@ export interface Props {
 }
 
 const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
-
-const spinnerClass = computed(() => {
-  return [
-    'oc-spinner',
-    `oc-spinner-${getSizeClass(size || 'medium')}`,
-    'inline-block',
-    'after:block',
-    'after:bg-transparent',
-    'text-role-on-surface',
-    'relative',
-    'after:relative'
-  ]
-})
 </script>
 
 <style lang="scss">
-@mixin oc-spinner-size($factor) {
-  height: math.round(calc($oc-size-icon-default * $factor / 2)) * 2;
-  width: math.round(calc($oc-size-icon-default * $factor / 2)) * 2;
-}
-
 .oc-spinner {
-  @include oc-spinner-size(1);
-
   &::after {
     border-bottom-color: transparent;
     content: '';
@@ -57,40 +44,6 @@ const spinnerClass = computed(() => {
   &,
   &::after {
     box-sizing: border-box;
-  }
-
-  @layer components {
-    &-xs {
-      @include oc-spinner-size(0.5);
-    }
-
-    &-s {
-      @include oc-spinner-size(0.7);
-    }
-
-    &-search {
-      @include oc-spinner-size(0.8);
-    }
-
-    &-m {
-      @include oc-spinner-size(1);
-    }
-
-    &-l {
-      @include oc-spinner-size(1.5);
-    }
-
-    &-xl {
-      @include oc-spinner-size(2);
-    }
-
-    &-xxl {
-      @include oc-spinner-size(4);
-    }
-
-    &-xxxl {
-      @include oc-spinner-size(8);
-    }
   }
 }
 

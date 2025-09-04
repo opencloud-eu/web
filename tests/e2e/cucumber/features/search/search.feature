@@ -26,6 +26,8 @@ Feature: Search
     And "Alice" creates the following resources
       | resource                   | type   |
       | folder                     | folder |
+      | FolDer                     | folder |
+      | FolDer/child-one           | folder |
       | FolDer/child-one/child-two | folder |
       | strängéनेपालीName          | folder |
     And "Alice" enables the option to display the hidden file
