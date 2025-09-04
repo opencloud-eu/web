@@ -71,6 +71,7 @@ Feature: link
       | lorem.txt     | replace |
     And "Anonymous" creates the following resources
       | resource       | type   |
+      | myfolder       | folder |
       | myfolder/child | folder |
     And "Anonymous" uploads the following resources in public link page
       | resource | type   |
