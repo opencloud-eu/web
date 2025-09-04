@@ -21,7 +21,10 @@
     class="oc-drop oc-box-shadow-medium rounded-sm"
     @click="onClick"
   >
-    <div v-if="$slots.default" :class="['oc-card oc-card-body', paddingClass]">
+    <div
+      v-if="$slots.default"
+      :class="['oc-card oc-card-body', getTailwindPaddingClass(paddingSize)]"
+    >
       <slot />
     </div>
     <slot v-else name="special" />
@@ -32,7 +35,7 @@
 import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getTailwindSizeClass, SizeType, uniqueId } from '../../helpers'
+import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import {
   ComponentPublicInstance,
   computed,
@@ -223,10 +226,6 @@ const triggerMapping = computed(() => {
       hover: 'mouseenter focus'
     }[mode] || mode
   )
-})
-
-const paddingClass = computed(() => {
-  return `p-${getTailwindSizeClass(paddingSize)}`
 })
 
 watch(

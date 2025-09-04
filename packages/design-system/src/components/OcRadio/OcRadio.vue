@@ -5,8 +5,12 @@
       v-model="model"
       type="radio"
       name="radio"
-      :class="classes"
-      class="checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 w-1 overflow-hidden transition-[background-color,border] duration-200 ease-in-out"
+      :class="{
+        'size-3': size === 'small',
+        'size-4': size === 'medium',
+        'size-5': size === 'large'
+      }"
+      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -17,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getSizeClass, uniqueId } from '../../helpers'
+import { uniqueId } from '../../helpers'
 
 export interface Props {
   /**
@@ -60,13 +64,6 @@ const {
 
 const model = defineModel<boolean | unknown>()
 
-const classes = computed(() => [
-  'oc-radio',
-  'oc-radio-' + getSizeClass(size),
-  'm-0',
-  'inline-block'
-])
-
 const labelClasses = computed(() => ({
   'oc-invisible-sr': hideLabel,
   'oc-cursor-pointer': !disabled
@@ -82,11 +79,6 @@ const labelClasses = computed(() => ({
 }
 </style>
 <style lang="scss">
-@mixin oc-form-check-size($factor) {
-  height: $oc-size-form-check-default * $factor;
-  width: $oc-size-form-check-default * $factor;
-}
-
 .oc-radio {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -97,20 +89,6 @@ const labelClasses = computed(() => ({
 
   &:not(:disabled) {
     cursor: pointer;
-  }
-
-  @layer components {
-    &.oc-radio-s {
-      @include oc-form-check-size(0.7);
-    }
-
-    &.oc-radio-m {
-      @include oc-form-check-size(1);
-    }
-
-    &.oc-radio-l {
-      @include oc-form-check-size(1.5);
-    }
   }
 }
 </style>

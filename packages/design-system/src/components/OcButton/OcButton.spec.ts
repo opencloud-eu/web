@@ -55,11 +55,10 @@ describe('OcButton', () => {
   })
   describe('different sizes of button', () => {
     it.each`
-      size         | expectedClass
-      ${'small'}   | ${'oc-button-s'}
-      ${'medium'}  | ${'oc-button-m'}
-      ${'large'}   | ${'oc-button-l'}
-      ${'x-small'} | ${'oc-button-undefined'}
+      size        | expectedClass
+      ${'small'}  | ${'text-sm'}
+      ${'medium'} | ${'text-base'}
+      ${'large'}  | ${'text-lg'}
     `(
       'when size prop is set as $size class $expectedClass should be assigned',
       ({ size, expectedClass }) => {
@@ -73,10 +72,10 @@ describe('OcButton', () => {
   describe('default prop values', () => {
     it.each`
       name                           | expected
-      ${'size'}                      | ${'oc-button-m'}
+      ${'size'}                      | ${'text-base'}
       ${'color role'}                | ${'oc-button-secondary'}
-      ${'justify content'}           | ${'oc-button-justify-content-center'}
       ${'gap size'}                  | ${'gap-2'}
+      ${'justify content'}           | ${'justify-center'}
       ${'appearance'}                | ${'oc-button-outline'}
       ${'color role and appearance'} | ${'oc-button-secondary-outline'}
     `('should have attribute "$name" as "$expected"', ({ expected }) => {
