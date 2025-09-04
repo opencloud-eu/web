@@ -33,10 +33,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.space_info {
-  grid-template-columns: auto 1fr auto;
-  grid-gap: 5px;
-}
-</style>

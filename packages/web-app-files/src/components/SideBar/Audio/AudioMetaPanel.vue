@@ -97,9 +97,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.audio-data-list {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-</style>

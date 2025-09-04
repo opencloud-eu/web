@@ -649,13 +649,11 @@ onBeforeUnmount(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .oc-tiles {
+    grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
+  }
   .oc-tiles-sort-filter-chip .oc-filter-chip-label {
     @apply text-sm;
   }
-}
-</style>
-<style lang="scss">
-.oc-tiles {
-  grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
 }
 </style>

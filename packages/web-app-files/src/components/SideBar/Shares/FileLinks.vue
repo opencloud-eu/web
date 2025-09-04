@@ -57,10 +57,10 @@
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
       </h4>
       <div
-        class="files-links-indirect-list grid [grid-template-rows:0fr] transition-all duration-250 ease-out"
+        class="files-links-indirect-list grid transition-all duration-250 ease-out"
         :class="{
-          'files-links-indirect-list-open': !indirectLinkListCollapsed,
-          'mt-4': !indirectLinkListCollapsed
+          '[grid-template-rows:1fr] mt-4': !indirectLinkListCollapsed,
+          '[grid-template-rows:0fr]': indirectLinkListCollapsed
         }"
       >
         <ul class="oc-list oc-list-divider overflow-hidden" :aria-label="$gettext('Public links')">
@@ -329,10 +329,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.files-links-indirect-list {
-  &-open {
-    grid-template-rows: 1fr;
-  }
-}
-</style>

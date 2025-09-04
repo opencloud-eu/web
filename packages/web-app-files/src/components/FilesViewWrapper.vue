@@ -29,16 +29,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.files-view-wrapper {
-  grid-template-rows: max-content max-content 1fr;
-  grid-template-areas:
-    'header'
-    'upload'
-    'main';
-}
-
 #files-view {
-  grid-area: main;
   z-index: 0;
 }
 </style>

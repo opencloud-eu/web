@@ -1,11 +1,14 @@
 <template>
   <header
     id="oc-topbar"
-    :class="{ 'open-app': contentOnLeftPortal }"
-    class="sticky grid items-center justify-center px-4 h-auto sm:h-13 sm:gap-2.5"
+    :class="[
+      { 'grid-cols-[auto_1fr_1fr]': contentOnLeftPortal },
+      { 'grid-cols-[auto_9fr_1fr]': !contentOnLeftPortal }
+    ]"
+    class="sticky grid items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto]"
     :aria-label="$gettext('Top bar')"
   >
-    <div class="oc-topbar-left flex items-center flex-start gap-2.5 sm:gap-5">
+    <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
       <applications-menu
         v-if="appMenuExtensions.length && !isEmbedModeEnabled"
         :menu-items="appMenuExtensions"
@@ -18,10 +21,10 @@
         />
       </router-link>
     </div>
-    <div v-if="!contentOnLeftPortal" class="oc-topbar-center flex justify-end sm:justify-center">
+    <div v-if="!contentOnLeftPortal" class="flex justify-end sm:justify-center col-2">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
-    <div class="oc-topbar-right flex items-center justify-end gap-5">
+    <div class="flex items-center justify-end gap-5 col-3">
       <portal-target name="app.runtime.header.right" multiple />
     </div>
     <template v-if="!isEmbedModeEnabled">
@@ -211,23 +214,7 @@ export default {
 
 <style lang="scss">
 #oc-topbar {
-  grid-template-areas: 'logo center right' 'secondRow secondRow secondRow';
-  grid-template-columns: 30% 30% 40%;
-  grid-template-rows: 52px auto;
   z-index: 5;
-
-  @media (min-width: $oc-breakpoint-small-default) {
-    grid-template-columns: v-bind(logoWidth) 9fr 1fr;
-    grid-template-rows: 1;
-  }
-
-  &.open-app {
-    grid-template-columns: 30% 30% 40%;
-
-    @media (min-width: $oc-breakpoint-small-default) {
-      grid-template-columns: v-bind(logoWidth) 1fr 1fr;
-    }
-  }
 
   .oc-logo-image {
     image-rendering: auto;
@@ -235,18 +222,6 @@ export default {
     image-rendering: pixelated;
     image-rendering: -webkit-optimize-contrast;
     user-select: none;
-  }
-
-  .oc-topbar-left {
-    grid-area: logo;
-  }
-
-  .oc-topbar-center {
-    grid-area: center;
-  }
-
-  .oc-topbar-right {
-    grid-area: right;
   }
 }
 </style>
