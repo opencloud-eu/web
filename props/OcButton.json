@@ -46,7 +46,7 @@
     "required": false,
     "description": "The alignment of the button content.",
     "default": "center",
-    "type": "'left' | 'center' | 'right' | 'space-around' | 'space-between' | 'space-evenly'"
+    "type": "JustifyContentType"
   },
   {
     "name": "showSpinner",
