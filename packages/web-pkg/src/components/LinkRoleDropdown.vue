@@ -105,11 +105,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.role-dropdown-list {
-  button {
-    justify-content: space-between !important;
-  }
-}
-</style>

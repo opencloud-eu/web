@@ -346,13 +346,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #files-app-bar {
-  box-sizing: border-box;
   z-index: 2;
-
-  .files-app-bar-controls {
-    @media (max-width: $oc-breakpoint-xsmall-max) {
-      justify-content: space-between;
-    }
-  }
 }
 </style>

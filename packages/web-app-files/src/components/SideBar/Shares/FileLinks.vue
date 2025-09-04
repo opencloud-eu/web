@@ -73,7 +73,7 @@
           </li>
         </ul>
       </div>
-      <div class="oc-flex oc-flex-center">
+      <div class="flex justify-center">
         <oc-button
           class="indirect-link-list-toggle"
           appearance="raw"

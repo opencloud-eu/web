@@ -26,7 +26,7 @@
               :error-message="wrongPasswordMessage"
               :label="passwordFieldLabel"
               type="password"
-              class="mb-2"
+              class="mb-2 [&_.oc-text-input-message]:justify-center"
             />
             <oc-button
               appearance="filled"
@@ -311,11 +311,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.oc-link-resolve {
-  .oc-text-input-message {
-    justify-content: center;
-  }
-}
-</style>

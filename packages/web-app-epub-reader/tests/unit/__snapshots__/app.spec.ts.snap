@@ -14,7 +14,7 @@ exports[`Epub reader app > renders correctly 1`] = `
   </ul>
   <div class="size-full">
     <div class="epub-reader-controls flex items-center m-2">
-      <div class="epub-reader-controls-font-size flex oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease">
+      <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

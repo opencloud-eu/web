@@ -313,12 +313,6 @@ onBeforeUnmount(() => {
 }
 </style>
 <style lang="scss">
-@media only screen and (max-width: $oc-breakpoint-small-default) {
-  .files-wrapper {
-    flex-wrap: nowrap !important;
-  }
-}
-
 .sidebar-panel {
   $root: &;
   // visibility is here to prevent focusing panel child elements,

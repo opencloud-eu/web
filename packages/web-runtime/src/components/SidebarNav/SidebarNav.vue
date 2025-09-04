@@ -9,10 +9,11 @@
   >
     <oc-button
       appearance="raw"
-      :class="toggleSidebarButtonClass"
+      :class="{ 'pr-2': !closed }"
       class="toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden transition-all duration-200 ease-out"
       :aria-label="$gettext('Toggle sidebar')"
       :aria-expanded="!closed"
+      :justify-content="closed ? 'center' : 'right'"
       no-hover
       @click="$emit('update:nav-bar-closed', !closed)"
     >
@@ -150,10 +151,6 @@ export default defineComponent({
     return { highlighterAttrs, navItemRefs, backendVersion, webVersion }
   },
   computed: {
-    toggleSidebarButtonClass() {
-      return this.closed ? 'toggle-sidebar-button-collapsed' : 'toggle-sidebar-button-expanded pr-2'
-    },
-
     toggleSidebarButtonIcon() {
       return this.closed ? 'arrow-drop-right' : 'arrow-drop-left'
     },
@@ -179,9 +176,5 @@ export default defineComponent({
 
 #web-nav-sidebar {
   z-index: 4;
-
-  .toggle-sidebar-button-expanded {
-    justify-content: flex-end !important;
-  }
 }
 </style>

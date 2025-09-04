@@ -21,7 +21,7 @@
         @click="toggleImageExpanded"
       />
     </div>
-    <div class="space-header-infos">
+    <div class="space-header-infos flex-1">
       <div class="flex mb-2 items-center justify-between">
         <div class="flex items-center space-header-infos-heading max-w-full">
           <h2 class="space-header-name break-all">{{ space.name }}</h2>
@@ -329,10 +329,6 @@ const openSideBarSharePanel = () => {
     img {
       object-fit: cover;
     }
-  }
-
-  &-infos {
-    flex: 1;
   }
 
   .markdown-container.collapsed {

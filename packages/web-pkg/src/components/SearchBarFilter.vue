@@ -22,6 +22,7 @@
                 size="medium"
                 class="search-bar-filter-item flex items-center w-full py-1 px-2"
                 :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
+                justify-content="space-between"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"
                 @click="onOptionSelected(option)"
@@ -145,8 +146,5 @@ export default defineComponent({
 .oc-location-search {
   z-index: 9999;
   float: right;
-}
-.search-bar-filter-item {
-  justify-content: space-between !important;
 }
 </style>

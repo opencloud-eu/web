@@ -1,6 +1,6 @@
 <template>
   <div class="mt-12">
-    <div class="flex space-info text-center">
+    <div class="flex flex-col items-center space-info text-center">
       <oc-icon name="layout-grid" size="xxlarge" />
       <p v-translate>Select a space to view details</p>
     </div>
@@ -12,9 +12,3 @@ export default defineComponent({
   name: 'SpaceNoSelection'
 })
 </script>
-<style lang="scss">
-.space-info {
-  align-items: center;
-  flex-direction: column;
-}
-</style>

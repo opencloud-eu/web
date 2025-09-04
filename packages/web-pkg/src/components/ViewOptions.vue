@@ -308,10 +308,6 @@ export default defineComponent({
 </style>
 
 <style lang="scss" scoped>
-.viewmode-switch-buttons {
-  flex-flow: initial;
-}
-
 .oc-range {
   -webkit-appearance: none;
 
