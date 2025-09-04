@@ -24,9 +24,11 @@
       </div>
       <div class="relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div class="oc-notifications-loading-background size-full bg-role-surface absolute" />
+          <div
+            class="oc-notifications-loading-background size-full bg-role-surface absolute opacity-60"
+          />
           <oc-spinner
-            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)]"
+            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)] opacity-100"
             size="large"
           />
         </div>
@@ -36,7 +38,11 @@
           v-text="$gettext('Nothing new')"
         />
         <oc-list v-else>
-          <li v-for="(el, index) in notifications" :key="index" class="oc-notifications-item">
+          <li
+            v-for="(el, index) in notifications"
+            :key="index"
+            class="oc-notifications-item [&>a]:text-role-on-surface"
+          >
             <component
               :is="el.computedLink ? 'router-link' : 'div'"
               class="flex items-center"
@@ -271,25 +277,3 @@ export default {
   }
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-notifications-item > a {
-    @apply text-role-on-surface;
-  }
-}
-</style>
-<style lang="scss" scoped>
-.oc-notifications {
-  &-loading {
-    &-background {
-      opacity: 0.6;
-    }
-
-    &-spinner {
-      opacity: 1;
-    }
-  }
-}
-</style>

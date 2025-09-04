@@ -317,7 +317,7 @@ const dropItemStyling = (
 
 @layer components {
   .oc-breadcrumb-item-dragover {
-    @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100;
+    @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100 ring-4 ring-role-secondary-container;
   }
 
   .oc-breadcrumb-list #oc-breadcrumb-contextmenu li button {
@@ -335,10 +335,6 @@ const dropItemStyling = (
 </style>
 <style lang="scss">
 .oc-breadcrumb {
-  &-item-dragover {
-    box-shadow: 0 0 0 5px var(--oc-role-secondary-container);
-  }
-
   &-list {
     list-style: none;
     flex-wrap: nowrap;

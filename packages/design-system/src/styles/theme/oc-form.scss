@@ -145,13 +145,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input[type="number"]::-webkit-outer-spin-button { height: auto; }
 
 /*
- * Removes placeholder transparency in Firefox.
- */
-
-.oc-input::placeholder,
-.oc-textarea::placeholder { opacity: 1; }
-
-/*
  * Improves consistency of cursor style for clickable elements
  */
 

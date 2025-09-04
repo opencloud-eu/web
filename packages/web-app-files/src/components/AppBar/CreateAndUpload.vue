@@ -495,12 +495,4 @@ const folderIconResource = computed(() => {
 #clipboard-btns {
   flex-flow: inherit;
 }
-
-#clipboard-btns.disabled {
-  opacity: 0.6;
-
-  button {
-    opacity: 1;
-  }
-}
 </style>

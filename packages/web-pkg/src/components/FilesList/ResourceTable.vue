@@ -96,7 +96,7 @@
           :parent-folder-link-icon-additional-attributes="
             getParentFolderLinkIconAdditionalAttributes(item)
           "
-          :class="{ 'resource-table-resource-cut': isResourceCut(item) }"
+          :class="{ 'opacity-70': isResourceCut(item) }"
           @click="emitFileClick(item)"
         />
         <oc-button
@@ -1491,14 +1491,14 @@ export default defineComponent({
   .oc-table.condensed > tbody > tr {
     @apply h-0;
   }
+  /* Show tooltip on status indicators without handler */
+  .oc-table-data-cell-indicators span.oc-status-indicators-indicator {
+    pointer-events: all;
+  }
 }
 </style>
 <style lang="scss">
 .resource-table {
-  &-resource-cut {
-    opacity: 0.7;
-  }
-
   &-resource-wrapper {
     &:hover > .resource-table-edit-name {
       svg {
@@ -1509,13 +1509,6 @@ export default defineComponent({
 
   &-tag-more {
     cursor: pointer;
-  }
-}
-
-// Show tooltip on status indicators without handler
-.oc-table-data-cell-indicators {
-  span.oc-status-indicators-indicator {
-    pointer-events: all;
   }
 }
 </style>

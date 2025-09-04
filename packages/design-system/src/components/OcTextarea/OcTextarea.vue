@@ -6,7 +6,7 @@
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline w-full max-w-full overflow-auto"
+      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline w-full max-w-full overflow-auto opacity-70 placeholder:opacity-100"
       :class="{
         'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
           !!errorMessage
@@ -96,13 +96,3 @@ const focus = () => {
 }
 defineExpose({ focus })
 </script>
-
-<style lang="scss">
-.oc-textarea {
-  box-sizing: border-box;
-
-  &:disabled {
-    opacity: 0.7;
-  }
-}
-</style>

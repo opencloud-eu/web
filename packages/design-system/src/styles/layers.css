@@ -172,4 +172,10 @@
     outline-offset: 0;
     box-shadow: 0 0 0 4px var(--oc-role-secondary);
   }
+
+  /* inner outline for visible focus on resource names. outer outlines don't work because of the hidden overflow (due to text truncation) */
+  .oc-resource-details a:focus-visible,
+  .oc-resource-details button:focus-visible {
+    box-shadow: inset 0px 0px 0px 2px var(--oc-role-secondary) !important;
+  }
 }

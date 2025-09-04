@@ -2,7 +2,7 @@
   <main id="files" class="flex h-full max-h-full relative">
     <div
       v-if="dragareaEnabled"
-      class="dragarea absolute inset-0 bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl"
+      class="dragarea absolute inset-0 bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl pointer-events-none"
     />
     <router-view tabindex="0" class="files-wrapper flex-1 h-full flex-wrap" />
   </main>
@@ -43,7 +43,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .dragarea {
-  pointer-events: none;
   z-index: 9;
 }
 </style>

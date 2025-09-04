@@ -1,6 +1,6 @@
 <template>
   <div
-    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container border max-w-xl"
+    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container border max-w-xl shadow-none"
   >
     <div class="p-1">
       <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
@@ -96,9 +96,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-details {
-  box-shadow: none;
-}
-</style>
