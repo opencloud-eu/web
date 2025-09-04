@@ -2,7 +2,7 @@
   <header
     id="oc-topbar"
     :class="{ 'open-app': contentOnLeftPortal }"
-    class="sticky grid items-center justify-center px-4 h-13 sm:gap-2.5"
+    class="sticky grid items-center justify-center px-4 h-auto sm:h-13 sm:gap-2.5"
     :aria-label="$gettext('Top bar')"
   >
     <div class="oc-topbar-left flex items-center flex-start gap-2.5 sm:gap-5">
