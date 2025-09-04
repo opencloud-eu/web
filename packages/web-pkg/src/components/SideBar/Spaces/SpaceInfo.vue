@@ -5,7 +5,7 @@
         <oc-icon
           name="layout-grid"
           :size="resource.description ? 'large' : 'medium'"
-          class="oc-display-block"
+          class="block"
         />
       </div>
       <div>

@@ -25,7 +25,7 @@
             :color-role="item.active ? 'secondaryContainer' : 'surface'"
             :no-hover="item.active"
             :to="item.route"
-            class="oc-display-block p-2"
+            class="block p-2"
             :class="{ 'router-link-active': item.active }"
           >
             <span class="flex">

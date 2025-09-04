@@ -72,7 +72,7 @@
               background-color="var(--oc-role-chrome)"
             />
             <span :class="{ 'py-1': !user.mail }">
-              <span class="oc-display-block" v-text="user.displayName" />
+              <span class="block" v-text="user.displayName" />
               <span v-if="user.mail" class="text-sm" v-text="user.mail" />
               <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
             </span>
