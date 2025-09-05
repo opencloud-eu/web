@@ -5,7 +5,7 @@
       v-model="model"
       type="checkbox"
       name="checkbox"
-      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default"
+      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center"
       :class="{
         'oc-checkbox-checked bg-white': isChecked,
         'size-3': size === 'small',
@@ -108,9 +108,6 @@ const keydownEnter = (event: KeyboardEvent) => {
 .oc-checkbox {
   -webkit-appearance: none;
   -moz-appearance: none;
-
-  background-position: 50% 50% !important;
-  background-repeat: no-repeat !important;
 
   &-checked,
   :checked {

@@ -7,7 +7,7 @@
     :role="accessibleLabel === '' ? null : 'img'"
   >
     <span
-      class="oc-avatar-item inline-flex items-center justify-center rounded-[50%]"
+      class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]"
       :style="{
         backgroundColor,
         width: avatarWidth,
@@ -105,11 +105,3 @@ const pickBackgroundColor = () => {
   return backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
 }
 </script>
-
-<style lang="scss">
-.oc-avatar-item {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 18px;
-}
-</style>

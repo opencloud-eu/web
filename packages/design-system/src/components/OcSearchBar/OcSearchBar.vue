@@ -189,7 +189,8 @@ const inputClass = computed(() => {
     'oc-input',
     'p-4',
     'rounded-4xl',
-    'disabled:cursor-not-allowed'
+    'disabled:cursor-not-allowed',
+    'focus:bg-none'
   ]
   if (!buttonHidden) {
     classes.push(...['oc-search-input-button', 'rounded-r-none'])
@@ -236,10 +237,6 @@ const onCancel = () => {
   }
 
   &-input {
-    &:focus {
-      background-image: none;
-    }
-
     &::-ms-clear,
     &::-ms-reveal {
       display: none;

@@ -7,12 +7,15 @@
         :style="{
           'background-image': isPreviewLoading ? 'none' : `url(${preview})`
         }"
-        class="details-preview flex items-center justify-center mb-4 p-2 h-[230px]"
+        class="details-preview flex items-center justify-center mb-4 p-2 h-[230px] bg-contain bg-no-repeat bg-center"
         data-testid="preview"
       >
         <oc-spinner v-if="isPreviewLoading" />
       </div>
-      <div v-else class="details-icon-wrapper w-full flex items-center justify-center mb-4 p-2">
+      <div
+        v-else
+        class="details-icon-wrapper w-full flex items-center justify-center mb-4 p-2 bg-contain bg-no-repeat bg-center"
+      >
         <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
       <div
@@ -330,11 +333,3 @@ watch(
   { immediate: true }
 )
 </script>
-<style lang="scss" scoped>
-.details-preview,
-.details-icon-wrapper {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-</style>
