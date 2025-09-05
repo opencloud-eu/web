@@ -1,14 +1,14 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar self-center flex">
+    <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
       <div
-        class="oc-app-top-bar-inner pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex self-center items-center justify-between basis-auto sm:basis-xs md:basis-sm bg-role-chrome border border-role-on-chrome rounded-lg w-full h-10 gap-6"
+        class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
       >
         <div class="open-file-bar flex">
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
-            class="max-w-2xs md:max-w-sm"
+            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60"
             :is-thumbnail-displayed="false"
             :is-extension-displayed="areFileExtensionsShown"
             :path-prefix="getPathPrefix(resource)"
@@ -189,7 +189,7 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-app-top-bar-inner .oc-resource-indicators .text,
+  .oc-app-top-bar .oc-resource-indicators .text,
   .app-topbar-action,
   .app-topbar-action:hover:not(:disabled),
   #app-top-bar-resource .oc-resource-name span {
@@ -202,24 +202,5 @@ export default defineComponent({
 .app-topbar-action:hover:not(:disabled) svg,
 #app-top-bar-resource svg {
   fill: var(--oc-role-on-chrome) !important;
-}
-</style>
-<style lang="scss">
-.oc-app-top-bar {
-  grid-column: 1 / 4;
-  grid-row: secondRow;
-
-  @media (min-width: $oc-breakpoint-small-default) {
-    grid-column: 2;
-    grid-row: 1;
-  }
-}
-
-.open-file-bar {
-  #app-top-bar-resource {
-    @media (min-width: $oc-breakpoint-small-default) {
-      widows: initial;
-    }
-  }
 }
 </style>
