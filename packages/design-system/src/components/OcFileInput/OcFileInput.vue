@@ -1,7 +1,7 @@
 <template>
   <div :class="$attrs.class">
     <slot name="label">
-      <label class="oc-label" :for="id">
+      <label class="inline-block mb-0.5" :for="id">
         {{ label }}
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>

@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* FIXME: define default colors/vars via a default.css and remove token parsing */
+@import '../assets/tokens/ods.css';
+
 @theme {
   --font-sans: 'OpenCloud', 'Inter', sans-serif;
 
@@ -60,6 +63,7 @@
   --animate-shake: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
   --animate-shimmer: shimmer 2s infinite;
   --animate-loading-bar: loading-bar 1.4s infinite;
+  --animate-fade-in: fade-in 0.3s;
 
   @keyframes shake {
 
@@ -98,6 +102,18 @@
     100% {
       left: 100%;
       width: 10%;
+    }
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 }
