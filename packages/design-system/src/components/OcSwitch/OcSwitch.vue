@@ -3,7 +3,7 @@
     <span :id="labelId" v-text="label" />
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 gap-2"
+      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 gap-2 cursor-pointer"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"
@@ -74,8 +74,6 @@ const toggle = () => {
 <style lang="scss">
 .oc-switch {
   &-btn {
-    cursor: pointer;
-
     &::before {
       border-radius: 50%;
     }

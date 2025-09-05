@@ -40,7 +40,7 @@ describe('OcCheckbox', () => {
       const wrapper = getWrapperWithProps({ disabled: false })
       const checkBoxLabelElement = wrapper.find('label')
       expect(checkBoxLabelElement.exists()).toBeTruthy()
-      expect(checkBoxLabelElement.attributes('class')).toContain('oc-cursor-pointer')
+      expect(checkBoxLabelElement.attributes('class')).toContain('cursor-pointer')
     })
   })
   describe('input size', () => {

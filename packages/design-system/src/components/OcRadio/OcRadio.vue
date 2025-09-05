@@ -10,12 +10,17 @@
         'size-4': size === 'medium',
         'size-5': size === 'large'
       }"
-      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out"
+      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out not-disabled:cursor-pointer"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
     />
-    <label :for="id" :class="labelClasses" class="ml-1" v-text="label" />
+    <label
+      :for="id"
+      :class="{ 'cursor-pointer': !disabled, 'oc-invisible-sr': hideLabel }"
+      class="ml-1"
+      v-text="label"
+    />
   </span>
 </template>
 
@@ -63,11 +68,6 @@ const {
 } = defineProps<Props>()
 
 const model = defineModel<boolean | unknown>()
-
-const labelClasses = computed(() => ({
-  'oc-invisible-sr': hideLabel,
-  'oc-cursor-pointer': !disabled
-}))
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
@@ -85,9 +85,5 @@ const labelClasses = computed(() => ({
 
   background-position: 50% 50%;
   background-repeat: no-repeat;
-
-  &:not(:disabled) {
-    cursor: pointer;
-  }
 }
 </style>

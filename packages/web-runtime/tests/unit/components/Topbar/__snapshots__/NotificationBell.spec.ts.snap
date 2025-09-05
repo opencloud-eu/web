@@ -4,7 +4,7 @@ exports[`NotificationBell > should match snapshot 1`] = `
 "<button type="button" aria-label="Notifications" class="oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default relative" id="oc-notifications-bell">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub class="oc-cursor-pointer flex items-center" name="notification-3" fill-type="line"></oc-icon-stub>
+  <oc-icon-stub class="cursor-pointer flex items-center" name="notification-3" fill-type="line"></oc-icon-stub>
   <!--v-if-->
 </button>"
 `;

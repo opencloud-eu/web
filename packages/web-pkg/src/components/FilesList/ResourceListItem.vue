@@ -52,8 +52,8 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
-          :style="parentFolderStyle"
           class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
+          :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
@@ -169,12 +169,6 @@ export default defineComponent({
   computed: {
     parentFolderComponentType() {
       return this.parentFolderLink ? 'router-link' : 'span'
-    },
-
-    parentFolderStyle() {
-      return {
-        cursor: this.parentFolderLink ? 'pointer' : 'default'
-      }
     },
 
     parentFolderLinkIconAttrs() {

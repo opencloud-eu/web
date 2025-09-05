@@ -15,7 +15,7 @@
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer rounded-lg size-full max-h-full"
+        class="cursor-pointer rounded-lg size-full max-h-full"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"

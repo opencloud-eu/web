@@ -2,7 +2,7 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header p-4 flex space-header-squashed">
-  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="oc-cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
   <div class="space-header-infos flex-1">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading max-w-full">
@@ -43,7 +43,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header p-4 flex">
-  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="oc-cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
   <div class="space-header-infos flex-1">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading max-w-full">
@@ -87,7 +87,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header p-4 flex">
-  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="oc-cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 min-w-xs w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full" alt="" src="blob:image"></div>
   <div class="space-header-infos flex-1">
     <div class="flex mb-2 items-center justify-between">
       <div class="flex items-center space-header-infos-heading max-w-full">

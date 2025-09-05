@@ -400,7 +400,7 @@ export const checkSpaceActivity = async ({
 export const getSpaceImageRatio = async (
   page: Page
 ): Promise<{ width: number; height: number }> => {
-  const spaceImage = page.locator('.space-header .space-header-image .oc-cursor-pointer')
+  const spaceImage = page.locator('.space-header .space-header-image .cursor-pointer')
   const width = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalWidth)
   const height = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalHeight)
   return { width, height }

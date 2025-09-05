@@ -145,7 +145,7 @@
       <oc-tag
         v-if="item.tags.length > 2"
         size="small"
-        class="resource-table-tag-more align-text-bottom"
+        class="resource-table-tag-more align-text-bottom cursor-pointer"
         @click="openTagsSidebar()"
       >
         + {{ item.tags.length - 2 }}
@@ -1494,13 +1494,6 @@ export default defineComponent({
   /* Show tooltip on status indicators without handler */
   .oc-table-data-cell-indicators span.oc-status-indicators-indicator {
     pointer-events: all;
-  }
-}
-</style>
-<style lang="scss">
-.resource-table {
-  &-tag-more {
-    cursor: pointer;
   }
 }
 </style>

@@ -144,12 +144,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input[type="number"]::-webkit-inner-spin-button,
 .oc-input[type="number"]::-webkit-outer-spin-button { height: auto; }
 
-/*
- * Improves consistency of cursor style for clickable elements
- */
-
-.oc-radio:not(:disabled) { cursor: pointer; }
-
 /* Input, select and textarea
  * Allowed: `text`, `password`, `datetime`, `datetime-local`, `date`,  `month`,
             `time`, `week`, `number`, `email`, `url`, `search`, `tel`, `color`
@@ -206,7 +200,6 @@ $internal-form-checkbox-indeterminate-image: "data:image/svg+xml;charset=UTF-8,%
 .oc-input:disabled,
 .oc-select:disabled {
   color: $form-disabled-color;
-  cursor: not-allowed;
 }
 
 /*
