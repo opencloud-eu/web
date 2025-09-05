@@ -82,7 +82,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
             </button></div>
           <div class="mt-2">
-            <div data-v-5389d5f3="" class="oc-date-picker"><label class="oc-label" for="oc-textinput-7">From
+            <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-7">From
                 <!--v-if-->
               </label>
               <div class="relative">
@@ -94,7 +94,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               </div>
               <!--v-if-->
             </div>
-            <div data-v-5389d5f3="" class="oc-date-picker"><label class="oc-label" for="oc-textinput-8">To
+            <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-8">To
                 <!--v-if-->
               </label>
               <div class="relative">
@@ -201,7 +201,7 @@ exports[`DateFilter > renders all items 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
             </button></div>
           <div class="mt-2">
-            <div data-v-5389d5f3="" class="oc-date-picker"><label class="oc-label" for="oc-textinput-3">From
+            <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-3">From
                 <!--v-if-->
               </label>
               <div class="relative">
@@ -213,7 +213,7 @@ exports[`DateFilter > renders all items 1`] = `
               </div>
               <!--v-if-->
             </div>
-            <div data-v-5389d5f3="" class="oc-date-picker"><label class="oc-label" for="oc-textinput-4">To
+            <div class="oc-date-picker"><label class="oc-label" for="oc-textinput-4">To
                 <!--v-if-->
               </label>
               <div class="relative">
