@@ -291,6 +291,11 @@ onBeforeUnmount(() => {
 
 @layer components {
   .sidebar-panel {
+    /* visibility is here to prevent focusing panel child elements,
+     * the transition delay keeps care that it will only apply if the element is visible or not.
+     * hidden: if element is off screen
+     * visible: if element is on screen */
+    @apply invisible;
     transform: translateX(100%);
     transition:
       transform 0.4s ease,
@@ -310,28 +315,22 @@ onBeforeUnmount(() => {
   .sidebar-panel.is-root-panel {
     transform: translateX(0);
   }
+  .sidebar-panel.is-active-root-panel,
+  .sidebar-panel.is-active-sub-panel {
+    visibility: unset;
+  }
+
+  .sidebar-panel.is-root-panel {
+    @apply visible;
+  }
 }
 </style>
 <style lang="scss">
 .sidebar-panel {
   $root: &;
-  // visibility is here to prevent focusing panel child elements,
-  // the transition delay keeps care that it will only apply if the element is visible or not.
-  // hidden: if element is off screen
-  // visible: if element is on screen
-  visibility: hidden;
 
   @media screen and (prefers-reduced-motion: reduce), (update: slow) {
     transition-duration: 0.001ms !important;
-  }
-
-  &.is-active-root-panel,
-  &.is-active-sub-panel {
-    visibility: unset;
-  }
-
-  &.is-root-panel {
-    visibility: visible;
   }
 }
 </style>

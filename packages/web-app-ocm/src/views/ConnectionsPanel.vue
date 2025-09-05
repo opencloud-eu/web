@@ -7,7 +7,7 @@
           <h2 class="px-2" v-text="$gettext('Federated connections')" />
           <oc-contextual-helper class="pl-1" v-bind="helperContent" />
         </div>
-        <div id="shares-links" class="flex items-center flex-wrap mr-4">
+        <div id="shares-links" class="flex items-center flex-wrap mr-4 invisible md:visible">
           <label class="mr-2" v-text="$gettext('Federated shares:')" />
           <oc-button
             :aria-current="$gettext('Federated shares with me')"
@@ -175,13 +175,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.sciencemesh-app {
-  #shares-links {
-    @media (max-width: $oc-breakpoint-medium-default) {
-      visibility: none;
-    }
-  }
-}
-</style>

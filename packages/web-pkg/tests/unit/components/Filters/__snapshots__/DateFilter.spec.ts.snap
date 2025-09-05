@@ -57,7 +57,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)]">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)]">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {

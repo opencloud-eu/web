@@ -1,5 +1,10 @@
 <template>
-  <oc-button id="context-menu-trigger-whitespace" class="size-0" aria-hidden appearance="raw">
+  <oc-button
+    id="context-menu-trigger-whitespace"
+    class="size-0 invisible"
+    aria-hidden
+    appearance="raw"
+  >
     <oc-drop
       drop-id="context-menu-drop-whitespace"
       toggle="#context-menu-trigger-whitespace"
@@ -73,9 +78,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-#context-menu-trigger-whitespace {
-  visibility: hidden;
-}
-</style>
