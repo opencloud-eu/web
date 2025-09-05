@@ -555,9 +555,6 @@ const handleSort = (field: FieldType) => {
 </style>
 <style lang="scss">
 .oc-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-
   &-sticky {
     .oc-table-header-cell {
       z-index: 1;

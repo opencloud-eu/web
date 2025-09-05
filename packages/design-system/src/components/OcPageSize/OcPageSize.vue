@@ -62,6 +62,7 @@ const emitChange = (value: string | boolean) => {
 </script>
 
 <style lang="scss">
+// overwrite vendor styling
 .oc-page-size {
   &-select,
   &-select .vs__dropdown-menu {

@@ -10,7 +10,7 @@
         'size-4': size === 'medium',
         'size-5': size === 'large'
       }"
-      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out not-disabled:cursor-pointer"
+      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out not-disabled:cursor-pointer bg-no-repeat bg-center appearance-none"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"
@@ -75,14 +75,5 @@ const model = defineModel<boolean | unknown>()
   .oc-radio {
     @apply align-middle;
   }
-}
-</style>
-<style lang="scss">
-.oc-radio {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
 }
 </style>

@@ -12,6 +12,7 @@
         'whitespace-nowrap',
         'p-2',
         'opacity-100',
+        'select-none',
         { 'active overflow-hidden': active }
       ]"
       :data-nav-id="index"
@@ -97,8 +98,6 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .oc-sidebar-nav-item-link {
-  user-select: none;
-
   &:focus:not(.active),
   &:hover:not(.active) {
     // must not be a tailwind layer because we're overwriting colors from the button mixin

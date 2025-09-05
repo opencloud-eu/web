@@ -88,9 +88,11 @@
                 :key="providerSearchResultValue.id"
                 :data-search-id="providerSearchResultValue.id"
                 :class="{
-                  active: isPreviewElementActive(providerSearchResultValue.id)
+                  'active bg-role-surface-container': isPreviewElementActive(
+                    providerSearchResultValue.id
+                  )
                 }"
-                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60 [&.disabled]:pointer-events-none"
+                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60 [&.disabled]:pointer-events-none hover:bg-role-surface-container"
               >
                 <component
                   :is="provider.previewSearch.component"
@@ -536,19 +538,12 @@ export default defineComponent({
     max-height: calc(100vh - 60px);
   }
   #files-global-search .oc-search-input {
-    @apply inline sm:block transition-none;
+    @apply inline sm:block transition-none bg-role-surface;
   }
 
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
     @apply p-0 w-auto gap-0;
-  }
-  #files-global-search .oc-search-input {
-    background-color: var(--oc-role-surface);
-  }
-  #files-global-search-options ul li.preview:hover,
-  #files-global-search-options ul li.preview.active {
-    background-color: var(--oc-role-surface-container);
   }
 }
 </style>
