@@ -53,6 +53,7 @@ const toggle = () => {
     @apply bg-role-on-secondary-container absolute;
     left: 1px;
     top: 2px;
+    content: '';
   }
   .oc-switch-btn[aria-checked='false'] {
     @apply bg-role-surface-container;
@@ -77,7 +78,6 @@ const toggle = () => {
 
     &::before {
       border-radius: 50%;
-      content: '';
     }
   }
 }

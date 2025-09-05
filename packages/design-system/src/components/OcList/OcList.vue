@@ -52,10 +52,12 @@ defineSlots<Slots>()
   }
   ul.oc-list.oc-timeline::before {
     width: 1.5px;
+    content: '';
   }
   ul.oc-list.oc-timeline li::before {
     @apply size-2.5;
     transform: translateY(-50%);
+    content: '';
   }
   ul.oc-list-raw a:hover {
     @apply text-inherit;
@@ -66,13 +68,8 @@ defineSlots<Slots>()
 ul.oc-list.oc-timeline {
   list-style: none;
 
-  &::before {
-    content: '';
-  }
-
   li {
     &::before {
-      content: '';
       z-index: 1;
     }
   }

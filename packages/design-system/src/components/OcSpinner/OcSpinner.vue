@@ -1,6 +1,6 @@
 <template>
   <span
-    class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin"
+    class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-['']"
     :class="{
       'size-2': size === 'xsmall',
       'size-4': size === 'small',
@@ -38,7 +38,6 @@ const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
 .oc-spinner {
   &::after {
     border-bottom-color: transparent;
-    content: '';
   }
 }
 </style>
