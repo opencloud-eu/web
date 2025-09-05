@@ -41,8 +41,9 @@
               "
             />
             <input type="submit" class="hidden" />
-          </form> </template
-      ></oc-modal>
+          </form>
+        </template>
+      </oc-modal>
       <app-loading-spinner v-if="loading" />
       <template v-else>
         <no-content-message
