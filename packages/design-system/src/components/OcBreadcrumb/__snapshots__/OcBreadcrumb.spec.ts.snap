@@ -8,7 +8,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center oc-invisible-sr">
+    <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only">
       <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
@@ -44,7 +44,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center oc-invisible-sr">
+    <li data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only">
       <router-link-stub tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
       <oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->

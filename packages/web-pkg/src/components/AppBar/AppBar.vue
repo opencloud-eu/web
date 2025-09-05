@@ -6,7 +6,7 @@
     :class="{ 'files-app-bar-squashed': isSideBarOpen, sticky: isSticky }"
   >
     <div class="files-topbar py-2">
-      <h1 class="oc-invisible-sr" v-text="pageTitle" />
+      <h1 class="sr-only" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
         class="flex items-center files-app-bar-controls min-h-13"

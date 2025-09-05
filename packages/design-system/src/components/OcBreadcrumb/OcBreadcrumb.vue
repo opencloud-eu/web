@@ -16,7 +16,7 @@
           'flex',
           'items-center',
           {
-            'oc-invisible-sr':
+            'sr-only':
               hiddenItems.indexOf(item) !== -1 ||
               (item.isTruncationPlaceholder && hiddenItems.length === 0)
           }
@@ -330,13 +330,6 @@ const dropItemStyling = (
 
   .oc-breadcrumb-list > :nth-child(n + 2)::before {
     @apply inline-block text-role-on-surface rounded-sm;
-  }
-}
-</style>
-<style lang="scss">
-.oc-breadcrumb {
-  &-list {
-    list-style: none;
   }
 }
 </style>

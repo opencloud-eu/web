@@ -12,8 +12,7 @@
         <oc-list
           class="date-filter-list"
           :class="{
-            'date-filter-list-hidden min-h-[225px] transition-[visibility] duration-[0.4s,0s]':
-              dateRangeClicked
+            'invisible min-h-[225px] transition-[visibility] duration-[0.4s,0s]': dateRangeClicked
           }"
         >
           <li
@@ -66,8 +65,8 @@
         <div
           class="date-filter-range-panel absolute top-0 p-2 bg-role-surface"
           :class="{
-            'date-filter-range-panel-active transform-[translateX(0)]': dateRangeClicked,
-            'transform-[translateX(100%)]': !dateRangeClicked
+            'transform-[translateX(0)] visible': dateRangeClicked,
+            'transform-[translateX(100%)] invisible': !dateRangeClicked
           }"
         >
           <div class="flex items-center justify-between mb-4">
@@ -337,23 +336,6 @@ export default defineComponent({
     transition:
       transform 0.4s ease,
       visibility 0.4s 0s;
-  }
-}
-</style>
-<style lang="scss">
-.date-filter {
-  &-list {
-    &-hidden {
-      visibility: hidden;
-    }
-  }
-
-  &-range-panel {
-    visibility: hidden;
-
-    &-active {
-      visibility: unset;
-    }
   }
 }
 </style>

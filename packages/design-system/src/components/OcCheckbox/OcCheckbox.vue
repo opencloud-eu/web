@@ -17,7 +17,13 @@
       :aria-label="labelHidden ? label : null"
       @keydown.enter="keydownEnter"
     />
-    <label v-if="!labelHidden" :for="id" :class="labelClasses" class="ml-1" v-text="label" />
+    <label
+      v-if="!labelHidden"
+      :for="id"
+      :class="{ 'cursor-pointer': !disabled }"
+      class="ml-1"
+      v-text="label"
+    />
   </span>
 </template>
 
@@ -75,10 +81,6 @@ const {
 const emit = defineEmits<Emits>()
 
 const model = defineModel<boolean | unknown[]>()
-
-const labelClasses = computed(() => ({
-  'oc-cursor-pointer': !disabled
-}))
 
 const isChecked = computed(() => {
   const val = unref(model)

@@ -54,9 +54,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-resource-item {
-  list-style: none;
-}
-</style>

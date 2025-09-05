@@ -31,7 +31,7 @@
         />
       </oc-button>
     </div>
-    <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
+    <div class="oc-search-button-wrapper" :class="{ 'sr-only': buttonHidden }">
       <oc-button
         class="oc-search-button ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
@@ -184,7 +184,13 @@ defineSlots<Slots>()
 const { $gettext } = useGettext()
 
 const inputClass = computed(() => {
-  const classes = ['oc-search-input', 'oc-input', 'p-4', 'rounded-4xl']
+  const classes = [
+    'oc-search-input',
+    'oc-input',
+    'p-4',
+    'rounded-4xl',
+    'disabled:cursor-not-allowed'
+  ]
   if (!buttonHidden) {
     classes.push(...['oc-search-input-button', 'rounded-r-none'])
   }

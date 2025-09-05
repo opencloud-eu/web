@@ -21,14 +21,14 @@
         <col class="w-auto md:w-[40%]" />
         <col class="w-auto md:w-[30%]" />
       </colgroup>
-      <oc-table-head :class="{ 'oc-invisible-sr': !showHead }">
+      <oc-table-head :class="{ 'sr-only': !showHead }">
         <oc-table-tr>
           <template v-for="field in fields" :key="typeof field === 'string' ? field : field.label">
             <oc-table-th v-if="typeof field === 'string'">{{ field }}</oc-table-th>
             <oc-table-th
               v-else
               :align-h="field.alignH || 'left'"
-              :class="{ 'oc-invisible-sr': field.hidden }"
+              :class="{ 'sr-only': field.hidden }"
             >
               {{ field.label }}
             </oc-table-th>

@@ -6,7 +6,7 @@
         :aria-label="$gettext('Space image is loading')"
       />
       <div v-else-if="spaceImage" class="relative mb-2">
-        <img :src="spaceImage" alt="" class="size-full" />
+        <img :src="spaceImage" alt="" class="size-full object-cover aspect-[16/9]" />
       </div>
       <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />
     </div>
@@ -233,11 +233,3 @@ const expandSharesPanel = () => {
   eventBus.publish(SideBarEventTopics.setActivePanel, 'space-share')
 }
 </script>
-<style lang="scss" scoped>
-.oc-space-details-sidebar {
-  &-image img {
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-}
-</style>

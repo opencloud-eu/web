@@ -6,7 +6,7 @@
       name="calendar-event"
       fill-type="line"
     />
-    <span class="oc-invisible-sr" v-text="screenreaderShareExpiration" />
+    <span class="sr-only" v-text="screenreaderShareExpiration" />
   </div>
 </template>
 

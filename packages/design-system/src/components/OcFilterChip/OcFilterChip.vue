@@ -183,9 +183,6 @@ defineExpose({ hideDrop })
 
 <style lang="scss">
 .oc-filter-chip {
-  &-button.oc-pill {
-    box-sizing: border-box;
-  }
   &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
   &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
     margin-left: 1px;

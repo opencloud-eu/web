@@ -103,7 +103,7 @@ describe('OcSearchBar', () => {
     it('should add invisible class to search button if enabled', () => {
       const wrapper = getWrapper({ buttonHidden: true })
       const searchButtonWrapper = wrapper.find(selectors.searchButtonWrapper)
-      expect(searchButtonWrapper.attributes('class')).toContain('oc-invisible-sr')
+      expect(searchButtonWrapper.attributes('class')).toContain('sr-only')
     })
     it('should add button class to input if disabled', () => {
       const wrapper = getWrapper({ buttonHidden: false })

@@ -2,7 +2,7 @@
   <div class="avatar-upload">
     <input
       ref="fileInputRef"
-      class="oc-invisible avatar-file-input"
+      class="invisible avatar-file-input"
       type="file"
       accept="image/jpeg, image/png"
       @change="onFileChange"

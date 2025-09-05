@@ -1,6 +1,6 @@
 <template>
   <main class="webfinger-resolve h-screen flex flex-col justify-center items-center">
-    <h1 class="oc-invisible-sr" v-text="pageTitle" />
+    <h1 class="sr-only" v-text="pageTitle" />
     <div class="oc-card oc-card-body text-center w-lg text-lg bg-role-surface-container rounded-xl">
       <template v-if="hasError">
         <h2 key="webfinger-resolve-error" class="mt-0">

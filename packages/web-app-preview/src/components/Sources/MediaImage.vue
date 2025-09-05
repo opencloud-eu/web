@@ -5,7 +5,7 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="max-w-[80%] max-h-[80%]"
+    class="max-w-[80%] max-h-[80%] cursor-move object-contain"
     :style="`transform: rotate(${currentImageRotation}deg)`"
   />
 </template>
@@ -117,9 +117,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-img {
-  object-fit: contain;
-  cursor: move;
-}
-</style>

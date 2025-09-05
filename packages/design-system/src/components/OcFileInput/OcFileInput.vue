@@ -12,7 +12,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-invisible oc-file-input p-0 size-0"
+        class="invisible oc-file-input p-0 size-0"
         type="file"
         :multiple="multiple"
         :accept="fileTypes"

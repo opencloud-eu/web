@@ -21,7 +21,7 @@
     />
     <template v-else>
       <resource-link
-        class="oc-card-media-top flex justify-center items-center m-0 w-full relative"
+        class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
         :resource="resource"
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
@@ -50,7 +50,7 @@
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm size-full"
+              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9]"
               :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
               @click="toggleTile([resource, $event])"
@@ -239,17 +239,10 @@ if (!lazy) {
   }
 
   .oc-card-media-top {
-    aspect-ratio: 16/9;
-
     .oc-tag {
       &.resource-disabled-indicator {
         z-index: 1;
       }
-    }
-
-    .tile-preview {
-      aspect-ratio: 16/9;
-      object-fit: cover;
     }
   }
 

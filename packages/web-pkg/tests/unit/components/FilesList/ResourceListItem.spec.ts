@@ -92,7 +92,7 @@ describe('OcResource', () => {
     })
 
     expect(wrapper.find('.parent-folder').exists()).toBeTruthy()
-    expect(wrapper.find('.parent-folder').attributes('style')).toEqual('cursor: pointer;')
+    expect(wrapper.find('.parent-folder').attributes('class')).toContain('cursor-pointer')
   })
 
   it('parent folder component type is span if parent folder not given', () => {
@@ -109,7 +109,7 @@ describe('OcResource', () => {
     })
 
     expect(wrapper.find('.parent-folder').find('a').exists()).toBeFalsy()
-    expect(wrapper.find('.parent-folder').attributes('style')).toEqual('cursor: default;')
+    expect(wrapper.find('.parent-folder').attributes('class')).toContain('cursor-default')
   })
 
   it('displays parent folder name default if calculated name is empty', () => {

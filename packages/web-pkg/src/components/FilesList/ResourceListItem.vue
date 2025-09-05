@@ -16,7 +16,7 @@
         :key="thumbnail"
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
-        class="oc-resource-thumbnail rounded-xs size-8"
+        class="oc-resource-thumbnail rounded-xs size-8 object-cover"
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
@@ -52,8 +52,8 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
-          :style="parentFolderStyle"
           class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
+          :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
@@ -171,12 +171,6 @@ export default defineComponent({
       return this.parentFolderLink ? 'router-link' : 'span'
     },
 
-    parentFolderStyle() {
-      return {
-        cursor: this.parentFolderLink ? 'pointer' : 'default'
-      }
-    },
-
     parentFolderLinkIconAttrs() {
       return {
         'fill-type': 'line' as const,
@@ -215,11 +209,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.oc-resource {
-  &-thumbnail {
-    object-fit: cover;
-  }
-}
-</style>

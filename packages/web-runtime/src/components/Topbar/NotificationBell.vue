@@ -8,7 +8,7 @@
     :aria-label="notificationsLabel"
     no-hover
   >
-    <oc-icon class="oc-cursor-pointer flex items-center" name="notification-3" fill-type="line" />
+    <oc-icon class="cursor-pointer flex items-center" name="notification-3" fill-type="line" />
     <span
       v-if="notificationCount"
       :key="notificationCount"

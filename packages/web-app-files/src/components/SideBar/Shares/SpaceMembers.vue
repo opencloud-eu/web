@@ -36,8 +36,8 @@
       <div
         class="flex justify-between space-members-filter-container max-h-0"
         :class="{
-          'space-members-filter-container-expanded max-h-15': isFilterOpen,
-          'mb-4': isFilterOpen
+          'space-members-filter-container-expanded visible max-h-15 mb-4': isFilterOpen,
+          invisible: !isFilterOpen
         }"
       >
         <oc-text-input
@@ -264,17 +264,6 @@ watch(filterTerm, async () => {
       max-height 0.25s ease-in-out,
       margin-bottom 0.25s ease-in-out,
       visibility 0s;
-  }
-}
-</style>
-<style lang="scss">
-.space-members-filter {
-  &-container {
-    visibility: hidden;
-
-    &-expanded {
-      visibility: visible;
-    }
   }
 }
 </style>

@@ -57,7 +57,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)]">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -86,7 +86,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-7" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -98,7 +98,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-8" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
               </div>
             </button></li>
         </ul>
-        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)]">
+        <div class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
           <div class="flex items-center justify-between mb-4"><button type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
               <!--v-if-->
               <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
@@ -205,7 +205,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -217,7 +217,7 @@ exports[`DateFilter > renders all items 1`] = `
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100" type="date" value="">
+                <!--v-if--> <input id="oc-textinput-4" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="date" value="">
                 <!--v-if-->
               </div>
               <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">

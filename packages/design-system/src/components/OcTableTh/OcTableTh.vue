@@ -5,7 +5,7 @@
     :align-v="alignV"
     :width="width"
     :wrap="wrap"
-    class="oc-th"
+    class="oc-th aria-[sort]:cursor-pointer"
     @click="$emit('click', $event)"
   >
     <slot />
@@ -31,13 +31,6 @@ defineEmits(['click'])
 @layer components {
   .oc-th {
     @apply font-medium;
-  }
-}
-</style>
-<style lang="scss">
-.oc-th {
-  &[aria-sort] {
-    cursor: pointer;
   }
 }
 </style>

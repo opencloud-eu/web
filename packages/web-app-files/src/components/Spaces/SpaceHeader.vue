@@ -4,7 +4,7 @@
     :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image mr-6 min-w-xs"
+      class="space-header-image mr-6 min-w-xs aspect-[16/9]"
       :class="{
         'space-header-image-expanded w-full max-w-full max-h-full': imageExpanded || isMobileWidth,
         'w-xs max-h-[158px]': !imageExpanded
@@ -15,7 +15,7 @@
       </div>
       <img
         v-else-if="imageContent"
-        class="oc-cursor-pointer rounded-lg size-full max-h-full"
+        class="cursor-pointer rounded-lg size-full max-h-full object-cover"
         alt=""
         :src="imageContent"
         @click="toggleImageExpanded"
@@ -323,14 +323,6 @@ const openSideBarSharePanel = () => {
 
 <style lang="scss">
 .space-header {
-  &-image {
-    aspect-ratio: 16 / 9;
-
-    img {
-      object-fit: cover;
-    }
-  }
-
   .markdown-container.collapsed {
     -webkit-mask-image: linear-gradient(180deg, #000 90%, transparent);
   }
