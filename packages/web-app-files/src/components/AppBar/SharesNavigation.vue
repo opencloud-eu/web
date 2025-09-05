@@ -1,6 +1,6 @@
 <template>
   <nav id="shares-navigation" class="py-2" :aria-label="$gettext('Shares pages navigation')">
-    <oc-list class="flex oc-visible@s">
+    <oc-list class="hidden sm:flex">
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"

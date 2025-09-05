@@ -1,7 +1,7 @@
 <template>
   <div class="epub-reader flex">
     <oc-list
-      class="epub-reader-chapters-list bg-role-surface-container pl-2 oc-visible@l border-r w-xs overflow-y-auto"
+      class="epub-reader-chapters-list bg-role-surface-container pl-2 hidden lg:block border-r w-xs overflow-y-auto"
     >
       <li
         v-for="chapter in chapters"

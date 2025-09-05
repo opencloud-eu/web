@@ -97,7 +97,7 @@
               <template #quickActions="{ resource }">
                 <quick-actions
                   :class="resource.preview"
-                  class="oc-visible@s"
+                  class="hidden sm:block"
                   :space="space"
                   :item="resource"
                 />

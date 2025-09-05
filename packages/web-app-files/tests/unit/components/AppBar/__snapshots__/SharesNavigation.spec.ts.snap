@@ -2,7 +2,7 @@
 
 exports[`SharesNavigation component > renders a shares navigation for both mobile and a desktop viewports 1`] = `
 "<nav id="shares-navigation" class="py-2" aria-label="Shares pages navigation">
-  <oc-list-stub raw="false" class="flex oc-visible@s">
+  <oc-list-stub raw="false" class="hidden sm:flex">
     <li>
       <oc-button-stub to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="mr-4 py-2 shares-nav-desktop w-full border-b-2 border-role-secondary-container rounded-none">
         <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="share-forward" size="small" type="span"></oc-icon-stub> <span>Shared with me</span>

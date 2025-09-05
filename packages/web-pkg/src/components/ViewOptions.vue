@@ -2,7 +2,7 @@
   <div class="flex items-center">
     <div
       v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group oc-visible@s mr-2"
+      class="viewmode-switch-buttons oc-button-group hidden sm:inline-flex mr-2"
     >
       <oc-button
         v-for="viewMode in viewModes"
