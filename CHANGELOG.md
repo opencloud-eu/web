@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
 - refactor: migrate grid to tailwind [[#1148](https://github.com/opencloud-eu/web/pull/1148)]
 - refactor: remaining flex props, display and fill to tailwind [[#1146](https://github.com/opencloud-eu/web/pull/1146)]
 - refactor: box-shadow, opacity, filter and pointer-event to tailwind [[#1142](https://github.com/opencloud-eu/web/pull/1142)]
