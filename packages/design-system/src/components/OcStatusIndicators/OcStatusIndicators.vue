@@ -38,7 +38,7 @@
         v-if="getIndicatorDescriptionId(indicator)"
         :id="getIndicatorDescriptionId(indicator)"
         :key="getIndicatorDescriptionId(indicator)"
-        class="oc-invisible-sr"
+        class="sr-only"
         v-text="$gettext(indicator.accessibleDescription)"
       />
     </template>

@@ -14,7 +14,7 @@
       </oc-button>
       <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
-        <span class="oc-invisible-sr" v-text="screenreaderFileCount" />
+        <span class="sr-only" v-text="screenreaderFileCount" />
       </p>
       <oc-button
         v-oc-tooltip="nextDescription"

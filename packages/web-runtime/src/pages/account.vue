@@ -227,7 +227,7 @@
           class="mt-4"
         >
           <template #header="{ title }">
-            <h2 class="oc-invisible-sr">{{ title }}</h2>
+            <h2 class="sr-only">{{ title }}</h2>
           </template>
 
           <oc-table-tr v-for="option in emailNotificationsOptions" :key="option.id">

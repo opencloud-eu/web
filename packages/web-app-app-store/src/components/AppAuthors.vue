@@ -44,9 +44,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-author-item {
-  list-style: none;
-}
-</style>

@@ -44,7 +44,7 @@
       required-mark
       @update:model-value="validatePassword"
     />
-    <input type="submit" class="oc-hidden" />
+    <input type="submit" class="hidden" />
   </form>
 </template>
 

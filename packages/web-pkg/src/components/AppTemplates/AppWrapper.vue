@@ -1,6 +1,6 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full" @keydown.esc="closeApp">
-    <h1 class="oc-invisible-sr" v-text="pageTitle" />
+    <h1 class="sr-only" v-text="pageTitle" />
     <app-top-bar
       v-if="!loading && !loadingError && resource"
       :main-actions="fileActions"

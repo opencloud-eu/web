@@ -94,10 +94,12 @@ watch(
 )
 </script>
 
-<style lang="scss">
-.oc-date-picker {
-  input::-webkit-calendar-picker-indicator {
-    cursor: pointer;
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-date-picker input::-webkit-calendar-picker-indicator {
+    @apply cursor-pointer;
   }
 }
 </style>

@@ -31,7 +31,7 @@
           @sort="handleSort"
         >
           <template #quickActions="props">
-            <quick-actions class="oc-visible@s" :item="props.resource" />
+            <quick-actions class="hidden sm:block" :item="props.resource" />
           </template>
           <template #contextMenu="{ resource, isOpen }">
             <context-actions

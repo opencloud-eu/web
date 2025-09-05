@@ -154,7 +154,7 @@ const bottomDrawerCardBodyRef = useTemplateRef<HTMLElement | null>('bottomDrawer
 
 const show = async () => {
   if (isNestedElement) {
-    unref(nestedParentRef).getElement().classList.add('oc-hidden')
+    unref(nestedParentRef).getElement().classList.add('hidden')
   }
 
   isOpen.value = true
@@ -169,7 +169,7 @@ const show = async () => {
 
 const openParentDrawer = () => {
   hide({ hideParent: false })
-  unref(nestedParentRef).getElement().classList.remove('oc-hidden')
+  unref(nestedParentRef).getElement().classList.remove('hidden')
 }
 
 const hide = async ({ hideParent = true } = {}) => {

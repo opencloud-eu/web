@@ -9,7 +9,7 @@
       v-if="dragareaEnabled"
       class="dragarea absolute inset-0 bg-sky-600/20 rounded-xl pointer-events-none"
     />
-    <h1 class="oc-invisible-sr">{{ pageTitle }}</h1>
+    <h1 class="sr-only">{{ pageTitle }}</h1>
     <div class="p-4 h-full text-center">
       <div key="loaded-drop" class="flex flex-col">
         <h2 v-text="title" />

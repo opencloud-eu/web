@@ -41,7 +41,7 @@
               class="files-collaborators-collaborator-name"
               v-text="shareDisplayName"
             />
-            <span class="oc-invisible-sr" v-text="screenreaderShareDisplayName" />
+            <span class="sr-only" v-text="screenreaderShareDisplayName" />
             <oc-contextual-helper
               v-if="isExternalShare"
               :text="

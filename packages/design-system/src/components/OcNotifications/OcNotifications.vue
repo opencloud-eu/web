@@ -34,7 +34,6 @@ defineSlots<Slots>()
 
 <style lang="scss">
 .oc-notification {
-  box-sizing: border-box;
   z-index: 1040;
 }
 </style>

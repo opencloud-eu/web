@@ -1,6 +1,6 @@
 <template>
   <nav id="shares-navigation" class="py-2" :aria-label="$gettext('Shares pages navigation')">
-    <oc-list class="flex oc-visible@s">
+    <oc-list class="hidden sm:flex">
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"
@@ -14,7 +14,7 @@
         </oc-button>
       </li>
     </oc-list>
-    <div id="shares-navigation-mobile" class="oc-hidden@s">
+    <div id="shares-navigation-mobile" class="block sm:hidden">
       <oc-button id="shares_navigation_mobile" class="p-1" appearance="raw">
         <span v-text="currentNavItem.text" />
         <oc-icon name="arrow-drop-down" />

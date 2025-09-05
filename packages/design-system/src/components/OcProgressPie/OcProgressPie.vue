@@ -1,7 +1,7 @@
 <template>
-  <div class="oc-progress-pie after:block after:size-full" :data-fill="fill">
+  <div class="oc-progress-pie after:block after:size-full after:content-['']" :data-fill="fill">
     <div
-      class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full"
+      class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full after:content-[''] before:content-['']"
     />
     <label
       v-if="showLabel"
@@ -62,18 +62,10 @@ $default-size: 64px;
   height: $default-size;
   width: $default-size;
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
   // Shadow
   &::after {
     border: calc($default-size / 10) solid var(--oc-role-surface-container);
     border-radius: 50%;
-    box-sizing: border-box;
-    content: '';
   }
 
   &-container {
@@ -85,7 +77,6 @@ $default-size: 64px;
       border-color: var(--oc-role-secondary);
       border-radius: 50%;
       clip: rect(0, calc($default-size / 2), $default-size, 0);
-      content: '';
     }
   }
 }
