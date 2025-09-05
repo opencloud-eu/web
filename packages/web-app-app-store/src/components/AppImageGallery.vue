@@ -12,8 +12,12 @@
       >
     </div>
     <div class="app-image w-full">
-      <oc-image v-if="currentImage?.url" :src="currentImage?.url" class="w-full max-w-full" />
-      <div v-else class="fallback-icon bg-white flex items-center justify-center w-full">
+      <oc-image
+        v-if="currentImage?.url"
+        :src="currentImage?.url"
+        class="w-full max-w-full object-cover aspect-3/2"
+      />
+      <div v-else class="fallback-icon bg-white flex items-center justify-center w-full aspect-3/2">
         <oc-icon name="computer" size="xxlarge" />
       </div>
     </div>
@@ -114,17 +118,6 @@ export default defineComponent({
 .app-image-wrapper {
   .app-image-ribbon {
     z-index: 1;
-  }
-
-  .app-image {
-    img {
-      aspect-ratio: 3/2;
-      object-fit: cover;
-    }
-
-    .fallback-icon {
-      aspect-ratio: 3/2;
-    }
   }
 }
 </style>

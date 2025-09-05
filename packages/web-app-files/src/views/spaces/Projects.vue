@@ -79,7 +79,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="table-preview mr-2 rounded-sm"
+                  class="table-preview mr-2 rounded-sm object-cover"
                   :class="{ 'opacity-80 grayscale': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
@@ -465,9 +465,3 @@ const openSidebarSharePanel = (space: SpaceResource) => {
   eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
 }
 </script>
-
-<style lang="scss">
-.table-preview {
-  object-fit: cover;
-}
-</style>
