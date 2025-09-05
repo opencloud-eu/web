@@ -300,6 +300,10 @@ onBeforeUnmount(() => {
     transition:
       transform 0.4s ease,
       visibility 0.4s 0s;
+
+    @media screen and (prefers-reduced-motion: reduce), (update: slow) {
+      transition-duration: 0.001ms !important;
+    }
   }
   .sidebar-panel.is-root-panel {
     right: 100px;
@@ -322,15 +326,6 @@ onBeforeUnmount(() => {
 
   .sidebar-panel.is-root-panel {
     @apply visible;
-  }
-}
-</style>
-<style lang="scss">
-.sidebar-panel {
-  $root: &;
-
-  @media screen and (prefers-reduced-motion: reduce), (update: slow) {
-    transition-duration: 0.001ms !important;
   }
 }
 </style>

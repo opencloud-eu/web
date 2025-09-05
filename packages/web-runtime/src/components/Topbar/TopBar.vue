@@ -17,7 +17,7 @@
         <oc-image
           :src="currentTheme.logo"
           :alt="sidebarLogoAlt"
-          class="oc-logo-image align-middle ml-1 max-h-[26px]"
+          class="oc-logo-image align-middle ml-1 max-h-[26px] select-none"
         />
       </router-link>
     </div>
@@ -211,17 +211,20 @@ export default {
   }
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
 
-<style lang="scss">
-#oc-topbar {
-  z-index: 5;
-
-  .oc-logo-image {
+@layer utilities {
+  #oc-topbar .oc-logo-image {
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;
     image-rendering: -webkit-optimize-contrast;
-    user-select: none;
   }
+}
+</style>
+<style lang="scss">
+#oc-topbar {
+  z-index: 5;
 }
 </style>

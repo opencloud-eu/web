@@ -1,7 +1,7 @@
 <template>
   <div class="oc-error-log">
     <oc-textarea
-      class="oc-error-log-textarea mt-2 text-sm"
+      class="oc-error-log-textarea mt-2 text-sm resize-none"
       :label="contentLabel"
       :model-value="content"
       rows="4"
@@ -49,11 +49,3 @@ const copyContentToClipboard = () => {
   setTimeout(() => (showCopied.value = false), 1500)
 }
 </script>
-
-<style lang="scss">
-.oc-error-log {
-  &-textarea {
-    resize: none;
-  }
-}
-</style>

@@ -235,12 +235,5 @@ const onCancel = () => {
   &-button {
     z-index: 0;
   }
-
-  &-input {
-    &::-ms-clear,
-    &::-ms-reveal {
-      display: none;
-    }
-  }
 }
 </style>

@@ -54,6 +54,7 @@ const toggle = () => {
     left: 1px;
     top: 2px;
     content: '';
+    border-radius: 50%;
   }
   .oc-switch-btn[aria-checked='false'] {
     @apply bg-role-surface-container;
@@ -68,15 +69,6 @@ const toggle = () => {
   }
   .oc-switch-btn[aria-checked='true']::before {
     transform: translateX(calc(100% + 2px));
-  }
-}
-</style>
-<style lang="scss">
-.oc-switch {
-  &-btn {
-    &::before {
-      border-radius: 50%;
-    }
   }
 }
 </style>
