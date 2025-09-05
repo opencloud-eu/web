@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="oc-label">
+    <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="inline-block mb-0.5">
       {{ label }}
       <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
     </label>

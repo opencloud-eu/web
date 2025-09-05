@@ -365,7 +365,7 @@ describe('OcTextInput', () => {
   describe('required mark', () => {
     it('should be displayed', () => {
       const wrapper = getShallowWrapper({ requiredMark: true })
-      expect(wrapper.find('.oc-label span').text()).toContain('*')
+      expect(wrapper.find('label span').text()).toContain('*')
     })
   })
 })

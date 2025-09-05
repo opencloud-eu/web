@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcTextInput > password input field > password policy > displays error state if password does not match criteria 1`] = `
-"<div class=""><label class="oc-label" for="oc-textinput-20">test
+"<div class=""><label class="inline-block mb-0.5" for="oc-textinput-20">test
     <!--v-if-->
   </label>
   <div class="relative">
     <!--v-if-->
-    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-20" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-text-input-show-password-toggle px-2">
+    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-20" aria-invalid="false" class="oc-text-input oc-input grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-text-input-show-password-toggle px-2">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -54,12 +54,12 @@ exports[`OcTextInput > password input field > password policy > displays error s
 `;
 
 exports[`OcTextInput > password input field > password policy > displays success state if password matches criteria 1`] = `
-"<div class=""><label class="oc-label" for="oc-textinput-21">test
+"<div class=""><label class="inline-block mb-0.5" for="oc-textinput-21">test
     <!--v-if-->
   </label>
   <div class="relative">
     <!--v-if-->
-    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-21" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-text-input-show-password-toggle px-2">
+    <div class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline"><input id="oc-textinput-21" aria-invalid="false" class="oc-text-input oc-input grow-2 border-0 focus:border-0 focus:outline-0" type="password"> <button type="button" aria-label="Show password" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-text-input-show-password-toggle px-2">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/eye-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

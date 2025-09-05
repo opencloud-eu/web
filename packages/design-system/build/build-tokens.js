@@ -42,7 +42,7 @@ const sd = new StyleDictionary({
       buildPath: 'src/assets/tokens/',
       files: [
         {
-          destination: 'ods.scss',
+          destination: 'ods.css',
           format: 'format/ods/scss',
           filter: ({ filePath }) => filePath.includes('/ods/')
         },
