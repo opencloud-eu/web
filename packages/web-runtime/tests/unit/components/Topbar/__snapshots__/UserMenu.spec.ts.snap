@@ -233,7 +233,7 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
 exports[`User Menu component > when user is not logged in > renders a navigation with login button 1`] = `
 "<nav aria-label="Account menu">
   <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account">
-    <div data-test-item-name="User Menu login" aria-hidden="true" focusable="false" class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%]" style="background-color: var(--oc-role-surface); width: 32px; height: 32px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="user" size="small" type="span"></oc-icon-stub></span></div>
+    <div data-test-item-name="User Menu login" aria-hidden="true" focusable="false" class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-surface); width: 32px; height: 32px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="user" size="small" type="span"></oc-icon-stub></span></div>
   </oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">

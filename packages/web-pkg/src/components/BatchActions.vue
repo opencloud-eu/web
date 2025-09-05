@@ -3,7 +3,10 @@
     <oc-list
       id="oc-appbar-batch-actions"
       class="block xl:flex xl:items-center"
-      :class="{ 'oc-appbar-batch-actions-squashed': limitedScreenSpace }"
+      :class="{
+        'oc-appbar-batch-actions-squashed [&_.oc-files-context-action-label]:hidden':
+          limitedScreenSpace
+      }"
     >
       <action-menu-item
         v-for="(action, index) in actions"
@@ -11,7 +14,7 @@
         :action="action"
         :action-options="actionOptions"
         appearance="raw"
-        class="batch-actions mr-2"
+        class="batch-actions mr-2 float-left [&_.action-menu-item]:p-2 [&_.action-menu-item]:gap-1"
         :shortcut-hint="false"
         :show-tooltip="limitedScreenSpace"
       />
@@ -44,23 +47,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #oc-appbar-batch-actions .action-menu-item {
-    @apply p-2 gap-1;
-  }
-
-  .oc-appbar-batch-actions-squashed .oc-files-context-action-label {
-    @apply hidden;
-  }
-}
-</style>
-<style lang="scss">
-#oc-appbar-batch-actions {
-  li {
-    float: left !important;
-  }
-}
-</style>
