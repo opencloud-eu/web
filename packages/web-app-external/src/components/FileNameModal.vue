@@ -11,7 +11,7 @@
       :selection-range="inputSelectionRange"
       @keydown.enter.prevent="emit('confirm')"
     />
-    <input type="submit" class="oc-hidden" />
+    <input type="submit" class="hidden" />
   </form>
 </template>
 

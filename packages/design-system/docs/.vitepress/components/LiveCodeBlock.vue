@@ -18,10 +18,10 @@
         >Code</oc-button
       >
     </div>
-    <div :class="{ 'oc-hidden': !previewActive }">
+    <div :class="{ hidden: !previewActive }">
       <component :is="preview" />
     </div>
-    <div ref="slot" :class="{ 'oc-hidden': previewActive }">
+    <div ref="slot" :class="{ hidden: previewActive }">
       <slot />
     </div>
   </div>

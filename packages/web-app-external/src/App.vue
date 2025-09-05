@@ -11,7 +11,7 @@
   />
   <div v-if="appUrl && method === 'POST' && formParameters" class="size-full">
     <form :action="appUrl" target="app-iframe" method="post">
-      <input ref="subm" type="submit" :value="formParameters" class="oc-hidden" />
+      <input ref="subm" type="submit" :value="formParameters" class="hidden" />
       <div v-for="(item, key, index) in formParameters" :key="index">
         <input :name="key" :value="item" type="hidden" />
       </div>

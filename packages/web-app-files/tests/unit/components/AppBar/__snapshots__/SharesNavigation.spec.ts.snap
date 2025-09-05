@@ -19,7 +19,7 @@ exports[`SharesNavigation component > renders a shares navigation for both mobil
       </oc-button-stub>
     </li>
   </oc-list-stub>
-  <div id="shares-navigation-mobile" class="oc-hidden@s">
+  <div id="shares-navigation-mobile" class="block sm:hidden">
     <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="shares_navigation_mobile" class="p-1"><span>Shared with me</span>
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="arrow-drop-down" size="medium" type="span"></oc-icon-stub>
     </oc-button-stub>

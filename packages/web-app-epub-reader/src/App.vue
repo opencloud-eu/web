@@ -55,7 +55,7 @@
         </div>
         <oc-select
           v-model="currentChapter"
-          class="epub-reader-controls-chapters-select w-full px-2 oc-hidden@l"
+          class="epub-reader-controls-chapters-select w-full px-2 block lg:hidden"
           :label="$gettext('Chapter')"
           :label-hidden="true"
           :options="chapters"

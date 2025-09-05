@@ -10,7 +10,7 @@
       required-mark
       @update:model-value="validateDisplayName"
     />
-    <input type="submit" class="oc-hidden" />
+    <input type="submit" class="hidden" />
   </form>
 </template>
 

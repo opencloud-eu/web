@@ -40,7 +40,7 @@
                 !descriptionErrorMessage && `${formInput.description?.length || 0}/${50}`
               "
             />
-            <input type="submit" class="oc-hidden" />
+            <input type="submit" class="hidden" />
           </form> </template
       ></oc-modal>
       <app-loading-spinner v-if="loading" />

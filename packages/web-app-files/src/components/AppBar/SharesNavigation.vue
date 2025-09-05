@@ -14,7 +14,7 @@
         </oc-button>
       </li>
     </oc-list>
-    <div id="shares-navigation-mobile" class="oc-hidden@s">
+    <div id="shares-navigation-mobile" class="block sm:hidden">
       <oc-button id="shares_navigation_mobile" class="p-1" appearance="raw">
         <span v-text="currentNavItem.text" />
         <oc-icon name="arrow-drop-down" />
