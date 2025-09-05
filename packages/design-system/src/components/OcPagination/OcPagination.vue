@@ -164,11 +164,3 @@ const bindPageLink = (page: Page) => {
   }
 }
 </script>
-
-<style lang="scss">
-.oc-pagination {
-  &-list {
-    list-style: none;
-  }
-}
-</style>

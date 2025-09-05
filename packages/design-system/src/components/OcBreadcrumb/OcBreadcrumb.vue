@@ -333,10 +333,3 @@ const dropItemStyling = (
   }
 }
 </style>
-<style lang="scss">
-.oc-breadcrumb {
-  &-list {
-    list-style: none;
-  }
-}
-</style>

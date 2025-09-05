@@ -126,9 +126,5 @@ export default defineComponent({
       aspect-ratio: 3/2;
     }
   }
-
-  .app-image-navigation {
-    list-style: none;
-  }
 }
 </style>

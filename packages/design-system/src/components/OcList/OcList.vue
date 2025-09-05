@@ -66,8 +66,6 @@ defineSlots<Slots>()
 </style>
 <style lang="scss">
 ul.oc-list.oc-timeline {
-  list-style: none;
-
   li {
     &::before {
       z-index: 1;
