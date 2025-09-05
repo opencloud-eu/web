@@ -76,6 +76,7 @@
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
         class="markdown-container flex"
+        :class="{ 'mask-linear-[180deg,black,transparent]': markdownCollapsed }"
       >
         <text-editor
           class="markdown-container-content"
@@ -317,14 +318,6 @@ const openSideBarSharePanel = () => {
   }
   .space-header .markdown-container.collapsed {
     @apply max-h-[100px] overflow-hidden;
-  }
-}
-</style>
-
-<style lang="scss">
-.space-header {
-  .markdown-container.collapsed {
-    -webkit-mask-image: linear-gradient(180deg, #000 90%, transparent);
   }
 }
 </style>

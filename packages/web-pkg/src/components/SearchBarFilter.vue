@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-location-search absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px]"
+    class="oc-location-search absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
     @click.stop
   >
     <div v-if="currentSelection">
@@ -9,7 +9,7 @@
         :is-toggle-active="false"
         :filter-label="$gettext('Location filter')"
         :selected-item-names="[currentSelectionTitle]"
-        class="oc-search-bar-filter [&_button]:items-center"
+        class="oc-search-bar-filter [&_button]:items-center [&_.oc-drop]:w-45"
         :has-active-state="false"
         raw
         close-on-click
@@ -133,18 +133,9 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
 
-@layer utilities {
-  .oc-location-search .oc-drop {
-    @apply w-45;
-  }
-}
-</style>
 <style lang="scss">
 .oc-location-search {
   z-index: 9999;
-  float: right;
 }
 </style>

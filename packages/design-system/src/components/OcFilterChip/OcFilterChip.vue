@@ -45,7 +45,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px]"
+      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px]"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
@@ -182,13 +182,6 @@ defineExpose({ hideDrop })
 </script>
 
 <style lang="scss">
-.oc-filter-chip {
-  &-clear:not(.oc-filter-chip-toggle .oc-filter-chip-clear),
-  &-clear:hover:not(.oc-filter-chip-toggle .oc-filter-chip-clear) {
-    margin-left: 1px;
-  }
-}
-
 // the focussed button needs to stay above the other to correctly display the focus outline
 .oc-filter-chip-button,
 .oc-filter-chip-clear {

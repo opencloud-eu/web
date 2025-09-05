@@ -51,9 +51,3 @@ const tableClasses = computed(() => {
   }
 }
 </style>
-<style lang="scss">
-.oc-table-simple {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-</style>

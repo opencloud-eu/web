@@ -338,10 +338,9 @@ watch(
     @apply w-xs max-w-full;
   }
 }
-</style>
-<style lang="scss">
+
 .tippy-box[data-theme~='none'] {
-  // overwrite tippy styles
+  /* overwrite tippy styles */
   background-color: transparent;
   font-size: inherit;
   line-height: inherit;

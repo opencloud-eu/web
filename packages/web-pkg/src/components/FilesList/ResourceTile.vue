@@ -28,7 +28,9 @@
         tabindex="-1"
         @click="$emit('click')"
       >
-        <div class="oc-tile-card-selection absolute top-0 left-0">
+        <div
+          class="oc-tile-card-selection absolute top-0 left-0 [&_input]:bg-role-surface-container"
+        >
           <div v-if="isLoading" class="oc-tile-card-loading-spinner m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
@@ -217,9 +219,6 @@ if (!lazy) {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-tile-card-selection input {
-    background-color: var(--oc-role-surface-container);
-  }
   .oc-tile-card:hover .tile-preview {
     @apply rounded-sm;
   }

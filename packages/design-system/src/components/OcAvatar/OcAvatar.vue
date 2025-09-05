@@ -1,6 +1,6 @@
 <template>
   <span
-    class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%]"
+    class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none"
     :style="style"
     :width="width"
     :aria-label="accessibleLabel === '' ? null : accessibleLabel"
@@ -128,9 +128,3 @@ const randomBackgroundColor = (seed: number, colors: string[]) => {
   return colors[seed % colors.length]
 }
 </script>
-
-<style lang="scss">
-.oc-avatar {
-  user-select: none;
-}
-</style>

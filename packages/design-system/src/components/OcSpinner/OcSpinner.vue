@@ -1,6 +1,6 @@
 <template>
   <span
-    class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-['']"
+    class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent"
     :class="{
       'size-2': size === 'xsmall',
       'size-4': size === 'small',
@@ -33,11 +33,3 @@ export interface Props {
 
 const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
 </script>
-
-<style lang="scss">
-.oc-spinner {
-  &::after {
-    border-bottom-color: transparent;
-  }
-}
-</style>
