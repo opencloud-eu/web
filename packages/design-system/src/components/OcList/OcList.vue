@@ -71,8 +71,6 @@ ul.oc-list.oc-timeline {
   }
 
   li {
-    box-sizing: border-box;
-
     &::before {
       content: '';
       z-index: 1;

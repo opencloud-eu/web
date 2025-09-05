@@ -83,7 +83,6 @@ const labelClasses = computed(() => ({
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  box-sizing: border-box;
   background-position: 50% 50%;
   background-repeat: no-repeat;
 

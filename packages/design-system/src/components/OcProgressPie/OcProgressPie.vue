@@ -62,17 +62,10 @@ $default-size: 64px;
   height: $default-size;
   width: $default-size;
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
   // Shadow
   &::after {
     border: calc($default-size / 10) solid var(--oc-role-surface-container);
     border-radius: 50%;
-    box-sizing: border-box;
     content: '';
   }
 

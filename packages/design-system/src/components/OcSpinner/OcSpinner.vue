@@ -40,11 +40,6 @@ const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
     border-bottom-color: transparent;
     content: '';
   }
-
-  &,
-  &::after {
-    box-sizing: border-box;
-  }
 }
 
 @keyframes ball-clip-rotate {
