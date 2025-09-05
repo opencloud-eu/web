@@ -418,7 +418,7 @@ export default defineComponent({
       document.querySelectorAll('.oc-breadcrumb-sr').forEach((el) => el.remove())
 
       const invisibleHint = document.createElement('p')
-      invisibleHint.className = 'oc-invisible-sr oc-breadcrumb-sr'
+      invisibleHint.className = 'sr-only oc-breadcrumb-sr'
       invisibleHint.innerHTML = translatedHint
 
       activeBreadcrumb.append(invisibleHint)

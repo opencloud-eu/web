@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="px-4 py-2 oc-invisible-sr">
+    <h2 class="px-4 py-2 sr-only">
       {{ title }}
       <span class="text-base">({{ items.length }})</span>
     </h2>

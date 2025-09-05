@@ -16,7 +16,7 @@
           'flex',
           'items-center',
           {
-            'oc-invisible-sr':
+            'sr-only':
               hiddenItems.indexOf(item) !== -1 ||
               (item.isTruncationPlaceholder && hiddenItems.length === 0)
           }

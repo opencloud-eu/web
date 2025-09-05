@@ -17,7 +17,7 @@
     />
     <label
       :for="id"
-      :class="{ 'cursor-pointer': !disabled, 'oc-invisible-sr': hideLabel }"
+      :class="{ 'cursor-pointer': !disabled, 'sr-only': hideLabel }"
       class="ml-1"
       v-text="label"
     />

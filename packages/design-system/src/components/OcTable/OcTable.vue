@@ -31,7 +31,7 @@
             <oc-icon
               :name="sortDir === 'asc' ? 'arrow-down' : 'arrow-up'"
               fill-type="line"
-              :class="{ 'oc-invisible-sr': sortBy !== field.name }"
+              :class="{ 'sr-only': sortBy !== field.name }"
               class="p-1 rounded-sm"
               size="small"
             />

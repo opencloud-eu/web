@@ -13,7 +13,7 @@
     >
       <oc-icon name="feedback" fill-type="line" />
     </oc-button>
-    <p id="oc-feedback-link-description" class="oc-invisible-sr" v-text="descriptionOrFallback" />
+    <p id="oc-feedback-link-description" class="sr-only" v-text="descriptionOrFallback" />
   </div>
 </template>
 

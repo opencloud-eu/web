@@ -1,6 +1,6 @@
 <template>
   <div class="oc-login h-screen" :style="backgroundImgStyle">
-    <h1 class="oc-invisible-sr" v-text="pageTitle" />
+    <h1 class="sr-only" v-text="pageTitle" />
     <router-view />
     <img
       v-if="!backgroundImg"

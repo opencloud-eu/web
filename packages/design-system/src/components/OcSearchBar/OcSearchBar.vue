@@ -31,7 +31,7 @@
         />
       </oc-button>
     </div>
-    <div class="oc-search-button-wrapper" :class="{ 'oc-invisible-sr': buttonHidden }">
+    <div class="oc-search-button-wrapper" :class="{ 'sr-only': buttonHidden }">
       <oc-button
         class="oc-search-button ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
