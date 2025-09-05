@@ -9,7 +9,7 @@
         :is-toggle-active="false"
         :filter-label="$gettext('Location filter')"
         :selected-item-names="[currentSelectionTitle]"
-        class="oc-search-bar-filter"
+        class="oc-search-bar-filter [&_button]:items-center"
         :has-active-state="false"
         raw
         close-on-click

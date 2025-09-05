@@ -290,8 +290,7 @@ export default defineComponent({
 
 @layer utilities {
   .share-access-details-drop dl {
-    @apply grid gap-x-4 gap-y-1;
-    grid-template-columns: max-content auto;
+    @apply grid gap-x-4 gap-y-1 grid-cols-[max-content_auto];
   }
 
   .share-access-details-drop dt {
