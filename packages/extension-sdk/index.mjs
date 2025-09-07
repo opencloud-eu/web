@@ -38,7 +38,7 @@ const manifestPlugin = () => {
       if (existsSync(generatedManifestPath)) {
         this.warn(
           `${generatedManifestPath} already exists in output directory (likely from public/), skipping generation\n` +
-            `Consider using --emptyOutDir if outDir is out of project root.`
+            `Consider using --emptyOutDir if outDir is outside of project root.`
         )
         return
       }
