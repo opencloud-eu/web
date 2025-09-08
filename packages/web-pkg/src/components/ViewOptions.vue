@@ -20,18 +20,23 @@
     >
       <oc-list>
         <li v-for="viewMode in viewModes" :key="viewMode.name">
-          <oc-button appearance="raw" justify-content="left" @click="setViewMode(viewMode)">
+          <oc-button
+            :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'raw'"
+            :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
+            justify-content="left"
+            @click="setViewMode(viewMode)"
+          >
             <div class="flex justify-between w-full">
               <span class="flex items-center">
                 <oc-icon
                   :name="viewMode.icon.name"
                   :fill-type="viewMode.icon.fillType"
-                  size="small"
+                  size="medium"
                   class="mr-1"
                 />
                 <span v-text="viewMode.label" />
               </span>
-              <oc-icon v-if="viewModeCurrent === viewMode.name" name="check" size="small" />
+              <oc-icon v-if="viewModeCurrent === viewMode.name" name="check" size="medium" />
             </div>
           </oc-button>
         </li>
