@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
 ### 📈 Enhancement
