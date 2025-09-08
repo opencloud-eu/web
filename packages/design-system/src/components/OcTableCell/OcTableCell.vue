@@ -3,9 +3,9 @@
     :is="type"
     class="oc-table-cell"
     :class="{
-      'whitespace-break break-all': wrap === 'break',
+      'break-all': wrap === 'break',
       'whitespace-nowrap': wrap === 'nowrap',
-      'whitespace-truncate overflow-visible max-w-0': wrap === 'truncate',
+      'overflow-visible max-w-0': wrap === 'truncate',
       'text-left': alignH === 'left',
       'text-right': alignH === 'right',
       'text-center': alignH === 'center',
