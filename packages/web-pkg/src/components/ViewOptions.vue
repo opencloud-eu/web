@@ -44,12 +44,12 @@
       <oc-button
         v-for="viewMode in viewModes"
         :key="viewMode.name"
-        v-oc-tooltip="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label.toLowerCase() })"
+        v-oc-tooltip="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
         :no-hover="viewModeCurrent === viewMode.name"
         :class="[viewMode.name]"
         :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'outline'"
         :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
-        :aria-label="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label.toLowerCase() })"
+        :aria-label="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
         @click="setViewMode(viewMode)"
       >
         <oc-icon :name="viewMode.icon.name" :fill-type="viewMode.icon.fillType" size="small" />
