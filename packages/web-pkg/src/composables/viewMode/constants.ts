@@ -5,7 +5,7 @@ export const FolderViewModeConstants = {
     condensedTable: 'resource-table-condensed',
     tiles: 'resource-tiles'
   },
-  defaultModeName: 'resource-table',
+  defaultModeName: 'resource-tiles',
   queryName: 'view-mode',
   tilesSizeDefault: 2,
   tilesSizeMax: 6,

@@ -10,7 +10,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
             <div class="flex">
-              <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+              <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
           </div>
           <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">
@@ -70,7 +70,7 @@ exports[`Users view > list view > renders list initially 1`] = `
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
             <div class="flex">
-              <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+              <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
           </div>
           <div class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10">

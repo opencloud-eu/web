@@ -11,7 +11,7 @@
         :batch-actions-loading="batchActionsLoading"
         :is-side-bar-open="isSideBarOpen"
         :view-modes="viewModes"
-        :view-mode-default="FolderViewModeConstants.name.tiles"
+        :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
         <template #actions>
           <create-space v-if="hasCreatePermission" class="mr-2" />
