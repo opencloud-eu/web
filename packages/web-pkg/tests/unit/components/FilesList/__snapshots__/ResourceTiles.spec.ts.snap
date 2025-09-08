@@ -35,7 +35,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <!-- Slot for indicators !-->
               <!--v-if-->
               <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-1">
+              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-1" data-test-context-menu-resource-name="Space 1">
                 <!--v-if-->
                 <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -74,7 +74,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <!-- Slot for indicators !-->
               <!--v-if-->
               <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-2">
+              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-2" data-test-context-menu-resource-name="Space 2">
                 <!--v-if-->
                 <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

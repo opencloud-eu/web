@@ -322,6 +322,7 @@ Feature: link
       | resource     | role     | password |
       | folderPublic | Can edit | %public% |
     When "Alice" opens the "files" app
+    And "Alice" switches to the "resource-table" view mode
     And "Alice" closes the sidebar
     Then "Alice" should see link-direct indicator on the folder "folderPublic"
     When "Alice" opens folder "folderPublic"

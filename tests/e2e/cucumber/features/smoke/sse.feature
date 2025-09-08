@@ -78,6 +78,7 @@ Feature: server sent events
     Then "Alice" should get "share-created" SSE event
     And "Brian" should get "share-created" SSE event
     And "Brian" closes the sidebar
+    And "Brian" switches to the "resource-table" view mode
     And "Brian" should see user-direct indicator on the folder "space-folder"
 
     # share-updated
@@ -93,6 +94,7 @@ Feature: server sent events
       | space-folder | %public% |
     Then "Alice" should get "link-created" SSE event
     Then "Brian" should get "link-created" SSE event
+    And "Brian" switches to the "resource-table" view mode
     And "Brian" should see link-direct indicator on the folder "space-folder"
 
     # link-updated

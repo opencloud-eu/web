@@ -59,7 +59,7 @@
           :is-extension-displayed="areFileExtensionsShown"
           :resource-icon-size="resourceIconSize"
           :draggable="dragDrop"
-          :lazy="lazy"
+          :lazy="false"
           :is-loading="isResourceInDeleteQueue(resource.id)"
           @vue:mounted="
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
@@ -82,6 +82,8 @@
               class="inline-flex p-2"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
+              :data-test-selection-resource-name="resource.name"
+              :data-test-selection-resource-path="resource.path"
               @click.stop.prevent="toggleTile([resource, $event])"
             />
           </template>

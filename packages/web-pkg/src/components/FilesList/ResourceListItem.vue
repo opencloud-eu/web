@@ -16,6 +16,7 @@
         :key="thumbnail"
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
+        :data-test-preview-resource-name="resource.name"
         class="oc-resource-thumbnail rounded-xs size-8 object-cover"
         width="40"
         height="40"

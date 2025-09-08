@@ -2,8 +2,13 @@ import { Page } from '@playwright/test'
 import util from 'util'
 import { locatorUtils } from '../../../utils'
 
-const contextMenuSelector =
-  '//span[@data-test-resource-name="%s"]/ancestor::tr[contains(@class, "oc-tbody-tr")]//button[contains(@class, "resource-table-btn-action-dropdown")]'
+const contextMenuSelector = `
+//button[
+  @data-test-context-menu-resource-name="%s" and
+  (contains(@class, "resource-tiles-btn-action-dropdown") or
+   contains(@class, "resource-table-btn-action-dropdown"))
+]
+`
 const closeSidebarRootPanelBtn = `#app-sidebar .is-active-root-panel .header__close`
 const closeSidebarSubPanelBtn = `#app-sidebar .is-active-sub-panel .header__close`
 
