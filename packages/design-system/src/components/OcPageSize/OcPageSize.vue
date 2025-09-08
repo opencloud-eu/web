@@ -61,12 +61,12 @@ const emitChange = (value: string | boolean) => {
 }
 </script>
 
-<style lang="scss">
-// overwrite vendor styling
-.oc-page-size {
-  &-select,
-  &-select .vs__dropdown-menu {
-    min-width: var(--oc-size-width-xsmall);
-  }
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+/* overwrite vendor styling */
+.oc-page-size-select,
+.oc-page-size-select .vs__dropdown-menu {
+  @apply min-w-25;
 }
 </style>

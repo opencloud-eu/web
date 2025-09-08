@@ -5,11 +5,13 @@ The design system provides some colors that can be used globally. Currently they
 ## Available colors
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import designTokens from '../../src/assets/tokens/ods.json'
+import { computed, ref, onMounted, unref } from 'vue'
+import { useLoadCssDefaultVars } from '../.vitepress/composables/useLoadCssDefaultVars'
+
+const { isLoading, cssVars } = useLoadCssDefaultVars()
 
 const tokens = computed(() => {
-	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-color-'))
+	return Object.values(unref(cssVars)).filter(({ name }) => name.startsWith('oc-color-'))
 })
 
 const fields = [

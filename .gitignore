@@ -42,16 +42,12 @@ packages/web-client/src/graph/generated/docs/
 # VitePress
 packages/design-system/docs/.vitepress/cache
 packages/design-system/docs/.vitepress/dist
-packages/design-system/docs/public/emits
-packages/design-system/docs/public/props
-packages/design-system/docs/public/slots
+packages/design-system/docs/public/*
+!packages/design-system/docs/public/logo.svg
 
 # Themes
 /packages/web-runtime/themes/*
 !/packages/web-runtime/themes/opencloud/
-
-# Compiled tokens
-/packages/design-system/src/assets/tokens/
 
 # Report for tests
 tests/report/cucumber_report.json

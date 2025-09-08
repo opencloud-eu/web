@@ -563,7 +563,7 @@ export default { components: { VueSelect } }
     }
 
     &__clear svg {
-      max-width: var(--oc-space-small);
+      max-width: var(--spacing);
     }
 
     &__selected-options {

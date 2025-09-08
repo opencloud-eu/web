@@ -5,11 +5,13 @@ The design system uses material design color roles to ensure a consistent look a
 ## Available roles
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import designTokens from '../../src/assets/tokens/ods.json'
+import { computed, unref } from 'vue'
+import { useLoadCssDefaultVars } from '../.vitepress/composables/useLoadCssDefaultVars'
+
+const { isLoading, cssVars } = useLoadCssDefaultVars()
 
 const tokens = computed(() => {
-	return Object.values(designTokens).filter((token) => token.name.startsWith('oc-role-'))
+	return Object.values(unref(cssVars)).filter((token) => token.name.startsWith('oc-role-'))
 })
 
 const fields = [
