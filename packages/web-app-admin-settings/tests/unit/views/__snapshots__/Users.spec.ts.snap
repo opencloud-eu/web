@@ -5,7 +5,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-[2] sticky">
+        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-20 sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
@@ -65,7 +65,7 @@ exports[`Users view > list view > renders list initially 1`] = `
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-[2] sticky">
+        <div id="admin-settings-app-bar" class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-20 sticky">
           <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object],[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <portal-target name="app.runtime.mobile.nav"></portal-target>
@@ -113,28 +113,28 @@ exports[`Users view > list view > renders list initially 1`] = `
             <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu users-table">
               <thead class="oc-thead border-b">
                 <tr data-v-98c4aba8="" class="oc-table-header-row h-10.5">
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-[1] pl-4" style="top: 0px;">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">
                     <div><span class="oc-table-thead-content inline-table align-middle"><span><input id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none size-5" aria-label="Select all users"> <!--v-if--></span></span></div>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-avatar z-[1]" style="top: 0px;">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-shrink oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-avatar z-10" style="top: 0px;">
                     <div><span class="oc-table-thead-content inline-table align-middle header-text"></span></div>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-onPremisesSamAccountName z-[1]" style="top: 0px;" aria-sort="ascending">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-onPremisesSamAccountName z-10" style="top: 0px;" aria-sort="ascending">
                     <oc-button-stub arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-displayName z-[1]" style="top: 0px;" aria-sort="none">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-displayName z-10" style="top: 0px;" aria-sort="none">
                     <oc-button-stub arialabel="Sort by displayName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-mail z-[1]" style="top: 0px;" aria-sort="none">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-mail z-10" style="top: 0px;" aria-sort="none">
                     <oc-button-stub arialabel="Sort by mail" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-role z-[1]" style="top: 0px;" aria-sort="none">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-role z-10" style="top: 0px;" aria-sort="none">
                     <oc-button-stub arialabel="Sort by role" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-accountEnabled z-[1]" style="top: 0px;" aria-sort="none">
+                  <th class="oc-table-cell oc-table-cell-align-left oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-accountEnabled z-10" style="top: 0px;" aria-sort="none">
                     <oc-button-stub arialabel="Sort by accountEnabled" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>
                   </th>
-                  <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-actions z-[1] pr-4" style="top: 0px;">
+                  <th class="oc-table-cell oc-table-cell-align-right oc-table-cell-align-middle oc-table-cell-width-auto oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-actions z-10 pr-4" style="top: 0px;">
                     <div><span class="oc-table-thead-content inline-table align-middle header-text">Actions</span></div>
                   </th>
                 </tr>

@@ -1,7 +1,7 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="bg-role-surface-container z-[4] flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
+    class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
     :class="{
       'max-w-[62px] min-w-[62px]': closed,
       'max-w-[230px] min-w-[230px]': !closed

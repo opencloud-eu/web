@@ -1,6 +1,6 @@
 <template>
   <div id="web-content" class="flex flex-col flex-nowrap h-dvh">
-    <div id="global-progress-bar" class="w-full absolute top-0 z-10">
+    <div id="global-progress-bar" class="w-full absolute top-0 z-[100]">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header" class="shrink basis-auto grow-0">

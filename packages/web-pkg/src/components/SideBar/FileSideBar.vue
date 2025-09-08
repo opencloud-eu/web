@@ -2,7 +2,7 @@
   <InnerSideBar
     v-if="isOpen"
     ref="sidebar"
-    class="files-side-bar z-[3]"
+    class="files-side-bar z-30"
     :is-open="isOpen"
     :active-panel="activePanel"
     :available-panels="availablePanels"

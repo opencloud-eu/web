@@ -2,7 +2,7 @@
   <div
     id="files-app-bar"
     ref="filesAppBar"
-    class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-[2]"
+    class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-20"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, sticky: isSticky }"
   >
     <div class="files-topbar py-2">

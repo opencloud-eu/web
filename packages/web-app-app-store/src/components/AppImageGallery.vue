@@ -2,7 +2,7 @@
   <div class="app-image-wrapper relative">
     <div
       v-if="app.badge"
-      class="app-image-ribbon z-[1] text-right size-[7rem] overflow-hidden absolute top-0 right-0"
+      class="app-image-ribbon z-10 text-right size-[7rem] overflow-hidden absolute top-0 right-0"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
       <span
