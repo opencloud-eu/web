@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-notification mb-2 w-md max-w-full"
+    class="oc-notification z-[1040] mb-2 w-md max-w-full"
     :class="{
       fixed: position !== 'default',
       'top-2 left-2': position === 'top-left',
@@ -31,9 +31,3 @@ export interface Slots {
 const { position = 'default' } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
-
-<style lang="scss">
-.oc-notification {
-  z-index: 1040;
-}
-</style>

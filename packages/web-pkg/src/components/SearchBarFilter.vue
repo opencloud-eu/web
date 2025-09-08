@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-location-search absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
+    class="oc-location-search z-[9999] absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
     @click.stop
   >
     <div v-if="currentSelection">
@@ -133,9 +133,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.oc-location-search {
-  z-index: 9999;
-}
-</style>

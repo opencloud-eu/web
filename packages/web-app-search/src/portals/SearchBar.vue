@@ -534,6 +534,17 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  @media (max-width: 639px) {
+    #files-global-search #files-global-search-bar {
+      @apply z-[9];
+    }
+
+    #files-global-search #files-global-search-bar input,
+    #files-global-search #files-global-search-bar input:not(:placeholder-shown) {
+      @apply z-[var(--z-index-modal)];
+    }
+  }
+
   #files-global-search-options {
     max-height: calc(100vh - 60px);
   }
@@ -544,20 +555,6 @@ export default defineComponent({
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
     @apply p-0 w-auto gap-0;
-  }
-}
-</style>
-<style lang="scss">
-#files-global-search {
-  #files-global-search-bar {
-    @media (max-width: 639px) {
-      z-index: 9;
-
-      input,
-      input:not(:placeholder-shown) {
-        z-index: var(--oc-z-index-modal);
-      }
-    }
   }
 }
 </style>

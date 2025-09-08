@@ -1,20 +1,20 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle 1`] = `
-"<div data-v-aba8ddeb="" id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 sticky">
-  <div data-v-aba8ddeb="" class="files-topbar py-2">
-    <h1 data-v-aba8ddeb="" class="sr-only">ExampleTitle</h1>
-    <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls min-h-13 justify-end">
+"<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-[2] sticky">
+  <div class="files-topbar py-2">
+    <h1 class="sr-only">ExampleTitle</h1>
+    <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
+    <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
       <!--v-if-->
-      <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
+      <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
-        <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+      <div id="files-app-bar-controls-right" class="flex">
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
-      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
+    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+      <div class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
     </div>
@@ -23,20 +23,20 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
 `;
 
 exports[`AppBar component > renders > if given, with content in the actions slot 1`] = `
-"<div data-v-aba8ddeb="" id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 sticky">
-  <div data-v-aba8ddeb="" class="files-topbar py-2">
-    <h1 data-v-aba8ddeb="" class="sr-only">ExampleTitle</h1>
-    <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls min-h-13 justify-end">
+"<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-[2] sticky">
+  <div class="files-topbar py-2">
+    <h1 class="sr-only">ExampleTitle</h1>
+    <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
+    <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
       <!--v-if-->
-      <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
+      <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
-        <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+      <div id="files-app-bar-controls-right" class="flex">
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
-      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center"><button class="action-slot">Click</button>
+    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+      <div class="flex-1 flex justify-start items-center"><button class="action-slot">Click</button>
         <!--v-if-->
       </div>
     </div>
@@ -45,20 +45,20 @@ exports[`AppBar component > renders > if given, with content in the actions slot
 `;
 
 exports[`AppBar component > renders > if given, with content in the content slot 1`] = `
-"<div data-v-aba8ddeb="" id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 sticky">
-  <div data-v-aba8ddeb="" class="files-topbar py-2">
-    <h1 data-v-aba8ddeb="" class="sr-only">ExampleTitle</h1>
-    <oc-hidden-announcer-stub data-v-aba8ddeb="" announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
-    <div data-v-aba8ddeb="" class="flex items-center files-app-bar-controls min-h-13 justify-end">
+"<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-[2] sticky">
+  <div class="files-topbar py-2">
+    <h1 class="sr-only">ExampleTitle</h1>
+    <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
+    <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
       <!--v-if-->
-      <portal-target data-v-aba8ddeb="" name="app.runtime.mobile.nav"></portal-target>
+      <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
-      <div data-v-aba8ddeb="" id="files-app-bar-controls-right" class="flex">
-        <view-options-stub data-v-aba8ddeb="" perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+      <div id="files-app-bar-controls-right" class="flex">
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
       </div>
     </div>
-    <div data-v-aba8ddeb="" class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
-      <div data-v-aba8ddeb="" class="flex-1 flex justify-start items-center">
+    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+      <div class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
     </div>

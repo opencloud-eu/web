@@ -197,12 +197,39 @@ onMounted(() => {
     @apply -ml-4;
   }
 }
+@layer utilities {
+  .oc-avatars-hover-effect > *:hover {
+    @apply hover:!z-[1000];
+  }
+}
 </style>
 <style lang="scss">
 .oc-avatars {
   &-hover-effect {
     > *:hover {
-      z-index: 1000 !important;
+      transform: scale(1.1);
+    }
+  }
+
+  &-gap {
+    &-xs {
+      gap: var(--oc-space-xsmall);
+    }
+
+    &-s {
+      gap: var(--oc-space-small);
+    }
+
+    &-m {
+      gap: var(--oc-space-medium);
+    }
+
+    &-l {
+      gap: var(--oc-space-large);
+    }
+
+    &-xl {
+      gap: var(--oc-space-xlarge);
     }
   }
 }

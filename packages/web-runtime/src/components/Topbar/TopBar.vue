@@ -5,7 +5,7 @@
       { 'grid-cols-[auto_1fr_1fr]': contentOnLeftPortal },
       { 'grid-cols-[auto_9fr_1fr]': !contentOnLeftPortal }
     ]"
-    class="sticky grid items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto]"
+    class="sticky grid z-[5] items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto]"
     :aria-label="$gettext('Top bar')"
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
@@ -221,10 +221,5 @@ export default {
     image-rendering: pixelated;
     image-rendering: -webkit-optimize-contrast;
   }
-}
-</style>
-<style lang="scss">
-#oc-topbar {
-  z-index: 5;
 }
 </style>

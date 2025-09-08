@@ -379,6 +379,7 @@ const extractThProps = (field: FieldType, index: number) => {
   }
   if (sticky) {
     props.style = `top: ${headerPosition}px;`
+    props.class += ' z-[1]'
   }
 
   if (index === 0) {
@@ -550,15 +551,6 @@ const handleSort = (field: FieldType) => {
   .oc-table-hover tr:not(.oc-table-footer-row, .oc-table-header-row, .oc-table-highlighted):hover,
   .oc-button-sort .oc-icon:hover {
     @apply bg-role-surface-container;
-  }
-}
-</style>
-<style lang="scss">
-.oc-table {
-  &-sticky {
-    .oc-table-header-cell {
-      z-index: 1;
-    }
   }
 }
 </style>

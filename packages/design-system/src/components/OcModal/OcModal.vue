@@ -1,13 +1,13 @@
 <template>
   <div
-    class="oc-modal-background fixed left-0 top-0 bg-black/40 flex items-center justify-center flex-row flex-wrap size-full"
+    class="oc-modal-background fixed left-0 top-0 z-[9999] bg-black/40 flex items-center justify-center flex-row flex-wrap size-full"
   >
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border border-role-outline rounded-sm focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
+        class="border z-[10000] border-role-outline rounded-sm focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -323,11 +323,3 @@ export default {
   components: { FocusTrap }
 }
 </script>
-
-<style lang="scss">
-.oc-modal {
-  &-background {
-    z-index: var(--oc-z-index-modal);
-  }
-}
-</style>

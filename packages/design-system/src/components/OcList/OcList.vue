@@ -27,6 +27,12 @@ defineSlots<Slots>()
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
 
+@layer utilities {
+  .oc-list li::before {
+    @apply z-[1];
+  }
+}
+
 @layer components {
   ul.oc-list,
   ul.oc-list.oc-timeline {
