@@ -1,5 +1,48 @@
 <template>
   <div class="flex items-center">
+    <template v-if="viewModes.length">
+      <oc-button
+        id="mobile-viewmode-switch-toggle"
+        v-oc-tooltip="$gettext('Switch view mode')"
+        :aria-label="$gettext('Switch view mode')"
+        appearance="raw"
+        class="my-2 mx-1 p-1 align-middle sm:hidden"
+      >
+        <oc-icon name="list-view" fill-type="none" />
+      </oc-button>
+      <oc-drop
+        :title="$gettext('View mode')"
+        drop-id="mobile-viewmode-switch-drop"
+        toggle="#mobile-viewmode-switch-toggle"
+        class="w-auto"
+        padding-size="medium"
+        close-on-click
+      >
+        <oc-list>
+          <li v-for="viewMode in viewModes" :key="viewMode.name">
+            <oc-button
+              :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'raw'"
+              :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
+              justify-content="left"
+              @click="setViewMode(viewMode)"
+            >
+              <div class="flex justify-between w-full">
+                <span class="flex items-center">
+                  <oc-icon
+                    :name="viewMode.icon.name"
+                    :fill-type="viewMode.icon.fillType"
+                    size="medium"
+                    class="mr-1"
+                  />
+                  <span v-text="viewMode.label" />
+                </span>
+                <oc-icon v-if="viewModeCurrent === viewMode.name" name="check" size="medium" />
+              </div>
+            </oc-button>
+          </li>
+        </oc-list>
+      </oc-drop>
+    </template>
     <div
       v-if="viewModes.length > 1"
       class="viewmode-switch-buttons oc-button-group hidden sm:inline-flex mr-2"
@@ -7,12 +50,12 @@
       <oc-button
         v-for="viewMode in viewModes"
         :key="viewMode.name"
-        v-oc-tooltip="$gettext(viewMode.label)"
+        v-oc-tooltip="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
         :no-hover="viewModeCurrent === viewMode.name"
         :class="[viewMode.name]"
         :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'outline'"
         :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
-        :aria-label="$gettext(viewMode.label)"
+        :aria-label="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
         @click="setViewMode(viewMode)"
       >
         <oc-icon :name="viewMode.icon.name" :fill-type="viewMode.icon.fillType" size="small" />
