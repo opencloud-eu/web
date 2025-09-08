@@ -31,7 +31,7 @@
         <div
           class="oc-tile-card-selection z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container"
         >
-          <div v-if="isLoading" class="oc-tile-card-loading-spinner z-[990] m-2">
+          <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
           <slot v-else name="selection" :item="resource" />

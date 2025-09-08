@@ -1,7 +1,7 @@
 <template>
   <div
     class="preview-details"
-    :class="[{ 'lightbox opacity-90 z-[1000]': isFullScreenModeActivated }]"
+    :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
     <div
       class="bg-role-surface-container p-2 w-lg flex items-center justify-center justify-around rounded-sm"
