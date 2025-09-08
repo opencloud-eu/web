@@ -2,6 +2,7 @@ import { App } from 'vue'
 import { createGettext } from 'vue3-gettext'
 import { applyCustomProp, setIconUrlPrefix, InstallOptions } from './helpers'
 import translations from '../l10n/translations.json'
+import kebabCase from 'lodash-es/kebabCase'
 
 import * as components from './components'
 import * as directives from './directives'
@@ -15,7 +16,7 @@ let gettextInstance: ReturnType<typeof createGettext> | null = null
 
 const initializeCustomProps = (tokens: Record<string, string>, prefix: string) => {
   for (const param in tokens) {
-    applyCustomProp(prefix + param, tokens[param])
+    applyCustomProp(prefix + kebabCase(param), tokens[param])
   }
 }
 
@@ -44,12 +45,8 @@ export default {
     }
 
     const themeOptions = options.tokens
-    initializeCustomProps(themeOptions?.breakpoints, 'breakpoint-')
     initializeCustomProps(themeOptions?.colorPalette, 'color-')
     initializeCustomProps(themeOptions?.roles, 'role-')
-    initializeCustomProps(themeOptions?.fontSizes, 'font-size-')
-    initializeCustomProps(themeOptions?.sizes, 'size-')
-    initializeCustomProps(themeOptions?.spacing, 'space-')
     applyCustomProp('font-family', themeOptions?.fontFamily)
     if (!themeOptions?.roles?.chrome) {
       // fallback to surfaceContainer if chrome is not defined since it may not be set

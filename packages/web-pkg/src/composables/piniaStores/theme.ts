@@ -30,13 +30,9 @@ const CommonSection = z.object({
 })
 
 const DesignTokens = z.object({
-  breakpoints: z.record(z.string(), z.string()).optional(),
   roles: z.record(z.string(), z.string()).optional(),
   colorPalette: z.record(z.string(), z.string()).optional(),
-  fontFamily: z.string().optional(),
-  fontSizes: z.record(z.string(), z.string()).optional(),
-  sizes: z.record(z.string(), z.string()).optional(),
-  spacing: z.record(z.string(), z.string()).optional()
+  fontFamily: z.string().optional()
 })
 
 const WebDefaults = CommonSection.extend({
@@ -113,12 +109,8 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     const customizableDesignTokens = [
-      { name: 'breakpoints', prefix: 'breakpoint' },
       { name: 'roles', prefix: 'role' },
-      { name: 'colorPalette', prefix: 'color' },
-      { name: 'fontSizes', prefix: 'font-size' },
-      { name: 'sizes', prefix: 'size' },
-      { name: 'spacing', prefix: 'spacing' }
+      { name: 'colorPalette', prefix: 'color' }
     ] as const
 
     applyCustomProp('font-family', unref(currentTheme).designTokens.fontFamily)
