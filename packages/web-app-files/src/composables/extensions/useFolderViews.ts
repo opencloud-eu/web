@@ -16,7 +16,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       extensionPointIds: [folderViewsFolderExtensionPoint.id],
       folderView: {
         name: 'resource-table-condensed',
-        label: $gettext('Switch to condensed table view'),
+        label: $gettext('Condensed table view'),
         icon: {
           name: 'menu-line-condensed',
           fillType: 'none'
@@ -34,7 +34,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       ],
       folderView: {
         name: 'resource-table',
-        label: $gettext('Switch to default table view'),
+        label: $gettext('Default table view'),
         icon: {
           name: 'menu-line',
           fillType: 'none'
@@ -52,7 +52,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       ],
       folderView: {
         name: 'resource-tiles',
-        label: $gettext('Switch to tiles view'),
+        label: $gettext('Tiles view'),
         icon: {
           name: 'apps-2',
           fillType: 'line'
