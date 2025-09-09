@@ -286,7 +286,7 @@ export const createSpaceFromSelection = async ({
 }): Promise<Space> => {
   await selectOrDeselectResources({
     page,
-    resources: resources.map((r) => ({name: r}) as resourceArgs), // prettier-ignore
+    resources: resources.map((r) => ({ name: r }) as resourceArgs), // prettier-ignore
     select: true
   })
   await page.locator(util.format(resourceNameSelector, resources[0])).click({ button: 'right' })
@@ -844,13 +844,9 @@ export const selectOrDeselectResources = async (args: selectResourcesArgs): Prom
     await page.locator(util.format(checkBox, resource.name)).waitFor()
     const resourceCheckbox = page.locator(util.format(checkBox, resource.name))
     if (!(await resourceCheckbox.isChecked()) && select) {
-      try {
-        await resourceCheckbox.check()
-      } catch (e) {
-        console.log(e)
-      }
+      await resourceCheckbox.click()
     } else if (await resourceCheckbox.isChecked()) {
-      await resourceCheckbox.uncheck()
+      await resourceCheckbox.click()
     }
   }
 }

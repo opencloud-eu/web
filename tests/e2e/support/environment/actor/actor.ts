@@ -18,6 +18,10 @@ export class ActorEnvironment extends EventEmitter implements Actor {
   async setup(): Promise<void> {
     this.context = await this.options.browser.newContext(buildBrowserContextOptions(this.options))
 
+    await this.context.addInitScript(() => {
+      ;(window as any).__E2E__ = true
+    })
+
     if (this.options.context.reportTracing) {
       await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true })
     }
