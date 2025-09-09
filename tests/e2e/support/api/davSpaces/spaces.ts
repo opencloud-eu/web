@@ -76,6 +76,25 @@ const createFile = async ({
   checkResponseStatus(response, `Failed while uploading file '${pathToFile}' in personal space`)
 }
 
+const deleteFile = async ({
+  user,
+  pathToFile,
+  webDavEndPathToRoot
+}: {
+  user: User
+  pathToFile: string
+  webDavEndPathToRoot: string
+}): Promise<void> => {
+  const response = await request({
+    method: 'DELETE',
+    path: join('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
+    user: user,
+    header: {}
+  })
+
+  checkResponseStatus(response, `Failed deleting file '${pathToFile}'`)
+}
+
 export const uploadFileInPersonalSpace = async ({
   user,
   pathToFile,
@@ -234,4 +253,16 @@ export const addTagToResource = async ({
   })
   const tagNames = tags.split(',').map((tag) => tag.trim())
   await createTagsForResource({ user, resourceId, tags: tagNames })
+}
+
+export const deleteFileInPersonalSpace = async ({
+  user,
+  pathToFile
+}: {
+  user: User
+  pathToFile: string
+}): Promise<void> => {
+  const webDavEndPathToRoot =
+    'spaces/' + (await getSpaceIdBySpaceName({ user, spaceType: 'personal' }))
+  await deleteFile({ user, pathToFile, webDavEndPathToRoot })
 }

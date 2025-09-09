@@ -40,3 +40,30 @@ Then(
     expect(actualText).toContain(expectedText)
   }
 )
+
+When(
+  '{string} navigates to the trashbin',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const pageObject = new objects.applicationFiles.page.trashbin.Overview({ page })
+    await pageObject.navigate()
+  }
+)
+
+When(
+  '{string} opens trashbin of the project space {string}',
+  async function (this: World, stepUser: string, key: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const trashbinObject = new objects.applicationFiles.Trashbin({ page })
+    await trashbinObject.openTrashbinOfProjectSpace(key)
+  }
+)
+
+When(
+  '{string} opens trashbin of the personal space',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const trashbinObject = new objects.applicationFiles.Trashbin({ page })
+    await trashbinObject.openTrashbinOfPersonalSpace()
+  }
+)

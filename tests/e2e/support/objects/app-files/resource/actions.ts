@@ -126,7 +126,6 @@ const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 // online office locators
 // Collabora
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
-const collaboraEditorSaveSelector = '.notebookbar-shortcuts-bar #save'
 const collaboraDocTextAreaSelector = '#clipboard-area'
 const collaboraCanvasEditorSelector = '.leaflet-layer'
 // OnlyOffice
@@ -2237,4 +2236,29 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
     buffer: buffer
   })
   await page.keyboard.press('Escape')
+}
+
+export const openRightSidebar = async ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Promise<void> => {
+  await sidebar.open({ page, resource })
+}
+
+export type PanelType = 'actions' | 'sharing' | 'versions' | 'activities'
+
+export const openResourcePanel = async ({
+  page,
+  resource,
+  panel
+}: {
+  page: Page
+  resource: string
+  panel: PanelType
+}): Promise<void> => {
+  await sidebar.open({ page, resource })
+  await sidebar.openPanel({ page, name: panel })
 }

@@ -4,6 +4,7 @@ import { sidebar } from '../utils'
 import { getActualExpiryDate } from '../../../utils/datePicker'
 import { clickResource } from '../resource/actions'
 import { config } from '../../../../config'
+import { checkAccessibility } from '../../../utils/accessibility'
 
 export interface createLinkArgs {
   page: Page
@@ -12,6 +13,7 @@ export interface createLinkArgs {
   name?: string
   space?: boolean
   password?: string
+  a11yEnabled?: boolean
 }
 
 export interface copyLinkArgs {
@@ -95,21 +97,18 @@ const showOrHidePasswordButton = '.oc-text-input-show-password-toggle'
 const copyPasswordButton = '.oc-text-input-copy-password-button'
 const generatePasswordButton = '.oc-text-input-generate-password-button'
 const expectedRegexForGeneratedPassword = /^[A-Za-z0-9\s\S]{12}$/
-const passwordInputDescription = '.oc-text-input-description .oc-text-input-description'
 const advancedModeButton = '.link-modal-advanced-mode-button'
 const copyLinkButton =
   '//span[contains(@class, "files-links-name") and text()="%s"]//ancestor::li//button[contains(@class, "oc-files-public-link-copy-url")]'
+const linkRoleDropdown = '.link-role-dropdown'
+const createLinkModal = '.oc-modal-body'
 
 const getRecentLinkUrl = async (page: Page, name: string): Promise<string> => {
   const linkElement = page.locator(util.format(copyLinkButton, name))
 
-  if (config.browser === 'webkit') {
-    return await linkElement.getAttribute('data-clipboard-text')
-  } else {
-    await linkElement.click()
-    const handle = await page.evaluateHandle(() => navigator.clipboard.readText())
-    return handle.jsonValue()
-  }
+  await linkElement.click()
+  const handle = await page.evaluateHandle(() => navigator.clipboard.readText())
+  return handle.jsonValue()
 }
 
 const getRecentLinkName = async (page: Page): Promise<string> => {
@@ -117,7 +116,7 @@ const getRecentLinkName = async (page: Page): Promise<string> => {
 }
 
 export const createLink = async (args: createLinkArgs): Promise<string> => {
-  const { space, page, resource, password, role } = args
+  const { space, page, resource, password, role, a11yEnabled } = args
   if (!space) {
     const resourcePaths = resource.split('/')
     const resourceName = resourcePaths.pop()
@@ -129,15 +128,21 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
   }
   await page.locator(addPublicLinkButton).click()
   await page.locator(advancedModeButton).click()
+  if (a11yEnabled) {
+    await checkAccessibility(page, 'create public link modal', createLinkModal)
+  }
 
   if (role) {
     await page.locator(publicLinkRoleToggle).click()
+    if (a11yEnabled) {
+      await checkAccessibility(page, 'check link role dropdown', linkRoleDropdown)
+    }
     await page.locator(util.format(publicLinkSetRoleButton, role)).click()
   }
 
   await page.locator(editPublicLinkPasswordInput).fill(password)
 
-  await Promise.all([
+  const resp = await Promise.all([
     page.waitForResponse(
       (res) =>
         res.url().includes('createLink') &&
@@ -147,7 +152,13 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
     page.locator(editPublicLinkRenameConfirm).click()
   ])
   await clearCurrentPopup(page)
-  return await getRecentLinkUrl(page, 'Unnamed link')
+
+  // workaround for webkit (safari browser). See bug #1169
+  if (config.browser === 'webkit') {
+    return (await resp[0].json()).link.webUrl
+  } else {
+    return await getRecentLinkUrl(page, 'Unnamed link')
+  }
 }
 
 export const changeRole = async (args: changeRoleArgs): Promise<string> => {

@@ -484,6 +484,15 @@ When(
   }
 )
 
+When(
+  '{string} opens the edit panel of group {string} using the context menu',
+  async function (this: World, stepUser: string, group: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    await groupsObject.openEditPanel({ key: group, action: 'context-menu' })
+  }
+)
+
 Then('{string} should see the edit panel', async function (this: World, stepUser: string) {
   const { page } = this.actorsEnvironment.getActor({ key: stepUser })
   const usersObject = new objects.applicationAdminSettings.Users({ page })
@@ -514,5 +523,32 @@ Then(
       const shareRole = shareRoles[info.role as keyof typeof shareRoles]
       expect(actualMemberList[shareRole as keyof typeof actualMemberList]).toContain(info.user)
     }
+  }
+)
+
+When(
+  '{string} selects the user {string}',
+  async function (this: World, stepUser: string, value: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    await usersObject.selectUser({ key: value })
+  }
+)
+
+When(
+  '{string} selects the group {string}',
+  async function (this: World, stepUser: string, value: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    await groupsObject.selectGroup({ key: value })
+  }
+)
+
+When(
+  '{string} selects the space {string}',
+  async function (this: World, stepUser: string, value: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    await spacesObject.select({ key: value })
   }
 )

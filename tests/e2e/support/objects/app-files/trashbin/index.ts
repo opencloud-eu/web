@@ -11,9 +11,13 @@ export class Trashbin {
     this.#spacesEnvironment = new SpacesEnvironment()
   }
 
-  async open(key: string): Promise<void> {
+  async openTrashbinOfProjectSpace(key: string): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
-    await po.openTrashbin({ page: this.#page, id })
+    await po.openTrashbinOfProjectSpace({ page: this.#page, id })
+  }
+
+  async openTrashbinOfPersonalSpace(): Promise<void> {
+    await po.openTrashbinOfPersonalSpace(this.#page)
   }
 
   async showEmptyTrashbins(): Promise<void> {

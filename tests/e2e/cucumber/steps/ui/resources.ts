@@ -8,7 +8,8 @@ import {
   createResourceTypes,
   displayedResourceType,
   shortcutType,
-  ActionViaType
+  ActionViaType,
+  PanelType
 } from '../../../support/objects/app-files/resource/actions'
 import { Public } from '../../../support/objects/app-files/page/public'
 import { Resource } from '../../../support/objects/app-files'
@@ -1097,5 +1098,23 @@ When(
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     await resourceObject.uploadImageFromClipboard()
+  }
+)
+
+When(
+  '{string} opens the right sidebar of the resource {string}',
+  async function (this: World, stepUser: string, resource: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.openRightSidebar(resource)
+  }
+)
+
+When(
+  '{string} opens a {string} panel of the resource {string}',
+  async function (this: World, stepUser: string, panel: string, resource: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.openResourcePanel(panel as PanelType, resource)
   }
 )

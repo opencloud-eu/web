@@ -68,7 +68,8 @@ Feature: spaces participant management
     When "Brian" deletes the following resources using the sidebar panel
       | resource     | from   |
       | textfile.txt | parent |
-    When "Carol" navigates to the trashbin of the project space "team.1"
+    When "Carol" navigates to the trashbin
+    And "Carol" opens trashbin of the project space "team.1"
     Then "Carol" should not be able to delete following resources from the trashbin
       | resource            |
       | parent/lorem.txt    |
@@ -77,7 +78,8 @@ Feature: spaces participant management
       | resource            |
       | parent/lorem.txt    |
       | parent/textfile.txt |
-    When "Brian" navigates to the trashbin of the project space "team.1"
+    When "Brian" navigates to the trashbin
+    And "Brian" opens trashbin of the project space "team.1"
     Then "Brian" should be able to restore following resource from the trashbin
       | resource         |
       | parent/lorem.txt |
@@ -93,7 +95,8 @@ Feature: spaces participant management
     When "Alice" changes the roles of the following users in the project space
       | user  | role       |
       | Carol | Can manage |
-    And "Carol" navigates to the trashbin of the project space "team.1"
+    And "Carol" navigates to the trashbin
+    And "Carol" opens trashbin of the project space "team.1"
     Then "Carol" should be able to delete following resource from the trashbin
       | resource            |
       | parent/textfile.txt |
