@@ -200,11 +200,14 @@ export default defineComponent({
   },
 
   methods: {
-    emitClick() {
+    emitClick(e: MouseEvent) {
+      if (!e || typeof e.stopPropagation !== 'function') {
+        return
+      }
       /**
        * Triggered when the resource is a file and the name is clicked
        */
-      this.$emit('click')
+      this.$emit('click', e)
     }
   }
 })
