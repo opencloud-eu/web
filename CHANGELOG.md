@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
 - refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
 - refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
 - refactor: migrate grid to tailwind [[#1148](https://github.com/opencloud-eu/web/pull/1148)]
