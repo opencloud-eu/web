@@ -1,6 +1,6 @@
 <template>
   <div id="web-content" class="flex flex-col flex-nowrap h-dvh">
-    <div id="global-progress-bar" class="w-full absolute top-0">
+    <div id="global-progress-bar" class="w-full absolute top-0 z-100">
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header" class="shrink basis-auto grow-0">
@@ -40,7 +40,9 @@
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
       <portal-target name="app.runtime.footer" />
     </div>
-    <div class="snackbars absolute inset-x-[20px] sm:left-auto bottom-[20px]">
+    <div
+      class="snackbars absolute inset-x-[20px] sm:left-auto bottom-[20px] z-[calc(var(--z-index-modal)+1)]"
+    >
       <message-bar />
       <upload-info />
     </div>
@@ -199,14 +201,3 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
 })
 </script>
-<style lang="scss">
-#web-content {
-  #global-progress-bar {
-    z-index: 10;
-  }
-
-  .snackbars {
-    z-index: calc(var(--oc-z-index-modal) + 1);
-  }
-}
-</style>

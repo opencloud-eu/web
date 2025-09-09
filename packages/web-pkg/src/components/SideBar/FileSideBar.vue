@@ -2,7 +2,7 @@
   <InnerSideBar
     v-if="isOpen"
     ref="sidebar"
-    class="files-side-bar"
+    class="files-side-bar z-30"
     :is-open="isOpen"
     :active-panel="activePanel"
     :available-panels="availablePanels"
@@ -465,9 +465,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.files-side-bar {
-  z-index: 3;
-}
-</style>

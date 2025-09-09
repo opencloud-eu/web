@@ -41,7 +41,7 @@
           <li
             v-for="(el, index) in notifications"
             :key="index"
-            class="oc-notifications-item [&>a]:text-role-on-surface"
+            class="oc-notifications-item [&>a]:text-role-on-surface -z-1000 relative"
           >
             <component
               :is="el.computedLink ? 'router-link' : 'div'"

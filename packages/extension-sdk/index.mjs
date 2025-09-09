@@ -8,7 +8,6 @@ import { cwd } from 'process'
 import { readFileSync } from 'fs'
 
 import vue from '@vitejs/plugin-vue'
-import serve from 'rollup-plugin-serve'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
@@ -23,7 +22,6 @@ export const defineConfig = (overrides = {}) => {
   return ({ mode }) => {
     const isProduction = mode === 'production'
     const isTesting = mode === 'test'
-    const isServing = !isProduction && !isTesting
 
     // read package name from vite workspace
     const packageJson = JSON.parse(
@@ -32,20 +30,13 @@ export const defineConfig = (overrides = {}) => {
 
     const name = overrides.name || packageJson.name
 
-    // take vite standard config and reuse it for rollup-plugin-serve config
-    const { https = defaultHttps(), port = 9210, host = 'localhost' } = overrides?.server || {}
+    // set default config
+    const { https = defaultHttps(), port = 9210 } = overrides?.server || {}
     const isHttps = !!https
-
-    if (isServing) {
-      console.log(
-        `>>> Serving extension at http${isHttps ? 's' : ''}://${host}:${port}/js/${name}.js`
-      )
-    }
 
     return mergeConfig(
       {
         server: {
-          host,
           port,
           strictPort: true,
           ...(isHttps && https)
@@ -80,18 +71,7 @@ export const defineConfig = (overrides = {}) => {
               dir: distDir,
               chunkFileNames: join('js', 'chunks', '[name]-[hash].mjs'),
               entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}.js`)
-            },
-            plugins: [
-              isServing &&
-                serve({
-                  headers: {
-                    'access-control-allow-origin': '*'
-                  },
-                  contentBase: distDir,
-                  ...(https && { https }),
-                  ...(port && { port })
-                })
-            ]
+            }
           }
         },
         plugins: [

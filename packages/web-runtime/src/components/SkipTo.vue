@@ -1,6 +1,6 @@
 <template>
   <button
-    class="skip-button absolute left-0 top-[-100px] bg-role-secondary text-role-on-secondary py-1 px-2 focus:border-dashed focus:border-white focus:outline-0 focus:top-0"
+    class="skip-button absolute left-0 top-[-100px] z-60 bg-role-secondary text-role-on-secondary py-1 px-2 focus:border-dashed focus:border-white focus:outline-0 focus:top-0"
     @click="skipToTarget"
   >
     <slot />
@@ -36,7 +36,6 @@ export default defineComponent({
 
 <style scoped>
 .skip-button {
-  z-index: 6;
   -webkit-appearance: none;
 }
 </style>

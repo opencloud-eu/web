@@ -1,5 +1,8 @@
 <template>
-  <div class="preview-details" :class="{ 'lightbox opacity-90': isFullScreenModeActivated }">
+  <div
+    class="preview-details"
+    :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
+  >
     <div
       class="bg-role-surface-container p-2 w-lg flex items-center justify-center justify-around rounded-sm"
     >
@@ -225,9 +228,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.preview-details.lightbox {
-  z-index: 1000;
-}
-</style>

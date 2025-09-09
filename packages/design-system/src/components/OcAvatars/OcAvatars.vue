@@ -7,7 +7,7 @@
       aria-hidden="true"
       :class="{
         'oc-avatars-stacked': stacked,
-        'oc-avatars-hover-effect [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
+        'oc-avatars-hover-effect [&>*]:hover:z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
           hasHoverEffect,
         ...getTailwindGapClass(gapSize)
       }"
@@ -195,15 +195,6 @@ onMounted(() => {
 @layer components {
   .oc-avatars-stacked > * + * {
     @apply -ml-4;
-  }
-}
-</style>
-<style lang="scss">
-.oc-avatars {
-  &-hover-effect {
-    > *:hover {
-      z-index: 1000 !important;
-    }
   }
 }
 </style>

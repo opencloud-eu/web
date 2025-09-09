@@ -2,7 +2,7 @@
   <div class="app-image-wrapper relative">
     <div
       v-if="app.badge"
-      class="app-image-ribbon text-right size-[7rem] overflow-hidden absolute top-0 right-0"
+      class="app-image-ribbon z-10 text-right size-[7rem] overflow-hidden absolute top-0 right-0"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
       <span
@@ -113,11 +113,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.app-image-wrapper {
-  .app-image-ribbon {
-    z-index: 1;
-  }
-}
-</style>

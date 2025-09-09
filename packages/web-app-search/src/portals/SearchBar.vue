@@ -18,7 +18,7 @@
       cancel-button-appearance="raw-inverse"
       :cancel-handler="cancelSearch"
       small
-      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute inset-0 sm:relative invisible sm:visible"
+      class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute inset-0 sm:relative invisible sm:visible z-90 sm:z-auto"
       @advanced-search="onKeyUpEnter"
       @update:model-value="updateTerm"
       @clear="onClear"
@@ -534,6 +534,11 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #files-global-search #files-global-search-bar input,
+  #files-global-search #files-global-search-bar input:not(:placeholder-shown) {
+    @apply z-[var(--z-index-modal)] sm:z-auto;
+  }
+
   #files-global-search-options {
     max-height: calc(100vh - 60px);
   }
@@ -544,20 +549,6 @@ export default defineComponent({
   #files-global-search-options .preview-component button,
   #files-global-search-options .preview-component a {
     @apply p-0 w-auto gap-0;
-  }
-}
-</style>
-<style lang="scss">
-#files-global-search {
-  #files-global-search-bar {
-    @media (max-width: 639px) {
-      z-index: 9;
-
-      input,
-      input:not(:placeholder-shown) {
-        z-index: var(--oc-z-index-modal);
-      }
-    }
   }
 }
 </style>
