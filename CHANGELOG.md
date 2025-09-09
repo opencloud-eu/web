@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
 - fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
 - fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
 - fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
