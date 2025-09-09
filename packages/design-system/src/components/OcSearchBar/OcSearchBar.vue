@@ -219,13 +219,3 @@ const onCancel = () => {
   cancelHandler()
 }
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .oc-search-icon {
-    @apply inline-flex justify-center items-center;
-  }
-}
-</style>

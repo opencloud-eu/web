@@ -12,7 +12,7 @@
     @click="onClickUrlInput"
   >
     <template #label>
-      <div class="flex items-center create-shortcut-modal-label mb-1">
+      <div class="flex items-center mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
           <span class="text-role-on-error" aria-hidden="true">*</span>
@@ -97,7 +97,7 @@
       :fix-message-line="true"
     >
       <template #label>
-        <div class="flex items-center create-shortcut-modal-label mb-1">
+        <div class="flex items-center mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
             <span class="text-role-on-error" aria-hidden="true">*</span>

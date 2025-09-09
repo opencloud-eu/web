@@ -13,7 +13,10 @@
         'p-2',
         'opacity-100',
         'select-none',
-        { 'active overflow-hidden': active }
+        { 'active overflow-hidden': active },
+        {
+          'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest': !active
+        }
       ]"
       :data-nav-id="index"
       :data-nav-name="navName"
@@ -96,12 +99,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.oc-sidebar-nav-item-link {
-  &:focus:not(.active),
-  &:hover:not(.active) {
-    // must not be a tailwind layer because we're overwriting colors from the button mixin
-    background: var(--oc-role-surface-container-highest) !important;
-  }
-}
-</style>

@@ -2,7 +2,7 @@
   <div
     class="oc-text-editor size-full"
     :class="{
-      'oc-text-editor-readonly p-4': isReadOnly
+      'p-4 overflow-auto': isReadOnly
     }"
   >
     <text-editor-component
@@ -35,15 +35,3 @@ export default defineComponent({
   emits: ['update:currentContent']
 })
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-text-editor-readonly {
-    /* Fixes in readonly mode vertical scrolling is not available */
-    @apply overflow-auto;
-    height: calc(100vh - 52px);
-  }
-}
-</style>

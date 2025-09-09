@@ -29,9 +29,7 @@
         tabindex="-1"
         @click="$emit('click', $event)"
       >
-        <div
-          class="oc-tile-card-selection z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container"
-        >
+        <div class="z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container">
           <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
@@ -39,7 +37,7 @@
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator z-10 absolute text-role-on-surface"
+          class="z-10 absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />
@@ -211,18 +209,16 @@ if (!lazy) {
 }
 </script>
 <style lang="scss">
-@layer components {
-  .oc-tile-card {
-    // needs to be scss because of the linear-gradient
-    &-lazy-shimmer::after {
-      background-image: linear-gradient(
-        90deg,
-        rgba(#4c5f79, 0) 0,
-        rgba(#4c5f79, 0.2) 20%,
-        rgba(#4c5f79, 0.5) 60%,
-        rgba(#4c5f79, 0)
-      );
-    }
+.oc-tile-card {
+  // needs to be scss because of the linear-gradient
+  &-lazy-shimmer::after {
+    background-image: linear-gradient(
+      90deg,
+      rgba(#4c5f79, 0) 0,
+      rgba(#4c5f79, 0.2) 20%,
+      rgba(#4c5f79, 0.5) 60%,
+      rgba(#4c5f79, 0)
+    );
   }
 }
 </style>

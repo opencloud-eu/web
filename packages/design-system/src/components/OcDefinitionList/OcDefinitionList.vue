@@ -29,7 +29,7 @@ const { items } = defineProps<Props>()
 @layer components {
   .details-list dt,
   .details-list dd {
-    @apply mb-2 flex items-center;
+    @apply mb-2 flex items-center last-of-type:mb-0;
   }
 
   .details-list dd {
@@ -38,11 +38,6 @@ const { items } = defineProps<Props>()
 
   .details-list dt {
     @apply font-semibold whitespace-nowrap;
-  }
-
-  .details-list dd:last-of-type,
-  .details-list dt:last-of-type {
-    @apply mb-0;
   }
 }
 </style>

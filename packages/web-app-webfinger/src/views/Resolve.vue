@@ -1,5 +1,5 @@
 <template>
-  <main class="webfinger-resolve h-screen flex flex-col justify-center items-center">
+  <main class="h-screen flex flex-col justify-center items-center">
     <h1 class="sr-only" v-text="pageTitle" />
     <oc-card
       :title="cardTitle"

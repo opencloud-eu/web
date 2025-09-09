@@ -1,5 +1,14 @@
 <template>
-  <div class="avatar-upload">
+  <div
+    :class="[
+      '[&_.cropper-crop-box]:!outline-1',
+      '[&_.cropper-crop-box]:!outline-role-outline',
+      '[&_.cropper-view-box]:!rounded-[50%]',
+      '[&_.cropper-crop-box]:!rounded-[50%]',
+      '[&_.cropper-line]:!bg-role-outline',
+      '[&_.cropper-point]:!bg-role-outline'
+    ]"
+  >
     <input
       ref="fileInputRef"
       class="invisible avatar-file-input"
@@ -11,7 +20,7 @@
       <user-avatar class="mb-4" :width="128" :user-id="user.id" :user-name="user.displayName" />
       <div>
         <div class="oc-button-group">
-          <oc-button class="avatar-upload-button" size="small" @click="triggerFileInput">
+          <oc-button size="small" @click="triggerFileInput">
             {{ $gettext('Upload') }}
           </oc-button>
           <oc-button
@@ -37,7 +46,7 @@
     >
       <template #content>
         <div v-if="imageUrl">
-          <img ref="imageRef" class="avatar-upload-modal-image max-h-[400px]" :src="imageUrl" />
+          <img ref="imageRef" class="max-h-[400px]" :src="imageUrl" />
           <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
             <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
             <span
@@ -220,19 +229,3 @@ const destroyCropper = () => {
   imageUrl.value = null
 }
 </script>
-
-<style lang="scss">
-.avatar-upload {
-  // overwrite vendor styling
-  .cropper-crop-box,
-  .cropper-view-box {
-    border-radius: 50%;
-    outline: 1px solid var(--oc-role-outline) !important;
-  }
-
-  .cropper-line,
-  .cropper-point {
-    background-color: var(--oc-role-outline) !important;
-  }
-}
-</style>

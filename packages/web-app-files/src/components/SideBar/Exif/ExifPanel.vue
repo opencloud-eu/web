@@ -1,6 +1,6 @@
 <template>
   <div id="files-sidebar-panel-exif" class="rounded-sm p-4 bg-role-surface-container">
-    <dl class="exif-data-list details-list grid grid-cols-[auto_minmax(0,1fr)] m-0">
+    <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0">
       <dt v-text="$gettext('Dimensions')" />
       <dd data-testid="exif-panel-dimensions" v-text="dimensions" />
       <dt v-text="$gettext('Device make')" />

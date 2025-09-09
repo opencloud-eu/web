@@ -1,5 +1,5 @@
 <template>
-  <div class="quota-information flex items-end">
+  <div class="flex items-end">
     <oc-icon name="hard-drive-2" size="small" fill-type="line" class="mr-1" />
     <div>
       <p class="my-0">
@@ -7,7 +7,6 @@
       </p>
       <oc-progress
         v-if="limitedPersonalStorage"
-        class="quota-information-progress-bar"
         :value="quotaUsagePercent"
         :max="100"
         size="small"

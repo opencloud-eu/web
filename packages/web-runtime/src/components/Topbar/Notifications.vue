@@ -24,11 +24,9 @@
       </div>
       <div class="relative">
         <div v-if="loading" class="oc-notifications-loading">
-          <div
-            class="oc-notifications-loading-background size-full bg-role-surface absolute opacity-60"
-          />
+          <div class="size-full bg-role-surface absolute opacity-60" />
           <oc-spinner
-            class="oc-notifications-loading-spinner absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)] opacity-100"
+            class="absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)] opacity-100"
             size="large"
           />
         </div>

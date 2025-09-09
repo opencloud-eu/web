@@ -6,9 +6,8 @@
     tabindex="-1"
     class="border-l focus:outline-0 focus-visible:outline-0 w-[440px] min-w-[440px] overflow-hidden relative focus:shadow-none focus-visible:shadow-none"
     :class="{
-      'has-active-sub-panel': hasActiveSubPanel,
       'flex justify-center items-center': loading,
-      'app-sidebar-full-width w-full min-w-full': fullWidthSideBar
+      'w-full min-w-full': fullWidthSideBar
     }"
   >
     <oc-spinner v-if="loading" />
@@ -43,7 +42,7 @@
             <oc-icon name="arrow-left-s" fill-type="line" />
           </oc-button>
 
-          <h2 class="header__title col-start-2 text-center my-0 text-lg">
+          <h2 class="col-start-2 text-center my-0 text-lg">
             {{ panel.title(panelContext) }}
           </h2>
 
@@ -68,7 +67,7 @@
           <div
             class="sidebar-panel__body-content"
             :class="{
-              'sidebar-panel__body-content-stretch flex-1 ': !panel.isRoot?.(panelContext)
+              'flex-1 ': !panel.isRoot?.(panelContext)
             }"
           >
             <slot name="body">
@@ -91,10 +90,7 @@
             </slot>
           </div>
 
-          <div
-            v-if="panel.isRoot?.(panelContext) && subPanels.length > 0"
-            class="sidebar-panel__navigation mt-4"
-          >
+          <div v-if="panel.isRoot?.(panelContext) && subPanels.length > 0" class="mt-4">
             <oc-button
               v-for="panelSelect in subPanels"
               :id="`sidebar-panel-${panelSelect.name}-select`"
@@ -286,7 +282,7 @@ onBeforeUnmount(() => {
   }
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

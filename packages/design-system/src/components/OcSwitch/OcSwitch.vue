@@ -45,7 +45,7 @@ const toggle = () => {
   emit('update:checked', !checked)
 }
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

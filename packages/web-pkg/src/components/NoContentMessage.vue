@@ -18,7 +18,7 @@ const { icon, iconFillType = 'fill' } = defineProps<{
   iconFillType?: FillType
 }>()
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
