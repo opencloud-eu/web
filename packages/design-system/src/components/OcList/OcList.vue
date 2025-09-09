@@ -70,12 +70,3 @@ defineSlots<Slots>()
   }
 }
 </style>
-<style lang="scss">
-ul.oc-list.oc-timeline {
-  li {
-    &::before {
-      z-index: 1;
-    }
-  }
-}
-</style>
