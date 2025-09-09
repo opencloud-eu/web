@@ -7,7 +7,7 @@
   >
     <div
       v-if="dragareaEnabled"
-      class="dragarea absolute inset-0 bg-sky-600/20 rounded-xl pointer-events-none"
+      class="dragarea absolute inset-0 z-90 bg-sky-600/20 rounded-xl pointer-events-none"
     />
     <h1 class="sr-only">{{ pageTitle }}</h1>
     <div class="p-4 h-full text-center">
@@ -254,9 +254,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.dragarea {
-  z-index: 9;
-}
-</style>

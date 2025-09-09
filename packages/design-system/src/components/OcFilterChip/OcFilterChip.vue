@@ -5,7 +5,7 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1"
+      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90"
       :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
@@ -45,7 +45,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px]"
+      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
@@ -180,13 +180,3 @@ const buttonColorRole = computed(() => {
 
 defineExpose({ hideDrop })
 </script>
-
-<style lang="scss">
-// the focussed button needs to stay above the other to correctly display the focus outline
-.oc-filter-chip-button,
-.oc-filter-chip-clear {
-  &:focus {
-    z-index: 9;
-  }
-}
-</style>

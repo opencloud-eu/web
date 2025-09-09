@@ -33,7 +33,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'sr-only': buttonHidden }">
       <oc-button
-        class="oc-search-button ml-4 rounded-l-none transform-[translateX(-1px)]"
+        class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -226,14 +226,6 @@ const onCancel = () => {
 @layer components {
   .oc-search-icon {
     @apply inline-flex justify-center items-center;
-  }
-}
-</style>
-
-<style lang="scss">
-.oc-search {
-  &-button {
-    z-index: 0;
   }
 }
 </style>

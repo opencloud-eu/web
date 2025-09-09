@@ -7,13 +7,14 @@
     <div
       v-if="isOpen"
       ref="bottomDrawerRef"
-      class="oc-bottom-drawer-background fixed top-0 left-0 bg-black/40 size-full"
+      class="oc-bottom-drawer-background fixed inset-0 z-[calc(var(--z-index-modal)+2)] top-0 left-0 bg-black/40 size-full"
       role="button"
       @click="onBackgroundClicked"
     >
       <focus-trap>
         <div
           :id="drawerId"
+          tabindex="0"
           class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%] transition-all duration-200"
         >
           <div class="oc-card bg-transparent">
@@ -257,10 +258,5 @@ defineExpose({ show, hide, getElement })
   .oc-bottom-drawer.active {
     @apply bottom-0;
   }
-}
-</style>
-<style lang="scss">
-.oc-bottom-drawer-background {
-  z-index: calc(var(--oc-z-index-modal) + 2);
 }
 </style>

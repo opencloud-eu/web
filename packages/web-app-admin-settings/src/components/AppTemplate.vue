@@ -7,7 +7,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar py-2 px-4 bg-role-surface top-0"
+            class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-20"
             :class="{ sticky: isSticky }"
           >
             <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
@@ -214,9 +214,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-#admin-settings-app-bar {
-  z-index: 2;
-}
-</style>

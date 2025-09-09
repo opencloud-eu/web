@@ -19,8 +19,13 @@ describe('OcBottomDrawer', () => {
   it('renders when toggle is clicked', async () => {
     const { wrapper } = getWrapper()
     await wrapper.find(selectors.toggle).trigger('click')
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-    expect(wrapper.html()).toMatchSnapshot()
+    const drawer = wrapper.find(selectors.drawer)
+    expect(drawer.exists()).toBe(true)
+    expect(drawer.classes()).toContain('active')
+    const backdrop = wrapper.find(selectors.background)
+    expect(backdrop.exists()).toBe(true)
+    expect(backdrop.classes()).toEqual(expect.arrayContaining(['fixed', 'inset-0']))
+    expect(backdrop.attributes('class')).toMatch(/z-\[/)
     wrapper.unmount()
   })
 
