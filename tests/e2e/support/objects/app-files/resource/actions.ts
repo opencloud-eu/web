@@ -139,7 +139,7 @@ const onlyOfficeCanvasEditorSelector = '#id_viewer_overlay'
 const onlyOfficeCanvasCursorSelector = '#id_target_cursor'
 const onlyOfficeInfoDialog = '.alert .info-box'
 const onlyOfficeInfoDialogConfirm = `.alert button[result="ok"]`
-const fileThumbnail = `//img[@data-test-preview-resource-name="%s"]`
+const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
 const fileIconWrapper = '#oc-file-details-sidebar .details-icon-wrapper'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'

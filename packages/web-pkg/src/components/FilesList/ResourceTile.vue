@@ -55,7 +55,7 @@
               class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9]"
               :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
-              :data-test-preview-resource-name="resource.name"
+              :data-test-thumbnail-resource-name="resource.name"
               @click="toggleTile([resource, $event])"
             />
             <resource-icon
