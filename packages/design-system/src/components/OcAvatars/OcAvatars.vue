@@ -7,7 +7,7 @@
       aria-hidden="true"
       :class="{
         'oc-avatars-stacked': stacked,
-        'oc-avatars-hover-effect [&>*]:hover:z-[1000] [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
+        'oc-avatars-hover-effect [&>*]:hover:z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
           hasHoverEffect,
         ...getTailwindGapClass(gapSize)
       }"

@@ -29,7 +29,7 @@ defineSlots<Slots>()
 
 @layer utilities {
   .oc-list li::before {
-    @apply z-[1];
+    @apply z-1;
   }
 }
 
