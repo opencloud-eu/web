@@ -407,6 +407,8 @@ export default defineComponent({
           } else {
             loadFileTask.perform()
           }
+        } else {
+          space.value = unref(unref(currentFileContext).space)
         }
       },
       { immediate: true }
