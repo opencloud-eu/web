@@ -26,7 +26,7 @@
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
         tabindex="-1"
-        @click="$emit('click')"
+        @click="$emit('click', $event)"
       >
         <div
           class="oc-tile-card-selection z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container"
@@ -81,7 +81,7 @@
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
               :link="resourceRoute"
-              @click.stop="$emit('click')"
+              @click.stop="$emit('click', $event)"
             />
           </div>
           <div class="flex items-center">
@@ -137,7 +137,7 @@ const {
 }>()
 
 const emit = defineEmits<{
-  (e: 'click'): void
+  (e: 'click', event: MouseEvent | KeyboardEvent): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
 }>()
