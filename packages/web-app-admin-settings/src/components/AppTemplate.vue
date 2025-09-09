@@ -7,10 +7,10 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="oc-app-bar py-2 px-4 bg-role-surface top-0 z-20"
+            class="py-2 px-4 bg-role-surface top-0 z-20"
             :class="{ sticky: isSticky }"
           >
-            <div class="admin-settings-app-bar-controls flex justify-between items-center h-13">
+            <div class="flex justify-between items-center h-13">
               <oc-breadcrumb
                 v-if="!isMobileWidth"
                 id="admin-settings-breadcrumb"
@@ -29,10 +29,7 @@
                 />
               </div>
             </div>
-            <div
-              v-if="showAppBar"
-              class="admin-settings-app-bar-actions flex items-center mt-1 min-h-10"
-            >
+            <div v-if="showAppBar" class="flex items-center mt-1 min-h-10">
               <slot
                 name="topbarActions"
                 :limited-screen-space="limitedScreenSpace"

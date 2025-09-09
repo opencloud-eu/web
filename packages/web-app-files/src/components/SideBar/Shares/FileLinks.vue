@@ -50,14 +50,14 @@
         v-text="$gettext('You do not have permission to create public links.')"
       />
     </div>
-    <div v-if="indirectLinks.length" class="files-links-indirect mt-4">
+    <div v-if="indirectLinks.length" class="mt-4">
       <hr class="my-4" />
       <h4 class="font-semibold text-base m-0">
         {{ indirectLinksHeading }}
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
       </h4>
       <div
-        class="files-links-indirect-list grid transition-all duration-250 ease-out"
+        class="grid transition-all duration-250 ease-out"
         :class="{
           '[grid-template-rows:1fr] mt-4': !indirectLinkListCollapsed,
           '[grid-template-rows:0fr]': indirectLinkListCollapsed

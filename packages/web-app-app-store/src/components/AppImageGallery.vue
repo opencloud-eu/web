@@ -1,5 +1,5 @@
 <template>
-  <div class="app-image-wrapper relative">
+  <div class="relative">
     <div
       v-if="app.badge"
       class="app-image-ribbon z-10 text-right size-[7rem] overflow-hidden absolute top-0 right-0"

@@ -1,13 +1,13 @@
 <template>
-  <div class="file_info flex justify-between p-2">
+  <div class="flex justify-between p-2">
     <div class="flex items-center">
       <resource-icon
         v-if="isSubPanelActive"
         :resource="resource"
         size="large"
-        class="file_info__icon mr-2 relative"
+        class="mr-2 relative"
       />
-      <div class="file_info__body">
+      <div>
         <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">
           <resource-name
             :name="name"

@@ -2,7 +2,7 @@
 
 exports[`Details SideBar Panel > displays the details side panel 1`] = `
 "<div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-  <div class="oc-space-details-sidebar-image text-center">
+  <div class="text-center">
     <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" type="span" class="space-default-image px-4 py-4"></oc-icon-stub>
   </div>
   <div class="flex items-center oc-space-details-sidebar-members mb-2 text-sm gap-2">

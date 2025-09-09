@@ -22,11 +22,7 @@
         />
       </template>
       <template #sideBarHeader>
-        <space-info
-          v-if="selectedSpaces.length === 1"
-          :space-resource="selectedSpaces[0]"
-          class="sidebar-panel__space_info"
-        />
+        <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
       </template>
       <template #mainContent>
         <app-loading-spinner v-if="isLoading" />
@@ -34,7 +30,6 @@
           <no-content-message
             v-if="!spaces.length"
             id="admin-settings-spaces-empty"
-            class="spaces-empty"
             icon="layout-grid"
           >
             <template #message>

@@ -1,7 +1,7 @@
 <template>
   <oc-recipient
     :data-testid="`recipient-container-${formattedRecipient.name}`"
-    class="files-share-invite-recipient wrap-anywhere"
+    class="wrap-anywhere"
     :recipient="formattedRecipient"
   >
     <template #avatar>

@@ -33,7 +33,7 @@ const tableClasses = computed(() => {
   return result
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

@@ -1,6 +1,6 @@
 <template>
   <ul class="mb-0 p-0">
-    <li v-for="resource in resources" :key="resource.label" class="app-resource-item">
+    <li v-for="resource in resources" :key="resource.label">
       <a
         :href="resource.url"
         data-testid="resource-link"

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="option.hasSwitch" class="action-menu-item item-has-switch p-2 flex justify-center">
+  <div v-if="option.hasSwitch" class="item-has-switch p-2 flex justify-center">
     <oc-icon :name="option.icon" fill-type="line" size="medium" />
     <oc-switch
       class="ml-2 flex w-full"
@@ -12,7 +12,7 @@
   <oc-button
     v-else
     appearance="raw"
-    class="p-2 action-menu-item"
+    class="p-2"
     :class="option.class"
     justify-content="left"
     :type="option.to ? 'router-link' : 'button'"

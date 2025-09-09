@@ -4,7 +4,6 @@
     <router-view />
     <img
       v-if="!backgroundImg"
-      class="oc-login-emblem"
       alt="OpenCloud emblem"
       src="/packages/design-system/src/assets/images/icon-lilac.svg"
     />

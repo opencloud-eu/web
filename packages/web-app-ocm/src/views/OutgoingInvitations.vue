@@ -49,7 +49,7 @@
         <no-content-message
           v-if="!sortedTokens.length"
           id="invite-tokens-empty"
-          class="files-empty h-full"
+          class="h-full"
           icon="user-shared"
         >
           <template #message>
@@ -58,7 +58,7 @@
         </no-content-message>
         <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
           <template #token="rowData">
-            <div class="invite-code-wrapper w-3xs flex">
+            <div class="w-3xs flex">
               <div class="truncate max-w-full">
                 <span class="truncate">{{ encodeInviteToken(rowData.item.token) }}</span>
               </div>

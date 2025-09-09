@@ -34,7 +34,7 @@
         <no-content-message
           v-if="!connections?.length"
           id="accepted-invitations-empty"
-          class="files-empty h-full"
+          class="h-full"
           icon="contacts-book"
         >
           <template #message>
@@ -43,11 +43,7 @@
         </no-content-message>
         <oc-table v-else :fields="fields" :data="connections" :highlighted="highlightedConnections">
           <template #actions="{ item }">
-            <oc-button
-              appearance="raw"
-              class="p-2 action-menu-item delete-connection-btn"
-              @click="deleteConnection(item)"
-            >
+            <oc-button appearance="raw" class="p-2" @click="deleteConnection(item)">
               <oc-icon name="delete-bin-5" fill-type="line" size="medium" />
               <span v-text="$gettext('Delete')" />
             </oc-button>

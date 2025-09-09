@@ -35,13 +35,13 @@ The following example shows how to use the component to display action items.
 <oc-button id="drop-2-btn">Open drop</oc-button>
 <oc-drop drop-id="drop-drop" toggle="#drop-2-btn" mode="click" padding-size="small">
   <oc-list :raw="true">
-    <li class="oc-menu-item-hover">
+    <li>
       <oc-button class="w-full" justify-content="left" appearance="raw"> Create Folder </oc-button>
     </li>
-    <li class="oc-menu-item-hover">
+    <li>
       <oc-button class="w-full" justify-content="left" appearance="raw"> Create Space </oc-button>
     </li>
-    <li class="oc-menu-item-hover">
+    <li>
       <oc-button class="w-full" justify-content="left" appearance="raw"> Create File </oc-button>
     </li>
   </oc-list>

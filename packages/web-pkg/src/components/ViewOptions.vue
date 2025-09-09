@@ -81,7 +81,7 @@
       padding-size="medium"
     >
       <oc-list>
-        <li v-if="hasHiddenFiles" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
+        <li v-if="hasHiddenFiles" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-switch
             v-model:checked="hiddenFilesShownModel"
             data-testid="files-switch-hidden-files"
@@ -89,7 +89,7 @@
             @update:checked="updateHiddenFilesShownModel"
           />
         </li>
-        <li v-if="hasFileExtensions" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
+        <li v-if="hasFileExtensions" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-switch
             v-model:checked="fileExtensionsShownModel"
             data-testid="files-switch-files-extensions-files"
@@ -97,7 +97,7 @@
             @update:checked="updateFileExtensionsShownModel"
           />
         </li>
-        <li v-if="hasPagination" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
+        <li v-if="hasPagination" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-page-size
             v-if="!queryParamsLoading"
             :selected="queryItemAsString(itemsPerPageCurrent)"
@@ -108,7 +108,7 @@
             @change="setItemsPerPage"
           />
         </li>
-        <li v-if="isProjectsLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
+        <li v-if="isProjectsLocation" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-switch
             v-model:checked="disabledSpacesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -116,7 +116,10 @@
             @update:checked="updateDisabledSpacesShownModel"
           />
         </li>
-        <li v-if="isTrashOverViewLocation" class="files-view-options-list-item mt-2 mb-4 last:mb-0">
+        <li
+          v-if="isTrashOverViewLocation"
+          class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between"
+        >
           <oc-switch
             v-model:checked="emptyTrashesShownModel"
             data-testid="files-switch-projects-show-disabled"
@@ -126,7 +129,7 @@
         </li>
         <li
           v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
-          class="files-view-options-list-item mt-2 mb-4 last:mb-0 flex justify-between items-center"
+          class="mt-2 mb-4 last:mb-0 flex justify-between items-center [&>*]:flex [&>*]:justify-between"
         >
           <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
           <input
@@ -135,7 +138,7 @@
             type="range"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high rounded-sm outline-0 w-full max-w-[50%] h-1.5 hover:opacity-100"
+            class="oc-range bg-role-surface-container-high rounded-sm outline-0 w-full max-w-[50%] h-1.5 hover:opacity-100 appearance-none"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -341,19 +344,10 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-/* Can't use @layer here: Tailwind only accepts plain class selectors, not `> *`. */
-.files-view-options-list-item > * {
-  @apply flex justify-between;
-}
-</style>
 
 <style lang="scss" scoped>
 .oc-range {
-  -webkit-appearance: none;
-
+  // needs to be scss to work properly
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;

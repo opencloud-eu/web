@@ -1,17 +1,14 @@
 <template>
-  <div
-    id="ghost-element"
-    class="ghost-element z-[var(--z-index-modal)] absolute pt-1 pl-4 bg-transparent"
-  >
-    <div class="ghost-element-layer1 relative rounded-sm bg-role-surface-container-high">
+  <div id="ghost-element" class="z-[var(--z-index-modal)] absolute pt-1 pl-4 bg-transparent">
+    <div class="relative rounded-sm bg-role-surface-container-high">
       <resource-icon class="p-1" :resource="previewItems[0]" />
       <div
         v-if="showSecondLayer"
-        class="ghost-element-layer2 -z-10 absolute top-[3px] left-[3px] right-[-3px] bottom-[-3px] rounded-sm bg-role-surface-container-high brightness-82"
+        class="-z-10 absolute top-[3px] left-[3px] right-[-3px] bottom-[-3px] rounded-sm bg-role-surface-container-high brightness-82"
       />
       <div
         v-if="showThirdLayer"
-        class="ghost-element-layer3 -z-20 absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high brightness-72"
+        class="-z-20 absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] rounded-sm bg-role-surface-container-high brightness-72"
       />
     </div>
     <span

@@ -1,5 +1,8 @@
 <template>
-  <div id="web" class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden">
+  <div
+    id="web"
+    class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden [&_.mark-highlight]:font-semibold"
+  >
     <oc-hidden-announcer :announcement="announcement" level="polite" />
     <skip-to target="web-content-main">
       <span v-text="$gettext('Skip to main')" />
@@ -134,12 +137,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #web .mark-highlight {
-    @apply font-semibold;
-  }
-}
-</style>

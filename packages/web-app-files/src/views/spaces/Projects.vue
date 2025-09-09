@@ -26,7 +26,7 @@
         <no-content-message
           v-if="!spaces.length"
           id="files-spaces-empty"
-          class="files-empty h-[75vh]"
+          class="h-[75vh]"
           icon="layout-grid"
         >
           <template #message>
@@ -34,7 +34,7 @@
           </template>
         </no-content-message>
         <div v-else class="spaces-list">
-          <div class="spaces-list-filters flex justify-end flex-wrap items-end mx-4 mb-4">
+          <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="spaces-filter"
               v-model="filterTerm"
@@ -93,7 +93,7 @@
               <oc-button
                 v-if="!resource.disabled"
                 v-oc-tooltip="showSpaceMemberLabel"
-                class="spaces-list-show-members-button raw-hover-surface p-1 ml-1"
+                class="raw-hover-surface p-1 ml-1"
                 :aria-label="showSpaceMemberLabel"
                 appearance="raw"
                 @click="openSidebarSharePanel(resource as SpaceResource)"

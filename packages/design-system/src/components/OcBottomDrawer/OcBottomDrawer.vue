@@ -15,7 +15,7 @@
         <div
           :id="drawerId"
           tabindex="0"
-          class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%] transition-all duration-200"
+          class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%] transition-all duration-200 [&.active]:bottom-0"
         >
           <oc-card class="bg-transparent" header-class="flex flex-row justify-between items-center">
             <template #header>
@@ -253,9 +253,6 @@ defineExpose({ show, hide, getElement })
   .oc-bottom-drawer ul {
     /* overwrite default list styling */
     @apply p-2 bg-role-surface rounded-lg;
-  }
-  .oc-bottom-drawer.active {
-    @apply bottom-0;
   }
 }
 </style>

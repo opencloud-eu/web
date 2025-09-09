@@ -68,7 +68,7 @@ const {
 
 const model = defineModel<boolean | unknown>()
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

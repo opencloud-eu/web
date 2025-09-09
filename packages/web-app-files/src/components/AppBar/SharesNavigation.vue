@@ -4,7 +4,7 @@
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"
-          class="mr-4 py-2 shares-nav-desktop w-full"
+          class="mr-4 py-2 w-full"
           :class="{ 'border-b-2 border-role-secondary-container rounded-none': navItem.active }"
           appearance="raw"
           :to="navItem.to"
@@ -30,7 +30,6 @@
           <li v-for="navItem in navItems" :key="`shares-navigation-mobile-${navItem.to}`">
             <oc-button
               type="router-link"
-              class="shares-nav-mobile"
               justify-content="left"
               :to="navItem.to"
               :class="{ 'bg-role-secondary-container': navItem.active }"

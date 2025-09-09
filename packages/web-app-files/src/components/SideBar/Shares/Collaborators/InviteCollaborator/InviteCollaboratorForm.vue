@@ -1,5 +1,9 @@
 <template>
-  <div id="new-collaborators-form" data-testid="new-collaborators-form">
+  <div
+    id="new-collaborators-form"
+    data-testid="new-collaborators-form"
+    class="[&_.vs\_\_actions]:!flex-nowrap"
+  >
     <div :class="['flex', 'w-full', { 'grid grid-cols-2': isRunningOnEos }]">
       <oc-select
         v-if="isRunningOnEos"
@@ -7,7 +11,6 @@
         v-model="accountType"
         :options="accountTypes"
         :label="$gettext('Account type')"
-        class="cern-account-type-input"
         :reduce="(option: AccountType) => option.description"
       >
         <template #option="{ description }">
@@ -20,7 +23,7 @@
       <oc-select
         id="files-share-invite-input"
         ref="ocSharingAutocomplete"
-        :class="['w-full', { 'cern-files-share-invite-input': isRunningOnEos }]"
+        class="w-full"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
         :loading="searchInProgress"
@@ -58,7 +61,7 @@
           <oc-filter-chip
             v-if="showShareTypeFilter"
             :filter-label="$gettext('Share type')"
-            class="invite-form-share-role-type"
+            class="invite-form-share-role-type [&_.oc-filter-chip-button]:pr-0 [&_.oc-drop]:w-3xs"
             raw
             close-on-click
             :has-active-state="false"
@@ -70,6 +73,7 @@
                   <oc-button
                     appearance="raw"
                     size="medium"
+                    justify-content="space-between"
                     class="invite-form-share-role-type-item flex justify-between items-center w-full py-1 px-2"
                     :class="{
                       'bg-role-secondary-container': option.id === currentShareRoleType.id
@@ -100,7 +104,7 @@
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="files-collaborators-collaborator-expiration ml-1 p-1"
+          class="ml-1 p-1"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
@@ -123,7 +127,7 @@
               class="collaborator-edit-dropdown-options-list"
               :aria-label="'shareEditOptions'"
             >
-              <li class="rounded-sm oc-menu-item-hover">
+              <li>
                 <expiration-datepicker
                   v-if="!saving"
                   :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
@@ -619,24 +623,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #new-collaborators-form-create-button .oc-spinner {
-    @apply ml-2;
-  }
-  .invite-form-share-role-type .oc-filter-chip-button {
-    @apply pr-0;
-  }
-  #new-collaborators-form .invite-form-share-role-type .oc-drop {
-    @apply w-3xs;
-  }
-}
-
-/* overwrite vue-select vendor styling */
-#new-collaborators-form .vs__actions {
-  @apply flex-nowrap;
-  cursor: inherit;
-}
-</style>

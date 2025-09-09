@@ -10,21 +10,12 @@
 <script setup lang="ts">
 defineOptions({ name: 'OcDropzone' })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-dropzone {
-    @apply p-4 text-center;
-  }
-}
-</style>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .oc-dropzone {
-    @apply text-2xl;
+    @apply p-4 text-center text-2xl;
   }
 }
 </style>

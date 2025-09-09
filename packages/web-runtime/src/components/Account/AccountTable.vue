@@ -1,7 +1,7 @@
 <template>
   <div class="account-table">
     <slot name="header" :title="title">
-      <h2 class="account-table-title flex items-center" :class="subtitle ? 'mb-2' : ''">
+      <h2 class="flex items-center" :class="subtitle ? 'mb-2' : ''">
         {{ title }}
         <oc-tag
           v-if="newTag"
@@ -9,7 +9,7 @@
           color="primary"
           appearance="filled"
           size="small"
-          class="ml-2 account-table-new-tag"
+          class="ml-2"
           v-text="$gettext('NEW')"
         />
       </h2>

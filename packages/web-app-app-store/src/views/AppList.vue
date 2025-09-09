@@ -1,5 +1,5 @@
 <template>
-  <div class="app-list mb-4">
+  <div class="mb-4">
     <h2 class="mt-0 app-list-headline">
       {{ $gettext('App Store') }}
       <app-contextual-helper />
@@ -19,10 +19,7 @@
         <span v-text="$gettext('No apps found matching your search')" />
       </template>
     </no-content-message>
-    <oc-list
-      v-else
-      class="app-tiles grid [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] gap-4"
-    >
+    <oc-list v-else class="grid [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] gap-4">
       <app-tile
         v-for="app in filteredApps"
         :key="`app-${app.repository.name}-${app.id}`"

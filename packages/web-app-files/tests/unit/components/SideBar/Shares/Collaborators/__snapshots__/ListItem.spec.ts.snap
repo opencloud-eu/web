@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Collaborator ListItem component > share inheritance indicators > show when sharedParentRoute is given 1`] = `
-"<div data-testid="collaborator-user-item-einstein" class="files-collaborators-collaborator py-1">
+"<div data-testid="collaborator-user-item-einstein" class="py-1">
   <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
     <div class="flex items-center">
       <div>
@@ -18,10 +18,10 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
         </div>
       </div>
     </div>
-    <div class="flex items-center justify-end files-collaborators-collaborator-navigation">
+    <div class="flex items-center justify-end">
       <!--v-if-->
       <oc-icon-stub name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
-      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="files-collaborators-collaborator-edit ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
+      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
     </div>
   </div>
 </div>"

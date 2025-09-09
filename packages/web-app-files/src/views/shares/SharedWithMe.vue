@@ -8,7 +8,7 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div class="shared-with-me-filters flex justify-between flex-wrap items-end mx-4 mb-4">
+        <div class="flex justify-between flex-wrap items-end mx-4 mb-4">
           <div class="flex flex-wrap">
             <div class="mr-4 flex items-center">
               <oc-icon name="filter-2" class="mr-1" />

@@ -1,5 +1,8 @@
 <template>
-  <div class="date-filter flex overflow-hidden" :class="`date-filter-${filterName}`">
+  <div
+    class="date-filter flex overflow-hidden [&_label]:text-sm"
+    :class="`date-filter-${filterName}`"
+  >
     <oc-filter-chip
       ref="filterChip"
       :filter-label="filterLabel"
@@ -10,7 +13,6 @@
     >
       <template #default>
         <oc-list
-          class="date-filter-list"
           :class="{
             'invisible min-h-[225px] transition-[visibility] duration-[0.4s,0s]': dateRangeClicked
           }"
@@ -325,13 +327,10 @@ export default defineComponent({
   }
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .date-filter .oc-date-picker label {
-    @apply text-sm;
-  }
   .date-filter-range-panel {
     transition:
       transform 0.4s ease,

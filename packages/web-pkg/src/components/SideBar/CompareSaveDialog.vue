@@ -1,10 +1,10 @@
 <template>
-  <div class="compare-save-dialog w-full flex flex-row flex-wrap justify-between items-center">
-    <span v-if="saved" class="state-indicator flex items-center">
+  <div class="w-full flex flex-row flex-wrap justify-between items-center">
+    <span v-if="saved" class="flex items-center">
       <oc-icon name="checkbox-circle" />
       <span class="ml-2" v-text="$gettext('Changes saved')" />
     </span>
-    <span v-else class="state-indicator">{{ unsavedChangesText }}</span>
+    <span v-else>{{ unsavedChangesText }}</span>
     <div>
       <oc-button
         :disabled="!unsavedChanges"

@@ -1,5 +1,5 @@
 <template>
-  <div class="files-search-result flex">
+  <div class="flex">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -18,15 +18,12 @@
           :filter-label="$gettext('Type')"
           :filterable-attributes="['label']"
           :items="availableMediaTypeValues"
-          class="files-search-filter-file-type mr-2"
+          class="mr-2"
           display-name-attribute="label"
           filter-name="mediaType"
         >
           <template #image="{ item }">
-            <div
-              class="file-category-option-wrapper flex items-center"
-              :data-test-id="`media-type-${item.id.toLowerCase()}`"
-            >
+            <div class="flex items-center" :data-test-id="`media-type-${item.id.toLowerCase()}`">
               <resource-icon :resource="getFakeResourceForIcon(item)" />
               <span class="ml-2">{{ item.label }}</span>
             </div>
@@ -46,7 +43,7 @@
           filter-name="tags"
         >
           <template #image="{ item }">
-            <div class="tag-option-wrapper flex items-center">
+            <div class="flex items-center">
               <oc-icon name="price-tag-3" size="small" />
               <span class="ml-2">{{ item.label }}</span>
             </div>
@@ -78,12 +75,7 @@
       </div>
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <no-content-message
-          v-if="!paginatedResources.length"
-          class="files-empty"
-          icon="search"
-          icon-fill-type="line"
-        >
+        <no-content-message v-if="!paginatedResources.length" icon="search" icon-fill-type="line">
           <template #message>
             <p class="text-role-on-surface-variant">
               <span v-if="!!$route.query.term" v-text="$gettext('No results found')" />
@@ -112,7 +104,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="files-search-resource-highlights truncate inline-block text-sm max-w-full"
+              class="truncate inline-block text-sm max-w-full [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->
@@ -520,12 +512,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .files-search-resource-highlights mark {
-    @apply font-semibold bg-yellow-200;
-  }
-}
-</style>

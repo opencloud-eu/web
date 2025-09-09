@@ -4,6 +4,9 @@
     :class="[
       'oc-icon',
       'box-content',
+      'inline-block',
+      'align-baseline',
+      '[&_svg]:block',
       tailwindSize,
       { 'bg-transparent min-h-0': type === 'button' }
     ]"
@@ -107,16 +110,3 @@ const transformSvgElement = (svg: SVGElement) => {
   return svg
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .oc-icon {
-    @apply align-baseline inline-block;
-  }
-
-  .oc-icon svg {
-    @apply block;
-  }
-}
-</style>

@@ -1,5 +1,8 @@
 <template>
-  <div class="oc-progress-pie after:block after:size-full after:content-['']" :data-fill="fill">
+  <div
+    class="oc-progress-pie relative after:block after:size-full after:content-['']"
+    :data-fill="fill"
+  >
     <div
       class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full after:content-[''] before:content-['']"
     />
@@ -46,16 +49,16 @@ const label = computed(() => {
   }
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-progress-pie {
-    @apply m-4 relative;
+    @apply m-4;
   }
 }
 </style>
-<style lang="scss">
+<style lang="scss" scoped>
 $default-size: 64px;
 
 .oc-progress-pie {

@@ -105,7 +105,7 @@
         />
       </div>
       <compare-save-dialog
-        class="edit-compare-save-dialog mb-6"
+        class="mb-6"
         :original-object="compareSaveDialogOriginalObject"
         :compare-object="editUser"
         :confirm-button-disabled="invalidFormData"
