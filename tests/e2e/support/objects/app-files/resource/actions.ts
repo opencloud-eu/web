@@ -107,7 +107,7 @@ const pauseUploadButton = '#pause-upload-info-btn[aria-label="Pause upload"]'
 const resumeUploadButton = '#pause-upload-info-btn[aria-label="Resume upload"]'
 const cancelUploadButton = '#cancel-upload-info-btn'
 const filesContextMenuAction = 'div[id^="context-menu-drop"] button.oc-files-actions-%s-trigger'
-const highlightedFileRowSelector = '#files-space-table tr.oc-table-highlighted'
+const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td//span[@data-test-indicator-type="resource-locked"]'
@@ -147,6 +147,7 @@ const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-pane
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
+const tilesSlider = '#tiles-size-slider'
 
 export const clickResource = async ({
   page,
@@ -935,7 +936,7 @@ export const moveOrCopyMultipleResources = async (
   switch (method) {
     case 'dropdown-menu': {
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
-      await page.locator(highlightedFileRowSelector).first().click({ button: 'right' })
+      await page.locator('.oc-tile-card-selected').first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
 
       await page.locator(breadcrumbRoot).click()
@@ -976,7 +977,7 @@ export const moveOrCopyMultipleResources = async (
       break
     }
     case 'drag-drop': {
-      const source = page.locator(highlightedFileRowSelector).first()
+      const source = page.locator(highlightedTileCardSelector).first()
       const target = page.locator(util.format(resourceNameSelector, newLocation))
 
       await Promise.all([...waitForMoveResponses, source.dragTo(target)])
@@ -985,7 +986,7 @@ export const moveOrCopyMultipleResources = async (
       break
     }
     case 'drag-drop-breadcrumb': {
-      const source = page.locator(highlightedFileRowSelector).first()
+      const source = page.locator(highlightedTileCardSelector).first()
       const target = page.locator(
         util.format(
           breadcrumbResourceNameSelector,
@@ -2248,6 +2249,13 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
     buffer: buffer
   })
   await page.keyboard.press('Escape')
+}
+
+export const reduceTileSize = async ({ page }: { page: Page }): Promise<void> => {
+  await page.locator(filesViewOptionButton).click()
+  const slider = page.locator(tilesSlider)
+  await slider.focus()
+  await page.keyboard.press('ArrowLeft')
 }
 
 export const openRightSidebar = async ({
