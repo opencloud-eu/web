@@ -5,7 +5,7 @@
 import { mergeConfig, searchForWorkspaceRoot } from 'vite'
 import { join } from 'path'
 import { cwd } from 'process'
-import { readFileSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 
 import vue from '@vitejs/plugin-vue'
 
@@ -17,6 +17,66 @@ const defaultHttps = () =>
     key: readFileSync(join(certsDir, 'server.key')),
     cert: readFileSync(join(certsDir, 'server.crt'))
   }
+
+const manifestFile = 'manifest.json'
+const manifestPath = join('./src/', manifestFile)
+const manifestPlugin = () => {
+  let outputDir
+
+  return {
+    name: 'manifest',
+    apply: 'build',
+    configResolved(config) {
+      outputDir = config.build.outDir
+    },
+    buildStart() {
+      this.addWatchFile(manifestPath)
+    },
+    generateBundle(options, bundle) {
+      const generatedManifestPath = join(outputDir, manifestFile)
+      if (existsSync(generatedManifestPath)) {
+        this.warn(
+          `${generatedManifestPath} already exists in output directory (likely from public/), skipping generation\n` +
+            `Consider using --emptyOutDir if outDir is outside of project root.`
+        )
+        return
+      }
+
+      // Find the entry chunk
+      const entryChunk = Object.values(bundle).find(
+        (chunk) => chunk.type === 'chunk' && chunk.isEntry
+      )
+
+      if (!entryChunk) {
+        this.error('No entry chunk found')
+        return
+      }
+
+      let manifest = {}
+      if (existsSync(manifestPath)) {
+        try {
+          manifest = JSON.parse(readFileSync(manifestPath).toString())
+        } catch (err) {
+          this.error(
+            `Failed to parse manifest.json at ${manifestPath}: ${err.message}\n` +
+              `Please ensure manifest.json contains a valid JSON object.`
+          )
+          return
+        }
+      }
+
+      // set entryPoint
+      manifest.entrypoint = entryChunk.fileName
+
+      // Add manifest.json to the bundle
+      this.emitFile({
+        type: 'asset',
+        fileName: 'manifest.json',
+        source: JSON.stringify(manifest, null, 2)
+      })
+    }
+  }
+}
 
 export const defineConfig = (overrides = {}) => {
   return ({ mode }) => {
@@ -44,6 +104,7 @@ export const defineConfig = (overrides = {}) => {
         build: {
           cssCodeSplit: true,
           minify: isProduction,
+          outDir: distDir,
           rollupOptions: {
             // keep in sync with packages/web-runtime/src/container/application/index.ts
             external: [
@@ -68,7 +129,6 @@ export const defineConfig = (overrides = {}) => {
             },
             output: {
               format: 'amd',
-              dir: distDir,
               chunkFileNames: join('js', 'chunks', '[name]-[hash].mjs'),
               entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}.js`)
             }
@@ -79,7 +139,8 @@ export const defineConfig = (overrides = {}) => {
             // set to true when switching to esm
             customElement: false,
             ...(isTesting && { template: { compilerOptions: { whitespace: 'preserve' } } })
-          })
+          }),
+          manifestPlugin()
         ],
         test: {
           globals: true,
