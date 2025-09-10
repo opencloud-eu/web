@@ -69,33 +69,6 @@
 
 @layer components {
 
-  /* card spacing FIXME: they should be in a dedicated component */
-  .oc-card {
-    @apply bg-role-surface text-role-on-surface rounded-sm relative transition-shadow duration-100 ease-in-out;
-  }
-
-  .oc-card-body {
-    @apply p-6;
-  }
-
-  .oc-card-header {
-    @apply px-2 py-4 border-b border-role-outline;
-  }
-
-  .oc-card-footer {
-    @apply px-4 py-6;
-  }
-
-  .oc-card-body> :last-child,
-  .oc-card-header> :last-child,
-  .oc-card-footer> :last-child {
-    @apply mb-0;
-  }
-
-  .oc-card-title {
-    @apply mb-6;
-  }
-
   /* sidebar */
   .sidebar-actions-panel li a,
   .sidebar-actions-panel li button {

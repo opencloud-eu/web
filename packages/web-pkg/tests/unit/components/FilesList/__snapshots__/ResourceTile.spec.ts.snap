@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcTile component > renders default space correctly 1`] = `
-"<div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest">
+"<oc-card-stub tag="div" titletag="h2" logourl="" headerclass="" bodyclass="" footerclass="" class="oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1">
     <div class="oc-tile-card-selection z-10 absolute top-0 left-0 [&amp;_input]:bg-role-surface-container"></div>
     <!--v-if-->
@@ -22,11 +22,11 @@ exports[`OcTile component > renders default space correctly 1`] = `
     </div>
     <!--v-if-->
   </div>
-</div>"
+</oc-card-stub>"
 `;
 
 exports[`OcTile component > renders disabled space correctly 1`] = `
-"<div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none">
+"<oc-card-stub tag="div" titletag="h2" logourl="" headerclass="" bodyclass="" footerclass="" class="oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1">
     <div class="oc-tile-card-selection z-10 absolute top-0 left-0 [&amp;_input]:bg-role-surface-container"></div>
     <!--v-if-->
@@ -47,5 +47,5 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
     </div>
     <!--v-if-->
   </div>
-</div>"
+</oc-card-stub>"
 `;

@@ -14,12 +14,12 @@
   >
     <slot />
   </oc-bottom-drawer>
-  <oc-card v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
-    <div v-if="$slots.default" :class="[getTailwindPaddingClass(paddingSize)]">
+  <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
+    <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
       <slot />
-    </div>
+    </oc-card>
     <slot v-else name="special" />
-  </oc-card>
+  </div>
 </template>
 
 <script setup lang="ts">

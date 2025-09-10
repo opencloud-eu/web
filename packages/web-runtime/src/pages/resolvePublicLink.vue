@@ -1,10 +1,11 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <oc-card class="text-center w-lg bg-role-surface-container rounded-xl">
-      <template #header>
-        <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-        <h2 class="m-0" v-text="headerTitle" />
-      </template>
+    <oc-card
+      :logo-url="logoImg"
+      :title="headerTitle"
+      body-class="w-lg text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
       <p v-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
       <form v-else-if="isPasswordRequired" @submit.prevent="resolvePublicLinkTask.perform(true)">
         <oc-text-input
@@ -26,7 +27,7 @@
       </form>
       <oc-spinner v-else :aria-hidden="true" />
       <template #footer>
-        <p class="m-0">{{ footerSlogan }}</p>
+        <p v-text="footerSlogan" />
       </template>
     </oc-card>
   </div>

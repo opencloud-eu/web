@@ -1,10 +1,10 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <oc-card class="text-center w-lg bg-role-surface-container rounded-xl">
-      <template #header>
-        <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-        <h2 class="m-0" v-text="headerTitle" />
-      </template>
+    <oc-card
+      :title="headerTitle"
+      body-class="w-lg text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
       <oc-spinner v-if="loading" :aria-hidden="true" />
       <p v-else-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
     </oc-card>
@@ -29,8 +29,7 @@ import {
   useRouteQuery,
   createLocationSpaces,
   createLocationShares,
-  useClientService,
-  useThemeStore
+  useClientService
 } from '@opencloud-eu/web-pkg'
 import { unref, defineComponent, computed, onMounted, ref, Ref } from 'vue'
 import { dirname } from 'path'
@@ -39,7 +38,6 @@ import { useTask } from 'vue-concurrency'
 import { isShareSpaceResource, Resource, SHARE_JAIL_ID } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'ResolvePrivateLink',
@@ -48,9 +46,6 @@ export default defineComponent({
     const id = useRouteParam('fileId')
     const { $gettext } = useGettext()
     const clientService = useClientService()
-    const themeStore = useThemeStore()
-    const { currentTheme } = storeToRefs(themeStore)
-    const logoImg = computed(() => unref(currentTheme).logo)
 
     const resource: Ref<Resource> = ref()
     const sharedParentResource: Ref<Resource> = ref()
@@ -176,7 +171,6 @@ export default defineComponent({
     })
 
     return {
-      logoImg,
       headerTitle,
       errorMessage,
       loading,

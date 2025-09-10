@@ -1,6 +1,7 @@
 <template>
   <oc-card
     ref="observerTarget"
+    body-class="p-0"
     class="oc-tile-card flex flex-col h-full shadow-none"
     :data-item-id="resource.id"
     :class="{
@@ -71,7 +72,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
+      <div class="p-2" @click.stop="toggleTile([resource, $event])">
         <div class="flex justify-between items-center">
           <div
             class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden"
@@ -103,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, customRef, ref, unref } from 'vue'
+import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
@@ -114,6 +115,7 @@ import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import { useToggleTile } from '../../composables/selection'
+import { OcCard } from '@opencloud-eu/design-system/components'
 
 const {
   resource,
@@ -154,19 +156,8 @@ defineSlots<{
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 
-const observerTarget = customRef((track, trigger) => {
-  let $el: HTMLElement
-  return {
-    get() {
-      track()
-      return $el
-    },
-    set(value) {
-      $el = value
-      trigger()
-    }
-  }
-})
+const observerTarget = useTemplateRef<typeof OcCard>('observerTarget')
+const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
 
 const showStatusIcon = computed(() => {
   return resource.locked || resource.processing
@@ -205,7 +196,7 @@ const resourceDescription = computed(() => {
 
 const { isVisible } = lazy
   ? useIsVisible({
-      target: observerTarget,
+      target: observerTargetElement,
       onVisibleCallback: () => emit('itemVisible')
     })
   : { isVisible: ref(true) }
