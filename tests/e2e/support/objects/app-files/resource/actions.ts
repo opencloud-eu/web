@@ -1037,7 +1037,10 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
     }
     case 'keyboard': {
       const resourceCheckbox = page.locator(util.format(checkBox, resourceBase))
-      await resourceCheckbox.check()
+      const isChecked = await resourceCheckbox.isChecked()
+      if (!isChecked) {
+        await resourceCheckbox.click()
+      }
       const keyValue = action === 'copy' ? 'c' : 'x'
       await page.keyboard.press(`ControlOrMeta+${keyValue}`)
       await page.locator(breadcrumbRoot).click()
