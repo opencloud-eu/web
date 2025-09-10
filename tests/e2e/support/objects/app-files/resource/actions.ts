@@ -936,7 +936,7 @@ export const moveOrCopyMultipleResources = async (
   switch (method) {
     case 'dropdown-menu': {
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
-      await page.locator('.oc-tile-card-selected').first().click({ button: 'right' })
+      await page.locator(highlightedTileCardSelector).first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
 
       await page.locator(breadcrumbRoot).click()
