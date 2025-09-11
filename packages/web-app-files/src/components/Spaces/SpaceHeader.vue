@@ -83,7 +83,7 @@
           is-read-only
           :current-content="markdownContent"
         />
-        <div class="markdown-container-edit ml-2">
+        <div v-if="isEditReadmeVisible" class="markdown-container-edit ml-2">
           <oc-button
             type="router-link"
             size="small"
@@ -122,6 +122,7 @@ import {
   useLoadPreview,
   useResourcesStore,
   useSharesStore,
+  useSpaceActionsEditReadmeContent,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
@@ -146,6 +147,11 @@ const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
+const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
+
+const isEditReadmeVisible = computed(() =>
+  unref(editReadmeContentActions)[0].isVisible({ resources: [space] })
+)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
