@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-files-sharing-sidebar" class="relative">
+  <div id="oc-files-sharing-sidebar" class="relative rounded-sm">
     <div class="flex justify-between items-center">
       <div class="flex">
         <h3 v-translate class="font-semibold text-base m-0">Share with people</h3>
@@ -10,11 +10,11 @@
     <invite-collaborator-form
       v-if="canShare({ resource, space })"
       key="new-collaborator"
-      class="my-2"
+      class="mt-2"
     />
     <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />
     <template v-if="hasSharees">
-      <div id="files-collaborators-headline" class="flex items-center justify-between h-10">
+      <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
       <portal-target
@@ -25,7 +25,7 @@
       <ul
         id="files-collaborators-list"
         class="oc-list oc-list-divider"
-        :class="{ 'mb-6': showSpaceMembers, 'm-0': !showSpaceMembers }"
+        :class="{ 'mb-4': showSpaceMembers, 'm-0': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
         <li v-for="collaborator in displayCollaborators" :key="collaborator.id">
@@ -59,7 +59,7 @@
       </div>
     </template>
     <template v-if="showSpaceMembers">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between mt-2">
         <h4 class="font-semibold my-2" v-text="spaceMemberLabel" />
       </div>
       <ul

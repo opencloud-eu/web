@@ -1,7 +1,7 @@
 <template>
-  <div id="oc-files-sharing-sidebar" class="relative">
+  <div id="oc-files-sharing-sidebar" class="relative rounded-sm">
     <div class="flex">
-      <div v-if="canShare({ space: resource, resource })" class="flex py-2">
+      <div v-if="canShare({ space: resource, resource })" class="flex">
         <h3 class="font-semibold text-base m-0" v-text="$gettext('Add members')" />
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
       </div>
@@ -12,12 +12,12 @@
       key="new-collaborator"
       :save-button-label="$gettext('Add')"
       :invite-label="$gettext('Search')"
-      class="my-2"
+      class="mt-2"
     />
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="flex items-center justify-between relative h-10"
+        class="flex items-center justify-between relative h-10 mt-2"
       >
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
