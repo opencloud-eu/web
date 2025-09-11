@@ -83,7 +83,7 @@ export default defineComponent({
     @apply md:flex md:justify-end md:items-center py-2 md:py-0 w-full md:w-auto min-h-10.5 md:min-h-auto;
   }
   .account-table tr {
-    @apply block md:table-row pb-1 md:pb-0 border-b h-full md:h-10.5;
+    @apply block md:table-row pb-1 md:pb-0 border-t-0 border-b h-full md:h-10.5;
   }
 }
 </style>
