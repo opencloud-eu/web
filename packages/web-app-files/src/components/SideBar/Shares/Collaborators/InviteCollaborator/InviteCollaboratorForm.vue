@@ -88,7 +88,7 @@
         </template>
       </oc-select>
     </div>
-    <div class="flex justify-between flex-wrap mb-6 mt-2">
+    <div class="flex justify-between flex-wrap mt-2">
       <role-dropdown
         mode="create"
         :show-icon="isRunningOnEos"
@@ -147,13 +147,8 @@
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
       </div>
-      <div class="w-full mt-2">
-        <oc-checkbox
-          v-if="isRunningOnEos"
-          v-model="notifyEnabled"
-          :value="false"
-          :label="$gettext('Notify via mail')"
-        />
+      <div v-if="isRunningOnEos" class="w-full mt-2">
+        <oc-checkbox v-model="notifyEnabled" :value="false" :label="$gettext('Notify via mail')" />
       </div>
     </div>
     <oc-hidden-announcer level="assertive" :announcement="announcement" />
