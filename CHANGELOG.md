@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
 - fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
 - fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
 - fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
