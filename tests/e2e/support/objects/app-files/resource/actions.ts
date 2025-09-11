@@ -1641,7 +1641,14 @@ export interface switchViewModeArgs {
 
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {
   const { page, target } = args
-  await page.locator(`.viewmode-switch-buttons .${target}`).click()
+
+  if (config.browser === 'mobile-chromium' || config.browser === 'mobile-webkit') {
+    await page.getByLabel('Switch view mode').click()
+    await expect(page.locator('#mobile-viewmode-switch-drop')).toBeVisible()
+    await page.getByText('Tiles view').click()
+  } else {
+    await page.locator(`.viewmode-switch-buttons .${target}`).click()
+  }
 }
 
 export const expectThatResourcesAreTiles = async (args: { page: Page }): Promise<void> => {
