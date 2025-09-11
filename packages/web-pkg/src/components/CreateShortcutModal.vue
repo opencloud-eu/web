@@ -15,7 +15,7 @@
       <div class="flex items-center mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
-          <span class="text-role-on-error" aria-hidden="true">*</span>
+          <span class="text-role-error" aria-hidden="true">*</span>
         </label>
         <oc-contextual-helper
           :text="
@@ -100,7 +100,7 @@
         <div class="flex items-center mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
-            <span class="text-role-on-error" aria-hidden="true">*</span>
+            <span class="text-role-error" aria-hidden="true">*</span>
           </label>
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
