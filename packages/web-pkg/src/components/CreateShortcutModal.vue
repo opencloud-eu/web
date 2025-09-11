@@ -43,7 +43,7 @@
   >
     <oc-list>
       <li
-        class="p-1 selectable-item selectable-item-url"
+        class="selectable-item selectable-item-url"
         :class="{
           active: isDropItemActive(0)
         }"
@@ -70,7 +70,7 @@
         <li
           v-for="(value, index) in searchResult.values"
           :key="index"
-          class="p-1 selectable-item"
+          class="selectable-item"
           :class="{
             active: isDropItemActive(index + 1)
           }"
