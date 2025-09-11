@@ -43,3 +43,12 @@ Then(
     await expect(avatarLocator).toBeVisible()
   }
 )
+
+Then(
+  '{string} opens notifications dropdown',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const application = new objects.runtime.Application({ page })
+    await application.getNotificationMessages()
+  }
+)

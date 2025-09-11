@@ -227,7 +227,8 @@ Feature: server sent events
       | example.txt |
 
     # item-restored
-    When "Brian" navigates to the trashbin of the project space "marketing"
+    When "Brian" navigates to the trashbin
+    When "Brian" opens trashbin of the project space "marketing"
     And "Brian" restores the following resources from trashbin
       | resource    |
       | example.txt |
