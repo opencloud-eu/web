@@ -76,10 +76,10 @@
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
         class="markdown-container flex"
-        :class="{ 'mask-linear-[180deg,black,transparent]': markdownCollapsed }"
+        :class="{ 'mask-linear-[180deg,black,transparent] collapsed': markdownCollapsed }"
       >
         <text-editor
-          class="markdown-container-content"
+          class="markdown-container-content w-full"
           is-read-only
           :current-content="markdownContent"
         />
@@ -161,8 +161,8 @@ const toggleMarkdownCollapsedText = computed(() => {
 })
 const toggleMarkdownCollapsed = () => {
   markdownCollapsed.value = !unref(markdownCollapsed)
-  unref(markdownContainerRef).classList.toggle(markdownContainerCollapsedClass)
 }
+
 const onMarkdownResize = () => {
   if (!unref(markdownContainerRef)) {
     return
@@ -316,8 +316,13 @@ const openSideBarSharePanel = () => {
   .space-header-squashed .space-header-image {
     @apply hidden lg:block;
   }
+
   .space-header .markdown-container.collapsed {
     @apply max-h-[100px] overflow-hidden;
+  }
+
+  .space-header .markdown-container #text-editor-preview-component {
+    @apply !bg-transparent;
   }
 }
 </style>
