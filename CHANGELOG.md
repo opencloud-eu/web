@@ -11,14 +11,9 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### ✅ Tests
-
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
 ### 🐛 Bug Fixes
 
+- fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
 - fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
 - fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
 - fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
@@ -26,6 +21,12 @@
 - fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
 - fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
 - fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
+### ✅ Tests
+
+- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
 
 ### 📈 Enhancement
 
