@@ -191,19 +191,6 @@ Then(
 )
 
 When(
-  /^"([^"]*)" navigates to the trashbin(| of the project space "([^"]*)")$/,
-  async function (this: World, stepUser: string, key: string): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.trashbin.Overview({ page })
-    await pageObject.navigate()
-    if (key) {
-      const trashbinObject = new objects.applicationFiles.Trashbin({ page })
-      await trashbinObject.open(key)
-    }
-  }
-)
-
-When(
   '{string} changes the roles of the following users in the project space',
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })

@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 import util from 'util'
 import { config } from '../../../config'
 
@@ -25,9 +25,13 @@ export class Application {
   }
 
   async open({ name }: { name: string }): Promise<void> {
-    await this.#page.waitForTimeout(1000)
     await this.#page.locator(appSwitcherButton).click()
     await this.#page.locator(util.format(appSelector, `app.${name}.menuItem`)).click()
+  }
+
+  async openAppsMenu(): Promise<void> {
+    await this.#page.locator(appSwitcherButton).click()
+    await expect(this.#page.locator('#app-switcher-dropdown')).toBeVisible()
   }
 
   async getNotificationMessages(): Promise<string[]> {
