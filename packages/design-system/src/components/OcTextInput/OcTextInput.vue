@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="inline-block mb-0.5" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="relative">
@@ -46,7 +46,7 @@
       class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5"
       :class="{
         'oc-text-input-description text-role-on-surface-variant relative': showDescriptionMessage,
-        'oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+        'oc-text-input-danger text-role-error focus:text-role-error border-role-error':
           showErrorMessage
       }"
     >
@@ -62,7 +62,7 @@
         <span
           v-if="showErrorMessage"
           :id="messageId"
-          class="oc-text-input-danger text-role-on-error focus:text-role-on-error border-role-error"
+          class="oc-text-input-danger text-role-error focus:text-role-error border-role-error"
           v-text="errorMessage"
         />
       </template>

@@ -2,7 +2,7 @@
   <div>
     <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="inline-block mb-0.5">
       {{ label }}
-      <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
+      <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
     </label>
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"

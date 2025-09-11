@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="inline-block mb-0.5" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="flex items-center">
@@ -22,7 +22,7 @@
       <oc-button
         ref="inputBtnRef"
         :class="{
-          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+          'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
         }"
         :disabled="disabled"
         color-role="secondary"
@@ -52,7 +52,7 @@
       class="oc-file-input-message flex items-center text-sm mt-1 min-h-4.5"
       :class="{
         'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
-        'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+        'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
       }"
     >
       <oc-icon
@@ -68,7 +68,7 @@
         :id="messageId"
         :class="{
           'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
-          'oc-file-input-danger text-role-on-error focus:text-role-on-error': !!errorMessage
+          'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
         }"
         v-text="messageText"
       />
