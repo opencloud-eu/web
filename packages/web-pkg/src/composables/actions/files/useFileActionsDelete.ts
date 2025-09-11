@@ -77,10 +77,9 @@ export const useFileActionsDelete = () => {
           )
         }
 
-        const deleteDisabled = resources.some((resource) => {
-          return !resource.canBeDeleted()
+        return !resources.some((resource) => {
+          return !resource.canBeDeleted() || isProjectSpaceResource(resource)
         })
-        return !deleteDisabled
       },
       class: 'oc-files-actions-delete-trigger'
     },
