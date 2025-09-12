@@ -8,7 +8,7 @@
           <div class="flex items-center">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
-              class="mr-1"
+              class="mr-1 inline-flex"
               stacked
               gap-size="small"
               :width="16.8"
