@@ -94,7 +94,7 @@
           </div>
         </div>
         <p v-if="resourceDescription" class="text-left my-0 truncate">
-          <small v-text="resourceDescription" />
+          <span class="text-sm" v-text="resourceDescription" />
         </p>
       </div>
     </template>
