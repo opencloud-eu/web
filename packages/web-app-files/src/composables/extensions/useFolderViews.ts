@@ -34,7 +34,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       ],
       folderView: {
         name: 'resource-table',
-        label: $gettext('Default table view'),
+        label: $gettext('Table view'),
         icon: {
           name: 'menu-line',
           fillType: 'none'
@@ -52,7 +52,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       ],
       folderView: {
         name: 'resource-tiles',
-        label: $gettext('Tiles view'),
+        label: $gettext('Default tiles view'),
         icon: {
           name: 'apps-2',
           fillType: 'line'
