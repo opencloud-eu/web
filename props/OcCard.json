@@ -1,0 +1,51 @@
+[
+  {
+    "name": "tag",
+    "required": false,
+    "description": "The html tag being used to render this card.",
+    "default": "'div'",
+    "type": "string"
+  },
+  {
+    "name": "title",
+    "required": false,
+    "description": "The title for the default card header. Don't provide one if you fill the 'header' slot yourself.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "titleTag",
+    "required": false,
+    "description": "The html tag being used to render the title of this card.",
+    "default": "'h2'",
+    "type": "string"
+  },
+  {
+    "name": "logoUrl",
+    "required": false,
+    "description": "The url of the logo to be rendered in the header of this card.",
+    "default": "''",
+    "type": "string"
+  },
+  {
+    "name": "headerClass",
+    "required": false,
+    "description": "The classes to be applied on the card header",
+    "default": "''",
+    "type": "string | string[] | Record<string, boolean> | Record<string, boolean>[]"
+  },
+  {
+    "name": "bodyClass",
+    "required": false,
+    "description": "The classes to be applied on the card body.",
+    "default": "''",
+    "type": "string | string[] | Record<string, boolean> | Record<string, boolean>[]"
+  },
+  {
+    "name": "footerClass",
+    "required": false,
+    "description": "The classes to be applied on the card footer.",
+    "default": "''",
+    "type": "string | string[] | Record<string, boolean> | Record<string, boolean>[]"
+  }
+]

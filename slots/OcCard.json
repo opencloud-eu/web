@@ -1,0 +1,17 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the card.",
+    "type": "() => unknown"
+  },
+  {
+    "name": "header",
+    "description": "Content of the header. By default, this is filled with a `<h2>` tag which renders the title.",
+    "type": "() => unknown"
+  },
+  {
+    "name": "footer",
+    "description": "Content of the footer. Empty by default.",
+    "type": "() => unknown"
+  }
+]
