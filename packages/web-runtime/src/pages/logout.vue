@@ -1,17 +1,16 @@
 <template>
   <div class="h-screen flex flex-col justify-center items-center">
-    <div class="oc-login-card">
-      <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-      <div class="oc-login-card-body w-sm p-6">
-        <h2 class="oc-login-card-title" v-text="cardTitle" />
-        <p v-text="cardHint" />
-      </div>
-      <div class="oc-login-card-footer pt-0">
-        <p>
-          {{ footerSlogan }}
-        </p>
-      </div>
-    </div>
+    <oc-card
+      :logo-url="logoImg"
+      :title="cardTitle"
+      body-class="w-sm text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
+      <p v-text="cardHint" />
+      <template #footer>
+        <p v-text="footerSlogan" />
+      </template>
+    </oc-card>
     <oc-button
       id="exitAnchor"
       class="mt-4 w-sm"

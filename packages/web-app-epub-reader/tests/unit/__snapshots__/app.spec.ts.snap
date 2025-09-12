@@ -3,18 +3,18 @@
 exports[`Epub reader app > renders correctly 1`] = `
 "<div class="epub-reader flex">
   <ul class="oc-list epub-reader-chapters-list bg-role-surface-container pl-2 hidden lg:block border-r w-xs overflow-y-auto">
-    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0 active"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full font-semibold">
+    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0 active"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full font-semibold">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 1</span>
       </button></li>
-    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full">
+    <li class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 2</span>
       </button></li>
   </ul>
   <div class="size-full">
     <div class="epub-reader-controls flex items-center m-2">
-      <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease">
+      <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group"><button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -33,10 +33,10 @@ exports[`Epub reader app > renders correctly 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-3"></svg></span>
-        </button> <button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-reset w-[58px]">
+        </button> <button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-reset w-[58px]">
           <!--v-if-->
           <!-- @slot Content of the button --> 100%
-        </button> <button type="button" aria-label="Increase font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-increase">
+        </button> <button type="button" aria-label="Increase font size" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-increase">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/font-family.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -84,7 +84,7 @@ exports[`Epub reader app > renders correctly 1`] = `
       </div>
     </div>
     <div class="flex justify-center size-full">
-      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-navigate-left">
+      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to previous page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-navigate-left">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content size-12"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -97,7 +97,7 @@ exports[`Epub reader app > renders correctly 1`] = `
     }" aria-hidden="true" focusable="false" class="size-12"></svg></span>
         </button></div>
       <div id="reader" class="flex justify-center"></div>
-      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to next page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-navigate-right">
+      <div class="flex items-center mx-6"><button type="button" aria-label="Navigate to next page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-navigate-right">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content size-12"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

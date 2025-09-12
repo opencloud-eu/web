@@ -26,7 +26,7 @@ exports[`account page > account information section > displays basic user inform
           <div class="avatar-upload mb-2"><input class="invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
             <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div>
-                <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default avatar-upload-button">
+                <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default avatar-upload-button">
                     <!--v-if-->
                     <!-- @slot Content of the button --> Upload
                   </button>
@@ -58,7 +58,7 @@ exports[`account page > account information section > displays basic user inform
       </tr>
       <tr data-v-98c4aba8="" class="account-page-logout-all-devices">
         <td class="oc-table-cell text-left align-middle oc-td">Logout from active devices</td>
-        <td class="oc-table-cell text-left align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
+        <td class="oc-table-cell text-left align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
             <!--v-if-->
             <!-- @slot Content of the button --> <span>Show devices</span>
           </a></td>
@@ -71,7 +71,7 @@ exports[`account page > account information section > displays basic user inform
 exports[`account page > account information section > group membership > displays group names 1`] = `"<td class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
 
 exports[`account page > header section > edit url button > should be displayed if defined via config 1`] = `
-"<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
+"<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

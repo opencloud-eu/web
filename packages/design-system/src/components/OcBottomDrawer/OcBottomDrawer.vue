@@ -17,33 +17,31 @@
           tabindex="0"
           class="oc-bottom-drawer fixed inset-x-0 bg-role-surface-container-high rounded-t-sm w-full max-h-[66vh] overflow-y-auto bottom-[-100%] transition-all duration-200"
         >
-          <div class="oc-card bg-transparent">
-            <div class="oc-card-header border-b-0 px-4 pt-4">
-              <div class="flex justify-between items-center">
-                <oc-button
-                  v-if="isNestedElement"
-                  appearance="raw"
-                  class="raw-hover-surface oc-bottom-drawer-back-button"
-                  :aria-label="$gettext('Open the parent context menu')"
-                  @click="openParentDrawer"
-                >
-                  <oc-icon name="arrow-left" fill-type="line" />
-                </oc-button>
-                <span class="font-semibold" v-text="title" />
-                <oc-button
-                  appearance="raw"
-                  class="raw-hover-surface oc-bottom-drawer-close-button"
-                  :aria-label="$gettext('Close the context menu')"
-                  @click="hide"
-                >
-                  <oc-icon name="close" fill-type="line" />
-                </oc-button>
-              </div>
-            </div>
-            <div ref="bottomDrawerCardBodyRef" class="oc-card-body px-4 pb-4 pt-2">
+          <oc-card class="bg-transparent" header-class="flex flex-row justify-between items-center">
+            <template #header>
+              <oc-button
+                v-if="isNestedElement"
+                appearance="raw"
+                class="raw-hover-surface oc-bottom-drawer-back-button"
+                :aria-label="$gettext('Open the parent context menu')"
+                @click="openParentDrawer"
+              >
+                <oc-icon name="arrow-left" fill-type="line" />
+              </oc-button>
+              <span class="font-semibold" v-text="title" />
+              <oc-button
+                appearance="raw"
+                class="raw-hover-surface oc-bottom-drawer-close-button"
+                :aria-label="$gettext('Close the context menu')"
+                @click="hide"
+              >
+                <oc-icon name="close" fill-type="line" />
+              </oc-button>
+            </template>
+            <div ref="bottomDrawerCardBodyRef">
               <slot />
             </div>
-          </div>
+          </oc-card>
         </div>
       </focus-trap>
     </div>
@@ -65,6 +63,7 @@ import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
 import { onKeyStroke } from '@vueuse/core'
 import OcButton from '../OcButton/OcButton.vue'
+import OcCard from '../OcCard/OcCard.vue'
 
 interface Props {
   /**

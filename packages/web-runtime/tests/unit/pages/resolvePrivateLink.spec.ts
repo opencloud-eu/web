@@ -13,13 +13,14 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 const selectors = {
-  loadingHeadline: '.oc-link-resolve-loading'
+  ocSpinnerStub: 'oc-spinner-stub',
+  errorMessage: '[data-testid="error-message"]'
 }
 
 describe('resolvePrivateLink', () => {
   it('is in a loading state initially', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.loadingHeadline).exists()).toBeTruthy()
+    expect(wrapper.find(selectors.ocSpinnerStub).exists()).toBeTruthy()
   })
   it('resolves to "files-spaces-generic" and passes the scrollTo query', async () => {
     const fileId = '1'
@@ -98,9 +99,7 @@ describe('resolvePrivateLink', () => {
       await wrapper.vm.resolvePrivateLinkTask.last
     } catch {}
 
-    expect(wrapper.find('.oc-link-resolve-error-message p').text()).toEqual(
-      'The file or folder does not exist'
-    )
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual('The file or folder does not exist')
   })
   describe('openWithDefaultApp', () => {
     it('correctly passes the openWithDefaultApp param if enabled and given via query', async () => {
@@ -176,7 +175,10 @@ function getWrapper({
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: {
+          OcCard: false
+        }
       }
     })
   }

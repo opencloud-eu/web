@@ -9,6 +9,7 @@ import OcAvatarLink from './src/components/OcAvatarLink/OcAvatarLink.vue'
 import OcAvatars from './src/components/OcAvatars/OcAvatars.vue'
 import OcBreadcrumb from './src/components/OcBreadcrumb/OcBreadcrumb.vue'
 import OcButton from './src/components/OcButton/OcButton.vue'
+import OcCard from './src/components/OcCard/OcCard.vue'
 import OcCheckbox from './src/components/OcCheckbox/OcCheckbox.vue'
 import OcContextualHelper from './src/components/OcContextualHelper/OcContextualHelper.vue'
 import OcColorInput from './src/components/OcColorInput/OcColorInput.vue'
@@ -65,6 +66,7 @@ declare module 'vue' {
     OcAvatars: typeof OcAvatars
     OcBreadcrumb: typeof OcBreadcrumb
     OcButton: typeof OcButton
+    OcCard: typeof OcCard
     OcCheckbox: typeof OcCheckbox
     OcColorInput: typeof OcColorInput
     OcContextualHelper: typeof OcContextualHelper

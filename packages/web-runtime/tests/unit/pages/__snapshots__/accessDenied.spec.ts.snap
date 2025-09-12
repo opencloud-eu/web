@@ -2,15 +2,17 @@
 
 exports[`access denied page > renders component 1`] = `
 "<div class="h-screen flex flex-col justify-center items-center">
-  <div class="oc-login-card"><img class="oc-login-logo" src="themes/opencloud/assets/logo.svg" alt="" aria-hidden="true">
-    <div class="oc-login-card-body w-sm p-6">
-      <h2 class="oc-login-card-title">Not logged in</h2>
+  <div class="oc-card bg-role-surface-container rounded-lg">
+    <div class="oc-card-header"><img src="themes/opencloud/assets/logo.svg" alt="" aria-hidden="true" class="max-w-48 max-h-48 absolute -translate-y-16">
+      <h2 class="mt-0">Not logged in</h2>
+    </div>
+    <div class="oc-card-body w-sm text-center">
       <p>This could be because of a routine safety log out, or because your account is either inactive or not yet authorized for use. Please try logging in after a while or seek help from your Administrator.</p>
       <!--v-if-->
     </div>
-    <div class="oc-login-card-footer pt-0">
+    <div class="oc-card-footer">
       <p></p>
     </div>
-  </div> <a attrs="[object Object]" class="oc-button-primary oc-button-filled oc-button-primary-filled gap-2 justify-center text-lg min-h-7 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default mt-4 w-sm" id="exitAnchor"></a>
+  </div> <a attrs="[object Object]" class="oc-button-primary oc-button-filled oc-button-primary-filled gap-2 justify-center text-lg min-h-7 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default mt-4 w-sm" id="exitAnchor"></a>
 </div>"
 `;

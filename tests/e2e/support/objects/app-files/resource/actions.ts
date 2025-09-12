@@ -90,7 +90,7 @@ const tagInInputForm =
 const tagFormInput = '//*[@data-testid="tags"]//input'
 const resourcesAsTiles = '#files-view .oc-tiles'
 const versionsPanelSelect = '//*[@data-testid="sidebar-panel-versions-select"]'
-const noLinkMessage = '#web .oc-link-resolve-error-message'
+const noLinkMessage = '#web .oc-link-resolve [data-testid="error-message"]'
 const listItemPageSelector = '//*[contains(@class,"oc-pagination-list-item-page") and text()="%s"]'
 const itemsPerPageDropDownOptionSelector =
   '//li[contains(@class,"vs__dropdown-option") and text()="%s"]'
