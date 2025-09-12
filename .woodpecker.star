@@ -496,7 +496,6 @@ def unitTests(ctx):
                          "name": "unit-tests",
                          "image": OC_CI_NODEJS,
                          "commands": [
-                             "pnpm build:tokens",
                              "pnpm test:unit --coverage",
                          ],
                      },
@@ -836,7 +835,6 @@ def buildAndPublishRelease(ctx):
                     "git clean -fd",
                     "git diff",
                     "git status",
-                    "pnpm build:tokens",
                     "bash -c '[ \"%s\" == \"design-system\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"web-client\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"web-pkg\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
