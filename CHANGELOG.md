@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- chore!: remove token generation and unnecessary theming options [[#1161](https://github.com/opencloud-eu/web/pull/1161)]
 - refactor!: remove scss files [[#1153](https://github.com/opencloud-eu/web/pull/1153)]
 
 ### ✨ Features
