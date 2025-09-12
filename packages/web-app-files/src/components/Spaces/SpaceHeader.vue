@@ -77,8 +77,7 @@
         ref="markdownContainerRef"
         class="markdown-container flex min-h-0 [mask-image:none]"
         :class="{
-          'mask-image:linear-gradient(180deg,black,transparent)] collapsed':
-            markdownCollapsed
+          'mask-image:linear-gradient(180deg,black,transparent)] collapsed': markdownCollapsed
         }"
       >
         <text-editor
