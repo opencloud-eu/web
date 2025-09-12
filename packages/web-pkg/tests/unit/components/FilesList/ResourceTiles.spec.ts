@@ -82,7 +82,6 @@ const resources: Resource[] = [
 
 describe('ResourceTiles component', () => {
   const originalGetElementById = document.getElementById
-  const originalGetComputedStyle = window.getComputedStyle
   beforeEach(() => {
     const mockElement = {
       clientWidth: 800
@@ -92,21 +91,6 @@ describe('ResourceTiles component', () => {
         return mockElement
       }
       return originalGetElementById.call(document, id)
-    })
-    window.getComputedStyle = vi.fn().mockImplementation(() => {
-      return {
-        getPropertyValue: (propName: string) => {
-          switch (propName) {
-            case '--oc-size-tiles-default':
-              return '9rem'
-            case '--oc-size-tiles-resize-step':
-              return '9rem'
-            default:
-              return originalGetComputedStyle(document.documentElement).getPropertyValue(propName)
-          }
-        },
-        fontSize: '14px'
-      }
     })
   })
   it('renders an array of spaces correctly', async () => {

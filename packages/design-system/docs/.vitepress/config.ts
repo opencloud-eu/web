@@ -4,6 +4,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 import Container from 'markdown-it-container'
 import path from 'path'
 import { generateJsonMetaData } from './generateJsonMetaData'
+import { generateCSSVarsJson } from './generateCSSVarsJson'
 import tailwindcss from '@tailwindcss/vite'
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
@@ -53,6 +54,7 @@ export default defineConfig({
     plugins: [
       tailwindcss(),
       generateJsonMetaData(),
+      generateCSSVarsJson(),
       viteStaticCopy({
         targets: (() => {
           return [
@@ -82,14 +84,6 @@ export default defineConfig({
             {
               text: 'Color palette',
               link: '/designTokens/colorPalette'
-            },
-            {
-              text: 'Font sizes',
-              link: '/designTokens/fontSizes'
-            },
-            {
-              text: 'Spacing',
-              link: '/designTokens/spacings'
             }
           ]
         },
