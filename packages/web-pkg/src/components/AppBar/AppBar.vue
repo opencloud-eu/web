@@ -123,7 +123,7 @@ export default defineComponent({
     viewModeDefault: {
       type: String,
       required: false,
-      default: () => FolderViewModeConstants.name.table
+      default: () => FolderViewModeConstants.defaultModeName
     },
     breadcrumbs: {
       type: Array as PropType<BreadcrumbItem[]>,

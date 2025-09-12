@@ -1102,6 +1102,15 @@ When(
 )
 
 When(
+  '{string} reduces the tile size',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.reduceTileSize()
+  }
+)
+
+When(
   '{string} opens the right sidebar of the resource {string}',
   async function (this: World, stepUser: string, resource: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })

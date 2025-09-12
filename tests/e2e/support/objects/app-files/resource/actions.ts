@@ -20,8 +20,8 @@ const appBarContextMenu = '#oc-openfile-contextmenu-trigger'
 const appBarDownloadFileButton = '#oc-openfile-contextmenu .oc-files-actions-download-file-trigger'
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
 const createSpaceFromResourceAction = '.oc-files-actions-create-space-from-resource-trigger'
-const checkBox = `//*[@data-test-resource-name="%s"]//ancestor::tr//input`
-const checkBoxForTrashbin = `//*[@data-test-resource-path="%s"]//ancestor::tr//input`
+const checkBox = `//*[@data-test-selection-resource-name="%s"]//input[@type="checkbox"]`
+const checkBoxForTrashbin = `//*[@data-test-selection-resource-path="%s"]//input[@type="checkbox"]`
 const filesSelector = '//*[@data-test-resource-name="%s"]'
 export const fileRow =
   '//ancestor::*[(contains(@class, "oc-tile-card") or contains(@class, "oc-tbody-tr"))]'
@@ -96,6 +96,7 @@ const itemsPerPageDropDownOptionSelector =
   '//li[contains(@class,"vs__dropdown-option") and text()="%s"]'
 const footerTextSelector = '//*[@data-testid="files-list-footer-info"]'
 const filesTableRowSelector = 'tbody tr'
+const filesTableTilesSelector = '.oc-tiles-item'
 const itemsPerPageDropDownSelector = '.vs__actions'
 const filesPaginationNavSelector = '.files-pagination'
 const uploadInfoSuccessLabelSelector = '.upload-info-label.upload-info-success'
@@ -106,7 +107,7 @@ const pauseUploadButton = '#pause-upload-info-btn[aria-label="Pause upload"]'
 const resumeUploadButton = '#pause-upload-info-btn[aria-label="Resume upload"]'
 const cancelUploadButton = '#cancel-upload-info-btn'
 const filesContextMenuAction = 'div[id^="context-menu-drop"] button.oc-files-actions-%s-trigger'
-const highlightedFileRowSelector = '#files-space-table tr.oc-table-highlighted'
+const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td//span[@data-test-indicator-type="resource-locked"]'
@@ -115,8 +116,10 @@ const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
 const sideBarActions =
   '//ul[@id="oc-files-actions-sidebar"]//span[contains(@class,"oc-files-context-action-label")]/span'
-const selectAllCheckbox = '#resource-table-select-all'
-const filesTable = '#files-space-table .oc-table-data-cell-select'
+const selectAllCheckbox =
+  '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
+const firstResourceCheckbox =
+  '//*[contains(@class, "oc-table-data-cell-select") or contains(@class, "oc-tile-card-selection")]'
 const sharerAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
 const recipientAvatarSelector =
@@ -136,7 +139,7 @@ const onlyOfficeCanvasEditorSelector = '#id_viewer_overlay'
 const onlyOfficeCanvasCursorSelector = '#id_target_cursor'
 const onlyOfficeInfoDialog = '.alert .info-box'
 const onlyOfficeInfoDialogConfirm = `.alert button[result="ok"]`
-const fileThumbnail = `//span[@data-test-resource-name="%s"]/ancestor::tr[contains(@class, "oc-tbody-tr")]//img[contains(@class,"oc-resource-thumbnail")]`
+const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
 const fileIconWrapper = '#oc-file-details-sidebar .details-icon-wrapper'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
@@ -144,6 +147,7 @@ const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-pane
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
+const tilesSlider = '#tiles-size-slider'
 
 export const clickResource = async ({
   page,
@@ -283,7 +287,7 @@ export const createSpaceFromSelection = async ({
 }): Promise<Space> => {
   await selectOrDeselectResources({
     page,
-    resources: resources.map((r) => ({name: r}) as resourceArgs), // prettier-ignore
+    resources: resources.map((r) => ({ name: r }) as resourceArgs), // prettier-ignore
     select: true
   })
   await page.locator(util.format(resourceNameSelector, resources[0])).click({ button: 'right' })
@@ -311,7 +315,7 @@ export const createSpaceFromAll = async ({
   spaceName: string
 }): Promise<Space> => {
   await page.locator(selectAllCheckbox).click()
-  await page.locator(filesTable).first().click({ button: 'right' })
+  await page.locator(firstResourceCheckbox).first().click({ button: 'right' })
 
   await page.locator(createSpaceFromResourceAction).click()
   await page.locator(resourceNameInput).fill(spaceName)
@@ -838,11 +842,12 @@ export const selectOrDeselectResources = async (args: selectResourcesArgs): Prom
     await clickResource({ page, path: folder })
   }
   for (const resource of resources) {
+    await page.locator(util.format(checkBox, resource.name)).waitFor()
     const resourceCheckbox = page.locator(util.format(checkBox, resource.name))
     if (!(await resourceCheckbox.isChecked()) && select) {
-      await resourceCheckbox.check()
+      await resourceCheckbox.click()
     } else if (await resourceCheckbox.isChecked()) {
-      await resourceCheckbox.uncheck()
+      await resourceCheckbox.click()
     }
   }
 }
@@ -931,7 +936,7 @@ export const moveOrCopyMultipleResources = async (
   switch (method) {
     case 'dropdown-menu': {
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
-      await page.locator(highlightedFileRowSelector).first().click({ button: 'right' })
+      await page.locator(highlightedTileCardSelector).first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
 
       await page.locator(breadcrumbRoot).click()
@@ -972,7 +977,7 @@ export const moveOrCopyMultipleResources = async (
       break
     }
     case 'drag-drop': {
-      const source = page.locator(highlightedFileRowSelector).first()
+      const source = page.locator(highlightedTileCardSelector).first()
       const target = page.locator(util.format(resourceNameSelector, newLocation))
 
       await Promise.all([...waitForMoveResponses, source.dragTo(target)])
@@ -981,7 +986,7 @@ export const moveOrCopyMultipleResources = async (
       break
     }
     case 'drag-drop-breadcrumb': {
-      const source = page.locator(highlightedFileRowSelector).first()
+      const source = page.locator(highlightedTileCardSelector).first()
       const target = page.locator(
         util.format(
           breadcrumbResourceNameSelector,
@@ -1033,7 +1038,10 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
     }
     case 'keyboard': {
       const resourceCheckbox = page.locator(util.format(checkBox, resourceBase))
-      await resourceCheckbox.check()
+      const isChecked = await resourceCheckbox.isChecked()
+      if (!isChecked) {
+        await resourceCheckbox.click()
+      }
       const keyValue = action === 'copy' ? 'c' : 'x'
       await page.keyboard.press(`ControlOrMeta+${keyValue}`)
       await page.locator(breadcrumbRoot).click()
@@ -1743,7 +1751,6 @@ export interface openFileInViewerArgs {
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {
   const { page, name, actionType } = args
-
   switch (actionType) {
     case 'OnlyOffice':
       await Promise.all([
@@ -1920,10 +1927,12 @@ export const countNumberOfResourcesInThePage = async ({
   // all the elements present
   await page.locator(footerTextSelector).waitFor()
   return page.evaluate(
-    ([filesTableRowSelector]) => {
-      return Promise.resolve(document.querySelectorAll(filesTableRowSelector).length)
+    ([filesTableRowSelector, filesTableTilesSelector]) => {
+      const rows = document.querySelectorAll(filesTableRowSelector).length
+      const tiles = document.querySelectorAll(filesTableTilesSelector).length
+      return Promise.resolve(Math.max(rows, tiles))
     },
-    [filesTableRowSelector]
+    [filesTableRowSelector, filesTableTilesSelector]
   )
 }
 
@@ -2240,6 +2249,13 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
     buffer: buffer
   })
   await page.keyboard.press('Escape')
+}
+
+export const reduceTileSize = async ({ page }: { page: Page }): Promise<void> => {
+  await page.locator(filesViewOptionButton).click()
+  const slider = page.locator(tilesSlider)
+  await slider.focus()
+  await page.keyboard.press('ArrowLeft')
 }
 
 export const openRightSidebar = async ({

@@ -2,6 +2,7 @@
   <oc-button
     :id="`context-menu-trigger-${resourceDomSelector(item)}`"
     v-oc-tooltip="contextMenuLabel"
+    :data-test-context-menu-resource-name="item.name"
     :aria-label="contextMenuLabel"
     appearance="raw"
     class="quick-action-button ml-1 p-1"

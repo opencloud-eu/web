@@ -33,6 +33,7 @@ Feature: Copy
       | PARENT/fileToCopy4.txt   | some content                        |
       | PARENT/fileToCopy5.txt   | some content                        |
     And "Alice" logs in
+    And "Alice" reduces the tile size
 
     When "Alice" copies the following resource using sidebar-panel
       | resource    | to          |

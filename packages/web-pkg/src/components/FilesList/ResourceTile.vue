@@ -52,9 +52,10 @@
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9]"
+              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
               :class="{ 'rounded-sm': isResourceSelected }"
               :src="resource.thumbnail"
+              :data-test-thumbnail-resource-name="resource.name"
               @click="toggleTile([resource, $event])"
             />
             <resource-icon
@@ -222,9 +223,11 @@ if (!lazy) {
   .oc-tile-card:hover .tile-preview {
     @apply rounded-sm;
   }
+
   .oc-tile-card:hover .oc-tile-card-preview {
     @apply p-2;
   }
+
   /* Show tooltip on status indicators without handler */
   .oc-tile-card-disabled span.oc-status-indicators-indicator {
     pointer-events: all;

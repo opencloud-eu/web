@@ -411,6 +411,10 @@ export class Resource {
     await po.uploadImageFromClipboard({ page: this.#page })
   }
 
+  async reduceTileSize(): Promise<void> {
+    await po.reduceTileSize({ page: this.#page })
+  }
+
   async openRightSidebar(resource: string): Promise<void> {
     await po.openRightSidebar({ page: this.#page, resource })
   }
