@@ -6,8 +6,9 @@
     <div
       class="space-header-image mr-6 min-w-xs aspect-[16/9]"
       :class="{
-        'space-header-image-expanded w-full max-w-full max-h-full': imageExpanded || isMobileWidth,
-        'w-xs max-h-[158px]': !imageExpanded,
+        'space-header-image-expanded w-full max-w-full max-h-full mb-4':
+          imageExpanded || isMobileWidth,
+        'w-xs max-h-40': !imageExpanded,
         'hidden lg:block': isSideBarOpen
       }"
     >
@@ -23,9 +24,9 @@
       />
     </div>
     <div class="flex-1">
-      <div class="flex mb-2 items-center justify-between">
+      <div class="flex items-center justify-between max-w-full">
         <div class="flex items-center max-w-full">
-          <h2 class="break-all">{{ space.name }}</h2>
+          <h2 class="break-all my-0">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
