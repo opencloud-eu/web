@@ -38,6 +38,7 @@
             <oc-text-input
               id="spaces-filter"
               v-model="filterTerm"
+              class="w-3xs"
               :label="$gettext('Search')"
               autocomplete="off"
             />

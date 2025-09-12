@@ -7,7 +7,7 @@ exports[`Projects view > different files view states > lists all available proje
       <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="spaces-list">
         <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
-          <div class=""><label class="inline-block mb-0.5" for="spaces-filter">Search
+          <div class="w-3xs"><label class="inline-block mb-0.5" for="spaces-filter">Search
               <!--v-if-->
             </label>
             <div class="relative">
