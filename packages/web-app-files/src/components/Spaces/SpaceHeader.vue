@@ -6,8 +6,9 @@
     <div
       class="space-header-image mr-6 min-w-xs aspect-[16/9]"
       :class="{
-        'space-header-image-expanded w-full max-w-full max-h-full': imageExpanded || isMobileWidth,
-        'w-xs max-h-[158px]': !imageExpanded
+        'space-header-image-expanded w-full max-w-full max-h-full mb-4':
+          imageExpanded || isMobileWidth,
+        'w-xs max-h-40': !imageExpanded
       }"
     >
       <div v-if="imagesLoading.includes(space.id)" class="h-full flex items-center justify-center">
@@ -24,7 +25,7 @@
     <div class="space-header-infos flex-1">
       <div class="flex mb-2 items-center justify-between">
         <div class="flex items-center space-header-infos-heading max-w-full">
-          <h2 class="space-header-name break-all">{{ space.name }}</h2>
+          <h2 class="space-header-name break-all my-0">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
