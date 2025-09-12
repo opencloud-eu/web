@@ -4,7 +4,7 @@
     "required": true,
     "description": "The resource that the indicators are related to.",
     "default": "",
-    "type": "unknown"
+    "type": "{ id?: string; name?: string; path?: string }"
   },
   {
     "name": "indicators",
