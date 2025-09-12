@@ -11,6 +11,7 @@ Feature: Users can use web to organize tags
       | pathToFile | content     |
       | lorem.txt  | lorem ipsum |
     And "Alice" logs in
+    And "Alice" switches to the "resource-table" view mode
     And "Alice" adds the following tags for the following resources using the sidebar panel
       | resource  | tags         |
       | lorem.txt | tag 1, tag 2 |
@@ -38,6 +39,7 @@ Feature: Users can use web to organize tags
       | lorem.txt    | lorem ipsum |
       | textfile.txt | test file   |
     And "Alice" logs in
+    And "Alice" switches to the "resource-table" view mode
     And "Alice" adds the following tags for the following resources using the sidebar panel
       | resource  | tags       |
       | lorem.txt | tag1, tag2 |
@@ -59,6 +61,7 @@ Feature: Users can use web to organize tags
       | pathToFile                 | content     |
       | folder_to_shared/lorem.txt | lorem ipsum |
     And "Alice" logs in
+    And "Alice" switches to the "resource-table" view mode
     And "Alice" adds the following tags for the following resources using the sidebar panel
       | resource                   | tags         |
       | folder_to_shared/lorem.txt | tag 1, tag 2 |
@@ -68,6 +71,7 @@ Feature: Users can use web to organize tags
     And "Alice" logs out
 
     And "Brian" logs in
+    And "Brian" switches to the "resource-table" view mode
     And "Brian" navigates to the shared with me page
     Then the following resources should contain the following tags in the files list for user "Brian"
       | resource                   | tags         |

@@ -67,6 +67,8 @@
         :disabled="isResourceDisabled(item)"
         :model-value="isResourceSelected(item)"
         :outline="isLatestSelectedItem(item)"
+        :data-test-selection-resource-name="item.name"
+        :data-test-selection-resource-path="item.path"
         @click.stop="
           (e: MouseEvent) => {
             if (!interceptModifierClick(e, item)) {

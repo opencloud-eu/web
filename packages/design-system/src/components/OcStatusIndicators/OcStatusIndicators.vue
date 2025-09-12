@@ -13,6 +13,8 @@
         appearance="raw"
         :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
+        :data-test-indicator-resource-name="resource.name"
+        :data-test-indicator-resource-path="resource.path"
         no-hover
         @click="(e: MouseEvent) => indicator.handler?.(resource, e)"
       >
@@ -67,7 +69,7 @@ export interface Props {
   /**
    * @docs The resource that the indicators are related to.
    */
-  resource: unknown
+  resource: { id?: string; name?: string; path?: string }
   /**
    * @docs The indicators to be displayed. Please refer to the component source code for the `Indicator` type definition.
    */

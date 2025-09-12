@@ -10,7 +10,7 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
       <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
       <div id="files-app-bar-controls-right" class="flex">
-        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
@@ -32,7 +32,7 @@ exports[`AppBar component > renders > if given, with content in the actions slot
       <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
       <div id="files-app-bar-controls-right" class="flex">
-        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
@@ -54,7 +54,7 @@ exports[`AppBar component > renders > if given, with content in the content slot
       <portal-target name="app.runtime.mobile.nav"></portal-target>
       <!--v-if-->
       <div id="files-app-bar-controls-right" class="flex">
-        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-table" viewmodes=""></view-options-stub>
+        <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>
     </div>
     <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">

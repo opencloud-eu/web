@@ -4,7 +4,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
 "<div class="flex">
   <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
     <div id="files-view" class="outline-0 z-0">
-      <app-bar-stub viewmodedefault="resource-table" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
+      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
         <div class="w-3xs"><label class="inline-block mb-0.5" for="trash-filter">Search
             <!--v-if-->
