@@ -4,7 +4,6 @@
       id="_userMenuButton"
       ref="menuButton"
       v-oc-tooltip="$gettext('My Account')"
-      class="oc-topbar-personal"
       appearance="raw"
       no-hover
       :aria-label="$gettext('My Account')"
@@ -19,7 +18,7 @@
       />
       <oc-avatar-item
         v-else
-        class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"
+        class="oc-topbar-avatar inline-flex justify-center items-center"
         :name="$gettext('User Menu login')"
         :width="32"
         icon="user"

@@ -28,7 +28,6 @@
         <no-content-message
           v-if="isEmpty"
           id="files-trashbin-empty"
-          class="files-empty"
           icon="delete-bin-7"
           icon-fill-type="line"
         >

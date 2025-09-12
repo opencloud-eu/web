@@ -131,26 +131,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .sciencemesh-app .option {
-    @apply block;
-  }
-}
-</style>
-<style lang="scss">
-.sciencemesh-app {
-  // overwrite vendor styles
-  .vs__selected,
-  .options-wrapper {
-    max-width: 100%;
-  }
-
-  .vs__selected-options {
-    max-width: 100%;
-    overflow: hidden;
-  }
-}
-</style>

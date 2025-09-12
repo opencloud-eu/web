@@ -21,7 +21,7 @@
             :is-resource-clickable="false"
           />
         </div>
-        <div class="flex main-actions">
+        <div class="flex">
           <template v-if="dropDownMenuSections.length">
             <oc-button
               id="oc-openfile-contextmenu-trigger"

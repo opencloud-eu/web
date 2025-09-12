@@ -9,7 +9,7 @@
     @date-changed="onDateChanged"
   />
 
-  <div class="link-modal-actions flex justify-end items-center mt-2">
+  <div class="flex justify-end items-center mt-2">
     <oc-button class="oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>

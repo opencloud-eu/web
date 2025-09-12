@@ -41,7 +41,7 @@ export interface Slots {
 const { recipient } = defineProps<Props>()
 defineSlots<Slots>()
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

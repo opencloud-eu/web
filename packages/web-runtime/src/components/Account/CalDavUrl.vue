@@ -13,9 +13,8 @@
         $gettext('CalCAV information value'),
         $gettext('CalCAV information actions')
       ]"
-      class="account-page-caldav"
     >
-      <oc-table-tr class="account-page-info-caldav-url">
+      <oc-table-tr>
         <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
         <oc-table-td>
           <span class="truncate">{{ configStore.serverUrl }}</span>
@@ -33,7 +32,7 @@
           </oc-button>
         </oc-table-td>
       </oc-table-tr>
-      <oc-table-tr class="account-page-info-caldav-username">
+      <oc-table-tr>
         <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
         <oc-table-td>
           <span>{{ user.onPremisesSamAccountName }}</span>
@@ -51,7 +50,7 @@
           </oc-button>
         </oc-table-td>
       </oc-table-tr>
-      <oc-table-tr class="account-page-info-caldav-password">
+      <oc-table-tr>
         <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
         <oc-table-td colspan="2">
           {{ $gettext('An app token needs to be generated and then can be used.') }}

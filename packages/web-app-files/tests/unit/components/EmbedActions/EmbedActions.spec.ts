@@ -20,7 +20,7 @@ const selectors = Object.freeze({
   btnSelect: '[data-testid="button-select"]',
   btnCancel: '[data-testid="button-cancel"]',
   btnShare: '[data-testid="button-share"]',
-  fileNameInput: '.files-embed-actions-file-name'
+  fileNameInput: 'oc-text-input-stub'
 })
 
 describe('EmbedActions', () => {

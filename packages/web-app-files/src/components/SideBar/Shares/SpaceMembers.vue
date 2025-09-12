@@ -43,7 +43,7 @@
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter mr-2 w-full overflow-hidden"
+          class="space-members-filter mr-2 w-full overflow-hidden [&_label]:text-sm"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />
@@ -247,9 +247,6 @@ watch(filterTerm, async () => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .space-members-filter label {
-    @apply text-sm;
-  }
   .space-members-filter input:focus {
     @apply border border-role-outline outline-0 inset-ring-1 ring-role-outline;
   }

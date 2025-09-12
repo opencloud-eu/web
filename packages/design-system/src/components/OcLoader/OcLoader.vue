@@ -33,7 +33,7 @@ export interface Props {
 
 const { ariaLabel = 'Loading', flat = false } = defineProps<Props>()
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {

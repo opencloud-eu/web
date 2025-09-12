@@ -31,12 +31,7 @@
       <template #mainContent>
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
-          <no-content-message
-            v-if="!groups.length"
-            id="admin-settings-groups-empty"
-            class="files-empty"
-            icon="user"
-          >
+          <no-content-message v-if="!groups.length" id="admin-settings-groups-empty" icon="user">
             <template #message>
               <span v-translate>No groups in here</span>
             </template>

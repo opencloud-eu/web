@@ -10,11 +10,12 @@ describe('ContextActionMenu component', () => {
     ]
     const { wrapper } = getWrapper(menuSections)
     expect(wrapper.html()).toMatchSnapshot()
-    expect(wrapper.find('.oc-files-context-actions').exists()).toBeTruthy()
-    expect(wrapper.findAll('.oc-files-context-actions').length).toEqual(menuSections.length)
+
+    expect(wrapper.find('#oc-files-context-menu > ul').exists()).toBeTruthy()
+    expect(wrapper.findAll('#oc-files-context-menu > ul').length).toEqual(menuSections.length)
   })
 
-  it('renders the menu with drop menu items', async () => {
+  it('renders the menu with drop menu items', () => {
     const menuSections = [
       {
         name: 'apps',
@@ -54,7 +55,7 @@ describe('ContextActionMenu component', () => {
     const { wrapper } = getWrapper(menuSections)
     expect(wrapper.html()).toMatchSnapshot()
 
-    expect(wrapper.findAll('.oc-files-context-actions').length).toEqual(menuSections.length)
+    expect(wrapper.findAll('#oc-files-context-menu > ul').length).toEqual(menuSections.length)
     expect(wrapper.findAll('.oc-files-context-action-drop').length).toEqual(3)
   })
 })

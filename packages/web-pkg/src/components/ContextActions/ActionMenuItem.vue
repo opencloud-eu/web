@@ -41,7 +41,7 @@
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
-        class="oc-files-context-action-shortcut text-sm flex-row-reverse"
+        class="text-sm flex-row-reverse"
         v-text="action.shortcut"
       />
     </oc-button>

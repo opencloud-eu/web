@@ -1,5 +1,5 @@
 <template>
-  <span class="oc-resource-size" v-text="formattedSize" />
+  <span v-text="formattedSize" />
 </template>
 
 <script lang="ts">

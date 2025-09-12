@@ -12,12 +12,7 @@
       key="new-collaborator"
       class="my-2"
     />
-    <p
-      v-else
-      key="no-share-permissions-message"
-      data-testid="files-collaborators-no-share-permissions-message"
-      v-text="noSharePermsMessage"
-    />
+    <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />
     <template v-if="hasSharees">
       <div id="files-collaborators-headline" class="flex items-center justify-between h-10">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />

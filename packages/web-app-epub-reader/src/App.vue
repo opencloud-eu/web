@@ -1,8 +1,6 @@
 <template>
   <div class="epub-reader flex">
-    <oc-list
-      class="epub-reader-chapters-list bg-role-surface-container pl-2 hidden lg:block border-r w-xs overflow-y-auto"
-    >
+    <oc-list class="bg-role-surface-container pl-2 hidden lg:block border-r w-xs overflow-y-auto">
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
@@ -21,7 +19,7 @@
       </li>
     </oc-list>
     <div class="size-full">
-      <div class="epub-reader-controls flex items-center m-2">
+      <div class="flex items-center m-2">
         <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group">
           <oc-button
             v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"

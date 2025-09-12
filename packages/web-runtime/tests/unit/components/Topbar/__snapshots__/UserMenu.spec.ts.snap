@@ -2,7 +2,7 @@
 
 exports[`User Menu component > when no quota and email is set > the user menu does not contain a quota 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
@@ -26,7 +26,7 @@ exports[`User Menu component > when no quota and email is set > the user menu do
 
 exports[`User Menu component > when no quota and no email is set > the user menu does not contain a quota 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class="py-1"><span class="block">Albert Einstein</span>
@@ -51,16 +51,16 @@ exports[`User Menu component > when no quota and no email is set > the user menu
 
 exports[`User Menu component > when quota and no email is set > renders a navigation without email 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class="py-1"><span class="block">Albert Einstein</span>
         <!--v-if-->
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
-            <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
+            <oc-progress-stub max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
           </div>
         </div></span>
       </li>
@@ -82,15 +82,15 @@ exports[`User Menu component > when quota and no email is set > renders a naviga
 
 exports[`User Menu component > when quota is above 80% and below 90% > renders a warning quota progress bar 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">810 B of 1 kB used (81%)</span></p>
-            <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="81"></oc-progress-stub>
+            <oc-progress-stub max="100" size="small" color="var(--oc-role-secondary)" value="81"></oc-progress-stub>
           </div>
         </div></span>
       </li>
@@ -112,15 +112,15 @@ exports[`User Menu component > when quota is above 80% and below 90% > renders a
 
 exports[`User Menu component > when quota is above 90% > renders a danger quota progress bar 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">910 B of 1 kB used (91%)</span></p>
-            <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-error)" value="91"></oc-progress-stub>
+            <oc-progress-stub max="100" size="small" color="var(--oc-role-error)" value="91"></oc-progress-stub>
           </div>
         </div></span>
       </li>
@@ -142,15 +142,15 @@ exports[`User Menu component > when quota is above 90% > renders a danger quota 
 
 exports[`User Menu component > when quota is below 80% > renders a primary quota progress bar 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
-            <oc-progress-stub class="quota-information-progress-bar" max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
+            <oc-progress-stub max="100" size="small" color="var(--oc-role-secondary)" value="30"></oc-progress-stub>
           </div>
         </div></span>
       </li>
@@ -172,11 +172,11 @@ exports[`User Menu component > when quota is below 80% > renders a primary quota
 
 exports[`User Menu component > when quota is not defined > renders no percentag of total and no progress bar 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">910 B used</span></p>
@@ -202,11 +202,11 @@ exports[`User Menu component > when quota is not defined > renders no percentag 
 
 exports[`User Menu component > when quota is unlimited > renders no percentag of total and no progress bar 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-on-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-chrome);">AE</span></span></oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="quota-information flex items-end text-sm mt-1">
+        <div class="flex items-end text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B used</span></p>
@@ -232,8 +232,8 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
 
 exports[`User Menu component > when user is not logged in > renders a navigation with login button 1`] = `
 "<nav aria-label="Account menu">
-  <oc-button-stub id="_userMenuButton" class="oc-topbar-personal" appearance="raw" no-hover="" aria-label="My Account">
-    <div data-test-item-name="User Menu login" aria-hidden="true" focusable="false" class="oc-topbar-avatar oc-topbar-unauthenticated-avatar inline-flex justify-center items-center"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-surface); width: 32px; height: 32px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="user" size="small" type="span"></oc-icon-stub></span></div>
+  <oc-button-stub id="_userMenuButton" appearance="raw" no-hover="" aria-label="My Account">
+    <div data-test-item-name="User Menu login" aria-hidden="true" focusable="false" class="oc-topbar-avatar inline-flex justify-center items-center"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-surface); width: 32px; height: 32px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="user" size="small" type="span"></oc-icon-stub></span></div>
   </oc-button-stub>
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">

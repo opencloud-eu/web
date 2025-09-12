@@ -16,7 +16,7 @@
           </template>
         </no-content-message>
         <template v-else>
-          <div class="trash-bin-filters flex justify-end flex-wrap items-end mx-4 mb-4">
+          <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="trash-filter"
               v-model="filterTerm"

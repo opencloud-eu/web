@@ -1,6 +1,13 @@
 <template>
-  <div class="space-image-modal">
-    <div v-if="imageUrl" class="space-image-modal-image-container max-h-[400px]">
+  <div
+    :class="[
+      '[&_.cropper-crop-box]:!outline-1',
+      '[&_.cropper-crop-box]:!outline-role-outline',
+      '[&_.cropper-line]:!bg-role-outline',
+      '[&_.cropper-point]:!bg-role-outline'
+    ]"
+  >
+    <div v-if="imageUrl" class="max-h-[400px]">
       <img ref="imageRef" :src="imageUrl" />
       <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
         <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
@@ -158,18 +165,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style lang="scss">
-.space-image-modal {
-  // overwrite vendor styling
-  .cropper-crop-box,
-  .cropper-view-box {
-    outline: 1px solid var(--oc-role-outline) !important;
-  }
-
-  .cropper-line,
-  .cropper-point {
-    background-color: var(--oc-role-outline) !important;
-  }
-}
-</style>

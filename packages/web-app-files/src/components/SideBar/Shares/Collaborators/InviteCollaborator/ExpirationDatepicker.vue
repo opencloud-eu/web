@@ -2,7 +2,7 @@
   <div class="flex items-center flex-nowrap">
     <oc-button
       data-testid="recipient-datepicker-btn"
-      class="files-collaborators-expiration-button p-2 action-menu-item"
+      class="p-2"
       appearance="raw"
       justify-content="left"
       gap-size="none"
@@ -20,7 +20,7 @@
   </div>
   <oc-button
     v-if="dateCurrent"
-    class="recipient-edit-expiration-btn-remove p-2 action-menu-item align-middle"
+    class="p-2 align-middle"
     appearance="raw"
     :aria-label="$gettext('Remove expiration date')"
     @click="dateCurrent = null"

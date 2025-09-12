@@ -1,12 +1,12 @@
 <template>
-  <div v-if="noUsers" class="flex user-info text-center mt-12">
+  <div v-if="noUsers" class="flex text-center mt-12">
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
   <div
     v-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
-    class="flex user-info p-4 bg-role-surface-container rounded-sm"
+    class="flex p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>

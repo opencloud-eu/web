@@ -1,6 +1,6 @@
 <template>
   <div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="oc-space-details-sidebar-image text-center">
+    <div class="text-center">
       <oc-spinner
         v-if="imagesLoading.includes(resource.id)"
         :aria-label="$gettext('Space image is loading')"

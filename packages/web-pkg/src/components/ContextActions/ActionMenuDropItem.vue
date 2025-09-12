@@ -1,15 +1,18 @@
 <template>
-  <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover">
+  <li class="context-menu px-2">
     <oc-button
       :id="toggleId"
       appearance="raw"
+      justify-content="space-between"
       gap-size="medium"
       class="w-full flex justify-between"
       aria-expanded="false"
     >
-      <oc-icon :name="menuSectionDrop.icon" size="medium" fill-type="line" />
-      <span class="flex oc-files-context-action-label">
-        <span v-text="menuSectionDrop.label" />
+      <span class="inline-flex gap-2">
+        <oc-icon :name="menuSectionDrop.icon" size="medium" fill-type="line" />
+        <span class="flex oc-files-context-action-label">
+          <span v-text="menuSectionDrop.label" />
+        </span>
       </span>
       <oc-icon name="arrow-right-s" size="small" fill-type="line" />
     </oc-button>
@@ -33,7 +36,6 @@
             :action="action"
             :appearance="appearance"
             :action-options="actionOptions"
-            class="oc-files-context-action rounded-sm oc-menu-item-hover"
           />
         </oc-list>
       </template>
