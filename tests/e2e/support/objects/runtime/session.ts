@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test'
 import { User } from '../../types'
 import { config } from '../../../config'
-import { checkAccessibility } from '../../utils/accessibility'
+import { checkA11yOrLocalization } from '../../utils/accessibility'
 
 export class Session {
   #page: Page
@@ -21,7 +21,7 @@ export class Session {
     await this.#page.locator('#oc-login-username').fill(username)
     await this.#page.locator('#oc-login-password').fill(password)
     if (a11y) {
-      await checkAccessibility(this.#page, 'before clicking login submit')
+      await checkA11yOrLocalization(this.#page, 'before clicking login submit', '#root')
     }
     await this.#page.locator('button[type="submit"]').click()
   }
