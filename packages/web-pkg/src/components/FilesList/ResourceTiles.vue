@@ -79,7 +79,7 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="inline-flex p-2"
+              class="inline-flex p-2.5"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
               :data-test-selection-resource-name="resource.name"
