@@ -69,7 +69,7 @@ export interface Props {
   /**
    * @docs The resource that the indicators are related to.
    */
-  resource: { name?: string; path?: string }
+  resource: { id?: string; name?: string; path?: string }
   /**
    * @docs The indicators to be displayed. Please refer to the component source code for the `Indicator` type definition.
    */
