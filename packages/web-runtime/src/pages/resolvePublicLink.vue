@@ -6,7 +6,9 @@
       body-class="w-lg text-center"
       class="bg-role-surface-container rounded-lg"
     >
-      <p v-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
+      <p v-if="errorMessage" data-testid="error-message" class="text-xl">
+        {{ errorMessage }}
+      </p>
       <form v-else-if="isPasswordRequired" @submit.prevent="resolvePublicLinkTask.perform(true)">
         <oc-text-input
           ref="passwordInput"

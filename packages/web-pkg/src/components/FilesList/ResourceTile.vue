@@ -47,14 +47,17 @@
         <div
           v-oc-tooltip="tooltipLabelIcon"
           class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
-          :class="{ 'p-2': isResourceSelected }"
+          :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
               class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
-              :class="{ 'rounded-sm': isResourceSelected }"
+              :class="{
+                'rounded-sm': isResourceSelected,
+                'hover:rounded-sm': !isResourceSelected
+              }"
               :src="resource.thumbnail"
               :data-test-thumbnail-resource-name="resource.name"
               @click="toggleTile([resource, $event])"
@@ -156,7 +159,7 @@ defineSlots<{
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 
-const observerTarget = useTemplateRef<typeof OcCard>('observerTarget')
+const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
 
 const showStatusIcon = computed(() => {
@@ -207,24 +210,6 @@ if (!lazy) {
   emit('itemVisible')
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-tile-card:hover .tile-preview {
-    @apply rounded-sm;
-  }
-
-  .oc-tile-card:hover .oc-tile-card-preview {
-    @apply p-2;
-  }
-
-  /* Show tooltip on status indicators without handler */
-  .oc-tile-card-disabled span.oc-status-indicators-indicator {
-    pointer-events: all;
-  }
-}
-</style>
 <style lang="scss">
 @layer components {
   .oc-tile-card {

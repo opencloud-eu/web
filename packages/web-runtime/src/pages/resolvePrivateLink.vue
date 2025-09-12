@@ -5,8 +5,8 @@
       body-class="w-lg text-center"
       class="bg-role-surface-container rounded-lg"
     >
-      <oc-spinner v-if="loading" :aria-hidden="true" />
-      <p v-else-if="errorMessage" class="text-xl">{{ errorMessage }}</p>
+      <oc-spinner v-if="loading" data-testid="loading-spinner" :aria-hidden="true" />
+      <p v-else-if="errorMessage" data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
     </oc-card>
     <oc-button
       v-if="isUnacceptedShareError"

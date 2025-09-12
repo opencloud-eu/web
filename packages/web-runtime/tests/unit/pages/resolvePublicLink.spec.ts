@@ -18,7 +18,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 const selectors = {
   cardFooter: '.oc-card-footer',
   ocSpinnerStub: 'oc-spinner-stub',
-  submitButton: '.oc-login-authorize-button'
+  submitButton: '.oc-login-authorize-button',
+  errorMessage: '[data-testid="error-message"]'
 }
 
 describe('resolvePublicLink', () => {
@@ -77,7 +78,7 @@ describe('resolvePublicLink', () => {
         await wrapper.vm.loadPublicSpaceTask.last
       } catch {}
 
-      expect(wrapper.find('.oc-link-resolve-error-message').text()).toContain(
+      expect(wrapper.find(selectors.errorMessage).text()).toContain(
         'The resource could not be located, it may not exist anymore.'
       )
     })
@@ -90,7 +91,7 @@ describe('resolvePublicLink', () => {
       await wrapper.vm.loadPublicSpaceTask.last
       await expect(wrapper.vm.resolvePublicLinkTask.perform(true)).rejects.toThrow()
 
-      expect(wrapper.find('.oc-link-resolve-error-message').text()).toContain(
+      expect(wrapper.find(selectors.errorMessage).text()).toContain(
         'The resource could not be located, it may not exist anymore.'
       )
     })
@@ -137,7 +138,10 @@ function getWrapper({
       global: {
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: {
+          OcCard: false
+        }
       }
     })
   }

@@ -63,6 +63,7 @@ import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
 import { onKeyStroke } from '@vueuse/core'
 import OcButton from '../OcButton/OcButton.vue'
+import OcCard from '../OcCard/OcCard.vue'
 
 interface Props {
   /**

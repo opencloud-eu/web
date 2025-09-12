@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
-"<li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-actions-toggle-2" aria-expanded="false">
+"<li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-actions-toggle-2" aria-expanded="false">
     <!--v-if-->
     <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/eye-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -26,13 +26,13 @@ exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
       <!--v-if-->
       <div class="oc-card-body p-2">
         <ul class="oc-list">
-          <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+          <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Copy</span></span>
               <!--v-if-->
             </button></li>
-          <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+          <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
               <!--v-if-->
               <!-- @slot Content of the button -->
               <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Paste</span></span>

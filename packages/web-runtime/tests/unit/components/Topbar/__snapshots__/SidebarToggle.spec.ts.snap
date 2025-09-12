@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SidebarToggle component > should show the "Toggle sidebar"-button with sidebar opened and closed 1`] = `
-"<button type="button" aria-label="Open sidebar to view details" class="oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default my-2" id="files-toggle-sidebar" issidebaropen="true">
+"<button type="button" aria-label="Open sidebar to view details" class="oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default my-2" id="files-toggle-sidebar" issidebaropen="true">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/side-bar-right-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -16,7 +16,7 @@ exports[`SidebarToggle component > should show the "Toggle sidebar"-button with 
 `;
 
 exports[`SidebarToggle component > should show the "Toggle sidebar"-button with sidebar opened and closed 2`] = `
-"<button type="button" aria-label="Open sidebar to view details" class="oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default my-2" id="files-toggle-sidebar" issidebaropen="false">
+"<button type="button" aria-label="Open sidebar to view details" class="oc-button-chrome oc-button-raw-inverse oc-button-chrome-raw-inverse gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default my-2" id="files-toggle-sidebar" issidebaropen="false">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/side-bar-right-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
