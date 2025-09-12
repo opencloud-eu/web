@@ -88,7 +88,6 @@ const tagInFilesTable = '//*[contains(@class, "oc-tag")]//span[text()="%s"]//anc
 const tagInInputForm =
   '//span[contains(@class, "tags-select-tag")]//span[text()="%s"]//ancestor::span//button[contains(@class, "vs__deselect")]'
 const tagFormInput = '//*[@data-testid="tags"]//input'
-const resourcesAsTiles = '#files-view .oc-tiles'
 const versionsPanelSelect = '//*[@data-testid="sidebar-panel-versions-select"]'
 const noLinkMessage = '#web .oc-link-resolve [data-testid="error-message"]'
 const listItemPageSelector = '//*[contains(@class,"oc-pagination-list-item-page") and text()="%s"]'
@@ -125,6 +124,8 @@ const sharerAvatarSelector =
 const recipientAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
 const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
+const mobileViewmodeSwitchBtn = '#mobile-viewmode-switch-toggle'
+const mobileViewmodeSwitchDropdown = '#mobile-viewmode-switch-drop'
 
 // online office locators
 // Collabora
@@ -1636,25 +1637,45 @@ export const getDisplayedResourcesFromTrashbin = async (page: Page): Promise<str
 
 export interface switchViewModeArgs {
   page: Page
-  target: 'resource-table' | 'resource-tiles' | 'resource-table-condensed'
+  target: 'table' | 'tiles' | 'table-condensed'
 }
 
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {
   const { page, target } = args
 
   if (config.browser === 'mobile-chromium' || config.browser === 'mobile-webkit') {
-    await page.getByLabel('Switch view mode').click()
-    await expect(page.locator('#mobile-viewmode-switch-drop')).toBeVisible()
-    await page.getByText('Tiles view').click()
+    await page.locator(mobileViewmodeSwitchBtn).click()
+    await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeVisible()
+
+    const mobileTexts = {
+      table: 'Table view',
+      tiles: 'Default tiles view',
+      'table-condensed': 'Condensed table view'
+    }
+    await page.getByText(mobileTexts[target]).first().click()
   } else {
-    await page.locator(`.viewmode-switch-buttons .${target}`).click()
+    const webSelectors = {
+      table: 'resource-table',
+      tiles: 'resource-tiles',
+      'table-condensed': 'resource-table-condensed'
+    }
+    await page.locator(`.viewmode-switch-buttons .${webSelectors[target]}`).click()
   }
 }
 
-export const expectThatResourcesAreTiles = async (args: { page: Page }): Promise<void> => {
-  const { page } = args
-  const tiles = page.locator(resourcesAsTiles)
-  await expect(tiles).toBeVisible()
+export const expectThatResourcesAreDisplayedAs = async (args: {
+  page: Page
+  viewMode: string
+}): Promise<void> => {
+  const { page, viewMode } = args
+  const viewSelectors = {
+    table: '#files-view .oc-table',
+    tiles: '#files-view .oc-tiles',
+    'table-condensed': '#files-view .oc-table.oc-table-condensed'
+  }
+
+  const selector = viewSelectors[viewMode]
+  await expect(page.locator(selector)).toBeVisible()
 }
 
 export const showHiddenResources = async (page: Page): Promise<void> => {
