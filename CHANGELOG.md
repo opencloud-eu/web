@@ -16,28 +16,9 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### 🐛 Bug Fixes
-
-- fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
-- fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
-- fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
-- fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
-- fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
-- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
-- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
-- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
-- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
-- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
-
-### ✅ Tests
-
-- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
 ### 📈 Enhancement
 
+- feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
 - refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
 - refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
 - refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
@@ -61,8 +42,29 @@
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
 
+### 🐛 Bug Fixes
+
+- fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
+- fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
+- fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
+- fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
+- fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
+- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
+- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
+- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
+### ✅ Tests
+
+- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
+- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
+
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vite to v6.3.6 [security] [[#1167](https://github.com/opencloud-eu/web/pull/1167)]
 - [full-ci] bump-opencloud-3.4.0. run all tests [[#1137](https://github.com/opencloud-eu/web/pull/1137)]
 - use bitnamilegacy [[#1133](https://github.com/opencloud-eu/web/pull/1133)]
 - chore: adjust display css props to tailwind [[#1114](https://github.com/opencloud-eu/web/pull/1114)]
