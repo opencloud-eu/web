@@ -18,7 +18,7 @@
         'no-hover': noHover
       }
     ]"
-    class="oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default"
+    class="oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default"
     v-on="handlers"
   >
     <oc-spinner v-if="showSpinner" size="small" class="spinner" />
@@ -178,7 +178,7 @@ const onClick = (event: MouseEvent) => {
     @apply py-1.5 px-2.5;
   }
   .oc-button {
-    @apply rounded-sm items-center;
+    @apply rounded-sm items-center inline-flex;
   }
   .oc-button-group {
     @apply inline-flex flex-row flex-wrap rounded-sm outline outline-role-secondary outline-offset-[-1px];

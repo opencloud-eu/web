@@ -1,16 +1,20 @@
 <template>
-  <div class="oc-login-card absolute top-[50%] left-[50%]">
-    <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-    <div class="oc-login-card-body p-6">
-      <h1 class="oc-login-card-title" v-text="$gettext('Missing or invalid config')" />
+  <div
+    class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden flex flex-col justify-center items-center"
+  >
+    <h1 class="sr-only" v-text="$gettext('Error')" />
+    <oc-card
+      :logo-url="logoImg"
+      :title="$gettext('Missing or invalid config')"
+      body-class="w-sm text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
       <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
       <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
-    </div>
-    <div class="oc-login-card-footer pt-0">
-      <p>
-        {{ footerSlogan }}
-      </p>
-    </div>
+      <template #footer>
+        <p v-text="footerSlogan" />
+      </template>
+    </oc-card>
   </div>
 </template>
 

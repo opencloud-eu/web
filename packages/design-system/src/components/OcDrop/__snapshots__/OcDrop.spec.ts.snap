@@ -35,11 +35,21 @@ exports[`OcDrop > tippy > renders tippy 1`] = `
           id="oc-drop-15"
         >
           <div
-            class="oc-card oc-card-body p-4"
+            class="oc-card"
           >
-            
-            show
-            
+            <!--v-if-->
+             
+            <div
+              class="oc-card-body p-4"
+            >
+              
+              
+              show
+              
+              
+            </div>
+             
+            <!--v-if-->
           </div>
         </div>
       </div>
@@ -83,11 +93,21 @@ exports[`OcDrop > tippy > renders tippy 2`] = `
           id="oc-drop-15"
         >
           <div
-            class="oc-card oc-card-body p-4"
+            class="oc-card"
           >
-            
-            show
-            
+            <!--v-if-->
+             
+            <div
+              class="oc-card-body p-4"
+            >
+              
+              
+              show
+              
+              
+            </div>
+             
+            <!--v-if-->
           </div>
         </div>
       </div>
@@ -131,11 +151,21 @@ exports[`OcDrop > tippy > renders tippy 3`] = `
           id="oc-drop-15"
         >
           <div
-            class="oc-card oc-card-body p-4"
+            class="oc-card"
           >
-            
-            show
-            
+            <!--v-if-->
+             
+            <div
+              class="oc-card-body p-4"
+            >
+              
+              
+              show
+              
+              
+            </div>
+             
+            <!--v-if-->
           </div>
         </div>
       </div>

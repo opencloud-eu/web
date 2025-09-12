@@ -20,7 +20,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
       <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" id="files-space-table" selection="">
         <thead class="oc-thead border-b">
           <tr data-v-98c4aba8="" class="oc-table-header-row h-10.5">
-            <th class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10 pl-4" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+            <th class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10 pl-4" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
                 <!--v-if-->
                 <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Name</span> <span class="oc-icon box-content size-4 p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

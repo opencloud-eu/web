@@ -18,26 +18,28 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul class="oc-list oc-tiles grid justify-start gap-3">
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" no-hover="" tabindex="-1"></a>
-        <div class="oc-card-body p-2">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-              <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
-                <!--v-if-->
-                <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
-                  <div class="oc-resource-indicators flex">
-                    <!--v-if-->
+      <div class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false">
+        <!--v-if-->
+        <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" no-hover="" tabindex="-1"></a>
+          <div class="p-2">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
+                <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
+                  <!--v-if-->
+                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                    <div class="oc-resource-indicators flex">
+                      <!--v-if-->
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="flex items-center">
-              <!-- Slot for indicators !-->
-              <!--v-if-->
-              <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-1" data-test-context-menu-resource-name="Space 1">
+              <div class="flex items-center">
+                <!-- Slot for indicators !-->
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+                <!-- Slot for individual actions -->
+                <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-1" data-test-context-menu-resource-name="Space 1">
+                  <!--v-if-->
+                  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -46,37 +48,45 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-                <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-                  <div class="oc-card oc-card-body p-2"></div>
-                </div>
-              </button>
+                  <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
+                    <div class="oc-card">
+                      <!--v-if-->
+                      <div class="oc-card-body p-2"></div>
+                      <!--v-if-->
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
+            <!--v-if-->
           </div>
-          <!--v-if-->
         </div>
+        <!--v-if-->
       </div>
     </li>
     <li class="oc-tiles-item has-item-context-menu">
-      <div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" no-hover="" tabindex="-1"></a>
-        <div class="oc-card-body p-2">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-              <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
-                <!--v-if-->
-                <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link inline-flex max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
-                  <div class="oc-resource-indicators flex">
-                    <!--v-if-->
+      <div class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false">
+        <!--v-if-->
+        <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" no-hover="" tabindex="-1"></a>
+          <div class="p-2">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
+                <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
+                  <!--v-if-->
+                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                    <div class="oc-resource-indicators flex">
+                      <!--v-if-->
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="flex items-center">
-              <!-- Slot for indicators !-->
-              <!--v-if-->
-              <!-- Slot for individual actions -->
-              <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-2" data-test-context-menu-resource-name="Space 2">
+              <div class="flex items-center">
+                <!-- Slot for indicators !-->
                 <!--v-if-->
-                <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+                <!-- Slot for individual actions -->
+                <!-- Slot for contextmenu --> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 resource-tiles-btn-action-dropdown" id="context-menu-trigger-2" data-test-context-menu-resource-name="Space 2">
+                  <!--v-if-->
+                  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -85,14 +95,20 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-                <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
-                  <div class="oc-card oc-card-body p-2"></div>
-                </div>
-              </button>
+                  <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
+                    <div class="oc-card">
+                      <!--v-if-->
+                      <div class="oc-card-body p-2"></div>
+                      <!--v-if-->
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
+            <!--v-if-->
           </div>
-          <!--v-if-->
         </div>
+        <!--v-if-->
       </div>
     </li>
     <li class="ghost-tile list-item" aria-hidden="true"></li>

@@ -1,15 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcTile component > renders default space correctly 1`] = `
-"<div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest">
+"<oc-card-stub tag="div" titletag="h2" logourl="" headerclass="" bodyclass="p-0" footerclass="" class="oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1">
     <div class="oc-tile-card-selection z-10 absolute top-0 left-0 [&amp;_input]:bg-role-surface-container"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute">
+    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute hover:p-2">
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1 relative"></resource-icon-stub>
     </div>
   </resource-link-stub>
-  <div class="oc-card-body p-2">
+  <div class="p-2">
     <div class="flex justify-between items-center">
       <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
         <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
@@ -22,19 +22,19 @@ exports[`OcTile component > renders default space correctly 1`] = `
     </div>
     <!--v-if-->
   </div>
-</div>"
+</oc-card-stub>"
 `;
 
 exports[`OcTile component > renders disabled space correctly 1`] = `
-"<div class="oc-tile-card oc-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none">
+"<oc-card-stub tag="div" titletag="h2" logourl="" headerclass="" bodyclass="p-0" footerclass="" class="oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none">
   <resource-link-stub resource="[object Object]" isresourceclickable="true" class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1">
     <div class="oc-tile-card-selection z-10 absolute top-0 left-0 [&amp;_input]:bg-role-surface-container"></div>
     <!--v-if-->
-    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute">
+    <div class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute hover:p-2">
       <resource-icon-stub resource="[object Object]" size="xlarge" class="tile-default-image pt-1 relative"></resource-icon-stub>
     </div>
   </resource-link-stub>
-  <div class="oc-card-body p-2">
+  <div class="p-2">
     <div class="flex justify-between items-center">
       <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
         <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
@@ -47,5 +47,5 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
     </div>
     <!--v-if-->
   </div>
-</div>"
+</oc-card-stub>"
 `;
