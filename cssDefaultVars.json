@@ -1,0 +1,270 @@
+[
+  {
+    "name": "oc-color-icon-archive",
+    "value": "rgb(251, 190, 84)"
+  },
+  {
+    "name": "oc-color-icon-audio",
+    "value": "rgb(112, 4, 96)"
+  },
+  {
+    "name": "oc-color-icon-code",
+    "value": "#171C1F"
+  },
+  {
+    "name": "oc-color-icon-document",
+    "value": "rgb(59, 68, 166)"
+  },
+  {
+    "name": "oc-color-icon-drawio",
+    "value": "rgb(255, 111, 0)"
+  },
+  {
+    "name": "oc-color-icon-epub",
+    "value": "rgb(244, 187, 68)"
+  },
+  {
+    "name": "oc-color-icon-file",
+    "value": "#171C1F"
+  },
+  {
+    "name": "oc-color-icon-folder",
+    "value": "rgb(77, 126, 175)"
+  },
+  {
+    "name": "oc-color-icon-form",
+    "value": "rgb(102, 166, 163)"
+  },
+  {
+    "name": "oc-color-icon-graphic",
+    "value": "rgb(235, 201, 74)"
+  },
+  {
+    "name": "oc-color-icon-ifc",
+    "value": "rgb(208, 67, 236)"
+  },
+  {
+    "name": "oc-color-icon-image",
+    "value": "rgb(238, 107, 59)"
+  },
+  {
+    "name": "oc-color-icon-jupyter",
+    "value": "rgb(243, 119, 38)"
+  },
+  {
+    "name": "oc-color-icon-markdown",
+    "value": "rgb(75, 100, 137)"
+  },
+  {
+    "name": "oc-color-icon-medical",
+    "value": "rgb(9, 132, 219)"
+  },
+  {
+    "name": "oc-color-icon-pdf",
+    "value": "rgb(236, 13, 71)"
+  },
+  {
+    "name": "oc-color-icon-presentation",
+    "value": "rgb(238, 107, 59)"
+  },
+  {
+    "name": "oc-color-icon-root",
+    "value": "rgb(0, 187, 219)"
+  },
+  {
+    "name": "oc-color-icon-spreadsheet",
+    "value": "rgb(21, 194, 134)"
+  },
+  {
+    "name": "oc-color-icon-text",
+    "value": "#171C1F"
+  },
+  {
+    "name": "oc-color-icon-video",
+    "value": "rgb(4, 84, 89)"
+  },
+  {
+    "name": "oc-font-family",
+    "value": "OpenCloud, Inter, sans-serif"
+  },
+  {
+    "name": "oc-role-background",
+    "value": "#F5FAFD"
+  },
+  {
+    "name": "oc-role-chrome",
+    "value": "#20434F"
+  },
+  {
+    "name": "oc-role-error",
+    "value": "#BA1A1A"
+  },
+  {
+    "name": "oc-role-error-container",
+    "value": "#FFDAD6"
+  },
+  {
+    "name": "oc-role-inverse-on-surface",
+    "value": "#EDF1F4"
+  },
+  {
+    "name": "oc-role-inverse-primary",
+    "value": "#88D1EC"
+  },
+  {
+    "name": "oc-role-inverse-surface",
+    "value": "#2C3134"
+  },
+  {
+    "name": "oc-role-on-background",
+    "value": "#171C1F"
+  },
+  {
+    "name": "oc-role-on-chrome",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-on-error",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-on-error-container",
+    "value": "#410002"
+  },
+  {
+    "name": "oc-role-on-primary",
+    "value": "#19353F"
+  },
+  {
+    "name": "oc-role-on-primary-container",
+    "value": "#001F28"
+  },
+  {
+    "name": "oc-role-on-primary-fixed",
+    "value": "#001F28"
+  },
+  {
+    "name": "oc-role-on-secondary",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-on-secondary-container",
+    "value": "#071E26"
+  },
+  {
+    "name": "oc-role-on-secondary-fixed",
+    "value": "#071E26"
+  },
+  {
+    "name": "oc-role-on-surface",
+    "value": "#171C1F"
+  },
+  {
+    "name": "oc-role-on-surface-variant",
+    "value": "#40484C"
+  },
+  {
+    "name": "oc-role-on-tertiary",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-on-tertiary-container",
+    "value": "#171937"
+  },
+  {
+    "name": "oc-role-on-tertiary-fixed",
+    "value": "#171937"
+  },
+  {
+    "name": "oc-role-outline",
+    "value": "#70787C"
+  },
+  {
+    "name": "oc-role-outline-variant",
+    "value": "#BFC8CC"
+  },
+  {
+    "name": "oc-role-primary",
+    "value": "#E2BAFF"
+  },
+  {
+    "name": "oc-role-primary-container",
+    "value": "#B7EAFF"
+  },
+  {
+    "name": "oc-role-primary-fixed",
+    "value": "#B7EAFF"
+  },
+  {
+    "name": "oc-role-scrim",
+    "value": "#000000"
+  },
+  {
+    "name": "oc-role-secondary",
+    "value": "#20434F"
+  },
+  {
+    "name": "oc-role-secondary-container",
+    "value": "#F4E5FF"
+  },
+  {
+    "name": "oc-role-secondary-fixed",
+    "value": "#CFE6F1"
+  },
+  {
+    "name": "oc-role-shadow",
+    "value": "#000000"
+  },
+  {
+    "name": "oc-role-surface",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-surface-bright",
+    "value": "#F5FAFD"
+  },
+  {
+    "name": "oc-role-surface-container",
+    "value": "#F1F3F4"
+  },
+  {
+    "name": "oc-role-surface-container-high",
+    "value": "#E4E9EC"
+  },
+  {
+    "name": "oc-role-surface-container-highest",
+    "value": "#DEE3E6"
+  },
+  {
+    "name": "oc-role-surface-container-low",
+    "value": "#EFF4F7"
+  },
+  {
+    "name": "oc-role-surface-container-lowest",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "oc-role-surface-dim",
+    "value": "#D6DBDE"
+  },
+  {
+    "name": "oc-role-surface-tint",
+    "value": "#715289"
+  },
+  {
+    "name": "oc-role-surface-variant",
+    "value": "#DBE4E8"
+  },
+  {
+    "name": "oc-role-tertiary",
+    "value": "#5A5C7E"
+  },
+  {
+    "name": "oc-role-tertiary-container",
+    "value": "#E0E0FF"
+  },
+  {
+    "name": "oc-role-tertiary-fixed",
+    "value": "#E0E0FF"
+  }
+]
