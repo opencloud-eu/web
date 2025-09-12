@@ -300,7 +300,6 @@ Feature: share
       | resource    | recipient | type | role     |
       | shareFolder | Brian     | user | Can edit |
     And "Alice" logs in
-    And "Alice" switches to the "resource-table" view mode
     Then "Alice" should see user-direct indicator on the folder "shareFolder"
     When "Alice" opens folder "shareFolder"
     Then "Alice" should see user-indirect indicator on the folder "subFolder"
