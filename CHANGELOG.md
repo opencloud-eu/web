@@ -18,6 +18,7 @@
 
 ### 📈 Enhancement
 
+- Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
 - feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
 - refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
 - refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
