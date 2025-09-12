@@ -2,11 +2,11 @@
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
 "<div class="ml-2">
-  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-3">Filter members
+  <div class="mr-2 mt-4"><label class="inline-block mb-0.5" for="oc-textinput-3">Filter members
       <!--v-if-->
     </label>
     <div class="relative">
-      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="text" value="no-match">
+      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input" type="text" value="no-match">
       <!--v-if-->
     </div>
     <!--v-if-->
@@ -32,11 +32,11 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
 "<div class="ml-2">
-  <div class="mr-2 mt-4"><label class="oc-label" for="oc-textinput-1">Filter members
+  <div class="mr-2 mt-4"><label class="inline-block mb-0.5" for="oc-textinput-1">Filter members
       <!--v-if-->
     </label>
     <div class="relative">
-      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed" type="text" value="">
+      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input" type="text" value="">
       <!--v-if-->
     </div>
     <!--v-if-->

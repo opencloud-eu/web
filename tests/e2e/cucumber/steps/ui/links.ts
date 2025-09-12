@@ -15,7 +15,8 @@ When(
         resource: info.resource,
         role: info.role,
         password: info.password === '%public%' ? securePassword : info.password,
-        name: 'Unnamed link'
+        name: 'Unnamed link',
+        a11yEnabled: this.a11yEnabled
       })
     }
   }

@@ -12,6 +12,7 @@ Feature: Accessibility checks
     And "Admin" assigns following roles to the users using API
       | id    | role        |
       | Alice | Space Admin |
+      | Brian | Admin       |
     And "Admin" adds user to the group using API
       | user  | group |
       | Alice | sales |
@@ -22,23 +23,29 @@ Feature: Accessibility checks
       | name        |
       | spaceFolder |
     And "Alice" creates the following folders in personal space using API
-      | name   |
-      | parent |
+      | name          |
+      | parent        |
+      | deletedFolder |
+    And "Alice" deletes the following resource from personal space using API
+      | resource      |
+      | deletedFolder |
     And "Alice" uploads the following local file into personal space using API
       | localFile       | to              |
       | testavatar.jpeg | testavatar.jpeg |
+      | lorem.txt       | lorem.txt       |
+    And "Alice" adds the following tags for the following resources using API
+      | resource        | tags      |
+      | testavatar.jpeg | alice tag |
     And "Alice" shares the following resource using API
       | resource | recipient | type  | role     |
       | parent   | Brian     | user  | Can edit |
       | parent   | sales     | group | Can edit |
-    And "Alice" creates a public link of following resource using API
-      | resource | role     | password |
-      | parent   | Can edit | %public% |
     
     ## checks login page
     When "Alice" logs in
+    And "Brian" logs in
 
-    ## check files-view-wrapper
+    ## 1. check files-view-wrapper
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
@@ -66,24 +73,98 @@ Feature: Accessibility checks
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
 
     # deleted files
+    And "Alice" navigates to the trashbin
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "deleted files"
+    And "Alice" opens trashbin of the personal space
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "deleted files -> Personal"
+
     # search results
+    And "Alice" searches "test" using the global search and the "all files" filter and presses enter
+    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "Search result"
 
-    ## check accesability on top bar
+    
+    ## 2. check accesability on top bar
+    And "Brian" checks the accessibility of the DOM selector "#oc-topbar" on the "top bar"
+    
     # search panel
+    And "Brian" opens location search panel
+    And "Brian" checks the accessibility of the DOM selector ".tippy-content" on the "search panel"
+
     # notifications
+    And "Brian" opens notifications dropdown
+    And "Brian" checks the accessibility of the DOM selector "#oc-notifications-drop" on the "notifications dropdown"
+
+    # apps menu
+    And "Brian" opens the apps menu
+    And "Brian" checks the accessibility of the DOM selector "#app-switcher-dropdown" on the "apps menu"
+
     
-    ## left sidebar web-nav-sidebar
+    ## 3. left sidebar web-nav-sidebar
+    And "Brian" checks the accessibility of the DOM selector "#web-nav-sidebar" on the "left sidebar"
+
+ 
+    ## 4. account page
+    And "Brian" opens the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account" on the "account menu"
+
     
-    ## admin-settings-view-wrapper
+    ## 5. admin-settings-view-wrapper
     # general
-    # users
-    # groups
-    # spaces
-
-    ## account page
-
-    ## app-sidebar (right sidebar)
-
-    ## public link page
+    And "Brian" opens the "admin-settings" app
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->general"
     
-    When "Alice" logs out
+    # users
+    And "Brian" navigates to the users management page
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->users"
+    And "Brian" selects the user "Alice"
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->users"
+    And "Brian" opens the edit panel of user "Alice" using the context menu
+    And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-EditPanel" on the "admin settings->users->edit user sidebar panel"
+
+    # groups
+    And "Brian" navigates to the groups management page
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->groups"
+    And "Brian" selects the group "sales"
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->groups"
+    And "Brian" opens the edit panel of group "sales" using the context menu
+    And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-EditPanel" on the "admin settings->groups->edit group sidebar panel"
+
+    # spaces
+    And "Brian" navigates to the project spaces management page
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->spaces"
+    And "Brian" selects the space "my_space"
+    And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->spaces"
+    And "Brian" lists the members of project space "my_space" using a sidebar panel
+    And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-SpaceMembers" on the "admin settings->spaces->members sidebar panel"
+
+
+    ## 6. space page
+    And "Alice" navigates to the project space "my_space"
+    And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
+    
+    
+    ## 7. app-sidebar (right sidebar)
+    And "Alice" opens the "files" app
+    And "Alice" opens the right sidebar of the resource "lorem.txt"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-details" on the "right sidebar"
+    And "Alice" opens a "actions" panel of the resource "lorem.txt"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-actions" on the "right sidebar->actions panel"
+    And "Alice" opens a "versions" panel of the resource "lorem.txt"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-versions" on the "right sidebar->versions panel"
+    And "Alice" opens a "activities" panel of the resource "lorem.txt"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->activities panel"
+    And "Alice" opens a "sharing" panel of the resource "lorem.txt"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->sharing panel"
+    
+    # check create public link modal and link role dropdown
+    And "Alice" creates a public link of following resource using the sidebar panel
+      | resource         | role     | password |
+      | parent  | Secret File Drop | %public% |
+
+    ## 8. public link page
+    And "Anonymous" opens the public link "Unnamed link"
+    And "Anonymous" unlocks the public link with password "%public%"
+    And "Anonymous" checks the accessibility of the DOM selector "#web-content" on the "public link page"
+    
+    And "Alice" logs out
+    And "Brian" logs out

@@ -56,3 +56,12 @@ When(
     })
   }
 )
+
+When(
+  '{string} opens location search panel',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const searchObject = new objects.applicationFiles.Search({ page })
+    await searchObject.openLocationSearchPanel()
+  }
+)

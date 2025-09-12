@@ -28,6 +28,7 @@ const getSpaceMock = (spaceImageData: DriveItem = undefined) =>
     name: 'space',
     description: '',
     spaceReadmeData: undefined,
+    canEditReadme: () => true,
     spaceImageData
   })
 

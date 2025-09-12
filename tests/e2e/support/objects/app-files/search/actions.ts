@@ -15,6 +15,7 @@ const enableSearchTitleOnlySelector =
   '//div[contains(@class,"files-search-filter-title-only")]//button[contains(@class,"oc-filter-chip-button")]'
 const disableSearchTitleOnlySelector =
   '//div[contains(@class,"files-search-filter-title-only")]//button[contains(@class,"oc-filter-chip-clear")]'
+const locationSearchPanelSelector = '.oc-location-search'
 
 export const getSearchResultMessage = ({ page }: { page: Page }): Promise<string> => {
   return page.locator(searchResultMessageSelector).innerText()
@@ -90,4 +91,8 @@ export const toggleSearchTitleOnly = async ({
   const selector =
     enableOrDisable === 'enable' ? enableSearchTitleOnlySelector : disableSearchTitleOnlySelector
   await page.locator(selector).click()
+}
+
+export const openLocationSearchPanel = async ({ page }: { page: Page }): Promise<void> => {
+  await page.locator(locationSearchPanelSelector).click()
 }

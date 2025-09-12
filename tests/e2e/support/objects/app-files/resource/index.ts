@@ -2,6 +2,7 @@ import { Download, Locator, Page, Response } from '@playwright/test'
 import * as po from './actions'
 import { Space } from '../../../types'
 import { showShareIndicator } from './utils'
+import type { PanelType } from './actions'
 
 export class Resource {
   #page: Page
@@ -408,5 +409,13 @@ export class Resource {
 
   async uploadImageFromClipboard(): Promise<void> {
     await po.uploadImageFromClipboard({ page: this.#page })
+  }
+
+  async openRightSidebar(resource: string): Promise<void> {
+    await po.openRightSidebar({ page: this.#page, resource })
+  }
+
+  async openResourcePanel(panel: PanelType, resource: string): Promise<void> {
+    await po.openResourcePanel({ page: this.#page, resource, panel })
   }
 }

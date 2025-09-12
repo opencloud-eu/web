@@ -337,6 +337,30 @@ watch(
   .oc-drop {
     @apply w-xs max-w-full;
   }
+
+  .oc-bottom-drawer li a,
+  .oc-bottom-drawer li .item-has-switch,
+  .oc-bottom-drawer li button:not([role='switch']),
+  .oc-drop li a,
+  .oc-drop li button:not([role='switch']),
+  .oc-drop li .item-has-switch {
+    @apply p-2 w-full;
+  }
+
+  .oc-bottom-drawer li,
+  .oc-drop li {
+    @apply mb-1;
+  }
+
+  .oc-bottom-drawer li:first-child,
+  .oc-drop li:first-child {
+    @apply mt-0;
+  }
+
+  .oc-bottom-drawer li:last-child,
+  .oc-drop li:last-child {
+    @apply mb-0;
+  }
 }
 
 .tippy-box[data-theme~='none'] {

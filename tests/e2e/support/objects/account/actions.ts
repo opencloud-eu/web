@@ -39,6 +39,7 @@ export const openAccountPage = async (args: { page: Page }): Promise<void> => {
   const { page } = args
   await page.locator(accountMenuButton).click()
   await page.locator(accountManageButton).click()
+  await expect(page.locator('#account')).toBeVisible()
 }
 
 export const requestGdprExport = async (args: { page: Page }): Promise<void> => {

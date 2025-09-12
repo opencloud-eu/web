@@ -39,4 +39,8 @@ export class Search {
   }): Promise<void> {
     await po.toggleSearchTitleOnly({ enableOrDisable: string, page: this.#page })
   }
+
+  async openLocationSearchPanel(): Promise<void> {
+    await po.openLocationSearchPanel({ page: this.#page })
+  }
 }

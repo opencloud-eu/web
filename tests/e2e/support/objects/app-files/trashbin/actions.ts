@@ -13,9 +13,13 @@ export interface openTrashBinArgs {
   id: string
   page: Page
 }
-export const openTrashbin = async (args: openTrashBinArgs): Promise<void> => {
+export const openTrashbinOfProjectSpace = async (args: openTrashBinArgs): Promise<void> => {
   const { id, page } = args
   await page.locator(util.format(spaceIdSelector, id)).click()
+}
+
+export const openTrashbinOfPersonalSpace = async (page: Page): Promise<void> => {
+  await page.getByTitle('Personal').click()
 }
 
 export const showEmptyTrashbins = async (page: Page): Promise<void> => {

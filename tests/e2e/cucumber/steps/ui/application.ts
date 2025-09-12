@@ -21,6 +21,12 @@ When(
   }
 )
 
+When('{string} opens the apps menu', async function (this: World, stepUser: string): Promise<void> {
+  const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+  const applicationObject = new objects.runtime.Application({ page })
+  await applicationObject.openAppsMenu()
+})
+
 When('{string} reloads the page', async function (this: World, stepUser: string): Promise<void> {
   const { page } = this.actorsEnvironment.getActor({ key: stepUser })
   const applicationObject = new objects.runtime.Application({ page })

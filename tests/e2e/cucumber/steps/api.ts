@@ -357,3 +357,16 @@ Given(
     })
   }
 )
+
+Given(
+  '{string} deletes the following resource(s) from personal space using API',
+  async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
+    const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
+    for (const info of stepTable.hashes()) {
+      await api.dav.deleteFileInPersonalSpace({
+        user,
+        pathToFile: info.resource
+      })
+    }
+  }
+)

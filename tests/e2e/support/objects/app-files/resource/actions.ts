@@ -126,7 +126,6 @@ const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 // online office locators
 // Collabora
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
-const collaboraEditorSaveSelector = '.notebookbar-shortcuts-bar #save'
 const collaboraDocTextAreaSelector = '#clipboard-area'
 const collaboraCanvasEditorSelector = '.leaflet-layer'
 // OnlyOffice
@@ -411,17 +410,19 @@ const createDocumentFile = async (
   const resourceInput = page.locator(resourceNameInput)
   await resourceInput.clear()
   await resourceInput.fill(name)
-  await Promise.all([
-    page.waitForLoadState(),
-    page.waitForURL(/.*\/external-.*/),
-    page.waitForResponse(
-      (resp) =>
-        resp.status() === 200 &&
-        resp.request().method() === 'POST' &&
-        resp.request().url().includes('/app/open?')
-    ),
-    page.locator(util.format(actionConfirmationButton, 'Create')).click()
-  ])
+  const loadStatePromise = page.waitForLoadState()
+  const urlPromise = page.waitForURL(/.*\/external-.*/)
+  const responsePromise = page.waitForResponse(
+    (resp) =>
+      resp.status() === 200 &&
+      resp.request().method() === 'POST' &&
+      resp.request().url().includes('/app/open?')
+  )
+  await page.locator(util.format(actionConfirmationButton, 'Create')).click()
+  await loadStatePromise
+  await urlPromise
+  await responsePromise
+
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
@@ -441,10 +442,12 @@ const createDocumentFile = async (
         "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
       )
   }
-  await Promise.all([
-    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
-    editor.close(page)
+  const respPromise = Promise.all([
+    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND')
   ])
+  await editor.close(page)
+  await respPromise
+
   await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
 }
@@ -2237,4 +2240,29 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
     buffer: buffer
   })
   await page.keyboard.press('Escape')
+}
+
+export const openRightSidebar = async ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Promise<void> => {
+  await sidebar.open({ page, resource })
+}
+
+export type PanelType = 'actions' | 'sharing' | 'versions' | 'activities'
+
+export const openResourcePanel = async ({
+  page,
+  resource,
+  panel
+}: {
+  page: Page
+  resource: string
+  panel: PanelType
+}): Promise<void> => {
+  await sidebar.open({ page, resource })
+  await sidebar.openPanel({ page, name: panel })
 }

@@ -19,7 +19,7 @@
         :key="`panel-${panel.name}`"
         :data-testid="`sidebar-panel-${panel.name}`"
         :tabindex="activePanelName === panel.name ? -1 : null"
-        class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden"
+        class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface rounded-r-xl w-full size-full max-w-full max-h-full overflow-hidden motion-reduce:transition-none"
         :inert="activePanelName !== panel.name"
         :class="{
           'is-root-panel transition-[right] duration-[0.4s,0s]': panel.isRoot?.(panelContext),
@@ -300,10 +300,6 @@ onBeforeUnmount(() => {
     transition:
       transform 0.4s ease,
       visibility 0.4s 0s;
-
-    @media screen and (prefers-reduced-motion: reduce), (update: slow) {
-      transition-duration: 0.001ms !important;
-    }
   }
   .sidebar-panel.is-root-panel {
     right: 100px;

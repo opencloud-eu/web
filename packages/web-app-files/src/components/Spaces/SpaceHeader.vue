@@ -76,14 +76,17 @@
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
         class="markdown-container flex min-h-0 [mask-image:none]"
-        :class="{ 'mask-linear-[180deg,black,transparent]': markdownCollapsed }"
+        :class="{
+          'collapsed [mask-image:linear-gradient(180deg,black,transparent)] collapsed':
+            markdownCollapsed
+        }"
       >
         <text-editor
-          class="markdown-container-content"
+          class="markdown-container-content w-full"
           is-read-only
           :current-content="markdownContent"
         />
-        <div class="markdown-container-edit ml-2">
+        <div v-if="isEditReadmeVisible" class="markdown-container-edit ml-2">
           <oc-button
             type="router-link"
             size="small"
@@ -122,6 +125,7 @@ import {
   useLoadPreview,
   useResourcesStore,
   useSharesStore,
+  useSpaceActionsEditReadmeContent,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
@@ -146,6 +150,11 @@ const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
+const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
+
+const isEditReadmeVisible = computed(() =>
+  unref(editReadmeContentActions)[0].isVisible({ resources: [space] })
+)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
@@ -161,8 +170,8 @@ const toggleMarkdownCollapsedText = computed(() => {
 })
 const toggleMarkdownCollapsed = () => {
   markdownCollapsed.value = !unref(markdownCollapsed)
-  unref(markdownContainerRef).classList.toggle(markdownContainerCollapsedClass)
 }
+
 const onMarkdownResize = () => {
   if (!unref(markdownContainerRef)) {
     return
@@ -316,8 +325,13 @@ const openSideBarSharePanel = () => {
   .space-header-squashed .space-header-image {
     @apply hidden lg:block;
   }
+
   .space-header .markdown-container.collapsed {
     @apply max-h-[100px] overflow-hidden;
+  }
+
+  .space-header .markdown-container #text-editor-preview-component {
+    @apply !bg-transparent;
   }
 }
 </style>
