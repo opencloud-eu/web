@@ -106,6 +106,28 @@ const keydownEnter = (event: KeyboardEvent) => {
 </style>
 <style lang="scss">
 .oc-checkbox {
+  $internal-form-checkbox-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%20%2F%3E%0A%3C%2Fsvg%3E%0A' !default;
+  $internal-form-checkbox-indeterminate-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22#000%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%20%2F%3E%0A%3C%2Fsvg%3E' !default;
+
+  @function str-replace($string, $search, $replace: '') {
+    $index: string.index($string, $search);
+
+    @if $index {
+      @return string.slice($string, 1, $index - 1) + $replace +
+        str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+    }
+
+    @return $string;
+  }
+
+  @mixin svg-fill($src, $color-default, $color-new) {
+    $replace-src: str-replace($src, $color-default, $color-new) !default;
+    $replace-src: str-replace($replace-src, '#', '%23');
+    $replace-src: string.quote($replace-src);
+
+    background-image: url($replace-src);
+  }
+
   &-checked,
   :checked {
     @include svg-fill($internal-form-checkbox-image, '#000', '#000');
@@ -116,14 +138,14 @@ const keydownEnter = (event: KeyboardEvent) => {
   }
 
   &:disabled:checked {
-    @include svg-fill($internal-form-checkbox-image, '#000', $form-radio-disabled-icon-color);
+    @include svg-fill($internal-form-checkbox-image, '#000', var(--oc-role-on-surface-variant));
   }
 
   &:disabled:indeterminate {
     @include svg-fill(
       $internal-form-checkbox-indeterminate-image,
       '#000',
-      $form-radio-disabled-icon-color
+      var(--oc-role-on-surface-variant)
     );
   }
 }

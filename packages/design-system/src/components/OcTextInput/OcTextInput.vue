@@ -1,7 +1,7 @@
 <template>
   <div :class="$attrs.class">
     <slot name="label">
-      <label class="oc-label" :for="id">
+      <label class="inline-block mb-0.5" :for="id">
         {{ label }}
         <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
       </label>
@@ -14,7 +14,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-text-input oc-input rounded-sm focus:border focus:border-role-surface placeholder:opacity-100 disabled:cursor-not-allowed"
+        class="oc-text-input oc-input"
         :class="{
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
@@ -347,8 +347,17 @@ watch(
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
-  .oc-text-input:focus {
-    @apply outline-2 outline-role-outline;
+  .oc-input {
+    @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline outline-0 overflow-visible appearance-none;
+  }
+  .oc-input:focus {
+    @apply border border-role-surface outline-2 outline-role-outline;
+  }
+  .oc-input:disabled {
+    @apply bg-role-surface-container cursor-not-allowed;
+  }
+  .oc-input::placeholder {
+    @apply text-role-on-surface opacity-100;
   }
 }
 </style>

@@ -5,10 +5,8 @@ export default {
   format: (dictionary) => {
     const props = sortProps(dictionary.allTokens)
     const data = [
-      ...props.map((p) => `$${p.name}: ${p.value};`),
-      '',
       ':host, :root {',
-      ...props.map((p) => `  --${p.name}: #{$${p.name}};`),
+      ...props.map((p) => `  --${p.name}: ${p.value};`),
       '}',
       ''
     ].join('\n')

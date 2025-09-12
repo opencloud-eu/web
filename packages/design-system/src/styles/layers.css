@@ -96,63 +96,6 @@
     @apply mb-6;
   }
 
-  /* drops */
-  .oc-bottom-drawer li a,
-  .oc-bottom-drawer li .item-has-switch,
-  .oc-bottom-drawer li button:not([role='switch']),
-  .oc-drop li a,
-  .oc-drop li button:not([role='switch']),
-  .oc-drop li .item-has-switch {
-    @apply p-2 w-full;
-  }
-
-  .oc-bottom-drawer li,
-  .oc-drop li {
-    @apply mb-1;
-  }
-
-  .oc-bottom-drawer li:first-child,
-  .oc-drop li:first-child {
-    @apply mt-0;
-  }
-
-  .oc-bottom-drawer li:last-child,
-  .oc-drop li:last-child {
-    @apply mb-0;
-  }
-
-  /* inputs */
-  .oc-input {
-    @apply p-1.5 align-middle leading-4 border border-role-outline rounded-sm outline-0 overflow-visible;
-  }
-
-  .oc-textarea {
-    @apply overflow-auto;
-  }
-
-  .oc-select optgroup {
-    @apply font-bold;
-  }
-
-  .oc-textarea {
-    @apply py-1 px-2 align-top;
-  }
-
-  .oc-radio {
-    @apply align-middle;
-  }
-
-  .oc-input,
-  .oc-select,
-  .oc-textarea {
-    @apply bg-role-surface w-full max-w-full;
-  }
-
-  .oc-input:disabled,
-  .oc-select:disabled {
-    @apply bg-role-surface-container;
-  }
-
   /* sidebar */
   .sidebar-actions-panel li a,
   .sidebar-actions-panel li button {
