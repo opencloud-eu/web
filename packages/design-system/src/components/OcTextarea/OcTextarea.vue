@@ -1,12 +1,12 @@
 <template>
   <div>
-    <label class="oc-label" :for="id" v-text="label" />
+    <label class="inline-block mb-0.5" :for="id" v-text="label" />
     <textarea
       :id="id"
       v-bind="additionalAttributes"
       ref="textareaRef"
       v-model="model"
-      class="oc-textarea rounded-sm m-0 py-1 border border-role-outline w-full max-w-full overflow-auto opacity-70 placeholder:opacity-100"
+      class="oc-textarea"
       :class="{
         'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
           !!errorMessage
@@ -96,3 +96,15 @@ const focus = () => {
 }
 defineExpose({ focus })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-textarea {
+    @apply rounded-sm m-0 py-1 border border-role-outline w-full max-w-full overflow-auto opacity-70 px-2 align-top bg-role-surface;
+  }
+  .oc-textarea::placeholder {
+    @apply opacity-100;
+  }
+}
+</style>

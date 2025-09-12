@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* FIXME: define default colors/vars via a default.css and remove token parsing */
+@import '../assets/tokens/ods.css';
+
 @theme {
   --font-sans: 'OpenCloud', 'Inter', sans-serif;
 
@@ -58,48 +61,61 @@
   --color-role-tertiary-container: var(--oc-role-tertiary-container);
   --color-role-tertiary-fixed: var(--oc-role-tertiary-fixed);
 
-   /* animations */
-   --animate-shake: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
-   --animate-shimmer: shimmer 2s infinite;
-   --animate-loading-bar: loading-bar 1.4s infinite;
+  /* animations */
+  --animate-shake: shake 0.6s cubic-bezier(0.46, 0.27, 0.59, 0.97) both;
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-loading-bar: loading-bar 1.4s infinite;
+  --animate-fade-in: fade-in 0.3s;
 
-   @keyframes shake {
+  @keyframes shake {
 
-     10%,
-     20%,
-     50%,
-     60% {
-       transform: translate3d(-1px, 0, 0);
-     }
+    10%,
+    20%,
+    50%,
+    60% {
+      transform: translate3d(-1px, 0, 0);
+    }
 
-     30%,
-     40%,
-     70%,
-     80% {
-       transform: translate3d(1px, 0, 0);
-     }
-   }
+    30%,
+    40%,
+    70%,
+    80% {
+      transform: translate3d(1px, 0, 0);
+    }
+  }
 
-   @keyframes shimmer {
-     100% {
-       transform: translateX(100%);
-     }
-   }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
 
-   @keyframes loading-bar {
-     0% {
-       left: 0;
-       width: 0;
-     }
+  @keyframes loading-bar {
+    0% {
+      left: 0;
+      width: 0;
+    }
 
-     50% {
-       left: 0;
-       width: 66%;
-     }
+    50% {
+      left: 0;
+      width: 66%;
+    }
 
-     100% {
-       left: 100%;
-       width: 10%;
-     }
-   }
- }
+    100% {
+      left: 100%;
+      width: 10%;
+    }
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}

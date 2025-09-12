@@ -7,7 +7,6 @@ import { generateJsonMetaData } from './generateJsonMetaData'
 import tailwindcss from '@tailwindcss/vite'
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
-const stripScssMarker = '/* STYLES STRIP IMPORTS MARKER */'
 
 export default defineConfig({
   title: 'OpenCloud Design System',
@@ -44,7 +43,8 @@ export default defineConfig({
         scss: {
           additionalData: `
                 @use "sass:math";
-                @import "${projectRootDir}/packages/design-system/src/styles/styles";${stripScssMarker};
+                @use "sass:string";
+                @use "sass:meta";
             `,
           silenceDeprecations: ['legacy-js-api', 'import']
         }
@@ -53,26 +53,6 @@ export default defineConfig({
     plugins: [
       tailwindcss(),
       generateJsonMetaData(),
-      {
-        name: '@opencloud-eu/vite-plugin-strip-css',
-        transform(src, id) {
-          if (id.endsWith('.vue') && !id.includes('node_modules') && src.includes('@extend')) {
-            console.warn(
-              'You are using @extend in your component. This is likely not working in your styles. Please use mixins instead.',
-              id.replace(`${projectRootDir}/`, '')
-            )
-          }
-          if (id.includes('lang.scss')) {
-            const split = src.split(stripScssMarker)
-            const newSrc = split[split.length - 1]
-
-            return {
-              code: newSrc,
-              map: null
-            }
-          }
-        }
-      },
       viteStaticCopy({
         targets: (() => {
           return [
