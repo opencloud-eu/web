@@ -1,10 +1,14 @@
 # Changelog
 
-## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-09-12
+## [4.0.0](https://github.com/opencloud-eu/web/releases/tag/v4.0.0) - 2025-09-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @individual-it, @kulmann, @tammi-23
+
+### 💥 Breaking changes
+
+- refactor!: remove scss files [[#1153](https://github.com/opencloud-eu/web/pull/1153)]
 
 ### ✨ Features
 
