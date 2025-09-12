@@ -12,10 +12,10 @@ Feature: Tiles
       | resource    | type   |
       | tile_folder | folder |
     And "Alice" switches to the "tiles" view
-    And "Alice" sees the resources displayed as tiles
+    And "Alice" sees the resources displayed as "tiles"
     And "Alice" opens folder "tile_folder"
     And "Alice" creates the following resources
       | resource     | type   |
       | tile_folder2 | folder |
-    And "Alice" sees the resources displayed as tiles
+    And "Alice" sees the resources displayed as "tiles"
     And "Alice" logs out
