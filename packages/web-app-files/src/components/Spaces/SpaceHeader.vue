@@ -75,9 +75,9 @@
       <div
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
-        class="markdown-container flex min-h-0 [mask-image:none]"
+        class="markdown-container flex min-h-0"
         :class="{
-          'mask-image:linear-gradient(180deg,black,transparent)] collapsed': markdownCollapsed
+          '[mask-image:linear-gradient(180deg,black_80%,transparent)] collapsed': markdownCollapsed
         }"
       >
         <text-editor
