@@ -38,6 +38,7 @@
             <oc-text-input
               id="spaces-filter"
               v-model="filterTerm"
+              class="w-3xs"
               :label="$gettext('Search')"
               autocomplete="off"
             />
@@ -66,7 +67,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="tile-preview rounded-t-sm w-full"
+                  class="tile-preview rounded-t-sm size-full"
                   :src="resource.thumbnail"
                   alt=""
                 />

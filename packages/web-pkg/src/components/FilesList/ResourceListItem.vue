@@ -9,6 +9,7 @@
       :link="link"
       :is-resource-clickable="isResourceClickable"
       class="oc-resource-icon-link relative"
+      :class="{ 'hover:underline': isResourceClickable }"
       @click="emitClick"
     >
       <oc-image
@@ -35,6 +36,7 @@
         :is-resource-clickable="isResourceClickable"
         :link="link"
         class="hover:outline-offset-0 focus:outline-offset-0"
+        :class="{ 'hover:underline': isResourceClickable }"
         @click="emitClick"
       >
         <resource-name

@@ -1,7 +1,7 @@
 <template>
   <span
     v-oc-tooltip="tooltip"
-    class="oc-resource-name flex hover:underline min-w-0"
+    class="oc-resource-name flex min-w-0"
     :class="[{ 'inline-block': !truncateName }]"
     :data-test-resource-path="fullPath"
     :data-test-resource-name="fullName"
