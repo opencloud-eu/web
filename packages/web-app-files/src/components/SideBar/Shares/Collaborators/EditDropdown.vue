@@ -21,10 +21,10 @@
       close-on-click
     >
       <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="shareEditOptions">
-        <li v-for="(option, i) in options" :key="i" class="rounded-sm oc-menu-item-hover">
+        <li v-for="(option, i) in options" :key="i">
           <context-menu-item :option="option" />
         </li>
-        <li v-if="sharedParentRoute" class="rounded-sm oc-menu-item-hover">
+        <li v-if="sharedParentRoute">
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
@@ -32,14 +32,14 @@
         v-if="canRemove"
         class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2 mt-2 border-t"
       >
-        <li class="rounded-sm oc-menu-item-hover">
+        <li>
           <context-menu-item :option="removeShareOption" />
         </li>
       </oc-list>
     </oc-drop>
     <oc-info-drop
       ref="accessDetailsDrop"
-      class="share-access-details-drop"
+      class="share-access-details-drop [&_dl]:grid [&_dl]:gap-x-4 [&_dl]:gap-y-1 [&_dl]:grid-cols-[max-content_auto] [&_dt]:col-start-1 [&_dd]:col-start-2"
       v-bind="{
         title: $gettext('Access details'),
         list: accessDetails
@@ -285,20 +285,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .share-access-details-drop dl {
-    @apply grid gap-x-4 gap-y-1 grid-cols-[max-content_auto];
-  }
-
-  .share-access-details-drop dt {
-    @apply col-start-1;
-  }
-
-  .share-access-details-drop dd {
-    @apply col-start-2;
-  }
-}
-</style>

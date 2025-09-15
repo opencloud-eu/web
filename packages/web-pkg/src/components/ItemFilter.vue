@@ -35,7 +35,7 @@
                   <oc-checkbox
                     v-if="allowMultiple"
                     size="large"
-                    class="item-filter-checkbox mr-2"
+                    class="mr-2"
                     :label="$gettext('Toggle selection')"
                     :model-value="isItemSelected(item)"
                     :label-hidden="true"

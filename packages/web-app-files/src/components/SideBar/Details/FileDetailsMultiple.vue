@@ -1,9 +1,9 @@
 <template>
   <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="files-preview mb-6 text-center rounded-sm">
-      <div class="files-preview-body">
-        <oc-icon class="preview-icon" size="xxlarge" name="file-copy" />
-        <p class="preview-text" data-testid="selectedFilesText" v-text="selectedFilesString" />
+    <div class="mb-6 text-center rounded-sm">
+      <div>
+        <oc-icon size="xxlarge" name="file-copy" />
+        <p data-testid="selectedFilesText" v-text="selectedFilesString" />
       </div>
     </div>
     <div>

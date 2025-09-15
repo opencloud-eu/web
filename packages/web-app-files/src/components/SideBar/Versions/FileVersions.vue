@@ -2,8 +2,8 @@
   <div id="oc-file-versions-sidebar">
     <div v-if="versions.length" class="ml-2">
       <oc-list class="oc-timeline">
-        <li v-for="(item, index) in versions" :key="index" class="version-item">
-          <div class="version-details">
+        <li v-for="(item, index) in versions" :key="index">
+          <div>
             <span
               v-oc-tooltip="formatVersionDate(item)"
               class="version-date font-semibold"
@@ -11,9 +11,7 @@
               >{{ formatVersionDateRelative(item) }}</span
             >
             -
-            <span class="version-filesize" data-testid="file-versions-file-size">{{
-              formatVersionFileSize(item)
-            }}</span>
+            <span data-testid="file-versions-file-size">{{ formatVersionFileSize(item) }}</span>
           </div>
           <oc-button
             v-if="isRevertible"
@@ -21,7 +19,7 @@
             appearance="raw"
             justify-content="left"
             :aria-label="$gettext('Restore')"
-            class="version-action-item w-full rounded-sm oc-button-justify-content-left oc-button-gap-m py-2 px-4"
+            class="w-full rounded-sm oc-button-justify-content-left oc-button-gap-m py-2 px-4"
             @click="revertToVersion(item)"
           >
             <oc-icon name="history" class="oc-icon-m mr-2 -mt-1" fill-type="line" />
@@ -32,7 +30,7 @@
             justify-content="left"
             appearance="raw"
             :aria-label="$gettext('Download')"
-            class="version-action-item w-full rounded-sm c-button-gap-m py-2 px-4"
+            class="w-full rounded-sm c-button-gap-m py-2 px-4"
             @click="downloadVersion(item)"
           >
             <oc-icon name="file-download" class="oc-icon-m mr-2" fill-type="line" />

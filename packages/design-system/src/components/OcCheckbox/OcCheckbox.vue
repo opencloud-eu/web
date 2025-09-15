@@ -5,7 +5,7 @@
       v-model="model"
       type="checkbox"
       name="checkbox"
-      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none"
+      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle"
       :class="{
         'oc-checkbox-checked bg-white': isChecked,
         'size-3': size === 'small',
@@ -95,16 +95,8 @@ const keydownEnter = (event: KeyboardEvent) => {
   emit('click', event)
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
 
-@layer components {
-  .oc-checkbox {
-    @apply align-middle;
-  }
-}
-</style>
-<style lang="scss">
+<style lang="scss" scoped>
 .oc-checkbox {
   $internal-form-checkbox-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%20%2F%3E%0A%3C%2Fsvg%3E%0A' !default;
   $internal-form-checkbox-indeterminate-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22#000%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%20%2F%3E%0A%3C%2Fsvg%3E' !default;

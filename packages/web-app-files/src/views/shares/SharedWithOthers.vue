@@ -30,14 +30,9 @@
             </template>
           </item-filter>
         </div>
-        <no-content-message
-          v-if="isEmpty"
-          id="files-shared-with-others-empty"
-          class="files-empty"
-          icon="reply"
-        >
+        <no-content-message v-if="isEmpty" id="files-shared-with-others-empty" icon="reply">
           <template #message>
-            <span v-translate> You have not shared any resources with other people. </span>
+            <span v-text="$gettext('You have not shared any resources with other people.')" />
           </template>
         </no-content-message>
         <resource-table

@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="link-modal-password mb-4 ml-[30px]">
+  <div class="mb-4 ml-[30px]">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -41,10 +41,7 @@
       class="link-modal-password-input"
       @update:model-value="updatePassword"
     />
-    <div
-      v-else-if="password.value"
-      class="link-modal-password-text text-sm text-role-on-surface-variant"
-    >
+    <div v-else-if="password.value" class="text-sm text-role-on-surface-variant">
       <span v-text="$gettext('Password:')" />
       <span v-text="password.value" />
     </div>
@@ -56,14 +53,11 @@
       @date-changed="onExpiryDateChanged"
     />
   </div>
-  <div class="link-modal-actions flex justify-end items-center mt-2">
+  <div class="flex justify-end items-center mt-2">
     <oc-button class="link-modal-cancel oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
       {{ $gettext('Cancel') }}
     </oc-button>
-    <div
-      class="link-modal-confirm-button-group ml-2"
-      :class="{ 'oc-button-group': password.value }"
-    >
+    <div class="ml-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"
         appearance="filled"
@@ -89,10 +83,10 @@
         :title="$gettext('More options')"
         close-on-click
       >
-        <oc-list class="oc-modal-body-actions-confirm-secondary-menu">
-          <li class="rounded-sm oc-menu-item-hover">
+        <oc-list>
+          <li>
             <oc-button
-              class="oc-modal-body-actions-confirm-password action-menu-item"
+              class="oc-modal-body-actions-confirm-password"
               appearance="raw"
               justify-content="left"
               @click="$emit('confirm', { copyPassword: true })"

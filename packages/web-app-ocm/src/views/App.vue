@@ -1,9 +1,7 @@
 <template>
   <div class="sciencemesh overflow-auto">
-    <div class="flex flex-col sciencemesh-wrapper h-full">
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 sciencemesh-top h-auto max-h-auto md:max-h-[360px]"
-      >
+    <div class="flex flex-col h-full">
+      <div class="grid grid-cols-1 md:grid-cols-2 h-auto max-h-auto md:max-h-[360px]">
         <div
           id="sciencemesh-invite"
           class="m-2 p-2 mb-0 lg:mb-2 bg-role-surface-container rounded-xl overflow-auto"

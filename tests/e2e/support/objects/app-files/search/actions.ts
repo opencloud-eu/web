@@ -15,7 +15,7 @@ const enableSearchTitleOnlySelector =
   '//div[contains(@class,"files-search-filter-title-only")]//button[contains(@class,"oc-filter-chip-button")]'
 const disableSearchTitleOnlySelector =
   '//div[contains(@class,"files-search-filter-title-only")]//button[contains(@class,"oc-filter-chip-clear")]'
-const locationSearchPanelSelector = '.oc-location-search'
+const locationSearchPanelSelector = '//*[@data-testid="search-bar-filter"]'
 
 export const getSearchResultMessage = ({ page }: { page: Page }): Promise<string> => {
   return page.locator(searchResultMessageSelector).innerText()

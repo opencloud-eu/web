@@ -17,7 +17,7 @@
         @update:model-value="validateDisplayName"
       />
       <compare-save-dialog
-        class="edit-compare-save-dialog mb-6 rounded-b-sm"
+        class="mb-6 rounded-b-sm"
         :original-object="group"
         :compare-object="editGroup"
         :confirm-button-disabled="invalidFormData"

@@ -8,14 +8,9 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message
-          v-if="isEmpty"
-          id="files-shared-via-link-empty"
-          class="files-empty"
-          icon="link"
-        >
+        <no-content-message v-if="isEmpty" id="files-shared-via-link-empty" icon="link">
           <template #message>
-            <span v-translate>You have not shared any resource via link.</span>
+            <span v-text="$gettext('You have not shared any resource via link.')" />
           </template>
         </no-content-message>
         <resource-table

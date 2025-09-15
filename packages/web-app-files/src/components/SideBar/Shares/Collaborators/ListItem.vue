@@ -3,7 +3,7 @@
     :data-testid="`collaborator-${isAnyUserShareType ? 'user' : 'group'}-item-${
       share.sharedWith.displayName
     }`"
-    class="files-collaborators-collaborator py-1"
+    class="py-1"
   >
     <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
       <div class="flex items-center">
@@ -83,10 +83,10 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center justify-end files-collaborators-collaborator-navigation">
+      <div class="flex items-center justify-end">
         <expiration-date-indicator
           v-if="hasExpirationDate"
-          class="files-collaborators-collaborator-expiration ml-1 p-1"
+          class="ml-1 p-1"
           data-testid="recipient-info-expiration-date"
           :expiration-date="DateTime.fromISO(share.expirationDateTime)"
         />
@@ -98,7 +98,7 @@
           class="files-collaborators-collaborator-shared-via ml-1 p-1"
         />
         <edit-dropdown
-          class="files-collaborators-collaborator-edit ml-1"
+          class="ml-1"
           data-testid="collaborator-edit"
           :expiration-date="share.expirationDateTime ? share.expirationDateTime : null"
           :share-category="shareCategory"

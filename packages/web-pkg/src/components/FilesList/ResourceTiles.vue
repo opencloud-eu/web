@@ -14,7 +14,7 @@
       />
       <div v-if="sortFields.length" class="oc-tiles-sort">
         <oc-filter-chip
-          class="oc-tiles-sort-filter-chip"
+          class="[&_.oc-filter-chip-label]:text-sm"
           :filter-label="$gettext('Sort by')"
           :selected-item-names="[currentSortField.label]"
           :has-active-state="false"
@@ -125,14 +125,14 @@
       <li
         v-for="index in ghostTilesCount"
         :key="`ghost-tile-${index}`"
-        class="ghost-tile list-item"
+        class="list-item"
         :aria-hidden="true"
       />
     </oc-list>
     <Teleport v-if="dragItem" to="body">
       <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
-    <div class="oc-tiles-footer p-1 text-sm">
+    <div class="p-1 text-sm">
       <slot name="footer" />
     </div>
   </div>
@@ -650,16 +650,12 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-tiles {
     grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
-  }
-
-  .oc-tiles-sort-filter-chip .oc-filter-chip-label {
-    @apply text-sm;
   }
 }
 </style>

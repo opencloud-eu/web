@@ -4,7 +4,7 @@
       v-for="(section, sectionIndex) in menuSections"
       :id="`oc-files-context-actions-${section.name}`"
       :key="`section-${section.name}-list`"
-      class="oc-files-context-actions"
+      class="[&_li]:px-0"
       :class="getSectionClasses(sectionIndex)"
     >
       <template v-if="section.items">
@@ -14,7 +14,7 @@
           :action="action"
           :appearance="appearance"
           :action-options="actionOptions"
-          class="context-menu oc-files-context-action rounded-sm oc-menu-item-hover"
+          class="context-menu"
         />
       </template>
       <template v-for="drop in section.dropItems">
@@ -82,18 +82,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-files-context-actions > li {
-    @apply px-0;
-  }
-
-  .oc-files-context-actions > li a,
-  .oc-files-context-actions > li button,
-  .oc-files-context-actions > li span:not(.oc-icon) {
-    @apply inline-flex justify-start w-full;
-  }
-}
-</style>

@@ -17,26 +17,26 @@
       close-on-click
       mode="click"
     >
-      <oc-list v-if="editOptions.length > 0" class="edit-public-link-dropdown-menu">
-        <li v-for="(option, i) in editOptions" :key="i" class="rounded-sm oc-menu-item-hover">
+      <oc-list v-if="editOptions.length > 0">
+        <li v-for="(option, i) in editOptions" :key="i">
           <context-menu-item :option="option" />
         </li>
       </oc-list>
       <oc-list
         v-if="sharedAncestor"
-        class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-navigate-to-parent"
+        class="edit-public-link-dropdown-menu-navigate-to-parent"
         :class="{ 'pt-2': editOptions.length > 0 }"
       >
-        <li class="rounded-sm oc-menu-item-hover">
+        <li>
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
       <oc-list
         v-if="isModifiable"
-        class="edit-public-link-dropdown-menu edit-public-link-dropdown-menu-delete mt-2 border-t"
+        class="edit-public-link-dropdown-menu-delete mt-2 border-t"
         :class="{ 'pt-2': editOptions.length > 0 }"
       >
-        <li class="rounded-sm oc-menu-item-hover">
+        <li>
           <context-menu-item :option="deleteOption" />
         </li>
       </oc-list>

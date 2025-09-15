@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-wrap oc-notification-message shadow-md/20 rounded-sm break-keep bg-role-surface motion-safe:animate-fade-in"
+    class="flex flex-wrap oc-notification-message shadow-md/20 rounded-sm break-keep bg-role-surface motion-safe:animate-fade-in relative"
     :class="classes"
   >
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
@@ -98,12 +98,12 @@ onMounted(() => {
   }
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-notification-message {
-    @apply relative p-4 mt-2;
+    @apply p-4 mt-2;
   }
 }
 </style>

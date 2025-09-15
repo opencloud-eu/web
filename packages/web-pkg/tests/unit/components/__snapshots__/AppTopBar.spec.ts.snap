@@ -7,7 +7,7 @@ exports[`AppTopBar > if a resource is present > renders a resource and dropdownA
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->
@@ -25,7 +25,7 @@ exports[`AppTopBar > if a resource is present > renders a resource and dropdownA
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <context-action-menu-stub menusections="[object Object]" actionoptions="[object Object]" appearance="raw-inverse" color-role="chrome"></context-action-menu-stub>
@@ -43,7 +43,7 @@ exports[`AppTopBar > if a resource is present > renders a resource and mainActio
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <context-action-menu-stub menusections="[object Object]" actionoptions="[object Object]" appearance="raw-inverse" color-role="chrome"></context-action-menu-stub>
@@ -61,7 +61,7 @@ exports[`AppTopBar > if a resource is present > renders a resource and no action
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->
@@ -79,7 +79,7 @@ exports[`AppTopBar > if a resource is present > renders a resource without file 
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="false" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <context-action-menu-stub menusections="[object Object]" actionoptions="[object Object]" appearance="raw-inverse" color-role="chrome"></context-action-menu-stub>
@@ -97,7 +97,7 @@ exports[`AppTopBar > if no resource is present > renders only a close button 1`]
       <div class="open-file-bar flex">
         <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
       </div>
-      <div class="flex main-actions">
+      <div class="flex">
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->

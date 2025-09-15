@@ -14,7 +14,7 @@ const languageValue = '[data-testid="language"] .vs__selected'
 const accountPageTitle = '#account-page-title'
 const confirmButton = '.oc-modal-body-actions-confirm'
 const topbarProfileAvatarImg = '.oc-topbar-personal-avatar .avatarImg'
-const accountProfileAvatarImg = '.avatar-upload .oc-avatar .avatarImg'
+const accountProfileAvatarImg = '.account-table .oc-avatar .avatarImg'
 const removeAccountProfileAvatarButton = 'button:has-text("Remove")'
 
 export const getQuotaValue = async (args: { page: Page }): Promise<string> => {

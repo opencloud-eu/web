@@ -1,6 +1,7 @@
 <template>
   <div
-    class="oc-location-search z-[var(--z-index-modal)] absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
+    class="z-[var(--z-index-modal)] absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
+    data-testid="search-bar-filter"
     @click.stop
   >
     <div v-if="currentSelection">
@@ -20,7 +21,7 @@
               <oc-button
                 appearance="raw"
                 size="medium"
-                class="search-bar-filter-item flex items-center w-full py-1 px-2"
+                class="flex items-center w-full py-1 px-2"
                 :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
                 justify-content="space-between"
                 :disabled="!option.enabled"

@@ -13,9 +13,9 @@ describe('ActionMenuDropItem component', () => {
     }
     const { wrapper } = getWrapper(menuSectionDrop)
     expect(wrapper.html()).toMatchSnapshot()
-    expect(
-      wrapper.find('.oc-files-context-action-drop').findAll('.oc-files-context-action').length
-    ).toEqual(menuSectionDrop.items.length)
+    expect(wrapper.find('.oc-files-context-action-drop').findAll('li').length).toEqual(
+      menuSectionDrop.items.length
+    )
   })
 })
 

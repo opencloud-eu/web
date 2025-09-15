@@ -118,7 +118,7 @@ const sideBarActions =
 const selectAllCheckbox =
   '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
 const firstResourceCheckbox =
-  '//*[contains(@class, "oc-table-data-cell-select") or contains(@class, "oc-tile-card-selection")]'
+  '(//*[contains(@class, "oc-table-data-cell-select")] | //*[@id="tiles-view"]//*[contains(@class, "oc-card-body")])//input'
 const sharerAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
 const recipientAvatarSelector =
