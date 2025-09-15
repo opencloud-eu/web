@@ -18,6 +18,7 @@
 
 ### ✅ Tests
 
+- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
 - e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
 - Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
 - fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
