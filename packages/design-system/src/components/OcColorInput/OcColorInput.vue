@@ -3,7 +3,7 @@
     <slot name="label">
       <label class="inline-block mb-0.5" :for="id">
         {{ label }}
-        <span v-if="requiredMark" class="text-role-on-error" aria-hidden="true">*</span>
+        <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
       </label>
     </slot>
     <div class="oc-color-input-wrapper relative max-m-5">
@@ -14,7 +14,7 @@
         :aria-invalid="ariaInvalid"
         class="oc-color-input oc-input rounded-sm py-0.5 focus:border focus:border-role-outline focus:outline-2 focus:outline-role-outline"
         :class="{
-          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          'oc-color-input-danger text-role-error focus:text-role-error border-role-error':
             !!errorMessage,
           'pr-6': showClearButton
         }"
@@ -38,7 +38,7 @@
       class="oc-color-input-message flex items-center text-sm mt-1 min-h-4.5"
       :class="{
         'oc-color-input-description text-role-on-surface-variant relative': !!descriptionMessage,
-        'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+        'oc-color-input-danger text-role-error focus:text-role-error border-role-error':
           !!errorMessage
       }"
     >
@@ -56,7 +56,7 @@
         :class="{
           'oc-color-input-description text-role-on-surface-variant flex items-center':
             !!descriptionMessage,
-          'oc-color-input-danger text-role-on-error focus:text-role-on-error border-role-error':
+          'oc-color-input-danger text-role-error focus:text-role-error border-role-error':
             !!errorMessage
         }"
         v-text="messageText"

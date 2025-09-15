@@ -2,23 +2,23 @@
   <component
     :is="type"
     class="oc-tag inline-flex items-center border gap-1"
-    :class="{
-      // rounded
-      'rounded-full px-2': rounded,
-      'rounded-lg': !rounded,
-      // size
-      'p-1 text-xs': size === 'small',
-      'py-1 px-2 text-sm min-h-6': size === 'medium',
-      'py-2 px-4 text-lg min-h-8': size === 'large',
-      // appearance
-      [`bg-role-surface text-role-${color} border-role-${color}`]: appearance === 'outline',
-      [`bg-role-${color} text-role-on-${color} border-role-on-${color}`]: appearance === 'filled',
-      // transition for links and buttons
-      'ease-in-out duration-200 transition-colors [&_svg]:ease-in-out [&_svg]:duration-200 [&_svg]:transition-colors':
-        ['link', 'button'].includes(type)
-    }"
+    :class="[
+      ...appearanceClasses,
+      {
+        // rounded
+        'rounded-full px-2': rounded,
+        'rounded-lg': !rounded,
+        // size
+        'p-1 text-xs': size === 'small',
+        'py-1 px-2 text-sm min-h-6': size === 'medium',
+        'py-2 px-4 text-lg min-h-8': size === 'large',
+        // transition for links and buttons
+        'ease-in-out duration-200 transition-colors [&_svg]:ease-in-out [&_svg]:duration-200 [&_svg]:transition-colors':
+          ['link', 'button'].includes(type)
+      }
+    ]"
     :to="to"
-    @click="$_ocTag_click"
+    @click="onClick"
   >
     <!-- @slot Content of the tag -->
     <slot />
@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface Props {
@@ -86,7 +87,40 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
-function $_ocTag_click(event: MouseEvent) {
+const appearanceClasses = computed(() => {
+  const classes: string[] = []
+
+  if (appearance === 'outline') {
+    classes.push('bg-role-surface')
+    switch (color) {
+      case 'primary':
+        classes.push('text-role-primary', 'border-role-primary')
+        break
+      case 'secondary':
+        classes.push('text-role-secondary', 'border-role-secondary')
+        break
+      case 'tertiary':
+        classes.push('text-role-tertiary', 'border-role-tertiary')
+        break
+    }
+    return classes
+  }
+
+  switch (color) {
+    case 'primary':
+      classes.push('bg-role-primary', 'text-role-on-primary', 'border-role-on-primary')
+      break
+    case 'secondary':
+      classes.push('bg-role-secondary', 'text-role-on-secondary', 'border-role-on-secondary')
+      break
+    case 'tertiary':
+      classes.push('bg-role-tertiary', 'text-role-on-tertiary', 'border-role-on-tertiary')
+      break
+  }
+  return classes
+})
+
+function onClick(event: MouseEvent) {
   emit('click', event)
 }
 </script>

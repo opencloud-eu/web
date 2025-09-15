@@ -5,7 +5,6 @@
       class="p-2"
       appearance="raw"
       justify-content="left"
-      gap-size="none"
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
       @click="showDatePickerModal"
     >

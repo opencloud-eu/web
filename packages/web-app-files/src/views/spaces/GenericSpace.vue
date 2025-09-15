@@ -37,7 +37,7 @@
             v-if="hasSpaceHeader"
             :space="space"
             :is-side-bar-open="isSideBarOpen"
-            class="px-4 mt-4"
+            class="px-4 mt-2"
           />
           <no-content-message
             v-if="isCurrentFolderEmpty"

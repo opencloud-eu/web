@@ -4,6 +4,10 @@
   html {
     @apply text-sm;
   }
+
+  body {
+    @apply overflow-hidden;
+  }
 }
 
 @layer base {
