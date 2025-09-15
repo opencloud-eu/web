@@ -212,16 +212,12 @@ export class Resource {
     await po.clickResourceFromBreadcrumb({ page: this.#page, resource })
   }
 
-  async switchToTilesViewMode(): Promise<void> {
-    await po.clickViewModeToggle({ page: this.#page, target: 'resource-tiles' })
-  }
-
   async switchViewMode(viewMode): Promise<void> {
     await po.clickViewModeToggle({ page: this.#page, target: viewMode })
   }
 
-  async expectThatResourcesAreTiles(): Promise<void> {
-    await po.expectThatResourcesAreTiles({ page: this.#page })
+  async expectThatResourcesAreDisplayedAs(viewMode: string): Promise<void> {
+    await po.expectThatResourcesAreDisplayedAs({ page: this.#page, viewMode })
   }
 
   async showHiddenFiles(): Promise<void> {
