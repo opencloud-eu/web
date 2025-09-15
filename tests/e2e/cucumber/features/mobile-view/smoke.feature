@@ -21,7 +21,6 @@ Feature: Mobile device test
       | testavatar.png | file   |
     And "Alice" creates the following resources
       | resource     | type         | content     |
-      | myDoc.odt    | OpenDocument | my document |
       | my-folder    | folder       |             |
       | textFile.txt | txtFile      | some text   |
     When "Alice" opens the following file in pdfviewer
