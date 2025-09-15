@@ -26,7 +26,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
                 <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
                   <!--v-if-->
-                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0 hover:underline" no-hover=""></a>
                     <div class="oc-resource-indicators flex">
                       <!--v-if-->
                     </div>
@@ -73,7 +73,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
               <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
                 <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
                   <!--v-if-->
-                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0" no-hover=""></a>
+                  <div class="oc-resource-details block truncate"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0 hover:underline" no-hover=""></a>
                     <div class="oc-resource-indicators flex">
                       <!--v-if-->
                     </div>

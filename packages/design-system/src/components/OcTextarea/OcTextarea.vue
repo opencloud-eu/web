@@ -8,8 +8,7 @@
       v-model="model"
       class="oc-textarea"
       :class="{
-        'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
-          !!errorMessage
+        'oc-textarea-danger text-role-error focus:text-role-error border-role-error': !!errorMessage
       }"
       :aria-invalid="ariaInvalid"
     />
@@ -18,7 +17,7 @@
         :id="messageId"
         :class="{
           'oc-textarea-description text-role-on-surface-variant': !!descriptionMessage,
-          'oc-textarea-danger text-role-on-error focus:text-role-on-error border-role-error':
+          'oc-textarea-danger text-role-error focus:text-role-error border-role-error':
             !!errorMessage
         }"
         v-text="messageText"

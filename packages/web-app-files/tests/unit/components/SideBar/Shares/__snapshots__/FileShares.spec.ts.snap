@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`FileShares > collaborators list > renders sharedWithLabel and sharee list 1`] = `
-"<div id="oc-files-sharing-sidebar" class="relative">
+"<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
   <div class="flex justify-between items-center">
     <div class="flex">
       <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>
@@ -9,8 +9,8 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
     </div>
     <copy-private-link-stub resource="undefined"></copy-private-link-stub>
   </div>
-  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="my-2"></invite-collaborator-form-stub>
-  <div id="files-collaborators-headline" class="flex items-center justify-between h-10">
+  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="mt-2"></invite-collaborator-form-stub>
+  <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
   <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
@@ -38,7 +38,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
 `;
 
 exports[`FileShares > current space > loads space members if a space is given and the current user is member 1`] = `
-"<div id="oc-files-sharing-sidebar" class="relative">
+"<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
   <div class="flex justify-between items-center">
     <div class="flex">
       <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>
@@ -46,19 +46,19 @@ exports[`FileShares > current space > loads space members if a space is given an
     </div>
     <copy-private-link-stub resource="undefined"></copy-private-link-stub>
   </div>
-  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="my-2"></invite-collaborator-form-stub>
-  <div id="files-collaborators-headline" class="flex items-center justify-between h-10">
+  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="mt-2"></invite-collaborator-form-stub>
+  <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
   <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
-  <ul id="files-collaborators-list" class="oc-list oc-list-divider mb-6" aria-label="Share receivers">
+  <ul id="files-collaborators-list" class="oc-list oc-list-divider mb-4" aria-label="Share receivers">
     <li>
       <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="false" removable="false" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
   </ul>
   <!--v-if-->
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between mt-2">
     <h4 class="font-semibold my-2">Space members</h4>
   </div>
   <ul id="space-collaborators-list" class="oc-list oc-list-divider overflow-hidden m-0" aria-label="Space members">

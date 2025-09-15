@@ -15,7 +15,7 @@
       <div class="flex items-center mb-1">
         <label for="create-shortcut-modal-url-input">
           {{ $gettext('Webpage or file') }}
-          <span class="text-role-on-error" aria-hidden="true">*</span>
+          <span class="text-role-error" aria-hidden="true">*</span>
         </label>
         <oc-contextual-helper
           :text="
@@ -43,7 +43,7 @@
   >
     <oc-list>
       <li
-        class="p-1 selectable-item selectable-item-url"
+        class="selectable-item selectable-item-url"
         :class="{
           active: isDropItemActive(0)
         }"
@@ -70,7 +70,7 @@
         <li
           v-for="(value, index) in searchResult.values"
           :key="index"
-          class="p-1 selectable-item"
+          class="selectable-item"
           :class="{
             active: isDropItemActive(index + 1)
           }"
@@ -100,7 +100,7 @@
         <div class="flex items-center mb-1">
           <label for="create-shortcut-modal-filename-input">
             {{ $gettext('Shortcut name') }}
-            <span class="text-role-on-error" aria-hidden="true">*</span>
+            <span class="text-role-error" aria-hidden="true">*</span>
           </label>
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"

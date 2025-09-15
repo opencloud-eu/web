@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcTag > uses correct component when type is specified 1`] = `
-"<button class="oc-tag inline-flex items-center border gap-1 rounded-lg py-1 px-2 text-sm min-h-6 bg-role-surface text-role-secondary border-role-secondary ease-in-out duration-200 transition-colors [&amp;_svg]:ease-in-out [&amp;_svg]:duration-200 [&amp;_svg]:transition-colors" to="">
+"<button class="oc-tag inline-flex items-center border gap-1 bg-role-surface text-role-secondary border-role-secondary rounded-lg py-1 px-2 text-sm min-h-6 ease-in-out duration-200 transition-colors [&amp;_svg]:ease-in-out [&amp;_svg]:duration-200 [&amp;_svg]:transition-colors" to="">
   <!-- @slot Content of the tag -->
 </button>"
 `;

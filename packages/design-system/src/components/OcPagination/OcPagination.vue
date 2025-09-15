@@ -3,7 +3,7 @@
     <ol class="oc-pagination-list flex items-center flex-wrap m-0 gap-2">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-prev flex mr-2"
+          class="oc-pagination-list-item-prev flex mr-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -13,7 +13,7 @@
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
         <component
           :is="pageComponent(page)"
-          class="oc-pagination-list-item-page py-1 px-2 text-role-on-surface rounded-sm hover:bg-role-secondary hover:text-role-on-secondary transition-colors duration-200 ease-in-out"
+          class="oc-pagination-list-item-page py-1 px-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary transition-colors duration-200 ease-in-out"
           :class="pageClass(page)"
           v-bind="bindPageProps(page)"
         >
@@ -22,7 +22,7 @@
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <router-link
-          class="oc-pagination-list-item-next flex ml-2"
+          class="oc-pagination-list-item-next flex ml-2 rounded-sm hover:bg-role-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >

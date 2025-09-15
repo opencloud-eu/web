@@ -34,7 +34,7 @@
         v-else
         class="upload-info-label"
         :class="{
-          'upload-info-danger text-role-on-error': Object.keys(errors).length && !uploadsCancelled,
+          'upload-info-danger text-role-error': Object.keys(errors).length && !uploadsCancelled,
           'upload-info-success': !Object.keys(errors).length && !uploadsCancelled
         }"
       >
@@ -691,7 +691,7 @@ export default defineComponent({
     },
     getUploadItemClass(item: UploadResult) {
       return this.errors[item.meta.uploadId]
-        ? 'upload-info-danger text-role-on-error'
+        ? 'upload-info-danger text-role-error'
         : 'upload-info-success'
     }
   }
