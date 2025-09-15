@@ -616,7 +616,7 @@ def e2eTests(ctx):
 
             if browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-                command = "pnpm exec playwright install webkit --with-deps && cd tests/e2e && bash run-e2e.sh"
+                command = "pnpm exec playwright install webkit --with-deps && cd tests/e2e && bash run-e2e.sh "
             else:
                 command = "cd tests/e2e && bash run-e2e.sh "
 
