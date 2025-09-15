@@ -69,6 +69,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency md-editor-v3 to v5.8.5 [[#1194](https://github.com/opencloud-eu/web/pull/1194)]
 - fix(deps): update dependency @babel/eslint-parser to v7.28.4 [[#1189](https://github.com/opencloud-eu/web/pull/1189)]
 - fix(deps): update dependency focus-trap-vue to v4.1.0 [[#1076](https://github.com/opencloud-eu/web/pull/1076)]
 - fix(deps): update dependency axios to v1.12.2 [[#1190](https://github.com/opencloud-eu/web/pull/1190)]
