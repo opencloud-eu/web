@@ -69,6 +69,10 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @babel/eslint-parser to v7.28.4 [[#1189](https://github.com/opencloud-eu/web/pull/1189)]
+- fix(deps): update dependency focus-trap-vue to v4.1.0 [[#1076](https://github.com/opencloud-eu/web/pull/1076)]
+- fix(deps): update dependency axios to v1.12.2 [[#1190](https://github.com/opencloud-eu/web/pull/1190)]
+- fix(deps): update uppy monorepo (major) [[#1110](https://github.com/opencloud-eu/web/pull/1110)]
 - fix(deps): update vue monorepo to v3.5.21 [[#1102](https://github.com/opencloud-eu/web/pull/1102)]
 - fix(deps): update dependency eslint-plugin-unused-imports to v4.2.0 [[#1088](https://github.com/opencloud-eu/web/pull/1088)]
 - fix(deps): update dependency @sentry/vue to v10.11.0 [[#1122](https://github.com/opencloud-eu/web/pull/1122)]
