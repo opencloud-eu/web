@@ -1,7 +1,7 @@
 import type { Body, DefinePluginOpts, Meta, Uppy } from '@uppy/core'
 import { BasePlugin } from '@uppy/core'
 import { getDroppedFiles } from './getDroppedFiles'
-import toArray from '@uppy/utils/lib/toArray'
+import { toArray } from '@uppy/utils'
 import { DropTargetOptions } from './types'
 import { convertToMinimalUppyFile } from '../utils'
 

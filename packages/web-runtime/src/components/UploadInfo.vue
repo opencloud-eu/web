@@ -162,7 +162,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, unref } from 'vue'
 import { isUndefined } from 'lodash-es'
-import getSpeed from '@uppy/utils/lib/getSpeed'
+import { getSpeed } from '@uppy/utils'
 import { HttpError, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { OcUppyFile, queryItemAsString, useConfigStore } from '@opencloud-eu/web-pkg'
 import { formatFileSize, ResourceListItem, ResourceIcon, ResourceName } from '@opencloud-eu/web-pkg'
