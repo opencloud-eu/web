@@ -10,7 +10,7 @@
       :show-option-filter="true"
       :items="filterableSpaces"
       :close-on-click="true"
-      class="files-search-filter-file-type mr-2"
+      class="mr-2"
       display-name-attribute="name"
       filter-name="location"
     >

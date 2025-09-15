@@ -1,12 +1,12 @@
 <template>
-  <main class="external-redirect h-screen flex flex-col justify-center items-center">
+  <main class="h-screen flex flex-col justify-center items-center">
     <h1 class="sr-only" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center w-lg text-lg bg-role-surface-container rounded-xl">
-      <h2 key="external-redirect-loading" class="mt-0">
-        <span v-text="$gettext('One moment please…')" />
-      </h2>
+    <oc-card
+      :title="$gettext('One moment please…')"
+      class="text-center w-lg text-lg bg-role-surface-container rounded-xl"
+    >
       <p v-text="$gettext('You are being redirected.')" />
-    </div>
+    </oc-card>
   </main>
 </template>
 

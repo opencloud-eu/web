@@ -29,7 +29,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
     </li>
     <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
   </ul>
-  <div class="flex justify-center"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default toggle-shares-list-btn">
+  <div class="flex justify-center"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default toggle-shares-list-btn">
       <!--v-if-->
       <!-- @slot Content of the button --> Show less
     </button></div>

@@ -1,15 +1,19 @@
 <template>
-  <div
-    class="app-details oc-card oc-card-default oc-card-rounded mx-auto bg-role-surface-container border max-w-xl shadow-none"
+  <oc-card
+    class="app-details mx-auto bg-role-surface-container border max-w-2xl shadow-none"
+    header-class="p-0 items-start"
   >
-    <div class="p-1">
-      <router-link :to="{ name: `${APPID}-list` }" class="flex items-center app-details-back">
+    <template #header>
+      <router-link
+        :to="{ name: `${APPID}-list` }"
+        class="flex flex-row items-center app-details-back p-1"
+      >
         <oc-icon name="arrow-left-s" fill-type="line" />
         <span v-text="$gettext('Back to list')" />
       </router-link>
-    </div>
-    <app-image-gallery :app="app" :show-pagination="true" />
-    <div class="app-content oc-card-body bg-role-surface-container flex flex-col p-4">
+      <app-image-gallery :app="app" :show-pagination="true" class="w-full" />
+    </template>
+    <div class="app-content bg-role-surface-container flex flex-col p-4">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
@@ -46,7 +50,7 @@
         <app-versions :app="app" />
       </div>
     </div>
-  </div>
+  </oc-card>
 </template>
 
 <script lang="ts">

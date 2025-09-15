@@ -1,16 +1,16 @@
 <template>
   <section
-    class="files-embed-actions relative z-[calc(var(--z-index-modal)+2)] w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
+    class="relative z-[calc(var(--z-index-modal)+2)] w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
   >
     <oc-text-input
       v-if="chooseFileName"
       v-model="fileName"
-      class="files-embed-actions-file-name flex flex-row items-center ml-0 md:ml-[230px] gap-2"
+      class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
     />
 
-    <div class="files-embed-actions-buttons flex items-center ml-auto">
+    <div class="flex items-center ml-auto">
       <oc-button
         class="mr-4"
         data-testid="button-cancel"
@@ -166,12 +166,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .files-embed-actions-file-name input {
-    @apply w-auto md:w-sm;
-  }
-}
-</style>

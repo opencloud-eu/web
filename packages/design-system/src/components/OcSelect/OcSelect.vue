@@ -452,12 +452,12 @@ import VueSelect from 'vue-select'
 // importing VueSelect in script setup leads to an anomymousstub in unit tests
 export default { components: { VueSelect } }
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-select {
-    @apply py-[1px] normal-case;
+    @apply py-[1px] normal-case text-role-on-surface;
   }
 }
 </style>
@@ -481,8 +481,6 @@ export default { components: { VueSelect } }
 }
 
 .oc-select {
-  color: var(--oc-role-on-surface);
-
   &-position-fixed {
     .vs__dropdown-menu {
       position: fixed;
@@ -563,7 +561,7 @@ export default { components: { VueSelect } }
     }
 
     &__clear svg {
-      max-width: var(--oc-space-small);
+      max-width: var(--spacing);
     }
 
     &__selected-options {

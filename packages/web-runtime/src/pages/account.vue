@@ -24,7 +24,7 @@
             </oc-button>
           </div>
         </template>
-        <oc-table-tr class="account-page-info-profile-picture">
+        <oc-table-tr>
           <oc-table-td>{{ $gettext('Profile picture') }}</oc-table-td>
           <oc-table-td
             >{{
@@ -120,7 +120,7 @@
             />
           </oc-table-td>
         </oc-table-tr>
-        <oc-table-tr v-if="showChangePassword" class="account-page-password">
+        <oc-table-tr v-if="showChangePassword">
           <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
           <oc-table-td><span v-text="'**********'" /></oc-table-td>
           <oc-table-td data-testid="password">
@@ -141,10 +141,7 @@
             <theme-switcher />
           </oc-table-td>
         </oc-table-tr>
-        <oc-table-tr
-          v-if="showNotifications && !canConfigureSpecificNotifications"
-          class="account-page-notification"
-        >
+        <oc-table-tr v-if="showNotifications && !canConfigureSpecificNotifications">
           <oc-table-td>{{ $gettext('Notifications') }}</oc-table-td>
           <oc-table-td v-if="!isMobileWidth">
             <span v-text="$gettext('Receive notification mails')" />
@@ -280,9 +277,8 @@
           $gettext('GDPR action description'),
           $gettext('GDPR actions')
         ]"
-        class="account-page-gdpr-export"
       >
-        <oc-table-tr class="account-page-gdpr-export">
+        <oc-table-tr>
           <oc-table-td>{{ $gettext('GDPR export') }}</oc-table-td>
           <oc-table-td>
             <span v-text="$gettext('Request a personal data export according to §20 GDPR.')" />

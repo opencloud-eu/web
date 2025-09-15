@@ -412,16 +412,7 @@ When(
 )
 
 When(
-  '{string} switches to the tiles-view',
-  async function (this: World, stepUser: string): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.switchToTilesViewMode()
-  }
-)
-
-When(
-  '{string} switches to the {string} view mode',
+  '{string} switches to the {string} view',
   async function (this: World, stepUser: string, viewMode: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
@@ -430,11 +421,11 @@ When(
 )
 
 When(
-  '{string} sees the resources displayed as tiles',
-  async function (this: World, stepUser: string): Promise<void> {
+  '{string} sees the resources displayed as {string}',
+  async function (this: World, stepUser: string, viewMode: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.expectThatResourcesAreTiles()
+    await resourceObject.expectThatResourcesAreDisplayedAs(viewMode)
   }
 )
 
@@ -1098,6 +1089,15 @@ When(
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     await resourceObject.uploadImageFromClipboard()
+  }
+)
+
+When(
+  '{string} reduces the tile size',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.reduceTileSize()
   }
 )
 

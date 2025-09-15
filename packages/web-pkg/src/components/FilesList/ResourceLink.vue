@@ -5,7 +5,7 @@
     v-if="isResourceClickable"
     :target="linkTarget"
     :draggable="false"
-    class="oc-resource-link inline-flex max-w-full"
+    class="oc-resource-link max-w-full"
     no-hover
     @dragstart.prevent.stop
     @click="emitClick"
@@ -108,3 +108,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-resource-link {
+    @apply inline-flex;
+  }
+}
+</style>

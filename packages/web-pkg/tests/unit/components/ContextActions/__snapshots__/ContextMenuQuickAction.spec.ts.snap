@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ContextMenuQuickAction component > renders component 1`] = `
-"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1">
+"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -13,7 +13,11 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
   <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-    <div class="oc-card oc-card-body p-2"></div>
+    <div class="oc-card">
+      <!--v-if-->
+      <div class="oc-card-body p-2"></div>
+      <!--v-if-->
+    </div>
   </div>
 </button>"
 `;

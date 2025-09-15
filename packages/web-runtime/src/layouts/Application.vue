@@ -20,7 +20,6 @@
         <template v-else>
           <sidebar-nav
             v-if="isSidebarVisible"
-            class="app-navigation"
             :nav-items="navItems"
             :closed="navBarClosed"
             @update:nav-bar-closed="setNavBarClosed"

@@ -14,18 +14,18 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <!--v-if-->
     </div>
   </div>
-  <table class="oc-table oc-table-hover oc-table-sticky has-item-context-menu settings-spaces-table">
-    <thead class="oc-thead border-b">
-      <tr data-v-98c4aba8="" class="oc-table-header-row h-10.5">
-        <th class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">
-          <div><span class="oc-table-thead-content inline-table align-middle"><oc-checkbox-stub label="Select all spaces" disabled="false" id="oc-checkbox-1" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub></span></div>
+  <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu settings-spaces-table">
+    <thead data-v-3c9ab66c="" class="oc-thead border-b">
+      <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><oc-checkbox-stub label="Select all spaces" disabled="false" id="oc-checkbox-1" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub></span></div>
         </th>
-        <th class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-icon z-10" style="top: 0px;">
-          <div><span class="oc-table-thead-content inline-table align-middle header-text"></span></div>
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-icon z-10" style="top: 0px;">
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text"></span></div>
         </th>
-        <th class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10" style="top: 0px;" aria-sort="ascending"><button type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10" style="top: 0px;" aria-sort="ascending"><button data-v-3c9ab66c="" type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Name</span> <span class="oc-icon box-content size-4 p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Name</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -35,9 +35,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-status z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by status" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-status z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by status" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Status</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Status</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -47,12 +47,12 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-manager z-10" style="top: 0px;">
-          <div><span class="oc-table-thead-content inline-table align-middle header-text">Manager</span></div>
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-manager z-10" style="top: 0px;">
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Manager</span></div>
         </th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-members z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-members z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Members</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Members</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -62,9 +62,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-totalQuota z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by totalQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-totalQuota z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by totalQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Total quota</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Total quota</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -74,9 +74,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-usedQuota z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by usedQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-usedQuota z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by usedQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Used quota</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Used quota</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -86,9 +86,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-remainingQuota z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by remainingQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-remainingQuota z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by remainingQuota" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Remaining quota</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Remaining quota</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -98,9 +98,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-mdate z-10" style="top: 0px;" aria-sort="none"><button type="button" aria-label="Sort by mdate" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-mdate z-10" style="top: 0px;" aria-sort="none"><button data-v-3c9ab66c="" type="button" aria-label="Sort by mdate" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-table-thead-content inline-table align-middle header-text">Modified</span> <span class="oc-icon box-content size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Modified</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 sr-only p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -110,17 +110,17 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
           </button></th>
-        <th class="oc-table-cell text-right align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-actions z-10 pr-4" style="top: 0px;">
-          <div><span class="oc-table-thead-content inline-table align-middle header-text">Actions</span></div>
+        <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-actions z-10 pr-4" style="top: 0px;">
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Actions</span></div>
         </th>
       </tr>
     </thead>
-    <tbody class="has-item-context-menu">
-      <tr data-v-98c4aba8="" class="oc-tbody-tr oc-tbody-tr-1 border-t h-10.5" data-item-id="1" draggable="false">
-        <td class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
+    <tbody data-v-3c9ab66c="" class="has-item-context-menu">
+      <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-1 border-t h-10.5" data-item-id="1" draggable="false">
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
           <oc-checkbox-stub option="undefined" label="Select 1 Some space" disabled="false" id="oc-checkbox-2" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
         </td>
-        <td class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -129,8 +129,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span></td>
-        <td class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span class="spaces-table-space-name" data-test-space-name="1 Some space">1 Some space</span></td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-status"><span class="flex items-center"><span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="1 Some space">1 Some space</span></td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-status"><span class="flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -139,16 +139,16 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span></span></td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">3</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">1 GB</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">0 B</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1 GB</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
-        <td class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
-          <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default ml-1 quick-action-button p-1 spaces-table-btn-details">
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">3</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">1 GB</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">0 B</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1 GB</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
+          <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-1 quick-action-button p-1 spaces-table-btn-details">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -157,9 +157,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-            </button> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 spaces-table-btn-action-dropdown" id="context-menu-trigger-1">
+            </button> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 spaces-table-btn-action-dropdown" id="context-menu-trigger-1" data-test-context-menu-resource-name="1 Some space">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -169,16 +169,20 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
               <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-                <div class="oc-card oc-card-body p-2"></div>
+                <div class="oc-card">
+                  <!--v-if-->
+                  <div class="oc-card-body p-2"></div>
+                  <!--v-if-->
+                </div>
               </div>
             </button></div>
         </td>
       </tr>
-      <tr data-v-98c4aba8="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
-        <td class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
+      <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
           <oc-checkbox-stub option="undefined" label="Select 2 Another space" disabled="false" id="oc-checkbox-3" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
         </td>
-        <td class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -187,8 +191,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span></td>
-        <td class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span class="spaces-table-space-name" data-test-space-name="2 Another space">2 Another space</span></td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-status"><span class="flex items-center"><span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/stop-circle-line.svg" transform-source="(svg) => {
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="2 Another space">2 Another space</span></td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-status"><span class="flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/stop-circle-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -197,16 +201,16 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span></span></td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">5</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">2 GB</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">500 MB</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1.5 GB</td>
-        <td class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
-        <td class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
-          <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default ml-1 quick-action-button p-1 spaces-table-btn-details">
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">5</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">2 GB</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">500 MB</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1.5 GB</td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
+        <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
+          <div class="spaces-list-actions"><button type="button" aria-label="Show details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-1 quick-action-button p-1 spaces-table-btn-details">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/information-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -215,9 +219,9 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-            </button> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 spaces-table-btn-action-dropdown" id="context-menu-trigger-2">
+            </button> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1 spaces-table-btn-action-dropdown" id="context-menu-trigger-2" data-test-context-menu-resource-name="2 Another space">
               <!--v-if-->
-              <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+              <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -227,15 +231,19 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
               <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
-                <div class="oc-card oc-card-body p-2"></div>
+                <div class="oc-card">
+                  <!--v-if-->
+                  <div class="oc-card-body p-2"></div>
+                  <!--v-if-->
+                </div>
               </div>
             </button></div>
         </td>
       </tr>
     </tbody>
-    <tfoot class="oc-table-footer border-t">
-      <tr class="oc-table-footer-row h-10.5">
-        <td colspan="11" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
+    <tfoot data-v-3c9ab66c="" class="oc-table-footer border-t">
+      <tr data-v-3c9ab66c="" class="oc-table-footer-row h-10.5">
+        <td data-v-3c9ab66c="" colspan="11" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
           <!-- @slot Footer of the table -->
           <!--v-if-->
           <div class="text-center w-full my-2">

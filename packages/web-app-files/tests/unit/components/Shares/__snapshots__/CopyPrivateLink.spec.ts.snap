@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CopyPrivateLink > should render a button 1`] = `
-"<div class="flex items-center copy-private-link"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-0 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+"<div class="flex items-center"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
+    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

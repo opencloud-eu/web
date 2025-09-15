@@ -2,7 +2,7 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="rounded-sm shadow-md/20 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg"
+    class="rounded-sm shadow-md/20 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:pl-1"
   >
     <div
       class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-sm bg-role-surface-container"
@@ -20,7 +20,7 @@
       </oc-button>
     </div>
     <div
-      class="upload-info-status px-4 pt-4 flex justify-between items-center"
+      class="px-4 pt-4 flex justify-between items-center"
       :class="{
         'pb-4': !runningUploads
       }"
@@ -101,7 +101,7 @@
     <div
       v-if="infoExpanded"
       class="upload-info-items px-4 pb-4 max-h-[50vh] overflow-y-auto"
-      :class="{ 'has-errors': showErrorLog }"
+      :class="{ 'max-h-[calc(50vh-100px)]': showErrorLog }"
     >
       <ul class="oc-list">
         <li v-for="(item, idx) in uploads" :key="idx">
@@ -697,15 +697,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #upload-info .oc-resource-details {
-    @apply pl-1;
-  }
-  #upload-info .upload-info-items.has-errors {
-    max-height: calc(50vh - 100px);
-  }
-}
-</style>

@@ -52,7 +52,6 @@ import { merge } from 'lodash-es'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
-import { storeToRefs } from 'pinia'
 import { getExtensionNavItems } from '../helpers/navItems'
 import {
   onSSEFileLockingEvent,
@@ -362,15 +361,12 @@ export const announceTheme = async ({
 }): Promise<void> => {
   const themeStore = useThemeStore()
   const { initializeThemes } = themeStore
-  const { currentTheme } = storeToRefs(themeStore)
 
   const webTheme = await loadTheme(configStore.theme)
 
-  await initializeThemes(webTheme)
+  initializeThemes(webTheme)
 
-  app.use(designSystem, {
-    tokens: currentTheme.value.designTokens
-  })
+  app.use(designSystem)
 }
 
 export const announcePiniaStores = () => {

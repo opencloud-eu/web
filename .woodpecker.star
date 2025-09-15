@@ -178,6 +178,12 @@ config = {
                 "OCM_OCM_PROVIDER_AUTHORIZER_PROVIDERS_FILE": "%s" % dir["ocmProviders"],
             },
         },
+        "mobile-view": {
+            "skip": False,
+            "suites": [
+                "mobile-view",
+            ],
+        },
     },
     "build": True,
 }
@@ -268,8 +274,7 @@ def stagePipelines(ctx):
     e2e_pipelines = e2eTests(ctx)
 
     keycloak_pipelines = e2eTestsOnKeycloak(ctx)
-    mobile_view_pipeline = e2eMobileTests(ctx)
-    return unit_test_pipelines + e2e_pipelines + keycloak_pipelines + mobile_view_pipeline
+    return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
     return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrix(), stagePipelines(ctx))
@@ -496,7 +501,6 @@ def unitTests(ctx):
                          "name": "unit-tests",
                          "image": OC_CI_NODEJS,
                          "commands": [
-                             "pnpm build:tokens",
                              "pnpm test:unit --coverage",
                          ],
                      },
@@ -627,6 +631,12 @@ def e2eTests(ctx):
                 print("Error: No suites or features defined for e2e test suite '%s'" % suite)
                 return []
 
+            if "mobile-view" in suite:
+                command = "pnpm exec playwright install webkit --with-deps && pnpm test:e2e:mobile-parallel"
+                pipeline_name = "e2e-tests-%s" % suite
+            else:
+                pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
+
             steps += [{
                          "name": "e2e-tests",
                          "image": OC_CI_NODEJS,
@@ -636,8 +646,6 @@ def e2eTests(ctx):
                          ],
                      }] + \
                      uploadTracingResult(ctx)
-
-            pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
 
             pipelines.append({
                 "name": pipeline_name,
@@ -836,7 +844,6 @@ def buildAndPublishRelease(ctx):
                     "git clean -fd",
                     "git diff",
                     "git status",
-                    "pnpm build:tokens",
                     "bash -c '[ \"%s\" == \"design-system\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"web-client\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"web-pkg\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
@@ -1683,63 +1690,6 @@ def e2eTestsOnKeycloak(ctx):
 
     return [{
         "name": "e2e-test-on-keycloak",
-        "workspace": web_workspace,
-        "steps": steps,
-        "services": postgresService(),
-        "when": [
-            event["base"],
-            event["cron"],
-            event["pull_request"],
-            event["tag"],
-        ],
-    }]
-
-def e2eMobileTests(ctx):
-    serverEnvironment = {
-        "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
-        "MICRO_REGISTRY": "nats-js-kv",
-        "MICRO_REGISTRY_ADDRESS": "0.0.0.0:9233",
-        "NATS_NATS_HOST": "0.0.0.0",
-        "NATS_NATS_PORT": 9233,
-        "ONLYOFFICE_DOMAIN": "onlyoffice:443",
-        "WEB_UI_CONFIG_FILE": None,
-    }
-
-    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-            restoreOpenCloudCache() + \
-            installPnpm() + \
-            restoreBrowsersCache() + \
-            restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
-            collaboraService() + \
-            waitForServices("collabora", ["collabora:9980"]) + \
-            openCloudService(serverEnvironment) + \
-            wopiCollaborationService("collabora") + \
-            waitForServices("wopi", ["wopi-collabora:9300"])
-
-    steps += [
-                 {
-                     "name": "e2e-tests",
-                     "image": OC_CI_NODEJS,
-                     "environment": {
-                         "OC_BASE_URL": "opencloud:9200",
-                         "HEADLESS": True,
-                         "RETRY": "1",
-                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
-                         "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-                         "FAIL_ON_UNCAUGHT_CONSOLE_ERR": "True",
-                         "TERM": "xterm-256color",
-                         "FORCE_COLOR": "1",
-                     },
-                     "commands": [
-                         "pnpm exec playwright install webkit --with-deps",
-                         "pnpm test:e2e:mobile-parallel",
-                     ],
-                 },
-             ] + \
-             uploadTracingResult(ctx)
-
-    return [{
-        "name": "e2e-mobile-test",
         "workspace": web_workspace,
         "steps": steps,
         "services": postgresService(),

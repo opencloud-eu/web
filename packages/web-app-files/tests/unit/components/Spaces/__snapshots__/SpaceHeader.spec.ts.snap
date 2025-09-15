@@ -2,13 +2,13 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header p-4 flex space-header-squashed">
-  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
-  <div class="space-header-infos flex-1">
+  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-[158px] hidden lg:block"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
+  <div class="flex-1">
     <div class="flex mb-2 items-center justify-between">
-      <div class="flex items-center space-header-infos-heading max-w-full">
-        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+      <div class="flex items-center max-w-full">
+        <h2 class="break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -19,11 +19,15 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
-          <div class="oc-card oc-card-body p-2"></div>
+          <div class="oc-card">
+            <!--v-if-->
+            <div class="oc-card-body p-2"></div>
+            <!--v-if-->
+          </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -44,12 +48,12 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header p-4 flex">
   <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
-  <div class="space-header-infos flex-1">
+  <div class="flex-1">
     <div class="flex mb-2 items-center justify-between">
-      <div class="flex items-center space-header-infos-heading max-w-full">
-        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+      <div class="flex items-center max-w-full">
+        <h2 class="break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -60,11 +64,15 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
-          <div class="oc-card oc-card-body p-2"></div>
+          <div class="oc-card">
+            <!--v-if-->
+            <div class="oc-card-body p-2"></div>
+            <!--v-if-->
+          </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -78,7 +86,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     <!--v-if-->
     <div class="markdown-container flex min-h-0 collapsed">
       <!---->
-      <div class="markdown-container-edit ml-2"><a attrs="[object Object]" aria-label="Edit description" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default p-1"></a></div>
+      <div class="markdown-container-edit ml-2"><a attrs="[object Object]" aria-label="Edit description" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default p-1"></a></div>
     </div>
     <!--v-if-->
   </div>
@@ -88,12 +96,12 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header p-4 flex">
   <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-[158px]"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
-  <div class="space-header-infos flex-1">
+  <div class="flex-1">
     <div class="flex mb-2 items-center justify-between">
-      <div class="flex items-center space-header-infos-heading max-w-full">
-        <h2 class="space-header-name break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+      <div class="flex items-center max-w-full">
+        <h2 class="break-all">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -104,11 +112,15 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
         </button>
         <div id="space-context-drop" class="oc-drop shadow-md/20 rounded-sm" options="[object Object]">
-          <div class="oc-card oc-card-body p-2"></div>
+          <div class="oc-card">
+            <!--v-if-->
+            <div class="oc-card-body p-2"></div>
+            <!--v-if-->
+          </div>
         </div>
-      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+      </div> <button type="button" aria-label="Open context menu and show members" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/group-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

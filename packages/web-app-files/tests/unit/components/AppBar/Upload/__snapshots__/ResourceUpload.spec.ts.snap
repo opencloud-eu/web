@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Resource Upload Component > file upload > should render component 1`] = `
-"<div><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+"<div><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5 oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%] h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-file-fill.svg" transform-source="(svg) => {
+    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5 oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%] h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-file-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -16,9 +16,9 @@ exports[`Resource Upload Component > file upload > should render component 1`] =
 `;
 
 exports[`Resource Upload Component > folder upload > should render component 1`] = `
-"<div><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default">
+"<div><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5 oc-resource-icon inline-flex items-center h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-folder-fill.svg" transform-source="(svg) => {
+    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5 oc-resource-icon inline-flex items-center h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-folder-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

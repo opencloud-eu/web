@@ -1,10 +1,8 @@
 @import 'tailwindcss';
-
-/* FIXME: define default colors/vars via a default.css and remove token parsing */
-@import '../assets/tokens/ods.css';
+@import './defaults.css';
 
 @theme {
-  --font-sans: 'OpenCloud', 'Inter', sans-serif;
+  --font-sans: var(--oc-font-family);
 
   --spacing: 4px;
   --breakpoint-xs: 580px;

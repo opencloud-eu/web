@@ -2,12 +2,12 @@
 
 exports[`OcSidebarNav > renders navItem with toolTip if collapsed 1`] = `
 "<li class="oc-sidebar-nav-item pb-1 px-2" id="123">
-  <router-link-stub to="/files/list/all" aria-label="Navigate to Personal page" class="oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse gap-2 justify-between text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-sidebar-nav-item-link relative w-full whitespace-nowrap p-2 opacity-100 select-none" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
+  <router-link-stub to="/files/list/all" aria-label="Navigate to Personal page" class="oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-sidebar-nav-item-link relative w-full whitespace-nowrap p-2 opacity-100 select-none hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
 </li>"
 `;
 
 exports[`OcSidebarNav > renders navItem without toolTip if expanded 1`] = `
 "<li class="oc-sidebar-nav-item pb-1 px-2" id="123">
-  <router-link-stub to="/files/list/all" class="oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse gap-2 justify-between text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-sidebar-nav-item-link relative w-full whitespace-nowrap p-2 opacity-100 select-none" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
+  <router-link-stub to="/files/list/all" class="oc-button-secondary-container oc-button-raw-inverse oc-button-secondary-container-raw-inverse gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-sidebar-nav-item-link relative w-full whitespace-nowrap p-2 opacity-100 select-none hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest" data-nav-id="5" data-nav-name="route.name"></router-link-stub>
 </li>"
 `;

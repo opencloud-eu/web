@@ -1,17 +1,16 @@
 <template>
-  <div class="oc-login-card absolute top-[50%] left-[50%]">
-    <img class="oc-login-logo" :src="logoImg" alt="" :aria-hidden="true" />
-    <div v-show="error" class="oc-login-card-body p-6">
-      <h2 v-translate class="oc-login-card-title">Authentication failed</h2>
-      <p v-translate>Please contact the administrator if this error persists.</p>
-    </div>
-    <div v-show="!error" class="oc-login-card-body">
-      <h3 v-translate class="oc-login-card-title">Logging you in</h3>
-      <p v-translate>Please wait, you are being redirected.</p>
-    </div>
-    <div class="oc-login-card-footer pt-0">
-      <p>{{ footerSlogan }}</p>
-    </div>
+  <div class="h-screen flex flex-col justify-center items-center">
+    <oc-card
+      :logo-url="logoImg"
+      :title="cardTitle"
+      body-class="w-sm text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
+      <p v-text="cardHint" />
+      <template #footer>
+        <p v-text="footerSlogan" />
+      </template>
+    </oc-card>
   </div>
 </template>
 
@@ -20,10 +19,12 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref, unref } fro
 import { useEmbedMode, useRoute, useThemeStore } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { storeToRefs } from 'pinia'
+import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'OidcCallbackPage',
   setup() {
+    const { $gettext } = useGettext()
     const themeStore = useThemeStore()
     const { currentTheme } = storeToRefs(themeStore)
 
@@ -32,8 +33,20 @@ export default defineComponent({
 
     const error = ref(false)
 
-    const footerSlogan = computed(() => unref(currentTheme)?.slogan)
     const logoImg = computed(() => unref(currentTheme)?.logo)
+    const cardTitle = computed(() => {
+      if (unref(error)) {
+        return $gettext('Authentication failed')
+      }
+      return $gettext('Logging you in')
+    })
+    const cardHint = computed(() => {
+      if (unref(error)) {
+        return $gettext('Please contact the administrator if this error persists.')
+      }
+      return $gettext('Please wait, you are being redirected.')
+    })
+    const footerSlogan = computed(() => unref(currentTheme)?.slogan)
 
     const route = useRoute()
 
@@ -89,6 +102,8 @@ export default defineComponent({
     return {
       error,
       logoImg,
+      cardTitle,
+      cardHint,
       footerSlogan
     }
   }

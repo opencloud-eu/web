@@ -14,20 +14,12 @@
     @close="closeSideBar"
   >
     <template #rootHeader>
-      <file-info
-        v-if="isFileHeaderVisible"
-        class="sidebar-panel__file_info px-2 pt-2"
-        :is-sub-panel-active="false"
-      />
-      <space-info v-else-if="isSpaceHeaderVisible" class="sidebar-panel__space_info" />
+      <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="false" />
+      <space-info v-else-if="isSpaceHeaderVisible" />
     </template>
     <template #subHeader>
-      <file-info
-        v-if="isFileHeaderVisible"
-        class="sidebar-panel__file_info px-2 pt-2"
-        :is-sub-panel-active="true"
-      />
-      <space-info v-else-if="isSpaceHeaderVisible" class="sidebar-panel__space_info" />
+      <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="true" />
+      <space-info v-else-if="isSpaceHeaderVisible" />
     </template>
   </InnerSideBar>
 </template>

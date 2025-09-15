@@ -1,21 +1,17 @@
 <template>
-  <main class="webfinger-resolve h-screen flex flex-col justify-center items-center">
+  <main class="h-screen flex flex-col justify-center items-center">
     <h1 class="sr-only" v-text="pageTitle" />
-    <div class="oc-card oc-card-body text-center w-lg text-lg bg-role-surface-container rounded-xl">
+    <oc-card
+      :title="cardTitle"
+      body-class="w-sm text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
       <template v-if="hasError">
-        <h2 key="webfinger-resolve-error" class="mt-0">
-          <span v-text="$gettext('Sorry!')" />
-        </h2>
         <p v-text="$gettext('Something went wrong.')" />
         <p v-text="$gettext('We could not resolve the destination.')" />
       </template>
-      <template v-else>
-        <h2 key="webfinger-resolve-loading" class="mt-0">
-          <span v-text="$gettext('One moment please…')" />
-        </h2>
-        <p v-text="$gettext('You are being redirected.')" />
-      </template>
-    </div>
+      <p v-else v-text="$gettext('You are being redirected.')" />
+    </oc-card>
   </main>
 </template>
 
@@ -74,10 +70,18 @@ export default defineComponent({
       window.location.href = openCloudServers.value[0].href
     })
 
+    const cardTitle = computed(() => {
+      if (unref(hasError)) {
+        return $gettext('Sorry!')
+      }
+      return $gettext('One moment please…')
+    })
+
     return {
       pageTitle,
       openCloudInstances: openCloudServers,
-      hasError
+      hasError,
+      cardTitle
     }
   }
 })

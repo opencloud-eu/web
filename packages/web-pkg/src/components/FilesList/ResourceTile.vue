@@ -1,7 +1,8 @@
 <template>
-  <div
+  <oc-card
     ref="observerTarget"
-    class="oc-tile-card oc-card flex flex-col h-full shadow-none"
+    body-class="p-0"
+    class="oc-tile-card flex flex-col h-full shadow-none"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
@@ -28,9 +29,7 @@
         tabindex="-1"
         @click="$emit('click', $event)"
       >
-        <div
-          class="oc-tile-card-selection z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container"
-        >
+        <div class="z-10 absolute top-0 left-0 [&_input]:bg-role-surface-container">
           <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
@@ -38,7 +37,7 @@
         </div>
         <oc-tag
           v-if="isResourceDisabled && isProjectSpaceResource(resource)"
-          class="resource-disabled-indicator z-10 absolute text-role-on-surface"
+          class="z-10 absolute text-role-on-surface"
           type="span"
         >
           <span v-text="$gettext('Disabled')" />
@@ -46,15 +45,19 @@
         <div
           v-oc-tooltip="tooltipLabelIcon"
           class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
-          :class="{ 'p-2': isResourceSelected }"
+          :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
           :aria-label="tooltipLabelIcon"
         >
           <slot name="imageField" :item="resource">
             <oc-image
               v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9]"
-              :class="{ 'rounded-sm': isResourceSelected }"
+              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
+              :class="{
+                'rounded-sm': isResourceSelected,
+                'hover:rounded-sm': !isResourceSelected
+              }"
               :src="resource.thumbnail"
+              :data-test-thumbnail-resource-name="resource.name"
               @click="toggleTile([resource, $event])"
             />
             <resource-icon
@@ -70,7 +73,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="oc-card-body p-2" @click.stop="toggleTile([resource, $event])">
+      <div class="p-2" @click.stop="toggleTile([resource, $event])">
         <div class="flex justify-between items-center">
           <div
             class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden"
@@ -98,11 +101,11 @@
         </p>
       </div>
     </template>
-  </div>
+  </oc-card>
 </template>
 
 <script setup lang="ts">
-import { computed, customRef, ref, unref } from 'vue'
+import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
@@ -113,6 +116,7 @@ import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import { useToggleTile } from '../../composables/selection'
+import { OcCard } from '@opencloud-eu/design-system/components'
 
 const {
   resource,
@@ -153,19 +157,8 @@ defineSlots<{
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 
-const observerTarget = customRef((track, trigger) => {
-  let $el: HTMLElement
-  return {
-    get() {
-      track()
-      return $el
-    },
-    set(value) {
-      $el = value
-      trigger()
-    }
-  }
-})
+const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
+const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
 
 const showStatusIcon = computed(() => {
   return resource.locked || resource.processing
@@ -204,7 +197,7 @@ const resourceDescription = computed(() => {
 
 const { isVisible } = lazy
   ? useIsVisible({
-      target: observerTarget,
+      target: observerTargetElement,
       onVisibleCallback: () => emit('itemVisible')
     })
   : { isVisible: ref(true) }
@@ -215,35 +208,17 @@ if (!lazy) {
   emit('itemVisible')
 }
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-tile-card:hover .tile-preview {
-    @apply rounded-sm;
-  }
-  .oc-tile-card:hover .oc-tile-card-preview {
-    @apply p-2;
-  }
-  /* Show tooltip on status indicators without handler */
-  .oc-tile-card-disabled span.oc-status-indicators-indicator {
-    pointer-events: all;
-  }
-}
-</style>
 <style lang="scss">
-@layer components {
-  .oc-tile-card {
-    // needs to be scss because of the linear-gradient
-    &-lazy-shimmer::after {
-      background-image: linear-gradient(
-        90deg,
-        rgba(#4c5f79, 0) 0,
-        rgba(#4c5f79, 0.2) 20%,
-        rgba(#4c5f79, 0.5) 60%,
-        rgba(#4c5f79, 0)
-      );
-    }
+.oc-tile-card {
+  // needs to be scss because of the linear-gradient
+  &-lazy-shimmer::after {
+    background-image: linear-gradient(
+      90deg,
+      rgba(#4c5f79, 0) 0,
+      rgba(#4c5f79, 0.2) 20%,
+      rgba(#4c5f79, 0.5) 60%,
+      rgba(#4c5f79, 0)
+    );
   }
 }
 </style>

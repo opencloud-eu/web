@@ -1,27 +1,13 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <div class="oc-card text-center w-lg bg-role-surface-container rounded-xl">
-      <template v-if="loading">
-        <div class="oc-card-header">
-          <h2 key="private-link-loading" class="oc-link-resolve-loading m-0">
-            <span v-text="$gettext('Resolving private link…')" />
-          </h2>
-        </div>
-        <div class="oc-card-body">
-          <oc-spinner :aria-hidden="true" />
-        </div>
-      </template>
-      <template v-else-if="errorMessage">
-        <div class="oc-card-header oc-link-resolve-error-title">
-          <h2 key="private-link-error" class="m-0">
-            <span v-text="$gettext('An error occurred while resolving the private link')" />
-          </h2>
-        </div>
-        <div class="oc-card-body oc-link-resolve-error-message">
-          <p class="text-xl">{{ errorMessage }}</p>
-        </div>
-      </template>
-    </div>
+    <oc-card
+      :title="headerTitle"
+      body-class="w-lg text-center"
+      class="bg-role-surface-container rounded-lg"
+    >
+      <oc-spinner v-if="loading" data-testid="loading-spinner" :aria-hidden="true" />
+      <p v-else-if="errorMessage" data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
+    </oc-card>
     <oc-button
       v-if="isUnacceptedShareError"
       type="router-link"
@@ -161,6 +147,16 @@ export default defineComponent({
       return $gettext('Open "Shared with me"')
     })
 
+    const headerTitle = computed(() => {
+      if (unref(loading)) {
+        return $gettext('Resolving private link…')
+      }
+      if (unref(errorMessage)) {
+        return $gettext('An error occurred while resolving the private link')
+      }
+      return ''
+    })
+
     const errorMessage = computed(() => {
       if (unref(isUnacceptedShareError)) {
         return $gettext(
@@ -175,6 +171,7 @@ export default defineComponent({
     })
 
     return {
+      headerTitle,
       errorMessage,
       loading,
       resource,

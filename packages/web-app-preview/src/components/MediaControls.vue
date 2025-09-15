@@ -3,9 +3,7 @@
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
-    <div
-      class="bg-role-surface-container p-2 w-lg flex items-center justify-center justify-around rounded-sm"
-    >
+    <div class="bg-role-surface-container p-2 w-lg flex items-center justify-around rounded-sm">
       <oc-button
         v-oc-tooltip="previousDescription"
         class="preview-controls-previous raw-hover-surface"

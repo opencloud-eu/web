@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full flex items-center justify-between files-links-details">
+  <div class="w-full flex items-center justify-between">
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
-      <div class="files-links-name-wrapper grid pl-2">
+      <div class="grid pl-2">
         <span class="files-links-name truncate" v-text="linkShare.displayName" />
         <div class="flex flex-nowrap items-center">
           <link-role-dropdown

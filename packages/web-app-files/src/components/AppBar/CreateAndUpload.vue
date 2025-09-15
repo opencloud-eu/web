@@ -28,7 +28,7 @@
           :class="areFileExtensionsShown ? 'min-w-xs' : null"
           class="py-2 first:pt-0 last:pb-0"
         >
-          <li class="create-list-folder oc-menu-item-hover">
+          <li>
             <oc-button
               id="new-folder-btn"
               class="w-full"
@@ -49,7 +49,6 @@
           <li
             v-for="(fileAction, fileActionIndex) in group"
             :key="`file-creation-item-${groupIndex}-${fileActionIndex}`"
-            class="create-list-file oc-menu-item-hover"
           >
             <oc-button
               appearance="raw"
@@ -59,18 +58,15 @@
               @click="fileAction.handler"
             >
               <resource-icon :resource="getIconResource(fileAction)" size="medium" class="h-full" />
-              <span class="create-list-file-item-text">{{ fileAction.label() }}</span>
-              <span
-                v-if="areFileExtensionsShown && fileAction.ext"
-                class="create-list-file-item-extension ml-auto text-sm"
-              >
+              <span>{{ fileAction.label() }}</span>
+              <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
                 {{ fileAction.ext }}
               </span>
             </oc-button>
           </li>
         </oc-list>
         <oc-list class="py-2 first:pt-0 last:pb-0 border-t">
-          <li class="create-list-shortcut oc-menu-item-hover">
+          <li>
             <oc-button
               id="new-shortcut-btn"
               class="w-full"
@@ -80,11 +76,7 @@
             >
               <oc-icon name="external-link" size="medium" />
               <span v-text="$gettext('Shortcut')" />
-              <span
-                v-if="areFileExtensionsShown"
-                class="create-list-file-item-extension ml-auto text-sm"
-                v-text="'url'"
-              />
+              <span v-if="areFileExtensionsShown" class="ml-auto text-sm" v-text="'url'" />
             </oc-button>
           </li>
         </oc-list>
@@ -129,10 +121,10 @@
       @show-drop="showDrop"
     >
       <oc-list id="upload-list">
-        <li class="oc-menu-item-hover">
+        <li>
           <resource-upload btn-class="w-full" />
         </li>
-        <li class="oc-menu-item-hover">
+        <li>
           <resource-upload btn-class="w-full" :is-folder="true" />
         </li>
       </oc-list>
@@ -147,7 +139,6 @@
           v-oc-tooltip="
             isActionDisabled(action) && action.disabledTooltip ? action.disabledTooltip() : null
           "
-          class="oc-menu-item-hover"
         >
           <oc-button
             class="w-full"

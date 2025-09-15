@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CreateSpace component > should show the "New Space" button 1`] = `
-"<button type="button" class="oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default" id="new-space-menu-btn">
+"<button type="button" class="oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" id="new-space-menu-btn">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/add-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

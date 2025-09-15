@@ -2,7 +2,7 @@
   <oc-select
     ref="tagSelect"
     v-model="selectedTags"
-    class="tags-select"
+    class="tags-select [&_.vs\_\_actions]:!hidden"
     :label="$gettext('Tags')"
     :label-hidden="true"
     :multiple="true"
@@ -310,16 +310,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .tags-select .vs__actions {
-    @apply !hidden;
-  }
-  .tags-select-tag-link {
-    pointer-events: visible;
-  }
-}
-</style>

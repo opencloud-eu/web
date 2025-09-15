@@ -14,7 +14,7 @@
       />
       <div v-if="sortFields.length" class="oc-tiles-sort">
         <oc-filter-chip
-          class="oc-tiles-sort-filter-chip"
+          class="[&_.oc-filter-chip-label]:text-sm"
           :filter-label="$gettext('Sort by')"
           :selected-item-names="[currentSortField.label]"
           :has-active-state="false"
@@ -59,7 +59,7 @@
           :is-extension-displayed="areFileExtensionsShown"
           :resource-icon-size="resourceIconSize"
           :draggable="dragDrop"
-          :lazy="lazy"
+          :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
           @vue:mounted="
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
@@ -82,6 +82,8 @@
               class="inline-flex p-2"
               :disabled="isResourceDisabled(resource)"
               :model-value="isResourceSelected(resource)"
+              :data-test-selection-resource-name="resource.name"
+              :data-test-selection-resource-path="resource.path"
               @click.stop.prevent="toggleTile([resource, $event])"
             />
           </template>
@@ -92,7 +94,7 @@
             <resource-status-indicators
               :space="space"
               :resource="resource"
-              :filter="(indicator) => indicator.category === 'system'"
+              :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
               :disable-handler="isResourceDisabled(resource)"
             />
           </template>
@@ -123,14 +125,14 @@
       <li
         v-for="index in ghostTilesCount"
         :key="`ghost-tile-${index}`"
-        class="ghost-tile list-item"
+        class="list-item"
         :aria-hidden="true"
       />
     </oc-list>
     <Teleport v-if="dragItem" to="body">
       <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
-    <div class="oc-tiles-footer p-1 text-sm">
+    <div class="p-1 text-sm">
       <slot name="footer" />
     </div>
   </div>
@@ -239,6 +241,9 @@ const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
   return Math.min(unref(viewSizeMax), viewSize)
 })
+
+// Disable lazy loading during E2E tests to avoid having to scroll in tests
+const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
@@ -645,15 +650,12 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updateViewWidth)
 })
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-tiles {
     grid-template-columns: repeat(auto-fit, minmax(var(--oc-size-tiles-actual), 1fr));
-  }
-  .oc-tiles-sort-filter-chip .oc-filter-chip-label {
-    @apply text-sm;
   }
 }
 </style>

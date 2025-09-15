@@ -53,7 +53,7 @@
     <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
       <oc-spinner
         v-if="isResourceInDeleteQueue(item.id)"
-        class="resource-table-activity-indicator inline-flex ml-1"
+        class="inline-flex ml-1"
         size="medium"
         :aria-label="$gettext('File is being processed')"
       />
@@ -67,6 +67,8 @@
         :disabled="isResourceDisabled(item)"
         :model-value="isResourceSelected(item)"
         :outline="isLatestSelectedItem(item)"
+        :data-test-selection-resource-name="item.name"
+        :data-test-selection-resource-path="item.path"
         @click.stop="
           (e: MouseEvent) => {
             if (!interceptModifierClick(e, item)) {
@@ -198,7 +200,6 @@
     <template #sharedBy="{ item }">
       <oc-button
         appearance="raw-inverse"
-        class="resource-table-shared-by"
         no-hover
         @click.stop="
           (e: MouseEvent) => {
@@ -210,7 +211,7 @@
         "
       >
         <oc-avatars
-          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
+          class="flex items-center justify-end flex-row flex-nowrap"
           :is-tooltip-displayed="true"
           :items="getSharedByAvatarItems(item)"
           :accessible-description="getSharedByAvatarDescription(item)"
@@ -243,7 +244,7 @@
         "
       >
         <oc-avatars
-          class="resource-table-people flex items-center justify-end flex-row flex-nowrap"
+          class="flex items-center justify-end flex-row flex-nowrap"
           :items="getSharedWithAvatarItems(item)"
           :stacked="true"
           :max-displayed="3"
@@ -264,10 +265,7 @@
       </oc-button>
     </template>
     <template #actions="{ item }">
-      <div
-        v-if="showContextDrop(item)"
-        class="resource-table-actions flex items-center justify-end flex-row flex-nowrap"
-      >
+      <div v-if="showContextDrop(item)" class="flex items-center justify-end flex-row flex-nowrap">
         <!-- @slot Add quick actions before the `context-menu / three dot` button in the actions column -->
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
@@ -1490,10 +1488,6 @@ export default defineComponent({
   }
   .oc-table.condensed > tbody > tr {
     @apply h-0;
-  }
-  /* Show tooltip on status indicators without handler */
-  .oc-table-data-cell-indicators span.oc-status-indicators-indicator {
-    pointer-events: all;
   }
 }
 </style>

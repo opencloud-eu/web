@@ -13,8 +13,12 @@
     />
     <loading-screen v-if="loading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
-    <div v-else class="flex size-full" :class="{ 'app-sidebar-open': isSideBarOpen }">
-      <slot class="app-wrapper-content h-full" v-bind="slotAttrs" />
+    <div v-else class="flex size-full">
+      <slot
+        class="app-wrapper-content size-full"
+        :class="{ 'w-[calc(100%-440px)] hidden xs:block': isSideBarOpen }"
+        v-bind="slotAttrs"
+      />
       <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
     </div>
   </main>
@@ -759,19 +763,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .app-wrapper .app-wrapper-content {
-    @apply w-full;
-  }
-  .app-sidebar-open > *:not(:last-child) {
-    @apply hidden sm:block;
-  }
-  .app-wrapper .app-sidebar-open .app-wrapper-content {
-    /* 440px is the width of the app sidebar */
-    width: calc(100% - 440px);
-  }
-}
-</style>

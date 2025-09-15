@@ -1,5 +1,5 @@
 <template>
-  <div class="app-tags flex gap-1">
+  <div class="flex gap-1">
     <oc-tag
       v-for="tag in app.tags"
       :key="`app-tag-${app.id}-${tag}`"

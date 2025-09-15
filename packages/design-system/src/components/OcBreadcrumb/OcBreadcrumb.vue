@@ -312,24 +312,12 @@ const dropItemStyling = (
 }
 </script>
 
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-breadcrumb-item-dragover {
     @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100 ring-4 ring-role-secondary-container;
-  }
-
-  .oc-breadcrumb-list #oc-breadcrumb-contextmenu li button {
-    @apply inline-flex;
-  }
-
-  .oc-breadcrumb-list > li button {
-    @apply inline;
-  }
-
-  .oc-breadcrumb-list > :nth-child(n + 2)::before {
-    @apply inline-block text-role-on-surface rounded-sm;
   }
 }
 </style>

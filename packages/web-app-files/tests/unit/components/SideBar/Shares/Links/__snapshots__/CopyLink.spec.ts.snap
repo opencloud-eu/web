@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CopyLink > upon clicking it should copy the link to the clipboard, render a success message and change icon for half a second 1`] = `
-"<button type="button" aria-label="Copy link to clipboard" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-files-public-link-copy-url raw-hover-surface p-1">
+"<button type="button" aria-label="Copy link to clipboard" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-files-public-link-copy-url raw-hover-surface p-1">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-line.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -16,9 +16,9 @@ exports[`CopyLink > upon clicking it should copy the link to the clipboard, rend
 `;
 
 exports[`CopyLink > upon clicking it should copy the link to the clipboard, render a success message and change icon for half a second 2`] = `
-"<button type="button" aria-label="Copy link to clipboard" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button inline-flex cursor-pointer disabled:opacity-60 disabled:cursor-default oc-files-public-link-copy-url raw-hover-surface p-1">
+"<button type="button" aria-label="Copy link to clipboard" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-files-public-link-copy-url raw-hover-surface p-1">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/file-copy-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

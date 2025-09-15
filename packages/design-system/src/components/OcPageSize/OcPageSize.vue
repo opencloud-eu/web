@@ -9,7 +9,7 @@
     />
     <oc-select
       :input-id="selectId"
-      class="oc-page-size-select"
+      class="oc-page-size-select min-w-25 [&_.vs\_\_dropdown-menu]:!min-w-25"
       data-testid="oc-page-size-select"
       :model-value="selected"
       :label="label"
@@ -60,13 +60,3 @@ const emitChange = (value: string | boolean) => {
   emit('change', value)
 }
 </script>
-
-<style lang="scss">
-// overwrite vendor styling
-.oc-page-size {
-  &-select,
-  &-select .vs__dropdown-menu {
-    min-width: var(--oc-size-width-xsmall);
-  }
-}
-</style>

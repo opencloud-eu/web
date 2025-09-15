@@ -89,42 +89,5 @@ export type InstallOptions = {
     }
     colorPalette?: Record<string, string>
     fontFamily?: string
-    fontSizes?: {
-      xsmall?: string
-      small?: string
-      default?: string
-      medium?: string
-      large?: string
-      xlarge?: string
-    }
-    sizes?: {
-      'form-check-default'?: string
-      'height-small'?: string
-      'height-table-row'?: string
-      'icon-default'?: string
-      'max-height-logo'?: string
-      'max-width-logo'?: string
-      'width-medium'?: string
-      'tiles-default'?: string
-      'tiles-resize-step'?: string
-    }
-    spacing?: {
-      xsmall?: string
-      small?: string
-      medium?: string
-      large?: string
-      xlarge?: string
-      xxlarge?: string
-    }
-    breakpoints?: {
-      'xsmall-max'?: string
-      'small-default'?: string
-      'small-max'?: string
-      'medium-default'?: string
-      'medium-max'?: string
-      'large-default'?: string
-      'large-max'?: string
-      xlarge?: string
-    }
   }
 }

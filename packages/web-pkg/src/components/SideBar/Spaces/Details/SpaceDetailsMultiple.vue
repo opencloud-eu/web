@@ -1,9 +1,9 @@
 <template>
   <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="spaces-preview text-center mb-6 rounded-sm">
-      <div class="spaces-preview-body">
-        <oc-icon class="preview-icon" size="xxlarge" name="layout-grid" />
-        <p class="preview-text" v-text="selectedSpacesString" />
+    <div class="text-center mb-6 rounded-sm">
+      <div>
+        <oc-icon size="xxlarge" name="layout-grid" />
+        <p v-text="selectedSpacesString" />
       </div>
     </div>
     <oc-definition-list :aria-label="detailsTableLabel" :items="items" class="m-0" />

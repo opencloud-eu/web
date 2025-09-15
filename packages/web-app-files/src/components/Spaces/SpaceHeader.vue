@@ -7,7 +7,8 @@
       class="space-header-image mr-6 min-w-xs aspect-[16/9]"
       :class="{
         'space-header-image-expanded w-full max-w-full max-h-full': imageExpanded || isMobileWidth,
-        'w-xs max-h-[158px]': !imageExpanded
+        'w-xs max-h-[158px]': !imageExpanded,
+        'hidden lg:block': isSideBarOpen
       }"
     >
       <div v-if="imagesLoading.includes(space.id)" class="h-full flex items-center justify-center">
@@ -21,10 +22,10 @@
         @click="toggleImageExpanded"
       />
     </div>
-    <div class="space-header-infos flex-1">
+    <div class="flex-1">
       <div class="flex mb-2 items-center justify-between">
-        <div class="flex items-center space-header-infos-heading max-w-full">
-          <h2 class="space-header-name break-all">{{ space.name }}</h2>
+        <div class="flex items-center max-w-full">
+          <h2 class="break-all">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
@@ -82,7 +83,7 @@
         }"
       >
         <text-editor
-          class="markdown-container-content w-full"
+          class="markdown-container-content w-full [&_#text-editor-preview-component]:!bg-transparent"
           is-read-only
           :current-content="markdownContent"
         />
@@ -317,21 +318,3 @@ const openSideBarSharePanel = () => {
   eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
 }
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .space-header-squashed .space-header-image {
-    @apply hidden lg:block;
-  }
-
-  .space-header .markdown-container.collapsed {
-    @apply max-h-[100px] overflow-hidden;
-  }
-
-  .space-header .markdown-container #text-editor-preview-component {
-    @apply !bg-transparent;
-  }
-}
-</style>
