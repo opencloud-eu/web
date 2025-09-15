@@ -69,8 +69,6 @@ import { useActiveApp, useRoute, useRouteMeta, useSpacesLoading } from '@openclo
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
 import { RouteLocationAsRelativeTyped, useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-
-import '@uppy/core/dist/style.min.css'
 import { storeToRefs } from 'pinia'
 import { progressBarExtensionPoint } from '../extensionPoints'
 

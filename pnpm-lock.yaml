@@ -207,7 +207,7 @@ importers:
         version: 7.6.5
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.0.3(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2))
+        version: 4.1.0(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2))
       fuse.js:
         specifier: ^7.0.0
         version: 7.1.0
@@ -286,7 +286,7 @@ importers:
         version: 0.24.0(rollup@4.50.1)(vite@6.3.6(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.90.0)(yaml@2.8.1))
       vitepress:
         specifier: ^1.6.3
-        version: 1.6.4(@algolia/client-search@5.35.0)(@types/node@22.16.0)(axios@1.12.0)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(lightningcss@1.30.1)(postcss@8.5.6)(sass@1.90.0)(search-insights@2.17.3)(typescript@5.9.2)
+        version: 1.6.4(@algolia/client-search@5.35.0)(@types/node@22.16.0)(axios@1.12.2)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(lightningcss@1.30.1)(postcss@8.5.6)(sass@1.90.0)(search-insights@2.17.3)(typescript@5.9.2)
       yaml:
         specifier: ^2.3.4
         version: 2.8.1
@@ -296,7 +296,7 @@ importers:
     dependencies:
       '@babel/eslint-parser':
         specifier: ^7.25.8
-        version: 7.28.0(@babel/core@7.28.0)(eslint@9.33.0(jiti@2.5.1))
+        version: 7.28.4(@babel/core@7.28.0)(eslint@9.33.0(jiti@2.5.1))
       '@typescript-eslint/parser':
         specifier: ^8.0.0
         version: 8.41.0(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
@@ -394,8 +394,8 @@ importers:
         specifier: workspace:^
         version: link:../web-pkg
       axios:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.2
+        version: 1.12.2
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -440,8 +440,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.2
+        version: 1.12.2
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -539,14 +539,14 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       '@uppy/core':
-        specifier: 4.5.2
-        version: 4.5.2
+        specifier: 5.0.1
+        version: 5.0.1
       '@vueuse/core':
         specifier: ^13.0.0
         version: 13.9.0(vue@3.5.21(typescript@5.9.2))
       axios:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.2
+        version: 1.12.2
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -603,8 +603,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.2
+        version: 1.12.2
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -750,7 +750,7 @@ importers:
         version: 2.0.1
       axios:
         specifier: ^1.7.7
-        version: 1.12.0
+        version: 1.12.2
       fast-xml-parser:
         specifier: ^4.5.0
         version: 4.5.3
@@ -814,17 +814,17 @@ importers:
         specifier: ^10.0.0
         version: 10.11.0(pinia@3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
       '@uppy/core':
-        specifier: ^4.3.1
-        version: 4.5.2
+        specifier: ^5.0.0
+        version: 5.0.1
       '@uppy/tus':
-        specifier: ^4.1.5
-        version: 4.3.2(@uppy/core@4.5.2)
+        specifier: ^5.0.0
+        version: 5.0.0(@uppy/core@5.0.1)
       '@uppy/utils':
-        specifier: ^6.0.6
-        version: 6.2.2
+        specifier: ^7.0.0
+        version: 7.0.1
       '@uppy/xhr-upload':
-        specifier: ^4.2.3
-        version: 4.4.2(@uppy/core@4.5.2)
+        specifier: ^5.0.0
+        version: 5.0.0(@uppy/core@5.0.1)
       '@vavt/cm-extension':
         specifier: ^1.6.0
         version: 1.11.0
@@ -836,7 +836,7 @@ importers:
         version: 13.9.0(vue@3.5.21(typescript@5.9.2))
       axios:
         specifier: ^1.7.7
-        version: 1.12.0
+        version: 1.12.2
       cropperjs:
         specifier: ^1.6.2
         version: 1.6.2
@@ -957,17 +957,17 @@ importers:
         specifier: 10.11.0
         version: 10.11.0(pinia@3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
       '@uppy/core':
-        specifier: 4.5.2
-        version: 4.5.2
+        specifier: 5.0.1
+        version: 5.0.1
       '@uppy/tus':
-        specifier: 4.3.2
-        version: 4.3.2(@uppy/core@4.5.2)
+        specifier: 5.0.0
+        version: 5.0.0(@uppy/core@5.0.1)
       '@uppy/utils':
-        specifier: 6.2.2
-        version: 6.2.2
+        specifier: 7.0.1
+        version: 7.0.1
       '@uppy/xhr-upload':
-        specifier: 4.4.2
-        version: 4.4.2(@uppy/core@4.5.2)
+        specifier: 5.0.0
+        version: 5.0.0(@uppy/core@5.0.1)
       '@vueuse/core':
         specifier: 13.9.0
         version: 13.9.0(vue@3.5.21(typescript@5.9.2))
@@ -975,8 +975,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0(vue@3.5.21(typescript@5.9.2))
       axios:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.2
+        version: 1.12.2
       deepmerge:
         specifier: 4.3.1
         version: 4.3.1
@@ -988,7 +988,7 @@ importers:
         version: 7.6.5
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.0.3(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2))
+        version: 4.1.0(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2))
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -1079,7 +1079,7 @@ importers:
         version: 2.4.6
       axios:
         specifier: ^1.7.9
-        version: 1.12.0
+        version: 1.12.2
       pinia:
         specifier: ^3.0.0
         version: 3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
@@ -1236,8 +1236,8 @@ packages:
     resolution: {integrity: sha512-UlLAnTPrFdNGoFtbSXwcGFQBtQZJCNjaN6hQNP3UPvuNXT1i82N26KL3dZeIpNalWywr9IuQuncaAfUaS1g6sQ==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/eslint-parser@7.28.0':
-    resolution: {integrity: sha512-N4ntErOlKvcbTt01rr5wj3y55xnIdx1ymrfIr8C2WnM1Y9glFgWaGDEULJIazOX3XM9NRzhfJ6zZnQ1sBNWU+w==}
+  '@babel/eslint-parser@7.28.4':
+    resolution: {integrity: sha512-Aa+yDiH87980jR6zvRfFuCR1+dLb00vBydhTL+zI992Rz/wQhSvuxjmOOuJOgO3XmakO6RykRGD2S1mq1AtgHA==}
     engines: {node: ^10.13.0 || ^12.13.0 || >=14.0.0}
     peerDependencies:
       '@babel/core': ^7.11.0
@@ -3057,29 +3057,29 @@ packages:
     peerDependencies:
       vue: '>=2.7 || >=3'
 
-  '@uppy/companion-client@4.5.2':
-    resolution: {integrity: sha512-hfUsReHM5COhn+5d7CdZgZaG8BtDvtwj7vjXzg8qmgKI901mYUm/Zh420iOKT7eHiofKVTNoa7oijeGrqUEnyg==}
+  '@uppy/companion-client@5.0.0':
+    resolution: {integrity: sha512-sI8AP5+mhi2HRuXFUGt2tJoIZqzHmznrPn8AdI2B/ny81upLvb5/Zo0BszlleK5iD7Wyxcn0hkBn/HQI73mcjA==}
     peerDependencies:
-      '@uppy/core': ^4.5.2
+      '@uppy/core': ^5.0.0
 
-  '@uppy/core@4.5.2':
-    resolution: {integrity: sha512-5XoPJNcqEXtxtw+vg8EyqUFe11JSbG3/aln83Y7+CLbs7WOovYdfwwKEt1aTbfg1+ijsxudLchya5yh72jaLqw==}
+  '@uppy/core@5.0.1':
+    resolution: {integrity: sha512-4hLCSjwkJtSZ/W/vJp+GX+4GkSXk/ilrL5ldH0gefAg+mQVxucuLFE7Rc1QdwmUQlnhqIFOSwLAkv2jTTNXGgw==}
 
-  '@uppy/store-default@4.3.2':
-    resolution: {integrity: sha512-dnY9R2o8fwmO1bF89D0b5jijD7DGED2qVST5hI/j18JreLWzLKH7u6HuNmOvzok8msrQ/qWzQd5Gx4LDQKhBbw==}
+  '@uppy/store-default@5.0.0':
+    resolution: {integrity: sha512-hQtCSQ1yGiaval/wVYUWquYGDJ+bpQ7e4FhUUAsRQz1x1K+o7NBtjfp63O9I4Ks1WRoKunpkarZ+as09l02cPw==}
 
-  '@uppy/tus@4.3.2':
-    resolution: {integrity: sha512-W9pXC/Xew6mM+XKbGafJI9flO3oQTFHxpd281SIy+hDFVTniAqW4VoNhcT15rDqlofQB+PufCXG1EJlX9pCIAw==}
+  '@uppy/tus@5.0.0':
+    resolution: {integrity: sha512-wGV8LgQAIdlMEQji91/glBy+TXlp6917z+nUCag4KhpW63WhQcd37xh34JjvQIf3IvaBa3Zjj37btQ3TL/aVeA==}
     peerDependencies:
-      '@uppy/core': ^4.5.2
+      '@uppy/core': ^5.0.0
 
-  '@uppy/utils@6.2.2':
-    resolution: {integrity: sha512-9mYJtbcngv2HOJIECkyfmdXTI5dW/ObCyvWP1Iti3E5bKtsa4sMmbx5Yh/tGCj8k/lBNhfvWyZuYnvnjmzNLSQ==}
+  '@uppy/utils@7.0.1':
+    resolution: {integrity: sha512-OLG5cbMYApwrj5VOeK4vEVOx0YtrsCMJKNqdA9LkFNIGWaF9KJPE6+P/MEvxgdAlnCZrF4Z7Gf/EuZF0gKMYJw==}
 
-  '@uppy/xhr-upload@4.4.2':
-    resolution: {integrity: sha512-CU66aVn4yghGklEkepCqFPulc6uygznApy2DpD+jCMLNB5q6yT1RPSrQUgRgXsYhpW1YhutZJWsrEnHEDS+Tcw==}
+  '@uppy/xhr-upload@5.0.0':
+    resolution: {integrity: sha512-ry/tDULv7xPEkm7VNl6GXV46JYb5lR/BUDo0Nl+S6n3I0EEMRO/sD30yA5BQZo80oZDUEyUGLoJ8HseD0nm4tA==}
     peerDependencies:
-      '@uppy/core': ^4.5.2
+      '@uppy/core': ^5.0.0
 
   '@vavt/cm-extension@1.11.0':
     resolution: {integrity: sha512-rwKoSSBGpP2ayH5cO4ZrweJtmeIVkvSgoyILL24BTb9vkItXwRTDV6ctrdIaD0yJ8OQ8Lez6jlWVLfS9Ipk6Zw==}
@@ -3441,8 +3441,8 @@ packages:
     resolution: {integrity: sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==}
     engines: {node: '>=4'}
 
-  axios@1.12.0:
-    resolution: {integrity: sha512-oXTDccv8PcfjZmPGlWsPSwtOJCZ/b6W5jAMCNcfwJbCzDckwG0jrYJFaWH1yvivfCXjVzV/SPDEhMB3Q+DSurg==}
+  axios@1.12.2:
+    resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
 
   babel-plugin-polyfill-corejs2@0.4.14:
     resolution: {integrity: sha512-Co2Y9wX854ts6U8gAAPXfn0GmAyctHuK8n0Yhfjd6t30g7yvKjspvvOo9yG+z52PZRgFErt7Ka2pYnXCjLKEpg==}
@@ -4267,8 +4267,8 @@ packages:
   flush-promises@1.0.2:
     resolution: {integrity: sha512-G0sYfLQERwKz4+4iOZYQEZVpOt9zQrlItIxQAAYAWpfby3gbHrx0osCHz5RLl/XoXevXk0xoN4hDFky/VV9TrA==}
 
-  focus-trap-vue@4.0.3:
-    resolution: {integrity: sha512-cIX5rybkCAlNZ4IHYJ3nCFIsipDDljJHHjtTO2IgYWkVYg7X9ipUVdab3HzYp88kmHgMwjcB71LYnXRRsF6ZqQ==}
+  focus-trap-vue@4.1.0:
+    resolution: {integrity: sha512-RvK28mED+4fqoqnJQyadfoiKZU2G/QEez+EnJtdsg83DjiuKetimvDGas9ot4p5bn1J09rDmKLtKFMBkwQc+JA==}
     peerDependencies:
       focus-trap: ^7.0.0
       vue: ^3.0.0
@@ -6901,7 +6901,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/eslint-parser@7.28.0(@babel/core@7.28.0)(eslint@9.33.0(jiti@2.5.1))':
+  '@babel/eslint-parser@7.28.4(@babel/core@7.28.0)(eslint@9.33.0(jiti@2.5.1))':
     dependencies:
       '@babel/core': 7.28.0
       '@nicolo-ribaudo/eslint-scope-5-internals': 5.1.1-v1
@@ -7839,7 +7839,7 @@ snapshots:
       '@cucumber/ci-environment': 10.0.1
       '@cucumber/cucumber-expressions': 18.0.1
       '@cucumber/gherkin': 32.2.0
-      '@cucumber/gherkin-streams': 5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0))(@cucumber/messages@27.2.0)
+      '@cucumber/gherkin-streams': 5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)
       '@cucumber/gherkin-utils': 9.2.0
       '@cucumber/html-formatter': 21.13.0(@cucumber/messages@27.2.0)
       '@cucumber/junit-xml-formatter': 0.7.1(@cucumber/messages@27.2.0)
@@ -7876,7 +7876,7 @@ snapshots:
       yaml: 2.8.1
       yup: 1.6.1
 
-  '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0))(@cucumber/messages@27.2.0)':
+  '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@32.2.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)':
     dependencies:
       '@cucumber/gherkin': 32.2.0
       '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)
@@ -8969,43 +8969,43 @@ snapshots:
       unhead: 1.11.20
       vue: 3.5.21(typescript@5.9.2)
 
-  '@uppy/companion-client@4.5.2(@uppy/core@4.5.2)':
+  '@uppy/companion-client@5.0.0(@uppy/core@5.0.1)':
     dependencies:
-      '@uppy/core': 4.5.2
-      '@uppy/utils': 6.2.2
+      '@uppy/core': 5.0.1
+      '@uppy/utils': 7.0.1
       namespace-emitter: 2.0.1
       p-retry: 6.2.1
 
-  '@uppy/core@4.5.2':
+  '@uppy/core@5.0.1':
     dependencies:
       '@transloadit/prettier-bytes': 0.3.5
-      '@uppy/store-default': 4.3.2
-      '@uppy/utils': 6.2.2
+      '@uppy/store-default': 5.0.0
+      '@uppy/utils': 7.0.1
       lodash: 4.17.21
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
       nanoid: 5.1.5
       preact: 10.27.0
 
-  '@uppy/store-default@4.3.2': {}
+  '@uppy/store-default@5.0.0': {}
 
-  '@uppy/tus@4.3.2(@uppy/core@4.5.2)':
+  '@uppy/tus@5.0.0(@uppy/core@5.0.1)':
     dependencies:
-      '@uppy/companion-client': 4.5.2(@uppy/core@4.5.2)
-      '@uppy/core': 4.5.2
-      '@uppy/utils': 6.2.2
+      '@uppy/companion-client': 5.0.0(@uppy/core@5.0.1)
+      '@uppy/core': 5.0.1
+      '@uppy/utils': 7.0.1
       tus-js-client: 4.3.1
 
-  '@uppy/utils@6.2.2':
+  '@uppy/utils@7.0.1':
     dependencies:
       lodash: 4.17.21
       preact: 10.27.0
 
-  '@uppy/xhr-upload@4.4.2(@uppy/core@4.5.2)':
+  '@uppy/xhr-upload@5.0.0(@uppy/core@5.0.1)':
     dependencies:
-      '@uppy/companion-client': 4.5.2(@uppy/core@4.5.2)
-      '@uppy/core': 4.5.2
-      '@uppy/utils': 6.2.2
+      '@uppy/companion-client': 5.0.0(@uppy/core@5.0.1)
+      '@uppy/core': 5.0.1
+      '@uppy/utils': 7.0.1
 
   '@vavt/cm-extension@1.11.0': {}
 
@@ -9238,13 +9238,13 @@ snapshots:
       '@unhead/vue': 1.11.20(vue@3.5.21(typescript@5.9.2))
       vue: 3.5.21(typescript@5.9.2)
 
-  '@vueuse/integrations@12.8.2(axios@1.12.0)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.2)':
+  '@vueuse/integrations@12.8.2(axios@1.12.2)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.2)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@5.9.2)
       '@vueuse/shared': 12.8.2(typescript@5.9.2)
       vue: 3.5.21(typescript@5.9.2)
     optionalDependencies:
-      axios: 1.12.0
+      axios: 1.12.2
       change-case: 5.4.4
       focus-trap: 7.6.5
       fuse.js: 7.1.0
@@ -9411,7 +9411,7 @@ snapshots:
 
   axe-core@4.10.3: {}
 
-  axios@1.12.0:
+  axios@1.12.2:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.4
@@ -10373,7 +10373,7 @@ snapshots:
 
   flush-promises@1.0.2: {}
 
-  focus-trap-vue@4.0.3(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2)):
+  focus-trap-vue@4.1.0(focus-trap@7.6.5)(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       focus-trap: 7.6.5
       vue: 3.5.21(typescript@5.9.2)
@@ -12558,7 +12558,7 @@ snapshots:
       sass: 1.90.0
       yaml: 2.8.1
 
-  vitepress@1.6.4(@algolia/client-search@5.35.0)(@types/node@22.16.0)(axios@1.12.0)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(lightningcss@1.30.1)(postcss@8.5.6)(sass@1.90.0)(search-insights@2.17.3)(typescript@5.9.2):
+  vitepress@1.6.4(@algolia/client-search@5.35.0)(@types/node@22.16.0)(axios@1.12.2)(change-case@5.4.4)(fuse.js@7.1.0)(jwt-decode@4.0.0)(lightningcss@1.30.1)(postcss@8.5.6)(sass@1.90.0)(search-insights@2.17.3)(typescript@5.9.2):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.35.0)(search-insights@2.17.3)
@@ -12571,7 +12571,7 @@ snapshots:
       '@vue/devtools-api': 7.7.7
       '@vue/shared': 3.5.21
       '@vueuse/core': 12.8.2(typescript@5.9.2)
-      '@vueuse/integrations': 12.8.2(axios@1.12.0)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.2)
+      '@vueuse/integrations': 12.8.2(axios@1.12.2)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.2)
       focus-trap: 7.6.5
       mark.js: 8.11.1
       minisearch: 7.1.2

@@ -6,8 +6,7 @@ import { Language } from 'vue3-gettext'
 import { eventBus } from '../eventBus'
 import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
-import generateFileID from '@uppy/utils/lib/generateFileID'
-import { Body, MinimalRequiredUppyFile } from '@uppy/utils/lib/UppyFile'
+import { generateFileID, Body, MinimalRequiredUppyFile } from '@uppy/utils'
 
 type UppyServiceTopics =
   | 'uploadStarted'

@@ -21,7 +21,7 @@ import {
 import { locationSpacesGeneric, UppyService } from '@opencloud-eu/web-pkg'
 import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
 import { ClientService, queryItemAsString } from '@opencloud-eu/web-pkg'
-import { PluginOpts } from '@uppy/core/lib/BasePlugin'
+import { PluginOpts } from '@uppy/core'
 
 export interface HandleUploadOptions {
   clientService: ClientService
