@@ -69,6 +69,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.5.2 [[#1127](https://github.com/opencloud-eu/web/pull/1127)]
+- chore(deps): update devdependencies (non-major) [[#1078](https://github.com/opencloud-eu/web/pull/1078)]
 - fix(deps): update dependency p-queue to v8.1.1 [[#1195](https://github.com/opencloud-eu/web/pull/1195)]
 - fix(deps): update dependency md-editor-v3 to v5.8.5 [[#1194](https://github.com/opencloud-eu/web/pull/1194)]
 - fix(deps): update dependency @babel/eslint-parser to v7.28.4 [[#1189](https://github.com/opencloud-eu/web/pull/1189)]
