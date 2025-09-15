@@ -39,4 +39,7 @@ Feature: Mobile device test
       | resource       | type |
       | testavatar.jpg | file |
     And "Alice" closes the file viewer
+    And "Alice" sees the resources displayed as "tiles"
+    And "Alice" switches to the "table" view
+    And "Alice" sees the resources displayed as "table"
     And "Alice" logs out

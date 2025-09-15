@@ -49,9 +49,9 @@ Feature: Accessibility checks
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
-    And "Alice" switches to the tiles-view
+    And "Alice" switches to the "tiles" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
-    And "Alice" switches to the "resource-table-condensed" view mode
+    And "Alice" switches to the "table-condensed" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
 
     # shares
@@ -65,11 +65,11 @@ Feature: Accessibility checks
     # project spaces
     And "Alice" navigates to the projects space page
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
-    And "Alice" switches to the tiles-view
+    And "Alice" switches to the "tiles" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
     And "Alice" navigates to the project space "my_space"
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
-    And "Alice" switches to the "resource-table" view mode
+    And "Alice" switches to the "table" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "project spaces"
 
     # deleted files
