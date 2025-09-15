@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SpaceInfo > shows space info 1`] = `
-"<div class="space_info grid items-center p-2">
-  <div class="space_info__body flex items-center text-sm">
+"<div class="grid items-center p-2">
+  <div class="flex items-center text-sm">
     <div class="mr-2">
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="medium" type="span" class="block"></oc-icon-stub>
     </div>

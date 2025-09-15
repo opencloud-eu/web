@@ -28,7 +28,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 const elSelector = {
-  component: '#create-and-upload-actions',
+  component: '.create-and-upload-actions',
   newFileButton: '#new-file-menu-btn',
   uploadBtn: '#upload-menu-btn',
   resourceUpload: 'resource-upload-stub',

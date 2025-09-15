@@ -4,14 +4,9 @@
       <app-bar ref="appBarRef" :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message
-          v-if="isEmpty"
-          id="files-favorites-empty"
-          class="files-empty"
-          icon="star"
-        >
+        <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
           <template #message>
-            <span v-translate>There are no resources marked as favorite</span>
+            <span v-text="$gettext('There are no resources marked as favorite')" />
           </template>
         </no-content-message>
         <component

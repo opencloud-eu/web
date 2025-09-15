@@ -40,7 +40,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="mobile-search-btn inline-flex sm:hidden mr-6"
+      class="inline-flex sm:hidden mr-6"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -62,7 +62,7 @@
       <oc-list class="oc-list-divider">
         <li
           v-if="loading"
-          class="loading spinner flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
+          class="flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
           <span class="ml-2">{{ $gettext('Searching ...') }}</span>

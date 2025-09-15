@@ -30,7 +30,6 @@
         <not-found-message
           v-if="folderNotFound"
           :space="space"
-          class="files-not-found"
           :class="{ 'h-[55vh]': isSpaceFrontpage }"
         />
         <template v-else>
@@ -43,7 +42,6 @@
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
-            class="files-empty"
             :class="{ 'h-[55vh]': isSpaceFrontpage }"
             icon="folder"
           >

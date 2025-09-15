@@ -79,7 +79,7 @@ const progressValue = computed(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .oc-progress {
   &-indeterminate-first {
     animation-duration: 2s;

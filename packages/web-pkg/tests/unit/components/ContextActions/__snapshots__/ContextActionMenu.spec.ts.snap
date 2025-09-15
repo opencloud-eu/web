@@ -2,17 +2,17 @@
 
 exports[`ContextActionMenu component > renders the menu with actions 1`] = `
 "<div id="oc-files-context-menu">
-  <ul class="oc-list oc-files-context-actions pb-2 border-b" id="oc-files-context-actions-section 1"> </ul>
-  <ul class="oc-list oc-files-context-actions pt-2" id="oc-files-context-actions-section 2"> </ul>
+  <ul class="oc-list [&amp;_li]:px-0 pb-2 border-b" id="oc-files-context-actions-section 1"> </ul>
+  <ul class="oc-list [&amp;_li]:px-0 pt-2" id="oc-files-context-actions-section 2"> </ul>
 </div>"
 `;
 
 exports[`ContextActionMenu component > renders the menu with drop menu items 1`] = `
 "<div id="oc-files-context-menu">
-  <ul class="oc-list oc-files-context-actions pb-2 border-b" id="oc-files-context-actions-apps">
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-apps-toggle-2" aria-expanded="false">
+  <ul class="oc-list [&amp;_li]:px-0 pb-2 border-b" id="oc-files-context-actions-apps">
+    <li class="context-menu px-2"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-apps-toggle-2" aria-expanded="false">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="inline-flex gap-2"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -20,7 +20,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Apps</span></span> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Apps</span></span></span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -35,13 +35,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Preview</span></span>
                   <!--v-if-->
                 </button></li>
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>PDF Viewer</span></span>
@@ -54,16 +54,16 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
       </div>
     </li>
   </ul>
-  <ul class="oc-list oc-files-context-actions pb-2 pt-2 border-b" id="oc-files-context-actions-actions">
-    <li class="context-menu oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+  <ul class="oc-list [&amp;_li]:px-0 pb-2 pt-2 border-b" id="oc-files-context-actions-actions">
+    <li class="context-menu"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
         <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Download</span></span>
         <!--v-if-->
       </button></li>
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-actions-toggle-4" aria-expanded="false">
+    <li class="context-menu px-2"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-actions-toggle-4" aria-expanded="false">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="inline-flex gap-2"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -71,7 +71,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Actions</span></span> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Actions</span></span></span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -86,13 +86,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Copy</span></span>
                   <!--v-if-->
                 </button></li>
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Paste</span></span>
@@ -104,9 +104,9 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         </div>
       </div>
     </li>
-    <li class="context-menu oc-files-context-action px-2 rounded-sm oc-menu-item-hover"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-delete-toggle-6" aria-expanded="false">
+    <li class="context-menu px-2"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-delete-toggle-6" aria-expanded="false">
         <!--v-if-->
-        <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
+        <!-- @slot Content of the button --> <span class="inline-flex gap-2"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/info-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -114,7 +114,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Delete</span></span> <span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
+    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span> <span class="flex oc-files-context-action-label"><span>Delete</span></span></span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -129,13 +129,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Delete</span></span>
                   <!--v-if-->
                 </button></li>
-              <li class="oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Delete permanently</span></span>
@@ -148,8 +148,8 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
       </div>
     </li>
   </ul>
-  <ul class="oc-list oc-files-context-actions pt-2" id="oc-files-context-actions-sidebar">
-    <li class="context-menu oc-files-context-action rounded-sm oc-menu-item-hover"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+  <ul class="oc-list [&amp;_li]:px-0 pt-2" id="oc-files-context-actions-sidebar">
+    <li class="context-menu"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
         <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Details</span></span>

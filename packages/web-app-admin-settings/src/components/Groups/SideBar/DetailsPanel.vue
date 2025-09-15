@@ -1,12 +1,12 @@
 <template>
-  <div v-if="noGroups" class="group-info flex flex-col items-center text-center mt-12">
+  <div v-if="noGroups" class="flex flex-col items-center text-center mt-12">
     <oc-icon name="group-2" size="xxlarge" />
     <p v-translate>Select a group to view details</p>
   </div>
   <div
     v-if="multipleGroups"
     id="oc-groups-details-multiple-sidebar"
-    class="group-info flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
+    class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group-2" size="xxlarge" />
     <p>{{ multipleGroupsSelectedText }}</p>
@@ -14,7 +14,7 @@
   <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <GroupInfoBox :group="group" />
     <p
-      class="selected-group-details table p-1"
+      class="table p-1"
       :aria-label="$gettext('Overview of the information about the selected group')"
     >
       <span class="pr-2 font-semibold" v-text="$gettext('Group name')" />

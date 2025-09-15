@@ -2,7 +2,7 @@
   <main id="files" class="flex h-full max-h-full relative">
     <div
       v-if="dragareaEnabled"
-      class="dragarea absolute inset-0 z-90 bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl pointer-events-none"
+      class="absolute inset-0 z-90 bg-sky-600/20 border-2 border-dashed border-role-outline rounded-xl pointer-events-none"
     />
     <router-view tabindex="0" class="files-wrapper flex-1 h-full flex-nowrap sm:flex-wrap" />
   </main>

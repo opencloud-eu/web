@@ -49,7 +49,7 @@ describe('OcSearchBar', () => {
     })
     it('should not render icon if false', () => {
       const wrapper = getWrapper({ icon: false })
-      const iconStub = wrapper.find('.oc-search-icon')
+      const iconStub = wrapper.find('oc-icon-stub[name="mdi-icon"]')
       expect(iconStub.exists()).toBeFalsy()
     })
   })

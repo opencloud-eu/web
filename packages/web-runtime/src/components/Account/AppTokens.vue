@@ -51,7 +51,6 @@
             no-hover
             gap-size="none"
             size="small"
-            class="delete-app-token-btn"
             :aria-label="$gettext('Delete app token')"
             @click="openDeleteAppTokenModal(item)"
           >

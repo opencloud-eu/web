@@ -6,7 +6,7 @@ exports[`account page > account information section > displays basic user inform
     <h2>Account Information</h2>
     <!--v-if-->
   </div>
-  <table class="oc-table-simple">
+  <table data-v-381278b9="" class="oc-table-simple">
     <colgroup>
       <col class="w-auto md:w-[30%]">
       <col class="w-auto md:w-[40%]">
@@ -14,19 +14,19 @@ exports[`account page > account information section > displays basic user inform
     </colgroup>
     <thead class="oc-thead border-b sr-only">
       <tr data-v-98c4aba8="">
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
-        <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
+        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
+        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
       </tr>
     </thead>
     <tbody>
-      <tr data-v-98c4aba8="" class="account-page-info-profile-picture">
-        <td class="oc-table-cell text-left align-middle oc-td">Profile picture</td>
-        <td class="oc-table-cell text-left align-middle oc-td">Max. 10MB, JPG, PNG</td>
-        <td class="oc-table-cell text-left align-middle oc-td">
-          <div class="avatar-upload mb-2"><input class="invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
+      <tr data-v-98c4aba8="">
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Profile picture</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Max. 10MB, JPG, PNG</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
+          <div class="[&amp;_.cropper-crop-box]:!outline-1 [&amp;_.cropper-crop-box]:!outline-role-outline [&amp;_.cropper-view-box]:!rounded-[50%] [&amp;_.cropper-crop-box]:!rounded-[50%] [&amp;_.cropper-line]:!bg-role-outline [&amp;_.cropper-point]:!bg-role-outline mb-2"><input class="invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
             <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div>
-                <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default avatar-upload-button">
+                <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
                     <!--v-if-->
                     <!-- @slot Content of the button --> Upload
                   </button>
@@ -40,25 +40,25 @@ exports[`account page > account information section > displays basic user inform
         </td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-info-username">
-        <td class="oc-table-cell text-left align-middle oc-td">Username</td>
-        <td class="oc-table-cell text-left align-middle oc-td">some-username</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Username</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-username</td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-info-displayname">
-        <td class="oc-table-cell text-left align-middle oc-td">First and last name</td>
-        <td class="oc-table-cell text-left align-middle oc-td">some-displayname</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">First and last name</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-displayname</td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-info-email">
-        <td class="oc-table-cell text-left align-middle oc-td">Email</td>
-        <td class="oc-table-cell text-left align-middle oc-td">some-email</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Email</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-email</td>
       </tr>
       <!--v-if-->
       <tr data-v-98c4aba8="" class="account-page-info-groups">
-        <td class="oc-table-cell text-left align-middle oc-td">Group memberships</td>
-        <td class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Group memberships</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-logout-all-devices">
-        <td class="oc-table-cell text-left align-middle oc-td">Logout from active devices</td>
-        <td class="oc-table-cell text-left align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Logout from active devices</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
             <!--v-if-->
             <!-- @slot Content of the button --> <span>Show devices</span>
           </a></td>
@@ -68,12 +68,12 @@ exports[`account page > account information section > displays basic user inform
 </div>"
 `;
 
-exports[`account page > account information section > group membership > displays group names 1`] = `"<td class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
+exports[`account page > account information section > group membership > displays group names 1`] = `"<td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
 
 exports[`account page > header section > edit url button > should be displayed if defined via config 1`] = `
 "<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content size-5.5"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -91,11 +91,11 @@ exports[`account page > public link context > should render a limited view 1`] =
     <h1 id="account-page-title" class="mb-0 border-b">My Account</h1>
     <!--v-if-->
     <div class="account-table account-page-preferences">
-      <h2 class="account-table-title flex items-center">Preferences
+      <h2 class="flex items-center">Preferences
         <!--v-if-->
       </h2>
       <!--v-if-->
-      <table class="oc-table-simple">
+      <table data-v-381278b9="" class="oc-table-simple">
         <colgroup>
           <col class="w-auto md:w-[30%]">
           <col class="w-auto md:w-[40%]">
@@ -103,17 +103,17 @@ exports[`account page > public link context > should render a limited view 1`] =
         </colgroup>
         <thead class="oc-thead border-b sr-only">
           <tr data-v-98c4aba8="">
-            <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference name</th>
-            <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference description</th>
-            <th class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference value</th>
+            <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference name</th>
+            <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference description</th>
+            <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Preference value</th>
           </tr>
         </thead>
         <tbody>
           <tr data-v-98c4aba8="" class="account-page-info-language">
-            <td class="oc-table-cell text-left align-middle oc-td">Language</td>
-            <td class="oc-table-cell text-left align-middle oc-td">
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Language</td>
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
               <div class="flex"><span>Select your language.</span> <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                  <div class="flex ml-1 items-center"><span>Help to translate</span> <span class="oc-icon box-content size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
+                  <div class="flex ml-1 items-center"><span>Help to translate</span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/service-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -124,16 +124,16 @@ exports[`account page > public link context > should render a limited view 1`] =
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span></div>
                 </a></div>
             </td>
-            <td class="oc-table-cell text-left align-middle oc-td" data-testid="language">
-              <div options="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" model-value="[object Object]">
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="language">
+              <div data-v-9521f10d="" options="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" model-value="[object Object]">
                 <!--v-if-->
                 <!--v-if-->
-                <div dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
+                <div data-v-9521f10d="" dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
                   <div id="vs1__combobox" class="vs__dropdown-toggle" role="combobox" aria-expanded="false" aria-owns="vs1__listbox" aria-label="Language - Search for option">
-                    <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> English <!--v-if--></span><input class="vs__search" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
+                    <div class="vs__selected-options"><span data-v-9521f10d="" class="vs__selected"><!--v-if--> English <!--v-if--></span><input data-v-9521f10d="" class="vs__search" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
                     <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                           <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                        </svg></button><span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+                        </svg></button><span data-v-9521f10d="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -155,19 +155,19 @@ exports[`account page > public link context > should render a limited view 1`] =
           </tr>
           <!--v-if-->
           <tr data-v-98c4aba8="" class="account-page-info-theme">
-            <td class="oc-table-cell text-left align-middle oc-td">Theme</td>
-            <td class="oc-table-cell text-left align-middle oc-td"><span>Select your favorite theme</span></td>
-            <td class="oc-table-cell text-left align-middle oc-td" data-testid="theme">
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Theme</td>
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td"><span>Select your favorite theme</span></td>
+            <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="theme">
               <div>
-                <div model-value="[object Object]" options="[object Object],[object Object],[object Object]">
+                <div data-v-9521f10d="" model-value="[object Object]" options="[object Object],[object Object],[object Object]">
                   <!--v-if-->
                   <!--v-if-->
-                  <div dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
+                  <div data-v-9521f10d="" dir="auto" class="v-select vs--single vs--searchable oc-select bg-transparent">
                     <div id="vs2__combobox" class="vs__dropdown-toggle" role="combobox" aria-expanded="false" aria-owns="vs2__listbox" aria-label="Theme - Search for option">
-                      <div class="vs__selected-options"><span class="vs__selected"><!--v-if--> Auto (same as system) <!--v-if--></span><input class="vs__search" id="oc-select-2" aria-autocomplete="list" aria-labelledby="vs2__combobox" aria-controls="vs2__listbox" type="search" autocomplete="off" value=""></div>
+                      <div class="vs__selected-options"><span data-v-9521f10d="" class="vs__selected"><!--v-if--> Auto (same as system) <!--v-if--></span><input data-v-9521f10d="" class="vs__search" id="oc-select-2" aria-autocomplete="list" aria-labelledby="vs2__combobox" aria-controls="vs2__listbox" type="search" autocomplete="off" value=""></div>
                       <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                             <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                          </svg></button><span class="oc-icon box-content size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+                          </svg></button><span data-v-9521f10d="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

@@ -20,7 +20,7 @@ exports[`EditPanel > renders all available inputs 1`] = `
       <quota-select-stub totalquota="0" maxquota="0" id="quota-select-form" disabled="false" class="mb-2" label="Personal quota" fix-message-line="true" description-message="" read-only="false" required-mark=""></quota-select-stub>
       <group-select-stub selectedgroups="" groupoptions="undefined,undefined" requiredmark="false" class="mb-2" read-only="false"></group-select-stub>
     </div>
-    <compare-save-dialog-stub originalobject="[object Object]" compareobject="[object Object]" confirmbuttondisabled="false" class="edit-compare-save-dialog mb-6"></compare-save-dialog-stub>
+    <compare-save-dialog-stub originalobject="[object Object]" compareobject="[object Object]" confirmbuttondisabled="false" class="mb-6"></compare-save-dialog-stub>
   </form>
 </div>"
 `;

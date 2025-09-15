@@ -25,7 +25,7 @@ export interface Props {
 const { alignH = 'left', alignV = 'middle', width = 'auto', wrap } = defineProps<Props>()
 defineEmits(['click'])
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
