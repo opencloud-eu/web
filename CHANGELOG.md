@@ -16,6 +16,14 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### ✅ Tests
+
+- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
+- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
+- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
+
 ### 📈 Enhancement
 
 - Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
@@ -55,13 +63,6 @@
 - fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
 - fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
 - fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
-
-### ✅ Tests
-
-- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
 
 ### 📦️ Dependencies
 
