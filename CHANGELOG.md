@@ -16,17 +16,9 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### ✅ Tests
-
-- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
-- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
-- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
 ### 📈 Enhancement
 
+- fix: adjusted notification area with tailwind [[#1168](https://github.com/opencloud-eu/web/pull/1168)]
 - Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
 - feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
 - refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
@@ -52,6 +44,15 @@
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
 
+### ✅ Tests
+
+- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
+- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
+- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
+- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
+
 ### 🐛 Bug Fixes
 
 - fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
@@ -67,6 +68,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.11.0 [[#1122](https://github.com/opencloud-eu/web/pull/1122)]
+- fix(deps): update dependency @vueuse/core to v13.9.0 [[#1123](https://github.com/opencloud-eu/web/pull/1123)]
+- fix(deps): update dependency zod to v4.1.8 [[#1128](https://github.com/opencloud-eu/web/pull/1128)]
 - fix(deps): update dependency axios to v1.12.0 [security] [[#1185](https://github.com/opencloud-eu/web/pull/1185)]
 - chore(deps): update dependency vite to v6.3.6 [security] [[#1167](https://github.com/opencloud-eu/web/pull/1167)]
 - [full-ci] bump-opencloud-3.4.0. run all tests [[#1137](https://github.com/opencloud-eu/web/pull/1137)]
