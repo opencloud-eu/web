@@ -69,6 +69,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.21 [[#1102](https://github.com/opencloud-eu/web/pull/1102)]
 - fix(deps): update dependency eslint-plugin-unused-imports to v4.2.0 [[#1088](https://github.com/opencloud-eu/web/pull/1088)]
 - fix(deps): update dependency @sentry/vue to v10.11.0 [[#1122](https://github.com/opencloud-eu/web/pull/1122)]
 - fix(deps): update dependency @vueuse/core to v13.9.0 [[#1123](https://github.com/opencloud-eu/web/pull/1123)]
