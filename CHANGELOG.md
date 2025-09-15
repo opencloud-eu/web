@@ -66,6 +66,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency axios to v1.12.0 [security] [[#1185](https://github.com/opencloud-eu/web/pull/1185)]
 - chore(deps): update dependency vite to v6.3.6 [security] [[#1167](https://github.com/opencloud-eu/web/pull/1167)]
 - [full-ci] bump-opencloud-3.4.0. run all tests [[#1137](https://github.com/opencloud-eu/web/pull/1137)]
 - use bitnamilegacy [[#1133](https://github.com/opencloud-eu/web/pull/1133)]
