@@ -1,5 +1,5 @@
 import {
-  RESOURCE_MAX_CHARACTER_LENGTH,
+  RESOURCE_NAME_MAX_BYTES,
   useIsResourceNameValid,
   useResourcesStore
 } from '../../../../../src'
@@ -103,8 +103,8 @@ describe('useIsResourceNameValid', () => {
       },
       {
         currentName: 'currentName',
-        newName: 'l'.repeat(64),
-        message: `The name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
+        newName: 'l'.repeat(RESOURCE_NAME_MAX_BYTES + 1),
+        message: `The name is too long`
       }
     ])('should detect name errors and display error messages accordingly %$', (inputData) => {
       getWrapper({
@@ -150,8 +150,8 @@ describe('useIsResourceNameValid', () => {
         message: 'The Space name cannot start or end with whitespace'
       },
       {
-        newName: 'l'.repeat(64),
-        message: `The Space name cannot be longer than ${RESOURCE_MAX_CHARACTER_LENGTH} characters`
+        newName: 'l'.repeat(RESOURCE_NAME_MAX_BYTES + 1),
+        message: 'The Space name is too long'
       }
     ])('should detect name errors and display error messages accordingly %$', (inputData) => {
       getWrapper({
