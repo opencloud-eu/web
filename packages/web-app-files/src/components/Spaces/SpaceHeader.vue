@@ -76,9 +76,10 @@
       <div
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
-        class="markdown-container flex [&.collapsed]:max-h-[100px] [&.collapsed]:overflow-hidden"
+        class="markdown-container flex min-h-0"
         :class="{
-          'mask-linear-[180deg,black,transparent] collapsed ': markdownCollapsed
+          collapsed: markdownCollapsed,
+          'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse
         }"
       >
         <text-editor
