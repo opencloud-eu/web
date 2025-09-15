@@ -184,6 +184,15 @@ config = {
                 "mobile-view",
             ],
         },
+        "localization-de": {
+            "skip": False,
+            "features": [
+                "cucumber/features/a11y/smoke.feature",
+            ],
+            "extraServerEnvironment": {
+                "OC_DEFAULT_LANGUAGE": "de",
+            },
+        },
     },
     "build": True,
 }
@@ -562,6 +571,9 @@ def e2eTests(ctx):
         if "ocm" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
             continue
 
+        if "localization-de" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
+            continue
+
         if params["skip"]:
             continue
 
@@ -636,6 +648,9 @@ def e2eTests(ctx):
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
+
+            if "localization-de" in suite:
+                command = "OC_DEFAULT_LANGUAGE=de pnpm test:e2e:cucumber tests/e2e/cucumber/features/a11y/smoke.feature"
 
             steps += [{
                          "name": "e2e-tests",

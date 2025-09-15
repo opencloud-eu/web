@@ -49,10 +49,11 @@ Feature: Accessibility checks
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
-    And "Alice" switches to the "tiles" view
-    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
     And "Alice" switches to the "table-condensed" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
+    # check empty page
+    And "Brian" opens the "files" app
+    And "Brian" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
 
     # shares
     And "Alice" navigates to the shared with me page
@@ -141,6 +142,9 @@ Feature: Accessibility checks
     ## 6. space page
     And "Alice" navigates to the project space "my_space"
     And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
+    And "Brian" opens the "files" app
+    And "Brian" navigates to the projects space page
+    And "Brian" checks the accessibility of the DOM selector "#files-view" on the "project spaces page"
     
     
     ## 7. app-sidebar (right sidebar)
@@ -158,8 +162,8 @@ Feature: Accessibility checks
     
     # check create public link modal and link role dropdown
     And "Alice" creates a public link of following resource using the sidebar panel
-      | resource         | role     | password |
-      | parent  | Secret File Drop | %public% |
+      | resource | role             | password |
+      | parent   | Secret File Drop | %public% |
 
     ## 8. public link page
     And "Anonymous" opens the public link "Unnamed link"
