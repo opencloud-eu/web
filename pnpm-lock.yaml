@@ -38,11 +38,11 @@ importers:
         specifier: 12.2.0
         version: 12.2.0
       '@cucumber/messages':
-        specifier: 28.1.0
-        version: 28.1.0
+        specifier: 29.0.1
+        version: 29.0.1
       '@cucumber/pretty-formatter':
         specifier: 2.2.0
-        version: 2.2.0(@cucumber/messages@28.1.0)
+        version: 2.2.0(@cucumber/messages@29.0.1)
       '@noble/hashes':
         specifier: 1.8.0
         version: 1.8.0
@@ -308,7 +308,7 @@ importers:
         version: 10.1.8(eslint@9.35.0(jiti@2.5.1))
       eslint-plugin-n:
         specifier: ^17.0.0
-        version: 17.21.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
+        version: 17.23.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
       eslint-plugin-promise:
         specifier: ^7.0.0
         version: 7.2.1(eslint@9.35.0(jiti@2.5.1))
@@ -1923,6 +1923,9 @@ packages:
 
   '@cucumber/messages@28.1.0':
     resolution: {integrity: sha512-2LzZtOwYKNlCuNf31ajkrekoy2M4z0Z1QGiPH40n4gf5t8VOUFb7m1ojtR4LmGvZxBGvJZP8voOmRqDWzBzYKA==}
+
+  '@cucumber/messages@29.0.1':
+    resolution: {integrity: sha512-aAvIYfQD6/aBdF8KFQChC3CQ1Q+GX9orlR6GurGiX6oqaCnBkxA4WU3OQUVepDynEFrPayerqKRFcAMhdcXReQ==}
 
   '@cucumber/pretty-formatter@1.0.1':
     resolution: {integrity: sha512-A1lU4VVP0aUWdOTmpdzvXOyEYuPtBDI0xYwYJnmoMDplzxMdhcHk86lyyvYDoMoPzzq6OkOE3isuosvUU4X7IQ==}
@@ -4060,8 +4063,8 @@ packages:
     peerDependencies:
       eslint: '>=8'
 
-  eslint-plugin-n@17.21.3:
-    resolution: {integrity: sha512-MtxYjDZhMQgsWRm/4xYLL0i2EhusWT7itDxlJ80l1NND2AL2Vi5Mvneqv/ikG9+zpran0VsVRXTEHrpLmUZRNw==}
+  eslint-plugin-n@17.23.0:
+    resolution: {integrity: sha512-aPePGxUr5LezcXmMRBF83eK1MmqUYY1NdLdHC+jdpfc5b98eL7yDXY20gXJ6DcTxrHBhrLsfYYqo7J+m0h9YXQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=8.23.0'
@@ -7856,7 +7859,7 @@ snapshots:
       '@cucumber/gherkin-utils': 9.2.0
       '@cucumber/html-formatter': 21.14.0(@cucumber/messages@28.1.0)
       '@cucumber/junit-xml-formatter': 0.8.1(@cucumber/messages@28.1.0)
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@28.1.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@29.0.1)
       '@cucumber/messages': 28.1.0
       '@cucumber/pretty-formatter': 1.0.1(@cucumber/cucumber@12.2.0)(@cucumber/messages@28.1.0)
       '@cucumber/tag-expressions': 6.2.0
@@ -7893,7 +7896,7 @@ snapshots:
   '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@34.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0))(@cucumber/messages@28.1.0)':
     dependencies:
       '@cucumber/gherkin': 34.0.0
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@28.1.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@29.0.1)
       '@cucumber/messages': 28.1.0
       commander: 9.1.0
       source-map-support: 0.5.21
@@ -7926,9 +7929,9 @@ snapshots:
       luxon: 3.7.1
       xmlbuilder: 15.1.1
 
-  '@cucumber/message-streams@4.0.1(@cucumber/messages@28.1.0)':
+  '@cucumber/message-streams@4.0.1(@cucumber/messages@29.0.1)':
     dependencies:
-      '@cucumber/messages': 28.1.0
+      '@cucumber/messages': 29.0.1
 
   '@cucumber/messages@26.0.1':
     dependencies:
@@ -7951,6 +7954,11 @@ snapshots:
       reflect-metadata: 0.2.2
       uuid: 11.1.0
 
+  '@cucumber/messages@29.0.1':
+    dependencies:
+      class-transformer: 0.5.1
+      reflect-metadata: 0.2.2
+
   '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@12.2.0)(@cucumber/messages@28.1.0)':
     dependencies:
       '@cucumber/cucumber': 12.2.0
@@ -7960,10 +7968,10 @@ snapshots:
       figures: 3.2.0
       ts-dedent: 2.2.0
 
-  '@cucumber/pretty-formatter@2.2.0(@cucumber/messages@28.1.0)':
+  '@cucumber/pretty-formatter@2.2.0(@cucumber/messages@29.0.1)':
     dependencies:
-      '@cucumber/messages': 28.1.0
-      '@cucumber/query': 14.1.0(@cucumber/messages@28.1.0)
+      '@cucumber/messages': 29.0.1
+      '@cucumber/query': 14.1.0(@cucumber/messages@29.0.1)
 
   '@cucumber/query@13.5.0(@cucumber/messages@28.1.0)':
     dependencies:
@@ -7971,9 +7979,9 @@ snapshots:
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
-  '@cucumber/query@14.1.0(@cucumber/messages@28.1.0)':
+  '@cucumber/query@14.1.0(@cucumber/messages@29.0.1)':
     dependencies:
-      '@cucumber/messages': 28.1.0
+      '@cucumber/messages': 29.0.1
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
@@ -10146,7 +10154,7 @@ snapshots:
       eslint: 9.35.0(jiti@2.5.1)
       eslint-compat-utils: 0.5.1(eslint@9.35.0(jiti@2.5.1))
 
-  eslint-plugin-n@17.21.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2):
+  eslint-plugin-n@17.23.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.0(eslint@9.35.0(jiti@2.5.1))
       enhanced-resolve: 5.18.3
