@@ -1,6 +1,6 @@
 <template>
   <div id="account-extension">
-    <component :is="extension.content" />
+    <component :is="extension.content" v-if="extension" />
   </div>
 </template>
 <script setup lang="ts">
