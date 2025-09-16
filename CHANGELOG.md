@@ -70,6 +70,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update typescript-eslint monorepo to v8.44.0 [[#1202](https://github.com/opencloud-eu/web/pull/1202)]
 - chore(deps): update traefik docker tag to v3.5.2 [[#1127](https://github.com/opencloud-eu/web/pull/1127)]
 - chore(deps): update devdependencies (non-major) [[#1078](https://github.com/opencloud-eu/web/pull/1078)]
 - fix(deps): update dependency p-queue to v8.1.1 [[#1195](https://github.com/opencloud-eu/web/pull/1195)]
