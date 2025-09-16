@@ -13,7 +13,8 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
-  RouteLocationNamedRaw
+  RouteLocationNamedRaw,
+  RouteRecordRaw
 } from 'vue-router'
 
 // @ts-ignore
@@ -24,7 +25,7 @@ import AccountExtensions from '../pages/account/accountExtensions.vue'
 import AccountPreferences from '../pages/account/accountPreferences.vue'
 import AccountInformation from '../pages/account/accountInformation.vue'
 import AccountLayout from '../pages/account/accountLayout.vue'
-import accountGDPR from '../pages/account/accountGDPR.vue'
+import AccountGDPR from '../pages/account/accountGDPR.vue'
 import { createLocation, isLocationActiveDirector } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export * from './helpers'
@@ -65,7 +66,7 @@ export const isLocationAccountActive = isLocationActiveDirector<RouteAccountType
 )
 
 export const base = document.querySelector('base')
-const routes = [
+const routes: readonly RouteRecordRaw[] = [
   {
     path: '/login',
     name: routeNames.login,
@@ -148,7 +149,7 @@ const routes = [
       {
         path: 'gdpr',
         name: locationAccountGDPR.name,
-        component: accountGDPR
+        component: AccountGDPR
       }
     ]
   },
