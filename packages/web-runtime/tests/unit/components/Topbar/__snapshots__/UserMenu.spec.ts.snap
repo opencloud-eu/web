@@ -56,7 +56,7 @@ exports[`User Menu component > when quota and no email is set > renders a naviga
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class="py-1"><span class="block">Albert Einstein</span>
         <!--v-if-->
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
@@ -86,7 +86,7 @@ exports[`User Menu component > when quota is above 80% and below 90% > renders a
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">810 B of 1 kB used (81%)</span></p>
@@ -116,7 +116,7 @@ exports[`User Menu component > when quota is above 90% > renders a danger quota 
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">910 B of 1 kB used (91%)</span></p>
@@ -146,7 +146,7 @@ exports[`User Menu component > when quota is below 80% > renders a primary quota
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B of 1 kB used (30%)</span></p>
@@ -176,7 +176,7 @@ exports[`User Menu component > when quota is not defined > renders no percentag 
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">910 B used</span></p>
@@ -206,7 +206,7 @@ exports[`User Menu component > when quota is unlimited > renders no percentag of
   <oc-drop-stub title="Account" drop-id="account-info-container" toggle="#_userMenuButton" mode="click" close-on-click="" padding-size="small" class="overflow-hidden">
     <oc-list-stub class="user-menu-list">
       <li class="flex items-center pl-2 min-h-10.5 gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 36px; height: 36px; line-height: 36px; background-color: var(--oc-role-chrome); font-size: 14px; font-family: Helvetica, Arial, sans-serif; color: white;" width="36" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: var(--oc-role-on-chrome);">AE</span></span> <span class=""><span class="block">Albert Einstein</span> <span class="text-sm">test@test.de</span>
-        <div class="flex items-end text-sm mt-1">
+        <div class="flex items-center text-sm mt-1">
           <oc-icon-stub name="hard-drive-2" size="small" fill-type="line" class="mr-1"></oc-icon-stub>
           <div>
             <p class="my-0"><span class="quota-information-text">300 B used</span></p>

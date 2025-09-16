@@ -14,6 +14,7 @@ export type ExtensionType = StringUnionOrAnyString<
   | 'search'
   | 'sidebarNav'
   | 'sidebarPanel'
+  | 'accountExtension'
 >
 
 export type Extension = {
@@ -54,6 +55,13 @@ export interface FolderViewExtension extends Extension {
 export interface CustomComponentExtension extends Extension {
   type: 'customComponent'
   content: Slot | Component
+}
+
+export interface AccountExtension extends Extension {
+  type: 'accountExtension'
+  content: Slot | Component
+  label: () => string
+  icon: string
 }
 
 export interface AppMenuItemExtension extends Extension {

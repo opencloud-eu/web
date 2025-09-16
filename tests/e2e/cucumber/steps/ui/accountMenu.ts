@@ -35,6 +35,15 @@ When('{string} opens the user menu', async function (this: World, stepUser: stri
 })
 
 When(
+  '{string} opens {string} on the user menu',
+  async function (this: World, stepUser: string, subPage: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const accountObject = new objects.account.Account({ page })
+    await accountObject.openAccountSubPage(subPage)
+  }
+)
+
+When(
   '{string} requests a new GDPR export',
   async function (this: World, stepUser: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })

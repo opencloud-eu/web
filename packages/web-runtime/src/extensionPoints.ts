@@ -1,4 +1,5 @@
 import {
+  AccountExtension,
   AppMenuItemExtension,
   CustomComponentExtension,
   Extension,
@@ -14,9 +15,9 @@ export const appMenuExtensionPoint: ExtensionPoint<AppMenuItemExtension> = {
   multiple: true
 }
 
-export const preferencesPanelExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
+export const preferencesPanelExtensionPoint: ExtensionPoint<AccountExtension> = {
   id: 'app.runtime.preferences.panels',
-  extensionType: 'customComponent',
+  extensionType: 'accountExtension',
   multiple: true
 }
 
