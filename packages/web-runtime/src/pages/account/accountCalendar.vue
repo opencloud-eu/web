@@ -21,12 +21,15 @@
         <span v-text="$gettext('here')" />
       </oc-button>
     </span>
-    <account-table
-      :subtitle="
+    <p
+      class="text-sm mt-0 mb-4"
+      v-text="
         $gettext(
           'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
         )
       "
+    />
+    <account-table
       :fields="[
         $gettext('CalDAV information name'),
         $gettext('CalCAV information value'),
