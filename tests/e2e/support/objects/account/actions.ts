@@ -5,6 +5,7 @@ import { config } from '../../../config'
 const accountMenuButton = '.oc-topbar-avatar'
 const quotaValue = '.quota-information-text'
 const accountManageButton = '#oc-topbar-account-manage'
+const accountProfilePage = '/a[@data-nav-name="account-information"]'
 const infoValue = '.account-page-info-%s td:nth-child(2)'
 const requestExportButton = '[data-testid="request-export-btn"]'
 const downloadExportButton = '[data-testid="download-export-btn"]'
@@ -32,6 +33,7 @@ export const getUserInfo = async (args: { page: Page; key: string }): Promise<st
   const { page, key } = args
   await page.locator(accountMenuButton).click()
   await page.locator(accountManageButton).click()
+  await page.locator(accountProfilePage).click()
   return await page.locator(util.format(infoValue, key)).textContent()
 }
 
@@ -47,19 +49,19 @@ export const openAccountSubPage = async (args: { page: Page; subPage: string }):
   let id = ''
 
   switch (subPage) {
-    case 'profile':
+    case 'Profile':
       id = 'account-information'
       break
-    case 'preferences':
+    case 'Preferences':
       id = 'account-preferences'
       break
-    case 'extensions':
+    case 'Extensions':
       id = 'account-extensions'
       break
-    case 'calendar':
+    case 'Calendar':
       id = 'account-calendar'
       break
-    case 'gdpr':
+    case 'GDPR':
       id = 'account-gdpr'
       break
   }
