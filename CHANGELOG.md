@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
 - fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
 - fix: tailwind regressions [[#1183](https://github.com/opencloud-eu/web/pull/1183)]
 - fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
@@ -75,13 +76,8 @@
 - chore(deps): update devdependencies (non-major) [[#1078](https://github.com/opencloud-eu/web/pull/1078)]
 - fix(deps): update dependency p-queue to v8.1.1 [[#1195](https://github.com/opencloud-eu/web/pull/1195)]
 - fix(deps): update dependency md-editor-v3 to v5.8.5 [[#1194](https://github.com/opencloud-eu/web/pull/1194)]
-- fix(deps): update dependency @babel/eslint-parser to v7.28.4 [[#1189](https://github.com/opencloud-eu/web/pull/1189)]
-- fix(deps): update dependency focus-trap-vue to v4.1.0 [[#1076](https://github.com/opencloud-eu/web/pull/1076)]
 - fix(deps): update dependency axios to v1.12.2 [[#1190](https://github.com/opencloud-eu/web/pull/1190)]
-- fix(deps): update uppy monorepo (major) [[#1110](https://github.com/opencloud-eu/web/pull/1110)]
-- fix(deps): update vue monorepo to v3.5.21 [[#1102](https://github.com/opencloud-eu/web/pull/1102)]
 - fix(deps): update dependency eslint-plugin-unused-imports to v4.2.0 [[#1088](https://github.com/opencloud-eu/web/pull/1088)]
-- fix(deps): update dependency @sentry/vue to v10.11.0 [[#1122](https://github.com/opencloud-eu/web/pull/1122)]
 - fix(deps): update dependency @vueuse/core to v13.9.0 [[#1123](https://github.com/opencloud-eu/web/pull/1123)]
 - fix(deps): update dependency zod to v4.1.8 [[#1128](https://github.com/opencloud-eu/web/pull/1128)]
 - fix(deps): update dependency axios to v1.12.0 [security] [[#1185](https://github.com/opencloud-eu/web/pull/1185)]
