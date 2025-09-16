@@ -216,7 +216,7 @@ importers:
         version: 4.17.21
       luxon:
         specifier: ^3.5.0
-        version: 3.7.1
+        version: 3.7.2
       portal-vue:
         specifier: ^3.0.0
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.21(typescript@5.9.2))
@@ -364,7 +364,7 @@ importers:
         version: link:../web-pkg
       luxon:
         specifier: ^3.5.0
-        version: 3.7.1
+        version: 3.7.2
       pinia:
         specifier: ^2.2.2 || ^3.0.0
         version: 3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
@@ -557,8 +557,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       luxon:
-        specifier: 3.7.1
-        version: 3.7.1
+        specifier: 3.7.2
+        version: 3.7.2
       mark.js:
         specifier: ^8.11.1
         version: 8.11.1
@@ -759,7 +759,7 @@ importers:
         version: 4.17.21
       luxon:
         specifier: ^3.5.0
-        version: 3.7.1
+        version: 3.7.2
       uuid:
         specifier: ^11.0.0
         version: 11.1.0
@@ -860,7 +860,7 @@ importers:
         version: 4.17.21
       luxon:
         specifier: ^3.5.0
-        version: 3.7.1
+        version: 3.7.2
       mark.js:
         specifier: ^8.11.1
         version: 8.11.1
@@ -996,8 +996,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       luxon:
-        specifier: 3.7.1
-        version: 3.7.1
+        specifier: 3.7.2
+        version: 3.7.2
       mark.js:
         specifier: 8.11.1
         version: 8.11.1
@@ -4999,6 +4999,10 @@ packages:
     resolution: {integrity: sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==}
     engines: {node: '>=12'}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
@@ -7926,7 +7930,7 @@ snapshots:
       '@cucumber/messages': 28.1.0
       '@cucumber/query': 13.5.0(@cucumber/messages@28.1.0)
       '@teppeis/multimaps': 3.0.0
-      luxon: 3.7.1
+      luxon: 3.7.2
       xmlbuilder: 15.1.1
 
   '@cucumber/message-streams@4.0.1(@cucumber/messages@29.0.1)':
@@ -11101,6 +11105,8 @@ snapshots:
   luxon@3.5.0: {}
 
   luxon@3.7.1: {}
+
+  luxon@3.7.2: {}
 
   magic-string@0.30.19:
     dependencies:
