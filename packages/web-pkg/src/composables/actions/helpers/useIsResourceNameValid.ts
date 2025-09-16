@@ -1,7 +1,8 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { RESOURCE_MAX_CHARACTER_LENGTH } from '../../../constants'
+import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
 import { useResourcesStore } from '../../piniaStores'
+import { getTextByteSize } from '../../../helpers'
 
 export const useIsResourceNameValid = () => {
   const { $gettext } = useGettext()
@@ -32,12 +33,10 @@ export const useIsResourceNameValid = () => {
       return { isValid: false, error: $gettext('The name cannot start or end with whitespace') }
     }
 
-    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+    if (getTextByteSize(newName) > RESOURCE_NAME_MAX_BYTES) {
       return {
         isValid: false,
-        error: $gettext('The name cannot be longer than %{length} characters', {
-          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
-        })
+        error: $gettext('The name is too long')
       }
     }
 
@@ -62,12 +61,10 @@ export const useIsResourceNameValid = () => {
       }
     }
 
-    if (newName.length > RESOURCE_MAX_CHARACTER_LENGTH) {
+    if (getTextByteSize(newName) > RESOURCE_NAME_MAX_BYTES) {
       return {
         isValid: false,
-        error: $gettext('The Space name cannot be longer than %{length} characters', {
-          length: RESOURCE_MAX_CHARACTER_LENGTH.toString()
-        })
+        error: $gettext('The Space name is too long')
       }
     }
 
