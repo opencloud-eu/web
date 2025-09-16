@@ -119,10 +119,11 @@ const routes: readonly RouteRecordRaw[] = [
     path: '/account',
     name: routeNames.account,
     component: AccountLayout,
+    redirect: { name: locationAccountInformation.name },
     meta: { title: $gettext('Account'), authContext: 'hybrid' },
     children: [
       {
-        path: '',
+        path: 'information',
         name: locationAccountInformation.name,
         component: AccountInformation
       },

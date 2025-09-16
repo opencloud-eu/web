@@ -15,12 +15,10 @@
 import { useGettext } from 'vue3-gettext'
 import SidebarNav from '../../components/SidebarNav/SidebarNav.vue'
 import { isLocationAccountActive } from '../../router'
-import { useRouter } from 'vue-router'
 import { useActiveLocation } from '@opencloud-eu/web-pkg/src'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 
 const { $gettext } = useGettext()
-const router = useRouter()
 
 const navBarClosed = ref<boolean>(false)
 
@@ -29,10 +27,7 @@ const navItems = computed(() => [
     name: $gettext('Profile'),
     route: '/account',
     icon: 'id-card',
-    active: unref(
-      useActiveLocation(isLocationAccountActive, 'account-information') &&
-        unref(router.currentRoute).path === '/account'
-    )
+    active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
   },
   {
     name: $gettext('Preferences'),
