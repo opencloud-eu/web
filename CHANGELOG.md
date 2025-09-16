@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
 - fix: tailwind regressions [[#1183](https://github.com/opencloud-eu/web/pull/1183)]
 - fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
 - fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
