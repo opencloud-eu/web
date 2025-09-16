@@ -865,8 +865,8 @@ importers:
         specifier: ^8.11.1
         version: 8.11.1
       md-editor-v3:
-        specifier: ^5.4.1
-        version: 5.8.5(vue@3.5.21(typescript@5.9.2))
+        specifier: ^6.0.0
+        version: 6.0.1(vue@3.5.21(typescript@5.9.2))
       oidc-client-ts:
         specifier: ^2.4.0 || ^3.0.0
         version: 3.3.0
@@ -4983,8 +4983,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-vue-next@0.453.0:
-    resolution: {integrity: sha512-5zmv83vxAs9SVoe22veDBi8Dw0Fh2F+oTngWgKnKOkrZVbZjceXLQ3tescV2boB0zlaf9R2Sd9RuUP2766xvsQ==}
+  lucide-vue-next@0.543.0:
+    resolution: {integrity: sha512-Az5kpNm/koKAwSNIKjsZ4uHV2tVfmlQlcHwFBygQ8gc5/jFg7An9OrxgDy/aE5m+HLx7VfLYqDxLr8gWecZbQA==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -5042,8 +5042,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  md-editor-v3@5.8.5:
-    resolution: {integrity: sha512-NsqAmmAx/ykA1AcwxcHH4Hkn4VAPkqMX7Hd6Lv4FcwQoMQ70wWmJfs/mokyPGkqr4oYqqn8LRMBTqFNfoP0O0A==}
+  md-editor-v3@6.0.1:
+    resolution: {integrity: sha512-ZZQpUsC6DkKYfFsDMck0kJabP/vYSDfNkB6Zmb6+v50orKOO7KG2SGgm6yGv78YWxh8ehqJL4IpZwhWneQzg1w==}
     peerDependencies:
       vue: ^3.5.3
 
@@ -11086,7 +11086,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-vue-next@0.453.0(vue@3.5.21(typescript@5.9.2)):
+  lucide-vue-next@0.543.0(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       vue: 3.5.21(typescript@5.9.2)
 
@@ -11140,7 +11140,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  md-editor-v3@5.8.5(vue@3.5.21(typescript@5.9.2)):
+  md-editor-v3@6.0.1(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       '@codemirror/autocomplete': 6.18.7
       '@codemirror/commands': 6.8.1
@@ -11156,7 +11156,7 @@ snapshots:
       '@vavt/util': 2.1.0
       codemirror: 6.0.2
       lru-cache: 11.2.1
-      lucide-vue-next: 0.453.0(vue@3.5.21(typescript@5.9.2))
+      lucide-vue-next: 0.543.0(vue@3.5.21(typescript@5.9.2))
       markdown-it: 14.1.0
       markdown-it-image-figures: 2.1.1(markdown-it@14.1.0)
       markdown-it-sub: 2.0.0
