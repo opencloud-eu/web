@@ -1,28 +1,30 @@
 <template>
-  <h1 v-text="$gettext('Extensions')" />
-  <account-table
-    v-if="extensionPointsWithUserPreferences.length"
-    :fields="[
-      $gettext('Extension name'),
-      $gettext('Extension description'),
-      $gettext('Extension value')
-    ]"
-    class="account-page-extensions"
-  >
-    <oc-table-tr
-      v-for="extensionPoint in extensionPointsWithUserPreferences"
-      :key="`extension-point-preference-${extensionPoint.id}`"
-      class="mb-4"
+  <div id="account-extensions">
+    <h1 v-text="$gettext('Extensions')" />
+    <account-table
+      v-if="extensionPointsWithUserPreferences.length"
+      :fields="[
+        $gettext('Extension name'),
+        $gettext('Extension description'),
+        $gettext('Extension value')
+      ]"
+      class="account-page-extensions"
     >
-      <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
-      <oc-table-td v-if="extensionPoint.userPreference.description">
-        <span v-text="$gettext(extensionPoint.userPreference.description || '')" />
-      </oc-table-td>
-      <oc-table-td>
-        <extension-preference :extension-point="extensionPoint" />
-      </oc-table-td>
-    </oc-table-tr>
-  </account-table>
+      <oc-table-tr
+        v-for="extensionPoint in extensionPointsWithUserPreferences"
+        :key="`extension-point-preference-${extensionPoint.id}`"
+        class="mb-4"
+      >
+        <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
+        <oc-table-td v-if="extensionPoint.userPreference.description">
+          <span v-text="$gettext(extensionPoint.userPreference.description || '')" />
+        </oc-table-td>
+        <oc-table-td>
+          <extension-preference :extension-point="extensionPoint" />
+        </oc-table-td>
+      </oc-table-tr>
+    </account-table>
+  </div>
 </template>
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext'

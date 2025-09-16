@@ -42,6 +42,31 @@ export const openAccountPage = async (args: { page: Page }): Promise<void> => {
   await expect(page.locator('#account')).toBeVisible()
 }
 
+export const openAccountSubPage = async (args: { page: Page; subPage: string }): Promise<void> => {
+  const { page, subPage } = args
+  let id = ''
+
+  switch (subPage) {
+    case 'profile':
+      id = 'account-information'
+      break
+    case 'preferences':
+      id = 'account-preferences'
+      break
+    case 'extensions':
+      id = 'account-extensions'
+      break
+    case 'calendar':
+      id = 'account-calendar'
+      break
+    case 'gdpr':
+      id = 'account-gdpr'
+      break
+  }
+  await page.locator(util.format('//a[@data-nav-name="%s"]', id)).click()
+  await expect(page.locator(`#${id}`)).toBeVisible()
+}
+
 export const requestGdprExport = async (args: { page: Page }): Promise<void> => {
   const { page } = args
   await Promise.all([

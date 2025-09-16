@@ -11,7 +11,7 @@ Feature: GDPR export
   Scenario: User should be able to create and download a GDPR export
     And "Alice" logs in
     And "Alice" opens the user menu
+    And "Alice" opens "GDPR" on the user menu
     And "Alice" requests a new GDPR export
     And "Alice" downloads the GDPR export
     And "Alice" logs out
-  
