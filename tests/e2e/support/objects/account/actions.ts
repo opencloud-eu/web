@@ -12,7 +12,7 @@ const downloadExportButton = '[data-testid="download-export-btn"]'
 const languageInput = '[data-testid="language"] .vs__search'
 const languageValueDropDown = `.vs__dropdown-menu :text-is("%s")`
 const languageValue = '[data-testid="language"] .vs__selected'
-const accountPageTitle = '#account-page-title'
+const accountPageTitle = '//main[@id="account"]//h1[1]'
 const confirmButton = '.oc-modal-body-actions-confirm'
 const topbarProfileAvatarImg = '.oc-topbar-personal-avatar .avatarImg'
 const accountProfileAvatarImg = '.account-table .oc-avatar .avatarImg'

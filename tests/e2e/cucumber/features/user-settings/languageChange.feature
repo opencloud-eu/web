@@ -20,7 +20,7 @@ Feature: language settings
     And "Alice" opens the user menu
     And "Alice" opens "Preferences" on the user menu
     And "Alice" changes the language to "Deutsch - German"
-    Then "Alice" should see the following account page title "Mein Konto"
+    Then "Alice" should see the following account page title "Einstellungen"
     When "Alice" logs out
     And "Alice" logs in
     Then "Alice" should see the following notifications
@@ -45,4 +45,4 @@ Feature: language settings
     And "Anonymous" opens the user menu
     And "Anonymous" opens "Preferences" on the user menu
     And "Anonymous" changes the language to "Deutsch - German"
-    Then "Anonymous" should see the following account page title "Mein Konto"
+    Then "Anonymous" should see the following account page title "Einstellungen"
