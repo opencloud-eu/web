@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-07-11
+## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-09-16
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -14,6 +14,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): bump pbkdf2 to 3.1.3 to fix CVE (backport) [[#1034](https://github.com/opencloud-eu/web/pull/1034)]
 - [full-ci] bump-opencloud-2.0.3 [[#933](https://github.com/opencloud-eu/web/pull/933)]
 
 ## [2.1.1](https://github.com/opencloud-eu/web/releases/tag/v2.1.1) - 2025-04-09
