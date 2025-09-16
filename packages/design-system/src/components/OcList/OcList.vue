@@ -39,7 +39,7 @@ defineSlots<Slots>()
     @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-5 pr-7 flex flex-col before:rounded-[50%] w-full relative;
+    @apply py-2 pl-8 pr-7 flex flex-col before:rounded-[50%] w-full relative;
   }
   ul.oc-list.oc-timeline li:before {
     @apply absolute;

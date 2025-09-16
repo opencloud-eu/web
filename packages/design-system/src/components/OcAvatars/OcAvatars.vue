@@ -6,8 +6,8 @@
       class="oc-avatars inline-flex w-fit flex-nowrap flex-row"
       aria-hidden="true"
       :class="{
-        'oc-avatars-stacked [&>*]:-ml-4': stacked,
-        'oc-avatars-hover-effect [&>*]:hover:z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
+        'oc-avatars-stacked [&>*]:not-first:-ml-3': stacked,
+        'oc-avatars-hover-effect [&>*]:hover:!z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
           hasHoverEffect,
         ...getTailwindGapClass(gapSize)
       }"
