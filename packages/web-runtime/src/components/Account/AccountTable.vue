@@ -1,8 +1,7 @@
 <template>
   <div class="account-table">
-    <slot name="header" :title="title">
+    <slot name="header">
       <h2 class="flex items-center" :class="subtitle ? 'mb-2' : ''">
-        {{ title }}
         <oc-tag
           v-if="newTag"
           :rounded="true"
@@ -54,10 +53,6 @@ type AccountTableCell = {
 export default defineComponent({
   name: 'AccountTable',
   props: {
-    title: {
-      type: String,
-      required: true
-    },
     fields: {
       type: Array<string | AccountTableCell>,
       required: true

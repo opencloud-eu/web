@@ -28,6 +28,14 @@ export const extensions = () => {
       userPreference: {
         optionLabel: $gettext('Default progress bar')
       }
-    } as CustomComponentExtension
+    } as CustomComponentExtension,
+    {
+      id: 'com.github.opencloud-eu.web.runtime.app-menu-item.Calendar',
+      type: 'appMenuItem',
+      label: () => $gettext('Calendar'),
+      color: '#0478d4',
+      icon: 'calendar',
+      path: '/account/calendar'
+    }
   ])
 }

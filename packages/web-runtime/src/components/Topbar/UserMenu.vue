@@ -43,7 +43,7 @@
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
-              :to="accountPageRoute"
+              :to="{ name: 'account' }"
               justify-content="left"
               appearance="raw"
             >
@@ -83,7 +83,7 @@
               id="oc-topbar-account-manage"
               type="router-link"
               justify-content="left"
-              :to="accountPageRoute"
+              :to="{ name: 'account' }"
               appearance="raw"
             >
               <oc-icon name="settings-4" fill-type="line" />
@@ -150,7 +150,6 @@
 import { storeToRefs } from 'pinia'
 import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
-  routeToContextQuery,
   useAuthService,
   UserAvatar,
   useRoute,
@@ -171,11 +170,6 @@ export default defineComponent({
     const authService = useAuthService()
 
     const { user } = storeToRefs(userStore)
-
-    const accountPageRoute = computed(() => ({
-      name: 'account',
-      query: routeToContextQuery(unref(route))
-    }))
 
     const loginLink = computed(() => {
       return {
@@ -201,7 +195,6 @@ export default defineComponent({
 
     return {
       user,
-      accountPageRoute,
       loginLink,
       imprintUrl,
       privacyUrl,

@@ -1,0 +1,126 @@
+<template>
+  <h1 v-text="$gettext('Calendar')" />
+  <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
+    <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
+
+    <span
+      v-text="
+        $gettext(
+          'The calendar is not yet configured on your system, in order to learn how to enable click'
+        )
+      "
+    />
+    <oc-button
+      no-hover
+      class="ml-1"
+      appearance="raw"
+      type="router-link"
+      href="https://docs.opencloud.eu/docs/admin/configuration/radicale-integration/"
+    >
+      <span v-text="$gettext('here')" />
+    </oc-button>
+  </span>
+  <account-table
+    :subtitle="
+      $gettext(
+        'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
+      )
+    "
+    :fields="[
+      $gettext('CalDAV information name'),
+      $gettext('CalCAV information value'),
+      $gettext('CalCAV information actions')
+    ]"
+  >
+    <oc-table-tr>
+      <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
+      <oc-table-td>
+        <span class="truncate">{{ configStore.serverUrl }}</span>
+      </oc-table-td>
+      <oc-table-td>
+        <oc-button
+          appearance="raw"
+          data-testid="copy-caldav-url"
+          size="small"
+          no-hover
+          @click="copyCalDavUrlToClipboard"
+        >
+          <oc-icon :name="copyCalDavUrlIcon" size="small" />
+          <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
+        </oc-button>
+      </oc-table-td>
+    </oc-table-tr>
+    <oc-table-tr>
+      <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
+      <oc-table-td>
+        <span>{{ user.onPremisesSamAccountName }}</span>
+      </oc-table-td>
+      <oc-table-td>
+        <oc-button
+          appearance="raw"
+          data-testid="copy-caldav-username"
+          size="small"
+          no-hover
+          @click="copyCalDavUsernameToClipboard"
+        >
+          <oc-icon :name="copyCalDavUsernameIcon" size="small" />
+          <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
+        </oc-button>
+      </oc-table-td>
+    </oc-table-tr>
+    <oc-table-tr>
+      <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
+      <oc-table-td colspan="2">
+        {{ $gettext('An app token needs to be generated and then can be used.') }}
+      </oc-table-td>
+    </oc-table-tr>
+  </account-table>
+</template>
+<script setup lang="ts">
+import { useGettext } from 'vue3-gettext'
+import AccountTable from '../../components/Account/AccountTable.vue'
+import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg/src'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref, unref } from 'vue'
+import { urlJoin } from '@opencloud-eu/web-client'
+
+const { $gettext } = useGettext()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const configStore = useConfigStore()
+const clientService = useClientService()
+
+const isCalDavAvailable = ref(false)
+const copiedIcon = 'check'
+const copyIcon = 'file-copy'
+
+const copyCalDavUrlIcon = ref(copyIcon)
+const copyCalDavUsernameIcon = ref(copyIcon)
+
+const copyCalDavUrlToClipboard = () => {
+  navigator.clipboard.writeText(unref(configStore.serverUrl))
+  copyCalDavUrlIcon.value = copiedIcon
+  setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
+}
+
+const copyCalDavUsernameToClipboard = () => {
+  navigator.clipboard.writeText(user.value.onPremisesSamAccountName)
+  copyCalDavUsernameIcon.value = copiedIcon
+  setTimeout(() => (copyCalDavUsernameIcon.value = copyIcon), 1500)
+}
+
+onMounted(async () => {
+  const wellKnownUrl = '.well-known/caldav'
+  try {
+    const response = await clientService.httpAuthenticated.get(wellKnownUrl, {
+      method: 'OPTIONS'
+    })
+
+    if (response.request.responseURL.includes(urlJoin(configStore.serverUrl, 'caldav'))) {
+      isCalDavAvailable.value = true
+    }
+  } catch (error) {
+    console.info('CalDAV check failed:', error)
+  }
+})
+</script>
