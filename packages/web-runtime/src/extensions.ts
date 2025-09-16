@@ -1,7 +1,7 @@
 import { computed, markRaw } from 'vue'
 import { preferencesPanelExtensionPoint, progressBarExtensionPoint } from './extensionPoints'
 import AppTokens from './components/Account/AppTokens.vue'
-import { CustomComponentExtension, LoadingIndicator } from '@opencloud-eu/web-pkg'
+import { AccountExtension, CustomComponentExtension, LoadingIndicator } from '@opencloud-eu/web-pkg'
 import CalDavUrl from './components/Account/CalDavUrl.vue'
 
 const $gettext = (str: string) => str
@@ -10,10 +10,12 @@ export const extensions = () => {
   return computed(() => [
     {
       id: 'com.github.opencloud-eu.web.runtime.preferences-panels.app-tokens',
-      type: 'customComponent',
+      type: 'accountExtension',
+      label: () => $gettext('App Tokens'),
+      icon: 'key-2',
       extensionPointIds: [preferencesPanelExtensionPoint.id],
       content: AppTokens
-    } as CustomComponentExtension,
+    } as AccountExtension,
     {
       id: 'com.github.opencloud-eu.web.runtime.preferences-panels.WebDavUrl',
       type: 'customComponent',

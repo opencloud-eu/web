@@ -15,51 +15,64 @@
 import { useGettext } from 'vue3-gettext'
 import SidebarNav from '../../components/SidebarNav/SidebarNav.vue'
 import { isLocationAccountActive } from '../../router'
-import { useActiveLocation } from '@opencloud-eu/web-pkg/src'
+import { useActiveLocation, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { preferencesPanelExtensionPoint } from '../../extensionPoints'
+import { useRoute } from 'vue-router'
 
 const { $gettext } = useGettext()
+const extensionRegistry = useExtensionRegistry()
+const route = useRoute()
 
 const navBarClosed = ref<boolean>(false)
 
-const navItems = computed(() => [
-  {
-    name: $gettext('Profile'),
-    route: '/account/information',
-    icon: 'id-card',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
-  },
-  {
-    name: $gettext('Preferences'),
-    route: '/account/preferences',
-    icon: 'settings-4',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
-  },
-  {
-    name: $gettext('Extensions'),
-    route: '/account/extensions',
-    icon: 'brush-2',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-extensions'))
-  },
-  {
-    name: $gettext('Calendar'),
-    route: '/account/calendar',
-    icon: 'calendar',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-calendar'))
-  },
-  {
-    name: $gettext('App Tokens'),
-    route: '/account/app-tokens',
-    icon: 'key-2',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-app-tokens'))
-  },
-  {
-    name: $gettext('GDPR'),
-    route: '/account/gdpr',
-    icon: 'git-repository',
-    active: unref(useActiveLocation(isLocationAccountActive, 'account-gdpr'))
-  }
-])
+const preferencesPanelExtensions = computed(() => {
+  return extensionRegistry.requestExtensions(preferencesPanelExtensionPoint)
+})
+
+const navItems = computed(() => {
+  const baseItems = [
+    {
+      name: $gettext('Profile'),
+      route: '/account/information',
+      icon: 'id-card',
+      active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
+    },
+    {
+      name: $gettext('Preferences'),
+      route: '/account/preferences',
+      icon: 'settings-4',
+      active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
+    },
+    {
+      name: $gettext('Extensions'),
+      route: '/account/extensions',
+      icon: 'brush-2',
+      active: unref(useActiveLocation(isLocationAccountActive, 'account-extensions'))
+    },
+    {
+      name: $gettext('Calendar'),
+      route: '/account/calendar',
+      icon: 'calendar',
+      active: unref(useActiveLocation(isLocationAccountActive, 'account-calendar'))
+    },
+    {
+      name: $gettext('GDPR'),
+      route: '/account/gdpr',
+      icon: 'git-repository',
+      active: unref(useActiveLocation(isLocationAccountActive, 'account-gdpr'))
+    }
+  ]
+
+  const extensionItems = unref(preferencesPanelExtensions).map((ext: any) => ({
+    name: ext.label(),
+    route: `/account/extension?extension-id=${ext.id}`,
+    icon: ext.icon,
+    active: route.path === '/account/extension' && route.query?.['extension-id'] === ext.id
+  }))
+
+  return [...baseItems, ...extensionItems]
+})
 
 const setNavBarClosed = (closed: boolean) => {
   navBarClosed.value = closed

@@ -19,7 +19,6 @@ import {
 
 // @ts-ignore
 import qs from 'qs'
-import AccountAppTokens from '../pages/account/accountAppTokens.vue'
 import AccountCalendar from '../pages/account/accountCalendar.vue'
 import AccountExtensions from '../pages/account/accountExtensions.vue'
 import AccountPreferences from '../pages/account/accountPreferences.vue'
@@ -27,6 +26,7 @@ import AccountInformation from '../pages/account/accountInformation.vue'
 import AccountLayout from '../pages/account/accountLayout.vue'
 import AccountGDPR from '../pages/account/accountGDPR.vue'
 import { createLocation, isLocationActiveDirector } from '@opencloud-eu/web-pkg/src/router/utils'
+import AccountExtensionLayout from '../pages/account/accountExtensionLayout.vue'
 
 export * from './helpers'
 export { createRouter } from 'vue-router'
@@ -41,8 +41,8 @@ export type RouteAccountTypes =
   | 'account-preferences'
   | 'account-extensions'
   | 'account-calendar'
-  | 'account-app-tokens'
   | 'account-gdpr'
+  | 'account-extension'
 
 export const createLocationAccount = (
   name: RouteAccountTypes,
@@ -53,15 +53,14 @@ export const locationAccountInformation = createLocationAccount('account-informa
 export const locationAccountPreferences = createLocationAccount('account-preferences')
 export const locationAccountExtensions = createLocationAccount('account-extensions')
 export const locationAccountCalendar = createLocationAccount('account-calendar')
-export const locationAccountAppTokens = createLocationAccount('account-app-tokens')
 export const locationAccountGDPR = createLocationAccount('account-gdpr')
+export const locationAccountExtension = createLocationAccount('account-extension')
 
 export const isLocationAccountActive = isLocationActiveDirector<RouteAccountTypes>(
   locationAccountInformation,
   locationAccountPreferences,
   locationAccountExtensions,
   locationAccountCalendar,
-  locationAccountAppTokens,
   locationAccountGDPR
 )
 
@@ -143,14 +142,14 @@ const routes: readonly RouteRecordRaw[] = [
         component: AccountCalendar
       },
       {
-        path: 'app-tokens',
-        name: locationAccountAppTokens.name,
-        component: AccountAppTokens
-      },
-      {
         path: 'gdpr',
         name: locationAccountGDPR.name,
         component: AccountGDPR
+      },
+      {
+        path: 'extension',
+        name: locationAccountExtension.name,
+        component: AccountExtensionLayout
       }
     ]
   },
