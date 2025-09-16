@@ -25,7 +25,7 @@ const navBarClosed = ref<boolean>(false)
 const navItems = computed(() => [
   {
     name: $gettext('Profile'),
-    route: '/account',
+    route: '/account/information',
     icon: 'id-card',
     active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
   },
