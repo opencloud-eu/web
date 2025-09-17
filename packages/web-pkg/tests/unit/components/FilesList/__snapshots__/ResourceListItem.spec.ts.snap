@@ -15,7 +15,7 @@ exports[`OcResource > displays parent folder name default if calculated name is 
   </button>
   <div class="oc-resource-details block truncate pl-2"><button data-v-88f32d7c="" target="_self" type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-0 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-resource-link max-w-full hover:outline-offset-0 focus:outline-offset-0 hover:underline" draggable="false">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-resource-name flex min-w-0" data-test-resource-path="example.pdf" data-test-resource-name="example.pdf" data-test-resource-type="file"><span class="truncate"><span class="oc-resource-basename whitespace-pre text-role-on-surface">example</span></span><span class="oc-resource-extension whitespace-pre text-role-on-surface">.pdf</span></span>
+      <!-- @slot Content of the button --> <span class="oc-resource-name flex min-w-0" data-test-resource-path="example.pdf" data-test-resource-name="example.pdf" data-test-resource-type="file"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface">example</span></span><span class="oc-resource-extension whitespace-pre text-role-on-surface leading-4">.pdf</span></span>
     </button>
     <div class="oc-resource-indicators flex"><span class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent cursor-default"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/folder-2-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {

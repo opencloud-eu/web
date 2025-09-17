@@ -8,16 +8,16 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="truncate">
+    <span v-if="truncateName" class="truncate leading-4">
       <span class="oc-resource-basename whitespace-pre text-role-on-surface" v-text="displayName" />
     </span>
     <span
       v-else
-      class="oc-resource-basename break-normal text-role-on-surface"
+      class="oc-resource-basename break-normal text-role-on-surface leading-4"
       v-text="displayName"
     /><span
       v-if="extension && isExtensionDisplayed"
-      class="oc-resource-extension whitespace-pre text-role-on-surface"
+      class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
       v-text="displayExtension"
     />
   </span>
