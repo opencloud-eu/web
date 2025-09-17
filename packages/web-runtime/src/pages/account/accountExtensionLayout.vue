@@ -1,12 +1,17 @@
 <template>
   <div id="account-extension">
-    <component :is="extension.content" v-if="extension" />
+    <no-content-message v-if="!extension" id="account-extensions-empty" icon="emotion-unhappy">
+      <template #message>
+        <span v-text="$gettext('Extension not found')" />
+      </template>
+    </no-content-message>
+    <component :is="extension.content" v-else />
   </div>
 </template>
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
-import { useExtensionRegistry, useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { NoContentMessage, useExtensionRegistry, useRouteQuery } from '@opencloud-eu/web-pkg/src'
 
 const extensionRegistry = useExtensionRegistry()
 
