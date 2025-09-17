@@ -43,7 +43,7 @@
             <oc-button
               id="oc-topbar-account-manage"
               type="router-link"
-              :to="{ name: 'account' }"
+              :to="accountPageRoute"
               justify-content="left"
               appearance="raw"
             >
