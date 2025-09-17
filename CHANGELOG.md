@@ -1,33 +1,19 @@
 # Changelog
 
-## [4.0.0](https://github.com/opencloud-eu/web/releases/tag/v4.0.0) - 2025-09-17
+## [3.4.0](https://github.com/opencloud-eu/web/releases/tag/v3.4.0) - 2025-09-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @individual-it, @kulmann, @tammi-23
-
-### 💥 Breaking changes
-
-- chore!: remove token generation and unnecessary theming options [[#1161](https://github.com/opencloud-eu/web/pull/1161)]
-- refactor!: remove scss files [[#1153](https://github.com/opencloud-eu/web/pull/1153)]
 
 ### ✨ Features
 
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
-### ✅ Tests
-
-- fix flaky. sharing test [[#1212](https://github.com/opencloud-eu/web/pull/1212)]
-- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
-- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
-- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
 ### 🐛 Bug Fixes
 
+- fix: line-height of resource name [[#1209](https://github.com/opencloud-eu/web/pull/1209)]
 - fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
 - fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
 - fix: tailwind regressions [[#1183](https://github.com/opencloud-eu/web/pull/1183)]
@@ -35,30 +21,30 @@
 - fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
 - fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
 - fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
-- fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
 - fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
 - fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
 - fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
 - fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
 - fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
 
+### ✅ Tests
+
+- fix flaky. sharing test [[#1212](https://github.com/opencloud-eu/web/pull/1212)]
+- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
+- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+
 ### 📈 Enhancement
 
 - fix: adjusted notification area with tailwind [[#1168](https://github.com/opencloud-eu/web/pull/1168)]
 - Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
-- feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
-- refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
-- refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
-- refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
 - refactor: migrate grid to tailwind [[#1148](https://github.com/opencloud-eu/web/pull/1148)]
 - refactor: remaining flex props, display and fill to tailwind [[#1146](https://github.com/opencloud-eu/web/pull/1146)]
-- refactor: box-shadow, opacity, filter and pointer-event to tailwind [[#1142](https://github.com/opencloud-eu/web/pull/1142)]
 - refactor: transitions and animations to tailwind [[#1141](https://github.com/opencloud-eu/web/pull/1141)]
 - feat: enable feedback link and fix button color [[#1145](https://github.com/opencloud-eu/web/pull/1145)]
 - refactor: gaps to tailwind [[#1136](https://github.com/opencloud-eu/web/pull/1136)]
 - chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
 - refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
-- refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
 - refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
 - refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
 - refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
@@ -74,7 +60,6 @@
 
 - fix(deps): update dependency zod to v4.1.9 [[#1211](https://github.com/opencloud-eu/web/pull/1211)]
 - fix(deps): update dependency @sentry/vue to v10.12.0 [[#1210](https://github.com/opencloud-eu/web/pull/1210)]
-- fix(deps): update uppy monorepo [[#1100](https://github.com/opencloud-eu/web/pull/1100)]
 - chore(deps): update dependency @cucumber/messages to v29 [[#1204](https://github.com/opencloud-eu/web/pull/1204)]
 - fix(deps): update dependency eslint-plugin-n to v17.23.0 [[#1199](https://github.com/opencloud-eu/web/pull/1199)]
 - fix(deps): update typescript-eslint monorepo to v8.44.0 [[#1202](https://github.com/opencloud-eu/web/pull/1202)]
@@ -83,16 +68,13 @@
 - fix(deps): update dependency p-queue to v8.1.1 [[#1195](https://github.com/opencloud-eu/web/pull/1195)]
 - fix(deps): update dependency md-editor-v3 to v5.8.5 [[#1194](https://github.com/opencloud-eu/web/pull/1194)]
 - fix(deps): update dependency @babel/eslint-parser to v7.28.4 [[#1189](https://github.com/opencloud-eu/web/pull/1189)]
-- fix(deps): update dependency focus-trap-vue to v4.1.0 [[#1076](https://github.com/opencloud-eu/web/pull/1076)]
 - fix(deps): update dependency axios to v1.12.2 [[#1190](https://github.com/opencloud-eu/web/pull/1190)]
-- fix(deps): update uppy monorepo (major) [[#1110](https://github.com/opencloud-eu/web/pull/1110)]
 - fix(deps): update vue monorepo to v3.5.21 [[#1102](https://github.com/opencloud-eu/web/pull/1102)]
 - fix(deps): update dependency eslint-plugin-unused-imports to v4.2.0 [[#1088](https://github.com/opencloud-eu/web/pull/1088)]
 - fix(deps): update dependency @sentry/vue to v10.11.0 [[#1122](https://github.com/opencloud-eu/web/pull/1122)]
 - fix(deps): update dependency @vueuse/core to v13.9.0 [[#1123](https://github.com/opencloud-eu/web/pull/1123)]
 - fix(deps): update dependency zod to v4.1.8 [[#1128](https://github.com/opencloud-eu/web/pull/1128)]
 - fix(deps): update dependency axios to v1.12.0 [security] [[#1185](https://github.com/opencloud-eu/web/pull/1185)]
-- chore(deps): update dependency vite to v6.3.6 [security] [[#1167](https://github.com/opencloud-eu/web/pull/1167)]
 - [full-ci] bump-opencloud-3.4.0. run all tests [[#1137](https://github.com/opencloud-eu/web/pull/1137)]
 - use bitnamilegacy [[#1133](https://github.com/opencloud-eu/web/pull/1133)]
 - chore: adjust display css props to tailwind [[#1114](https://github.com/opencloud-eu/web/pull/1114)]
@@ -102,7 +84,6 @@
 - fix(deps): update dependency @vueuse/core to v13.7.0 [[#1087](https://github.com/opencloud-eu/web/pull/1087)]
 - fix(deps): update dependency zod to v4.1.3 [[#1070](https://github.com/opencloud-eu/web/pull/1070)]
 - fix(deps): update dependency @sentry/vue to v10.5.0 [[#1068](https://github.com/opencloud-eu/web/pull/1068)]
-- fix(deps): update typescript-eslint monorepo to v8.40.0 [[#1075](https://github.com/opencloud-eu/web/pull/1075)]
 - chore(deps): update apache/tika docker tag to v3.2.2.0 [[#1066](https://github.com/opencloud-eu/web/pull/1066)]
 - chore(deps): update dependency vite-plugin-static-copy to v3.1.2 [security] [[#1106](https://github.com/opencloud-eu/web/pull/1106)]
 - [full-ci] bump-opencloud-3.3.0. run all tests [[#1074](https://github.com/opencloud-eu/web/pull/1074)]
