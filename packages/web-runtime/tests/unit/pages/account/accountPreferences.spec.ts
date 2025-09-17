@@ -1,4 +1,4 @@
-import accountPreferences from '../../../../src/pages/account/accountPreferences.vue'
+import AccountPreferences from '../../../../src/pages/account/accountPreferences.vue'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -10,7 +10,6 @@ import { mock } from 'vitest-mock-extended'
 import {
   Extension,
   ExtensionPoint,
-  OptionsConfig,
   useExtensionRegistry,
   useMessages,
   useResourcesStore
@@ -202,18 +201,14 @@ const blockLoadingState = async (wrapper: VueWrapper<any, any>) => {
 function getWrapper({
   user = mock<User>({ memberOf: [] }),
   capabilities = {},
-  accountEditLink = undefined,
   spaces = [],
-  isPublicLinkContext = false,
   isUserContext = true,
   extensionPoints = [],
   extensions = []
 }: {
   user?: User
   capabilities?: Partial<Capabilities['capabilities']>
-  accountEditLink?: OptionsConfig['accountEditLink']
   spaces?: SpaceResource[]
-  isPublicLinkContext?: boolean
   isUserContext?: boolean
   extensionPoints?: ExtensionPoint<Extension>[]
   extensions?: Extension[]
@@ -222,17 +217,10 @@ function getWrapper({
     piniaOptions: {
       userState: { user },
       authState: {
-        userContextReady: isUserContext,
-        publicLinkContextReady: isPublicLinkContext
+        userContextReady: isUserContext
       },
       spacesState: { spaces },
-      capabilityState: { capabilities },
-      configState: {
-        options: {
-          logoutUrl: 'https://account-manager/logout',
-          ...(accountEditLink && { accountEditLink })
-        }
-      }
+      capabilityState: { capabilities }
     }
   })
 
@@ -261,7 +249,7 @@ function getWrapper({
 
   return {
     mocks,
-    wrapper: mount(accountPreferences, {
+    wrapper: mount(AccountPreferences, {
       global: {
         plugins,
         mocks,

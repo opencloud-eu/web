@@ -5,6 +5,7 @@
       <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
 
       <span
+        class="calendar-not-configured-message"
         v-text="
           $gettext(
             'The calendar is not yet configured on your system, in order to learn how to enable click'
