@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { Page, expect } from '@playwright/test'
 import util from 'util'
 import { locatorUtils } from '../../../utils'
 
@@ -55,14 +55,10 @@ export const open = async ({
 }
 
 export const close = async ({ page }: { page: Page }): Promise<void> => {
-  // await sidebar transitions
-  await new Promise((resolve) => setTimeout(resolve, 250))
-  const isSubPanelActive = await page.locator(closeSidebarSubPanelBtn).isVisible()
-  if (isSubPanelActive) {
-    await page.locator(closeSidebarSubPanelBtn).click()
-  } else {
-    await page.locator(closeSidebarRootPanelBtn).click()
-  }
+  const subPanelBtn = page.locator(closeSidebarSubPanelBtn)
+  const rootPanelBtn = page.locator(closeSidebarRootPanelBtn)
+  await expect(subPanelBtn.or(rootPanelBtn)).toBeVisible()
+  await subPanelBtn.or(rootPanelBtn).click()
 }
 
 export const openPanel = async ({ page, name }: { page: Page; name: string }): Promise<void> => {
