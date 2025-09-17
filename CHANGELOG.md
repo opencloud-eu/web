@@ -72,6 +72,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.1.9 [[#1211](https://github.com/opencloud-eu/web/pull/1211)]
+- fix(deps): update dependency @sentry/vue to v10.12.0 [[#1210](https://github.com/opencloud-eu/web/pull/1210)]
 - fix(deps): update uppy monorepo [[#1100](https://github.com/opencloud-eu/web/pull/1100)]
 - chore(deps): update dependency @cucumber/messages to v29 [[#1204](https://github.com/opencloud-eu/web/pull/1204)]
 - fix(deps): update dependency eslint-plugin-n to v17.23.0 [[#1199](https://github.com/opencloud-eu/web/pull/1199)]
