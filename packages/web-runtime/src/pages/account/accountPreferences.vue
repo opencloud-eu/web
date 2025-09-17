@@ -94,6 +94,7 @@
       <template v-if="showNotifications && canConfigureSpecificNotifications">
         <h2 class="mt-8" v-text="$gettext('Notifications')" />
         <p
+          class="text-sm mt-0 mb-4"
           v-text="
             $gettext('Personalise your notification preferences about any file, folder, or Space.')
           "
