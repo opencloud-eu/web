@@ -1,8 +1,17 @@
 <template>
   <div id="account-extensions">
     <h1 v-text="$gettext('Extensions')" />
+    <no-content-message
+      v-if="!extensionPointsWithUserPreferences.length"
+      id="account-extensions-empty"
+      icon="brush-2"
+    >
+      <template #message>
+        <span v-text="$gettext('No extensions available')" />
+      </template>
+    </no-content-message>
     <account-table
-      v-if="extensionPointsWithUserPreferences.length"
+      v-else
       :fields="[
         $gettext('Extension name'),
         $gettext('Extension description'),
@@ -30,7 +39,7 @@
 import { useGettext } from 'vue3-gettext'
 import ExtensionPreference from '../../components/Account/ExtensionPreference.vue'
 import AccountTable from '../../components/Account/AccountTable.vue'
-import { useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
+import { NoContentMessage, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
 import { computed } from 'vue'
 import { isEmpty } from 'lodash-es'
 
