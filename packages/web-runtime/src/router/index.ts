@@ -124,17 +124,20 @@ const routes: readonly RouteRecordRaw[] = [
       {
         path: 'information',
         name: locationAccountInformation.name,
-        component: AccountInformation
+        component: AccountInformation,
+        meta: { authContext: 'user' }
       },
       {
         path: 'preferences',
         name: locationAccountPreferences.name,
-        component: AccountPreferences
+        component: AccountPreferences,
+        meta: { authContext: 'hybrid' }
       },
       {
         path: 'extensions',
         name: locationAccountExtensions.name,
-        component: AccountExtensions
+        component: AccountExtensions,
+        meta: { authContext: 'user' }
       },
       {
         path: 'calendar',
@@ -144,12 +147,14 @@ const routes: readonly RouteRecordRaw[] = [
       {
         path: 'gdpr',
         name: locationAccountGDPR.name,
-        component: AccountGDPR
+        component: AccountGDPR,
+        meta: { authContext: 'user' }
       },
       {
         path: 'extension',
         name: locationAccountExtension.name,
-        component: AccountExtensionLayout
+        component: AccountExtensionLayout,
+        meta: { authContext: 'user' }
       }
     ]
   },

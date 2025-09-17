@@ -15,7 +15,7 @@
 import { useGettext } from 'vue3-gettext'
 import SidebarNav from '../../components/SidebarNav/SidebarNav.vue'
 import { isLocationAccountActive } from '../../router'
-import { useActiveLocation, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
+import { useActiveLocation, useAuthStore, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useRoute } from 'vue-router'
@@ -23,6 +23,7 @@ import { useRoute } from 'vue-router'
 const { $gettext } = useGettext()
 const extensionRegistry = useExtensionRegistry()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const navBarClosed = ref<boolean>(false)
 
@@ -31,6 +32,17 @@ const preferencesPanelExtensions = computed(() => {
 })
 
 const navItems = computed(() => {
+  if (!authStore.userContextReady) {
+    return [
+      {
+        name: $gettext('Preferences'),
+        route: '/account/preferences',
+        icon: 'settings-4',
+        active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
+      }
+    ]
+  }
+
   const baseItems = [
     {
       name: $gettext('Profile'),

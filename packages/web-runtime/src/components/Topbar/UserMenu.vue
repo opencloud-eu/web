@@ -83,7 +83,7 @@
               id="oc-topbar-account-manage"
               type="router-link"
               justify-content="left"
-              :to="{ name: 'account' }"
+              :to="accountPageRoute"
               appearance="raw"
             >
               <oc-icon name="settings-4" fill-type="line" />
@@ -151,6 +151,7 @@ import { storeToRefs } from 'pinia'
 import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
   useAuthService,
+  useAuthStore,
   UserAvatar,
   useRoute,
   useSpacesStore,
@@ -168,8 +169,13 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const spacesStore = useSpacesStore()
     const authService = useAuthService()
+    const authStore = useAuthStore()
 
     const { user } = storeToRefs(userStore)
+
+    const accountPageRoute = computed(() => ({
+      name: authStore.userContextReady ? 'account-information' : 'account-preferences'
+    }))
 
     const loginLink = computed(() => {
       return {
@@ -201,7 +207,8 @@ export default defineComponent({
       accessibilityUrl,
       showFooter,
       quota,
-      logout
+      logout,
+      accountPageRoute
     }
   },
   computed: {
