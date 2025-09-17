@@ -16,6 +16,16 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### ✅ Tests
+
+- fix flaky. sharing test [[#1212](https://github.com/opencloud-eu/web/pull/1212)]
+- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
+- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
+- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
+- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
+- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
+- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
+
 ### 🐛 Bug Fixes
 
 - fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
@@ -59,15 +69,6 @@
 - refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
-
-### ✅ Tests
-
-- e2e. view mode switch [[#1177](https://github.com/opencloud-eu/web/pull/1177)]
-- e2e-tests. remove create odt file from mobile suite [[#1186](https://github.com/opencloud-eu/web/pull/1186)]
-- Expand accessibility testing coverage [[#1164](https://github.com/opencloud-eu/web/pull/1164)]
-- fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
-- fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
-- e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
 
 ### 📦️ Dependencies
 
