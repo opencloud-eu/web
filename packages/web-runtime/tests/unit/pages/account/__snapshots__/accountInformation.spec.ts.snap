@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`account page > account information section > displays basic user information 1`] = `
+exports[`account information page > account information section > displays basic user information 1`] = `
 "<div class="account-table account-page-info mt-6">
   <table data-v-381278b9="" class="oc-table-simple">
     <colgroup>
@@ -64,9 +64,9 @@ exports[`account page > account information section > displays basic user inform
 </div>"
 `;
 
-exports[`account page > account information section > group membership > displays group names 1`] = `"<td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
+exports[`account information page > account information section > group membership > displays group names 1`] = `"<td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
 
-exports[`account page > header section > edit url button > should be displayed if defined via config 1`] = `
+exports[`account information page > header section > edit url button > should be displayed if defined via config 1`] = `
 "<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
@@ -81,7 +81,7 @@ exports[`account page > header section > edit url button > should be displayed i
 </a>"
 `;
 
-exports[`account page > public link context > should render a limited view 1`] = `
+exports[`account information page > public link context > should render a limited view 1`] = `
 "<div id="account-information">
   <div class="flex justify-between items-center w-full">
     <h1>Account Information</h1>
