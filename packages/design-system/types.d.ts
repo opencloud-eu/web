@@ -8,6 +8,7 @@ import OcAvatarItem from './src/components/OcAvatarItem/OcAvatarItem.vue'
 import OcAvatarLink from './src/components/OcAvatarLink/OcAvatarLink.vue'
 import OcAvatars from './src/components/OcAvatars/OcAvatars.vue'
 import OcBreadcrumb from './src/components/OcBreadcrumb/OcBreadcrumb.vue'
+import OcBottomDrawer from './src/components/OcBottomDrawer/OcBottomDrawer.vue'
 import OcButton from './src/components/OcButton/OcButton.vue'
 import OcCard from './src/components/OcCard/OcCard.vue'
 import OcCheckbox from './src/components/OcCheckbox/OcCheckbox.vue'
@@ -65,6 +66,7 @@ declare module 'vue' {
     OcAvatarLink: typeof OcAvatarLink
     OcAvatars: typeof OcAvatars
     OcBreadcrumb: typeof OcBreadcrumb
+    OcBottomDrawer: typeof OcBottomDrawer
     OcButton: typeof OcButton
     OcCard: typeof OcCard
     OcCheckbox: typeof OcCheckbox
