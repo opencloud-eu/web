@@ -1,5 +1,5 @@
 import { pbkdf2 } from '@noble/hashes/pbkdf2'
-import { sha512 } from '@noble/hashes/sha512'
+import { sha512 } from '@noble/hashes/sha2.js'
 import { randomBytes } from '@noble/hashes/utils'
 
 export const pbkdf2Sync = (password, salt, c, dkLen) => {
