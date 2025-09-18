@@ -13,7 +13,7 @@
       </router-link>
       <app-image-gallery :app="app" :show-pagination="true" class="w-full" />
     </template>
-    <div class="app-content bg-role-surface-container flex flex-col p-4">
+    <div class="app-content bg-role-surface-container flex flex-col">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
         <span class="ml-2 text-role-on-surface-variant text-sm mt-2">

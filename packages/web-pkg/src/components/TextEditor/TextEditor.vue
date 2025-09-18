@@ -179,6 +179,9 @@ export default defineComponent({
     background-color: var(--oc-role-surface-container);
   }
 }
+#text-editor-preview-component {
+  background-color: transparent;
+}
 
 // overwrite md-editor styles
 .md-editor {

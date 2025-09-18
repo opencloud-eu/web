@@ -1,10 +1,10 @@
 <template>
-  <div class="mb-4">
+  <div>
     <h2 class="mt-0 app-list-headline">
       {{ $gettext('App Store') }}
       <app-contextual-helper />
     </h2>
-    <div class="flex items-center">
+    <div class="flex items-center mb-4">
       <oc-text-input
         id="apps-filter"
         :model-value="filterTermInput"
@@ -24,7 +24,6 @@
         v-for="app in filteredApps"
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
-        class="my-4"
         @search="setFilterTerm"
       />
     </oc-list>

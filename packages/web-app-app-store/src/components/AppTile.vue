@@ -1,7 +1,7 @@
 <template>
   <oc-card
     tag="li"
-    class="app-tile bg-role-surface-container flex flex-col border h-full overflow-hidden shadow-none"
+    class="app-tile bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
     header-class="p-0"
   >
     <template #header>

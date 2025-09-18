@@ -103,7 +103,7 @@ const hasSlotFooter = computed(() => {
 
 @layer components {
   .oc-card {
-    @apply bg-role-surface text-role-on-surface rounded-sm relative;
+    @apply bg-role-surface text-role-on-surface rounded-md relative;
   }
 
   .oc-card-header {
