@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: tailwind regressions #3 [[#1216](https://github.com/opencloud-eu/web/pull/1216)]
 - fix: line-height of resource name [[#1209](https://github.com/opencloud-eu/web/pull/1209)]
 - fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
 - fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
