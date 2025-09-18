@@ -84,22 +84,10 @@
         }"
       >
         <text-editor
-          class="markdown-container-content w-full [&_#text-editor-preview-component]:!bg-transparent"
+          class="markdown-container-content w-full"
           is-read-only
           :current-content="markdownContent"
         />
-        <div v-if="isEditReadmeVisible" class="markdown-container-edit ml-2">
-          <oc-button
-            type="router-link"
-            size="small"
-            :aria-label="$gettext('Edit description')"
-            appearance="raw"
-            class="p-1"
-            :to="editReadMeContentLink"
-          >
-            <oc-icon name="pencil" size="small" fill-type="line" />
-          </oc-button>
-        </div>
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
@@ -123,11 +111,9 @@ import {
   SideBarEventTopics,
   TextEditor,
   useClientService,
-  useFileActions,
   useLoadPreview,
   useResourcesStore,
   useSharesStore,
-  useSpaceActionsEditReadmeContent,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
@@ -147,16 +133,10 @@ const { $gettext, $ngettext } = language
 const clientService = useClientService()
 const { getFileContents, getFileInfo } = clientService.webdav
 const resourcesStore = useResourcesStore()
-const { getDefaultAction } = useFileActions()
 const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
-const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
-
-const isEditReadmeVisible = computed(() =>
-  unref(editReadmeContentActions)[0].isVisible({ resources: [space] })
-)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
@@ -280,15 +260,6 @@ watch(
 const imageContent = ref<string>(null)
 const imageExpanded = ref(false)
 
-const editReadMeContentLink = computed(() => {
-  const action = getDefaultAction({ resources: [unref(markdownResource)], space })
-
-  if (!action.route) {
-    return null
-  }
-
-  return action.route({ space, resources: [unref(markdownResource)] })
-})
 const toggleImageExpanded = () => {
   imageExpanded.value = !unref(imageExpanded)
 }
