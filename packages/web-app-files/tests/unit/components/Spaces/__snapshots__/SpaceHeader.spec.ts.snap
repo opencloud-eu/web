@@ -86,7 +86,6 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     <!--v-if-->
     <div class="markdown-container flex min-h-0 [&amp;.collapsed]:max-h-[150px] [&amp;.collapsed]:overflow-hidden collapsed">
       <!---->
-      <div class="markdown-container-edit ml-2"><a attrs="[object Object]" aria-label="Edit description" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default p-1"></a></div>
     </div>
     <!--v-if-->
   </div>
