@@ -56,6 +56,13 @@ export interface CustomComponentExtension extends Extension {
   content: Slot | Component
 }
 
+export interface AccountExtension extends Extension {
+  type: 'accountExtension'
+  content: Slot | Component
+  label: () => string
+  icon: string
+}
+
 export interface AppMenuItemExtension extends Extension {
   type: 'appMenuItem'
   label: () => string

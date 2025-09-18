@@ -1,4 +1,4 @@
-import account from '../../../src/pages/account.vue'
+import AccountPreferences from '../../../../src/pages/account/accountPreferences.vue'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -10,12 +10,11 @@ import { mock } from 'vitest-mock-extended'
 import {
   Extension,
   ExtensionPoint,
-  OptionsConfig,
   useExtensionRegistry,
   useMessages,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
-import { LanguageOption, SettingsBundle, SettingsValue } from '../../../src/helpers/settings'
+import { LanguageOption, SettingsBundle, SettingsValue } from '../../../../src/helpers/settings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { VueWrapper } from '@vue/test-utils'
 import { SpaceResource } from '@opencloud-eu/web-client'
@@ -28,110 +27,10 @@ const $route = {
 }
 
 const selectors = {
-  pageTitle: '.oc-page-title',
-  loaderStub: 'oc-spinner-stub',
-  editUrlButton: '[data-testid="account-page-edit-url-btn"]',
-  editPasswordButton: '[data-testid="account-page-edit-password-btn"]',
-  logoutButton: '[data-testid="account-page-logout-url-btn"]',
-  accountPageInfo: '.account-page-info',
-  groupNames: '[data-testid="group-names"]',
-  groupNamesEmpty: '[data-testid="group-names-empty"]',
-  gdprExport: '[data-testid="gdpr-export"]',
-  extensionsSection: '.account-page-extensions'
+  editPasswordButton: '[data-testid="account-page-edit-password-btn"]'
 }
 
-describe('account page', () => {
-  describe('public link context', () => {
-    it('should render a limited view', async () => {
-      const { wrapper } = getWrapper({ isUserContext: false, isPublicLinkContext: true })
-      await blockLoadingState(wrapper)
-
-      expect(wrapper.html()).toMatchSnapshot()
-    })
-  })
-
-  describe('header section', () => {
-    describe('edit url button', () => {
-      it('should be displayed if defined via config', async () => {
-        const { wrapper } = getWrapper({
-          accountEditLink: { href: '/' }
-        })
-        await blockLoadingState(wrapper)
-
-        const editUrlButton = wrapper.find(selectors.editUrlButton)
-        expect(editUrlButton.html()).toMatchSnapshot()
-      })
-      it('should not be displayed if not defined via config', async () => {
-        const { wrapper } = getWrapper()
-        await blockLoadingState(wrapper)
-
-        const editUrlButton = wrapper.find(selectors.editUrlButton)
-        expect(editUrlButton.exists()).toBeFalsy()
-      })
-    })
-  })
-
-  describe('account information section', () => {
-    it('displays basic user information', async () => {
-      const { wrapper } = getWrapper({
-        user: mock<User>({
-          onPremisesSamAccountName: 'some-username',
-          displayName: 'some-displayname',
-          mail: 'some-email',
-          memberOf: []
-        })
-      })
-      await blockLoadingState(wrapper)
-
-      const accountPageInfo = wrapper.find(selectors.accountPageInfo)
-      expect(accountPageInfo.html()).toMatchSnapshot()
-    })
-
-    describe('group membership', () => {
-      it('displays message if not member of any groups', async () => {
-        const { wrapper } = getWrapper()
-        await blockLoadingState(wrapper)
-
-        const groupNamesEmpty = wrapper.find(selectors.groupNamesEmpty)
-        expect(groupNamesEmpty.exists()).toBeTruthy()
-      })
-      it('displays group names', async () => {
-        const { wrapper } = getWrapper({
-          user: mock<User>({
-            memberOf: [{ displayName: 'one' }, { displayName: 'two' }, { displayName: 'three' }]
-          })
-        })
-        await blockLoadingState(wrapper)
-
-        const groupNames = wrapper.find(selectors.groupNames)
-        expect(groupNames.html()).toMatchSnapshot()
-      })
-    })
-
-    describe('Logout from all devices link', () => {
-      it('should render the logout from active devices if logoutUrl is provided', async () => {
-        const { wrapper } = getWrapper()
-        await blockLoadingState(wrapper)
-
-        expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
-      })
-      it("shouldn't render the logout from active devices if logoutUrl isn't provided", async () => {
-        const { wrapper } = getWrapper()
-        await blockLoadingState(wrapper)
-
-        wrapper.vm.logoutUrl = undefined
-        expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
-      })
-      it('should use url from configuration manager', async () => {
-        const { wrapper } = getWrapper()
-        await blockLoadingState(wrapper)
-
-        const logoutButton = wrapper.find(selectors.logoutButton)
-        expect(logoutButton.attributes('href')).toBe('https://account-manager/logout')
-      })
-    })
-  })
-
+describe('account preferences page', () => {
   describe('Preferences section', () => {
     describe('change password button', () => {
       it('should be displayed if not disabled via capability', async () => {
@@ -163,7 +62,7 @@ describe('account page', () => {
       mocks.$clientService.httpAuthenticated.post.mockResolvedValueOnce(
         mockAxiosResolve({ value: { id: 'settings-language' } })
       )
-      await wrapper.vm.updateDisableEmailNotifications(true)
+      await (wrapper.vm as any).updateDisableEmailNotifications(true)
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
@@ -174,7 +73,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.httpAuthenticated.post.mockImplementation(() => mockAxiosReject('err'))
-      await wrapper.vm.updateDisableEmailNotifications(true)
+      await (wrapper.vm as any).updateDisableEmailNotifications(true)
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
     })
@@ -186,7 +85,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.graphAuthenticated.users.editMe.mockResolvedValueOnce(undefined)
-      await wrapper.vm.updateSelectedLanguage({ value: 'en' } as LanguageOption)
+      await (wrapper.vm as any).updateSelectedLanguage({ value: 'en' } as LanguageOption)
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
@@ -197,7 +96,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.graphAuthenticated.users.editMe.mockRejectedValue(new Error())
-      await wrapper.vm.updateSelectedLanguage({ value: 'en' } as LanguageOption)
+      await (wrapper.vm as any).updateSelectedLanguage({ value: 'en' } as LanguageOption)
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
     })
@@ -207,7 +106,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.graphAuthenticated.users.editMe.mockResolvedValueOnce(undefined)
-      await wrapper.vm.updateSelectedLanguage({ value: 'en' } as LanguageOption)
+      await (wrapper.vm as any).updateSelectedLanguage({ value: 'en' } as LanguageOption)
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledWith(
         '/api/v0/settings/bundles-list',
         {},
@@ -221,69 +120,12 @@ describe('account page', () => {
       const { wrapper } = getWrapper({})
       await blockLoadingState(wrapper)
 
-      await wrapper.vm.updateViewOptionsWebDavDetails(true)
+      await (wrapper.vm as any).updateViewOptionsWebDavDetails(true)
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
 
       const { setAreWebDavDetailsShown } = useResourcesStore()
       expect(setAreWebDavDetailsShown).toHaveBeenCalled()
-    })
-  })
-
-  describe('Extensions section', () => {
-    it('should be hidden if no extension points offer preferences', async () => {
-      const { wrapper } = getWrapper({})
-      await blockLoadingState(wrapper)
-
-      expect(wrapper.find(selectors.extensionsSection).exists()).toBeFalsy()
-    })
-
-    it('should be hidden if an extension point only has 1 or less extensions', async () => {
-      const extensionPointMock = mock<ExtensionPoint<Extension>>({
-        userPreference: {
-          label: 'example-extension-point',
-          description: 'example-extension-point'
-        }
-      })
-      const { wrapper } = getWrapper({
-        extensionPoints: [extensionPointMock]
-      })
-      await blockLoadingState(wrapper)
-
-      expect(wrapper.find(selectors.extensionsSection).exists()).toBeFalsy()
-    })
-
-    it('should be visible if an extension point has at least 2 extensions', async () => {
-      const extensionPoint = mock<ExtensionPoint<Extension>>({
-        id: 'test-extension-point',
-        multiple: false,
-        defaultExtensionId: 'foo-2',
-        userPreference: {
-          label: 'Foo container',
-          description: 'Foo container'
-        }
-      })
-      const extensions = [
-        mock<Extension>({
-          id: 'foo-1',
-          userPreference: {
-            optionLabel: 'Foo 1'
-          }
-        }),
-        mock<Extension>({
-          id: 'foo-2',
-          userPreference: {
-            optionLabel: 'Foo 2'
-          }
-        })
-      ]
-      const { wrapper } = getWrapper({
-        extensionPoints: [extensionPoint],
-        extensions
-      })
-      await blockLoadingState(wrapper)
-
-      expect(wrapper.find(selectors.extensionsSection).exists()).toBeTruthy()
     })
   })
 
@@ -297,7 +139,7 @@ describe('account page', () => {
           value: { identifier: { setting: 'setting-id' }, value: { id: 'value-id' } }
         })
       )
-      await wrapper.vm.updateMultiChoiceSettingsValue('setting-id', 'setting-key', true)
+      await (wrapper.vm as any).updateMultiChoiceSettingsValue('setting-id', 'setting-key', true)
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
@@ -309,7 +151,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.httpAuthenticated.post.mockImplementation(() => mockAxiosReject('err'))
-      await wrapper.vm.updateMultiChoiceSettingsValue('setting-id', 'setting-key', true)
+      await (wrapper.vm as any).updateMultiChoiceSettingsValue('setting-id', 'setting-key', true)
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
     })
@@ -325,7 +167,7 @@ describe('account page', () => {
           value: { identifier: { setting: 'setting-id' }, value: { id: 'value-id' } }
         })
       )
-      await wrapper.vm.updateSingleChoiceValue('setting-id', {
+      await (wrapper.vm as any).updateSingleChoiceValue('setting-id', {
         displayValue: 'Daily',
         value: { stringValue: 'daily' }
       })
@@ -340,7 +182,7 @@ describe('account page', () => {
       await blockLoadingState(wrapper)
 
       mocks.$clientService.httpAuthenticated.post.mockImplementation(() => mockAxiosReject('err'))
-      await wrapper.vm.updateSingleChoiceValue('setting-id', {
+      await (wrapper.vm as any).updateSingleChoiceValue('setting-id', {
         displayValue: 'Daily',
         value: { stringValue: 'daily' }
       })
@@ -359,18 +201,14 @@ const blockLoadingState = async (wrapper: VueWrapper<any, any>) => {
 function getWrapper({
   user = mock<User>({ memberOf: [] }),
   capabilities = {},
-  accountEditLink = undefined,
   spaces = [],
-  isPublicLinkContext = false,
   isUserContext = true,
   extensionPoints = [],
   extensions = []
 }: {
   user?: User
   capabilities?: Partial<Capabilities['capabilities']>
-  accountEditLink?: OptionsConfig['accountEditLink']
   spaces?: SpaceResource[]
-  isPublicLinkContext?: boolean
   isUserContext?: boolean
   extensionPoints?: ExtensionPoint<Extension>[]
   extensions?: Extension[]
@@ -379,17 +217,10 @@ function getWrapper({
     piniaOptions: {
       userState: { user },
       authState: {
-        userContextReady: isUserContext,
-        publicLinkContextReady: isPublicLinkContext
+        userContextReady: isUserContext
       },
       spacesState: { spaces },
-      capabilityState: { capabilities },
-      configState: {
-        options: {
-          logoutUrl: 'https://account-manager/logout',
-          ...(accountEditLink && { accountEditLink })
-        }
-      }
+      capabilityState: { capabilities }
     }
   })
 
@@ -418,14 +249,11 @@ function getWrapper({
 
   return {
     mocks,
-    wrapper: mount(account, {
+    wrapper: mount(AccountPreferences, {
       global: {
         plugins,
         mocks,
-        provide: mocks,
-        stubs: {
-          'extension-preference': true
-        }
+        provide: mocks
       }
     })
   }

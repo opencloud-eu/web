@@ -7,8 +7,8 @@ Feature: language settings
       | id    |
       | Alice |
       | Brian |
-  
-  
+
+
   Scenario: system language change
     And "Brian" creates the following folder in personal space using API
       | name          |
@@ -18,8 +18,9 @@ Feature: language settings
       | check_message | Alice     | user | Can edit |
     And "Alice" logs in
     And "Alice" opens the user menu
+    And "Alice" opens "Preferences" on the user menu
     And "Alice" changes the language to "Deutsch - German"
-    Then "Alice" should see the following account page title "Mein Konto"
+    Then "Alice" should see the following account page title "Einstellungen"
     When "Alice" logs out
     And "Alice" logs in
     Then "Alice" should see the following notifications
@@ -42,5 +43,6 @@ Feature: language settings
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" opens the user menu
+    And "Anonymous" opens "Preferences" on the user menu
     And "Anonymous" changes the language to "Deutsch - German"
-    Then "Anonymous" should see the following account page title "Mein Konto"
+    Then "Anonymous" should see the following account page title "Einstellungen"

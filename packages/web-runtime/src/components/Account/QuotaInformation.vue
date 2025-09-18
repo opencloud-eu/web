@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-end">
+  <div class="flex items-center">
     <oc-icon name="hard-drive-2" size="small" fill-type="line" class="mr-1" />
     <div>
       <p class="my-0">

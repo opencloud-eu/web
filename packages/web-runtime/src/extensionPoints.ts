@@ -16,7 +16,7 @@ export const appMenuExtensionPoint: ExtensionPoint<AppMenuItemExtension> = {
 
 export const preferencesPanelExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
   id: 'app.runtime.preferences.panels',
-  extensionType: 'customComponent',
+  extensionType: 'accountExtension',
   multiple: true
 }
 

@@ -150,8 +150,8 @@
 import { storeToRefs } from 'pinia'
 import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
-  routeToContextQuery,
   useAuthService,
+  useAuthStore,
   UserAvatar,
   useRoute,
   useSpacesStore,
@@ -169,12 +169,12 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const spacesStore = useSpacesStore()
     const authService = useAuthService()
+    const authStore = useAuthStore()
 
     const { user } = storeToRefs(userStore)
 
     const accountPageRoute = computed(() => ({
-      name: 'account',
-      query: routeToContextQuery(unref(route))
+      name: authStore.userContextReady ? 'account-information' : 'account-preferences'
     }))
 
     const loginLink = computed(() => {
@@ -201,14 +201,14 @@ export default defineComponent({
 
     return {
       user,
-      accountPageRoute,
       loginLink,
       imprintUrl,
       privacyUrl,
       accessibilityUrl,
       showFooter,
       quota,
-      logout
+      logout,
+      accountPageRoute
     }
   },
   computed: {

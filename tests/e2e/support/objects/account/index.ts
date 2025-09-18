@@ -20,6 +20,10 @@ export class Account {
     await po.openAccountPage({ page: this.#page })
   }
 
+  async openAccountSubPage(subPage: string): Promise<void> {
+    await po.openAccountSubPage({ page: this.#page, subPage })
+  }
+
   async requestGdprExport(): Promise<void> {
     await po.requestGdprExport({ page: this.#page })
   }

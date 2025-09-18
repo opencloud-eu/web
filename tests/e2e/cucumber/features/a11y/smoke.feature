@@ -40,7 +40,7 @@ Feature: Accessibility checks
       | resource | recipient | type  | role     |
       | parent   | Brian     | user  | Can edit |
       | parent   | sales     | group | Can edit |
-    
+
     ## checks login page
     When "Alice" logs in
     And "Brian" logs in
@@ -82,10 +82,10 @@ Feature: Accessibility checks
     And "Alice" searches "test" using the global search and the "all files" filter and presses enter
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "Search result"
 
-    
+
     ## 2. check accesability on top bar
     And "Brian" checks the accessibility of the DOM selector "#oc-topbar" on the "top bar"
-    
+
     # search panel
     And "Brian" opens location search panel
     And "Brian" checks the accessibility of the DOM selector ".tippy-content" on the "search panel"
@@ -98,21 +98,30 @@ Feature: Accessibility checks
     And "Brian" opens the apps menu
     And "Brian" checks the accessibility of the DOM selector "#app-switcher-dropdown" on the "apps menu"
 
-    
+
     ## 3. left sidebar web-nav-sidebar
     And "Brian" checks the accessibility of the DOM selector "#web-nav-sidebar" on the "left sidebar"
 
- 
+
     ## 4. account page
     And "Brian" opens the user menu
-    And "Brian" checks the accessibility of the DOM selector "#account" on the "account menu"
+    And "Brian" opens "Profile" on the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account-information" on the "account menu->profile"
+    And "Brian" opens "Preferences" on the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account-preferences" on the "account menu->preferences"
+    And "Brian" opens "Extensions" on the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account-extensions" on the "account menu->extensions"
+    And "Brian" opens "Calendar" on the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account-calendar" on the "account menu->calendar"
+    And "Brian" opens "GDPR" on the user menu
+    And "Brian" checks the accessibility of the DOM selector "#account-gdpr" on the "account menu->gdpr"
 
-    
+
     ## 5. admin-settings-view-wrapper
     # general
     And "Brian" opens the "admin-settings" app
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->general"
-    
+
     # users
     And "Brian" navigates to the users management page
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->users"
@@ -141,8 +150,8 @@ Feature: Accessibility checks
     ## 6. space page
     And "Alice" navigates to the project space "my_space"
     And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
-    
-    
+
+
     ## 7. app-sidebar (right sidebar)
     And "Alice" opens the "files" app
     And "Alice" opens the right sidebar of the resource "lorem.txt"
@@ -155,7 +164,7 @@ Feature: Accessibility checks
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->activities panel"
     And "Alice" opens a "sharing" panel of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->sharing panel"
-    
+
     # check create public link modal and link role dropdown
     And "Alice" creates a public link of following resource using the sidebar panel
       | resource         | role     | password |
@@ -165,6 +174,6 @@ Feature: Accessibility checks
     And "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" checks the accessibility of the DOM selector "#web-content" on the "public link page"
-    
+
     And "Alice" logs out
     And "Brian" logs out
