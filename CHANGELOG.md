@@ -73,6 +73,10 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency luxon to v3.7.2 [[#1192](https://github.com/opencloud-eu/web/pull/1192)]
+- chore(deps): update dependency @noble/hashes to v2 [[#1118](https://github.com/opencloud-eu/web/pull/1118)]
+- chore(deps): update dependency jsdom to v27 [[#1205](https://github.com/opencloud-eu/web/pull/1205)]
+- fix(deps): update dependency uuid to v13 [[#1208](https://github.com/opencloud-eu/web/pull/1208)]
 - fix(deps): update dependency globals to v16.4.0 [[#1201](https://github.com/opencloud-eu/web/pull/1201)]
 - chore(deps): update apache/tika docker tag to v3.2.3.0 [[#1198](https://github.com/opencloud-eu/web/pull/1198)]
 - chore(deps): update pnpm to v10.17.0 [[#1214](https://github.com/opencloud-eu/web/pull/1214)]
