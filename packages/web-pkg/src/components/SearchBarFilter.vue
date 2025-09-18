@@ -19,10 +19,11 @@
           <oc-list>
             <li v-for="(option, index) in locationOptions" :key="index">
               <oc-button
-                appearance="raw"
+                :appearance="option.id === currentSelection.id ? 'filled' : 'raw-inverse'"
+                :color-role="option.id === currentSelection.id ? 'secondaryContainer' : 'surface'"
+                :no-hover="option.id === currentSelection.id"
                 size="medium"
                 class="flex items-center w-full py-1 px-2"
-                :class="{ 'oc-role-secondary-container': option.id === currentSelection.id }"
                 justify-content="space-between"
                 :disabled="!option.enabled"
                 :data-test-id="option.id"

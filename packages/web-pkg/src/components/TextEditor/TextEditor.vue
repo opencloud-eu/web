@@ -1,5 +1,8 @@
 <template>
-  <div id="text-editor-container" class="h-full">
+  <div
+    id="text-editor-container"
+    class="h-full [&_.md-editor-preview]:!font-(family-name:--oc-font-family)"
+  >
     <md-preview
       v-if="isReadOnly"
       id="text-editor-preview-component"
@@ -18,6 +21,7 @@
     <md-editor
       v-else
       id="text-editor-component"
+      class="[&_.cm-content]:!font-(family-name:--oc-font-family)"
       :model-value="currentContent"
       no-katex
       no-mermaid
