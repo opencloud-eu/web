@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border z-[calc(var(--z-index-modal)+1)] border-role-outline rounded-sm focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
+        class="border z-[calc(var(--z-index-modal)+1)] border-role-outline rounded-lg focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
