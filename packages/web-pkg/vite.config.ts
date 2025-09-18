@@ -19,7 +19,8 @@ export default defineConfig({
       scss: {
         additionalData: `
           @use "sass:math";
-          @import "${projectRootDir}/packages/design-system/src/styles/styles";
+          @use "sass:string";
+          @use "sass:meta";
         `,
         silenceDeprecations: ['legacy-js-api', 'import']
       }
