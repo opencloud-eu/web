@@ -415,8 +415,8 @@ importers:
         specifier: 3.0.3
         version: 3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.21(typescript@5.9.2))
@@ -508,8 +508,8 @@ importers:
         specifier: ^6.13.0
         version: 6.14.0
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.21(typescript@5.9.2))
@@ -572,8 +572,8 @@ importers:
         specifier: 6.14.0
         version: 6.14.0
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.21(typescript@5.9.2))
@@ -615,8 +615,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.21(typescript@5.9.2))
@@ -761,8 +761,8 @@ importers:
         specifier: ^3.5.0
         version: 3.7.1
       uuid:
-        specifier: ^11.0.0
-        version: 11.1.0
+        specifier: ^13.0.0
+        version: 13.0.0
       webdav:
         specifier: ^5.7.1
         version: 5.8.0
@@ -895,8 +895,8 @@ importers:
         specifier: ^7.6.3
         version: 7.7.2
       uuid:
-        specifier: ^11.0.0
-        version: 11.1.0
+        specifier: ^13.0.0
+        version: 13.0.0
       vue-concurrency:
         specifier: ^5.0.1
         version: 5.0.3(vue@3.5.21(typescript@5.9.2))
@@ -1026,8 +1026,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       vue:
         specifier: 3.5.21
         version: 3.5.21(typescript@5.9.2)
@@ -6347,6 +6347,10 @@ packages:
 
   uuid@11.1.0:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
+  uuid@13.0.0:
+    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -12481,6 +12485,8 @@ snapshots:
   uuid@11.0.5: {}
 
   uuid@11.1.0: {}
+
+  uuid@13.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
