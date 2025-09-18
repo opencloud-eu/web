@@ -75,8 +75,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vite to v7 [[#853](https://github.com/opencloud-eu/web/pull/853)]
 - fix(deps): update dependency luxon to v3.7.2 [[#1192](https://github.com/opencloud-eu/web/pull/1192)]
-- chore(deps): update dependency @noble/hashes to v2 [[#1118](https://github.com/opencloud-eu/web/pull/1118)]
 - chore(deps): update dependency jsdom to v27 [[#1205](https://github.com/opencloud-eu/web/pull/1205)]
 - fix(deps): update dependency uuid to v13 [[#1208](https://github.com/opencloud-eu/web/pull/1208)]
 - fix(deps): update dependency globals to v16.4.0 [[#1201](https://github.com/opencloud-eu/web/pull/1201)]
