@@ -6,39 +6,31 @@
     <oc-card
       :logo-url="logoImg"
       :title="$gettext('Missing or invalid config')"
-      body-class="w-sm text-center"
+      body-class="text-center"
       class="bg-role-surface-container rounded-lg"
     >
       <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
       <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
       <template #footer>
-        <p v-text="footerSlogan" />
+        <p v-if="footerSlogan" v-text="footerSlogan" />
       </template>
     </oc-card>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, unref } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import { useThemeStore } from '@opencloud-eu/web-pkg'
 import { useHead } from '../composables/head'
 import { storeToRefs } from 'pinia'
+// import ods component because ods is not initialized in case of a missing or invalid config
+import { OcCard } from '@opencloud-eu/design-system/components'
 
-export default defineComponent({
-  name: 'MissingConfigPage',
-  setup() {
-    const themeStore = useThemeStore()
-    const { currentTheme } = storeToRefs(themeStore)
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
-    const logoImg = computed(() => unref(currentTheme)?.logo)
-    const footerSlogan = computed(() => unref(currentTheme)?.slogan)
+const logoImg = computed(() => unref(currentTheme)?.logo)
+const footerSlogan = computed(() => unref(currentTheme)?.slogan)
 
-    useHead()
-
-    return {
-      logoImg,
-      footerSlogan
-    }
-  }
-})
+useHead()
 </script>
