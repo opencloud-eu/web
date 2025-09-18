@@ -33,7 +33,7 @@
                 appearance="raw"
                 class="raw-hover-surface oc-bottom-drawer-close-button"
                 :aria-label="$gettext('Close the context menu')"
-                @click="hide"
+                @click="hide()"
               >
                 <oc-icon name="close" fill-type="line" />
               </oc-button>
@@ -65,7 +65,7 @@ import { onKeyStroke } from '@vueuse/core'
 import OcButton from '../OcButton/OcButton.vue'
 import OcCard from '../OcCard/OcCard.vue'
 
-interface Props {
+export interface Props {
   /**
    * @docs The ID the drawer element gets.
    */

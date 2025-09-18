@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, useAttrs, useTemplateRef, unref } from 'vue'
+import { computed, nextTick, useAttrs, useTemplateRef, unref, HTMLAttributes } from 'vue'
 import { uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -193,7 +193,7 @@ const additionalAttributes = computed(() => {
 })
 
 const ariaInvalid = computed(() => {
-  return (!!errorMessage).toString()
+  return (!!errorMessage).toString() as HTMLAttributes['aria-invalid']
 })
 
 const messageText = computed(() => {
