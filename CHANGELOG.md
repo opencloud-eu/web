@@ -16,6 +16,35 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### 📈 Enhancement
+
+- feat: remove edit space description inline button [[#1219](https://github.com/opencloud-eu/web/pull/1219)]
+- fix: adjusted notification area with tailwind [[#1168](https://github.com/opencloud-eu/web/pull/1168)]
+- Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
+- feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
+- refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
+- refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
+- refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
+- refactor: migrate grid to tailwind [[#1148](https://github.com/opencloud-eu/web/pull/1148)]
+- refactor: remaining flex props, display and fill to tailwind [[#1146](https://github.com/opencloud-eu/web/pull/1146)]
+- refactor: box-shadow, opacity, filter and pointer-event to tailwind [[#1142](https://github.com/opencloud-eu/web/pull/1142)]
+- refactor: transitions and animations to tailwind [[#1141](https://github.com/opencloud-eu/web/pull/1141)]
+- feat: enable feedback link and fix button color [[#1145](https://github.com/opencloud-eu/web/pull/1145)]
+- refactor: gaps to tailwind [[#1136](https://github.com/opencloud-eu/web/pull/1136)]
+- chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
+- refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
+- refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
+- refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
+- refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
+- refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
+- refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
+- refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
+- refactor: text-align and vertical-align to tailwind [[#1094](https://github.com/opencloud-eu/web/pull/1094)]
+- refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
+- refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
+- refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
+- feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
+
 ### 🐛 Bug Fixes
 
 - fix: adjust space description [[#1206](https://github.com/opencloud-eu/web/pull/1206)]
@@ -45,34 +74,6 @@
 - fix mobile flaky test [[#1173](https://github.com/opencloud-eu/web/pull/1173)]
 - fix: remove flaky resourceExists [[#1144](https://github.com/opencloud-eu/web/pull/1144)]
 - e2e: flaky after closing text file [[#1139](https://github.com/opencloud-eu/web/pull/1139)]
-
-### 📈 Enhancement
-
-- fix: adjusted notification area with tailwind [[#1168](https://github.com/opencloud-eu/web/pull/1168)]
-- Oc card component [[#1172](https://github.com/opencloud-eu/web/pull/1172)]
-- feat: set tiles view as default view option [[#1159](https://github.com/opencloud-eu/web/pull/1159)]
-- refactor: migrate z-index to tailwind [[#1156](https://github.com/opencloud-eu/web/pull/1156)]
-- refactor: remaining css props to tailwind #2 [[#1152](https://github.com/opencloud-eu/web/pull/1152)]
-- refactor: remaining css to tailwind #1 [[#1151](https://github.com/opencloud-eu/web/pull/1151)]
-- refactor: migrate grid to tailwind [[#1148](https://github.com/opencloud-eu/web/pull/1148)]
-- refactor: remaining flex props, display and fill to tailwind [[#1146](https://github.com/opencloud-eu/web/pull/1146)]
-- refactor: box-shadow, opacity, filter and pointer-event to tailwind [[#1142](https://github.com/opencloud-eu/web/pull/1142)]
-- refactor: transitions and animations to tailwind [[#1141](https://github.com/opencloud-eu/web/pull/1141)]
-- feat: enable feedback link and fix button color [[#1145](https://github.com/opencloud-eu/web/pull/1145)]
-- refactor: gaps to tailwind [[#1136](https://github.com/opencloud-eu/web/pull/1136)]
-- chore: adjust position css props to tailwind [[#1130](https://github.com/opencloud-eu/web/pull/1130)]
-- refactor: overflow to tailwind [[#1131](https://github.com/opencloud-eu/web/pull/1131)]
-- refactor: height to tailwind [[#1129](https://github.com/opencloud-eu/web/pull/1129)]
-- refactor: width to tailwind [[#1120](https://github.com/opencloud-eu/web/pull/1120)]
-- refactor: migrate outlines to tailwind [[#1116](https://github.com/opencloud-eu/web/pull/1116)]
-- refactor: borders to tailwind [[#1111](https://github.com/opencloud-eu/web/pull/1111)]
-- refactor: colors to tailwind [[#1099](https://github.com/opencloud-eu/web/pull/1099)]
-- refactor: word breaks and truncation to tailwind [[#1097](https://github.com/opencloud-eu/web/pull/1097)]
-- refactor: text-align and vertical-align to tailwind [[#1094](https://github.com/opencloud-eu/web/pull/1094)]
-- refactor: font-weight and text-decoration to tailwind [[#1093](https://github.com/opencloud-eu/web/pull/1093)]
-- refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
-- refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
-- feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
 
 ### 📦️ Dependencies
 
