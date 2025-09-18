@@ -73,6 +73,10 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency globals to v16.4.0 [[#1201](https://github.com/opencloud-eu/web/pull/1201)]
+- chore(deps): update apache/tika docker tag to v3.2.3.0 [[#1198](https://github.com/opencloud-eu/web/pull/1198)]
+- chore(deps): update pnpm to v10.17.0 [[#1214](https://github.com/opencloud-eu/web/pull/1214)]
+- chore(deps): update dependency pino to v9.10.0 [[#1215](https://github.com/opencloud-eu/web/pull/1215)]
 - fix(deps): update dependency dompurify to v3.2.7 [[#1213](https://github.com/opencloud-eu/web/pull/1213)]
 - chore(deps): update pnpm to v10.16.1 [[#1197](https://github.com/opencloud-eu/web/pull/1197)]
 - chore(deps): update node.js to v22.19.0 [[#1196](https://github.com/opencloud-eu/web/pull/1196)]
