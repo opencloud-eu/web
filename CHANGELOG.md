@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- App store style fixes [[#1218](https://github.com/opencloud-eu/web/pull/1218)]
 - fix: tailwind regressions #3 [[#1216](https://github.com/opencloud-eu/web/pull/1216)]
 - fix: line-height of resource name [[#1209](https://github.com/opencloud-eu/web/pull/1209)]
 - fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
