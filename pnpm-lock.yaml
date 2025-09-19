@@ -41,8 +41,8 @@ importers:
         specifier: 29.0.1
         version: 29.0.1
       '@cucumber/pretty-formatter':
-        specifier: 2.2.0
-        version: 2.2.0(@cucumber/messages@29.0.1)
+        specifier: 2.3.0
+        version: 2.3.0(@cucumber/messages@29.0.1)
       '@noble/hashes':
         specifier: 2.0.0
         version: 2.0.0
@@ -1945,8 +1945,8 @@ packages:
       '@cucumber/cucumber': '>=7.0.0'
       '@cucumber/messages': '*'
 
-  '@cucumber/pretty-formatter@2.2.0':
-    resolution: {integrity: sha512-WS9k/XEF1wV6q/nst6lYoF+gzQWa5giw4cZEXhAuK7oeyuamfKUYn8FM1i5dntdXqZ5l4ltH8fxVVphWF6dptQ==}
+  '@cucumber/pretty-formatter@2.3.0':
+    resolution: {integrity: sha512-KLQPbi3bzdzjzSbKtmgnIOcO5v/3X3MO9h4eqgsghG9bnJPDMGJnQm/cs/S/l811qLmwL+BtJn4bAeKhyIfRow==}
     peerDependencies:
       '@cucumber/messages': '*'
 
@@ -8004,7 +8004,7 @@ snapshots:
       figures: 3.2.0
       ts-dedent: 2.2.0
 
-  '@cucumber/pretty-formatter@2.2.0(@cucumber/messages@29.0.1)':
+  '@cucumber/pretty-formatter@2.3.0(@cucumber/messages@29.0.1)':
     dependencies:
       '@cucumber/messages': 29.0.1
       '@cucumber/query': 14.1.0(@cucumber/messages@29.0.1)
