@@ -141,6 +141,10 @@ export default defineConfig({
               link: '/OcButton'
             },
             {
+              text: 'OcCard',
+              link: '/OcCard'
+            },
+            {
               text: 'OcCheckbox',
               link: '/OcCheckbox'
             },
