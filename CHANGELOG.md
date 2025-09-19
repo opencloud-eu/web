@@ -77,6 +77,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/pretty-formatter to v2.3.0 [[#1222](https://github.com/opencloud-eu/web/pull/1222)]
 - fix(deps): update dependency eslint-plugin-n to v17.23.1 [[#1220](https://github.com/opencloud-eu/web/pull/1220)]
 - chore(deps): update dependency vite to v7 [[#853](https://github.com/opencloud-eu/web/pull/853)]
 - fix(deps): update dependency luxon to v3.7.2 [[#1192](https://github.com/opencloud-eu/web/pull/1192)]
