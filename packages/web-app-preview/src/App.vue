@@ -36,9 +36,7 @@
           :file="activeMediaFileCached"
           :current-image-rotation="currentImageRotation"
           :current-image-zoom="currentImageZoom"
-          :current-image-position-x="currentImagePositionX"
-          :current-image-position-y="currentImagePositionY"
-          @pan-zoom-change="onPanZoomChanged"
+          @set-zoom="currentImageZoom = $event"
         />
         <media-video
           v-else-if="activeMediaFileCached.isVideo"

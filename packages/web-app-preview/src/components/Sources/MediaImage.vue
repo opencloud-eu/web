@@ -5,15 +5,24 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="max-w-full max-h-full pt-4 cursor-move object-contain"
-    :style="`transform: rotate(${currentImageRotation}deg)`"
+    class="max-w-full max-h-full pt-4"
   />
 </template>
 <script lang="ts">
 import { CachedFile } from '../../helpers/types'
-import { defineComponent, PropType, onMounted, ref, watch, unref, nextTick } from 'vue'
+import {
+  defineComponent,
+  PropType,
+  ref,
+  watch,
+  unref,
+  nextTick,
+  onMounted,
+  onBeforeUnmount
+} from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
+import { useEventBus } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'MediaImage',
@@ -29,32 +38,35 @@ export default defineComponent({
     currentImageRotation: {
       type: Number,
       required: true
-    },
-    currentImagePositionX: {
-      type: Number,
-      required: true
-    },
-    currentImagePositionY: {
-      type: Number,
-      required: true
     }
   },
-  emits: ['panZoomChange'],
+  emits: ['setZoom'],
   setup(props, { emit }) {
+    const eventBus = useEventBus()
+
     const img = ref<HTMLElement | null>()
     const panzoom = ref<PanzoomObject>()
+    const resetEventToken = ref(null)
 
-    const onPanZoomChange = (event: Event) => {
-      emit('panZoomChange', event)
+    const onWheelEvent = (e: WheelEvent) => {
+      e.preventDefault()
+      if (!e.shiftKey) {
+        return false
+      }
+
+      if (e.deltaY < 0) {
+        unref(panzoom).zoomOut({ step: 0.1 })
+      } else if (e.deltaY > 0) {
+        unref(panzoom).zoomIn({ step: 0.1 })
+      }
+
+      emit('setZoom', unref(panzoom).getScale())
     }
 
     const initPanzoom = async () => {
       if (unref(panzoom)) {
         await nextTick()
-        ;(unref(img) as unknown as HTMLElement).removeEventListener(
-          'panzoomchange',
-          onPanZoomChange
-        )
+        ;(unref(img) as unknown as HTMLElement).removeEventListener('wheel', onWheelEvent)
         unref(panzoom)?.destroy()
       }
 
@@ -66,6 +78,8 @@ export default defineComponent({
         duration: 300,
         overflow: 'auto',
         maxScale: 10,
+        minScale: 0.5,
+
         setTransform: (_, { scale, x, y }) => {
           let h: number
           let v: number
@@ -97,18 +111,23 @@ export default defineComponent({
           )
         }
       } as PanzoomOptions)
-      ;(unref(img) as unknown as HTMLElement).addEventListener('panzoomchange', onPanZoomChange)
+      ;(unref(img) as unknown as HTMLElement).addEventListener('wheel', onWheelEvent)
     }
 
-    watch(img, initPanzoom)
-    onMounted(initPanzoom)
+    watch(() => props.file, initPanzoom, { immediate: true, deep: true })
 
     watch([() => props.currentImageZoom, () => props.currentImageRotation], () => {
       unref(panzoom).zoom(props.currentImageZoom)
     })
 
-    watch([() => props.currentImagePositionX, () => props.currentImagePositionY], () => {
-      unref(panzoom).pan(props.currentImagePositionX, props.currentImagePositionY)
+    onMounted(() => {
+      resetEventToken.value = eventBus.subscribe('app.preview.media.image.reset', () =>
+        initPanzoom()
+      )
+    })
+
+    onBeforeUnmount(() => {
+      eventBus.unsubscribe('app.preview.media.image.reset', unref(resetEventToken))
     })
 
     return {
