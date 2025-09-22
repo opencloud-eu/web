@@ -5,7 +5,7 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="max-w-[80%] max-h-[80%] cursor-move object-contain"
+    class="max-w-full max-h-full pt-4 cursor-move object-contain"
     :style="`transform: rotate(${currentImageRotation}deg)`"
   />
 </template>
