@@ -50,6 +50,7 @@
       class="mt-2"
       :min-date="DateTime.now()"
       :label="$gettext('Expiry date')"
+      :is-dark="currentTheme.isDark"
       @date-changed="onExpiryDateChanged"
     />
   </div>
@@ -121,13 +122,15 @@ import {
   useLinkTypes,
   Modal,
   useSharesStore,
-  useClientService
+  useClientService,
+  useThemeStore
 } from '../composables'
 import { LinkShare, SpaceResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import LinkRoleDropdown from './LinkRoleDropdown.vue'
+import { storeToRefs } from 'pinia'
 
 type RoleRef = ComponentPublicInstance<typeof OcButton>
 
@@ -163,6 +166,9 @@ export default defineComponent({
       isPasswordEnforcedForLinkType
     } = useLinkTypes()
     const { addLink } = useSharesStore()
+    const themeStore = useThemeStore()
+    const { currentTheme } = storeToRefs(themeStore)
+
     const isAdvancedMode = ref(false)
     const isInvalidExpiryDate = ref(false)
 
@@ -329,6 +335,7 @@ export default defineComponent({
       onExpiryDateChanged,
       confirmButtonDisabled,
       DateTime,
+      currentTheme,
 
       // unit tests
       onConfirm

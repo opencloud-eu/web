@@ -12,7 +12,8 @@ import { DateTime } from 'luxon'
 import { VueWrapper } from '@vue/test-utils'
 
 const copyMock = vi.fn()
-vi.mock('@vueuse/core', () => ({
+vi.mock('@vueuse/core', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useClipboard: vi.fn(() => ({ copy: copyMock, copied: false }))
 }))
 

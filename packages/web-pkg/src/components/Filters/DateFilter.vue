@@ -95,6 +95,7 @@
               :label="$gettext('From')"
               :is-clearable="true"
               :current-date="fromDate"
+              :is-dark="currentTheme.isDark"
               @date-changed="(value) => setDateRangeDate(value, 'from')"
             />
             <oc-datepicker
@@ -102,6 +103,7 @@
               :is-clearable="true"
               :current-date="toDate"
               :min-date="fromDate ? fromDate : undefined"
+              :is-dark="currentTheme.isDark"
               @date-changed="(value) => setDateRangeDate(value, 'to')"
             />
           </div>
@@ -119,12 +121,13 @@
 <script lang="ts">
 import { PropType, computed, defineComponent, onMounted, ref, unref } from 'vue'
 import omit from 'lodash-es/omit'
-import { useRoute, useRouteQuery, useRouter } from '../../composables'
+import { useRoute, useRouteQuery, useRouter, useThemeStore } from '../../composables'
 import { formatDateFromDateTime } from '../../helpers'
 import { queryItemAsString } from '../../composables/appDefaults'
 import { DateTime } from 'luxon'
 import { useGettext } from 'vue3-gettext'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
+import { storeToRefs } from 'pinia'
 
 type Item = Record<string, string>
 
@@ -159,6 +162,8 @@ export default defineComponent({
     const router = useRouter()
     const { current: currentLanguage } = useGettext()
     const currentRoute = useRoute()
+    const themeStore = useThemeStore()
+    const { currentTheme } = storeToRefs(themeStore)
     const selectedItem = ref<Item>()
     const displayedItems = ref(props.items)
     const fromDate = ref<DateTime>()
@@ -320,6 +325,7 @@ export default defineComponent({
       dateRangeApplied,
       setDateRangeDate,
       dateRangeClicked,
+      currentTheme,
 
       // for unit tests
       queryParam

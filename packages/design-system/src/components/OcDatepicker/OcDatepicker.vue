@@ -10,6 +10,7 @@
     :clear-button-enabled="isClearable"
     :clear-button-accessible-label="$gettext('Clear date')"
     class="oc-date-picker"
+    :class="{ 'oc-date-picker-dark': isDark }"
   />
 </template>
 
@@ -35,6 +36,11 @@ export interface Props {
    * @docs Minimum date that can be selected. Dates before this date will be disabled.
    */
   minDate?: DateTime
+  /**
+   * @docs Dark theme for the date picker.
+   * Dark theme is only available for Chromium-like browsers and Safari, Firefox is not supported.
+   */
+  isDark?: boolean
 }
 
 export interface Emits {
@@ -44,7 +50,7 @@ export interface Emits {
   (e: 'dateChanged', data: { date: DateTime | null; error: boolean }): void
 }
 
-const { label, currentDate, isClearable = true, minDate } = defineProps<Props>()
+const { label, currentDate, isClearable = true, minDate, isDark = false } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 
@@ -100,6 +106,14 @@ watch(
 @layer components {
   .oc-date-picker input::-webkit-calendar-picker-indicator {
     @apply cursor-pointer;
+  }
+
+  .oc-date-picker-dark input {
+    color-scheme: dark;
+  }
+
+  .oc-date-picker-dark input::-webkit-calendar-picker-indicator {
+    filter: invert(0);
   }
 }
 </style>
