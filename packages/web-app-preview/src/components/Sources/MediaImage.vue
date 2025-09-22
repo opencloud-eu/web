@@ -40,7 +40,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['setZoom'],
+  emits: ['setZoom', 'setShrink'],
   setup(props, { emit }) {
     const eventBus = useEventBus()
 
@@ -55,12 +55,10 @@ export default defineComponent({
       }
 
       if (e.deltaY < 0) {
-        unref(panzoom).zoomOut({ step: 0.1 })
+        emit('setZoom')
       } else if (e.deltaY > 0) {
-        unref(panzoom).zoomIn({ step: 0.1 })
+        emit('setShrink')
       }
-
-      emit('setZoom', unref(panzoom).getScale())
     }
 
     const initPanzoom = async () => {

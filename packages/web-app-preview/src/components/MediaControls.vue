@@ -51,7 +51,7 @@
             class="preview-controls-image-shrink raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageShrinkDescription"
-            @click="imageShrink"
+            @click="$emit('setShrink')"
           >
             <oc-icon fill-type="line" name="zoom-out" />
           </oc-button>
@@ -60,7 +60,7 @@
             class="preview-controls-image-zoom raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageZoomDescription"
-            @click="imageZoom"
+            @click="$emit('setZoom')"
           >
             <oc-icon fill-type="line" name="zoom-in" />
           </oc-button>
@@ -71,7 +71,7 @@
             class="preview-controls-rotate-left raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateLeftDescription"
-            @click="imageRotateLeft"
+            @click="$emit('setRotationLeft')"
           >
             <oc-icon fill-type="line" name="anticlockwise" />
           </oc-button>
@@ -80,7 +80,7 @@
             class="preview-controls-rotate-right raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateRightDescription"
-            @click="imageRotateRight"
+            @click="$emit('setRotationRight')"
           >
             <oc-icon fill-type="line" name="clockwise" />
           </oc-button>
@@ -153,7 +153,9 @@ export default defineComponent({
     }
   },
   emits: [
-    'setRotation',
+    'setRotationLeft',
+    'setRotationRight',
+    'setShrink',
     'setZoom',
     'toggleFullScreen',
     'toggleNext',
@@ -161,7 +163,7 @@ export default defineComponent({
     'resetImage',
     'deleteResource'
   ],
-  setup(props, { emit }) {
+  setup(props) {
     const { $gettext } = useGettext()
 
     const currentZoomDisplayValue = computed(() => {
@@ -181,23 +183,6 @@ export default defineComponent({
       })
     })
 
-    const calculateZoom = (zoom: number, factor: number) => {
-      return Math.round(zoom * factor * 20) / 20
-    }
-    const imageShrink = () => {
-      emit('setZoom', Math.max(0.1, calculateZoom(props.currentImageZoom, 0.8)))
-    }
-    const imageZoom = () => {
-      const maxZoomValue = calculateZoom(9, 1.25)
-      emit('setZoom', Math.min(calculateZoom(props.currentImageZoom, 1.25), maxZoomValue))
-    }
-    const imageRotateLeft = () => {
-      emit('setRotation', props.currentImageRotation === -270 ? 0 : props.currentImageRotation - 90)
-    }
-    const imageRotateRight = () => {
-      emit('setRotation', props.currentImageRotation === 270 ? 0 : props.currentImageRotation + 90)
-    }
-
     const resourceDeleteDescription = computed(() => {
       return $gettext('Delete (%{key})', {
         key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
@@ -211,17 +196,13 @@ export default defineComponent({
       resourceDeleteDescription,
       enterFullScreenDescription: $gettext('Enter full screen mode'),
       exitFullScreenDescription: $gettext('Exit full screen mode'),
-      imageShrinkDescription: $gettext('Shrink the image'),
-      imageZoomDescription: $gettext('Enlarge the image'),
+      imageShrinkDescription: $gettext('Shrink the image (⇧ + Mouse wheel)'),
+      imageZoomDescription: $gettext('Enlarge the image (⇧ + Mouse wheel)'),
       imageResetDescription: $gettext('Reset'),
       imageRotateLeftDescription: $gettext('Rotate the image 90 degrees to the left'),
       imageRotateRightDescription: $gettext('Rotate the image 90 degrees to the right'),
       previousDescription: $gettext('Show previous media file in folder'),
-      nextDescription: $gettext('Show next media file in folder'),
-      imageShrink,
-      imageZoom,
-      imageRotateLeft,
-      imageRotateRight
+      nextDescription: $gettext('Show next media file in folder')
     }
   }
 })

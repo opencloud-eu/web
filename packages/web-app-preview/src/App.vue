@@ -36,7 +36,8 @@
           :file="activeMediaFileCached"
           :current-image-rotation="currentImageRotation"
           :current-image-zoom="currentImageZoom"
-          @set-zoom="currentImageZoom = $event"
+          @set-zoom="imageZoom"
+          @set-shrink="imageShrink"
         />
         <media-video
           v-else-if="activeMediaFileCached.isVideo"
@@ -60,8 +61,10 @@
         :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
         :current-image-zoom="currentImageZoom"
-        @set-rotation="currentImageRotation = $event"
-        @set-zoom="currentImageZoom = $event"
+        @set-rotation-right="imageRotateRight"
+        @set-rotation-left="imageRotateLeft"
+        @set-zoom="imageZoom"
+        @set-shrink="imageShrink"
         @reset-image="resetImage"
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
