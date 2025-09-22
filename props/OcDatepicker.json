@@ -26,5 +26,12 @@
     "description": "Minimum date that can be selected. Dates before this date will be disabled.",
     "default": "",
     "type": "DateTime"
+  },
+  {
+    "name": "isDark",
+    "required": false,
+    "description": "Dark theme for the date picker.\nDark theme is only available for Chromium-like browsers and Safari, Firefox is not supported.",
+    "default": "",
+    "type": "boolean"
   }
 ]
