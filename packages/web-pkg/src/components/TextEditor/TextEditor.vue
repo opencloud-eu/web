@@ -186,12 +186,5 @@ export default defineComponent({
 // overwrite md-editor styles
 .md-editor {
   height: 100%;
-
-  .cm-line:has(.ͼy),
-  .cm-line:has(.ͼ1h) {
-    max-height: 60px;
-    overflow: auto;
-    margin-right: calc(var(--spacing) * 4);
-  }
 }
 </style>
