@@ -78,6 +78,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency eslint-plugin-vue to v10.5.0 [[#1231](https://github.com/opencloud-eu/web/pull/1231)]
 - chore: update md-editor-v3 to v6.0.1 [[#1234](https://github.com/opencloud-eu/web/pull/1234)]
 - chore(deps): update dependency vite to v7.1.7 [[#1229](https://github.com/opencloud-eu/web/pull/1229)]
 - chore(deps): update devdependencies (non-major) [[#1226](https://github.com/opencloud-eu/web/pull/1226)]
