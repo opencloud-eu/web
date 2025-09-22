@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: authenticated requests in password protected public links [[#1233](https://github.com/opencloud-eu/web/pull/1233)]
 - fix: visual glitch when checking checkboxes [[#1230](https://github.com/opencloud-eu/web/pull/1230)]
 - fix: adjust space description [[#1206](https://github.com/opencloud-eu/web/pull/1206)]
 - App store style fixes [[#1218](https://github.com/opencloud-eu/web/pull/1218)]
