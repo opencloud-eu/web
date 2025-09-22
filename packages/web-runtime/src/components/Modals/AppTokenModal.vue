@@ -8,6 +8,7 @@
     />
     <oc-datepicker
       :label="$gettext('Expiration date')"
+      :is-dark="currentTheme.isDark"
       class="mt-2"
       type="date"
       :min-date="minDate"
@@ -76,10 +77,16 @@
 <script setup lang="ts">
 import { computed, ref, unref, watch } from 'vue'
 import { DateTime } from 'luxon'
-import { formatDateFromDateTime, Modal, useClientService } from '@opencloud-eu/web-pkg'
+import {
+  formatDateFromDateTime,
+  Modal,
+  useClientService,
+  useThemeStore
+} from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useClipboard } from '@vueuse/core'
 import { AppToken } from '../../helpers/appTokens'
+import { storeToRefs } from 'pinia'
 
 defineProps<{ modal: Modal }>()
 defineEmits(['confirm', 'cancel'])
@@ -87,6 +94,8 @@ defineEmits(['confirm', 'cancel'])
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const tokenLabel = ref<string>('')
 const tokenLabelErrorMessage = ref<string>('')

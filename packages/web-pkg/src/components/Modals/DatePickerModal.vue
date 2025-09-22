@@ -5,6 +5,7 @@
     :min-date="minDate"
     :current-date="currentDate"
     :is-clearable="isClearable"
+    :is-dark="currentTheme.isDark"
     required-mark
     @date-changed="onDateChanged"
   />
@@ -27,7 +28,8 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
 import { DateTime } from 'luxon'
-import { Modal } from '../../composables/piniaStores'
+import { Modal, useThemeStore } from '../../composables/piniaStores'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'DatePickerModal',
@@ -39,6 +41,9 @@ export default defineComponent({
   },
   emits: ['confirm', 'cancel'],
   setup() {
+    const themeStore = useThemeStore()
+    const { currentTheme } = storeToRefs(themeStore)
+
     const dateTime = ref<DateTime>()
     const confirmDisabled = ref(true)
     const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
@@ -49,6 +54,7 @@ export default defineComponent({
     return {
       confirmDisabled,
       onDateChanged,
+      currentTheme,
       dateTime
     }
   }
