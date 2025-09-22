@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-09-22
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear
+
+### 📈 Enhancement
+
+- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
 ## [4.0.0](https://github.com/opencloud-eu/web/releases/tag/v4.0.0) - 2025-09-22
 
 ### ❤️ Thanks to all contributors! ❤️
