@@ -3,9 +3,35 @@
   --vp-c-brand-1: var(--oc-role-secondary);
 }
 
+.vp-doc tr:nth-child(2n) {
+  // disable the color change on table rows
+  background-color: var(--vp-c-bg);
+}
+
+.vp-doc .live-code-block {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    // reset vitepress styling inside live code blocks
+    margin: revert-layer;
+    border: revert-layer;
+    padding: revert-layer;
+    font-size: revert-layer;
+    line-height: revert-layer;
+    letter-spacing: revert-layer;
+  }
+}
+
 // re-apply some basic styling we removed during the build to avoid conflicts with tailwind
 .title span {
   font-size: 14px;
+}
+
+li::marker {
+  color: var(--oc-role-on-surface);
 }
 
 #VPSidebarNav .VPLink p {
@@ -20,6 +46,9 @@
 html * {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+body {
   overflow: auto;
 }
 

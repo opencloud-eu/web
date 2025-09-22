@@ -45,12 +45,6 @@ const fields = [
   </template>
 </oc-table>
 
-<style lang="scss">
-.oc-tbody-tr {
-  background-color: var(--oc-role-surface) !important;
-}
-</style>
-
 ## Usage
 
 You can use these variables in your SCSS files or style blocks:
@@ -60,4 +54,12 @@ You can use these variables in your SCSS files or style blocks:
   color: var(--oc-role-on-primary);
   background-color: var(--oc-role-primary);
 }
+```
+
+They can also be used via Tailwind's utility classes:
+
+```html
+<div class="bg-role-secondary">
+  <span class="text-role-on-secondary">Some text.</span>
+</div>
 ```

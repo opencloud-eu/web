@@ -45,12 +45,6 @@ const fields = [
   </template>
 </oc-table>
 
-<style lang="scss">
-.oc-tbody-tr {
-  background-color: var(--oc-role-surface) !important;
-}
-</style>
-
 ## Usage
 
 You can use these variables in your SCSS files or style blocks:

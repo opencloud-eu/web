@@ -69,7 +69,7 @@ export interface Slots {
    */
   default?: () => unknown
   /**
-   * @docs Content of the header. By default, this is filled with a `<h2>` tag which renders the title.
+   * @docs Content of the header. By default, this is filled with a `h2` tag which renders the title.
    */
   header?: () => unknown
   /**
