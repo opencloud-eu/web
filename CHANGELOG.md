@@ -77,6 +77,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vite to v7.1.7 [[#1229](https://github.com/opencloud-eu/web/pull/1229)]
+- chore(deps): update devdependencies (non-major) [[#1226](https://github.com/opencloud-eu/web/pull/1226)]
+- fix(deps): update dependency zod to v4.1.11 - autoclosed [[#1227](https://github.com/opencloud-eu/web/pull/1227)]
+- fix(deps): update dependency filesize to v11.0.13 [[#1225](https://github.com/opencloud-eu/web/pull/1225)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v2.3.0 [[#1222](https://github.com/opencloud-eu/web/pull/1222)]
 - fix(deps): update dependency eslint-plugin-n to v17.23.1 [[#1220](https://github.com/opencloud-eu/web/pull/1220)]
 - chore(deps): update dependency vite to v7 [[#853](https://github.com/opencloud-eu/web/pull/853)]
