@@ -23,7 +23,8 @@ export class Auth {
           'Basic ' + Buffer.from(['public', this.publicLinkPassword].join(':')).toString('base64')
       }),
       ...(this.accessToken &&
-        !this.publicLinkPassword && {
+        !this.publicLinkPassword &&
+        !this.publicLinkToken && {
           Authorization: 'Bearer ' + this.accessToken
         })
     }

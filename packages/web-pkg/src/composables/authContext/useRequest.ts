@@ -1,7 +1,7 @@
 import { useClientService } from '../clientService'
 import type { Router, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { Method, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ClientService } from '../../services'
+import { Auth, ClientService } from '../../services'
 import { AuthStore, useAuthStore } from '../piniaStores'
 
 interface RequestOptions {
@@ -24,25 +24,20 @@ export function useRequest(options: RequestOptions = {}): RequestResult {
     url: string,
     config: AxiosRequestConfig = {}
   ): Promise<AxiosResponse> => {
-    const httpClient = authStore.accessToken
-      ? clientService.httpAuthenticated
-      : clientService.httpUnAuthenticated
+    const httpClient =
+      !authStore.accessToken || authStore.publicLinkContextReady
+        ? clientService.httpUnAuthenticated
+        : clientService.httpAuthenticated
 
-    config.headers = config.headers || {}
-
-    if (authStore.publicLinkContextReady) {
-      if (authStore.publicLinkPassword) {
-        config.headers.Authorization =
-          'Basic ' +
-          Buffer.from(['public', authStore.publicLinkPassword].join(':')).toString('base64')
-      }
-      if (authStore.publicLinkToken) {
-        config.headers['public-token'] = authStore.publicLinkToken
-      }
-    }
+    const auth = new Auth({
+      accessToken: authStore.accessToken,
+      publicLinkToken: authStore.publicLinkToken,
+      publicLinkPassword: authStore.publicLinkPassword
+    })
 
     config.method = method
     config.url = url
+    config.headers = { ...auth.getHeaders(), ...(config?.headers || {}) }
 
     return httpClient.request(config)
   }
