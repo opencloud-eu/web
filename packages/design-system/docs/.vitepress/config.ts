@@ -75,6 +75,23 @@ export default defineConfig({
     sidebar: {
       '/': [
         {
+          text: 'Getting Started',
+          items: [
+            {
+              text: 'Installation',
+              link: '/gettingStarted/installation'
+            },
+            {
+              text: 'Usage',
+              link: '/gettingStarted/usage'
+            },
+            {
+              text: 'Tailwind migration (v4)',
+              link: '/gettingStarted/tailwindMigration'
+            }
+          ]
+        },
+        {
           text: 'Design Tokens',
           items: [
             {
@@ -122,6 +139,10 @@ export default defineConfig({
             {
               text: 'OcButton',
               link: '/OcButton'
+            },
+            {
+              text: 'OcCard',
+              link: '/OcCard'
             },
             {
               text: 'OcCheckbox',
