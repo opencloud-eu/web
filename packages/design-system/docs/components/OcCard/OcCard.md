@@ -8,7 +8,7 @@ prev: false
 
 ## Description
 
-The `OcCard` component represents a simple card element consisting of a header, a body and an optional footer. It is used to group related information in a visually distinct container.
+The `OcCard` component represents a simple card element consisting of a body and an optional header and footer. It is used to group related information in a visually distinct container.
 
 ## Examples
 
