@@ -16,6 +16,27 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### 🐛 Bug Fixes
+
+- fix: visual glitch when checking checkboxes [[#1230](https://github.com/opencloud-eu/web/pull/1230)]
+- fix: adjust space description [[#1206](https://github.com/opencloud-eu/web/pull/1206)]
+- App store style fixes [[#1218](https://github.com/opencloud-eu/web/pull/1218)]
+- fix: tailwind regressions #3 [[#1216](https://github.com/opencloud-eu/web/pull/1216)]
+- fix: line-height of resource name [[#1209](https://github.com/opencloud-eu/web/pull/1209)]
+- fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
+- fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
+- fix: tailwind regressions [[#1183](https://github.com/opencloud-eu/web/pull/1183)]
+- fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
+- fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
+- fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
+- fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
+- fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
+- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
+- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
+- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
+- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
+- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
+
 ### 📈 Enhancement
 
 - feat: remove edit space description inline button [[#1219](https://github.com/opencloud-eu/web/pull/1219)]
@@ -44,26 +65,6 @@
 - refactor: migrate font-size and line-height to tailwind [[#1091](https://github.com/opencloud-eu/web/pull/1091)]
 - refactor: tailwind spacings [[#1082](https://github.com/opencloud-eu/web/pull/1082)]
 - feat: add tailwindcss and replace oc-m/p classes [[#1073](https://github.com/opencloud-eu/web/pull/1073)]
-
-### 🐛 Bug Fixes
-
-- fix: adjust space description [[#1206](https://github.com/opencloud-eu/web/pull/1206)]
-- App store style fixes [[#1218](https://github.com/opencloud-eu/web/pull/1218)]
-- fix: tailwind regressions #3 [[#1216](https://github.com/opencloud-eu/web/pull/1216)]
-- fix: line-height of resource name [[#1209](https://github.com/opencloud-eu/web/pull/1209)]
-- fix: avatar alignment and z-index [[#1203](https://github.com/opencloud-eu/web/pull/1203)]
-- fix: check byte length on name validation instead of character count [[#1187](https://github.com/opencloud-eu/web/pull/1187)]
-- fix: tailwind regressions [[#1183](https://github.com/opencloud-eu/web/pull/1183)]
-- fix: space edit readme button visible for space members without permissions [[#1180](https://github.com/opencloud-eu/web/pull/1180)]
-- fix: file delete batch action appears in the project spaces overview leading to errors [[#1176](https://github.com/opencloud-eu/web/pull/1176)]
-- fix: space description doesn't collapse [[#1174](https://github.com/opencloud-eu/web/pull/1174)]
-- fix: shortcut links not opening in tiles view [[#1166](https://github.com/opencloud-eu/web/pull/1166)]
-- fix: opening image with right sidebar being opened [[#1163](https://github.com/opencloud-eu/web/pull/1163)]
-- fix(design-system): docs after tailwind migration [[#1132](https://github.com/opencloud-eu/web/pull/1132)]
-- fix: tailwind regressions [[#1126](https://github.com/opencloud-eu/web/pull/1126)]
-- fix: font-weight in contextual helpers [[#1101](https://github.com/opencloud-eu/web/pull/1101)]
-- fix: tailwind reference [[#1086](https://github.com/opencloud-eu/web/pull/1086)]
-- fix: Added advanced Shift-Click-Handling for Files [[#824](https://github.com/opencloud-eu/web/pull/824)]
 
 ### ✅ Tests
 
