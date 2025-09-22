@@ -16,6 +16,10 @@
 - feat: add view mode switch to mobile view [[#1157](https://github.com/opencloud-eu/web/pull/1157)]
 - feat: hide Login allowed for users [[#1121](https://github.com/opencloud-eu/web/pull/1121)]
 
+### 📚 Documentation
+
+- docs(design-system): add tailwind migration docs [[#1221](https://github.com/opencloud-eu/web/pull/1221)]
+
 ### 🐛 Bug Fixes
 
 - fix: authenticated requests in password protected public links [[#1233](https://github.com/opencloud-eu/web/pull/1233)]
