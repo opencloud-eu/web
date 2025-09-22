@@ -79,7 +79,6 @@ export default defineComponent({
         overflow: 'auto',
         maxScale: 10,
         minScale: 0.5,
-
         setTransform: (_, { scale, x, y }) => {
           let h: number
           let v: number
