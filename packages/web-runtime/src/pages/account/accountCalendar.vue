@@ -1,6 +1,6 @@
 <template>
   <div id="account-calendar">
-    <h1 v-text="$gettext('Calendar')" />
+    <h1 class="mt-0" v-text="$gettext('Calendar')" />
     <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
       <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
 

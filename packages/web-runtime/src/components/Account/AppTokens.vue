@@ -1,7 +1,7 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
     <div class="flex items-center mb-4">
-      <h1 v-text="$gettext('App Tokens')" />
+      <h1 class="mt-0" v-text="$gettext('App Tokens')" />
       <oc-button
         v-if="!authAppServiceDisabled"
         size="small"
