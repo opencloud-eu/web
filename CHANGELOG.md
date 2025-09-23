@@ -14,6 +14,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1246](https://github.com/opencloud-eu/web/pull/1246)]
 - fix(deps): update typescript-eslint monorepo to v8.44.1 [[#1247](https://github.com/opencloud-eu/web/pull/1247)]
 - chore(deps): update pnpm to v10.17.1 [[#1245](https://github.com/opencloud-eu/web/pull/1245)]
 - [full-ci] bump-opencloud-3.5.0. run all tests [[#1240](https://github.com/opencloud-eu/web/pull/1240)]
