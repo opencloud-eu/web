@@ -152,6 +152,7 @@ import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
 import {
   routeToContextQuery,
   useAuthService,
+  useAuthStore,
   UserAvatar,
   useRoute,
   useSpacesStore,
@@ -169,11 +170,12 @@ export default defineComponent({
     const themeStore = useThemeStore()
     const spacesStore = useSpacesStore()
     const authService = useAuthService()
+    const authStore = useAuthStore()
 
     const { user } = storeToRefs(userStore)
 
     const accountPageRoute = computed(() => ({
-      name: 'account',
+      name: authStore.userContextReady ? 'account-information' : 'account-preferences',
       query: routeToContextQuery(unref(route))
     }))
 
@@ -201,14 +203,14 @@ export default defineComponent({
 
     return {
       user,
-      accountPageRoute,
       loginLink,
       imprintUrl,
       privacyUrl,
       accessibilityUrl,
       showFooter,
       quota,
-      logout
+      logout,
+      accountPageRoute
     }
   },
   computed: {

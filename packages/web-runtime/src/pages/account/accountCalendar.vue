@@ -1,13 +1,36 @@
 <template>
-  <div v-if="isCalDavAvailable">
-    <account-table
-      :title="$gettext('Calendar')"
-      :new-tag="true"
-      :subtitle="
+  <div id="account-calendar">
+    <h1 class="mt-0" v-text="$gettext('Calendar')" />
+    <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
+      <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
+
+      <span
+        class="calendar-not-configured-message"
+        v-text="
+          $gettext(
+            'The calendar is not yet configured on your system, in order to learn how to enable click'
+          )
+        "
+      />
+      <oc-button
+        no-hover
+        class="ml-1"
+        appearance="raw"
+        type="router-link"
+        href="https://docs.opencloud.eu/docs/admin/configuration/radicale-integration/"
+      >
+        <span v-text="$gettext('here')" />
+      </oc-button>
+    </span>
+    <p
+      class="text-sm mt-0 mb-4"
+      v-text="
         $gettext(
           'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
         )
       "
+    />
+    <account-table
       :fields="[
         $gettext('CalDAV information name'),
         $gettext('CalCAV information value'),
@@ -59,13 +82,12 @@
     </account-table>
   </div>
 </template>
-
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import AccountTable from './AccountTable.vue'
+import AccountTable from '../../components/Account/AccountTable.vue'
+import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref, unref } from 'vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 const { $gettext } = useGettext()
