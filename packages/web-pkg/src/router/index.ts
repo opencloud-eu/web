@@ -34,6 +34,7 @@ import {
   isLocationTrashActive,
   createLocationTrash
 } from './trash'
+import { isLocationActiveDirector, createLocation } from './utils'
 import type { ActiveRouteDirectorFunc } from './utils'
 
 const ROOT_ROUTE = {
@@ -53,6 +54,7 @@ const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
 ]
 
 export {
+  createLocation,
   createLocationCommon,
   createLocationShares,
   createLocationSpaces,
@@ -62,6 +64,7 @@ export {
   isLocationSpacesActive,
   isLocationPublicActive,
   isLocationActive,
+  isLocationActiveDirector,
   isLocationTrashActive,
   createLocationTrash,
   locationPublicLink,

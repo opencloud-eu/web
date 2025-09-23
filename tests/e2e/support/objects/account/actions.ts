@@ -5,13 +5,14 @@ import { config } from '../../../config'
 const accountMenuButton = '.oc-topbar-avatar'
 const quotaValue = '.quota-information-text'
 const accountManageButton = '#oc-topbar-account-manage'
+const accountProfilePage = '//a[@data-nav-name="account-information"]'
 const infoValue = '.account-page-info-%s td:nth-child(2)'
 const requestExportButton = '[data-testid="request-export-btn"]'
 const downloadExportButton = '[data-testid="download-export-btn"]'
 const languageInput = '[data-testid="language"] .vs__search'
 const languageValueDropDown = `.vs__dropdown-menu :text-is("%s")`
 const languageValue = '[data-testid="language"] .vs__selected'
-const accountPageTitle = '#account-page-title'
+const accountPageTitle = '//main[@id="account"]//h1[1]'
 const confirmButton = '.oc-modal-body-actions-confirm'
 const topbarProfileAvatarImg = '.oc-topbar-personal-avatar .avatarImg'
 const accountProfileAvatarImg = '.account-table .oc-avatar .avatarImg'
@@ -32,6 +33,7 @@ export const getUserInfo = async (args: { page: Page; key: string }): Promise<st
   const { page, key } = args
   await page.locator(accountMenuButton).click()
   await page.locator(accountManageButton).click()
+  await page.locator(accountProfilePage).click()
   return await page.locator(util.format(infoValue, key)).textContent()
 }
 
@@ -40,6 +42,31 @@ export const openAccountPage = async (args: { page: Page }): Promise<void> => {
   await page.locator(accountMenuButton).click()
   await page.locator(accountManageButton).click()
   await expect(page.locator('#account')).toBeVisible()
+}
+
+export const openAccountSubPage = async (args: { page: Page; subPage: string }): Promise<void> => {
+  const { page, subPage } = args
+  let id = ''
+
+  switch (subPage) {
+    case 'Profile':
+      id = 'account-information'
+      break
+    case 'Preferences':
+      id = 'account-preferences'
+      break
+    case 'Extensions':
+      id = 'account-extensions'
+      break
+    case 'Calendar':
+      id = 'account-calendar'
+      break
+    case 'GDPR':
+      id = 'account-gdpr'
+      break
+  }
+  await page.locator(util.format('//a[@data-nav-name="%s"]', id)).click()
+  await expect(page.locator(`#${id}`)).toBeVisible()
 }
 
 export const requestGdprExport = async (args: { page: Page }): Promise<void> => {
