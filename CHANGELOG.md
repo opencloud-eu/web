@@ -6,6 +6,10 @@
 
 @AlexAndBear, @ScharfViktor
 
+### ✨ Features
+
+- enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
+
 ### 📈 Enhancement
 
 - feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
