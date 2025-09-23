@@ -138,12 +138,16 @@ const getEmbedConfigFromQuery = (
  */
 export const announceConfiguration = async ({
   path,
-  configStore
+  configStore,
+  token
 }: {
   path: string
   configStore: ConfigStore
+  token?: string
 }) => {
-  const request = await fetch(path, { headers: { 'X-Request-ID': uuidV4() } })
+  const request = await fetch(path, {
+    headers: { 'X-Request-ID': uuidV4(), ...(token && { Authorization: `Bearer ${token}` }) }
+  })
   if (request.status !== 200) {
     throw new Error(`config could not be loaded. HTTP status-code ${request.status}`)
   }
