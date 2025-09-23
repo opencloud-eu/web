@@ -15,17 +15,15 @@
 import { useGettext } from 'vue3-gettext'
 import SidebarNav from '../../components/SidebarNav/SidebarNav.vue'
 import { isLocationAccountActive } from '../../router'
-import { useActiveLocation, useAuthStore, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
+import {
+  routeToContextQuery,
+  useActiveLocation,
+  useAuthStore,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg/src'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useRoute } from 'vue-router'
-
-interface ExtensionItem {
-  name: string
-  route: string
-  icon: string
-  active: boolean
-}
 
 const { $gettext } = useGettext()
 const extensionRegistry = useExtensionRegistry()
@@ -43,7 +41,7 @@ const navItems = computed(() => {
     return [
       {
         name: $gettext('Preferences'),
-        route: '/account/preferences',
+        route: { name: 'account-preferences', query: routeToContextQuery(unref(route)) }, // Persist query for hybrid auth context
         icon: 'settings-4',
         active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
       }
@@ -53,39 +51,42 @@ const navItems = computed(() => {
   const baseItems = [
     {
       name: $gettext('Profile'),
-      route: '/account/information',
+      route: { name: 'account-information' },
       icon: 'id-card',
       active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
     },
     {
       name: $gettext('Preferences'),
-      route: '/account/preferences',
+      route: { name: 'account-preferences' },
       icon: 'settings-4',
       active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
     },
     {
       name: $gettext('Extensions'),
-      route: '/account/extensions',
+      route: { name: 'account-extensions' },
       icon: 'brush-2',
       active: unref(useActiveLocation(isLocationAccountActive, 'account-extensions'))
     },
     {
       name: $gettext('Calendar'),
-      route: '/account/calendar',
+      route: { name: 'account-calendar' },
       icon: 'calendar',
       active: unref(useActiveLocation(isLocationAccountActive, 'account-calendar'))
     },
     {
       name: $gettext('GDPR'),
-      route: '/account/gdpr',
+      route: { name: 'account-gdpr' },
       icon: 'git-repository',
       active: unref(useActiveLocation(isLocationAccountActive, 'account-gdpr'))
     }
   ]
 
-  const extensionItems: ExtensionItem[] = unref(preferencesPanelExtensions).map((ext) => ({
+  const extensionItems = unref(preferencesPanelExtensions).map((ext) => ({
     name: ext.label(),
-    route: `/account/extension?extension-id=${ext.id}`,
+    route: {
+      name: 'account-extension',
+      query: { 'extension-id': ext.id }
+    },
     icon: ext.icon,
     active: route.path === '/account/extension' && route.query?.['extension-id'] === ext.id
   }))
