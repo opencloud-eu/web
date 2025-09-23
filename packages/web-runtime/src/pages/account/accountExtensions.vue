@@ -39,7 +39,7 @@
 import { useGettext } from 'vue3-gettext'
 import ExtensionPreference from '../../components/Account/ExtensionPreference.vue'
 import AccountTable from '../../components/Account/AccountTable.vue'
-import { NoContentMessage, useExtensionRegistry } from '@opencloud-eu/web-pkg/src'
+import { NoContentMessage, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { isEmpty } from 'lodash-es'
 
