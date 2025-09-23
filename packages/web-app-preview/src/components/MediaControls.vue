@@ -143,10 +143,6 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
-    currentImageZoom: {
-      type: Number,
-      default: 1
-    },
     currentImageRotation: {
       type: Number,
       default: 0
@@ -165,10 +161,6 @@ export default defineComponent({
   ],
   setup(props) {
     const { $gettext } = useGettext()
-
-    const currentZoomDisplayValue = computed(() => {
-      return `${(props.currentImageZoom * 100).toFixed(0)}%`
-    })
 
     const ariaHiddenFileCount = computed(() => {
       return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
@@ -190,7 +182,6 @@ export default defineComponent({
     })
 
     return {
-      currentZoomDisplayValue,
       screenreaderFileCount,
       ariaHiddenFileCount,
       resourceDeleteDescription,

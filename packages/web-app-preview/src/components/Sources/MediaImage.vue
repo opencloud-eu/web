@@ -103,8 +103,8 @@ export default defineComponent({
         animate: false,
         duration: 300,
         overflow: 'auto',
-        maxScale: 10,
         minScale: 0.5,
+        maxScale: 10,
         setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
       } as PanzoomOptions)
       ;(unref(img) as unknown as HTMLElement).addEventListener('wheel', onWheelEvent)
@@ -115,6 +115,10 @@ export default defineComponent({
     watch(
       () => props.currentImageRotation,
       () => {
+        if (!unref(panzoom)) {
+          return
+        }
+
         setTransform({
           scale: unref(panzoom).getScale(),
           x: unref(panzoom).getPan().x,

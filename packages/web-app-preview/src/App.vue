@@ -57,7 +57,6 @@
         :show-image-controls="activeMediaFileCached?.isImage && !activeMediaFileCached?.isError"
         :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
-        :current-image-zoom="currentImageZoom"
         @set-rotation-right="imageRotateRight"
         @set-rotation-left="imageRotateLeft"
         @set-zoom="imageZoom"
@@ -413,7 +412,6 @@ export default defineComponent({
         this.isAutoPlayEnabled = false
       }
 
-      this.currentImageZoom = 1
       this.currentImageRotation = 0
     }
   },
