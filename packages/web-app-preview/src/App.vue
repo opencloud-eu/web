@@ -35,10 +35,6 @@
           v-else-if="activeMediaFileCached.isImage"
           :file="activeMediaFileCached"
           :current-image-rotation="currentImageRotation"
-          :current-image-zoom="currentImageZoom"
-          :current-image-position-x="currentImagePositionX"
-          :current-image-position-y="currentImagePositionY"
-          @pan-zoom-change="onPanZoomChanged"
         />
         <media-video
           v-else-if="activeMediaFileCached.isVideo"
@@ -61,9 +57,10 @@
         :show-image-controls="activeMediaFileCached?.isImage && !activeMediaFileCached?.isError"
         :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
-        :current-image-zoom="currentImageZoom"
-        @set-rotation="currentImageRotation = $event"
-        @set-zoom="currentImageZoom = $event"
+        @set-rotation-right="imageRotateRight"
+        @set-rotation-left="imageRotateLeft"
+        @set-zoom="imageZoom"
+        @set-shrink="imageShrink"
         @reset-image="resetImage"
         @toggle-full-screen="toggleFullScreenMode"
         @toggle-previous="goToPrev"
@@ -209,14 +206,14 @@ export default defineComponent({
 
       const files = props.activeFiles.filter((file) => {
         if (
-          unref(props.currentFileContext.routeQuery)['q_share-visibility'] === 'hidden' &&
+          unref(props.currentFileContext.routeQuery)?.['q_share-visibility'] === 'hidden' &&
           !(file as IncomingShareResource).hidden
         ) {
           return false
         }
 
         if (
-          unref(props.currentFileContext.routeQuery)['q_share-visibility'] !== 'hidden' &&
+          unref(props.currentFileContext.routeQuery)?.['q_share-visibility'] !== 'hidden' &&
           (file as IncomingShareResource).hidden
         ) {
           return false
@@ -415,7 +412,6 @@ export default defineComponent({
         this.isAutoPlayEnabled = false
       }
 
-      this.currentImageZoom = 1
       this.currentImageRotation = 0
     }
   },
