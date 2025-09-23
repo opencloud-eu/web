@@ -35,9 +35,6 @@
           v-else-if="activeMediaFileCached.isImage"
           :file="activeMediaFileCached"
           :current-image-rotation="currentImageRotation"
-          :current-image-zoom="currentImageZoom"
-          @set-zoom="imageZoom"
-          @set-shrink="imageShrink"
         />
         <media-video
           v-else-if="activeMediaFileCached.isVideo"

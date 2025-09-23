@@ -31,22 +31,19 @@ export default defineComponent({
       type: Object as PropType<CachedFile>,
       required: true
     },
-    currentImageZoom: {
-      type: Number,
-      required: true
-    },
     currentImageRotation: {
       type: Number,
       required: true
     }
   },
-  emits: ['setZoom', 'setShrink'],
-  setup(props, { emit }) {
+  setup(props) {
     const eventBus = useEventBus()
 
     const img = ref<HTMLElement | null>()
     const panzoom = ref<PanzoomObject>()
     const resetEventToken = ref(null)
+    const zoomToken = ref(null)
+    const shrinkToken = ref(null)
 
     const onWheelEvent = (e: WheelEvent) => {
       e.preventDefault()
@@ -55,10 +52,41 @@ export default defineComponent({
       }
 
       if (e.deltaY < 0) {
-        emit('setZoom')
+        unref(panzoom).zoomIn({ step: 0.1 })
       } else if (e.deltaY > 0) {
-        emit('setShrink')
+        unref(panzoom).zoomOut({ step: 0.1 })
       }
+    }
+
+    const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) => {
+      let h: number
+      let v: number
+
+      switch (props.currentImageRotation) {
+        case -270:
+        case 90:
+          h = y
+          v = 0 - x
+          break
+        case -180:
+        case 180:
+          h = 0 - x
+          v = 0 - y
+          break
+        case -90:
+        case 270:
+          h = 0 - y
+          v = x
+          break
+        default:
+          h = x
+          v = y
+      }
+
+      unref(panzoom).setStyle(
+        'transform',
+        `rotate(${props.currentImageRotation}deg) scale(${scale}) translate(${h}px, ${v}px)`
+      )
     }
 
     const initPanzoom = async () => {
@@ -77,54 +105,40 @@ export default defineComponent({
         overflow: 'auto',
         maxScale: 10,
         minScale: 0.5,
-        setTransform: (_, { scale, x, y }) => {
-          let h: number
-          let v: number
-
-          switch (props.currentImageRotation) {
-            case -270:
-            case 90:
-              h = y
-              v = 0 - x
-              break
-            case -180:
-            case 180:
-              h = 0 - x
-              v = 0 - y
-              break
-            case -90:
-            case 270:
-              h = 0 - y
-              v = x
-              break
-            default:
-              h = x
-              v = y
-          }
-
-          unref(panzoom).setStyle(
-            'transform',
-            `rotate(${props.currentImageRotation}deg) scale(${scale}) translate(${h}px, ${v}px)`
-          )
-        }
+        setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
       } as PanzoomOptions)
       ;(unref(img) as unknown as HTMLElement).addEventListener('wheel', onWheelEvent)
     }
 
     watch(() => props.file, initPanzoom, { immediate: true, deep: true })
 
-    watch([() => props.currentImageZoom, () => props.currentImageRotation], () => {
-      unref(panzoom).zoom(props.currentImageZoom)
-    })
+    watch(
+      () => props.currentImageRotation,
+      () => {
+        setTransform({
+          scale: unref(panzoom).getScale(),
+          x: unref(panzoom).getPan().x,
+          y: unref(panzoom).getPan().y
+        })
+      }
+    )
 
     onMounted(() => {
       resetEventToken.value = eventBus.subscribe('app.preview.media.image.reset', () =>
         initPanzoom()
       )
+      zoomToken.value = eventBus.subscribe('app.preview.media.image.zoom', () =>
+        unref(panzoom)?.zoomIn({ step: 0.1 })
+      )
+      shrinkToken.value = eventBus.subscribe('app.preview.media.image.shrink', () =>
+        unref(panzoom)?.zoomOut({ step: 0.1 })
+      )
     })
 
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.preview.media.image.reset', unref(resetEventToken))
+      eventBus.unsubscribe('app.preview.media.image.zoom', unref(zoomToken))
+      eventBus.unsubscribe('app.preview.media.image.shrink', unref(shrinkToken))
     })
 
     return {
