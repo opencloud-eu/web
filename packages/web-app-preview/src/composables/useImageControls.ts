@@ -1,30 +1,36 @@
-import { PanzoomEventDetail } from '@panzoom/panzoom'
-import { ref } from 'vue'
+import { ref, unref } from 'vue'
+import { useEventBus } from '@opencloud-eu/web-pkg'
 
 export const useImageControls = () => {
-  const currentImageZoom = ref(1)
+  const eventBus = useEventBus()
   const currentImageRotation = ref(0)
-  const currentImagePositionX = ref(0)
-  const currentImagePositionY = ref(0)
-
-  const onPanZoomChanged = ({ detail }: { detail: PanzoomEventDetail }) => {
-    currentImagePositionX.value = detail.x
-    currentImagePositionY.value = detail.y
-  }
 
   const resetImage = () => {
-    currentImageZoom.value = 1
     currentImageRotation.value = 0
-    currentImagePositionX.value = 0
-    currentImagePositionY.value = 0
+    eventBus.publish('app.preview.media.image.reset')
+  }
+
+  const imageShrink = () => {
+    eventBus.publish('app.preview.media.image.shrink')
+  }
+  const imageZoom = () => {
+    eventBus.publish('app.preview.media.image.zoom')
+  }
+  const imageRotateLeft = () => {
+    currentImageRotation.value =
+      unref(currentImageRotation) === -270 ? 0 : unref(currentImageRotation) - 90
+  }
+  const imageRotateRight = () => {
+    currentImageRotation.value =
+      unref(currentImageRotation) === 270 ? 0 : unref(currentImageRotation) + 90
   }
 
   return {
-    currentImageZoom,
     currentImageRotation,
-    currentImagePositionX,
-    currentImagePositionY,
-    onPanZoomChanged,
+    imageShrink,
+    imageZoom,
+    imageRotateLeft,
+    imageRotateRight,
     resetImage
   }
 }

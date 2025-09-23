@@ -57,7 +57,7 @@ describe('MediaControls component', () => {
       it('emits "setZoom"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsImageShrink).trigger('click')
-        expect(wrapper.emitted('setZoom').length).toBeDefined()
+        expect(wrapper.emitted('setShrink')).toBeTruthy
       })
     })
     describe('zoom button', () => {
@@ -68,7 +68,7 @@ describe('MediaControls component', () => {
       it('emits "setZoom"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsImageZoom).trigger('click')
-        expect(wrapper.emitted('setZoom').length).toBeDefined()
+        expect(wrapper.emitted('setZoom')).toBeTruthy()
       })
     })
   })
@@ -81,7 +81,7 @@ describe('MediaControls component', () => {
       it('emits "setRotation"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsRotateLeft).trigger('click')
-        expect(wrapper.emitted('setRotation').length).toBeDefined()
+        expect(wrapper.emitted('setRotationLeft')).toBeTruthy()
       })
     })
     describe('right button', () => {
@@ -92,7 +92,7 @@ describe('MediaControls component', () => {
       it('emits "setRotation"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsRotateRight).trigger('click')
-        expect(wrapper.emitted('setRotation').length).toBeDefined()
+        expect(wrapper.emitted('setRotationRight')).toBeTruthy()
       })
     })
   })
