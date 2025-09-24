@@ -14,6 +14,7 @@
     "directory": "packages/extension-sdk"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
     "@vitejs/plugin-vue": "^6.0.0"
   },
   "peerDependencies": {
