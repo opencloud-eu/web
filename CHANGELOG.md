@@ -6,10 +6,6 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
-### ✨ Features
-
-- enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
-
 ### 📈 Enhancement
 
 - feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
@@ -19,6 +15,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.20.0 [[#1258](https://github.com/opencloud-eu/web/pull/1258)]
 - chore(design-system): remove sass dependencies [[#1255](https://github.com/opencloud-eu/web/pull/1255)]
 - fix(deps): update dependency @sentry/vue to v10.14.0 [[#1253](https://github.com/opencloud-eu/web/pull/1253)]
 - chore(deps): update dependency @playwright/test to v1.55.1 [[#1252](https://github.com/opencloud-eu/web/pull/1252)]
