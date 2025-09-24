@@ -61,6 +61,10 @@ export default defineConfig({
           {
             src: './src/styles/tailwind.css',
             dest: '.'
+          },
+          {
+            src: './src/styles/defaults.css',
+            dest: '.'
           }
         ]
       })()
