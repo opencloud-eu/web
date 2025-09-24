@@ -6,6 +6,7 @@ import { mergeConfig, searchForWorkspaceRoot } from 'vite'
 import { join } from 'path'
 import { cwd } from 'process'
 import { readFileSync, existsSync } from 'fs'
+import tailwindcss from '@tailwindcss/vite'
 
 import vue from '@vitejs/plugin-vue'
 
@@ -140,7 +141,8 @@ export const defineConfig = (overrides = {}) => {
             customElement: false,
             ...(isTesting && { template: { compilerOptions: { whitespace: 'preserve' } } })
           }),
-          manifestPlugin()
+          manifestPlugin(),
+          tailwindcss()
         ],
         test: {
           globals: true,
