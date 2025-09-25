@@ -65,13 +65,17 @@
         @contextmenu="
           $emit(
             constants.EVENT_TROW_CONTEXTMENU,
-            ($refs[`row-${trIndex}`] as HTMLElement[])[0],
+            ($refs[`row-${trIndex}`] as ComponentPublicInstance<unknown>[])[0],
             $event,
             item
           )
         "
         @vue:mounted="
-          $emit(constants.EVENT_TROW_MOUNTED, item, ($refs[`row-${trIndex}`] as HTMLElement[])[0])
+          $emit(
+            constants.EVENT_TROW_MOUNTED,
+            item,
+            ($refs[`row-${trIndex}`] as Array<typeof OcTr>)[0]
+          )
         "
         @dragstart="dragStart(item, $event)"
         @drop="dropRowEvent(domSelector(item), $event)"
@@ -111,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ComponentPublicInstance, computed } from 'vue'
 import OcThead from '../OcTableHead/OcTableHead.vue'
 import OcTbody from '../OcTableBody/OcTableBody.vue'
 import OcTr from '../OcTableTr/OcTableTr.vue'
@@ -229,12 +233,17 @@ export interface Emits {
   /**
    * @docs Emitted when a table row has been mounted.
    */
-  (e: 'rowMounted', item: Item, element: HTMLElement): void
+  (e: 'rowMounted', item: Item, element: typeof OcTr): void
 
   /**
    * @docs Emitted when a table row has been right-clicked.
    */
-  (e: 'contextmenuClicked', element: HTMLElement, event: MouseEvent, item: Item): void
+  (
+    e: 'contextmenuClicked',
+    element: ComponentPublicInstance<unknown>,
+    event: MouseEvent,
+    item: Item
+  ): void
 
   /**
    * @docs Emitted when a column has been sorted.
