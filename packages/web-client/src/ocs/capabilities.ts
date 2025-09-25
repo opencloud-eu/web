@@ -87,6 +87,7 @@ export interface Capabilities {
         version?: string
         versionstring?: string
       }
+      'check-for-updates'?: boolean
       'support-sse'?: boolean
       'support-url-signing'?: boolean
       'webdav-root'?: string

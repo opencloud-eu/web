@@ -1,6 +1,6 @@
 import SidebarNav from '../../../../src/components/SidebarNav/SidebarNav.vue'
 import sidebarNavItemFixtures from '../../../__fixtures__/sidebarNavItems'
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('uuid', () => ({
   v4: () => {
@@ -14,7 +14,7 @@ const slots = {
 
 describe('OcSidebarNav', () => {
   it('displays a bottom slot if given', () => {
-    const { wrapper } = getWrapper()
+    const { wrapper } = getWrapper({ slots })
     expect(wrapper.findAll('.footer').length).toBe(1)
   })
   it('renders navItems into a list', () => {
@@ -44,9 +44,21 @@ describe('OcSidebarNav', () => {
       }
     })
   })
+  describe('VersionCheck component', () => {
+    it('renders when capability "check-for-updates" is true', () => {
+      const { wrapper } = getWrapper({ closed: false, checkForUpdates: true })
+      expect(wrapper.findComponent({ name: 'version-check' }).exists()).toBeTruthy()
+    })
+    it('does not render when capability "check-for-updates" is false', () => {
+      const { wrapper } = getWrapper({ closed: false, checkForUpdates: false })
+      expect(wrapper.findComponent({ name: 'version-check' }).exists()).toBeFalsy()
+    })
+  })
 })
 
-function getWrapper({ closed = false } = {}) {
+function getWrapper({ closed = false, checkForUpdates = true, slots = {} } = {}) {
+  const mocks = defaultComponentMocks()
+
   return {
     wrapper: mount(SidebarNav, {
       slots,
@@ -56,7 +68,22 @@ function getWrapper({ closed = false } = {}) {
       },
       global: {
         renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()],
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: {
+              capabilityState: {
+                capabilities: {
+                  core: {
+                    'check-for-updates': checkForUpdates,
+                    status: { productversion: '3.5.0' }
+                  }
+                }
+              }
+            }
+          })
+        ],
+        mocks,
+        provide: mocks,
         stubs: { SidebarNavItem: true }
       }
     })
