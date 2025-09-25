@@ -73,8 +73,6 @@ const loadVersionsTask = useTask(function* (signal) {
       }
     )
 
-    // TODO: implement lts comparison
-
     const newestVersion = data.channels[serverEdition].current_version
     if (semver.gt(newestVersion, currentServerVersionSanitized)) {
       updateAvailable.value = true
