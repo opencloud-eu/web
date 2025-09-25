@@ -64,7 +64,14 @@ const isLoading = computed(() => loadVersionsTask.isRunning || !loadVersionsTask
 const loadVersionsTask = useTask(function* (signal) {
   try {
     const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
-      `https://update.opencloud. eu/server.json?version=${currentServerVersion}&server=${configStore.serverUrl}`
+      `https://update.opencloud.eu/server.json`,
+      {
+        params: {
+          server: configStore.serverUrl,
+          edition: serverEdition,
+          version: currentServerVersion
+        }
+      }
     )
 
     // TODO: implement lts comparison
