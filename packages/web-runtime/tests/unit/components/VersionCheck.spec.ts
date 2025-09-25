@@ -21,7 +21,7 @@ describe('VersionCheck component', () => {
     expect(wrapper.find('.version-check-update').exists()).toBe(false)
     expect(wrapper.find('.version-check-loading').exists()).toBe(false)
   })
-  it('shows no update available, when up to date', async () => {
+  it('shows update available, when not up to date', async () => {
     const { wrapper } = getWrapper({ productversion: '3.4.0' })
     await (wrapper.vm as any).loadVersionsTask.last
     console.log(wrapper.html())
