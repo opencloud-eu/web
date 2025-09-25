@@ -51,11 +51,11 @@
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
       <div
-        v-if="!closed"
+        v-show="!closed"
         class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"
       >
         <span v-text="backendVersion" />
-        <span v-text="webVersion" />
+        <version-check />
       </div>
     </slot>
   </div>
@@ -78,11 +78,13 @@ import SidebarNavItem from './SidebarNavItem.vue'
 import { NavItem } from '../../helpers/navItems'
 import { getBackendVersion, getWebVersion } from '../../container/versions'
 import { useCapabilityStore } from '@opencloud-eu/web-pkg'
+import VersionCheck from '../VersionCheck.vue'
 
 type NavItemRef = InstanceType<typeof SidebarNavItem>
 
 export default defineComponent({
   components: {
+    VersionCheck,
     SidebarNavItem
   },
   props: {
