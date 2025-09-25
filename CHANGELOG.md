@@ -19,6 +19,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.22 [[#1262](https://github.com/opencloud-eu/web/pull/1262)]
 - chore(deps): update node.js to v22.20.0 [[#1258](https://github.com/opencloud-eu/web/pull/1258)]
 - chore(design-system): remove sass dependencies [[#1255](https://github.com/opencloud-eu/web/pull/1255)]
 - fix(deps): update dependency @sentry/vue to v10.14.0 [[#1253](https://github.com/opencloud-eu/web/pull/1253)]
