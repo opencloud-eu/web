@@ -45,6 +45,6 @@ export default defineConfig({
     nodePolyfills({
       exclude: ['crypto']
     }),
-    dts({ exclude: ['**/tests'] })
+    dts({ exclude: ['**/tests'], entryRoot: 'src', outDir: 'dist/src' })
   ]
 })
