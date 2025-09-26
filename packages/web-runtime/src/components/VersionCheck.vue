@@ -36,7 +36,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
-import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg/src'
+import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { promiseTimeout } from '@vueuse/core'
 
 export interface UpdateChannelData {
