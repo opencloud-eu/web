@@ -16,12 +16,14 @@ describe('VersionCheck component', () => {
   it('shows no update available, when up to date', async () => {
     const { wrapper } = getWrapper()
     await (wrapper.vm as any).loadVersionsTask.last
+    await new Promise((r) => setTimeout(r, 1100))
     expect(wrapper.find('.version-check-no-updates').exists()).toBe(true)
     expect(wrapper.find('.version-check-update').exists()).toBe(false)
     expect(wrapper.find('.version-check-loading').exists()).toBe(false)
   })
   it('shows update available, when not up to date', async () => {
     const { wrapper } = getWrapper({ productversion: '3.4.0' })
+    await new Promise((r) => setTimeout(r, 1100))
     await (wrapper.vm as any).loadVersionsTask.last
     expect(wrapper.find('.version-check-update').exists()).toBe(true)
     expect(wrapper.find('.version-check-no-updates').exists()).toBe(false)
