@@ -4,7 +4,11 @@
     <oc-spinner class="ml-1" size="xsmall" />
   </div>
   <div v-else>
-    <div v-if="!updateAvailable" class="version-check-no-updates flex items-center">
+    <div v-if="hasError" class="version-check-error flex items-center">
+      <span v-text="$gettext('Version check failed')" />
+      <oc-icon class="ml-0.5" name="close-circle" size="xsmall" fill-type="line" />
+    </div>
+    <div v-else-if="!updateAvailable" class="version-check-no-updates flex items-center">
       <span v-text="$gettext('Up to date')" />
       <oc-icon class="ml-0.5" name="checkbox-circle" size="xsmall" fill-type="line" />
     </div>
@@ -28,10 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
+import { debounce } from 'lodash-es'
 import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg/src'
 
 export interface UpdateChannelData {
@@ -39,7 +44,7 @@ export interface UpdateChannelData {
   url: string
 }
 
-export type UpdateChannelName = 'rolling' | 'stable' | `lts${string}`
+export type UpdateChannelName = 'rolling' | 'production'
 
 export type UpdateChannels = Record<UpdateChannelName, UpdateChannelData>
 
@@ -52,14 +57,19 @@ const { httpUnAuthenticated } = useClientService()
 const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 
+const isLoading = ref(true)
 const updateAvailable = ref(false)
+const hasError = ref(false)
 const updateData = ref<UpdateChannelData>()
 //TODO: retrieve serverEdition
 const serverEdition = 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
-const isLoading = computed(() => loadVersionsTask.isRunning || !loadVersionsTask.last)
+const stopLoading = debounce(() => {
+  isLoading.value = false
+}, 1000)
+
 const loadVersionsTask = useTask(function* (signal) {
   try {
     const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
@@ -80,6 +90,9 @@ const loadVersionsTask = useTask(function* (signal) {
     }
   } catch (error) {
     console.error(error)
+    hasError.value = true
+  } finally {
+    stopLoading()
   }
 }).restartable()
 
