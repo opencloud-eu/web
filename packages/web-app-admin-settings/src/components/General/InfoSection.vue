@@ -19,7 +19,6 @@ export default defineComponent({
     let backendProductName = ''
     let backendVersion = ''
     let backendEdition = ''
-    let webClientVersion = ''
 
     const backendStatus = capabilityStore.status
 
@@ -27,22 +26,19 @@ export default defineComponent({
       backendProductName = backendStatus.product || 'OpenCloud'
       backendVersion = backendStatus.productversion || backendStatus.versionstring
       backendEdition = backendStatus.edition
-      webClientVersion = process.env.PACKAGE_VERSION
     }
 
     const infoItems = [
       { term: $gettext('OpenCloud'), definition: backendProductName },
       ...(backendEdition ? [{ term: $gettext('Edition'), definition: backendEdition }] : []),
-      { term: $gettext('Version'), definition: backendVersion },
-      { term: $gettext('Web client version'), definition: webClientVersion }
+      { term: $gettext('Version'), definition: backendVersion }
     ]
 
     return {
       backendProductName,
       backendVersion,
       backendEdition,
-      infoItems,
-      webClientVersion
+      infoItems
     }
   }
 })
