@@ -8,6 +8,7 @@
 
 ### ✨ Features
 
+- feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
 - enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
 
 ### 📈 Enhancement
