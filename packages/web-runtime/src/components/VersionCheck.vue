@@ -32,12 +32,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
-import { debounce } from 'lodash-es'
 import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg/src'
+import { promiseTimeout } from '@vueuse/core'
 
 export interface UpdateChannelData {
   current_version: string
@@ -57,7 +57,6 @@ const { httpUnAuthenticated } = useClientService()
 const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 
-const isLoading = ref(true)
 const updateAvailable = ref(false)
 const hasError = ref(false)
 const updateData = ref<UpdateChannelData>()
@@ -66,11 +65,16 @@ const serverEdition = 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
-const stopLoading = debounce(() => {
-  isLoading.value = false
-}, 1000)
+const hasMinLoadingTimePassed = ref(false)
+const isLoading = computed(
+  () => loadVersionsTask.isRunning || !loadVersionsTask.last || !hasMinLoadingTimePassed.value
+)
 
 const loadVersionsTask = useTask(function* (signal) {
+  promiseTimeout(1000).then(() => {
+    hasMinLoadingTimePassed.value = true
+  })
+
   try {
     const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
       `https://update.opencloud.eu/server.json`,
@@ -91,8 +95,6 @@ const loadVersionsTask = useTask(function* (signal) {
   } catch (error) {
     console.error(error)
     hasError.value = true
-  } finally {
-    stopLoading()
   }
 }).restartable()
 
