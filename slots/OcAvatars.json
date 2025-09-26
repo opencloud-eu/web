@@ -1,0 +1,7 @@
+[
+  {
+    "name": "userAvatars",
+    "description": "Can be used to overwrite the default rendering of the user avatars.",
+    "type": "({ avatars, width }: { avatars: Item[]; width: number }) => unknown"
+  }
+]
