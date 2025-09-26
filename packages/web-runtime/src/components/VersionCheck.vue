@@ -3,7 +3,7 @@
     <span v-text="$gettext('Checking for updates')" />
     <oc-spinner class="ml-1" size="xsmall" />
   </div>
-  <div v-else>
+  <template v-else>
     <div v-if="hasError" class="version-check-error flex items-center">
       <span v-text="$gettext('Version check failed')" />
       <oc-icon class="ml-0.5" name="close-circle" size="xsmall" fill-type="line" />
@@ -28,7 +28,7 @@
       />
       <oc-icon name="refresh" size="xsmall" fill-type="line" />
     </oc-button>
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
