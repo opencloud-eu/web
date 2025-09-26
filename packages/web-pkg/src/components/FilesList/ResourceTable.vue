@@ -357,7 +357,7 @@ import { useFileActionsRename } from '../../composables/actions'
 import { createLocationCommon, isLocationTrashActive } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
-import { OcButton, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
+import { OcButton, OcSpinner, OcTable, OcTableTr } from '@opencloud-eu/design-system/components'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
@@ -1087,7 +1087,7 @@ export default defineComponent({
 
       this.addSelectedResource(file)
     },
-    fileDropped(selector: HTMLElement, event: DragEvent) {
+    fileDropped(selector: string, event: DragEvent) {
       if (!this.dragDrop) {
         return
       }
@@ -1113,7 +1113,7 @@ export default defineComponent({
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
     },
-    dropRowStyling(selector: HTMLElement, leaving: boolean, event: DragEvent) {
+    dropRowStyling(selector: string, leaving: boolean, event: DragEvent) {
       const hasFilePayload = (event.dataTransfer?.types || []).some((e) => e === 'Files')
       if (hasFilePayload) {
         return
@@ -1182,7 +1182,7 @@ export default defineComponent({
 
       displayPositionedDropdown(instance._tippy, event, this.contextMenuButton)
     },
-    rowMounted(resource: Resource, component: ComponentPublicInstance<unknown>) {
+    rowMounted(resource: Resource, component: typeof OcTableTr) {
       /**
        * Triggered whenever a row is mounted
        * @property {object} resource The resource which was mounted as table row
@@ -1190,7 +1190,7 @@ export default defineComponent({
        */
       this.$emit('rowMounted', resource, component, this.constants.ImageDimension.Thumbnail)
     },
-    fileClicked(data: [Resource, MouseEvent, boolean]) {
+    fileClicked(data: [Resource, MouseEvent]) {
       /**
        * Triggered when the file row is clicked
        * @property {object} resource The resource for which the event is triggered
@@ -1211,7 +1211,6 @@ export default defineComponent({
       }
 
       const eventData = data[1]
-      const skipTargetSelection = data[2] ?? false
 
       if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
         eventBus.publish('app.files.shiftAnchor.reset')
@@ -1228,7 +1227,10 @@ export default defineComponent({
         return eventBus.publish('app.files.list.clicked.meta', resource)
       }
       if (eventData && eventData.shiftKey) {
-        return eventBus.publish('app.files.list.clicked.shift', { resource, skipTargetSelection })
+        return eventBus.publish('app.files.list.clicked.shift', {
+          resource,
+          skipTargetSelection: false
+        })
       }
       if (isCheckboxClicked) {
         return

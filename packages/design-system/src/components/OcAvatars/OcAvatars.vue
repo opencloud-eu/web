@@ -57,6 +57,7 @@ type Item = {
   avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest' | string
   username?: string
   avatar?: string
+  userId?: string
 }
 
 export interface Props {
@@ -117,6 +118,15 @@ const {
   width = 30,
   hoverEffect = false
 } = defineProps<Props>()
+
+export interface Slots {
+  /**
+   * @docs Can be used to overwrite the default rendering of the user avatars.
+   */
+  userAvatars?: ({ avatars, width }: { avatars: Item[]; width: number }) => unknown
+}
+
+defineSlots<Slots>()
 
 const avatarsRef = useTemplateRef('avatarsRef')
 
