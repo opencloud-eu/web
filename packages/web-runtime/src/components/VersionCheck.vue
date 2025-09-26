@@ -83,7 +83,8 @@ const loadVersionsTask = useTask(function* (signal) {
           server: configStore.serverUrl,
           edition: serverEdition,
           version: currentServerVersion
-        }
+        },
+        signal
       }
     )
 
