@@ -10,6 +10,10 @@
 
 - enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
 
+### 🐛 Bug Fixes
+
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
+
 ### 📈 Enhancement
 
 - feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
