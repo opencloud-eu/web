@@ -41,175 +41,97 @@
   </header>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, unref, PropType, ref, onMounted } from 'vue'
+import { computed, unref, ref } from 'vue'
 import ApplicationsMenu from './ApplicationsMenu.vue'
 import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
 import FeedbackLink from './FeedbackLink.vue'
 import SideBarToggle from './SideBarToggle.vue'
 import {
-  ApplicationInformation,
-  AppMenuItemExtension,
   CustomComponentTarget,
   useAuthStore,
   useCapabilityStore,
   useConfigStore,
   useEmbedMode,
   useExtensionRegistry,
-  useOpenEmptyEditor,
   useRouter,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { routeNames } from '../../router/names'
 import { appMenuExtensionPoint, topBarCenterExtensionPoint } from '../../extensionPoints'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { useGettext } from 'vue3-gettext'
 
-export default {
-  components: {
-    ApplicationsMenu,
-    CustomComponentTarget,
-    FeedbackLink,
-    Notifications,
-    SideBarToggle,
-    UserMenu
-  },
-  props: {
-    applicationsList: {
-      type: Array as PropType<ApplicationInformation[]>,
-      required: false,
-      default: (): ApplicationInformation[] => []
-    }
-  },
-  setup(props) {
-    const capabilityStore = useCapabilityStore()
-    const themeStore = useThemeStore()
-    const { currentTheme } = storeToRefs(themeStore)
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
-    const extensionRegistry = useExtensionRegistry()
-    const { openEmptyEditor } = useOpenEmptyEditor()
+const { $gettext } = useGettext()
+const capabilityStore = useCapabilityStore()
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
+const configStore = useConfigStore()
+const { options: configOptions } = storeToRefs(configStore)
+const extensionRegistry = useExtensionRegistry()
 
-    const authStore = useAuthStore()
-    const router = useRouter()
-    const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
+const authStore = useAuthStore()
+const router = useRouter()
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
-    const appMenuExtensions = computed(() => {
-      return extensionRegistry.requestExtensions(appMenuExtensionPoint)
-    })
+const appMenuExtensions = computed(() => {
+  return extensionRegistry.requestExtensions(appMenuExtensionPoint)
+})
 
-    const logoWidth = ref('150px')
-    const hideLogo = computed(() => unref(configOptions).hideLogo)
+const hideLogo = computed(() => unref(configOptions).hideLogo)
 
-    const isNotificationBellEnabled = computed(() => {
-      return (
-        authStore.userContextReady && capabilityStore.notificationsOcsEndpoints.includes('list')
-      )
-    })
+const isNotificationBellEnabled = computed(() => {
+  return authStore.userContextReady && capabilityStore.notificationsOcsEndpoints.includes('list')
+})
 
-    const homeLink = computed(() => {
-      if (authStore.publicLinkContextReady && !authStore.userContextReady) {
-        return {
-          name: 'resolvePublicLink',
-          params: { token: authStore.publicLinkToken }
-        }
-      }
-
-      return '/'
-    })
-
-    const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
-      return Object.values(routeNames).includes(route.name.toString())
-    }
-    const isSideBarToggleVisible = computed(() => {
-      return authStore.userContextReady || authStore.publicLinkContextReady
-    })
-    const isSideBarToggleDisabled = computed(() => {
-      return isRuntimeRoute(unref(router.currentRoute))
-    })
-
-    const contentOnLeftPortal = ref(false)
-    const updateLeftPortal = (newContent: { hasContent: boolean; sources: string[] }) => {
-      contentOnLeftPortal.value = newContent.hasContent
-    }
-
-    onMounted(() => {
-      // FIXME: backwards compatibility for the deprecated applicationMenu prop
-      const navExtensions = props.applicationsList
-        .filter((app) => app.applicationMenu?.enabled())
-        .map((app) => ({
-          id: app.id,
-          type: 'appMenuItem',
-          label: () => app.name,
-          path: `/${app.id}`,
-          icon: app.icon,
-          color: app.color,
-          extensionPointIds: [appMenuExtensionPoint.id],
-          priority: app.applicationMenu?.priority || 50,
-          ...((app as any).url && { url: (app as any).url, target: '_blank' }),
-          ...(app.applicationMenu?.openAsEditor && {
-            handler: () => openEmptyEditor(app.id, app.defaultExtension)
-          })
-        })) as AppMenuItemExtension[]
-
-      extensionRegistry.registerExtensions(computed(() => navExtensions))
-    })
-
+const homeLink = computed(() => {
+  if (authStore.publicLinkContextReady && !authStore.userContextReady) {
     return {
-      configOptions,
-      contentOnLeftPortal,
-      currentTheme,
-      updateLeftPortal,
-      isNotificationBellEnabled,
-      hideLogo,
-      logoWidth,
-      isEmbedModeEnabled,
-      isSideBarToggleVisible,
-      isSideBarToggleDisabled,
-      homeLink,
-      topBarCenterExtensionPoint,
-      appMenuExtensions
+      name: 'resolvePublicLink',
+      params: { token: authStore.publicLinkToken }
     }
-  },
-  computed: {
-    sidebarLogoAlt() {
-      return this.$gettext('Navigate to personal files page')
-    },
-
-    isFeedbackLinkEnabled() {
-      return !this.configOptions.disableFeedbackLink
-    },
-
-    feedbackLinkOptions() {
-      const feedback = this.configOptions.feedbackLink
-      if (!this.isFeedbackLinkEnabled || !feedback) {
-        return {}
-      }
-
-      return {
-        ...(feedback.href && { href: feedback.href }),
-        ...(feedback.ariaLabel && { ariaLabel: feedback.ariaLabel }),
-        ...(feedback.description && { description: feedback.description })
-      }
-    }
-  },
-  async created() {
-    const image = new Image()
-    const imageDimensions = (await new Promise((resolve) => {
-      image.onload = () => {
-        resolve({
-          height: image.height,
-          width: image.width
-        })
-      }
-      image.src = this.currentTheme.logo
-    })) as { height: number; width: number }
-    // max-height of logo is 38px, so we calculate the width based on the ratio of the image
-    // and add 70px to account for the width of the left side of the topbar
-    this.logoWidth = `${imageDimensions.width / (imageDimensions.height / 38) + 70}px`
   }
+
+  return '/'
+})
+
+const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
+  return Object.values(routeNames).includes(route.name.toString())
 }
+const isSideBarToggleVisible = computed(() => {
+  return authStore.userContextReady || authStore.publicLinkContextReady
+})
+const isSideBarToggleDisabled = computed(() => {
+  return isRuntimeRoute(unref(router.currentRoute))
+})
+
+const contentOnLeftPortal = ref(false)
+const updateLeftPortal = (newContent: { hasContent: boolean; sources: string[] }) => {
+  contentOnLeftPortal.value = newContent.hasContent
+}
+
+const sidebarLogoAlt = computed(() => {
+  return $gettext('Navigate to personal files page')
+})
+
+const isFeedbackLinkEnabled = computed(() => {
+  return !unref(configOptions).disableFeedbackLink
+})
+
+const feedbackLinkOptions = computed(() => {
+  const feedback = unref(configOptions).feedbackLink
+  if (!unref(isFeedbackLinkEnabled) || !feedback) {
+    return {}
+  }
+
+  return {
+    ...(feedback.href && { href: feedback.href }),
+    ...(feedback.ariaLabel && { ariaLabel: feedback.ariaLabel }),
+    ...(feedback.description && { description: feedback.description })
+  }
+})
 </script>
 <style scoped>
 @reference '@opencloud-eu/design-system/tailwind';

@@ -7,7 +7,7 @@
       <div v-if="isIE11" class="bg-role-surface-container text-center py-4">
         <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
-      <top-bar :applications-list="Object.values(apps)" />
+      <top-bar />
     </div>
     <div
       id="web-content-main"
@@ -53,7 +53,6 @@ import orderBy from 'lodash-es/orderBy'
 import {
   AppLoadingSpinner,
   CustomComponentTarget,
-  useAppsStore,
   useAuthStore,
   useExtensionRegistry,
   useLocalStorage,
@@ -69,7 +68,6 @@ import { useActiveApp, useRoute, useRouteMeta, useSpacesLoading } from '@openclo
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
 import { RouteLocationAsRelativeTyped, useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
 import { progressBarExtensionPoint } from '../extensionPoints'
 
 const MOBILE_BREAKPOINT = 640
@@ -81,9 +79,6 @@ const authStore = useAuthStore()
 const activeApp = useActiveApp()
 const extensionRegistry = useExtensionRegistry()
 const { isSideBarOpen } = useSideBar()
-
-const appsStore = useAppsStore()
-const { apps } = storeToRefs(appsStore)
 
 const extensionNavItems = computed(() =>
   getExtensionNavItems({ extensionRegistry, appId: unref(activeApp) })
