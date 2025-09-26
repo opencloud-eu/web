@@ -31,8 +31,7 @@ export default defineConfig({
       'e2e/**'
     ],
     alias: {
-      'vue-inline-svg': `${root}/tests/unit/stubs/vue-inline-svg.ts`,
-      'js-generate-password': `${root}/tests/unit/stubs/empty.ts`
+      'vue-inline-svg': `${root}/tests/unit/stubs/vue-inline-svg.ts`
     },
     coverage: {
       provider: 'v8',
