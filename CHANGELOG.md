@@ -1,5 +1,42 @@
 # Changelog
 
+## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-09-27
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### ✨ Features
+
+- feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
+- enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
+
+### 📈 Enhancement
+
+- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
+- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
+- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
+- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
+- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
+### 🐛 Bug Fixes
+
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.15.0 [[#1260](https://github.com/opencloud-eu/web/pull/1260)]
+- fix(deps): update vue monorepo to v3.5.22 [[#1262](https://github.com/opencloud-eu/web/pull/1262)]
+- chore(deps): update node.js to v22.20.0 [[#1258](https://github.com/opencloud-eu/web/pull/1258)]
+- chore(design-system): remove sass dependencies [[#1255](https://github.com/opencloud-eu/web/pull/1255)]
+- fix(deps): update dependency @sentry/vue to v10.14.0 [[#1253](https://github.com/opencloud-eu/web/pull/1253)]
+- chore(deps): update dependency @playwright/test to v1.55.1 [[#1252](https://github.com/opencloud-eu/web/pull/1252)]
+- fix(deps): update dependency @sentry/vue to v10.13.0 [[#1243](https://github.com/opencloud-eu/web/pull/1243)]
+- chore(deps): update devdependencies (non-major) [[#1246](https://github.com/opencloud-eu/web/pull/1246)]
+- fix(deps): update typescript-eslint monorepo to v8.44.1 [[#1247](https://github.com/opencloud-eu/web/pull/1247)]
+- chore(deps): update pnpm to v10.17.1 [[#1245](https://github.com/opencloud-eu/web/pull/1245)]
+- [full-ci] bump-opencloud-3.5.0. run all tests [[#1240](https://github.com/opencloud-eu/web/pull/1240)]
+
 ## [4.0.0](https://github.com/opencloud-eu/web/releases/tag/v4.0.0) - 2025-09-22
 
 ### ❤️ Thanks to all contributors! ❤️
