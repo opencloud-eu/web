@@ -18,13 +18,16 @@
       class="account-page-info mt-6"
     >
       <oc-table-tr>
-        <oc-table-td>{{ $gettext('Profile picture') }}</oc-table-td>
-        <oc-table-td
-          >{{
-            $gettext('Max. %{size}MB, JPG, PNG', {
-              size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
-            })
-          }}
+        <oc-table-td>
+          <div v-text="$gettext('Profile picture')" />
+          <div
+            class="text-sm text-role-on-surface-variant"
+            v-text="
+              $gettext('Max. %{size}MB, JPG, PNG', {
+                size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
+              })
+            "
+          />
         </oc-table-td>
         <oc-table-td>
           <avatar-upload class="mb-2" />
