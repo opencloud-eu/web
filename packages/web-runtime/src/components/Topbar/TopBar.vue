@@ -16,7 +16,7 @@
       <router-link v-if="!hideLogo" :to="homeLink" class="w-full oc-logo-href">
         <picture>
           <source
-            :srcset="currentTheme.logoMobile ? currentTheme.logoMobile : currentTheme.logo"
+            :srcset="currentTheme.logoMobile || currentTheme.logo"
             media="(max-width: 639px)"
           />
           <oc-image
