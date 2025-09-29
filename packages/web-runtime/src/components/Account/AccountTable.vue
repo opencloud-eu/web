@@ -62,5 +62,9 @@ export default defineComponent({
   .account-table tr {
     @apply block md:table-row pb-1 md:pb-0 border-t-0 border-b h-full md:h-10.5;
   }
+
+  .account-table tr:last-child {
+    @apply border-b-0;
+  }
 }
 </style>

@@ -16,8 +16,10 @@ exports[`account information page > account information section > displays basic
     </thead>
     <tbody>
       <tr data-v-98c4aba8="">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Profile picture</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Max. 10MB, JPG, PNG</td>
+        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
+          <div>Profile picture</div>
+          <div class="text-sm text-role-on-surface-variant">Max. 10MB, JPG, PNG</div>
+        </td>
         <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
           <div class="[&amp;_.cropper-crop-box]:!outline-1 [&amp;_.cropper-crop-box]:!outline-role-outline [&amp;_.cropper-view-box]:!rounded-[50%] [&amp;_.cropper-crop-box]:!rounded-[50%] [&amp;_.cropper-line]:!bg-role-outline [&amp;_.cropper-point]:!bg-role-outline mb-2"><input class="invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
             <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
@@ -102,8 +104,10 @@ exports[`account information page > public link context > should render a limite
       </thead>
       <tbody>
         <tr data-v-98c4aba8="">
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Profile picture</td>
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Max. 10MB, JPG, PNG</td>
+          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
+            <div>Profile picture</div>
+            <div class="text-sm text-role-on-surface-variant">Max. 10MB, JPG, PNG</div>
+          </td>
           <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">
             <div class="[&amp;_.cropper-crop-box]:!outline-1 [&amp;_.cropper-crop-box]:!outline-role-outline [&amp;_.cropper-view-box]:!rounded-[50%] [&amp;_.cropper-crop-box]:!rounded-[50%] [&amp;_.cropper-line]:!bg-role-outline [&amp;_.cropper-point]:!bg-role-outline mb-2"><input class="invisible avatar-file-input" type="file" accept="image/jpeg, image/png">
               <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #b82015; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name=""><span class="avatar-initials" style="color: white;"></span></span>
