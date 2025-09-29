@@ -37,3 +37,11 @@ export default defineConfig({
   }
 })
 ```
+
+### Tailwind CSS
+
+The extension-sdk comes with a preconfigured Tailwind CSS setup for extension development. To use it, simply import the provided CSS file in your main application file. Note that Tailwind classes need to be prefixed via `ext:` in extensions to avoid style conflicts.
+
+```ts
+import '@opencloud-eu/extension-sdk/tailwind.css'
+```

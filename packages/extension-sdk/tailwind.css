@@ -1,0 +1,14 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme) prefix(ext);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(ext);
+
+@theme {
+  --font-sans: var(--oc-font-family);
+
+  --spacing: 4px;
+  --breakpoint-xs: 580px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1600px;
+}
