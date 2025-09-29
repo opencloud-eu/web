@@ -69,10 +69,10 @@ importers:
         version: 6.0.1(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.2))
       '@vitest/coverage-v8':
         specifier: ^3.0.5
-        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
+        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       '@vitest/web-worker':
         specifier: ^3.0.5
-        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
+        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       '@vue/compiler-dom':
         specifier: 3.5.22
         version: 3.5.22
@@ -101,8 +101,8 @@ importers:
         specifier: 11.0.3
         version: 11.0.3
       happy-dom:
-        specifier: 18.0.1
-        version: 18.0.1
+        specifier: 19.0.1
+        version: 19.0.1
       jsdom:
         specifier: ^27.0.0
         version: 27.0.0(postcss@8.5.6)
@@ -162,10 +162,10 @@ importers:
         version: 0.1.4(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       vitest:
         specifier: ^3.0.5
-        version: 3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
       vitest-mock-extended:
         specifier: 3.1.0
-        version: 3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
+        version: 3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       vue:
         specifier: 3.5.22
         version: 3.5.22(typescript@5.9.2)
@@ -912,7 +912,7 @@ importers:
         version: 4.17.12
       '@vitest/web-worker':
         specifier: ^3.0.5
-        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
+        version: 3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       clean-publish:
         specifier: 5.2.2
         version: 5.2.2
@@ -1076,7 +1076,7 @@ importers:
         version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
       vitest-mock-extended:
         specifier: ^3.0.0
-        version: 3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
+        version: 3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       vue:
         specifier: ^3.5.10
         version: 3.5.22(typescript@5.9.2)
@@ -4430,8 +4430,8 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
-  happy-dom@18.0.1:
-    resolution: {integrity: sha512-qn+rKOW7KWpVTtgIUi6RVmTBZJSe2k0Db0vh1f7CWrWclkkc7/Q+FrOfkZIb2eiErLyqu5AXEzE7XthO9JVxRA==}
+  happy-dom@19.0.1:
+    resolution: {integrity: sha512-Rr1H/mvgdCGoIq+jjaGxE/y+ZB+O2DhUBXk9vqoRVc5zsZ/Ne6Fssb8fXaAjPFh3Ajmbx+kfDDf946PHiUbC6Q==}
     engines: {node: '>=20.0.0'}
 
   has-ansi@4.0.1:
@@ -9060,7 +9060,7 @@ snapshots:
       vite: 7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
       vue: 3.5.22(typescript@5.9.2)
 
-  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))':
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -9075,7 +9075,7 @@ snapshots:
       std-env: 3.9.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
+      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -9121,10 +9121,10 @@ snapshots:
       loupe: 3.1.4
       tinyrainbow: 2.0.0
 
-  '@vitest/web-worker@3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))':
+  '@vitest/web-worker@3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
+      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -10559,7 +10559,7 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  happy-dom@18.0.1:
+  happy-dom@19.0.1:
     dependencies:
       '@types/node': 20.19.0
       '@types/whatwg-mimetype': 3.0.2
@@ -12638,13 +12638,13 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest-mock-extended@3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)):
+  vitest-mock-extended@3.1.0(typescript@5.9.2)(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)):
     dependencies:
       ts-essentials: 10.0.4(typescript@5.9.2)
       typescript: 5.9.2
-      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
+      vitest: 3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
 
-  vitest@3.2.4(@types/node@22.16.0)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.1)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -12671,7 +12671,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.16.0
-      happy-dom: 18.0.1
+      happy-dom: 19.0.1
       jsdom: 27.0.0(postcss@8.5.6)
     transitivePeerDependencies:
       - jiti
