@@ -28,7 +28,7 @@
       <div v-if="runningUploads" class="flex items-center">
         <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
         <oc-spinner v-else size="small" class="mr-1" />
-        <span class="text-sm text-role-on-surface-variant" v-text="remainingTime" />
+        <span class="text-sm text-role-on-surface-variant leading-7" v-text="remainingTime" />
       </div>
       <div
         v-else
