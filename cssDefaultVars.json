@@ -89,7 +89,7 @@
   },
   {
     "name": "oc-role-background",
-    "value": "#F5FAFD"
+    "value": "#FBFCFE"
   },
   {
     "name": "oc-role-chrome",
@@ -105,19 +105,19 @@
   },
   {
     "name": "oc-role-inverse-on-surface",
-    "value": "#EDF1F4"
+    "value": "#EFF1F2"
   },
   {
     "name": "oc-role-inverse-primary",
-    "value": "#88D1EC"
+    "value": "#5CD5FB"
   },
   {
     "name": "oc-role-inverse-surface",
-    "value": "#2C3134"
+    "value": "#2E3132"
   },
   {
     "name": "oc-role-on-background",
-    "value": "#171C1F"
+    "value": "#191C1D"
   },
   {
     "name": "oc-role-on-chrome",
@@ -133,7 +133,7 @@
   },
   {
     "name": "oc-role-on-primary",
-    "value": "#19353F"
+    "value": "#FFFFFF"
   },
   {
     "name": "oc-role-on-primary-container",
@@ -157,7 +157,7 @@
   },
   {
     "name": "oc-role-on-surface",
-    "value": "#171C1F"
+    "value": "#191C1D"
   },
   {
     "name": "oc-role-on-surface-variant",
@@ -185,7 +185,7 @@
   },
   {
     "name": "oc-role-primary",
-    "value": "#E2BAFF"
+    "value": "#00677F"
   },
   {
     "name": "oc-role-primary-container",
@@ -205,7 +205,7 @@
   },
   {
     "name": "oc-role-secondary-container",
-    "value": "#F4E5FF"
+    "value": "#CFE6F1"
   },
   {
     "name": "oc-role-secondary-fixed",
@@ -217,27 +217,27 @@
   },
   {
     "name": "oc-role-surface",
-    "value": "#FFFFFF"
+    "value": "#FBFCFE"
   },
   {
     "name": "oc-role-surface-bright",
-    "value": "#F5FAFD"
+    "value": "#F8F9FB"
   },
   {
     "name": "oc-role-surface-container",
-    "value": "#F1F3F4"
+    "value": "#ECEEF0"
   },
   {
     "name": "oc-role-surface-container-high",
-    "value": "#E4E9EC"
+    "value": "#E7E8EA"
   },
   {
     "name": "oc-role-surface-container-highest",
-    "value": "#DEE3E6"
+    "value": "#E1E3E4"
   },
   {
     "name": "oc-role-surface-container-low",
-    "value": "#EFF4F7"
+    "value": "#F2F4F5"
   },
   {
     "name": "oc-role-surface-container-lowest",
@@ -245,7 +245,7 @@
   },
   {
     "name": "oc-role-surface-dim",
-    "value": "#D6DBDE"
+    "value": "#D8DADC"
   },
   {
     "name": "oc-role-surface-tint",
