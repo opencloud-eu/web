@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
 - feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
 - feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
 - feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
