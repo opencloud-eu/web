@@ -46,7 +46,6 @@ type TusClientError = Error & { originalResponse: any }
 
 // IMPORTANT: must only contain primitive types, complex types won't be serialized properly!
 export type OcUppyMeta = {
-  retry?: boolean
   name?: string
   mtime?: number
   // current space & folder
@@ -91,8 +90,9 @@ export class UppyService {
     this.uppy = new Uppy<OcUppyMeta, OcUppyBody>({
       autoProceed: false,
       onBeforeFileAdded: (file, files) => {
-        if (file.id in files) {
-          file.meta.retry = true
+        if (file.id in files && !files[file.id].error) {
+          // file is currently being uploaded, no need to add it again
+          return false
         }
         file.meta.relativePath = this.getRelativeFilePath(file)
         // id needs to be generated after the relative path has been set.
