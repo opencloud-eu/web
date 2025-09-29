@@ -11,6 +11,16 @@
 - feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
 - enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
 
+### 📈 Enhancement
+
+- feat(extension-sdk): provide default tailwind config  [[#1275](https://github.com/opencloud-eu/web/pull/1275)]
+- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
+- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
+- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
+- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
+- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
+- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
 ### 🐛 Bug Fixes
 
 - fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
@@ -19,15 +29,6 @@
 ### ✅ Tests
 
 - [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
-
-### 📈 Enhancement
-
-- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
-- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
-- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
-- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
-- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
-- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
 
 ### 📦️ Dependencies
 
