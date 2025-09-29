@@ -4,12 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
 
 ### ✨ Features
 
 - feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
 - enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
+
+### ✅ Tests
+
+- [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
 
 ### 📈 Enhancement
 
