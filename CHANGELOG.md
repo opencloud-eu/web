@@ -26,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v19 [[#1273](https://github.com/opencloud-eu/web/pull/1273)]
 - fix(deps): update dependency @sentry/vue to v10.15.0 [[#1260](https://github.com/opencloud-eu/web/pull/1260)]
 - fix(deps): update vue monorepo to v3.5.22 [[#1262](https://github.com/opencloud-eu/web/pull/1262)]
 - chore(deps): update node.js to v22.20.0 [[#1258](https://github.com/opencloud-eu/web/pull/1258)]
