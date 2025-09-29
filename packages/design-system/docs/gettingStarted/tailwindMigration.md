@@ -9,6 +9,9 @@ Starting with `v4` of OpenCloud Web and the design-system, the custom utility cl
 
 The following guide shows how to migrate your application or extension to `v4` of OpenCloud Web and its design-system.
 
+> [!NOTE]
+> When using Tailwind classes within a Web extension, it's recommended to use the Tailwind default config provided by the extension-sdk via `@opencloud-eu/extension-sdk/tailwind.css`. This however requires you to prefix all Tailwind classes with `ext:` to avoid style conflicts.
+
 ## Utility classes
 
 ### Spacing
