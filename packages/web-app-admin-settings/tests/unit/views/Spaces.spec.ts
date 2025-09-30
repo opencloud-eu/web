@@ -9,6 +9,7 @@ import {
   useAppDefaultsMock
 } from '@opencloud-eu/web-test-helpers'
 import Spaces from '../../../src/views/Spaces.vue'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -34,7 +35,7 @@ describe('Spaces view', () => {
     it('should render spaces list after loading has been finished', async () => {
       const spaces = [{ id: '1', name: 'Some Space' }] as SpaceResource[]
       const { wrapper } = getWrapper({ spaces })
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(wrapper.html()).toMatchSnapshot()
       expect(wrapper.find(selectors.spacesListStub).exists()).toBeTruthy()
     })
@@ -43,19 +44,19 @@ describe('Spaces view', () => {
     const graph = mockDeep<Graph>()
     graph.drives.listAllDrives.mockResolvedValue([])
     const { wrapper } = getWrapper({ spaces: [] })
-    await wrapper.vm.loadResourcesTask.last
+    await flushPromises()
     expect(wrapper.find(selectors.noContentMessageStub).exists()).toBeTruthy()
   })
   describe('batch actions', () => {
     it('do not display when no space selected', async () => {
       const { wrapper } = getWrapper()
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeFalsy()
     })
     it('display when one space selected', async () => {
       const spaces = [{ id: '1', name: 'Some Space' }] as SpaceResource[]
       const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
     })
@@ -65,7 +66,7 @@ describe('Spaces view', () => {
         { id: '1', name: 'Some other Space' }
       ] as SpaceResource[]
       const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
     })

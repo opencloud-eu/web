@@ -77,7 +77,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, inject, Ref, ref, unref, watch } from 'vue'
-import { buildSpaceImageResource, isManager, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  buildSpaceImageResource,
+  getSpaceManagers,
+  isManager,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import {
   SideBarEventTopics,
   useLoadPreview,
@@ -148,8 +153,21 @@ watch(
 )
 
 const ownerUsernames = computed(() => {
-  const managerPermissions = unref(spaceMembers).filter(isManager)
-  return managerPermissions
+  if (!unref(spaceMembers).length) {
+    // shares might not be loaded (e.g. in admin-settings), fallback to permissions
+    const managerPermissions = getSpaceManagers(unref(resource), sharesStore.graphRoles)
+    return managerPermissions
+      ?.map(({ grantedToV2 }) => {
+        if (grantedToV2.user?.id === unref(user)?.id) {
+          return $gettext('%{displayName} (me)', { displayName: grantedToV2.user.displayName })
+        }
+        return grantedToV2.user?.displayName || grantedToV2.group?.displayName
+      })
+      .join(', ')
+  }
+
+  const managerShares = unref(spaceMembers).filter(isManager)
+  return managerShares
     .map(({ sharedWith }) => {
       if (sharedWith.id === unref(user)?.id) {
         return $gettext('%{displayName} (me)', { displayName: sharedWith.displayName })
