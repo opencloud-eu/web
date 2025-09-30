@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
 - feat(extension-sdk): provide default tailwind config  [[#1275](https://github.com/opencloud-eu/web/pull/1275)]
 - feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
 - feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
