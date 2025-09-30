@@ -14,11 +14,17 @@
         :menu-items="appMenuExtensions"
       />
       <router-link v-if="!hideLogo" :to="homeLink" class="w-full oc-logo-href">
-        <oc-image
-          :src="currentTheme.logo"
-          :alt="sidebarLogoAlt"
-          class="oc-logo-image align-middle ml-1 max-h-[26px] select-none"
-        />
+        <picture>
+          <source
+            :srcset="currentTheme.logoMobile || currentTheme.logo"
+            media="(max-width: 959px)"
+          />
+          <oc-image
+            :src="currentTheme.logo"
+            :alt="sidebarLogoAlt"
+            class="oc-logo-image align-middle ml-1 max-h-[26px] select-none"
+          />
+        </picture>
       </router-link>
     </div>
     <div v-if="!contentOnLeftPortal" class="flex justify-end sm:justify-center col-2">

@@ -11,6 +11,7 @@ const CommonSection = z.object({
   name: z.string().optional(),
   slogan: z.string().optional(),
   logo: z.string().optional(),
+  logoMobile: z.string().optional(),
   urls: z
     .object({
       accessDeniedHelp: z.string().optional(),
