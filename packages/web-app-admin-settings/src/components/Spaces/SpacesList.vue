@@ -135,7 +135,7 @@ import {
   unref,
   watch
 } from 'vue'
-import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
+import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -356,26 +356,8 @@ export default defineComponent({
       }
     ])
 
-    const getSpaceManagers = (space: SpaceResource) => {
-      return space.root.permissions.filter((p) => {
-        let permissionActions: string[] = []
-        if (p['@libre.graph.permissions.actions']) {
-          permissionActions = p['@libre.graph.permissions.actions']
-        }
-        const role = sharesStore.graphRoles[p.roles?.[0]]
-        if (role && !permissionActions.length) {
-          const permissions = role.rolePermissions.find(
-            ({ condition }) => condition === 'exists @Resource.Root'
-          )
-          permissionActions = permissions?.allowedResourceActions || []
-        }
-
-        return permissionActions.includes(GraphSharePermission.deletePermissions)
-      })
-    }
-
     const getManagerNames = (space: SpaceResource) => {
-      const allManagers = getSpaceManagers(space)
+      const allManagers = getSpaceManagers(space, sharesStore.graphRoles)
       const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
       let managerStr = managers
         .map(({ grantedToV2 }) => (grantedToV2.user || grantedToV2.group).displayName)

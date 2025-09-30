@@ -17,7 +17,7 @@ import { DavProperty } from '../../webdav/constants'
 import { buildWebDavPublicPath, buildWebDavOcmPath } from '../publicLink'
 import { urlJoin } from '../../utils'
 import { Drive, DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { CollaboratorShare, GraphSharePermission } from '../share'
+import { CollaboratorShare, GraphSharePermission, ShareRole } from '../share'
 
 export function buildWebDavSpacesPath(storageId: string, path?: string) {
   return urlJoin('spaces', storageId, path, {
@@ -48,6 +48,24 @@ export function getRelativeSpecialFolderSpacePath(space: SpaceResource, type: 'i
 export function isManager(share: CollaboratorShare) {
   // delete permissions implies that the user/group is a manager
   return share.permissions.includes(GraphSharePermission.deletePermissions)
+}
+
+export const getSpaceManagers = (space: SpaceResource, graphRoles: Record<string, ShareRole>) => {
+  return space.root.permissions?.filter((p) => {
+    let permissionActions: string[] = []
+    if (p['@libre.graph.permissions.actions']) {
+      permissionActions = p['@libre.graph.permissions.actions']
+    }
+    const role = graphRoles[p.roles?.[0]]
+    if (role && !permissionActions.length) {
+      const permissions = role.rolePermissions.find(
+        ({ condition }) => condition === 'exists @Resource.Root'
+      )
+      permissionActions = permissions?.allowedResourceActions || []
+    }
+
+    return permissionActions.includes(GraphSharePermission.deletePermissions)
+  })
 }
 
 export type PublicLinkType = 'ocm' | 'public-link'
