@@ -11,6 +11,12 @@
 - feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
 - enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
 
+### 🐛 Bug Fixes
+
+- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
+- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
+
 ### 📈 Enhancement
 
 - feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
@@ -21,11 +27,6 @@
 - feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
 - feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
 - feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
-
-### 🐛 Bug Fixes
-
-- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
-- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
 
 ### ✅ Tests
 
