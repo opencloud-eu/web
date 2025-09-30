@@ -157,7 +157,7 @@ const ownerUsernames = computed(() => {
     // shares might not be loaded (e.g. in admin-settings), fallback to permissions
     const managerPermissions = getSpaceManagers(unref(resource), sharesStore.graphRoles)
     return managerPermissions
-      .map(({ grantedToV2 }) => {
+      ?.map(({ grantedToV2 }) => {
         if (grantedToV2.user?.id === unref(user)?.id) {
           return $gettext('%{displayName} (me)', { displayName: grantedToV2.user.displayName })
         }

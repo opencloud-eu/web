@@ -18,7 +18,7 @@
           v-if="hasCreatePermission"
           :show-label="!limitedScreenSpace"
           class="mr-2"
-          @space-created="(space) => spaceSettingsStore.upsertSpace(space)"
+          @space-created="(space: SpaceResource) => spaceSettingsStore.upsertSpace(space)"
         />
       </template>
       <template #sideBarHeader>

@@ -358,6 +358,9 @@ export default defineComponent({
 
     const getManagerNames = (space: SpaceResource) => {
       const allManagers = getSpaceManagers(space, sharesStore.graphRoles)
+      if (!allManagers?.length) {
+        return '-'
+      }
       const managers = allManagers.length > 2 ? allManagers.slice(0, 2) : allManagers
       let managerStr = managers
         .map(({ grantedToV2 }) => (grantedToV2.user || grantedToV2.group).displayName)
@@ -396,7 +399,7 @@ export default defineComponent({
       return formatFileSize(space.spaceQuota.remaining, language.current)
     }
     const getMemberCount = (space: SpaceResource) => {
-      return space.root.permissions.length
+      return space.root.permissions?.length || 1
     }
 
     const getSelectSpaceLabel = (space: SpaceResource) => {
