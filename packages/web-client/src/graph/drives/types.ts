@@ -7,9 +7,6 @@ export interface GraphDrives {
   getDrive: (
     id: string,
     options?: {
-      orderBy?: string
-      filter?: string
-      expand?: string
       select?: Array<ListMyDrivesBetaSelectEnum>
     },
     requestOptions?: GraphRequestOptions
