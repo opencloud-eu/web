@@ -27,7 +27,11 @@
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
         <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
+      <div v-if="detailsLoading" class="flex justify-center">
+        <oc-spinner :aria-label="$gettext('Loading details')" />
+      </div>
       <dl
+        v-else
         class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
@@ -179,6 +183,7 @@ const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
 const versions = inject<Ref<Resource[]>>('versions')
+const versionsLoading = inject<Ref<boolean>>('versionsLoading')
 const space = inject<Ref<SpaceResource>>('space')
 
 const preview = ref<string>(undefined)
@@ -187,6 +192,7 @@ const authStore = useAuthStore()
 const { publicLinkContextReady } = storeToRefs(authStore)
 
 const isPreviewLoading = computed(() => previewEnabled && unref(previewsLoading))
+const detailsLoading = computed(() => unref(versionsLoading))
 
 const sharedAncestor = computed(() => {
   return Object.values(unref(ancestorMetaData)).find(
