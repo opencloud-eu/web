@@ -17,7 +17,7 @@
         <picture>
           <source
             :srcset="currentTheme.logoMobile || currentTheme.logo"
-            media="(max-width: 639px)"
+            media="(max-width: 959px)"
           />
           <oc-image
             :src="currentTheme.logo"
