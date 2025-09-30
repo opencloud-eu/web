@@ -32,6 +32,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v19.0.2 [[#1284](https://github.com/opencloud-eu/web/pull/1284)]
+- fix(deps): update dependency @sentry/vue to v10.16.0 [[#1283](https://github.com/opencloud-eu/web/pull/1283)]
+- chore(deps): update typescript-eslint monorepo to v8.45.0 [[#1282](https://github.com/opencloud-eu/web/pull/1282)]
 - chore(deps): update traefik docker tag to v3.5.3 [[#1271](https://github.com/opencloud-eu/web/pull/1271)]
 - chore(deps): update devdependencies (non-major) [[#1254](https://github.com/opencloud-eu/web/pull/1254)]
 - chore(deps): update dependency happy-dom to v19 [[#1273](https://github.com/opencloud-eu/web/pull/1273)]
