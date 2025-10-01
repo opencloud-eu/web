@@ -8,7 +8,7 @@
       :resource="resource"
       :link="link"
       :is-resource-clickable="isResourceClickable"
-      class="oc-resource-icon-link relative"
+      class="contents relative"
       :class="{ 'hover:underline': isResourceClickable }"
       @click="emitClick"
     >
@@ -18,7 +18,7 @@
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
         :data-test-thumbnail-resource-name="resource.name"
-        class="oc-resource-thumbnail rounded-xs size-8 object-cover"
+        class="rounded-xs size-8 object-cover"
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
@@ -50,7 +50,7 @@
           :is-extension-displayed="isExtensionDisplayed"
         />
       </resource-link>
-      <div class="oc-resource-indicators flex">
+      <div class="flex">
         <component
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
@@ -65,153 +65,77 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceLink from './ResourceLink.vue'
 import ResourceName from './ResourceName.vue'
 import { RouteLocationRaw } from 'vue-router'
+import { useGettext } from 'vue3-gettext'
 
-/**
- * Displays a resource together with the resource type icon or thumbnail
- */
-export default defineComponent({
-  name: 'ResourceListItem',
-  components: { ResourceIcon, ResourceLink, ResourceName },
-  props: {
-    /**
-     * The resource to be displayed
-     */
-    resource: {
-      type: Object as PropType<Resource>,
-      required: true
-    },
-    /**
-     * The prefix that will be shown in the path
-     */
-    pathPrefix: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    /**
-     * The resource link
-     */
-    link: {
-      type: Object as PropType<RouteLocationRaw>,
-      required: false,
-      default: null
-    },
-    /**
-     * Asserts whether the resource path should be displayed
-     */
-    isPathDisplayed: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    /**
-     * The resource parent folder link path
-     */
-    parentFolderLink: {
-      type: Object,
-      required: false,
-      default: null
-    },
-    /**
-     * The resource parent folder name to be displayed
-     */
-    parentFolderName: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    /**
-     * The resource parent folder link path icon additional attributes
-     */
-    parentFolderLinkIconAdditionalAttributes: {
-      type: Object,
-      required: false,
-      default: () => ({})
-    },
-    /**
-     * Asserts whether the resource extension should be displayed
-     */
-    isExtensionDisplayed: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    /**
-     * Asserts whether the resource thumbnail should be displayed
-     */
-    isThumbnailDisplayed: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    /**
-     * Asserts whether the resource thumbnail should be displayed
-     */
-    isIconDisplayed: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    /**
-     * Asserts whether clicking on the resource name triggers any action
-     */
-    isResourceClickable: {
-      type: Boolean,
-      required: false,
-      default: true
-    }
-  },
-  emits: ['click'],
-  computed: {
-    parentFolderComponentType() {
-      return this.parentFolderLink ? 'router-link' : 'span'
-    },
+const {
+  resource,
+  pathPrefix = '',
+  link = null,
+  isPathDisplayed = false,
+  parentFolderLink = null,
+  parentFolderName = '',
+  parentFolderLinkIconAdditionalAttributes = {},
+  isExtensionDisplayed = true,
+  isThumbnailDisplayed = true,
+  isIconDisplayed = true,
+  isResourceClickable = true
+} = defineProps<{
+  resource: Resource
+  pathPrefix?: string
+  link?: RouteLocationRaw
+  isPathDisplayed?: boolean
+  parentFolderLink?: RouteLocationRaw
+  parentFolderName?: string
+  parentFolderLinkIconAdditionalAttributes?: Record<string, unknown>
+  isExtensionDisplayed?: boolean
+  isThumbnailDisplayed?: boolean
+  isIconDisplayed?: boolean
+  isResourceClickable?: boolean
+}>()
 
-    parentFolderLinkIconAttrs() {
-      return {
-        'fill-type': 'line' as const,
-        name: 'folder-2',
-        size: 'small' as const,
-        ...this.parentFolderLinkIconAdditionalAttributes
-      }
-    },
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
 
-    hasThumbnail() {
-      return (
-        this.isThumbnailDisplayed &&
-        Object.prototype.hasOwnProperty.call(this.resource, 'thumbnail')
-      )
-    },
+const { $gettext } = useGettext()
 
-    thumbnail() {
-      return this.resource.thumbnail
-    },
+const parentFolderComponentType = computed(() => {
+  return parentFolderLink ? 'router-link' : 'span'
+})
 
-    tooltipLabelIcon() {
-      if (this.resource.locked) {
-        return this.$gettext('This item is locked')
-      }
-      return null
-    }
-  },
-
-  methods: {
-    emitClick(e: MouseEvent) {
-      if (!e || typeof e.stopPropagation !== 'function') {
-        return
-      }
-      /**
-       * Triggered when the resource is a file and the name is clicked
-       */
-      this.$emit('click', e)
-    }
+const parentFolderLinkIconAttrs = computed(() => {
+  return {
+    'fill-type': 'line' as const,
+    name: 'folder-2',
+    size: 'small' as const,
+    ...parentFolderLinkIconAdditionalAttributes
   }
 })
+
+const hasThumbnail = computed(() => {
+  return isThumbnailDisplayed && Object.prototype.hasOwnProperty.call(resource, 'thumbnail')
+})
+
+const thumbnail = computed(() => resource.thumbnail)
+
+const tooltipLabelIcon = computed(() => {
+  if (resource.locked) {
+    return $gettext('This item is locked')
+  }
+  return null
+})
+
+const emitClick = (e: MouseEvent) => {
+  if (!e || typeof e.stopPropagation !== 'function') {
+    return
+  }
+  emit('click', e)
+}
 </script>
