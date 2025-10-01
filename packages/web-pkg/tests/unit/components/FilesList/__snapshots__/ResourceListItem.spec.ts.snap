@@ -17,7 +17,7 @@ exports[`OcResource > displays parent folder name default if calculated name is 
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-resource-name flex min-w-0" data-test-resource-path="example.pdf" data-test-resource-name="example.pdf" data-test-resource-type="file"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface">example</span></span><span class="oc-resource-extension whitespace-pre text-role-on-surface leading-4">.pdf</span></span>
     </button>
-    <div class="oc-resource-indicators flex"><span class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent cursor-default"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/folder-2-line.svg" transform-source="(svg) => {
+    <div class="flex"><span class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent cursor-default"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/folder-2-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);

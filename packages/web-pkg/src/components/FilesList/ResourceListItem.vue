@@ -50,7 +50,7 @@
           :is-extension-displayed="isExtensionDisplayed"
         />
       </resource-link>
-      <div class="oc-resource-indicators flex">
+      <div class="flex">
         <component
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"

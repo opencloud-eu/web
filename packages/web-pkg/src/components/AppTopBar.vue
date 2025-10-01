@@ -1,6 +1,8 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+    <div
+      class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&_.parent-folder]:text-role-on-chrome"
+    >
       <div
         class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
       >
@@ -8,7 +10,7 @@
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
-            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome"
+            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
             :is-thumbnail-displayed="false"
             :is-extension-displayed="areFileExtensionsShown"
             :path-prefix="getPathPrefix(resource)"
@@ -161,13 +163,3 @@ const isPathDisplayed = computed(() => {
   return !isPublicSpaceResource(unref(space))
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-app-top-bar .oc-resource-indicators .text,
-  #app-top-bar-resource .oc-resource-name span {
-    @apply text-role-on-chrome;
-  }
-}
-</style>
