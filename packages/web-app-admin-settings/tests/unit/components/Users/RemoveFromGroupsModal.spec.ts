@@ -35,8 +35,7 @@ describe('RemoveFromGroupsModal', () => {
       mocks.$clientService.graphAuthenticated.users.getUser.mockResolvedValue(
         mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
       )
-
-      wrapper.vm.selectedOptions = groups
+      ;(wrapper.vm as any).selectedOptions = groups
 
       await wrapper.vm.onConfirm()
       const { showMessage } = useMessages()
@@ -56,8 +55,7 @@ describe('RemoveFromGroupsModal', () => {
       const { wrapper, mocks } = getWrapper({ users, groups })
       mocks.$clientService.graphAuthenticated.groups.deleteMember.mockRejectedValue(new Error(''))
       mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
-
-      wrapper.vm.selectedOptions = groups
+      ;(wrapper.vm as any).selectedOptions = groups
 
       await wrapper.vm.onConfirm()
       const { showErrorMessage } = useMessages()
