@@ -8,7 +8,7 @@
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
-            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60"
+            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome"
             :is-thumbnail-displayed="false"
             :is-extension-displayed="areFileExtensionsShown"
             :path-prefix="getPathPrefix(resource)"
@@ -67,7 +67,8 @@
                     .map((action) => {
                       return {
                         ...action,
-                        class: 'p-1 app-topbar-action',
+                        class:
+                          'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome [&:hover:not(:disabled)_svg]:!fill-role-chrome',
                         hideLabel: true
                       }
                     })
@@ -190,17 +191,8 @@ export default defineComponent({
 
 @layer utilities {
   .oc-app-top-bar .oc-resource-indicators .text,
-  .app-topbar-action,
-  .app-topbar-action:hover:not(:disabled),
   #app-top-bar-resource .oc-resource-name span {
     @apply text-role-on-chrome;
   }
-}
-
-/* must not be inside a layer to overwrite the icon styles */
-.app-topbar-action svg,
-.app-topbar-action:hover:not(:disabled) svg,
-#app-top-bar-resource svg {
-  fill: var(--oc-role-on-chrome) !important;
 }
 </style>
