@@ -1,6 +1,5 @@
 /// <reference types="vite/client" />
 
-import { UppyService } from '@opencloud-eu/web-pkg'
 import { Route, Router } from 'vue-router'
 
 // This file must have at least one export or import on top-level
@@ -14,8 +13,6 @@ declare global {
 
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $uppyService: UppyService
-
     $router: Router
     $route: Route
   }
