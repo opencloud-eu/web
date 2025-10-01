@@ -329,7 +329,7 @@ importers:
         version: 4.1.13(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))
       '@vitejs/plugin-vue':
         specifier: ^6.0.0
-        version: 6.0.1(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.2))
+        version: 6.0.1(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
       vite:
         specifier: ^5 || ^6.0.0 || ^7.0.0
         version: 7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
@@ -358,16 +358,16 @@ importers:
         version: 3.7.2
       pinia:
         specifier: ^2.2.2 || ^3.0.0
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-concurrency:
         specifier: ^5.0.1
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: ^4.2.5
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: ^2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -404,16 +404,16 @@ importers:
         version: 8.11.1
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       uuid:
         specifier: 13.0.0
         version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -444,16 +444,16 @@ importers:
         version: 8.11.1
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       zod:
         specifier: 4.1.11
         version: 4.1.11
@@ -475,7 +475,7 @@ importers:
         version: 0.3.93
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -494,7 +494,7 @@ importers:
         version: 4.17.21
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       qs:
         specifier: ^6.13.0
         version: 6.14.0
@@ -503,13 +503,13 @@ importers:
         version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       zod:
         specifier: 4.1.11
         version: 4.1.11
@@ -534,7 +534,7 @@ importers:
         version: 5.0.2
       '@vueuse/core':
         specifier: ^13.0.0
-        version: 13.9.0(vue@3.5.22(typescript@5.9.2))
+        version: 13.9.0(vue@3.5.22(typescript@5.9.3))
       axios:
         specifier: 1.12.2
         version: 1.12.2
@@ -558,7 +558,7 @@ importers:
         version: 8.1.1
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       qs:
         specifier: 6.14.0
         version: 6.14.0
@@ -567,13 +567,13 @@ importers:
         version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       web-app-search:
         specifier: workspace:*
         version: link:../web-app-search
@@ -610,10 +610,10 @@ importers:
         version: 13.0.0
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       zod:
         specifier: 4.1.11
         version: 4.1.11
@@ -625,7 +625,7 @@ importers:
         version: link:../web-pkg
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -644,16 +644,16 @@ importers:
         version: 4.6.0
       '@vueuse/core':
         specifier: ^13.0.0
-        version: 13.9.0(vue@3.5.22(typescript@5.9.2))
+        version: 13.9.0(vue@3.5.22(typescript@5.9.3))
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -678,13 +678,13 @@ importers:
         version: 8.11.1
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -706,10 +706,10 @@ importers:
         version: link:../web-pkg
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -931,7 +931,7 @@ importers:
         version: 6.7.3
       '@casl/vue':
         specifier: ^2.2.2
-        version: 2.2.2(@casl/ability@6.7.3)(vue@3.5.22(typescript@5.9.2))
+        version: 2.2.2(@casl/ability@6.7.3)(vue@3.5.22(typescript@5.9.3))
       '@microsoft/fetch-event-source':
         specifier: 2.0.1
         version: 2.0.1
@@ -946,7 +946,7 @@ importers:
         version: link:../web-pkg
       '@sentry/vue':
         specifier: 10.17.0
-        version: 10.17.0(pinia@3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2)))(vue@3.5.22(typescript@5.9.2))
+        version: 10.17.0(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@uppy/core':
         specifier: 5.0.2
         version: 5.0.2
@@ -961,10 +961,10 @@ importers:
         version: 5.0.1(@uppy/core@5.0.2)
       '@vueuse/core':
         specifier: 13.9.0
-        version: 13.9.0(vue@3.5.22(typescript@5.9.2))
+        version: 13.9.0(vue@3.5.22(typescript@5.9.3))
       '@vueuse/head':
         specifier: 2.0.0
-        version: 2.0.0(vue@3.5.22(typescript@5.9.2))
+        version: 2.0.0(vue@3.5.22(typescript@5.9.3))
       axios:
         specifier: 1.12.2
         version: 1.12.2
@@ -979,7 +979,7 @@ importers:
         version: 7.6.5
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.1.0(focus-trap@7.6.5)(vue@3.5.22(typescript@5.9.2))
+        version: 4.1.0(focus-trap@7.6.5)(vue@3.5.22(typescript@5.9.3))
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -1000,10 +1000,10 @@ importers:
         version: 8.1.1
       pinia:
         specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       portal-vue:
         specifier: ^3.0.0
-        version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.2))
+        version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.3))
       promise:
         specifier: ^8.1.0
         version: 8.3.0
@@ -1021,16 +1021,16 @@ importers:
         version: 13.0.0
       vue:
         specifier: 3.5.22
-        version: 3.5.22(typescript@5.9.2)
+        version: 3.5.22(typescript@5.9.3)
       vue-concurrency:
         specifier: 5.0.3
-        version: 5.0.3(vue@3.5.22(typescript@5.9.2))
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.5.1
-        version: 4.5.1(vue@3.5.22(typescript@5.9.2))
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       vue3-gettext:
         specifier: 2.4.0
-        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.2))
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       webdav:
         specifier: 5.8.0
         version: 5.8.0
@@ -6219,6 +6219,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typical@4.0.0:
     resolution: {integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==}
     engines: {node: '>=8'}
@@ -7570,6 +7575,11 @@ snapshots:
       '@casl/ability': 6.7.3
       vue: 3.5.22(typescript@5.9.2)
 
+  '@casl/vue@2.2.2(@casl/ability@6.7.3)(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      '@casl/ability': 6.7.3
+      vue: 3.5.22(typescript@5.9.3)
+
   '@codemirror/autocomplete@6.18.7':
     dependencies:
       '@codemirror/language': 6.11.3
@@ -8663,6 +8673,14 @@ snapshots:
     optionalDependencies:
       pinia: 3.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
 
+  '@sentry/vue@10.17.0(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      '@sentry/browser': 10.17.0
+      '@sentry/core': 10.17.0
+      vue: 3.5.22(typescript@5.9.3)
+    optionalDependencies:
+      pinia: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+
   '@shikijs/core@2.5.0':
     dependencies:
       '@shikijs/engine-javascript': 2.5.0
@@ -8996,13 +9014,13 @@ snapshots:
       '@unhead/schema': 1.11.20
       '@unhead/shared': 1.11.20
 
-  '@unhead/vue@1.11.20(vue@3.5.22(typescript@5.9.2))':
+  '@unhead/vue@1.11.20(vue@3.5.22(typescript@5.9.3))':
     dependencies:
       '@unhead/schema': 1.11.20
       '@unhead/shared': 1.11.20
       hookable: 5.5.3
       unhead: 1.11.20
-      vue: 3.5.22(typescript@5.9.2)
+      vue: 3.5.22(typescript@5.9.3)
 
   '@uppy/companion-client@5.0.1(@uppy/core@5.0.2)':
     dependencies:
@@ -9058,6 +9076,12 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.29
       vite: 7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
       vue: 3.5.22(typescript@5.9.2)
+
+  '@vitejs/plugin-vue@6.0.1(vite@7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.0-beta.29
+      vite: 7.1.7(@types/node@22.16.0)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1)
+      vue: 3.5.22(typescript@5.9.3)
 
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.16.0)(happy-dom@19.0.2)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(sass@1.93.1)(yaml@2.8.1))':
     dependencies:
@@ -9241,6 +9265,12 @@ snapshots:
       '@vue/shared': 3.5.22
       vue: 3.5.22(typescript@5.9.2)
 
+  '@vue/server-renderer@3.5.22(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      '@vue/compiler-ssr': 3.5.22
+      '@vue/shared': 3.5.22
+      vue: 3.5.22(typescript@5.9.3)
+
   '@vue/shared@3.5.22': {}
 
   '@vue/test-utils@2.4.6':
@@ -9264,13 +9294,20 @@ snapshots:
       '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.9.2))
       vue: 3.5.22(typescript@5.9.2)
 
-  '@vueuse/head@2.0.0(vue@3.5.22(typescript@5.9.2))':
+  '@vueuse/core@13.9.0(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      '@types/web-bluetooth': 0.0.21
+      '@vueuse/metadata': 13.9.0
+      '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.9.3))
+      vue: 3.5.22(typescript@5.9.3)
+
+  '@vueuse/head@2.0.0(vue@3.5.22(typescript@5.9.3))':
     dependencies:
       '@unhead/dom': 1.11.20
       '@unhead/schema': 1.11.20
       '@unhead/ssr': 1.11.20
-      '@unhead/vue': 1.11.20(vue@3.5.22(typescript@5.9.2))
-      vue: 3.5.22(typescript@5.9.2)
+      '@unhead/vue': 1.11.20(vue@3.5.22(typescript@5.9.3))
+      vue: 3.5.22(typescript@5.9.3)
 
   '@vueuse/integrations@12.8.2(axios@1.12.2)(change-case@5.4.4)(focus-trap@7.6.5)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.2)':
     dependencies:
@@ -9299,6 +9336,10 @@ snapshots:
   '@vueuse/shared@13.9.0(vue@3.5.22(typescript@5.9.2))':
     dependencies:
       vue: 3.5.22(typescript@5.9.2)
+
+  '@vueuse/shared@13.9.0(vue@3.5.22(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.22(typescript@5.9.3)
 
   '@xmldom/xmldom@0.7.13': {}
 
@@ -10420,6 +10461,11 @@ snapshots:
     dependencies:
       focus-trap: 7.6.5
       vue: 3.5.22(typescript@5.9.2)
+
+  focus-trap-vue@4.1.0(focus-trap@7.6.5)(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      focus-trap: 7.6.5
+      vue: 3.5.22(typescript@5.9.3)
 
   focus-trap@7.6.5:
     dependencies:
@@ -11589,6 +11635,13 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.2
 
+  pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      '@vue/devtools-api': 7.7.7
+      vue: 3.5.22(typescript@5.9.3)
+    optionalDependencies:
+      typescript: 5.9.3
+
   pino-abstract-transport@2.0.0:
     dependencies:
       split2: 4.2.0
@@ -11662,6 +11715,10 @@ snapshots:
   portal-vue@3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.2)):
     optionalDependencies:
       vue: 3.5.22(typescript@5.9.2)
+
+  portal-vue@3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.3)):
+    optionalDependencies:
+      vue: 3.5.22(typescript@5.9.3)
 
   possible-typed-array-names@1.1.0: {}
 
@@ -12370,6 +12427,9 @@ snapshots:
 
   typescript@5.9.2: {}
 
+  typescript@5.9.3:
+    optional: true
+
   typical@4.0.0: {}
 
   ua-regexes-lite@1.2.1: {}
@@ -12696,6 +12756,11 @@ snapshots:
       caf: 15.0.1(patch_hash=b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14)
       vue: 3.5.22(typescript@5.9.2)
 
+  vue-concurrency@5.0.3(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      caf: 15.0.1(patch_hash=b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14)
+      vue: 3.5.22(typescript@5.9.3)
+
   vue-demi@0.14.10(vue@3.5.22(typescript@5.9.2)):
     dependencies:
       vue: 3.5.22(typescript@5.9.2)
@@ -12722,6 +12787,11 @@ snapshots:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.22(typescript@5.9.2)
 
+  vue-router@4.5.1(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.22(typescript@5.9.3)
+
   vue-select@4.0.0-beta.6(vue@3.5.22(typescript@5.9.2)):
     dependencies:
       vue: 3.5.22(typescript@5.9.2)
@@ -12746,6 +12816,20 @@ snapshots:
       tslib: 2.8.1
       vue: 3.5.22(typescript@5.9.2)
 
+  vue3-gettext@2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      '@vue/compiler-sfc': 3.5.22
+      chalk: 4.1.2
+      command-line-args: 5.2.1
+      cosmiconfig: 7.1.0
+      gettext-extractor: 3.8.0
+      glob: 7.2.3
+      parse5: 6.0.1
+      parse5-htmlparser2-tree-adapter: 6.0.1
+      pofile: 1.1.4
+      tslib: 2.8.1
+      vue: 3.5.22(typescript@5.9.3)
+
   vue@3.5.22(typescript@5.9.2):
     dependencies:
       '@vue/compiler-dom': 3.5.22
@@ -12755,6 +12839,16 @@ snapshots:
       '@vue/shared': 3.5.22
     optionalDependencies:
       typescript: 5.9.2
+
+  vue@3.5.22(typescript@5.9.3):
+    dependencies:
+      '@vue/compiler-dom': 3.5.22
+      '@vue/compiler-sfc': 3.5.22
+      '@vue/runtime-dom': 3.5.22
+      '@vue/server-renderer': 3.5.22(vue@3.5.22(typescript@5.9.3))
+      '@vue/shared': 3.5.22
+    optionalDependencies:
+      typescript: 5.9.3
 
   w3c-keyname@2.2.8: {}
 
