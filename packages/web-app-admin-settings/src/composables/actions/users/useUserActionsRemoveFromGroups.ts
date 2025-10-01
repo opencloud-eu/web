@@ -39,6 +39,10 @@ export const useUserActionsRemoveFromGroups = ({ groups }: { groups: Ref<Group[]
           return false
         }
 
+        if (resources.every(({ memberOf }) => !memberOf?.length)) {
+          return false
+        }
+
         return resources.length > 0
       },
       handler

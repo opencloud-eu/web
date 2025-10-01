@@ -1,7 +1,7 @@
 <template>
   <group-select
     :selected-groups="selectedOptions"
-    :group-options="groups"
+    :group-options="availableGroups"
     :position-fixed="true"
     required-mark
     @selected-option-change="changeSelectedGroupOption"
@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, Ref, ref, unref, watch } from 'vue'
+import { computed, defineComponent, PropType, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import GroupSelect from './GroupSelect.vue'
@@ -41,6 +41,16 @@ export default defineComponent({
     const changeSelectedGroupOption = (options: Group[]) => {
       selectedOptions.value = options
     }
+
+    const availableGroups = computed(() => {
+      if (props.users.length > 1) {
+        // return all groups if multiple users are selected since we don't want to compute the intersection
+        return props.groups
+      }
+      return props.groups.filter(
+        (group) => !props.users.some((user) => user.memberOf.some(({ id }) => id === group.id))
+      )
+    })
 
     watch(
       selectedOptions,
@@ -134,6 +144,7 @@ export default defineComponent({
     return {
       selectedOptions,
       changeSelectedGroupOption,
+      availableGroups,
 
       // unit tests
       onConfirm
