@@ -6,13 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899
 
-### ✨ Features
-
-- feat: add update check [[#1264](https://github.com/opencloud-eu/web/pull/1264)]
-- enhancement: redesign account page [[#1200](https://github.com/opencloud-eu/web/pull/1200)]
-
 ### 🐛 Bug Fixes
 
+- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
 - fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
 - fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
 - fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
