@@ -8,7 +8,7 @@
       :resource="resource"
       :link="link"
       :is-resource-clickable="isResourceClickable"
-      class="oc-resource-icon-link relative"
+      class="contents relative"
       :class="{ 'hover:underline': isResourceClickable }"
       @click="emitClick"
     >
@@ -18,7 +18,7 @@
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
         :data-test-thumbnail-resource-name="resource.name"
-        class="oc-resource-thumbnail rounded-xs size-8 object-cover"
+        class="rounded-xs size-8 object-cover"
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
