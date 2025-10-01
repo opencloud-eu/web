@@ -97,8 +97,8 @@
   </portal>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -114,76 +114,51 @@ import { isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { Duration } from 'luxon'
 import { MenuSection } from './ContextActions'
 
-export default defineComponent({
-  name: 'AppTopBar',
-  components: {
-    ContextActionMenu,
-    ResourceListItem
+const {
+  dropDownMenuSections = [],
+  dropDownActionOptions = {
+    space: null,
+    resources: []
   },
-  props: {
-    dropDownMenuSections: {
-      type: Array as PropType<MenuSection[]>,
-      default: (): MenuSection[] => []
-    },
-    dropDownActionOptions: {
-      type: Object as PropType<FileActionOptions>,
-      default: (): FileActionOptions => ({
-        space: null,
-        resources: []
-      })
-    },
-    mainActions: {
-      type: Array as PropType<Action[]>,
-      default: (): Action[] => []
-    },
-    hasAutoSave: {
-      type: Boolean,
-      default: true
-    },
-    isEditor: {
-      type: Boolean,
-      default: false
-    },
-    resource: {
-      type: Object as PropType<Resource>,
-      default: null
-    }
-  },
-  emits: ['close'],
-  setup(props) {
-    const { $gettext, current: currentLanguage } = useGettext()
-    const resourcesStore = useResourcesStore()
-    const configStore = useConfigStore()
-    const { getMatchingSpace } = useGetMatchingSpace()
+  mainActions = [],
+  hasAutoSave = true,
+  isEditor = false,
+  resource = null
+} = defineProps<{
+  dropDownMenuSections?: MenuSection[]
+  dropDownActionOptions?: FileActionOptions
+  mainActions?: Action[]
+  hasAutoSave?: boolean
+  isEditor?: boolean
+  resource?: Resource
+}>()
 
-    const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
-    const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const hasAutosave = computed(
-      () => props.isEditor && props.hasAutoSave && configStore.options.editor.autosaveEnabled
-    )
-    const autoSaveTooltipText = computed(() => {
-      const duration = Duration.fromObject(
-        { seconds: configStore.options.editor.autosaveInterval },
-        { locale: currentLanguage }
-      )
-      return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
-    })
+defineEmits<{ (e: 'close'): void }>()
 
-    const space = computed(() => getMatchingSpace(props.resource))
+const { $gettext, current: currentLanguage } = useGettext()
+const resourcesStore = useResourcesStore()
+const configStore = useConfigStore()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { getParentFolderName, getPathPrefix, getParentFolderLinkIconAdditionalAttributes } =
+  useFolderLink()
 
-    const isPathDisplayed = computed(() => {
-      return !isPublicSpaceResource(unref(space))
-    })
+const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
+const contextMenuLabel = computed(() => $gettext('Show context menu'))
+const hasAutosave = computed(
+  () => isEditor && hasAutoSave && configStore.options.editor.autosaveEnabled
+)
+const autoSaveTooltipText = computed(() => {
+  const duration = Duration.fromObject(
+    { seconds: configStore.options.editor.autosaveInterval },
+    { locale: currentLanguage }
+  )
+  return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
+})
 
-    return {
-      contextMenuLabel,
-      areFileExtensionsShown,
-      hasAutosave,
-      autoSaveTooltipText,
-      isPathDisplayed,
-      ...useFolderLink()
-    }
-  }
+const space = computed(() => getMatchingSpace(resource))
+
+const isPathDisplayed = computed(() => {
+  return !isPublicSpaceResource(unref(space))
 })
 </script>
 <style>
