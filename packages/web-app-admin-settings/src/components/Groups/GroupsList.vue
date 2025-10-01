@@ -34,6 +34,9 @@
           "
         />
       </template>
+      <template #avatarHeader>
+        <span class="sr-only">{{ $gettext('Avatar') }}</span>
+      </template>
       <template #select="rowData">
         <oc-checkbox
           size="large"
@@ -328,7 +331,9 @@ export default defineComponent({
           name: 'avatar',
           title: '',
           type: 'slot',
-          width: 'shrink'
+          width: 'shrink',
+          headerType: 'slot',
+          sortable: false
         },
         {
           name: 'displayName',

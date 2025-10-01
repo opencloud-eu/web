@@ -5,7 +5,13 @@
       :type="componentType"
       v-bind="componentProps"
       :class="[action.class, 'action-menu-item', 'align-middle', 'w-full', ...buttonClasses]"
-      :aria-label="componentProps.disabled ? action.disabledTooltip?.(actionOptions) : ''"
+      :aria-label="
+        componentProps.disabled
+          ? action.disabledTooltip?.(actionOptions)
+          : typeof action.label === 'function'
+            ? action.label(actionOptions)
+            : action.label
+      "
       data-testid="action-handler"
       :size="size"
       justify-content="left"

@@ -24,6 +24,7 @@
         @highlight="rowClicked"
       >
         <template #selectHeader>
+          <span class="sr-only">{{ $gettext('Select users') }}</span>
           <oc-checkbox
             size="large"
             :label="$gettext('Select all users')"
@@ -44,6 +45,9 @@
             @update:model-value="selectUser(item)"
             @click.stop="rowClicked([item, $event])"
           />
+        </template>
+        <template #avatarHeader>
+          <span class="sr-only">{{ $gettext('Avatar') }}</span>
         </template>
         <template #avatar="{ item }">
           <user-avatar :user-id="item.id" :user-name="item.displayName" />
@@ -351,7 +355,9 @@ export default defineComponent({
           name: 'avatar',
           title: '',
           type: 'slot',
-          width: 'shrink'
+          width: 'shrink',
+          headerType: 'slot',
+          sortable: false
         },
         {
           name: 'onPremisesSamAccountName',

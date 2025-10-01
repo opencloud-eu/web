@@ -10,9 +10,11 @@
       'size-12': size === 'xxlarge',
       'size-16': size === 'xxxlarge'
     }"
-    :aria-label="ariaLabel"
+    :aria-label="ariaLabel || undefined"
+    aria-live="ariaLabel ? 'polite' : undefined"
+    aria-hidden="ariaLabel ? undefined : 'true'"
     tabindex="-1"
-    role="img"
+    :role="ariaLabel ? 'status' : undefined"
   />
 </template>
 

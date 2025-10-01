@@ -72,8 +72,10 @@
         class="link-modal-confirm oc-modal-body-actions-confirm-secondary-trigger p-1"
         appearance="filled"
         :disabled="confirmButtonDisabled"
+        :aria-label="$gettext('More options')"
       >
         <oc-icon size="small" name="arrow-down-s" />
+        <span class="sr-only">{{ $gettext('More options') }}</span>
       </oc-button>
       <oc-drop
         v-if="password.value"

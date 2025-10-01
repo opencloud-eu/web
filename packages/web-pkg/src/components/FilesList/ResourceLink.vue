@@ -1,7 +1,7 @@
 <template>
   <component
     :is="componentType"
-    v-bind="componentProps"
+    v-bind="mergedProps"
     v-if="isResourceClickable"
     :target="linkTarget"
     :draggable="false"
@@ -28,6 +28,7 @@ import { RouteLocationRaw } from 'vue-router'
  */
 export default {
   name: 'ResourceLink',
+  inheritAttrs: false,
   props: {
     /**
      * The resource folder link
@@ -90,6 +91,15 @@ export default {
       return {
         to: this.link
       }
+    },
+    mergedProps(): Record<string, unknown> {
+      const {
+        target: _t,
+        draggable: _d,
+        'no-hover': _nh,
+        ...restAttrs
+      } = this.$attrs as Record<string, unknown>
+      return { ...restAttrs, ...this.componentProps }
     }
   },
   methods: {

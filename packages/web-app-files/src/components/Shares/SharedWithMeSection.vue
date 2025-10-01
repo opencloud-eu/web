@@ -66,11 +66,16 @@
       <template #quickActions="{ resource }">
         <oc-button
           v-oc-tooltip="hideShareAction.label({ space: null, resources: [resource] })"
+          :aria-label="hideShareAction.label({ space: null, resources: [resource] })"
           appearance="raw"
           :class="['p-1', hideShareAction.class, 'raw-hover-surface']"
           @click.stop="hideShareAction.handler({ space: null, resources: [resource] })"
         >
-          <oc-icon :name="resource.hidden ? 'eye' : 'eye-off'" fill-type="line" />
+          <oc-icon
+            :name="resource.hidden ? 'eye' : 'eye-off'"
+            fill-type="line"
+            aria-hidden="true"
+          />
         </oc-button>
       </template>
       <template #footer>

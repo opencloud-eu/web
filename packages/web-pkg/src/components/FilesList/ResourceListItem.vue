@@ -10,6 +10,7 @@
       :is-resource-clickable="isResourceClickable"
       class="contents relative"
       :class="{ 'hover:underline': isResourceClickable }"
+      :aria-label="$gettext('Open: %{name}', { name: resource?.name ?? '' })"
       @click="emitClick"
     >
       <oc-image
