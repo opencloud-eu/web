@@ -6,7 +6,7 @@
   <div
     v-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
-    class="flex p-4 bg-role-surface-container rounded-sm"
+    class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
