@@ -153,7 +153,7 @@ const otherItems = computed(() => {
 const avatarsAriaLabel = computed(() => {
   if (isTooltipDisplayed) return tooltip.value as string
   const names = (avatars.value || [])
-    .map((a: any) => a?.displayName || a?.name || a?.username)
+    .map((a) => a?.displayName || a?.name || a?.username)
     .filter(Boolean)
   return names.length ? names.join(', ') : undefined
 })
