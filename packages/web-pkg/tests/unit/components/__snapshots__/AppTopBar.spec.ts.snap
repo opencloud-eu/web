@@ -2,10 +2,10 @@
 
 exports[`AppTopBar > if a resource is present > renders a resource and dropdownActions (if given) and a close button 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="undefined">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->
@@ -20,10 +20,10 @@ exports[`AppTopBar > if a resource is present > renders a resource and dropdownA
 
 exports[`AppTopBar > if a resource is present > renders a resource and dropdownActions as well as mainActions (if both are passed) and a close button 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="undefined">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->
@@ -38,10 +38,10 @@ exports[`AppTopBar > if a resource is present > renders a resource and dropdownA
 
 exports[`AppTopBar > if a resource is present > renders a resource and mainActions (if given) and a close button 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->
@@ -56,10 +56,10 @@ exports[`AppTopBar > if a resource is present > renders a resource and mainActio
 
 exports[`AppTopBar > if a resource is present > renders a resource and no actions (if none given) and a close button 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->
@@ -74,10 +74,10 @@ exports[`AppTopBar > if a resource is present > renders a resource and no action
 
 exports[`AppTopBar > if a resource is present > renders a resource without file extension if areFileExtensionsShown is set to false 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="undefined">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="false" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="false" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->
@@ -92,10 +92,10 @@ exports[`AppTopBar > if a resource is present > renders a resource without file 
 
 exports[`AppTopBar > if no resource is present > renders only a close button 1`] = `
 "<portal to="app.runtime.header.left" dropdownactions="">
-  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+  <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&amp;_.parent-folder]:text-role-on-chrome">
     <div class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit">
       <div class="open-file-bar flex">
-        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60"></resource-list-item-stub>
+        <resource-list-item-stub resource="undefined" pathprefix="[Function]" ispathdisplayed="true" parentfoldername="Personal" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="false" isicondisplayed="true" isresourceclickable="false" id="app-top-bar-resource" class="[&amp;_.oc-resource-name]:max-w-60 xs:[&amp;_.oc-resource-name]:max-w-full sm:[&amp;_.oc-resource-name]:max-w-20 md:[&amp;_.oc-resource-name]:max-w-60 [&amp;_svg]:!fill-role-on-chrome [&amp;_span]:text-role-on-chrome"></resource-list-item-stub>
       </div>
       <div class="flex">
         <!--v-if-->

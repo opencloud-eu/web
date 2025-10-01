@@ -1,6 +1,8 @@
 <template>
   <portal to="app.runtime.header.left">
-    <div class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1">
+    <div
+      class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&_.parent-folder]:text-role-on-chrome"
+    >
       <div
         class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
       >
@@ -8,7 +10,7 @@
           <resource-list-item
             v-if="resource"
             id="app-top-bar-resource"
-            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60"
+            class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
             :is-thumbnail-displayed="false"
             :is-extension-displayed="areFileExtensionsShown"
             :path-prefix="getPathPrefix(resource)"
@@ -67,7 +69,8 @@
                     .map((action) => {
                       return {
                         ...action,
-                        class: 'p-1 app-topbar-action',
+                        class:
+                          'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome [&:hover:not(:disabled)_svg]:!fill-role-chrome',
                         hideLabel: true
                       }
                     })
@@ -96,8 +99,8 @@
   </portal>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -113,94 +116,50 @@ import { isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { Duration } from 'luxon'
 import { MenuSection } from './ContextActions'
 
-export default defineComponent({
-  name: 'AppTopBar',
-  components: {
-    ContextActionMenu,
-    ResourceListItem
+const {
+  dropDownMenuSections = [],
+  dropDownActionOptions = {
+    space: null,
+    resources: []
   },
-  props: {
-    dropDownMenuSections: {
-      type: Array as PropType<MenuSection[]>,
-      default: (): MenuSection[] => []
-    },
-    dropDownActionOptions: {
-      type: Object as PropType<FileActionOptions>,
-      default: (): FileActionOptions => ({
-        space: null,
-        resources: []
-      })
-    },
-    mainActions: {
-      type: Array as PropType<Action[]>,
-      default: (): Action[] => []
-    },
-    hasAutoSave: {
-      type: Boolean,
-      default: true
-    },
-    isEditor: {
-      type: Boolean,
-      default: false
-    },
-    resource: {
-      type: Object as PropType<Resource>,
-      default: null
-    }
-  },
-  emits: ['close'],
-  setup(props) {
-    const { $gettext, current: currentLanguage } = useGettext()
-    const resourcesStore = useResourcesStore()
-    const configStore = useConfigStore()
-    const { getMatchingSpace } = useGetMatchingSpace()
+  mainActions = [],
+  hasAutoSave = true,
+  isEditor = false,
+  resource = null
+} = defineProps<{
+  dropDownMenuSections?: MenuSection[]
+  dropDownActionOptions?: FileActionOptions
+  mainActions?: Action[]
+  hasAutoSave?: boolean
+  isEditor?: boolean
+  resource?: Resource
+}>()
 
-    const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
-    const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const hasAutosave = computed(
-      () => props.isEditor && props.hasAutoSave && configStore.options.editor.autosaveEnabled
-    )
-    const autoSaveTooltipText = computed(() => {
-      const duration = Duration.fromObject(
-        { seconds: configStore.options.editor.autosaveInterval },
-        { locale: currentLanguage }
-      )
-      return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
-    })
+defineEmits<{ (e: 'close'): void }>()
 
-    const space = computed(() => getMatchingSpace(props.resource))
+const { $gettext, current: currentLanguage } = useGettext()
+const resourcesStore = useResourcesStore()
+const configStore = useConfigStore()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { getParentFolderName, getPathPrefix, getParentFolderLinkIconAdditionalAttributes } =
+  useFolderLink()
 
-    const isPathDisplayed = computed(() => {
-      return !isPublicSpaceResource(unref(space))
-    })
+const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
+const contextMenuLabel = computed(() => $gettext('Show context menu'))
+const hasAutosave = computed(
+  () => isEditor && hasAutoSave && configStore.options.editor.autosaveEnabled
+)
+const autoSaveTooltipText = computed(() => {
+  const duration = Duration.fromObject(
+    { seconds: configStore.options.editor.autosaveInterval },
+    { locale: currentLanguage }
+  )
+  return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
+})
 
-    return {
-      contextMenuLabel,
-      areFileExtensionsShown,
-      hasAutosave,
-      autoSaveTooltipText,
-      isPathDisplayed,
-      ...useFolderLink()
-    }
-  }
+const space = computed(() => getMatchingSpace(resource))
+
+const isPathDisplayed = computed(() => {
+  return !isPublicSpaceResource(unref(space))
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .oc-app-top-bar .oc-resource-indicators .text,
-  .app-topbar-action,
-  .app-topbar-action:hover:not(:disabled),
-  #app-top-bar-resource .oc-resource-name span {
-    @apply text-role-on-chrome;
-  }
-}
-
-/* must not be inside a layer to overwrite the icon styles */
-.app-topbar-action svg,
-.app-topbar-action:hover:not(:disabled) svg,
-#app-top-bar-resource svg {
-  fill: var(--oc-role-on-chrome) !important;
-}
-</style>
