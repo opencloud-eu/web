@@ -1,5 +1,5 @@
 <template>
-  <div v-if="ready" class="flex">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -26,6 +26,7 @@
               autocomplete="off"
             />
           </div>
+
           <component
             :is="folderView.component"
             class="trash-table"
@@ -33,7 +34,7 @@
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
-            :sort-fields="sortFields"
+            :sort-fields="sortFields.filter((field) => field.name === 'name')"
             :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
@@ -42,6 +43,7 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
+            :style="folderViewStyle"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
@@ -73,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -137,7 +139,15 @@ const viewModes = computed(() => {
   ]
 })
 
-const ready = ref(false)
+const appBarRef = ref<ComponentPublicInstance | null>()
+const folderViewStyle = computed(() => {
+  return {
+    ...(unref(folderView)?.isScrollable === false && {
+      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+    })
+  }
+})
+
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 const filterTerm = ref('')
@@ -269,7 +279,6 @@ onMounted(async () => {
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
     return router.push(getTrashLink(unref(spaces)[0]))
   }
-  ready.value = true
   await loadResourcesTask.perform()
   await nextTick()
   markInstance.value = new Mark('.trash-table')
