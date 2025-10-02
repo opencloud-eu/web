@@ -1,7 +1,7 @@
 import { useUserActionsRemoveFromGroups } from '../../../../../src/composables/actions/users/useUserActionsRemoveFromGroups'
 import { mock } from 'vitest-mock-extended'
 import { ref, unref } from 'vue'
-import { User } from '@opencloud-eu/web-client/graph/generated'
+import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { getComposableWrapper, writable } from '@opencloud-eu/web-test-helpers'
 import { useCapabilityStore, useModals } from '@opencloud-eu/web-pkg'
 
@@ -9,8 +9,9 @@ describe('useUserActionsRemoveFromGroups', () => {
   describe('method "isVisible"', () => {
     it.each([
       { resources: [], isVisible: false },
-      { resources: [mock<User>()], isVisible: true },
-      { resources: [mock<User>(), mock<User>()], isVisible: true }
+      { resources: [mock<User>()], isVisible: false },
+      { resources: [mock<User>({ memberOf: [mock<Group>()] })], isVisible: true },
+      { resources: [mock<User>({ memberOf: [mock<Group>()] }), mock<User>()], isVisible: true }
     ])('requires at least one user to be enabled', ({ resources, isVisible }) => {
       getWrapper({
         setup: ({ actions }) => {

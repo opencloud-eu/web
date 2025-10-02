@@ -1,12 +1,16 @@
 <template>
-  <div v-if="noUsers" class="flex flex-col items-center text-center mt-12">
+  <div
+    v-if="noUsers"
+    class="flex flex-col items-center text-center mt-12"
+    data-testid="no-users-selected"
+  >
     <oc-icon name="user" size="xxlarge" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
   <div
     v-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
-    class="flex p-4 bg-role-surface-container rounded-sm"
+    class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
   >
     <oc-icon name="group" size="xxlarge" />
     <p>{{ multipleUsersSelectedText }}</p>
@@ -73,86 +77,58 @@
     </dl>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  name: 'DetailsPanel',
-  components: {
-    UserInfoBox
-  },
-  props: {
-    user: {
-      type: Object as PropType<User>,
-      required: false,
-      default: null
-    },
-    users: {
-      type: Array as PropType<User[]>,
-      required: true
-    },
-    roles: {
-      type: Array as PropType<AppRole[]>,
-      required: true
-    }
-  },
-  setup() {
-    const language = useGettext()
-    const currentLanguage = computed(() => language.current)
+const {
+  users,
+  roles,
+  user = null
+} = defineProps<{
+  users: User[]
+  roles: AppRole[]
+  user?: User
+}>()
 
-    const capabilityStore = useCapabilityStore()
-    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
+const { current: currentLanguage, $gettext } = useGettext()
+const capabilityStore = useCapabilityStore()
+const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 
-    return {
-      currentLanguage,
-      graphUsersEditLoginAllowedDisabled
-    }
-  },
-  computed: {
-    noUsers() {
-      return !this.users.length
-    },
-    multipleUsers() {
-      return this.users.length > 1
-    },
-    multipleUsersSelectedText() {
-      return this.$gettext('%{count} users selected', {
-        count: this.users.length.toString()
-      })
-    },
-    roleDisplayName() {
-      const assignedRole = this.user.appRoleAssignments[0]
+const noUsers = computed(() => !users.length)
+const multipleUsers = computed(() => users.length > 1)
+const multipleUsersSelectedText = computed(() => {
+  return $gettext('%{count} users selected', {
+    count: users.length.toString()
+  })
+})
 
-      return (
-        this.$gettext(
-          this.roles.find((role) => role.id === assignedRole?.appRoleId)?.displayName || ''
-        ) || '-'
-      )
-    },
-    groupsDisplayValue() {
-      return this.user.memberOf
-        .map((group) => group.displayName)
-        .sort()
-        .join(', ')
-    },
-    showUserQuota() {
-      return 'total' in (this.user.drive?.quota || {})
-    },
-    quotaDisplayValue() {
-      return this.user.drive.quota.total === 0
-        ? this.$gettext('No restriction')
-        : formatFileSize(this.user.drive.quota.total, this.currentLanguage)
-    },
-    loginDisplayValue() {
-      return this.user.accountEnabled === false
-        ? this.$gettext('Forbidden')
-        : this.$gettext('Allowed')
-    }
-  }
+const roleDisplayName = computed(() => {
+  const assignedRole = user.appRoleAssignments[0]
+
+  return (
+    $gettext(roles.find((role) => role.id === assignedRole?.appRoleId)?.displayName || '') || '-'
+  )
+})
+const groupsDisplayValue = computed(() => {
+  return user.memberOf
+    .map((group) => group.displayName)
+    .sort()
+    .join(', ')
+})
+
+const showUserQuota = computed(() => 'total' in (user.drive?.quota || {}))
+const quotaDisplayValue = computed(() => {
+  return user.drive.quota.total === 0
+    ? $gettext('No restriction')
+    : formatFileSize(user.drive.quota.total, currentLanguage)
+})
+
+const loginDisplayValue = computed(() => {
+  return user.accountEnabled === false ? $gettext('Forbidden') : $gettext('Allowed')
 })
 </script>
