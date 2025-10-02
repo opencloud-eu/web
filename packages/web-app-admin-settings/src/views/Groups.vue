@@ -67,7 +67,15 @@ import {
   useSideBar
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { computed, defineComponent, ref, unref, onBeforeUnmount, onMounted } from 'vue'
+import {
+  computed,
+  defineComponent,
+  unref,
+  onBeforeUnmount,
+  onMounted,
+  ComponentPublicInstance,
+  useTemplateRef
+} from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -87,7 +95,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const template = ref()
+    const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
     const groupSettingsStore = useGroupSettingsStore()
     const { selectedGroups, groups } = storeToRefs(groupSettingsStore)
     const clientService = useClientService()

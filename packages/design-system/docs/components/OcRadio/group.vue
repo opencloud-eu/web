@@ -14,5 +14,5 @@
 import { ref } from 'vue'
 
 const availableOptions = ['Folder', 'Space', 'File']
-const inputValue = ref(null)
+const inputValue = ref(false)
 </script>

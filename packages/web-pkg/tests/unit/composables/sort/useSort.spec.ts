@@ -13,8 +13,8 @@ describe('useSort', () => {
       const input: SortOptions<any> = {
         items: [{ id: '3' }, { id: '4' }, { id: '6' }, { id: '1' }, { id: '2' }, { id: '5' }],
         fields: [],
-        sortBy: ref(null),
-        sortDir: ref(null),
+        sortBy: ref<string>(null),
+        sortDir: ref<SortDir>(null),
         routeName: 'mocked'
       }
 

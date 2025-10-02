@@ -115,6 +115,7 @@
 
 <script lang="ts">
 import {
+  ComponentPublicInstance,
   computed,
   defineComponent,
   nextTick,
@@ -123,6 +124,7 @@ import {
   Ref,
   ref,
   unref,
+  useTemplateRef,
   watch
 } from 'vue'
 import { SpaceResource, urlJoin } from '@opencloud-eu/web-client'
@@ -178,13 +180,13 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
     const { resources, currentFolder } = storeToRefs(resourcesStore)
 
-    const dropRef = ref(null)
+    const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
     const inputUrl = ref('')
     const inputFilename = ref('')
-    const searchResult: Ref<SearchResult> = ref(null)
-    const activeDropItemIndex = ref(null)
+    const searchResult: Ref<SearchResult | null> = ref(null)
+    const activeDropItemIndex = ref<number | null>(null)
     const isDropOpen = ref(false)
-    let markInstance: Mark = null
+    let markInstance: Mark | undefined
 
     const getInputUrlWithProtocol = (input: string) => {
       const url = input.trim()

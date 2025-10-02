@@ -48,7 +48,7 @@ export const useSideBar = (options?: SideBarOptions): SideBarResult => {
     appSideBar.focus()
   }
 
-  const sideBarActivePanel = ref(null)
+  const sideBarActivePanel = ref<string | null>(null)
   const toggleSideBarToken = eventBus.subscribe(SideBarEventTopics.toggle, () => {
     isSideBarOpen.value = !unref(isSideBarOpen)
     if (unref(isSideBarOpen)) {
