@@ -171,6 +171,7 @@ function getMountedWrapper({
   })
 
   vi.mocked(queryItemAsString).mockImplementation(() => includeDisabled.toString())
+  vi.mocked(queryItemAsString).mockImplementation(() => 'resource-table')
 
   const extensions = [
     {
