@@ -6,8 +6,9 @@ import PL from '@vavt/cm-extension/dist/locale/pl-PL'
 import RU from '@vavt/cm-extension/dist/locale/ru'
 import JP from '@vavt/cm-extension/dist/locale/jp-JP'
 import ID from '@vavt/cm-extension/dist/locale/id-ID'
+import { StaticTextDefaultValue } from 'md-editor-v3'
 
-export const languages = {
+export const languages: Record<string, string> = {
   zh: 'zh-CN',
   fr: 'fr-FR',
   ja: 'jp-JP',
@@ -20,7 +21,7 @@ export const languages = {
   en: 'en-US'
 }
 
-export const languageUserDefined = {
+export const languageUserDefined: Record<string, StaticTextDefaultValue> = {
   'fr-FR': FR,
   'de-DE': DE,
   'it-IT': IT,

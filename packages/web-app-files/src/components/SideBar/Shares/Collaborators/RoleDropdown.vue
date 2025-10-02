@@ -101,7 +101,7 @@ export default defineComponent({
     existingSharePermissions: {
       type: Array as PropType<string[]>,
       required: false,
-      default: () => []
+      default: (): string[] => []
     },
     domSelector: {
       type: String,

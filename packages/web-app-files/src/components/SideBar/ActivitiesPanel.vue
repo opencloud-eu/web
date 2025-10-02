@@ -91,7 +91,8 @@ const getAvatarsFromActivity = (activity: Activity) => {
   const avatars = []
 
   for (const key of ['user', 'sharee']) {
-    const entry = activity.template.variables[key]
+    // FIXME: graph sdk type is wrong
+    const entry = (activity.template.variables as Record<string, any>)[key]
     if (entry) {
       avatars.push({
         userName: entry.displayName,

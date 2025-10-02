@@ -117,6 +117,7 @@ import {
   usePreviewDimensions
 } from './composables'
 import { mimeTypes } from './mimeTypes'
+import { RouteLocationRaw } from 'vue-router'
 
 export const appId = 'preview'
 const PRELOAD_COUNT = 5
@@ -314,7 +315,7 @@ export default defineComponent({
         path: unref(route).fullPath,
         params: { ...unref(route).params, ...params },
         query: { ...unref(route).query, ...query }
-      })
+      } as RouteLocationRaw)
     }
 
     const instance = getCurrentInstance()

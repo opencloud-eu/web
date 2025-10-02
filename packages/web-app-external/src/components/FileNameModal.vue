@@ -16,7 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { extractNameWithoutExtension, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  call,
+  extractNameWithoutExtension,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import {
   Modal,
   resolveFileNameDuplicate,
@@ -50,10 +55,12 @@ const parentResources = ref<Resource[]>([])
 const inputSelectionRange = ref<[number, number]>([0, resource?.name?.length || 0])
 
 const buildFileNameTask = useTask(function* () {
-  const { children: existingFiles } = yield webdav.listFiles(
-    space,
-    { fileId: resource.parentFolderId },
-    { davProperties: [DavProperty.Name] }
+  const { children: existingFiles } = yield* call(
+    webdav.listFiles(
+      space,
+      { fileId: resource.parentFolderId },
+      { davProperties: [DavProperty.Name] }
+    )
   )
   parentResources.value = existingFiles
 

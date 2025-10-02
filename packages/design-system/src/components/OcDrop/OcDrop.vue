@@ -26,18 +26,8 @@
 import tippy, { hideAll, Props as TippyProps, ReferenceElement, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { getTailwindPaddingClass, NestedDrop, SizeType, uniqueId } from '../../helpers'
+import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 import OcCard from '../OcCard/OcCard.vue'
@@ -64,13 +54,7 @@ export interface Props {
   /**
    * @docs The parent `OcDrop` ref of the nested drop.
    */
-  nestedParentRef?: Ref<
-    ComponentPublicInstance & {
-      show: () => void
-      hide: () => void
-      getElement: () => HTMLElement
-    }
-  >
+  nestedParentRef?: NestedDrop
   /**
    * @docs Determines the event that triggers the drop.
    * @default 'click'
@@ -215,7 +199,9 @@ onBeforeUnmount(() => {
 const triggerMapping = computed(() => {
   return (
     {
-      hover: 'mouseenter focus'
+      hover: 'mouseenter focus',
+      click: undefined,
+      manual: undefined
     }[mode] || mode
   )
 })

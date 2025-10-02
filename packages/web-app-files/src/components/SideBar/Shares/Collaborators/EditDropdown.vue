@@ -68,7 +68,7 @@ export type EditOption = {
   class?: string
   hasSwitch?: boolean
   isChecked?: Ref<boolean>
-  method?: (args?: unknown) => void
+  method?: () => void
   to?: RouteLocationNamedRaw
 }
 

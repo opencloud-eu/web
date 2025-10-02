@@ -63,7 +63,7 @@ describe('OcSelect', () => {
       const wrapper = getWrapper<(typeof options)[0]>({
         options,
         modelValue: options[0],
-        getOptionLabel: (o) => o.nested.customLabel
+        getOptionLabel: (o) => (o as (typeof options)[0]).nested.customLabel
       })
       expect(wrapper.findAll(selectors.selectedOptions).at(0).text()).toEqual(
         options[0].nested.customLabel
@@ -95,13 +95,11 @@ describe('OcSelect', () => {
 })
 
 function getWrapper<T>(
-  props: Partial<
-    Omit<PartialComponentProps<typeof OcSelect>, 'getOptionLabel'> & {
-      options: T[]
-      getOptionLabel?: (o: T) => string
-      modelValue: T
-    }
-  > = {}
+  props: PartialComponentProps<typeof OcSelect> & {
+    options?: T[]
+    getOptionLabel?: (o: T) => string
+    modelValue?: T
+  } = {}
 ) {
   return mount(OcSelect, {
     props: {

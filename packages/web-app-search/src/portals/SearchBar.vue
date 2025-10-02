@@ -134,6 +134,7 @@ import {
   inject,
   Ref,
   ref,
+  onBeforeUnmount,
   unref,
   useTemplateRef,
   watch
@@ -334,6 +335,14 @@ export default defineComponent({
       )
     })
 
+    const clearTermEvent = eventBus.subscribe('app.search.term.clear', () => {
+      term.value = ''
+    })
+
+    onBeforeUnmount(() => {
+      eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
+    })
+
     return {
       userContextReady,
       publicLinkContextReady,
@@ -361,13 +370,6 @@ export default defineComponent({
     }
   },
 
-  data() {
-    return {
-      activeProvider: undefined,
-      optionsVisible: false,
-      clearTermEvent: null
-    }
-  },
   computed: {
     showNoResults() {
       return this.searchResults.every(({ result }) => !result.values.length)
@@ -425,14 +427,7 @@ export default defineComponent({
     }
   },
   created() {
-    this.clearTermEvent = eventBus.subscribe('app.search.term.clear', () => {
-      this.term = ''
-    })
     this.parseRouteQuery(this.$route, true)
-  },
-
-  beforeUnmount() {
-    eventBus.unsubscribe('app.search.term.clear', this.clearTermEvent)
   },
 
   methods: {

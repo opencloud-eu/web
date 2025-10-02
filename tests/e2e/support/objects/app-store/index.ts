@@ -28,7 +28,7 @@ export class AppStore {
     return po.selectAppTag({ page: this.#page, app, tag })
   }
 
-  selectTag(tag): Promise<void> {
+  selectTag(tag: string): Promise<void> {
     return po.selectTag({ page: this.#page, tag })
   }
 

@@ -90,7 +90,7 @@ export default defineComponent({
     },
     buttonClasses: {
       type: Array as PropType<string[]>,
-      default: () => []
+      default: (): string[] => []
     }
   },
   setup(props) {

@@ -200,7 +200,7 @@ export function buildSpace(
     spaceImageData,
     spaceReadmeData,
     hasTrashedItems: data['@libre.graph.hasTrashedItems'] || false,
-    graphPermissions: undefined,
+    graphPermissions: undefined as string[],
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
         return true

@@ -13,7 +13,9 @@ describe('GroupSelect', () => {
   it('correctly maps the read-only state', () => {
     const groupMock = mock<Group>({ id: '1', groupTypes: ['ReadOnly'] })
     const { wrapper } = getWrapper(groupMock)
-    expect(wrapper.vm.selectedOptions[0].readonly).toBeTruthy()
+    expect(
+      (wrapper.vm.selectedOptions as (Group & { readonly?: boolean })[])[0].readonly
+    ).toBeTruthy()
   })
   it('emits "selectedOptionChange" on update', () => {
     const group = mock<Group>({ id: '2', groupTypes: [] })

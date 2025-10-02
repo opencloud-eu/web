@@ -14,7 +14,7 @@ export class Federation {
   async acceptInvitation(sharer: string): Promise<void> {
     await po.acceptInvitation({ page: this.#page, sharer })
   }
-  async connectionExists(info): Promise<boolean> {
+  async connectionExists(info: Record<string, any>): Promise<boolean> {
     return await po.connectionExists({ page: this.#page, info })
   }
 }

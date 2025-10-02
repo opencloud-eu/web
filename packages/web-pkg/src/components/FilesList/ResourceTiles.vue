@@ -231,6 +231,17 @@ const emit = defineEmits<{
   (e: 'update:selectedIds', ids: string[]): void
 }>()
 
+defineSlots<{
+  image?: (props: { resource: Resource }) => unknown
+  actions?: (props: { resource: Resource }) => unknown
+  contextMenu?: (props: {
+    resource: Resource
+    isOpen: boolean
+    dropRef: HTMLElement | null
+  }) => unknown
+  footer?: () => unknown
+}>()
+
 const { $gettext } = useGettext()
 const router = useRouter()
 const resourcesStore = useResourcesStore()
