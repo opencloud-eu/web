@@ -9,7 +9,18 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceTable, SortDir } from '@opencloud-eu/web-pkg'
+import {
+  FolderViewExtension,
+  ResourceTable,
+  SortDir,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg'
+import {
+  folderViewsFavoritesExtensionPoint,
+  folderViewsFolderExtensionPoint,
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsTrashOverviewExtensionPoint
+} from '../../../../src/extensionPoints'
 
 const spaceMocks = [
   {
@@ -117,6 +128,32 @@ function getWrapper({ spaces = spaceMocks }: { spaces?: SpaceResource[] } = {}) 
     })
   }
 
+  const plugins = [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
+      ],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue(extensions)
+
   mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue(spaceMocks)
 
   return {
@@ -126,7 +163,7 @@ function getWrapper({ spaces = spaceMocks }: { spaces?: SpaceResource[] } = {}) 
         stubs: { ...defaultStubs, NoContentMessage: true, 'resource-table': false },
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
+        plugins
       }
     })
   }

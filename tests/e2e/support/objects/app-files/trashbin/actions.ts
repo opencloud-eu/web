@@ -1,18 +1,19 @@
 import { Page, Locator } from '@playwright/test'
 import util from 'util'
 
-const spaceIdSelector = '//tr[@data-item-id="%s"]//*[contains(@class, "oc-resource-details")]//a'
+const spaceIdSelector = '(//*[@data-item-id="%s"]//a[contains(@class, "oc-resource-link")])[1]'
 const showEmptyTrashbinsButton = '//*[@data-testid="files-switch-projects-show-disabled"]//button'
 const filesViewOptionButton = '#files-view-options-btn'
 const emptyTrashbinQuickActionBtn =
-  '//*[@data-test-resource-name="%s"]//ancestor::tr//button[@aria-label="Empty trash bin"]'
+  '//*[@data-test-resource-name="%s"]//ancestor::tr//button[@aria-label="Empty trash bin"] | //*[@data-test-resource-name="%s"]//ancestor::li[contains(@class, "oc-tiles-item")]//button[@aria-label="Empty trash bin"]'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
-const footerTextSelector = '.oc-table-footer-row'
+const footerTextSelector = '//*[@data-testid="files-list-footer-info"]'
 
 export interface openTrashBinArgs {
   id: string
   page: Page
 }
+
 export const openTrashbinOfProjectSpace = async (args: openTrashBinArgs): Promise<void> => {
   const { id, page } = args
   await page.locator(util.format(spaceIdSelector, id)).click()
@@ -35,7 +36,7 @@ export const getEmptyTrashbinLocator = async ({
   page: Page
   space: string
 }): Promise<Locator> => {
-  return await page.locator(util.format(emptyTrashbinQuickActionBtn, space))
+  return await page.locator(util.format(emptyTrashbinQuickActionBtn, space, space))
 }
 
 export const emptyTrashbinUsingQuickAction = async ({
@@ -45,7 +46,7 @@ export const emptyTrashbinUsingQuickAction = async ({
   page: Page
   space: string
 }): Promise<void> => {
-  await page.locator(util.format(emptyTrashbinQuickActionBtn, space)).click()
+  await page.locator(util.format(emptyTrashbinQuickActionBtn, space, space)).click()
   await Promise.all([
     page.waitForResponse(
       (resp) =>

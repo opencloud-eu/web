@@ -2,6 +2,7 @@
   <div id="tiles-view" class="px-4 pt-2">
     <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
+        v-if="isSelectable"
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
         class="ml-2"
@@ -76,7 +77,7 @@
         >
           <template #selection>
             <oc-checkbox
-              v-if="!isLocationPicker && !isFilePicker"
+              v-if="isSelectable && !isLocationPicker && !isFilePicker"
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
@@ -159,10 +160,8 @@ import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-clie
 // Alignment regarding naming would be an API-breaking change and can
 // Be done at a later point in time?
 import { ContextMenuQuickAction } from '../ContextActions'
-import { createLocationSpaces } from '../../router'
 import {
   ContextMenuBtnClickEventData,
-  createFileRouteOptions,
   CreateTargetRouteOptions,
   displayPositionedDropdown
 } from '../../helpers'
@@ -196,6 +195,7 @@ type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuick
 const {
   resources = [],
   selectedIds = [],
+  isSelectable = true,
   targetRouteCallback,
   space,
   sortFields = [],
@@ -209,6 +209,7 @@ const {
 } = defineProps<{
   resources?: Resource[]
   selectedIds?: string[]
+  isSelectable?: boolean
   targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   space?: SpaceResource
   sortFields?: SortField[]
@@ -275,18 +276,6 @@ const resourceRouteResolver = useResourceRouteResolver(
 )
 
 const getRoute = (resource: Resource) => {
-  if (isSpaceResource(resource)) {
-    return resource.disabled
-      ? null
-      : createLocationSpaces(
-          'files-spaces-generic',
-          createFileRouteOptions(resource as SpaceResource, {
-            path: '',
-            fileId: resource.fileId
-          })
-        )
-  }
-
   if (resource.isFolder) {
     return resourceRouteResolver.createFolderLink({
       path: resource.path,

@@ -2,6 +2,7 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
@@ -52,7 +53,7 @@
           :space="space"
           :view-mode="viewMode"
           :has-actions="showActions"
-          :sort-fields="sortFields"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-size="viewSize"
           :style="folderViewStyle"
           @sort="handleSort"
