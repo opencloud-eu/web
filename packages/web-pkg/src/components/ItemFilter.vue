@@ -62,13 +62,24 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, nextTick, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  PropType,
+  defineComponent,
+  nextTick,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import Fuse, { FuseOptionKey } from 'fuse.js'
 import Mark from 'mark.js'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
 import { defaultFuseOptions } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 
 type Item = unknown
 
@@ -126,11 +137,11 @@ export default defineComponent({
   setup: function (props, { emit, expose }) {
     const router = useRouter()
     const currentRoute = useRoute()
-    const filterInputRef = ref()
-    const selectedItems = ref([])
+    const filterInputRef =
+      useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('filterInputRef')
+    const selectedItems = ref<Item[]>([])
     const displayedItems = ref(props.items)
-    const markInstance = ref(null)
-    const itemFilterListRef = ref(null)
+    const itemFilterListRef = useTemplateRef('itemFilterListRef')
 
     const queryParam = `q_${props.filterName}`
     const currentRouteQuery = useRouteQuery(queryParam)
@@ -145,7 +156,7 @@ export default defineComponent({
           ...omit(unref(currentRoute).query, [queryParam]),
           ...(!!unref(selectedItems).length && {
             [queryParam]: unref(selectedItems)
-              .reduce((acc, item) => {
+              .reduce<string>((acc, item) => {
                 acc += `${getId(item)}+`
                 return acc
               }, '')
@@ -172,7 +183,7 @@ export default defineComponent({
       emit('selectionChange', unref(selectedItems))
     }
 
-    const filterTerm = ref()
+    const filterTerm = ref<string>()
     const filter = (items: Item[], filterTerm: string) => {
       if (!(filterTerm || '').trim()) {
         return items
@@ -201,12 +212,13 @@ export default defineComponent({
       unref(filterInputRef)?.focus()
     }
 
+    let markInstance: Mark | undefined
     watch(filterTerm, () => {
       setDisplayedItems(filter(props.items, unref(filterTerm)))
       if (unref(itemFilterListRef)) {
-        markInstance.value = new Mark(unref(itemFilterListRef))
-        unref(markInstance).unmark()
-        unref(markInstance).mark(unref(filterTerm), {
+        markInstance = new Mark(unref(itemFilterListRef))
+        markInstance.unmark()
+        markInstance.mark(unref(filterTerm), {
           element: 'span',
           className: 'mark-highlight'
         })

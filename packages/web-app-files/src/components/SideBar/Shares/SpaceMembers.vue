@@ -124,7 +124,6 @@ const configStore = useConfigStore()
 
 const { user } = storeToRefs(userStore)
 
-const markInstance = ref<Mark>()
 const filterTerm = ref('')
 const isFilterOpen = ref(false)
 
@@ -230,13 +229,14 @@ watch(isFilterOpen, () => {
   filterTerm.value = ''
 })
 
+let markInstance: Mark | undefined
 watch(filterTerm, async () => {
   await nextTick()
 
   if (unref(collaboratorList)) {
-    markInstance.value = new Mark(unref(collaboratorList))
-    markInstance.value.unmark()
-    markInstance.value.mark(unref(filterTerm), {
+    markInstance = new Mark(unref(collaboratorList))
+    markInstance.unmark()
+    markInstance.mark(unref(filterTerm), {
       element: 'span',
       className: 'mark-highlight'
     })

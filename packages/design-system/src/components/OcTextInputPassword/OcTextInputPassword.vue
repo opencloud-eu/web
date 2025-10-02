@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
 import { useGettext } from 'vue3-gettext'
@@ -108,7 +108,7 @@ const emit = defineEmits([
   'passwordGenerated'
 ])
 
-const passwordInput = ref(null)
+const passwordInput = useTemplateRef('passwordInput')
 const { $gettext } = useGettext()
 const password = ref(value)
 const showPassword = ref(false)

@@ -122,6 +122,7 @@ import {
   onMounted,
   ref,
   unref,
+  useTemplateRef,
   watch
 } from 'vue'
 import Fuse from 'fuse.js'
@@ -160,7 +161,8 @@ export default defineComponent({
   setup() {
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-    const contextMenuButtonRef = ref(undefined)
+    const contextMenuButtonRef =
+      useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
     const sortBy = ref<keyof Group>('displayName')
     const sortDir = ref<SortDir>(SortDir.Asc)
     const filterTerm = ref('')
@@ -169,7 +171,7 @@ export default defineComponent({
     const { isSticky } = useIsTopBarSticky()
 
     const lastSelectedGroupIndex = ref(0)
-    const lastSelectedGroupId = ref(null)
+    const lastSelectedGroupId = ref<string>()
 
     const groupSettingsStore = useGroupSettingsStore()
     const { groups, selectedGroups } = storeToRefs(groupSettingsStore)
@@ -361,15 +363,15 @@ export default defineComponent({
       await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
     })
 
-    const markInstance = ref<Mark>(null)
+    let markInstance: Mark | undefined
     onMounted(async () => {
       await nextTick()
-      markInstance.value = new Mark('.mark-element')
+      markInstance = new Mark('.mark-element')
     })
     watch([filterTerm, paginatedItems], () => {
-      unref(markInstance)?.unmark()
+      markInstance?.unmark()
       if (unref(filterTerm)) {
-        unref(markInstance)?.mark(unref(filterTerm), {
+        markInstance?.mark(unref(filterTerm), {
           element: 'span',
           className: 'mark-highlight'
         })

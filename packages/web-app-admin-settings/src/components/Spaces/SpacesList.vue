@@ -125,7 +125,16 @@ import {
   useIsTopBarSticky,
   useSharesStore
 } from '@opencloud-eu/web-pkg'
-import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
@@ -158,14 +167,14 @@ const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-const contextMenuButtonRef = ref(undefined)
+const contextMenuButtonRef =
+  useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
 const sortBy = ref('name')
 const sortDir = ref(SortDir.Asc)
 const filterTerm = ref('')
-const markInstance = ref(undefined)
 
 const lastSelectedSpaceIndex = ref(0)
-const lastSelectedSpaceId = ref(null)
+const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
@@ -389,9 +398,10 @@ const getSelectSpaceLabel = (space: SpaceResource) => {
   return $gettext('Select %{ space }', { space: space.name }, true)
 }
 
+let markInstance: Mark | undefined
 onMounted(() => {
   nextTick(() => {
-    markInstance.value = new Mark('.mark-element')
+    markInstance = new Mark('.mark-element')
   })
 })
 
@@ -400,8 +410,8 @@ watch(filterTerm, async () => {
 })
 
 watch([filterTerm, paginatedItems], () => {
-  unref(markInstance)?.unmark()
-  unref(markInstance)?.mark(unref(filterTerm), {
+  markInstance?.unmark()
+  markInstance?.mark(unref(filterTerm), {
     element: 'span',
     className: 'mark-highlight'
   })

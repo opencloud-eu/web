@@ -24,7 +24,7 @@ export default defineComponent({
     const { $gettext } = useGettext()
     const autoTheme = computed(() => ({ label: $gettext('Auto (same as system)') }))
     const { availableThemes, currentTheme } = storeToRefs(themeStore)
-    const currentThemeSelection = ref(null)
+    const currentThemeSelection = ref<WebThemeType>()
 
     const { setAndApplyTheme, setAutoSystemTheme, isCurrentThemeAutoSystem } = themeStore
 

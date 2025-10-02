@@ -102,7 +102,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, onMounted, Ref, ref, unref, watch } from 'vue'
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  Ref,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   eventBus,
@@ -142,7 +153,7 @@ const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
 const isDropOpen = ref(false)
 
-const markdownContainerRef = ref(null)
+const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownContent = ref('')
 const markdownResource = ref<Resource>(null)
 const markdownCollapsed = ref(true)

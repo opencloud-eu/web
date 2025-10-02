@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const option = ref()
+const option = ref<{ value: string; label: string }>()
 const options = [
   { value: '1', label: 'Option 1' },
   { value: '2', label: 'Option 2' },

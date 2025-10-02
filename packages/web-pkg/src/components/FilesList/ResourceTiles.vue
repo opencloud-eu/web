@@ -148,7 +148,8 @@ import {
   onMounted,
   ref,
   unref,
-  watch
+  watch,
+  useTemplateRef
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -251,8 +252,9 @@ const selectAllCheckboxLabel = computed(() => {
   return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
 })
 
-const dragItem = ref()
-const ghostElementRef = ref()
+const dragItem = ref<Resource>()
+const ghostElementRef =
+  useTemplateRef<ComponentPublicInstance<typeof ResourceGhostElement>>('ghostElementRef')
 
 const tileRefs = ref({
   tiles: {} as Record<string, ResourceTileRef>,
@@ -542,7 +544,7 @@ const setDropStyling = (
   el.$el.classList.add('bg-role-secondary-container')
 }
 const dragSelection = computed(() => {
-  return selectedIds.filter((id) => id !== unref(dragItem).id)
+  return unref(selectedResources).filter(({ id }) => id !== unref(dragItem)?.id)
 })
 const setDragItem = async (item: Resource, event: DragEvent) => {
   dragItem.value = item

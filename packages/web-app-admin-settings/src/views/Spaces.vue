@@ -78,7 +78,15 @@ import {
   CreateSpace
 } from '@opencloud-eu/web-pkg'
 import { call, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  provide,
+  unref,
+  useTemplateRef
+} from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
@@ -90,9 +98,9 @@ const { $gettext } = useGettext()
 const { isSideBarOpen, sideBarActivePanel } = useSideBar()
 const { can } = useAbility()
 
-const loadResourcesEventToken = ref(null)
+let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
-const template = ref(null)
+const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
 
@@ -208,7 +216,7 @@ const sideBarAvailablePanels = [
 onMounted(async () => {
   await loadResourcesTask.perform()
 
-  loadResourcesEventToken.value = eventBus.subscribe('app.admin-settings.list.load', async () => {
+  loadResourcesEventToken = eventBus.subscribe('app.admin-settings.list.load', async () => {
     await loadResourcesTask.perform()
     selectedSpaces.value = []
 
@@ -232,7 +240,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   spaceSettingsStore.reset()
-  eventBus.unsubscribe('app.admin-settings.list.load', unref(loadResourcesEventToken))
+  eventBus.unsubscribe('app.admin-settings.list.load', loadResourcesEventToken)
   eventBus.unsubscribe(
     'app.admin-settings.spaces.space.quota.updated',
     updateQuotaForSpaceEventToken

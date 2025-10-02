@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { ComponentPublicInstance, defineComponent, useTemplateRef } from 'vue'
 import AppTemplate from '../components/AppTemplate.vue'
 import InfoSection from '../components/General/InfoSection.vue'
 import DetailsPanel from '../components/General/SideBar/DetailsPanel.vue'
@@ -31,7 +31,7 @@ export default defineComponent({
     InfoSection
   },
   setup() {
-    const template = ref()
+    const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
     const { $gettext } = useGettext()
 
     const sideBarAvailablePanels = [

@@ -23,7 +23,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch, unref } from 'vue'
+import { computed, inject, ref, watch, unref, useTemplateRef } from 'vue'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from './MembersRoleSection.vue'
 import Fuse from 'fuse.js'
@@ -35,8 +35,7 @@ const sharesStore = useSharesStore()
 
 const resource = inject<SpaceResource>('resource')
 const filterTerm = ref('')
-const markInstance = ref(null)
-const membersListRef = ref(null)
+const membersListRef = useTemplateRef('membersListRef')
 
 const filterMembers = (collection: Permission[], term: string) => {
   if (!(term || '').trim()) {
@@ -80,11 +79,12 @@ const getPermissionsForRole = (role: ShareRole) => {
   return unref(filteredPermissions).filter(({ roles }) => roles.includes(role.id))
 }
 
+let markInstance: Mark | undefined
 watch(filterTerm, () => {
   if (unref(membersListRef)) {
-    markInstance.value = new Mark(unref(membersListRef))
-    unref(markInstance).unmark()
-    unref(markInstance).mark(unref(filterTerm), {
+    markInstance = new Mark(unref(membersListRef))
+    markInstance.unmark()
+    markInstance.mark(unref(filterTerm), {
       element: 'span',
       className: 'mark-highlight'
     })

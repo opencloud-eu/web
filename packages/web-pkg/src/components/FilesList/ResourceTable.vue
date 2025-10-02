@@ -300,7 +300,8 @@ import {
   defineComponent,
   PropType,
   ref,
-  unref
+  unref,
+  useTemplateRef
 } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
@@ -627,8 +628,10 @@ export default defineComponent({
     const { areFileExtensionsShown, latestSelectedId, deleteQueue } = storeToRefs(resourcesStore)
 
     const dragItem = ref<Resource>()
-    const ghostElement = ref()
-    const contextMenuButton = ref<ComponentPublicInstance<typeof OcButton>>()
+    const ghostElement =
+      useTemplateRef<ComponentPublicInstance<typeof ResourceGhostElement>>('ghostElement')
+    const contextMenuButton =
+      useTemplateRef<ComponentPublicInstance<typeof OcButton>>('contextMenuButton')
 
     const { width } = useWindowSize()
     const hasTags = computed(

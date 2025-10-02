@@ -149,7 +149,6 @@ export default defineComponent({
 
     const areHiddenFilesShown = ref(false)
     const filterTerm = ref('')
-    const markInstance = ref<Mark>()
 
     const shareSectionTitle = computed(() => {
       return unref(areHiddenFilesShown) ? $gettext('Hidden Shares') : $gettext('Shares')
@@ -201,14 +200,15 @@ export default defineComponent({
       return result
     })
 
+    let markInstance: Mark | undefined
     watch(filteredItems, () => {
       if (!unref(areResourcesLoading)) {
-        if (!unref(markInstance)) {
-          markInstance.value = new Mark('.oc-resource-details')
+        if (!markInstance) {
+          markInstance = new Mark('.oc-resource-details')
         }
 
-        unref(markInstance).unmark()
-        unref(markInstance).mark(unref(filterTerm), {
+        markInstance.unmark()
+        markInstance.mark(unref(filterTerm), {
           element: 'span',
           className: 'mark-highlight'
         })

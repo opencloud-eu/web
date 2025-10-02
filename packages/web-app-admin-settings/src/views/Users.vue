@@ -159,7 +159,18 @@ import {
   useConfigStore,
   QueryValue
 } from '@opencloud-eu/web-pkg'
-import { computed, defineComponent, ref, onBeforeUnmount, onMounted, unref, watch, Ref } from 'vue'
+import {
+  computed,
+  defineComponent,
+  ref,
+  onBeforeUnmount,
+  onMounted,
+  unref,
+  watch,
+  Ref,
+  ComponentPublicInstance,
+  useTemplateRef
+} from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { format } from 'util'
@@ -211,14 +222,14 @@ export default defineComponent({
     const groups = ref([])
     const roles = ref([])
     const additionalUserDataLoadedForUserIds = ref([])
-    const applicationId = ref()
+    const applicationId = ref<string>()
     const selectedUserIds = computed(() =>
       unref(selectedUsers).map((selectedUser) => selectedUser.id)
     )
     const isFilteringMandatory = ref(configStore.options.userListRequiresFilter)
 
     const sideBarLoading = ref(false)
-    const template = ref()
+    const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
     const displayNameQuery = useRouteQuery('q_displayName')
     const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)))
 

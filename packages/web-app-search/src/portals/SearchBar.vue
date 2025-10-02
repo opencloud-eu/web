@@ -127,7 +127,17 @@ import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
 import { useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { computed, defineComponent, inject, Ref, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  defineComponent,
+  inject,
+  Ref,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
 import { useAvailableProviders } from '../composables'
@@ -152,14 +162,14 @@ export default defineComponent({
     const { currentFolder } = storeToRefs(resourcesStore)
 
     const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
-    const optionsDropRef = ref<typeof OcDrop>(null)
-    const activePreviewIndex = ref(null)
+    const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
+    const activePreviewIndex = ref<number | null>(null)
     const term = ref('')
     const restoreSearchFromRoute = ref(false)
     const searchResults = ref([])
     const loading = ref(false)
     const currentFolderAvailable = ref(false)
-    const markInstance = ref<Mark>()
+    let markInstance: Mark | undefined
 
     const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 

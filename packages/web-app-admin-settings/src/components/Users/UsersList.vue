@@ -167,14 +167,15 @@ export default defineComponent({
     const { $gettext } = useGettext()
     const { isSticky } = useIsTopBarSticky()
 
-    const tableRef = useTemplateRef<typeof OcTable>('tableRef')
-    const contextMenuButtonRef = ref(undefined)
+    const tableRef = useTemplateRef<ComponentPublicInstance<typeof OcTable>>('tableRef')
+    const contextMenuButtonRef =
+      useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
     const sortBy = ref('onPremisesSamAccountName')
     const sortDir = ref<SortDir>(SortDir.Asc)
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 
     const lastSelectedUserIndex = ref(0)
-    const lastSelectedUserId = ref(null)
+    const lastSelectedUserId = ref<string>()
     const capabilityStore = useCapabilityStore()
     const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const userSettingsStore = useUserSettingsStore()
@@ -397,17 +398,17 @@ export default defineComponent({
       return cols
     })
 
-    const markInstance = ref<Mark>(null)
+    let markInstance: Mark | undefined
     onMounted(async () => {
       await nextTick()
-      markInstance.value = new Mark('.mark-element')
+      markInstance = new Mark('.mark-element')
     })
     const displayNameQuery = useRouteQuery('q_displayName')
     watch([displayNameQuery, paginatedItems, tableRef], () => {
-      unref(markInstance)?.unmark()
+      markInstance?.unmark()
       const filterTerm = queryItemAsString(unref(displayNameQuery))
       if (filterTerm) {
-        unref(markInstance)?.mark(filterTerm, {
+        markInstance?.mark(filterTerm, {
           element: 'span',
           className: 'mark-highlight'
         })

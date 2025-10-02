@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import tippy, { hideAll, Props as TippyProps, ReferenceElement } from 'tippy.js'
+import tippy, { hideAll, Props as TippyProps, ReferenceElement, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
@@ -166,22 +166,22 @@ const { isMobile } = useIsMobile()
 const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcBottomDrawer>('bottomDrawerRef')
 
-const drop = ref<HTMLElement | null>(null)
-const tippyInstance = ref(null)
+const drop = useTemplateRef('drop')
+const tippyInstance = ref<Instance | null>(null)
 
-const show = (duration?: number) => {
+const show = () => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).show()
     return
   }
-  unref(tippyInstance)?.show(duration)
+  unref(tippyInstance)?.show()
 }
-const hide = (duration?: number) => {
+const hide = () => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).hide()
     return
   }
-  unref(tippyInstance)?.hide(duration)
+  unref(tippyInstance)?.hide()
 }
 
 const getElement = () => {

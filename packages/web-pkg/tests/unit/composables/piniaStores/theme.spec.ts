@@ -29,7 +29,7 @@ describe('useThemeStore', () => {
     describe('currentTheme', () => {
       it.each([true, false])('gets set based on the OS setting', (isDark) => {
         vi.mocked(usePreferredDark).mockReturnValue(computed(() => isDark))
-        vi.mocked(useLocalStorage).mockReturnValue(ref(null))
+        vi.mocked(useLocalStorage).mockReturnValue(ref<string>(null))
 
         const themeConfig = mockDeep<ThemeConfigType>()
         themeConfig.clients.web.themes = [
@@ -47,7 +47,7 @@ describe('useThemeStore', () => {
       })
       it('falls back to the first theme if no match for the OS setting is found', () => {
         vi.mocked(usePreferredDark).mockReturnValue(computed(() => true))
-        vi.mocked(useLocalStorage).mockReturnValue(ref(null))
+        vi.mocked(useLocalStorage).mockReturnValue(ref<string>(null))
 
         const themeConfig = mockDeep<ThemeConfigType>()
         themeConfig.clients.web.themes = [{ label: 'light', designTokens: {}, isDark: false }]

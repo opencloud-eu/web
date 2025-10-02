@@ -174,8 +174,8 @@ export default defineComponent({
     const loading = ref(!unref(noResourceLoading))
     const loadingError: Ref<Error> = ref()
     const isReadOnly = ref(false)
-    const serverContent = ref()
-    const currentContent = ref()
+    const serverContent = ref<unknown>()
+    const currentContent = ref<unknown>()
     let deleteResourceEventToken = ''
     let appOnDeleteResourceCallback: (() => void) | null = null
 
@@ -435,7 +435,7 @@ export default defineComponent({
       const newContent = unref(currentContent)
       try {
         const putFileContentsResponse = yield putFileContents(currentFileContext, {
-          content: newContent,
+          content: newContent as string,
           previousEntityTag: unref(currentETag)
         })
         serverContent.value = newContent

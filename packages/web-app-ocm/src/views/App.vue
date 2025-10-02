@@ -54,7 +54,7 @@ export default defineComponent({
 
     const connections: Ref<FederatedConnection[]> = ref([])
     const highlightedConnections: Ref<FederatedConnection[]> = ref([])
-    const highlightNewConnectionsInterval = ref(null)
+    const highlightNewConnectionsInterval = ref<ReturnType<typeof setInterval>>()
     const loadingConnections = ref(true)
 
     const findAcceptedUsers = async () => {

@@ -134,7 +134,7 @@ export default defineComponent({
     const share = ref<PublicSpaceResource>()
     const dragareaEnabled = ref(false)
     const loading = ref(true)
-    const errorMessage = ref(null)
+    const errorMessage = ref<string>()
     let dragOver: string
     let dragOut: string
     let drop: string
