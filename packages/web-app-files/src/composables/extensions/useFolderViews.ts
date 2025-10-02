@@ -13,7 +13,10 @@ export const useFolderViews = (): FolderViewExtension[] => {
     {
       id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
       type: 'folderView',
-      extensionPointIds: [folderViewsFolderExtensionPoint.id],
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id
+      ],
       folderView: {
         name: 'resource-table-condensed',
         label: $gettext('Condensed table view'),

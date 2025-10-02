@@ -55,6 +55,7 @@
             :header-position="fileListHeaderY"
             :is-side-bar-open="isSideBarOpen"
             :view-size="viewSize"
+            :view-mode="viewMode"
             v-bind="folderView.componentAttrs?.()"
             @sort="handleSort"
             @item-visible="loadPreview({ space: $event, resource: $event })"
@@ -146,7 +147,6 @@ import {
   useResourcesStore,
   useSpacesStore,
   useExtensionRegistry,
-  queryItemAsString,
   useLoadPreview
 } from '@opencloud-eu/web-pkg'
 
@@ -155,9 +155,7 @@ import {
   useAbility,
   useClientService,
   FolderViewModeConstants,
-  useRouteQueryPersisted,
   useSort,
-  useRouteName,
   usePagination,
   useRouter,
   useRoute,
@@ -216,6 +214,7 @@ const loadResourcesTask = useTask(function* (signal) {
 
 const {
   viewSize,
+  viewMode,
   fileListHeaderY,
   scrollToResourceFromRoute,
   areResourcesLoading,
@@ -335,15 +334,7 @@ const viewModes = computed(() => {
   ]
 })
 
-const routeName = useRouteName()
-
-const viewMode = useRouteQueryPersisted({
-  name: `${unref(routeName)}-${FolderViewModeConstants.queryName}`,
-  defaultValue: FolderViewModeConstants.name.tiles
-})
-const viewModeStr = computed(() => queryItemAsString(unref(viewMode)))
-
-const { loadPreview } = useLoadPreview(viewModeStr)
+const { loadPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, runtimeSpaces, viewMode)

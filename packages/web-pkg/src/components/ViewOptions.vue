@@ -157,7 +157,6 @@ import {
   useActiveLocation,
   useResourcesStore,
   useRoute,
-  useRouteName,
   useRouteQuery,
   useRouteQueryPersisted,
   useRouter,
@@ -232,9 +231,8 @@ export default defineComponent({
       storagePrefix: props.perPageStoragePrefix
     })
 
-    const routeName = useRouteName()
     const viewModeQuery = useRouteQueryPersisted({
-      name: `${unref(routeName)}-${FolderViewModeConstants.queryName}`,
+      name: FolderViewModeConstants.queryName,
       defaultValue: props.viewModeDefault
     })
 

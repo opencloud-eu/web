@@ -5,7 +5,6 @@ import {
   useSort,
   SortDir,
   SortField,
-  useRouteName,
   useResourcesStore,
   folderService
 } from '@opencloud-eu/web-pkg'
@@ -72,9 +71,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
 
-  const currentRoute = useRouteName()
   const currentViewModeQuery = useRouteQuery(
-    `${unref(currentRoute)}-${FolderViewModeConstants.queryName}`,
+    FolderViewModeConstants.queryName,
     FolderViewModeConstants.defaultModeName
   )
   const currentViewMode = computed((): string => queryItemAsString(currentViewModeQuery.value))
