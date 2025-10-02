@@ -7,6 +7,7 @@
         :has-hidden-files="false"
         :has-file-extensions="false"
         :has-pagination="false"
+        :view-modes="viewModes"
       />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
@@ -25,18 +26,22 @@
               autocomplete="off"
             />
           </div>
-          <resource-table
+          <component
+            :is="folderView.component"
             class="trash-table"
             :resources="displaySpaces"
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
+            :sort-fields="sortFields"
             :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
             :is-selectable="false"
             :show-rename-quick-action="false"
+            :view-mode="viewMode"
+            :view-size="viewSize"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
@@ -47,6 +52,9 @@
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
             </template>
+            <template #actions="{ resource }">
+              <trash-quick-actions :space="resource" :item="resource" />
+            </template>
             <template #quickActions="{ resource }">
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
@@ -56,7 +64,7 @@
                 <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
               </div>
             </template>
-          </resource-table>
+          </component>
         </template>
       </template>
     </files-view-wrapper>
@@ -81,10 +89,9 @@ import {
   NoContentMessage,
   SortDir,
   useClientService,
-  useFileListHeaderPosition,
+  useExtensionRegistry,
   useResourcesStore,
   useRouter,
-  useSideBar,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -95,22 +102,40 @@ import {
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
 import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
+import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
+import { useResourcesViewDefaults } from '../../composables'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const { $gettext, $ngettext } = useGettext()
 const clientService = useClientService()
-const { y: fileListHeaderY } = useFileListHeaderPosition()
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
 const resourcesStore = useResourcesStore()
 
+const resourcesViewDefaults = useResourcesViewDefaults()
+
+const { isSideBarOpen, fileListHeaderY, sideBarActivePanel, viewMode, viewSize, sortFields } =
+  resourcesViewDefaults
+
+const folderView = computed(() => {
+  const viewMode = unref(resourcesViewDefaults.viewMode)
+  return unref(viewModes).find((v) => v.name === viewMode)
+})
+
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
+
+const extensionRegistry = useExtensionRegistry()
+const viewModes = computed(() => {
+  return [
+    ...extensionRegistry
+      .requestExtensions(folderViewsTrashOverviewExtensionPoint)
+      .map((e) => e.folderView)
+  ]
+})
 
 const ready = ref(false)
 const sortBy = ref<keyof SpaceResource>('name')

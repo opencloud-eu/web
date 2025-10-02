@@ -2,6 +2,7 @@
   <div id="tiles-view" class="px-4 pt-2">
     <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
+        v-if="isSelectable"
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
         class="ml-2"
@@ -76,7 +77,7 @@
         >
           <template #selection>
             <oc-checkbox
-              v-if="!isLocationPicker && !isFilePicker"
+              v-if="isSelectable && !isLocationPicker && !isFilePicker"
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
@@ -195,6 +196,7 @@ type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuick
 const {
   resources = [],
   selectedIds = [],
+  isSelectable = true,
   targetRouteCallback,
   space,
   sortFields = [],
@@ -208,6 +210,7 @@ const {
 } = defineProps<{
   resources?: Resource[]
   selectedIds?: string[]
+  isSelectable?: boolean
   targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   space?: SpaceResource
   sortFields?: SortField[]

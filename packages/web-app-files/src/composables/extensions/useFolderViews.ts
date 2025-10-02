@@ -4,7 +4,8 @@ import {
   folderViewsFavoritesExtensionPoint,
   folderViewsFolderExtensionPoint,
   folderViewsProjectSpacesExtensionPoint,
-  folderViewsTrashExtensionPoint
+  folderViewsTrashExtensionPoint,
+  folderViewsTrashOverviewExtensionPoint
 } from '../../extensionPoints'
 
 export const useFolderViews = (): FolderViewExtension[] => {
@@ -14,7 +15,11 @@ export const useFolderViews = (): FolderViewExtension[] => {
     {
       id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
       type: 'folderView',
-      extensionPointIds: [folderViewsFolderExtensionPoint.id, folderViewsTrashExtensionPoint.id],
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
+      ],
       folderView: {
         name: 'resource-table-condensed',
         label: $gettext('Condensed table view'),
@@ -32,7 +37,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashExtensionPoint.id
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',
@@ -51,7 +57,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashExtensionPoint.id
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
       ],
       folderView: {
         name: 'resource-tiles',
