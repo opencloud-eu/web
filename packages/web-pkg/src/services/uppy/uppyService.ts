@@ -41,12 +41,8 @@ type FileWithPath = File & {
   readonly relativePath?: string
 }
 
-// FIXME: tus error types seem to be wrong in Uppy, we need the type of the tus client lib
-type TusClientError = Error & { originalResponse: any }
-
 // IMPORTANT: must only contain primitive types, complex types won't be serialized properly!
 export type OcUppyMeta = {
-  retry?: boolean
   name?: string
   mtime?: number
   // current space & folder
@@ -91,8 +87,9 @@ export class UppyService {
     this.uppy = new Uppy<OcUppyMeta, OcUppyBody>({
       autoProceed: false,
       onBeforeFileAdded: (file, files) => {
-        if (file.id in files) {
-          file.meta.retry = true
+        if (file.id in files && !files[file.id].error) {
+          // file is currently being uploaded, no need to add it again
+          return false
         }
         file.meta.relativePath = this.getRelativeFilePath(file)
         // id needs to be generated after the relative path has been set.
@@ -170,10 +167,10 @@ export class UppyService {
       onBeforeRequest,
       onShouldRetry: (err, retryAttempt, options, next) => {
         // status code 5xx means the upload is gone on the server side
-        if ((err as TusClientError)?.originalResponse?.getStatus() >= 500) {
+        if (err?.originalResponse?.getStatus() >= 500) {
           return false
         }
-        if ((err as TusClientError)?.originalResponse?.getStatus() === 401) {
+        if (err?.originalResponse?.getStatus() === 401) {
           return true
         }
         return next(err)
