@@ -37,6 +37,7 @@ vi.mock('../../../../src/composables/actions/files', async (importOriginal) => (
 const spacesResources = [
   {
     id: '1',
+    storageId: '1',
     name: 'Space 1',
     path: '',
     type: 'space',
@@ -47,6 +48,7 @@ const spacesResources = [
   },
   {
     id: '2',
+    storageId: '2',
     name: 'Space 2',
     path: '',
     type: 'space',
@@ -62,6 +64,7 @@ const resources: Resource[] = [
     id: 'forest',
     resourceId: 'forest',
     driveId: 'forest',
+    storageId: '1',
     name: 'forest.jpg',
     path: 'images/nature/forest.jpg',
     extension: 'jpg',
@@ -290,7 +293,14 @@ describe('ResourceTiles component', () => {
           ...slots
         },
         global: {
-          plugins: [...defaultPlugins({ piniaOptions: { resourcesStore: { deleteQueue } } })],
+          plugins: [
+            ...defaultPlugins({
+              piniaOptions: {
+                resourcesStore: { deleteQueue },
+                spacesState: { spaces: spacesResources }
+              }
+            })
+          ],
           mocks: mocks,
           provide: mocks,
           stubs

@@ -1297,7 +1297,7 @@ export const deleteResourceTrashbin = async (args: deleteResourceTrashbinArgs): 
   )
   await new Promise((resolve) => setTimeout(resolve, 5000))
   if (!(await resourceCheckbox.isChecked())) {
-    await resourceCheckbox.check()
+    await resourceCheckbox.click()
   }
 
   await page.locator(permanentDeleteButton).first().click()
@@ -1346,7 +1346,7 @@ export const expectThatDeleteButtonIsNotVisible = async (
     util.format(checkBoxForTrashbin, `/${resource.replace(/^\/+/, '')}`)
   )
   if (!(await resourceCheckbox.isChecked())) {
-    await resourceCheckbox.check()
+    await resourceCheckbox.click()
   }
   const deleteButton = page.locator(permanentDeleteButton)
   await expect(deleteButton).not.toBeVisible()
@@ -1385,7 +1385,7 @@ export const selectTrashbinResource = async (page: Page, resource: string): Prom
     util.format(checkBoxForTrashbin, `/${resource.replace(/^\/+/, '')}`)
   )
   if (!(await resourceCheckbox.isChecked())) {
-    await resourceCheckbox.check()
+    await resourceCheckbox.click()
   }
 }
 
@@ -1446,7 +1446,7 @@ export const expectThatRestoreResourceButtonVisibility = async (
     util.format(checkBoxForTrashbin, `/${resource.replace(/^\/+/, '')}`)
   )
   if (!(await resourceCheckbox.isChecked())) {
-    await resourceCheckbox.check()
+    await resourceCheckbox.click()
   }
   const restoreButton = page.locator(restoreResourceButton)
   await expect(restoreButton).not.toBeVisible()
