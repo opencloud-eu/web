@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
 - fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
 - fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
 - fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
