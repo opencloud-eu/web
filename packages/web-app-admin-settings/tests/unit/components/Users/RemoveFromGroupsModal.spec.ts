@@ -21,6 +21,18 @@ describe('RemoveFromGroupsModal', () => {
       const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
       expect(input.props('groupOptions').length).toBe(1)
     })
+    it('lists a sum of all assigned groups when multiple users are selected', () => {
+      const assignedGroup = mock<Group>({ id: '1' })
+      const assignedGroup2 = mock<Group>({ id: '2' })
+      const users = [
+        mock<User>({ memberOf: [assignedGroup] }),
+        mock<User>({ memberOf: [assignedGroup, assignedGroup2] })
+      ]
+      const groups = [assignedGroup, assignedGroup2, mock<Group>()]
+      const { wrapper } = getWrapper({ users, groups })
+      const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
+      expect(input.props('groupOptions').length).toBe(2)
+    })
   })
 
   describe('method "onConfirm"', () => {
