@@ -78,8 +78,8 @@ const loadVersionsTask = useTask(function* (signal) {
   })
 
   try {
-    const enconder = new TextEncoder()
-    const sha256ServerUrl = sha256(enconder.encode(configStore.serverUrl))
+    const encoder = new TextEncoder()
+    const sha256ServerUrl = sha256(encoder.encode(configStore.serverUrl))
 
     const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
       `https://update.opencloud.eu/server.json`,
