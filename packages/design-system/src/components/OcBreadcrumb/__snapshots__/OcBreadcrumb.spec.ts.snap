@@ -8,8 +8,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
+    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1" aria-hidden="true">...</span>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -44,8 +43,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">...</span></router-link-stub>
+    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1" aria-hidden="true">...</span>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>

@@ -35,13 +35,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="Preview" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Preview</span></span>
                   <!--v-if-->
                 </button></li>
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="PDF Viewer" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>PDF Viewer</span></span>
@@ -55,7 +55,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
     </li>
   </ul>
   <ul class="oc-list [&amp;_li]:px-0 pb-2 pt-2 border-b" id="oc-files-context-actions-actions">
-    <li class="context-menu"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+    <li class="context-menu"><button type="button" aria-label="Download" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
         <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Download</span></span>
@@ -86,13 +86,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="Copy" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Copy</span></span>
                   <!--v-if-->
                 </button></li>
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="Paste" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Paste</span></span>
@@ -129,13 +129,13 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
           <!--v-if-->
           <div class="oc-card-body p-2">
             <ul class="oc-list">
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="Delete" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Delete</span></span>
                   <!--v-if-->
                 </button></li>
-              <li><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+              <li><button type="button" aria-label="Delete permanently" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
                   <!--v-if-->
                   <!-- @slot Content of the button -->
                   <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Delete permanently</span></span>
@@ -149,7 +149,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
     </li>
   </ul>
   <ul class="oc-list [&amp;_li]:px-0 pt-2" id="oc-files-context-actions-sidebar">
-    <li class="context-menu"><button type="button" aria-label="" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
+    <li class="context-menu"><button type="button" aria-label="Details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
         <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Details</span></span>

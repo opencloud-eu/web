@@ -105,6 +105,8 @@
           v-if="hasRenameAction(item)"
           class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
           appearance="raw"
+          :aria-label="$gettext('Rename file »%{name}«', { name: item.name })"
+          :title="$gettext('Rename')"
           @click.stop="
             (e: MouseEvent) => {
               if (interceptModifierClick(e, item)) {

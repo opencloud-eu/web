@@ -16,9 +16,7 @@
           'flex',
           'items-center',
           {
-            'sr-only':
-              hiddenItems.indexOf(item) !== -1 ||
-              (item.isTruncationPlaceholder && hiddenItems.length === 0)
+            'sr-only': isItemHidden(item, index)
           }
         ]"
         @dragover.prevent
@@ -28,9 +26,9 @@
         @drop="dropItemEvent(item, index)"
       >
         <router-link
-          v-if="item.to"
+          v-if="item.to && !item.isTruncationPlaceholder"
           :aria-current="getAriaCurrent(index)"
-          :to="item.isTruncationPlaceholder ? lastHiddenItem.to : item.to"
+          :to="item.to"
           class="first:text-base text-xl text-role-on-surface"
         >
           <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
@@ -38,7 +36,7 @@
           }}</span>
         </router-link>
         <oc-button
-          v-else-if="item.onClick"
+          v-else-if="item.onClick && !item.isTruncationPlaceholder"
           :aria-current="getAriaCurrent(index)"
           appearance="raw-inverse"
           color-role="surface"
@@ -61,6 +59,13 @@
             v-text="item.text"
           />
         </oc-button>
+        <span
+          v-else-if="item.isTruncationPlaceholder"
+          class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
+          tabindex="-1"
+          aria-hidden="true"
+          v-text="item.text"
+        />
         <span
           v-else
           class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
@@ -197,6 +202,13 @@ const hiddenItems = ref<BreadcrumbItem[]>([])
 // FIXME: setting this initially will cause vue-router type errors
 const displayItems: Ref<BreadcrumbItem[]> = ref([])
 displayItems.value = items
+
+const isItemHidden = (item: BreadcrumbItem, index: number): boolean => {
+  return (
+    hiddenItems.value.indexOf(item) !== -1 ||
+    (item.isTruncationPlaceholder && hiddenItems.value.length === 0)
+  )
+}
 
 const getBreadcrumbElement = (id: string): HTMLElement => {
   return document.querySelector(`.oc-breadcrumb-list [data-item-id="${id}"]`)

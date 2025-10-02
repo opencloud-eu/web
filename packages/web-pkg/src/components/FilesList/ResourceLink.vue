@@ -1,12 +1,17 @@
 <template>
   <component
-    :is="componentType"
-    v-bind="componentProps"
     v-if="isResourceClickable"
-    :target="linkTarget"
+    :is="isNavigatable ? 'router-link' : 'oc-button'"
+    :to="isNavigatable ? link : undefined"
+    :target="isNavigatable ? linkTarget : undefined"
+    :rel="isNavigatable && linkTarget === '_blank' ? 'noopener noreferrer' : undefined"
+    :appearance="!isNavigatable ? 'raw' : undefined"
+    :gap-size="!isNavigatable ? 'none' : undefined"
+    :justify-content="!isNavigatable ? 'left' : undefined"
+    :type="!isNavigatable ? 'button' : undefined"
+    :no-hover="!isNavigatable ? true : undefined"
     :draggable="false"
     class="oc-resource-link max-w-full"
-    no-hover
     @dragstart.prevent.stop
     @click="emitClick"
   >
@@ -75,21 +80,8 @@ export default {
       }
       return (this.resource.isFolder || this.link) && !this.resource.disabled
     },
-    componentType() {
-      return this.isNavigatable ? 'router-link' : 'oc-button'
-    },
-    componentProps() {
-      if (!this.isNavigatable) {
-        return {
-          appearance: 'raw',
-          gapSize: 'none',
-          justifyContent: 'left'
-        }
-      }
-
-      return {
-        to: this.link
-      }
+    isClickable() {
+      return this.isResourceClickable && !this.resource?.disabled
     }
   },
   methods: {

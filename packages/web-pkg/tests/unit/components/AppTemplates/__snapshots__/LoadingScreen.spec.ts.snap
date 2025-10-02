@@ -2,7 +2,7 @@
 
 exports[`The external app loading screen component > displays a spinner and a paragraph 1`] = `
 "<div class="text-center flex justify-center items-center h-full">
-  <oc-spinner-stub arialabel="" size="xlarge"></oc-spinner-stub>
+  <oc-spinner-stub size="xlarge"></oc-spinner-stub>
   <p class="sr-only">Loading app</p>
 </div>"
 `;

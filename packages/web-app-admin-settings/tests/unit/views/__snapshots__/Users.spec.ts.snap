@@ -46,7 +46,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
                 <!--v-if-->
                 <!--v-if-->
               </div>
-              <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
+              <oc-button-stub arialabel="Search users" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
             </div>
           </div>
           <div>
@@ -106,7 +106,7 @@ exports[`Users view > list view > renders list initially 1`] = `
                 <!--v-if-->
                 <!--v-if-->
               </div>
-              <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
+              <oc-button-stub arialabel="Search users" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
             </div>
           </div>
           <div>
@@ -114,10 +114,10 @@ exports[`Users view > list view > renders list initially 1`] = `
               <thead data-v-3c9ab66c="" class="oc-thead border-b">
                 <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
                   <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">
-                    <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><span data-v-5c58355a=""><input data-v-5c58355a="" id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" aria-label="Select all users"> <!--v-if--></span></span></div>
+                    <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><span class="sr-only">Select users</span> <span data-v-5c58355a=""><input data-v-5c58355a="" id="oc-checkbox-1" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" aria-label="Select all users"> <!--v-if--></span></span></div>
                   </th>
                   <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-avatar z-10" style="top: 0px;">
-                    <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text"></span></div>
+                    <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><span class="sr-only">Avatar</span></span></div>
                   </th>
                   <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-onPremisesSamAccountName z-10" style="top: 0px;" aria-sort="ascending">
                     <oc-button-stub data-v-3c9ab66c="" arialabel="Sort by onPremisesSamAccountName" appearance="raw" colorrole="secondary" disabled="false" gapsize="small" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-button-sort w-full hover:underline"></oc-button-stub>

@@ -22,7 +22,7 @@ exports[`OcSidebarNav > renders navItems into a list 1`] = `
     </ul>
   </nav> <!-- @slot bottom content of the sidebar -->
   <div class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"><span></span>
-    <div class="version-check-loading flex items-center"><span>Checking for updates</span> <span class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-2 ml-1" aria-label="" tabindex="-1" role="img"></span></div>
+    <div class="version-check-loading flex items-center"><span>Checking for updates</span> <span class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-2 ml-1" aria-hidden="true" tabindex="-1"></span></div>
   </div>
 </div>"
 `;
