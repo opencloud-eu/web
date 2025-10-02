@@ -80,21 +80,8 @@ export default {
       }
       return (this.resource.isFolder || this.link) && !this.resource.disabled
     },
-    componentType() {
-      return this.isNavigatable ? 'router-link' : 'oc-button'
-    },
-    componentProps() {
-      if (!this.isNavigatable) {
-        return {
-          appearance: 'raw',
-          gapSize: 'none',
-          justifyContent: 'left'
-        }
-      }
-
-      return {
-        to: this.link
-      }
+    isClickable() {
+      return this.isResourceClickable && !this.resource?.disabled
     }
   },
   methods: {
