@@ -7,10 +7,8 @@
       :class="[action.class, 'action-menu-item', 'align-middle', 'w-full', ...buttonClasses]"
       :aria-label="
         componentProps.disabled
-          ? action.disabledTooltip?.(actionOptions)
-          : typeof action.label === 'function'
-            ? action.label(actionOptions)
-            : action.label
+          ? (action.disabledTooltip?.(actionOptions) ?? action.label(actionOptions))
+          : action.label(actionOptions)
       "
       data-testid="action-handler"
       :size="size"

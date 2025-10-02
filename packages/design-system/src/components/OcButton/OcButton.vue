@@ -2,7 +2,7 @@
   <component
     :is="type"
     v-bind="additionalAttributes"
-    :aria-label="ariaLabel || undefined"
+    :aria-label="ariaLabel"
     :class="[
       `oc-button-${kebabCase(colorRole)}`,
       `oc-button-${appearance}`,

@@ -11,10 +11,10 @@
       'size-16': size === 'xxxlarge'
     }"
     :aria-label="ariaLabel || undefined"
-    aria-live="ariaLabel ? 'polite' : undefined"
-    aria-hidden="ariaLabel ? undefined : 'true'"
+    :aria-live="ariaLabel ? 'polite' : undefined"
+    :aria-hidden="ariaLabel ? undefined : 'true'"
     tabindex="-1"
-    :role="ariaLabel ? 'status' : undefined"
+    :role="ariaLabel ? 'img' : undefined"
   />
 </template>
 
@@ -33,5 +33,5 @@ export interface Props {
   size?: SizeType
 }
 
-const { ariaLabel = '', size = 'medium' } = defineProps<Props>()
+const { ariaLabel = undefined, size = 'medium' } = defineProps<Props>()
 </script>

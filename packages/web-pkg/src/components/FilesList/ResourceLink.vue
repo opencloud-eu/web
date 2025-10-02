@@ -1,12 +1,17 @@
 <template>
   <component
-    :is="componentType"
-    v-bind="mergedProps"
     v-if="isResourceClickable"
-    :target="linkTarget"
+    :is="isNavigatable ? 'router-link' : 'oc-button'"
+    :to="isNavigatable ? link : undefined"
+    :target="isNavigatable ? linkTarget : undefined"
+    :rel="isNavigatable && linkTarget === '_blank' ? 'noopener noreferrer' : undefined"
+    :appearance="!isNavigatable ? 'raw' : undefined"
+    :gap-size="!isNavigatable ? 'none' : undefined"
+    :justify-content="!isNavigatable ? 'left' : undefined"
+    :type="!isNavigatable ? 'button' : undefined"
+    :no-hover="!isNavigatable ? true : undefined"
     :draggable="false"
     class="oc-resource-link max-w-full"
-    no-hover
     @dragstart.prevent.stop
     @click="emitClick"
   >
@@ -28,7 +33,6 @@ import { RouteLocationRaw } from 'vue-router'
  */
 export default {
   name: 'ResourceLink',
-  inheritAttrs: false,
   props: {
     /**
      * The resource folder link
@@ -91,15 +95,6 @@ export default {
       return {
         to: this.link
       }
-    },
-    mergedProps(): Record<string, unknown> {
-      const {
-        target: _t,
-        draggable: _d,
-        'no-hover': _nh,
-        ...restAttrs
-      } = this.$attrs as Record<string, unknown>
-      return { ...restAttrs, ...this.componentProps }
     }
   },
   methods: {

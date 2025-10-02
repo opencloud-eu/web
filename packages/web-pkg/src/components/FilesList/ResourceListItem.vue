@@ -8,7 +8,7 @@
       :resource="resource"
       :link="link"
       :is-resource-clickable="isResourceClickable"
-      class="contents relative"
+      class="relative"
       :class="{ 'hover:underline': isResourceClickable }"
       :aria-label="$gettext('Open »%{name}«', { name: resource?.name ?? '' })"
       @click="emitClick"
