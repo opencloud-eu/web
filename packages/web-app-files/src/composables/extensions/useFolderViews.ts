@@ -3,7 +3,8 @@ import { useGettext } from 'vue3-gettext'
 import {
   folderViewsFavoritesExtensionPoint,
   folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsTrashExtensionPoint
 } from '../../extensionPoints'
 
 export const useFolderViews = (): FolderViewExtension[] => {
@@ -13,7 +14,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
     {
       id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
       type: 'folderView',
-      extensionPointIds: [folderViewsFolderExtensionPoint.id],
+      extensionPointIds: [folderViewsFolderExtensionPoint.id, folderViewsTrashExtensionPoint.id],
       folderView: {
         name: 'resource-table-condensed',
         label: $gettext('Condensed table view'),
@@ -30,7 +31,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',
@@ -48,7 +50,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id
       ],
       folderView: {
         name: 'resource-tiles',

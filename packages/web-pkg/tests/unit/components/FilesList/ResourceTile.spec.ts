@@ -1,14 +1,20 @@
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import ResourceTile from '../../../../src/components/FilesList/ResourceTile.vue'
+import { mock } from 'vitest-mock-extended'
+import { RouteLocation } from 'vue-router'
+import { SpaceResource } from '@opencloud-eu/web-client'
 
-const getSpaceMock = (disabled = false) => ({
-  name: 'Space 1',
-  path: '',
-  type: 'space',
-  isFolder: true,
-  disabled,
-  getDriveAliasAndItem: () => '1'
-})
+const getSpaceMock = (disabled = false) =>
+  ({
+    name: 'Space 1',
+    id: '1',
+    storageId: '1',
+    path: '',
+    type: 'space',
+    isFolder: true,
+    disabled,
+    getDriveAliasAndItem: () => '1'
+  }) as unknown as SpaceResource
 
 describe('OcTile component', () => {
   it('renders default space correctly', () => {
@@ -36,9 +42,20 @@ describe('OcTile component', () => {
   })
 
   function getWrapper(props = {}) {
+    const defaultMocks = defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({ name: 'files' })
+    })
+
     return shallowMount(ResourceTile, {
       props,
-      global: { plugins: [...defaultPlugins()], renderStubDefaultSlot: true }
+      global: {
+        plugins: [
+          ...defaultPlugins({ piniaOptions: { spacesState: { spaces: [getSpaceMock(false)] } } })
+        ],
+        renderStubDefaultSlot: true,
+        mocks: defaultMocks,
+        provide: defaultMocks
+      }
     })
   }
 })

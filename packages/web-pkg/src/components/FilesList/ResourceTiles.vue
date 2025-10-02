@@ -57,6 +57,7 @@
           :is-resource-clickable="isResourceClickable(resource)"
           :is-resource-disabled="isResourceDisabled(resource) || isSpaceResourceDisabled(resource)"
           :is-extension-displayed="areFileExtensionsShown"
+          :is-path-displayed="arePathsDisplayed"
           :resource-icon-size="resourceIconSize"
           :draggable="dragDrop"
           :lazy="areTilesLazy"
@@ -201,7 +202,9 @@ const {
   sortDir,
   viewSize = FolderViewModeConstants.tilesSizeDefault,
   dragDrop = false,
-  lazy = true
+  lazy = true,
+  areResourcesClickable = true,
+  arePathsDisplayed = false
 } = defineProps<{
   resources?: Resource[]
   selectedIds?: string[]
@@ -213,6 +216,8 @@ const {
   viewSize?: number
   dragDrop?: boolean
   lazy?: boolean
+  areResourcesClickable?: boolean
+  arePathsDisplayed?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -349,6 +354,10 @@ const selectedResources = computed(() => {
 })
 
 const isResourceClickable = (resource: Resource) => {
+  if (!areResourcesClickable) {
+    return false
+  }
+
   if (isResourceDisabled(resource) || isSpaceResourceDisabled(resource)) {
     return false
   }
