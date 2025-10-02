@@ -328,6 +328,14 @@ export class UppyService {
     return this.uppy.cancelAll()
   }
 
+  removeFailedFiles() {
+    const { files } = this.uppy.getState()
+    const failedFiles = Object.values(files).filter((f) => f.error)
+    if (failedFiles.length) {
+      this.uppy.removeFiles(failedFiles.map(({ id }) => id))
+    }
+  }
+
   getCurrentUploads(): Record<string, unknown> {
     return this.uppy.getState().currentUploads
   }

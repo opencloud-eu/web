@@ -244,7 +244,8 @@ function getShallowWrapper() {
     wrapper: shallowMount(UploadInfo, {
       global: {
         plugins: [...defaultPlugins()],
-        mocks
+        mocks,
+        provide: mocks
       }
     })
   }
