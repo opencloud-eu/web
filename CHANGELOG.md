@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @tailwindcss/vite to v4.1.14 [[#1301](https://github.com/opencloud-eu/web/pull/1301)]
 - fix(deps): update dependency p-queue to v9 [[#1295](https://github.com/opencloud-eu/web/pull/1295)]
 - chore(deps): update devdependencies (non-major) [[#1290](https://github.com/opencloud-eu/web/pull/1290)]
 - fix(deps): update dependency @sentry/vue to v10.17.0 [[#1288](https://github.com/opencloud-eu/web/pull/1288)]
