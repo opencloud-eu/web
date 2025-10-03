@@ -54,6 +54,16 @@ export const folderViewsProjectSpacesExtensionPoint: ExtensionPoint<FolderViewEx
   extensionType: 'folderView'
 }
 
+export const folderViewsTrashExtensionPoint: ExtensionPoint<FolderViewExtension> = {
+  id: 'app.files.folder-views.trash',
+  extensionType: 'folderView'
+}
+
+export const folderViewsTrashOverviewExtensionPoint: ExtensionPoint<FolderViewExtension> = {
+  id: 'app.files.folder-views.trash-overview',
+  extensionType: 'folderView'
+}
+
 export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
@@ -66,7 +76,8 @@ export const extensionPoints = () => {
       fileSideBarExtensionPoint,
       folderViewsFolderExtensionPoint,
       folderViewsFavoritesExtensionPoint,
-      folderViewsProjectSpacesExtensionPoint
+      folderViewsProjectSpacesExtensionPoint,
+      folderViewsTrashExtensionPoint
     ]
   })
 }

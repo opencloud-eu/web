@@ -85,6 +85,8 @@
               :is-icon-displayed="false"
               :is-extension-displayed="isExtensionDisplayed"
               :is-resource-clickable="isResourceClickable"
+              :is-path-displayed="isPathDisplayed"
+              :parent-folder-name="getParentFolderName(resource)"
               :link="resourceRoute"
               @click.stop="$emit('click', $event)"
             />
@@ -119,6 +121,7 @@ import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import { useToggleTile } from '../../composables/selection'
 import { OcCard } from '@opencloud-eu/design-system/components'
+import { useFolderLink } from '../../composables'
 
 const {
   resource,
@@ -127,6 +130,7 @@ const {
   isResourceClickable = true,
   isResourceDisabled = false,
   isExtensionDisplayed = true,
+  isPathDisplayed = false,
   resourceIconSize = 'xlarge',
   lazy = false,
   isLoading = false
@@ -137,6 +141,7 @@ const {
   isResourceClickable?: boolean
   isResourceDisabled?: boolean
   isExtensionDisplayed?: boolean
+  isPathDisplayed?: boolean
   resourceIconSize?: SizeType
   lazy?: boolean
   isLoading?: boolean
@@ -158,6 +163,7 @@ defineSlots<{
 
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
+const { getParentFolderName } = useFolderLink()
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
