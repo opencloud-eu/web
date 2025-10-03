@@ -38,6 +38,8 @@ import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
 import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { promiseTimeout } from '@vueuse/core'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { bytesToHex } from '@noble/hashes/utils.js'
 
 export interface UpdateChannelData {
   current_version: string
@@ -76,11 +78,14 @@ const loadVersionsTask = useTask(function* (signal) {
   })
 
   try {
+    const encoder = new TextEncoder()
+    const sha256ServerUrl = sha256(encoder.encode(configStore.serverUrl))
+
     const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
       `https://update.opencloud.eu/server.json`,
       {
         params: {
-          server: configStore.serverUrl,
+          server: bytesToHex(sha256ServerUrl),
           edition: serverEdition,
           version: currentServerVersion
         },
