@@ -1,5 +1,62 @@
 # Changelog
 
+## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-04
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899
+
+### 🐛 Bug Fixes
+
+- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
+- fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
+- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
+- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
+- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
+
+### 📈 Enhancement
+
+- feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
+- feat(extension-sdk): provide default tailwind config  [[#1275](https://github.com/opencloud-eu/web/pull/1275)]
+- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
+- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
+- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
+- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
+- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
+- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
+### ✅ Tests
+
+- [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency pino to v9.13.0 [[#1305](https://github.com/opencloud-eu/web/pull/1305)]
+- chore(deps): update devdependencies (non-major) [[#1303](https://github.com/opencloud-eu/web/pull/1303)]
+- chore(deps): update dependency vite to v7.1.8 [[#1302](https://github.com/opencloud-eu/web/pull/1302)]
+- chore(deps): update dependency @tailwindcss/vite to v4.1.14 [[#1301](https://github.com/opencloud-eu/web/pull/1301)]
+- fix(deps): update dependency p-queue to v9 [[#1295](https://github.com/opencloud-eu/web/pull/1295)]
+- chore(deps): update devdependencies (non-major) [[#1290](https://github.com/opencloud-eu/web/pull/1290)]
+- fix(deps): update dependency @sentry/vue to v10.17.0 [[#1288](https://github.com/opencloud-eu/web/pull/1288)]
+- chore(deps): update dependency happy-dom to v19.0.2 [[#1284](https://github.com/opencloud-eu/web/pull/1284)]
+- fix(deps): update dependency @sentry/vue to v10.16.0 [[#1283](https://github.com/opencloud-eu/web/pull/1283)]
+- chore(deps): update typescript-eslint monorepo to v8.45.0 [[#1282](https://github.com/opencloud-eu/web/pull/1282)]
+- chore(deps): update traefik docker tag to v3.5.3 [[#1271](https://github.com/opencloud-eu/web/pull/1271)]
+- chore(deps): update devdependencies (non-major) [[#1254](https://github.com/opencloud-eu/web/pull/1254)]
+- chore(deps): update dependency happy-dom to v19 [[#1273](https://github.com/opencloud-eu/web/pull/1273)]
+- fix(deps): update dependency @sentry/vue to v10.15.0 [[#1260](https://github.com/opencloud-eu/web/pull/1260)]
+- fix(deps): update vue monorepo to v3.5.22 [[#1262](https://github.com/opencloud-eu/web/pull/1262)]
+- chore(deps): update node.js to v22.20.0 [[#1258](https://github.com/opencloud-eu/web/pull/1258)]
+- chore(design-system): remove sass dependencies [[#1255](https://github.com/opencloud-eu/web/pull/1255)]
+- fix(deps): update dependency @sentry/vue to v10.14.0 [[#1253](https://github.com/opencloud-eu/web/pull/1253)]
+- chore(deps): update dependency @playwright/test to v1.55.1 [[#1252](https://github.com/opencloud-eu/web/pull/1252)]
+- fix(deps): update dependency @sentry/vue to v10.13.0 [[#1243](https://github.com/opencloud-eu/web/pull/1243)]
+- chore(deps): update devdependencies (non-major) [[#1246](https://github.com/opencloud-eu/web/pull/1246)]
+- fix(deps): update typescript-eslint monorepo to v8.44.1 [[#1247](https://github.com/opencloud-eu/web/pull/1247)]
+- chore(deps): update pnpm to v10.17.1 [[#1245](https://github.com/opencloud-eu/web/pull/1245)]
+- [full-ci] bump-opencloud-3.5.0. run all tests [[#1240](https://github.com/opencloud-eu/web/pull/1240)]
+
 ## [4.0.0](https://github.com/opencloud-eu/web/releases/tag/v4.0.0) - 2025-09-22
 
 ### ❤️ Thanks to all contributors! ❤️
