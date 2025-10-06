@@ -139,6 +139,29 @@ describe('PasswordPolicyService', () => {
       })
     })
   })
+  describe('generating password', () => {
+    it('generates a password that meets the policy requirements', () => {
+      {
+        const capability: PasswordPolicyCapability = {
+          min_characters: 12,
+          max_characters: 12,
+          min_lowercase_characters: 2,
+          min_uppercase_characters: 2,
+          min_digits: 2,
+          min_special_characters: 2
+        }
+        const { passwordPolicyService, store } = getWrapper(capability)
+        passwordPolicyService.initialize(store)
+        const generatedPw = passwordPolicyService.generatePassword()
+
+        expect(generatedPw).toBeDefined()
+        expect(generatedPw.length).toBe(12)
+
+        const policy = passwordPolicyService.getPolicy()
+        expect(policy.check(generatedPw)).toBeTruthy()
+      }
+    })
+  })
 })
 
 const getWrapper = (capability: PasswordPolicyCapability) => {
