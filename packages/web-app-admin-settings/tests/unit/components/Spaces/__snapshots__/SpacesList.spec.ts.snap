@@ -18,10 +18,12 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
     <thead data-v-3c9ab66c="" class="oc-thead border-b">
       <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
         <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">
-          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><oc-checkbox-stub label="Select all spaces" disabled="false" id="oc-checkbox-1" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub></span></div>
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><span class="sr-only">Select spaces</span>
+            <oc-checkbox-stub label="Select all spaces" disabled="false" id="oc-checkbox-1" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub></span>
+          </div>
         </th>
         <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-icon z-10" style="top: 0px;">
-          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text"></span></div>
+          <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle"><span class="sr-only">Icon</span></span></div>
         </th>
         <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10" style="top: 0px;" aria-sort="ascending"><button data-v-3c9ab66c="" type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
             <!--v-if-->

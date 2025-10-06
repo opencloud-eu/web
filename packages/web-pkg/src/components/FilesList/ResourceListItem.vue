@@ -8,8 +8,12 @@
       :resource="resource"
       :link="link"
       :is-resource-clickable="isResourceClickable"
-      class="contents relative"
+      class="relative"
       :class="{ 'hover:underline': isResourceClickable }"
+      v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
+      :aria-label="
+        isResourceClickable ? $gettext('Open »%{name}«', { name: resource?.name ?? '' }) : undefined
+      "
       @click="emitClick"
     >
       <oc-image
@@ -22,11 +26,13 @@
         width="40"
         height="40"
         :aria-label="tooltipLabelIcon"
+        alt=""
       />
       <resource-icon
         v-else
         v-oc-tooltip="tooltipLabelIcon"
         :aria-label="tooltipLabelIcon"
+        aria-hidden="true"
         :resource="resource"
       />
     </resource-link>
