@@ -323,11 +323,9 @@ watch(
   }
 
   .oc-bottom-drawer li a,
-  .oc-bottom-drawer li .item-has-switch,
-  .oc-bottom-drawer li button:not([role='switch']),
+  .oc-bottom-drawer li button,
   .oc-drop li a,
-  .oc-drop li button:not([role='switch']),
-  .oc-drop li .item-has-switch {
+  .oc-drop li button {
     @apply p-2 w-full;
   }
 

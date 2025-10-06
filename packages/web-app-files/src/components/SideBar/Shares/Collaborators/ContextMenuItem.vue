@@ -1,16 +1,5 @@
 <template>
-  <div v-if="option.hasSwitch" class="item-has-switch p-2 flex justify-center">
-    <oc-icon :name="option.icon" fill-type="line" size="medium" />
-    <oc-switch
-      class="ml-2 flex w-full"
-      :checked="option.isChecked.value"
-      :class="option.class"
-      :label="option.title"
-      @update:checked="option.method"
-    />
-  </div>
   <oc-button
-    v-else
     appearance="raw"
     class="p-2"
     :class="option.class"

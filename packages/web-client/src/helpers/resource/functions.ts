@@ -211,9 +211,6 @@ export function buildResource(
         ? resource.filename.split('/').length === 3
         : false
     },
-    canDeny: function () {
-      return this.permissions.indexOf(DavPermission.Deny) >= 0
-    },
     getDomSelector: () => extractDomSelector(id)
   } satisfies Resource
   Object.defineProperty(r, 'nodeId', {

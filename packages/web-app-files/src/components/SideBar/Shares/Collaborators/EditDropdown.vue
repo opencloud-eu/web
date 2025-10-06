@@ -66,7 +66,6 @@ export type EditOption = {
   title: string
   additionalAttributes?: Record<string, string>
   class?: string
-  hasSwitch?: boolean
   isChecked?: Ref<boolean>
   method?: () => void
   to?: RouteLocationNamedRaw
@@ -101,14 +100,6 @@ export default defineComponent({
       type: Array as PropType<ContextualHelperDataListItem[]>,
       required: true
     },
-    isShareDenied: {
-      type: Boolean,
-      default: false
-    },
-    deniable: {
-      type: Boolean,
-      default: false
-    },
     isLocked: {
       type: Boolean,
       default: false
@@ -118,7 +109,7 @@ export default defineComponent({
       default: undefined
     }
   },
-  emits: ['expirationDateChanged', 'removeShare', 'setDenyShare', 'notifyShare'],
+  emits: ['expirationDateChanged', 'removeShare', 'notifyShare'],
   setup(props, { emit }) {
     const language = useGettext()
     const { $gettext } = language
@@ -128,10 +119,6 @@ export default defineComponent({
     const accessDetailsDrop = useTemplateRef<typeof OcInfoDrop>('accessDetailsDrop')
 
     const resource = inject<Ref<Resource>>('resource')
-
-    const toggleShareDenied = (value: boolean) => {
-      emit('setDenyShare', value)
-    }
 
     const dropButtonTooltip = computed(() => {
       if (props.isLocked) {
@@ -171,7 +158,6 @@ export default defineComponent({
       resource,
       expirationDateDrop,
       accessDetailsDrop,
-      toggleShareDenied,
       dropButtonTooltip,
       dispatchModal,
       navigateToParentOption,
@@ -188,17 +174,6 @@ export default defineComponent({
           class: 'show-access-details'
         }
       ]
-
-      if (this.deniable) {
-        result.push({
-          title: this.$gettext('Deny access'),
-          method: this.toggleShareDenied,
-          icon: 'stop-circle',
-          class: 'deny-share',
-          hasSwitch: true,
-          isChecked: computed(() => this.isShareDenied)
-        })
-      }
 
       if (this.canEdit && this.isExpirationSupported) {
         result.push({

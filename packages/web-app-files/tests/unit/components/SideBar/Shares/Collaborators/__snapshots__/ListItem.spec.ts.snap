@@ -21,7 +21,7 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
     <div class="flex items-center justify-end">
       <!--v-if-->
       <oc-icon-stub name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
-      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" issharedenied="false" deniable="false" islocked="false" sharedparentroute="[object Object]" class="ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
+      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" islocked="false" sharedparentroute="[object Object]" class="ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
     </div>
   </div>
 </div>"

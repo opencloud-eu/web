@@ -30,8 +30,7 @@ const folderMock = {
   name: 'lorem.txt',
   privateLink: 'some-link',
   canShare: vi.fn(() => true),
-  path: '/documents',
-  canDeny: () => false
+  path: '/documents'
 } as Resource
 
 const spaceMock = {
