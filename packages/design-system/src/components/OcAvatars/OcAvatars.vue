@@ -4,7 +4,7 @@
       ref="avatarsRef"
       v-oc-tooltip="tooltip"
       class="oc-avatars inline-flex w-fit flex-nowrap flex-row"
-      aria-hidden="true"
+      :aria-label="avatarsAriaLabel"
       :class="{
         'oc-avatars-stacked [&>*]:not-first:-ml-3': stacked,
         'oc-avatars-hover-effect [&>*]:hover:!z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
@@ -148,6 +148,14 @@ const otherItems = computed(() => {
     return []
   }
   return a.slice(0, maxDisplayed! - avatars.value.length)
+})
+
+const avatarsAriaLabel = computed(() => {
+  if (isTooltipDisplayed) return tooltip.value as string
+  const names = (avatars.value || [])
+    .map((a) => a?.displayName || a?.name || a?.username)
+    .filter(Boolean)
+  return names.length ? names.join(', ') : undefined
 })
 
 const tooltip = computed(() => {

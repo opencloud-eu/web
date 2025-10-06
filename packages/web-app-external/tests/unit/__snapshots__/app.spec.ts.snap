@@ -19,7 +19,7 @@ exports[`The app provider extension > should be able to load an iFrame via post 
 
 exports[`The app provider extension > should fail for unauthenticated users 1`] = `
 "<div class="size-full flex justify-center items-center">
-  <oc-spinner-stub arialabel="" size="large"></oc-spinner-stub>
+  <oc-spinner-stub size="large"></oc-spinner-stub>
 </div>
 
 <!--v-if-->"

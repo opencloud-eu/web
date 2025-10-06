@@ -25,6 +25,7 @@
       @highlight="fileClicked"
     >
       <template #selectHeader>
+        <span class="sr-only">{{ $gettext('Select spaces') }}</span>
         <oc-checkbox
           size="large"
           :label="$gettext('Select all spaces')"
@@ -34,6 +35,12 @@
             allSpacesSelected ? unselectAllSpaces() : selectSpaces(paginatedItems)
           "
         />
+      </template>
+      <template #iconHeader>
+        <span class="sr-only">{{ $gettext('Icon') }}</span>
+      </template>
+      <template #avatarHeader>
+        <span class="sr-only">{{ $gettext('Avatar') }}</span>
       </template>
       <template #select="{ item }">
         <oc-checkbox
@@ -287,7 +294,9 @@ const fields = computed<FieldType[]>(() => [
     name: 'icon',
     title: '',
     type: 'slot',
-    width: 'shrink'
+    width: 'shrink',
+    headerType: 'slot',
+    sortable: false
   },
   {
     name: 'name',
