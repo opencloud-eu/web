@@ -33,6 +33,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.18.0 [[#1312](https://github.com/opencloud-eu/web/pull/1312)]
 - chore(deps): update devdependencies (non-major) [[#1313](https://github.com/opencloud-eu/web/pull/1313)]
 - chore(deps): update dependency pino to v9.13.0 [[#1305](https://github.com/opencloud-eu/web/pull/1305)]
 - chore(deps): update devdependencies (non-major) [[#1303](https://github.com/opencloud-eu/web/pull/1303)]
