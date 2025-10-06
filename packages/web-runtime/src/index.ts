@@ -28,7 +28,8 @@ import {
   setViewOptions,
   announceGettext,
   announceArchiverService,
-  announceAppProviderService
+  announceAppProviderService,
+  announceUpdates
 } from './container/bootstrap'
 import { applicationStore } from './container/store'
 import {
@@ -180,7 +181,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       if (!newValue || newValue === oldValue) {
         return
       }
-      await announceVersions({ capabilityStore, configStore })
+      announceVersions({ capabilityStore })
+      await announceUpdates({ capabilityStore, configStore, clientService })
 
       await announceApplicationsReady({
         app,
@@ -298,7 +300,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
 export const bootstrapErrorApp = async (err: Error): Promise<void> => {
   const { capabilityStore, configStore } = announcePiniaStores()
-  await announceVersions({ capabilityStore, configStore })
+  announceVersions({ capabilityStore })
   const app = createApp(pages.failure)
   const designSystem = await loadDesignSystem()
   try {

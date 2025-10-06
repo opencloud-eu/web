@@ -662,15 +662,12 @@ export const announceDefaults = ({
  * announce some version numbers
  *
  * @param capabilityStore
- * @param configStore
  */
-export const announceVersions = async ({
-  capabilityStore,
-  configStore
+export const announceVersions = ({
+  capabilityStore
 }: {
   capabilityStore: CapabilityStore
-  configStore: ConfigStore
-}): Promise<void> => {
+}): void => {
   const versions = [getWebVersion(), getBackendVersion({ capabilityStore })].filter(Boolean)
   versions.forEach((version) => {
     console.log(
@@ -678,22 +675,43 @@ export const announceVersions = async ({
       'background-color: #041E42; color: #FFFFFF; font-weight: bold; border: 1px solid #FFFFFF; padding: 5px;'
     )
   })
+}
 
-  if (capabilityStore.capabilities.core['check-for-updates']) {
-    const params = new URLSearchParams({
-      server: configStore.serverUrl,
-      edition: 'rolling', //TODO: retrieve serverEdition
-      version: capabilityStore.status.productversion
-    })
+/**
+ * announce updates
+ *
+ * @param capabilityStore
+ * @param configStore
+ * @param clientService
+ */
+export const announceUpdates = async ({
+  capabilityStore,
+  configStore,
+  clientService
+}: {
+  capabilityStore: CapabilityStore
+  configStore: ConfigStore
+  clientService: ClientService
+}): Promise<void> => {
+  if (!capabilityStore.capabilities.core['check-for-updates']) {
+    return
+  }
 
-    const response = await fetch(`https://update.opencloud.eu/server.json?${params.toString()}`)
+  try {
+    const { data } = await clientService.httpUnAuthenticated.get(
+      'https://update.opencloud.eu/server.json',
+      {
+        params: {
+          server: configStore.serverUrl,
+          edition: 'rolling', //TODO: retrieve serverEdition
+          version: capabilityStore.status.productversion
+        }
+      }
+    )
 
-    if (!response.ok) {
-      console.error('Error while contacting update server')
-    }
-
-    const updateData = await response.json()
-    configStore.loadConfigUpdates(UpdatesConfigSchema.parse(updateData))
+    configStore.loadConfigUpdates(UpdatesConfigSchema.parse(data))
+  } catch (e) {
+    console.error(e)
   }
 }
 
