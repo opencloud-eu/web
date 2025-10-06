@@ -114,7 +114,7 @@ export default {
     const language = useGettext()
 
     const notifications = ref<Notification[]>([])
-    const notificationsInterval = ref()
+    const notificationsInterval = ref<ReturnType<typeof setInterval>>()
 
     const loading = computed(() => {
       return fetchNotificationsTask.isRunning || deleteNotificationsTask.isRunning

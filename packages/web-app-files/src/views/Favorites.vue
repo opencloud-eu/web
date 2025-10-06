@@ -127,10 +127,10 @@ export default defineComponent({
         })
       }
     })
-    const loadResourcesEventToken = ref(null)
 
+    let loadResourcesEventToken: string
     onMounted(() => {
-      loadResourcesEventToken.value = eventBus.subscribe(
+      loadResourcesEventToken = eventBus.subscribe(
         'app.files.list.removeFromFavorites',
         (resourceId: string) => {
           resourcesStore.removeResources([{ id: resourceId }] as Resource[])
@@ -139,7 +139,7 @@ export default defineComponent({
     })
 
     onBeforeUnmount(() => {
-      eventBus.unsubscribe('app.files.list.removeFromFavorites', unref(loadResourcesEventToken))
+      eventBus.unsubscribe('app.files.list.removeFromFavorites', loadResourcesEventToken)
     })
 
     return {

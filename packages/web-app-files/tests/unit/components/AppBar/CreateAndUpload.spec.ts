@@ -256,7 +256,7 @@ function getWrapper({
     currentRoute: mock<RouteLocation>({ name: currentRouteName })
   })
 
-  const onUploadCompleteCallback = ref()
+  const onUploadCompleteCallback = ref<(...args: unknown[]) => void>()
   defaultMocks.$uppyService.subscribe.mockImplementation((event, callback) => {
     onUploadCompleteCallback.value = callback
     return null
