@@ -99,10 +99,10 @@
               />
               <oc-button
                 id="users-filter-confirm"
+                v-oc-tooltip="$gettext('Search')"
                 class="ml-1 p-1 mt-5"
                 appearance="raw"
                 :aria-label="$gettext('Search users')"
-                v-oc-tooltip="$gettext('Search')"
                 @click="filterDisplayName"
               >
                 <oc-icon name="search" fill-type="line" aria-hidden="true" />

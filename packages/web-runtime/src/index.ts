@@ -180,7 +180,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       if (!newValue || newValue === oldValue) {
         return
       }
-      announceVersions({ capabilityStore })
+      await announceVersions({ capabilityStore, configStore })
 
       await announceApplicationsReady({
         app,
@@ -298,7 +298,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
 export const bootstrapErrorApp = async (err: Error): Promise<void> => {
   const { capabilityStore, configStore } = announcePiniaStores()
-  announceVersions({ capabilityStore })
+  await announceVersions({ capabilityStore, configStore })
   const app = createApp(pages.failure)
   const designSystem = await loadDesignSystem()
   try {

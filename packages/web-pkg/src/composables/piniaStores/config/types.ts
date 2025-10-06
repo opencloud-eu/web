@@ -134,6 +134,16 @@ const ExternalApp = z.object({
   config: z.record(z.string(), z.unknown()).optional()
 })
 
+export const UpdatesConfigSchema = z.object({
+  channels: z.record(
+    z.string(),
+    z.object({
+      current_version: z.string(),
+      url: z.string()
+    })
+  )
+})
+
 export const RawConfigSchema = z.object({
   server: z.string(),
   theme: z.string(),
@@ -145,7 +155,8 @@ export const RawConfigSchema = z.object({
   openIdConnect: OpenIdConnectConfigSchema.optional(),
   sentry: SentryConfigSchema.optional(),
   scripts: z.array(ScriptConfigSchema).optional(),
-  styles: z.array(StyleConfigSchema).optional()
+  styles: z.array(StyleConfigSchema).optional(),
+  updates: UpdatesConfigSchema.optional()
 })
 
 export type RawConfig = z.infer<typeof RawConfigSchema>

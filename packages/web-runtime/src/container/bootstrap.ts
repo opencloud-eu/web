@@ -43,7 +43,8 @@ import {
   AppConfigObject,
   resourceIconMappingInjectionKey,
   ResourceIconMapping,
-  ClassicApplicationScript
+  ClassicApplicationScript,
+  UpdatesConfigSchema
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -661,12 +662,15 @@ export const announceDefaults = ({
  * announce some version numbers
  *
  * @param capabilityStore
+ * @param configStore
  */
-export const announceVersions = ({
-  capabilityStore
+export const announceVersions = async ({
+  capabilityStore,
+  configStore
 }: {
   capabilityStore: CapabilityStore
-}): void => {
+  configStore: ConfigStore
+}): Promise<void> => {
   const versions = [getWebVersion(), getBackendVersion({ capabilityStore })].filter(Boolean)
   versions.forEach((version) => {
     console.log(
@@ -674,6 +678,23 @@ export const announceVersions = ({
       'background-color: #041E42; color: #FFFFFF; font-weight: bold; border: 1px solid #FFFFFF; padding: 5px;'
     )
   })
+
+  if (capabilityStore.capabilities.core['check-for-updates']) {
+    const params = new URLSearchParams({
+      server: configStore.serverUrl,
+      edition: 'rolling', //TODO: retrieve serverEdition
+      version: capabilityStore.status.productversion
+    })
+
+    const response = await fetch(`https://update.opencloud.eu/server.json?${params.toString()}`)
+
+    if (!response.ok) {
+      console.error('Error while contacting update server')
+    }
+
+    const updateData = await response.json()
+    configStore.loadConfigUpdates(UpdatesConfigSchema.parse(updateData))
+  }
 }
 
 /**
