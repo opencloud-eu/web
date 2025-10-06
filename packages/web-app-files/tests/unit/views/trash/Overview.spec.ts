@@ -1,4 +1,6 @@
 import TrashOverview from '../../../../src/views/trash/Overview.vue'
+import { useResourcesViewDefaults } from '../../../../src/composables'
+import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -21,6 +23,8 @@ import {
   folderViewsProjectSpacesExtensionPoint,
   folderViewsTrashOverviewExtensionPoint
 } from '../../../../src/extensionPoints'
+
+vi.mock('../../../../src/composables')
 
 const spaceMocks = [
   {
@@ -58,8 +62,9 @@ describe('TrashOverview', () => {
     await (wrapper.vm as any).loadResourcesTask.last
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
   })
-  it('should navigate to single space trash if only one space exists', () => {
-    const { mocks } = getWrapper({ spaces: [spaceMocks[0]] })
+  it('should navigate to single space trash if only one space exists', async () => {
+    const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
+    await (wrapper.vm as any).loadResourcesTask.last
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
@@ -129,6 +134,7 @@ function getWrapper({ spaces = spaceMocks }: { spaces?: SpaceResource[] } = {}) 
   }
 
   const plugins = [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
+  vi.mocked(useResourcesViewDefaults).mockImplementation(() => useResourcesViewDefaultsMock())
 
   const extensions = [
     {

@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TrashOverview > view states > should render trash list 1`] = `
+"<div class="flex w-full">
+  <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
+    <div id="files-view" class="outline-0 z-0">
+      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
+      <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
+        <div class="w-3xs"><label class="inline-block mb-0.5" for="trash-filter">Search
+            <!--v-if-->
+          </label>
+          <div class="relative">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" value="">
+            <!--v-if-->
+          </div>
+          <!--v-if-->
+          <!--v-if-->
+        </div>
+      </div>
+      <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" sort-fields="" view-size="1" id="files-space-table" selection="">
+        <thead data-v-3c9ab66c="" class="oc-thead border-b">
+          <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
+            <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10 pl-4" style="top: 0px;" aria-sort="ascending"><button data-v-3c9ab66c="" type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
+                <!--v-if-->
+                <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Name</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
+      if (__props.accessibleLabel !== &quot;&quot;) {
+        const title = document.createElement(&quot;title&quot;);
+        title.setAttribute(&quot;id&quot;, svgTitleId.value);
+        title.appendChild(document.createTextNode(__props.accessibleLabel));
+        svg.insertBefore(title, svg.firstChild);
+      };
+      return svg;
+    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+              </button></th>
+            <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-indicators z-10" style="top: 0px;">
+              <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Status</span></div>
+            </th>
+            <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-actions z-10 pr-4" style="top: 0px;">
+              <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Actions</span></div>
+            </th>
+          </tr>
+        </thead>
+        <tbody data-v-3c9ab66c="" class="has-item-context-menu">
+          <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-1 border-t h-10.5" data-item-id="1" draggable="false">
+            <td data-v-27e13406="" data-v-98c4aba8="" class="oc-table-cell text-left align-middle oc-td" colspan="3"><span data-v-98c4aba8="" class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"></span></td>
+          </tr>
+          <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
+            <td data-v-27e13406="" data-v-98c4aba8="" class="oc-table-cell text-left align-middle oc-td" colspan="3"><span data-v-98c4aba8="" class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"></span></td>
+          </tr>
+          <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-3 border-t h-10.5" data-item-id="3" draggable="false">
+            <td data-v-27e13406="" data-v-98c4aba8="" class="oc-table-cell text-left align-middle oc-td" colspan="3"><span data-v-98c4aba8="" class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"></span></td>
+          </tr>
+        </tbody>
+        <tfoot data-v-3c9ab66c="" class="oc-table-footer border-t">
+          <tr data-v-3c9ab66c="" class="oc-table-footer-row h-10.5">
+            <td data-v-3c9ab66c="" colspan="3" class="oc-table-footer-cell p-1 text-sm text-role-on-surface-variant">
+              <!-- @slot Footer of the table -->
+              <!-- @slot Footer of the files table -->
+              <div class="text-center w-full my-2">
+                <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">3 trash bins in total</p>
+                <!--v-if-->
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+      <!--v-if-->
+    </div>
+  </div>
+  <!--v-if-->
+  <file-side-bar-stub isopen="false" activepanel=""></file-side-bar-stub>
+</div>"
+`;
