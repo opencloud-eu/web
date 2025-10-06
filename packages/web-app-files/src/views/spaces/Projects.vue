@@ -194,7 +194,6 @@ const { can } = useAbility()
 const language = useGettext()
 const { $gettext, $ngettext } = language
 const filterTerm = ref('')
-const markInstance = ref(undefined)
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
 const { isSideBarOpen, sideBarActivePanel } = useSideBar()
@@ -298,14 +297,11 @@ const batchActionsLoading = computed(() => {
   return selectedSpaces.some(({ graphPermissions }) => graphPermissions === undefined)
 })
 
+let markInstance: Mark | undefined
 watch(filterTerm, async () => {
-  const instance = unref(markInstance)
-  if (!instance) {
-    return
-  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-  instance.unmark()
-  instance.mark(unref(filterTerm), {
+  markInstance?.unmark()
+  markInstance?.mark(unref(filterTerm), {
     element: 'span',
     className: 'mark-highlight',
     exclude: ['th *', 'tfoot *']
@@ -375,7 +371,7 @@ onMounted(async () => {
   )
   scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
   nextTick(() => {
-    markInstance.value = new Mark('.spaces-table')
+    markInstance = new Mark('.spaces-list')
   })
 })
 

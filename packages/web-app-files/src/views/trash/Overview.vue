@@ -116,7 +116,6 @@ const ready = ref(false)
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 const filterTerm = ref('')
-const markInstance = ref<Mark>()
 
 const spaces = computed(() =>
   spacesStore.spaces.filter(
@@ -240,6 +239,7 @@ const resourceTargetRouteCallback = ({
   resource
 }: CreateTargetRouteOptions): RouteLocationNamedRaw => getTrashLink(resource as SpaceResource)
 
+let markInstance: Mark | undefined
 onMounted(async () => {
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
     return router.push(getTrashLink(unref(spaces)[0]))
@@ -247,14 +247,12 @@ onMounted(async () => {
   ready.value = true
   await loadResourcesTask.perform()
   await nextTick()
-  markInstance.value = new Mark('.trash-table')
+  markInstance = new Mark('.trash-table')
 })
 
 watch(filterTerm, () => {
-  const instance = unref(markInstance)
-  if (!instance) return
-  instance.unmark()
-  instance.mark(unref(filterTerm), {
+  markInstance?.unmark()
+  markInstance?.mark(unref(filterTerm), {
     element: 'span',
     className: 'mark-highlight',
     exclude: ['th *', 'tfoot *']

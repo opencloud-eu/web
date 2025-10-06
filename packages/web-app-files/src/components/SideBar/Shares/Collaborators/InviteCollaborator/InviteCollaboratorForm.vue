@@ -263,8 +263,6 @@ export default defineComponent({
     const availableInternalRoles = inject<Ref<ShareRole[]>>('availableInternalShareRoles')
     const availableExternalRoles = inject<Ref<ShareRole[]>>('availableExternalShareRoles')
 
-    const markInstance = ref(null)
-
     const isOpen = ref(false)
 
     const onOpen = () => {
@@ -289,14 +287,15 @@ export default defineComponent({
       }, 700)
     })
 
+    let markInstance: Mark | undefined
     watch([autocompleteResults, isOpen], async () => {
       if (!unref(isOpen)) {
         return
       }
 
       await nextTick()
-      unref(markInstance)?.unmark()
-      unref(markInstance)?.mark(unref(searchQuery), {
+      markInstance?.unmark()
+      markInstance?.mark(unref(searchQuery), {
         element: 'span',
         className: 'mark-highlight'
       })
@@ -311,7 +310,7 @@ export default defineComponent({
     onMounted(async () => {
       setInitialSelectedRole()
       await nextTick()
-      markInstance.value = new Mark('.mark-element')
+      markInstance = new Mark('.mark-element')
     })
 
     const accountType = ref('standard')

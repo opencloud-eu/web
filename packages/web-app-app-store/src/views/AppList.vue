@@ -83,16 +83,16 @@ export default defineComponent({
       return filter(unref(apps), unref(filterTerm))
     })
 
-    const markInstance = ref<Mark>(null)
+    let markInstance: Mark | undefined
     onMounted(async () => {
       await nextTick()
-      markInstance.value = new Mark('.mark-element')
+      markInstance = new Mark('.mark-element')
     })
     watch([filterTerm, markInstance], () => {
       filterTermInput.value = unref(filterTerm)
-      unref(markInstance)?.unmark()
+      markInstance?.unmark()
       if (unref(filterTerm)) {
-        unref(markInstance)?.mark(unref(filterTerm), {
+        markInstance?.mark(unref(filterTerm), {
           element: 'span',
           className: 'mark-highlight'
         })

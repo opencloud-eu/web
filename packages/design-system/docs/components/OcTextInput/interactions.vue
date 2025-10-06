@@ -19,17 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref } from 'vue'
+import { ref, unref, useTemplateRef } from 'vue'
 
 const inputValueForClearing = ref<string>('clear me')
 const inputValueWithDefault = ref<string | null>(null)
 
-const inputForFocusRef = ref(null)
+const inputForFocusRef = useTemplateRef('inputForFocusRef')
 const focus = () => {
-  unref(inputForFocusRef).focus()
+  unref(inputForFocusRef)?.focus()
 }
-const inputForFocusSelectRef = ref(null)
+const inputForFocusSelectRef = useTemplateRef('inputForFocusSelectRef')
 const focusAndSelect = () => {
-  unref(inputForFocusSelectRef).focus()
+  unref(inputForFocusSelectRef)?.focus()
 }
 </script>

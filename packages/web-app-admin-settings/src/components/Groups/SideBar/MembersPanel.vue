@@ -13,7 +13,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, inject, ref, watch, unref, Ref } from 'vue'
+import { computed, defineComponent, inject, ref, watch, unref, Ref, useTemplateRef } from 'vue'
 import MembersRoleSection from '../../Groups/SideBar/MembersRoleSection.vue'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
@@ -26,8 +26,7 @@ export default defineComponent({
   setup() {
     const group = inject<Ref<Group>>('group')
     const filterTerm = ref('')
-    const markInstance = ref(null)
-    const membersListRef = ref(null)
+    const membersListRef = useTemplateRef('membersListRef')
 
     const filterMembers = (collection: User[], term: string) => {
       if (!(term || '').trim()) {
@@ -49,12 +48,13 @@ export default defineComponent({
       return filterMembers(unref(members), unref(filterTerm))
     })
 
+    let markInstance: Mark | undefined
     watch(filterTerm, () => {
       if (unref(membersListRef)) {
-        markInstance.value = new Mark(unref(membersListRef))
-        unref(markInstance).unmark()
+        markInstance = new Mark(unref(membersListRef))
+        markInstance.unmark()
         const searchTermRegex = unref(filterTerm)
-        unref(markInstance).mark(searchTermRegex, {
+        markInstance.mark(searchTermRegex, {
           element: 'span',
           className: 'mark-highlight'
         })
