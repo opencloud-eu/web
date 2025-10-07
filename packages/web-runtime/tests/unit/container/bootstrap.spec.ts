@@ -18,8 +18,6 @@ import {
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
 import { createTestingPinia, mockAxiosResolve } from '@opencloud-eu/web-test-helpers'
-import { describe } from 'vitest'
-import { expect } from '@playwright/test'
 
 vi.mock('../../../src/container/application')
 
