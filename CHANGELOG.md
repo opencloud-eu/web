@@ -6,6 +6,11 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @tammi-23
 
+### ✅ Tests
+
+- fail accessibility tests on any violation [[#1319](https://github.com/opencloud-eu/web/pull/1319)]
+- [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
+
 ### 🐛 Bug Fixes
 
 - fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
@@ -27,10 +32,6 @@
 - feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
 - feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
 - feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
-
-### ✅ Tests
-
-- [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
 
 ### 📦️ Dependencies
 
