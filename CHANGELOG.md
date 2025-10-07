@@ -36,6 +36,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v30 [[#1315](https://github.com/opencloud-eu/web/pull/1315)]
+- chore(deps): update dependency pino to v10 [[#1314](https://github.com/opencloud-eu/web/pull/1314)]
 - fix(deps): update dependency zod to v4.1.12 [[#1321](https://github.com/opencloud-eu/web/pull/1321)]
 - chore(deps): update pnpm to v10.18.1 [[#1320](https://github.com/opencloud-eu/web/pull/1320)]
 - chore(deps): update typescript-eslint monorepo to v8.46.0 [[#1324](https://github.com/opencloud-eu/web/pull/1324)]
