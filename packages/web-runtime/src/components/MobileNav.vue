@@ -36,6 +36,12 @@
           </oc-button>
         </li>
       </oc-list>
+      <div
+        class="versions flex flex-col items-center justify-center py-2 mt-4 bg-role-surface-container text-xs text-role-on-surface-variant"
+      >
+        <div v-text="backendVersion" />
+        <version-check v-if="checkForUpdates" />
+      </div>
     </oc-drop>
   </nav>
 </template>
@@ -43,9 +49,13 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { NavItem } from '../helpers/navItems'
+import VersionCheck from './VersionCheck.vue'
+import { getBackendVersion } from '../container/versions'
+import { useCapabilityStore } from '@opencloud-eu/web-pkg/src'
 
 export default defineComponent({
   name: 'MobileNav',
+  components: { VersionCheck },
   props: {
     navItems: {
       type: Array as PropType<NavItem[]>,
@@ -53,11 +63,16 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const capabilityStore = useCapabilityStore()
+
+    const checkForUpdates = capabilityStore.capabilities.core['check-for-updates']
+
+    const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
     const activeNavItem = computed(() => {
       return unref(props.navItems).find((n) => n.active) || props.navItems[0]
     })
 
-    return { activeNavItem }
+    return { activeNavItem, checkForUpdates, backendVersion }
   }
 })
 </script>

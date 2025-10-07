@@ -43,7 +43,10 @@ import {
   AppConfigObject,
   resourceIconMappingInjectionKey,
   ResourceIconMapping,
-  ClassicApplicationScript
+  ClassicApplicationScript,
+  UpdatesStore,
+  useUpdatesStore,
+  Updates
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -386,6 +389,7 @@ export const announcePiniaStores = () => {
   const spacesStore = useSpacesStore()
   const userStore = useUserStore()
   const webWorkersStore = useWebWorkersStore()
+  const updatesStore = useUpdatesStore()
 
   return {
     appsStore,
@@ -399,7 +403,8 @@ export const announcePiniaStores = () => {
     sharesStore,
     spacesStore,
     userStore,
-    webWorkersStore
+    webWorkersStore,
+    updatesStore
   }
 }
 
@@ -674,6 +679,51 @@ export const announceVersions = ({
       'background-color: #041E42; color: #FFFFFF; font-weight: bold; border: 1px solid #FFFFFF; padding: 5px;'
     )
   })
+}
+
+/**
+ * announce updates
+ *
+ * @param updateStore
+ * @param capabilityStore
+ * @param configStore
+ * @param clientService
+ */
+export const announceUpdates = async ({
+  updatesStore,
+  capabilityStore,
+  configStore,
+  clientService
+}: {
+  updatesStore: UpdatesStore
+  capabilityStore: CapabilityStore
+  configStore: ConfigStore
+  clientService: ClientService
+}): Promise<void> => {
+  if (!capabilityStore.capabilities.core['check-for-updates']) {
+    return
+  }
+
+  try {
+    updatesStore.setIsLoading(true)
+    const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
+      'https://update.opencloud.eu/server.json',
+      {
+        params: {
+          server: configStore.serverUrl,
+          edition: capabilityStore.status.edition || 'rolling',
+          version: capabilityStore.status.productversion
+        }
+      }
+    )
+
+    updatesStore.setUpdates(data)
+  } catch (e) {
+    console.error(e)
+    updatesStore.setHasError(true)
+  } finally {
+    updatesStore.setIsLoading(false)
+  }
 }
 
 /**

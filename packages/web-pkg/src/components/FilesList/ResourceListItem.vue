@@ -5,12 +5,12 @@
   >
     <resource-link
       v-if="isIconDisplayed"
+      v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
       :resource="resource"
       :link="link"
       :is-resource-clickable="isResourceClickable"
       class="relative"
       :class="{ 'hover:underline': isResourceClickable }"
-      v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
       :aria-label="
         isResourceClickable ? $gettext('Open »%{name}«', { name: resource?.name ?? '' }) : undefined
       "
