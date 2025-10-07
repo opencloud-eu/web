@@ -141,7 +141,7 @@ const viewModes = computed(() => {
   ]
 })
 
-const appBarRef = ref<ComponentPublicInstance | null>()
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')```
 const folderViewStyle = computed(() => {
   return {
     ...(unref(folderView)?.isScrollable === false && {
