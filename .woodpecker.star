@@ -123,7 +123,6 @@ config = {
                 "NATS_NATS_HOST": "0.0.0.0",
                 "NATS_NATS_PORT": 9233,
                 "COLLABORA_DOMAIN": "collabora:9980",
-                "FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR": "eu.opencloud.api.collaboration.Collabora",
                 "WEB_UI_CONFIG_FILE": None,
             },
         },
