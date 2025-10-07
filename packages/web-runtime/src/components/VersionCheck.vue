@@ -26,10 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
 import { useCapabilityStore, useConfigStore } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
 
 export interface UpdateChannelData {
   current_version: string
@@ -40,25 +41,32 @@ const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 
+const { updates } = storeToRefs(configStore)
+
 const updateAvailable = ref(false)
 const hasError = ref(false)
 const updateData = ref<UpdateChannelData>()
 
-onMounted(() => {
-  if (configStore.updates === undefined) {
-    hasError.value = true
-    return
-  }
+//TODO: retrieve serverEdition
+const serverEdition = 'rolling'
+const currentServerVersion = capabilityStore.status.productversion
+const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
-  //TODO: retrieve serverEdition
-  const serverEdition = 'rolling'
-  const currentServerVersion = capabilityStore.status.productversion
-  const currentServerVersionSanitized = currentServerVersion.split('+')[0]
+watch(
+  () => updates,
+  () => {
+    if (unref(updates) === undefined) {
+      hasError.value = true
+      return
+    }
 
-  const newestVersion = configStore.updates.channels[serverEdition].current_version
-  if (semver.gt(newestVersion, currentServerVersionSanitized)) {
-    updateAvailable.value = true
-    updateData.value = configStore.updates.channels[serverEdition]
-  }
-})
+    hasError.value = false
+    const newestVersion = unref(updates).channels[serverEdition].current_version
+    if (semver.gt(newestVersion, currentServerVersionSanitized)) {
+      updateAvailable.value = true
+      updateData.value = unref(updates).channels[serverEdition]
+    }
+  },
+  { immediate: true, deep: true }
+)
 </script>
