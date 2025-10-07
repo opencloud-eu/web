@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import tippy, { hideAll, Props as TippyProps, ReferenceElement, Instance } from 'tippy.js'
+import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getTailwindPaddingClass, NestedDrop, SizeType, uniqueId } from '../../helpers'
@@ -62,8 +62,9 @@ export interface Props {
   mode?: 'click' | 'hover' | 'manual'
   /**
    * @docs The visual offset of the drop.
+   * @default [0, 0]
    */
-  offset?: string
+  offset?: TippyProps['offset']
   /**
    * @docs The padding size of the drop.
    * @default 'medium'
@@ -131,7 +132,7 @@ const {
   dropId = uniqueId('oc-drop-'),
   isNestedElement = false,
   mode = 'click',
-  offset,
+  offset = [0, 0],
   paddingSize = 'medium',
   popperOptions = {},
   position = 'bottom-start',
@@ -236,7 +237,7 @@ const initializeTippy = () => {
   if (!to || !content) {
     return
   }
-  const config: any = {
+  const config: Partial<TippyProps> = {
     trigger: triggerMapping.value,
     placement: position,
     arrow: false,
@@ -245,9 +246,9 @@ const initializeTippy = () => {
     plugins: [hideOnEsc],
     theme: 'none',
     maxWidth: 416,
-    offset: offset ?? 0,
+    offset,
     ...(!isNestedElement && {
-      onShow: (instance: ReferenceElement) => {
+      onShow: (instance) => {
         emit('showDrop')
         hideAll({ exclude: instance })
       },

@@ -34,7 +34,6 @@
       mode="click"
       padding-size="small"
       class="files-recipient-role-drop w-md"
-      offset="0"
       close-on-click
     >
       <oc-list

@@ -7,7 +7,7 @@ exports[`CreateAndUpload component > action buttons > should show and be enabled
       <!-- @slot Content of the button -->
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="add" size="medium" type="span"></oc-icon-stub> <span>New</span>
     </button></div>
-  <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
+  <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
     <oc-list-stub raw="false" id="create-list" class="py-2 first:pt-0 last:pb-0">
       <li><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full" id="new-folder-btn">
           <!--v-if-->
@@ -44,7 +44,7 @@ exports[`CreateAndUpload component > action buttons > should show and be enabled
         </button></li>
     </oc-list-stub>
   </oc-drop-stub> <span><button type="button" aria-label="Upload files or folders" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" id="upload-menu-btn"><!--v-if--> <!-- @slot Content of the button --> <oc-icon-stub accessiblelabel="" color="" filltype="line" name="upload" size="medium" type="span"></oc-icon-stub> <span>Upload</span></button></span>
-  <oc-drop-stub title="Upload" closeonclick="true" dropid="upload-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#upload-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
+  <oc-drop-stub title="Upload" closeonclick="true" dropid="upload-menu-drop" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#upload-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
     <oc-list-stub raw="false" id="upload-list">
       <li>
         <resource-upload-stub btnlabel="" btnclass="w-full" isfolder="false"></resource-upload-stub>
@@ -66,7 +66,7 @@ exports[`CreateAndUpload component > file handlers > should show entries for all
       <!-- @slot Content of the button -->
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="add" size="medium" type="span"></oc-icon-stub> <span>New</span>
     </button></div>
-  <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
+  <oc-drop-stub title="New file" closeonclick="true" dropid="new-file-menu-drop" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#new-file-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
     <oc-list-stub raw="false" id="create-list" class="py-2 first:pt-0 last:pb-0">
       <li><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full" id="new-folder-btn">
           <!--v-if-->
@@ -103,7 +103,7 @@ exports[`CreateAndUpload component > file handlers > should show entries for all
         </button></li>
     </oc-list-stub>
   </oc-drop-stub> <span><button type="button" aria-label="Upload files or folders" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" id="upload-menu-btn"><!--v-if--> <!-- @slot Content of the button --> <oc-icon-stub accessiblelabel="" color="" filltype="line" name="upload" size="medium" type="span"></oc-icon-stub> <span>Upload</span></button></span>
-  <oc-drop-stub title="Upload" closeonclick="true" dropid="upload-menu-drop" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#upload-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
+  <oc-drop-stub title="Upload" closeonclick="true" dropid="upload-menu-drop" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#upload-menu-btn" enforcedroponmobile="false" class="w-auto min-w-3xs">
     <oc-list-stub raw="false" id="upload-list">
       <li>
         <resource-upload-stub btnlabel="" btnclass="w-full" isfolder="false"></resource-upload-stub>
