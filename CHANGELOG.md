@@ -6,6 +6,19 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @tammi-23
 
+### 📈 Enhancement
+
+- feat: add update check for mobile view [[#1323](https://github.com/opencloud-eu/web/pull/1323)]
+- feat: set view mode e.G tiles or table view  globally, add condensed view to Spaces view   [[#1306](https://github.com/opencloud-eu/web/pull/1306)]
+- feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
+- feat(extension-sdk): provide default tailwind config  [[#1275](https://github.com/opencloud-eu/web/pull/1275)]
+- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
+- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
+- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
+- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
+- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
+- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
 ### ✅ Tests
 
 - fail accessibility tests on any violation [[#1319](https://github.com/opencloud-eu/web/pull/1319)]
@@ -20,18 +33,6 @@
 - fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
 - fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
 - fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
-
-### 📈 Enhancement
-
-- feat: set view mode e.G tiles or table view  globally, add condensed view to Spaces view   [[#1306](https://github.com/opencloud-eu/web/pull/1306)]
-- feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
-- feat(extension-sdk): provide default tailwind config  [[#1275](https://github.com/opencloud-eu/web/pull/1275)]
-- feat: account page enhancements: remove last table row border, adjust… [[#1272](https://github.com/opencloud-eu/web/pull/1272)]
-- feat: load config authenticated [[#1249](https://github.com/opencloud-eu/web/pull/1249)]
-- feat(extension-sdk): add tailwind vite plugin to vite config [[#1256](https://github.com/opencloud-eu/web/pull/1256)]
-- feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
-- feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
-- feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
 
 ### 📦️ Dependencies
 
