@@ -80,6 +80,8 @@ import {
 } from './sse'
 import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { bytesToHex } from '@noble/hashes/utils.js'
 
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
@@ -705,12 +707,15 @@ export const announceUpdates = async ({
   }
 
   try {
+    const encoder = new TextEncoder()
+    const sha256ServerUrl = sha256(encoder.encode(configStore.serverUrl))
+
     updatesStore.setIsLoading(true)
     const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
       'https://update.opencloud.eu/server.json',
       {
         params: {
-          server: configStore.serverUrl,
+          server: bytesToHex(sha256ServerUrl),
           edition: capabilityStore.status.edition || 'rolling',
           version: capabilityStore.status.productversion
         }

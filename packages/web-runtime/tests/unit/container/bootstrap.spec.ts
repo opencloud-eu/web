@@ -1,15 +1,23 @@
-import { mock } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import { createApp, defineComponent, App } from 'vue'
-import { useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
+import {
+  CapabilityStore,
+  ClientService,
+  ConfigStore,
+  useAppsStore,
+  useConfigStore,
+  useUpdatesStore
+} from '@opencloud-eu/web-pkg'
 import {
   initializeApplications,
   announceApplicationsReady,
   announceCustomScripts,
   announceCustomStyles,
-  announceConfiguration
+  announceConfiguration,
+  announceUpdates
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
-import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import { createTestingPinia, mockAxiosResolve } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('../../../src/container/application')
 
@@ -215,5 +223,48 @@ describe('announceConfiguration', () => {
     const configStore = useConfigStore()
     await announceConfiguration({ path: '/config.json', configStore })
     expect(configStore.options.embed.enabled).toStrictEqual(false)
+  })
+})
+
+describe('announceUpdates', () => {
+  it('does not contact the update server, if capability is turned off', async () => {
+    const configStore = mockDeep<ConfigStore>({ serverUrl: 'https://demo.opencloud.eu' })
+    const capabilityStore = mockDeep<CapabilityStore>({
+      capabilities: {
+        core: { 'check-for-updates': false }
+      },
+      status: { productversion: '3.5.0', edition: 'rolling' }
+    })
+    const updatesStore = useUpdatesStore()
+    const clientService = mockDeep<ClientService>()
+
+    clientService.httpAuthenticated.get.mockResolvedValue(mockAxiosResolve({}))
+    await announceUpdates({ clientService, updatesStore, configStore, capabilityStore })
+    expect(clientService.httpUnAuthenticated.get).not.toHaveBeenCalled()
+  })
+
+  it('sends the correct params to the update server', async () => {
+    const configStore = mockDeep<ConfigStore>({ serverUrl: 'https://demo.opencloud.eu' })
+    const capabilityStore = mockDeep<CapabilityStore>({
+      capabilities: {
+        core: { 'check-for-updates': true }
+      },
+      status: { productversion: '3.5.0', edition: 'rolling' }
+    })
+    const updatesStore = useUpdatesStore()
+    const clientService = mockDeep<ClientService>()
+
+    clientService.httpAuthenticated.get.mockResolvedValue(mockAxiosResolve({}))
+    await announceUpdates({ clientService, updatesStore, configStore, capabilityStore })
+    expect(clientService.httpUnAuthenticated.get).toHaveBeenCalledWith(
+      'https://update.opencloud.eu/server.json',
+      {
+        params: {
+          edition: 'rolling',
+          server: 'feb937bb3019600cd682a7fc66d17a37540d9b3060ffa415373f2ad81f9f3b3a',
+          version: '3.5.0'
+        }
+      }
+    )
   })
 })
