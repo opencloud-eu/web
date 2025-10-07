@@ -44,7 +44,9 @@ import {
   resourceIconMappingInjectionKey,
   ResourceIconMapping,
   ClassicApplicationScript,
-  UpdatesConfigSchema
+  UpdatesStore,
+  useUpdatesStore,
+  Updates
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -387,6 +389,7 @@ export const announcePiniaStores = () => {
   const spacesStore = useSpacesStore()
   const userStore = useUserStore()
   const webWorkersStore = useWebWorkersStore()
+  const updatesStore = useUpdatesStore()
 
   return {
     appsStore,
@@ -400,7 +403,8 @@ export const announcePiniaStores = () => {
     sharesStore,
     spacesStore,
     userStore,
-    webWorkersStore
+    webWorkersStore,
+    updatesStore
   }
 }
 
@@ -680,15 +684,18 @@ export const announceVersions = ({
 /**
  * announce updates
  *
+ * @param updateStore
  * @param capabilityStore
  * @param configStore
  * @param clientService
  */
 export const announceUpdates = async ({
+  updatesStore,
   capabilityStore,
   configStore,
   clientService
 }: {
+  updatesStore: UpdatesStore
   capabilityStore: CapabilityStore
   configStore: ConfigStore
   clientService: ClientService
@@ -698,7 +705,8 @@ export const announceUpdates = async ({
   }
 
   try {
-    const { data } = await clientService.httpUnAuthenticated.get(
+    updatesStore.setIsLoading(true)
+    const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
       'https://update.opencloud.eu/server.json',
       {
         params: {
@@ -709,9 +717,12 @@ export const announceUpdates = async ({
       }
     )
 
-    configStore.loadConfigUpdates(UpdatesConfigSchema.parse(data))
+    updatesStore.setUpdates(data)
   } catch (e) {
     console.error(e)
+    updatesStore.setHasError(true)
+  } finally {
+    updatesStore.setIsLoading(false)
   }
 }
 

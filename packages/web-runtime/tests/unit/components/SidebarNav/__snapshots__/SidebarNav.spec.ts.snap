@@ -21,16 +21,7 @@ exports[`OcSidebarNav > renders navItems into a list 1`] = `
       <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
     </ul>
   </nav> <!-- @slot bottom content of the sidebar -->
-  <div class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"><span></span>
-    <div class="version-check-no-updates flex items-center"><span>Up to date</span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-3 ml-0.5"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-line.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-3"></svg></span></div>
+  <div class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"><span></span> false <div class="version-check-loading flex items-center"><span>Checking for updates</span> <span class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-2 ml-1" aria-hidden="true" tabindex="-1"></span></div>
   </div>
 </div>"
 `;

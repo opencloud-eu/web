@@ -58,8 +58,6 @@ export const useConfigStore = defineStore('config', () => {
   const scripts = ref<RawConfig['scripts']>([])
   const styles = ref<RawConfig['styles']>([])
 
-  const updates = ref<RawConfig['updates']>()
-
   const serverUrl = computed(() =>
     urlJoin(unref(server) || window.location.origin, { trailingSlash: true })
   )
@@ -98,10 +96,6 @@ export const useConfigStore = defineStore('config', () => {
     }
   }
 
-  const loadConfigUpdates = (data: RawConfig['updates']) => {
-    updates.value = data
-  }
-
   return {
     options,
     oAuth2,
@@ -116,9 +110,7 @@ export const useConfigStore = defineStore('config', () => {
     scripts,
     styles,
     serverUrl,
-    updates,
-    loadConfig,
-    loadConfigUpdates
+    loadConfig
   }
 })
 
