@@ -80,6 +80,8 @@ import {
 } from './sse'
 import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { bytesToHex } from '@noble/hashes/utils.js'
 
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
@@ -700,17 +702,32 @@ export const announceUpdates = async ({
   configStore: ConfigStore
   clientService: ClientService
 }): Promise<void> => {
+  console.log('?')
   if (!capabilityStore.capabilities.core['check-for-updates']) {
     return
   }
 
+  console.log('B')
   try {
+    const encoder = new TextEncoder()
+    const sha256ServerUrl = sha256(encoder.encode(configStore.serverUrl))
+    console.log('e')
+
     updatesStore.setIsLoading(true)
+    console.log('f')
+    console.log(capabilityStore.status.productversion)
+    console.log(capabilityStore.status.edition)
+    console.log('e')
+    console.log({
+      server: bytesToHex(sha256ServerUrl),
+      edition: capabilityStore.status.edition || 'rolling',
+      version: capabilityStore.status.productversion
+    })
     const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
       'https://update.opencloud.eu/server.json',
       {
         params: {
-          server: configStore.serverUrl,
+          server: bytesToHex(sha256ServerUrl),
           edition: capabilityStore.status.edition || 'rolling',
           version: capabilityStore.status.productversion
         }
