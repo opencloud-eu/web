@@ -8,7 +8,6 @@ import {
   MustNotBeEmptyRule
 } from './rules'
 import { PasswordPolicyCapability } from '@opencloud-eu/web-client/ocs'
-import { GeneratePassword } from 'js-generate-password'
 import { CapabilityStore } from '../../composables'
 
 // @ts-ignore
@@ -130,13 +129,59 @@ export class PasswordPolicyService {
   }
 
   public generatePassword(): string {
-    return GeneratePassword({
-      symbols: true,
-      length: this.generatePasswordRules.length,
-      minLengthLowercase: this.generatePasswordRules.minLowercaseCharacters,
-      minLengthUppercase: this.generatePasswordRules.minUppercaseCharacters,
-      minLengthNumbers: this.generatePasswordRules.minDigits,
-      minLengthSymbols: this.generatePasswordRules.minSpecialCharacters
-    })
+    const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz'
+    const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const specialChars = '"!#$%&\'()*+,-./:;<=>?@[]^_`{|}~'
+    const numberChars = '0123456789'
+
+    const generateRandomChars = (chars: string, length: number) => {
+      // inspired from https://blog.hboeck.de/archives/907-How-to-create-a-Secure,-Random-Password-with-JavaScript.html
+      const limit = 256 - (256 % chars.length)
+      let result = ''
+      let randval: number
+      for (let i = 0; i < length; i++) {
+        do {
+          randval = window.crypto.getRandomValues(new Uint8Array(1))[0]
+        } while (randval >= limit)
+        result += chars[randval % chars.length]
+      }
+      return result
+    }
+
+    const {
+      minLowercaseCharacters,
+      minUppercaseCharacters,
+      minDigits,
+      minSpecialCharacters,
+      length
+    } = this.generatePasswordRules
+
+    let password = ''
+    password += generateRandomChars(lowercaseChars, minLowercaseCharacters)
+    password += generateRandomChars(uppercaseChars, minUppercaseCharacters)
+    password += generateRandomChars(numberChars, minDigits)
+    password += generateRandomChars(specialChars, minSpecialCharacters)
+
+    if (password.length < length) {
+      // fill the remaining length with a random selection of all characters
+      const remainingLength = length - password.length
+      const allChars = lowercaseChars + uppercaseChars + specialChars + numberChars
+      password += generateRandomChars(allChars, remainingLength)
+    }
+
+    const shuffleChars = (str: string) => {
+      const arr = str.split('')
+      const randomValues = new Uint32Array(arr.length)
+      window.crypto.getRandomValues(randomValues)
+
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = randomValues[i] % (i + 1)
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      }
+
+      return arr.join('')
+    }
+
+    return shuffleChars(password)
   }
 }
