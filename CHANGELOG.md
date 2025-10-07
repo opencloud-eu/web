@@ -6,19 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @tammi-23
 
-### 🐛 Bug Fixes
-
-- fix: prevent uploading the same file again during upload [[#1277](https://github.com/opencloud-eu/web/pull/1277)]
-- fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
-- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
-- fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
-- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
-- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
-- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
-- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
-
 ### 📈 Enhancement
 
+- feat: send server url sha256 encoded to update server [[#1311](https://github.com/opencloud-eu/web/pull/1311)]
 - feat: add update check for mobile view [[#1323](https://github.com/opencloud-eu/web/pull/1323)]
 - feat: set view mode e.G tiles or table view  globally, add condensed view to Spaces view   [[#1306](https://github.com/opencloud-eu/web/pull/1306)]
 - feat: add top bar logo for mobile view [[#1281](https://github.com/opencloud-eu/web/pull/1281)]
@@ -29,6 +19,16 @@
 - feat: add shift + mouse scroll for zoom out and zoom in in preview app [[#1248](https://github.com/opencloud-eu/web/pull/1248)]
 - feat: add more screen real estate for images in preview app [[#1241](https://github.com/opencloud-eu/web/pull/1241)]
 - feat: add dark mode for OcDatePicker [[#1235](https://github.com/opencloud-eu/web/pull/1235)]
+
+### 🐛 Bug Fixes
+
+- fix: prevent uploading the same file again during upload [[#1277](https://github.com/opencloud-eu/web/pull/1277)]
+- fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
+- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
+- fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
+- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
+- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
+- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
 
 ### ✅ Tests
 
