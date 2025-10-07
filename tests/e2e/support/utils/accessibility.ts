@@ -13,7 +13,6 @@ export async function checkAccessibility(
     builder = builder.include(includeSelector)
   }
   const results = await builder.analyze()
-  let shouldFail = false
 
   if (results.violations.length > 0) {
     console.error(`♿ Accessibility violations detected${context ? ` in ${context}` : ''}:`)
@@ -25,20 +24,7 @@ export async function checkAccessibility(
       violation.nodes.forEach((node, idx) => {
         console.error(`  Node ${idx + 1}: ${node.html}`)
       })
-
-      if (violation.impact === 'critical') {
-        // Enable test failure after critical availability issue is resolved
-        shouldFail = false
-      }
     }
-    console.log(
-      `Accessibility check failed with ${results.violations.length} violation(s)${context ? ` in ${context}` : ''}.`
-    )
-
-    if (shouldFail) {
-      throw new Error(
-        `Accessibility check failed due to critical or serious violation(s)${context ? ` in ${context}` : ''}.`
-      )
-    }
+    throw new Error(`Accessibility check failed${context ? ` in ${context}` : ''}.`)
   }
 }
