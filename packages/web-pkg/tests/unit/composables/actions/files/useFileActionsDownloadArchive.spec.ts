@@ -9,7 +9,6 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { useArchiverService } from '../../../../../src/composables'
 import { ArchiverService } from '../../../../../src'
-import { ref } from 'vue'
 
 vi.mock('../../../../../src/composables/archiverService/useArchiverService')
 
@@ -63,8 +62,7 @@ function getWrapper({
 
   vi.mocked(useArchiverService).mockImplementation(() => {
     return {
-      triggerDownload: triggerDownloadMock,
-      fileIdsSupported: ref(true)
+      triggerDownload: triggerDownloadMock
     } as ArchiverService
   })
 
