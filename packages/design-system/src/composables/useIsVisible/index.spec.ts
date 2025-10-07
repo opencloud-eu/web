@@ -60,7 +60,7 @@ describe('useIsVisible', () => {
   it('is visible by default if browser does not support IntersectionObserver', () => {
     disableIntersectionObserver()
     const wrapper = createWrapper()
-    expect((wrapper.vm.$refs.target as any).innerHTML).toBe('true')
+    expect((wrapper.vm.$refs.target as HTMLElement).innerHTML).toBe('true')
   })
 
   it('observes the target', async () => {

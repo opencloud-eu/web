@@ -46,7 +46,7 @@ export type FieldType = {
   title?: string
   headerType?: string
   type?: string
-  callback?: any
+  callback?: (item: any) => void
   alignH?: 'left' | 'center' | 'right'
   alignV?: 'top' | 'middle' | 'bottom'
   width?: 'auto' | 'shrink' | 'expand'

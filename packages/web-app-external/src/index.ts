@@ -15,7 +15,7 @@ import { useActionExtensionCreateFromTemplate } from './extensions'
 import { useCreateFileHandler } from './composables'
 
 export default defineWebApplication({
-  setup(options: any) {
+  setup(options) {
     const { $gettext } = useGettext()
     const appProviderService = useAppProviderService()
     const { createFileHandler } = useCreateFileHandler()

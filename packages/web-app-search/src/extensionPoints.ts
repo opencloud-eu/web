@@ -8,7 +8,7 @@ export const searchProviderExtensionPoint: ExtensionPoint<SearchExtension> = {
 }
 
 export const extensionPoints = () => {
-  return computed<ExtensionPoint<any>[]>(() => {
+  return computed<ExtensionPoint<SearchExtension>[]>(() => {
     return [searchProviderExtensionPoint]
   })
 }

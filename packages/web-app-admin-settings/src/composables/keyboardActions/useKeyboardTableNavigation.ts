@@ -111,7 +111,7 @@ export const useKeyboardTableNavigation = (
       )
       const lastSelectedRowIndex = findIndex(
         unref(selectedRows),
-        (resource: any) => resource.id === lastSelectedRowId.value
+        (resource) => resource.id === lastSelectedRowId.value
       )
 
       if (lastSelectedRowIndex === -1) {
@@ -160,7 +160,7 @@ export const useKeyboardTableNavigation = (
     )
     const lastSelectedRowIndex = findIndex(
       unref(selectedRows),
-      (resource: any) => resource.id === lastSelectedRowId.value
+      (resource) => resource.id === lastSelectedRowId.value
     )
     return {
       lastSelectedRow,

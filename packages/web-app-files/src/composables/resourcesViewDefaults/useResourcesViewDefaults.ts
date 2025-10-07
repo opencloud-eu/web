@@ -34,7 +34,7 @@ interface ResourcesViewDefaultsOptions<T, U extends any[]> {
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
-  fileListHeaderY: Ref<any>
+  fileListHeaderY: Ref<number>
   refreshFileListHeaderPosition(): void
   loadResourcesTask: Task<TT, TU>
   areResourcesLoading: ReadOnlyRef<boolean>
