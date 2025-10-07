@@ -455,8 +455,8 @@ importers:
         specifier: 2.4.0
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       zod:
-        specifier: 4.1.11
-        version: 4.1.11
+        specifier: 4.1.12
+        version: 4.1.12
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -511,8 +511,8 @@ importers:
         specifier: 2.4.0
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       zod:
-        specifier: 4.1.11
-        version: 4.1.11
+        specifier: 4.1.12
+        version: 4.1.12
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -615,8 +615,8 @@ importers:
         specifier: 4.5.1
         version: 4.5.1(vue@3.5.22(typescript@5.9.3))
       zod:
-        specifier: 4.1.11
-        version: 4.1.11
+        specifier: 4.1.12
+        version: 4.1.12
 
   packages/web-app-pdf-viewer:
     dependencies:
@@ -762,7 +762,7 @@ importers:
         version: 1.6.11
       zod:
         specifier: ^4.0.0
-        version: 4.1.11
+        version: 4.1.12
     devDependencies:
       '@types/luxon':
         specifier: 3.7.1
@@ -896,7 +896,7 @@ importers:
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
       zod:
         specifier: ^4.0.0
-        version: 4.1.11
+        version: 4.1.12
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:^
@@ -1035,8 +1035,8 @@ importers:
         specifier: ^1.6.11
         version: 1.6.11
       zod:
-        specifier: 4.1.11
-        version: 4.1.11
+        specifier: 4.1.12
+        version: 4.1.12
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -6721,8 +6721,8 @@ packages:
   zhead@2.2.4:
     resolution: {integrity: sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==}
 
-  zod@4.1.11:
-    resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
+  zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -12895,6 +12895,6 @@ snapshots:
 
   zhead@2.2.4: {}
 
-  zod@4.1.11: {}
+  zod@4.1.12: {}
 
   zwitch@2.0.4: {}
