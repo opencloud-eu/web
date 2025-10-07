@@ -76,7 +76,14 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  unref,
+  useTemplateRef
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {

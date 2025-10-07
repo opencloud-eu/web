@@ -2,6 +2,7 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-view-options="true"
         :has-hidden-files="false"
@@ -77,7 +78,16 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -141,7 +151,7 @@ const viewModes = computed(() => {
   ]
 })
 
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')```
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 const folderViewStyle = computed(() => {
   return {
     ...(unref(folderView)?.isScrollable === false && {
