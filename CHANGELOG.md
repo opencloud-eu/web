@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.1.12 [[#1321](https://github.com/opencloud-eu/web/pull/1321)]
 - chore(deps): update pnpm to v10.18.1 [[#1320](https://github.com/opencloud-eu/web/pull/1320)]
 - chore(deps): update typescript-eslint monorepo to v8.46.0 [[#1324](https://github.com/opencloud-eu/web/pull/1324)]
 - chore(deps): update dependency @vavt/cm-extension to v1.11.1 [[#1325](https://github.com/opencloud-eu/web/pull/1325)]
