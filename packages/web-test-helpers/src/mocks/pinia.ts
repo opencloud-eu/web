@@ -9,6 +9,7 @@ import {
   Message,
   Modal,
   OptionsConfig,
+  Updates,
   WebThemeType
 } from '@opencloud-eu/web-pkg'
 import {
@@ -83,6 +84,11 @@ export type PiniaMockOptions = {
     capabilities?: Partial<Capabilities['capabilities']>
     isInitialized?: boolean
   }
+  updatesState?: {
+    isLoading?: boolean
+    hasError?: boolean
+    updates?: Updates
+  }
 }
 
 export function createMockStore({
@@ -102,7 +108,8 @@ export function createMockStore({
   sharesState = {},
   spacesState = {},
   userState = {},
-  capabilityState = {}
+  capabilityState = {},
+  updatesState = {}
 }: PiniaMockOptions = {}) {
   const defaultOpenCloudTheme = {
     defaults: {
@@ -164,7 +171,8 @@ export function createMockStore({
           ...mock<Capabilities['capabilities']>(),
           ...(capabilityState?.capabilities && { ...capabilityState.capabilities })
         }
-      }
+      },
+      updates: { isLoading: true, hasError: false, ...updatesState }
     }
   })
 }

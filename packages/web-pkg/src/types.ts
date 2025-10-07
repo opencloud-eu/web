@@ -18,3 +18,12 @@ export type FederatedUser = {
 export type FederatedConnection = FederatedUser & {
   id: string
 }
+
+export interface UpdateChannel {
+  current_version: string
+  url: string
+}
+
+export interface Updates {
+  channels: Record<string, UpdateChannel>
+}

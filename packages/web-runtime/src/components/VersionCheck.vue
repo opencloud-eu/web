@@ -32,74 +32,37 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useTask } from 'vue-concurrency'
+import { ref, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import semver from 'semver'
-import { useCapabilityStore, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { promiseTimeout } from '@vueuse/core'
-
-export interface UpdateChannelData {
-  current_version: string
-  url: string
-}
-
-export type UpdateChannelName = 'rolling' | 'production'
-
-export type UpdateChannels = Record<UpdateChannelName, UpdateChannelData>
-
-export interface UpdateResponseData {
-  channels: UpdateChannels
-}
+import { UpdateChannel, useCapabilityStore, useUpdatesStore } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
 
 const { $gettext } = useGettext()
-const { httpUnAuthenticated } = useClientService()
 const capabilityStore = useCapabilityStore()
-const configStore = useConfigStore()
+const updatesStore = useUpdatesStore()
+
+const { updates, isLoading, hasError } = storeToRefs(updatesStore)
 
 const updateAvailable = ref(false)
-const hasError = ref(false)
-const updateData = ref<UpdateChannelData>()
-//TODO: retrieve serverEdition
-const serverEdition = 'rolling'
+const updateData = ref<UpdateChannel>()
+
+const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
-const hasMinLoadingTimePassed = ref(false)
-const isLoading = computed(
-  () => loadVersionsTask.isRunning || !loadVersionsTask.last || !hasMinLoadingTimePassed.value
-)
-
-const loadVersionsTask = useTask(function* (signal) {
-  promiseTimeout(1000).then(() => {
-    hasMinLoadingTimePassed.value = true
-  })
-
-  try {
-    const { data }: { data: UpdateResponseData } = yield httpUnAuthenticated.get(
-      `https://update.opencloud.eu/server.json`,
-      {
-        params: {
-          server: configStore.serverUrl,
-          edition: serverEdition,
-          version: currentServerVersion
-        },
-        signal
-      }
-    )
-
-    const newestVersion = data.channels[serverEdition].current_version
+watch(
+  () => updates,
+  () => {
+    if (!unref(updates)) {
+      return
+    }
+    const newestVersion = unref(updates).channels[serverEdition].current_version
     if (semver.gt(newestVersion, currentServerVersionSanitized)) {
       updateAvailable.value = true
-      updateData.value = data.channels[serverEdition]
+      updateData.value = unref(updates).channels[serverEdition]
     }
-  } catch (error) {
-    console.error(error)
-    hasError.value = true
-  }
-}).restartable()
-
-onMounted(() => {
-  loadVersionsTask.perform()
-})
+  },
+  { immediate: true, deep: true }
+)
 </script>

@@ -1,7 +1,7 @@
 <template>
   <component
-    v-if="isResourceClickable"
     :is="isNavigatable ? 'router-link' : 'oc-button'"
+    v-if="isResourceClickable"
     :to="isNavigatable ? link : undefined"
     :target="isNavigatable ? linkTarget : undefined"
     :rel="isNavigatable && linkTarget === '_blank' ? 'noopener noreferrer' : undefined"
