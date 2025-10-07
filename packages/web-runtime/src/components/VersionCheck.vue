@@ -47,8 +47,7 @@ const { updates, isLoading, hasError } = storeToRefs(updatesStore)
 const updateAvailable = ref(false)
 const updateData = ref<UpdateChannel>()
 
-//TODO: retrieve serverEdition
-const serverEdition = 'rolling'
+const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 

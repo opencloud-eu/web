@@ -711,7 +711,7 @@ export const announceUpdates = async ({
       {
         params: {
           server: configStore.serverUrl,
-          edition: 'rolling', //TODO: retrieve serverEdition
+          edition: capabilityStore.status.edition || 'rolling',
           version: capabilityStore.status.productversion
         }
       }
