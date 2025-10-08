@@ -111,10 +111,10 @@ export default defineComponent({
 
     const { selectedResources } = useSelectedResources()
 
-    const isMetaDataLoading = ref(false)
+    const sharesLoading = ref(false)
 
     const isLoading = computed(() => {
-      return unref(isMetaDataLoading) || loadVersionsTask.isRunning
+      return unref(sharesLoading)
     })
 
     const panelContext = computed<SideBarPanelContext<SpaceResource, Resource, Resource>>(() => {
@@ -329,9 +329,10 @@ export default defineComponent({
       sharesStore.setLoading(false)
     }).restartable()
 
+    const currentResourceMtime = ref<string>() // used to check if we need to load new versions
     watch(
       () => [...unref(panelContext).items, props.isOpen],
-      async () => {
+      async (newValue, oldValue) => {
         if (unref(panelContext).items?.length !== 1) {
           return
         }
@@ -341,7 +342,15 @@ export default defineComponent({
           return
         }
 
+        const res1 = newValue?.[0] as Resource
+        const res2 = oldValue?.[0] as Resource
+        if (res1?.id === res2?.id && res1?.mdate === unref(currentResourceMtime)) {
+          // don't load versions if the content of the resource didn't change
+          return
+        }
+
         const resource = unref(panelContext).items[0]
+        currentResourceMtime.value = resource.mdate
 
         if (loadVersionsTask.isRunning) {
           loadVersionsTask.cancelAll()
@@ -376,7 +385,7 @@ export default defineComponent({
         }
 
         const resource = unref(panelContext).items[0]
-        isMetaDataLoading.value = true
+        sharesLoading.value = true
 
         if (isProjectSpaceResource(resource)) {
           await spacesStore.loadGraphPermissions({
@@ -399,7 +408,7 @@ export default defineComponent({
 
         if (!unref(isShareLocation)) {
           loadedResource.value = resource
-          isMetaDataLoading.value = false
+          sharesLoading.value = false
           return
         }
 
@@ -420,7 +429,7 @@ export default defineComponent({
           loadedResource.value = resource
           console.error(error)
         }
-        isMetaDataLoading.value = false
+        sharesLoading.value = false
       },
       {
         deep: true,
@@ -440,6 +449,10 @@ export default defineComponent({
     )
     provide('availableInternalShareRoles', readonly(availableInternalShareRoles))
     provide('availableExternalShareRoles', readonly(availableExternalShareRoles))
+    provide(
+      'versionsLoading',
+      computed(() => loadVersionsTask.isRunning)
+    )
 
     return {
       loadedResource,
