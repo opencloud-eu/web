@@ -18,6 +18,7 @@
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
+          :is-selectable="false"
           :fields-displayed="['name', 'sdate']"
           :are-paths-displayed="true"
           :resources="paginatedResources"

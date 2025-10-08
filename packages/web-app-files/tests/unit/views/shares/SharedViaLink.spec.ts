@@ -38,7 +38,6 @@ describe('SharedViaLink view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
-      console.log(wrapper.html())
       expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
     })
     it('shows the no-content-message after loading', () => {
@@ -49,7 +48,6 @@ describe('SharedViaLink view', () => {
     it('shows the files table when files are available', () => {
       const mockedFiles = [mockDeep<OutgoingShareResource>(), mockDeep<OutgoingShareResource>()]
       const { wrapper } = getMountedWrapper({ files: mockedFiles })
-      console.log(wrapper.html())
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
       expect(
