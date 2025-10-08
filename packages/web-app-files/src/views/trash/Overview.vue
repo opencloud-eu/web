@@ -1,12 +1,14 @@
 <template>
-  <div v-if="ready" class="flex">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-view-options="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
         :has-pagination="false"
+        :view-modes="viewModes"
       />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
@@ -25,18 +27,24 @@
               autocomplete="off"
             />
           </div>
-          <resource-table
+
+          <component
+            :is="folderView.component"
             class="trash-table"
             :resources="displaySpaces"
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
+            :sort-fields="sortFields.filter((field) => field.name === 'name')"
             :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
             :is-selectable="false"
             :show-rename-quick-action="false"
+            :view-mode="viewMode"
+            :view-size="viewSize"
+            :style="folderViewStyle"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
           >
@@ -47,16 +55,21 @@
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
             </template>
+            <template #actions="{ resource }">
+              <trash-quick-actions :space="resource" :item="resource" />
+            </template>
             <template #quickActions="{ resource }">
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
             <template #footer>
               <div class="text-center w-full my-2">
-                <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+                <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
+                  {{ footerTextTotal }}
+                </p>
                 <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
               </div>
             </template>
-          </resource-table>
+          </component>
         </template>
       </template>
     </files-view-wrapper>
@@ -65,7 +78,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -81,10 +103,9 @@ import {
   NoContentMessage,
   SortDir,
   useClientService,
-  useFileListHeaderPosition,
+  useExtensionRegistry,
   useResourcesStore,
   useRouter,
-  useSideBar,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -95,24 +116,50 @@ import {
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { ResourceTable } from '@opencloud-eu/web-pkg/src'
 import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
 import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
+import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
+import { useResourcesViewDefaults } from '../../composables'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const { $gettext, $ngettext } = useGettext()
 const clientService = useClientService()
-const { y: fileListHeaderY } = useFileListHeaderPosition()
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
 const resourcesStore = useResourcesStore()
+
+const resourcesViewDefaults = useResourcesViewDefaults()
+
+const { isSideBarOpen, fileListHeaderY, sideBarActivePanel, viewMode, viewSize, sortFields } =
+  resourcesViewDefaults
+
+const folderView = computed(() => {
+  const viewMode = unref(resourcesViewDefaults.viewMode)
+  return unref(viewModes).find((v) => v.name === viewMode)
+})
 
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
 
-const ready = ref(false)
+const extensionRegistry = useExtensionRegistry()
+const viewModes = computed(() => {
+  return [
+    ...extensionRegistry
+      .requestExtensions(folderViewsTrashOverviewExtensionPoint)
+      .map((e) => e.folderView)
+  ]
+})
+
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+const folderViewStyle = computed(() => {
+  return {
+    ...(unref(folderView)?.isScrollable === false && {
+      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+    })
+  }
+})
+
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 const filterTerm = ref('')
@@ -157,6 +204,7 @@ const loadResourcesTask = useTask(function* (signal) {
     ids: unref(spaces).map((space) => space.id),
     graphClient: clientService.graphAuthenticated
   })
+
   resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
 })
 
@@ -241,11 +289,12 @@ const resourceTargetRouteCallback = ({
 
 let markInstance: Mark | undefined
 onMounted(async () => {
+  await loadResourcesTask.perform()
+
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
     return router.push(getTrashLink(unref(spaces)[0]))
   }
-  ready.value = true
-  await loadResourcesTask.perform()
+
   await nextTick()
   markInstance = new Mark('.trash-table')
 })

@@ -1,10 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`TrashOverview > view states > should render trash list 1`] = `
-"<div class="flex">
+"<div class="flex w-full">
   <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
     <div id="files-view" class="outline-0 z-0">
-      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
+      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
       <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
         <div class="w-3xs"><label class="inline-block mb-0.5" for="trash-filter">Search
             <!--v-if-->
@@ -17,7 +17,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
           <!--v-if-->
         </div>
       </div>
-      <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" id="files-space-table" selection="">
+      <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu trash-table files-table" sort-fields="" view-size="1" id="files-space-table" selection="">
         <thead data-v-3c9ab66c="" class="oc-thead border-b">
           <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
             <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10 pl-4" style="top: 0px;" aria-sort="ascending"><button data-v-3c9ab66c="" type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
@@ -57,7 +57,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
               <!-- @slot Footer of the table -->
               <!-- @slot Footer of the files table -->
               <div class="text-center w-full my-2">
-                <p class="text-role-on-surface-variant">3 trash bins in total</p>
+                <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">3 trash bins in total</p>
                 <!--v-if-->
               </div>
             </td>
@@ -68,6 +68,6 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
     </div>
   </div>
   <!--v-if-->
-  <file-side-bar-stub isopen="false"></file-side-bar-stub>
+  <file-side-bar-stub isopen="false" activepanel=""></file-side-bar-stub>
 </div>"
 `;
