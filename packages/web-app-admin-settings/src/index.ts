@@ -3,26 +3,21 @@ import General from './views/General.vue'
 import Users from './views/Users.vue'
 import Groups from './views/Groups.vue'
 import Spaces from './views/Spaces.vue'
-import { Ability, urlJoin } from '@opencloud-eu/web-client'
+import { urlJoin } from '@opencloud-eu/web-client'
 import {
   ApplicationInformation,
   AppMenuItemExtension,
-  AppNavigationItem,
+  ClassicApplicationScript,
   defineWebApplication,
   useAbility,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { RouteRecordRaw } from 'vue-router'
 import { computed } from 'vue'
-
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
+import { useGettext } from 'vue3-gettext'
 
 const appId = 'admin-settings'
 
-export const routes = ({ $ability }: { $ability: Ability }): RouteRecordRaw[] => [
+export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext }) => [
   {
     path: '/',
     component: General,
@@ -104,7 +99,7 @@ export const routes = ({ $ability }: { $ability: Ability }): RouteRecordRaw[] =>
   }
 ]
 
-export const navItems = ({ $ability }: { $ability: Ability }): AppNavigationItem[] => [
+export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gettext }) => [
   {
     name: $gettext('General'),
     icon: 'settings-4',
@@ -155,6 +150,7 @@ export default defineWebApplication({
   setup() {
     const { can } = useAbility()
     const userStore = useUserStore()
+    const { $gettext } = useGettext()
 
     const appInfo: ApplicationInformation = {
       name: $gettext('Admin Settings'),
