@@ -42,6 +42,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v25.04.6.1.1 [[#1109](https://github.com/opencloud-eu/web/pull/1109)]
 - fix(deps): update dependency @sentry/vue to v10.18.0 [[#1328](https://github.com/opencloud-eu/web/pull/1328)]
 - chore(deps): update dependency @cucumber/messages to v30 [[#1315](https://github.com/opencloud-eu/web/pull/1315)]
 - chore(deps): update dependency pino to v10 [[#1314](https://github.com/opencloud-eu/web/pull/1314)]
