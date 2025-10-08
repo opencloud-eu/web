@@ -13,7 +13,19 @@ import {
   PartialComponentProps,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { AppBar, NoContentMessage, ResourceTable } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  FolderViewExtension,
+  NoContentMessage,
+  ResourceTable,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg'
+import {
+  folderViewsFavoritesExtensionPoint,
+  folderViewsFolderExtensionPoint,
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsTrashExtensionPoint
+} from '../../../../src/extensionPoints'
 
 vi.mock('../../../../src/composables')
 
@@ -74,12 +86,38 @@ function getMountedWrapper({
   files?: Resource[]
   loading?: boolean
 } = {}) {
+  const plugins = [...defaultPlugins()]
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
       paginatedResources: ref(files),
       areResourcesLoading: ref(loading)
     })
   )
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id
+      ],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue(extensions)
+
   const defaultMocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-trash-generic' })
@@ -90,12 +128,13 @@ function getMountedWrapper({
     space: mock<SpaceResource>({ id: '1', getDriveAliasAndItem: vi.fn(), name: 'Personal space' }),
     ...props
   }
+
   return {
     mocks: defaultMocks,
     wrapper: mount(GenericTrash, {
       props: propsData,
       global: {
-        plugins: [...defaultPlugins()],
+        plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
         stubs: { ...defaultStubs, portal: true }

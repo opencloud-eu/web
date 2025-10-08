@@ -2,10 +2,12 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
         :space="space"
+        :view-modes="viewModes"
       >
         <template #actions>
           <oc-button
@@ -35,7 +37,8 @@
             <span v-text="$gettext('This trash bin is empty')" />
           </template>
         </no-content-message>
-        <resource-table
+        <component
+          :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
@@ -48,7 +51,11 @@
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :space="space"
+          :view-mode="viewMode"
           :has-actions="showActions"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :view-size="viewSize"
+          :style="folderViewStyle"
           @sort="handleSort"
         >
           <template #contextMenu="{ resource, isOpen }">
@@ -61,7 +68,7 @@
             <pagination :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
-        </resource-table>
+        </component>
       </template>
     </files-view-wrapper>
     <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
@@ -69,7 +76,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, unref } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  unref,
+  useTemplateRef
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {
@@ -81,16 +95,17 @@ import {
   FileSideBar,
   Pagination,
   NoContentMessage,
-  ResourceTable,
   useDocumentTitle,
   useFileActionsEmptyTrashBin,
-  useUserStore
+  useUserStore,
+  useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { useResourcesViewDefaults } from '../../composables'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { folderViewsTrashExtensionPoint } from '../../extensionPoints'
 
 const props = defineProps<{
   space?: SpaceResource | null
@@ -116,8 +131,31 @@ const {
   handleSort,
   sideBarActivePanel,
   selectedResources,
-  isResourceInSelection
+  isResourceInSelection,
+  viewMode,
+  viewSize,
+  sortFields
 } = resourcesViewDefaults
+
+const extensionRegistry = useExtensionRegistry()
+const viewModes = computed(() => {
+  return [
+    ...extensionRegistry.requestExtensions(folderViewsTrashExtensionPoint).map((e) => e.folderView)
+  ]
+})
+
+const folderView = computed(() => {
+  const viewMode = unref(resourcesViewDefaults.viewMode)
+  return unref(viewModes).find((v) => v.name === viewMode)
+})
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+const folderViewStyle = computed(() => {
+  return {
+    ...(unref(folderView)?.isScrollable === false && {
+      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+    })
+  }
+})
 
 const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).length < 1)
 

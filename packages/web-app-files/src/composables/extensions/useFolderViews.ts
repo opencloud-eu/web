@@ -3,7 +3,9 @@ import { useGettext } from 'vue3-gettext'
 import {
   folderViewsFavoritesExtensionPoint,
   folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsTrashExtensionPoint,
+  folderViewsTrashOverviewExtensionPoint
 } from '../../extensionPoints'
 
 export const useFolderViews = (): FolderViewExtension[] => {
@@ -15,6 +17,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
       type: 'folderView',
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id
       ],
       folderView: {
@@ -33,7 +37,9 @@ export const useFolderViews = (): FolderViewExtension[] => {
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',
@@ -51,7 +57,9 @@ export const useFolderViews = (): FolderViewExtension[] => {
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id
       ],
       folderView: {
         name: 'resource-tiles',
