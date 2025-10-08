@@ -49,14 +49,14 @@ describe('admin settings index', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValueOnce(true)
         const route = routes({ $ability: ability }).find((n) => n.path === '/')
-        expect((route.redirect as any)().name).toEqual('admin-settings-general')
+        expect((route.beforeEnter as any)().name).toEqual('admin-settings-general')
       })
       it('should redirect to user management if permission given', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
         const route = routes({ $ability: ability }).find((n) => n.path === '/')
-        expect((route.redirect as any)().name).toEqual('admin-settings-users')
+        expect((route.beforeEnter as any)().name).toEqual('admin-settings-users')
       })
       it('should redirect to group management if permission given', () => {
         const ability = mock<Ability>()
@@ -64,7 +64,7 @@ describe('admin settings index', () => {
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
         const route = routes({ $ability: ability }).find((n) => n.path === '/')
-        expect((route.redirect as any)().name).toEqual('admin-settings-groups')
+        expect((route.beforeEnter as any)().name).toEqual('admin-settings-groups')
       })
       it('should redirect to space management if permission given', () => {
         const ability = mock<Ability>()
@@ -73,12 +73,12 @@ describe('admin settings index', () => {
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
         const route = routes({ $ability: ability }).find((n) => n.path === '/')
-        expect((route.redirect as any)().name).toEqual('admin-settings-spaces')
+        expect((route.beforeEnter as any)().name).toEqual('admin-settings-spaces')
       })
       it('should throw an error if permissions are insufficient', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValue(false)
-        expect(routes({ $ability: ability }).find((n) => n.path === '/').redirect).toThrow()
+        expect(routes({ $ability: ability }).find((n) => n.path === '/').beforeEnter).toThrow()
       })
     })
     it.each([

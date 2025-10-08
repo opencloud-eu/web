@@ -25,18 +25,19 @@ const appId = 'admin-settings'
 export const routes = ({ $ability }: { $ability: Ability }): RouteRecordRaw[] => [
   {
     path: '/',
-    redirect: () => {
+    component: General,
+    beforeEnter: (to, from, next) => {
       if ($ability.can('read-all', 'Setting')) {
-        return { name: 'admin-settings-general' }
+        next({ name: 'admin-settings-general' })
       }
       if ($ability.can('read-all', 'Account')) {
-        return { name: 'admin-settings-users' }
+        next({ name: 'admin-settings-users' })
       }
       if ($ability.can('read-all', 'Group')) {
-        return { name: 'admin-settings-groups' }
+        next({ name: 'admin-settings-groups' })
       }
       if ($ability.can('read-all', 'Drive')) {
-        return { name: 'admin-settings-spaces' }
+        next({ name: 'admin-settings-spaces' })
       }
       throw Error('Insufficient permissions')
     }
