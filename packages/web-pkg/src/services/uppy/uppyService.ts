@@ -91,7 +91,8 @@ export class UppyService {
           // file is currently being uploaded, no need to add it again
           return false
         }
-        file.meta.relativePath = this.getRelativeFilePath(file)
+        file.name = file.name.normalize('NFC')
+        file.meta.relativePath = this.getRelativeFilePath(file)?.normalize('NFC')
         // id needs to be generated after the relative path has been set.
         file.id = this.generateUploadId(file)
         return file
