@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-07
+## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-08
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -29,6 +29,7 @@
 - fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
 - fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
 - fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
 
 ### ✅ Tests
 
