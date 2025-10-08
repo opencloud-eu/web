@@ -12,6 +12,7 @@
       no-prettier
       no-upload-img
       no-highlight
+      no-echarts
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
       auto-focus
