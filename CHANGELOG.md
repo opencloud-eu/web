@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: sidebar versions loading (performance) [[#1285](https://github.com/opencloud-eu/web/pull/1285)]
 - fix: normalize file and folder names to NFC when uploading [[#1327](https://github.com/opencloud-eu/web/pull/1327)]
 - fix: prevent uploading the same file again during upload [[#1277](https://github.com/opencloud-eu/web/pull/1277)]
 - fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
