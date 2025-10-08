@@ -34,7 +34,7 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
       if ($ability.can('read-all', 'Drive')) {
         next({ name: 'admin-settings-spaces' })
       }
-      throw Error('Insufficient permissions')
+      next({ path: '/' })
     }
   },
   {
