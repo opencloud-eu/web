@@ -4,7 +4,7 @@ import { App } from 'vue'
 import { isFunction, isObject } from 'lodash-es'
 import { NextApplication } from './next'
 import { Router } from 'vue-router'
-import { RuntimeError, useAppsStore } from '@opencloud-eu/web-pkg'
+import { GlobalProperties, RuntimeError, useAppsStore } from '@opencloud-eu/web-pkg'
 import { AppConfigObject, AppReadyHookArgs, ClassicApplicationScript } from '@opencloud-eu/web-pkg'
 import { useExtensionRegistry } from '@opencloud-eu/web-pkg'
 
@@ -25,8 +25,10 @@ class ClassicApplication extends NextApplication {
   initialize(): Promise<void> {
     const { routes, navItems } = this.applicationScript
     const { globalProperties } = this.app.config
-    const _routes = typeof routes === 'function' ? routes(globalProperties) : routes
-    const _navItems = typeof navItems === 'function' ? navItems(globalProperties) : navItems
+    const _routes =
+      typeof routes === 'function' ? routes(globalProperties as GlobalProperties) : routes
+    const _navItems =
+      typeof navItems === 'function' ? navItems(globalProperties as GlobalProperties) : navItems
 
     routes && this.runtimeApi.announceRoutes(_routes)
     navItems && this.runtimeApi.announceNavigationItems(_navItems)
@@ -57,7 +59,7 @@ class ClassicApplication extends NextApplication {
         }),
         instance,
         router: this.runtimeApi.requestRouter(),
-        globalProperties: this.app.config.globalProperties
+        globalProperties: this.app.config.globalProperties as GlobalProperties
       })
   }
 }

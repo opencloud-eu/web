@@ -1,8 +1,10 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { navItems } from '../../src/index'
-import { useSpacesStore } from '@opencloud-eu/web-pkg'
+import { AppNavigationItem, GlobalProperties, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
+
+const callableNavItems = navItems as (args: GlobalProperties) => AppNavigationItem[]
 
 describe('Web app files', () => {
   beforeEach(() => {
@@ -18,7 +20,7 @@ describe('Web app files', () => {
         spacesStore.spaces = [
           mock<SpaceResource>({ id: '1', driveType: 'personal', isOwner: () => true })
         ]
-        const items = navItems(undefined)
+        const items = callableNavItems(mock<GlobalProperties>())
         expect(items[0].isVisible()).toBeTruthy()
       })
       it('should be disabled if user has no a personal space', () => {
@@ -26,7 +28,7 @@ describe('Web app files', () => {
         spacesStore.spaces = [
           mock<SpaceResource>({ id: '1', driveType: 'project', isOwner: () => false })
         ]
-        const items = navItems(undefined)
+        const items = callableNavItems(mock<GlobalProperties>())
         expect(items[0].isVisible()).toBeFalsy()
       })
     })

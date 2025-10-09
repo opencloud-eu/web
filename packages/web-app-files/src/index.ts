@@ -10,6 +10,7 @@ import TrashOverview from './views/trash/Overview.vue'
 import translations from '../l10n/translations.json'
 import {
   ApplicationInformation,
+  ClassicApplicationScript,
   defineWebApplication,
   useCapabilityStore,
   useEmbedMode,
@@ -18,28 +19,22 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { extensions } from './extensions'
 import { buildRoutes } from '@opencloud-eu/web-pkg'
-import { AppNavigationItem } from '@opencloud-eu/web-pkg'
 
 // dirty: importing view from other extension within project
 import SearchResults from '../../web-app-search/src/views/List.vue'
 import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
-import { ComponentCustomProperties, unref } from 'vue'
+import { unref } from 'vue'
 import { extensionPoints } from './extensionPoints'
-
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
+import { useGettext } from 'vue3-gettext'
 
 const appInfo: ApplicationInformation = {
-  name: $gettext('Files'),
   id: 'files',
   icon: 'resource-type-folder',
   color: 'var(--oc-role-secondary)',
   extensions: []
 }
 
-export const navItems = (context: ComponentCustomProperties): AppNavigationItem[] => {
+export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gettext }) => {
   const spacesStores = useSpacesStore()
   const userStore = useUserStore()
   const capabilityStore = useCapabilityStore()
@@ -75,7 +70,7 @@ export const navItems = (context: ComponentCustomProperties): AppNavigationItem[
         path: `/${appInfo.id}/favorites`
       },
       isVisible() {
-        return capabilityStore.filesFavorites && context.$ability.can('read', 'Favorite')
+        return capabilityStore.filesFavorites && $ability.can('read', 'Favorite')
       },
       priority: 20
     },
@@ -133,6 +128,9 @@ export const navItems = (context: ComponentCustomProperties): AppNavigationItem[
 
 export default defineWebApplication({
   setup() {
+    const { $gettext } = useGettext()
+    appInfo.name = $gettext('Files')
+
     return {
       appInfo,
       routes: buildRoutes({

@@ -1,27 +1,21 @@
 import App from './App.vue'
 import List from './views/List.vue'
-
-// @ts-ignore
 import translations from '../l10n/translations.json'
-import { ApplicationInformation, defineWebApplication } from '@opencloud-eu/web-pkg'
+import { defineWebApplication } from '@opencloud-eu/web-pkg'
 import { extensions } from './extensions'
 import { extensionPoints } from './extensionPoints'
-
-// just a dummy function to trick gettext tools
-const $gettext = (msg: string) => {
-  return msg
-}
-
-const appInfo: ApplicationInformation = {
-  name: $gettext('Search'),
-  id: 'search',
-  icon: 'folder'
-}
+import { useGettext } from 'vue3-gettext'
 
 export default defineWebApplication({
   setup() {
+    const { $gettext } = useGettext()
+
     return {
-      appInfo,
+      appInfo: {
+        name: $gettext('Search'),
+        id: 'search',
+        icon: 'folder'
+      },
       routes: [
         {
           name: 'search',
