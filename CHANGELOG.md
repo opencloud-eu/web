@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add tiles view for shared via link view [[#1343](https://github.com/opencloud-eu/web/pull/1343)]
 - feat: tiles view for trash [[#1310](https://github.com/opencloud-eu/web/pull/1310)]
 - feat: send server url sha256 encoded to update server [[#1311](https://github.com/opencloud-eu/web/pull/1311)]
 - feat: add update check for mobile view [[#1323](https://github.com/opencloud-eu/web/pull/1323)]
@@ -23,6 +24,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): redirect when accessing /admin-settings [[#1337](https://github.com/opencloud-eu/web/pull/1337)]
 - fix: disable echart loading in text editor [[#1332](https://github.com/opencloud-eu/web/pull/1332)]
 - fix: sidebar versions loading (performance) [[#1285](https://github.com/opencloud-eu/web/pull/1285)]
 - fix: normalize file and folder names to NFC when uploading [[#1327](https://github.com/opencloud-eu/web/pull/1327)]
