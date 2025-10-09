@@ -68,7 +68,7 @@
               class="oc-modal-body-actions-cancel"
               :disabled="isLoading"
               @click="cancelModalAction"
-              >{{ $gettext(buttonCancelText) }}
+              >{{ $gettext(cancelLabel) }}
             </oc-button>
             <oc-button
               v-if="!hideConfirmButton"
@@ -77,7 +77,7 @@
               :disabled="isLoading || buttonConfirmDisabled || !!inputError"
               :show-spinner="showSpinner"
               @click="confirm"
-              >{{ $gettext(buttonConfirmText) }}
+              >{{ $gettext(confirmLabel) }}
             </oc-button>
           </div>
         </div>
@@ -262,6 +262,14 @@ const setLoadingState = () => {
   showSpinner.value = true
   buttonConfirmAppearance.value = 'outline'
 }
+
+const confirmLabel = computed(() => {
+  return buttonConfirmText || $gettext('Confirm')
+})
+
+const cancelLabel = computed(() => {
+  return buttonCancelText || $gettext('Cancel')
+})
 
 watch(
   () => isLoading,
