@@ -14,7 +14,7 @@ Feature: profile photo
 
     When "Alice" changes the profile image "testavatar.png"
     Then "Alice" should have a profile picture
-    
+
     When "Alice" deletes the profile image
     Then "Alice" should not have a profile picture
     And "Alice" logs out
@@ -35,7 +35,7 @@ Feature: profile photo
       | resource       | recipient | type | role     |
       | sharedFolder   | Brian     | user | Can edit |
       | sharedFolder   | Carol     | user | Can edit |
-    
+
     When "Alice" logs in
     Then "Alice" should see the following recipients
       | resource     | recipient | hasAvatar |
@@ -43,13 +43,14 @@ Feature: profile photo
       | sharedFolder | Carol     | false    |
     And "Alice" should see "Brian" avatar for the resource "sharedFolder" in the activity panel
     And "Alice" navigates to the shared with others page
+    And "Alice" switches to the "table" view
     And "Alice" should see "recipient" avatar for the resource "sharedFolder"
     And "Alice" should see the following recipients
       | resource     | recipient | hasAvatar |
       | sharedFolder | Brian     | true     |
       | sharedFolder | Carol     | false    |
     And "Alice" logs out
-    
+
     When "Brian" logs in
     Then "Brian" should see sharer avatar in the notification
     And "Brian" navigates to the shared with me page

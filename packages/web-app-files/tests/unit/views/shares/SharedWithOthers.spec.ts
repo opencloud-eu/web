@@ -8,7 +8,14 @@ import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
+import { ResourceTable, FolderViewExtension, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import {
+  folderViewsSharedWithOthers,
+  folderViewsTrashOverviewExtensionPoint,
+  folderViewsFavoritesExtensionPoint,
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsFolderExtensionPoint
+} from '../../../../src/extensionPoints'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -81,12 +88,40 @@ function getMountedWrapper({
   files?: IncomingShareResource[]
   loading?: boolean
 } = {}) {
+  const plugins = [...defaultPlugins()]
+
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
       paginatedResources: ref(files),
       areResourcesLoading: ref(loading)
     })
   )
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id,
+        folderViewsSharedWithOthers.id
+      ],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue(extensions)
+
   const defaultMocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-shares-with-others' })
@@ -98,7 +133,7 @@ function getMountedWrapper({
     mocks: defaultMocks,
     wrapper: mount(SharedWithOthers, {
       global: {
-        plugins: [...defaultPlugins()],
+        plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
         stubs: { ...defaultStubs, ItemFilter: true }

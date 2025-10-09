@@ -69,6 +69,11 @@ export const folderViewsSharedViaLink: ExtensionPoint<FolderViewExtension> = {
   extensionType: 'folderView'
 }
 
+export const folderViewsSharedWithOthers: ExtensionPoint<FolderViewExtension> = {
+  id: 'app.files.folder-views.shared-with-others',
+  extensionType: 'folderView'
+}
+
 export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
