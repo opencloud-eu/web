@@ -8,6 +8,7 @@ const emptyTrashbinQuickActionBtn =
   '//*[@data-test-resource-name="%s"]//ancestor::tr//button[@aria-label="Empty trash bin"] | //*[@data-test-resource-name="%s"]//ancestor::li[contains(@class, "oc-tiles-item")]//button[@aria-label="Empty trash bin"]'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const footerTextSelector = '//*[@data-testid="files-list-footer-info"]'
+const personalTrashbinSelector = 'a[href^="/files/trash/personal/"]'
 
 export interface openTrashBinArgs {
   id: string
@@ -20,7 +21,7 @@ export const openTrashbinOfProjectSpace = async (args: openTrashBinArgs): Promis
 }
 
 export const openTrashbinOfPersonalSpace = async (page: Page): Promise<void> => {
-  await page.getByTitle('Personal').click()
+  await page.locator(personalTrashbinSelector).first().click()
 }
 
 export const showEmptyTrashbins = async (page: Page): Promise<void> => {

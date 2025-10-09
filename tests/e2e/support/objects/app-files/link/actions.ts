@@ -4,7 +4,7 @@ import { sidebar } from '../utils'
 import { getActualExpiryDate } from '../../../utils/datePicker'
 import { clickResource } from '../resource/actions'
 import { config } from '../../../../config'
-import { checkAccessibility } from '../../../utils/accessibility'
+import { checkA11yOrLocalization } from '../../../utils/accessibility'
 
 export interface createLinkArgs {
   page: Page
@@ -115,6 +115,12 @@ const getRecentLinkName = async (page: Page): Promise<string> => {
   return await page.locator(publicLinkNameList).first().textContent()
 }
 
+const roleIdMap: Record<string, string> = {
+  'Can view': '#files-role-view',
+  'Can edit': '#files-role-edit',
+  'Secret File Drop': '#files-role-createOnly'
+}
+
 export const createLink = async (args: createLinkArgs): Promise<string> => {
   const { space, page, resource, password, role, a11yEnabled } = args
   if (!space) {
@@ -129,15 +135,18 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
   await page.locator(addPublicLinkButton).click()
   await page.locator(advancedModeButton).click()
   if (a11yEnabled) {
-    await checkAccessibility(page, 'create public link modal', createLinkModal)
+    await checkA11yOrLocalization(page, 'create public link modal', createLinkModal)
   }
 
   if (role) {
+    const roleSelector = roleIdMap[role]
+    if (!roleSelector) throw new Error(`Unknown role: ${role}`)
     await page.locator(publicLinkRoleToggle).click()
+
     if (a11yEnabled) {
-      await checkAccessibility(page, 'check link role dropdown', linkRoleDropdown)
+      await checkA11yOrLocalization(page, 'check link role dropdown', linkRoleDropdown)
     }
-    await page.locator(util.format(publicLinkSetRoleButton, role)).click()
+    await page.locator(roleSelector).click()
   }
 
   await page.locator(editPublicLinkPasswordInput).fill(password)
@@ -157,7 +166,9 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
   if (config.browser === 'webkit') {
     return (await resp[0].json()).link.webUrl
   } else {
-    return await getRecentLinkUrl(page, 'Unnamed link')
+    const name =
+      process.env.RUN_LOCALIZATION_TEST_FOR_LANG === 'de' ? 'Unbenannter Link' : 'Unnamed link'
+    return await getRecentLinkUrl(page, name)
   }
 }
 
