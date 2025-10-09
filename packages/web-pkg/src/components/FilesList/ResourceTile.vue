@@ -87,6 +87,7 @@
               :is-resource-clickable="isResourceClickable"
               :is-path-displayed="isPathDisplayed"
               :parent-folder-name="getParentFolderName(resource)"
+              :parent-folder-link="getParentFolderLink(resource)"
               :link="resourceRoute"
               @click.stop="$emit('click', $event)"
             />
@@ -163,7 +164,7 @@ defineSlots<{
 
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
-const { getParentFolderName } = useFolderLink()
+const { getParentFolderName, getParentFolderLink } = useFolderLink()
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
