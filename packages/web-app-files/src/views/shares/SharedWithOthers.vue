@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :is-side-bar-open="isSideBarOpen">
+      <app-bar ref="appBarRef" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -35,7 +35,8 @@
             <span v-text="$gettext('You have not shared any resources with other people.')" />
           </template>
         </no-content-message>
-        <resource-table
+        <component
+          :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
@@ -45,6 +46,10 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :style="folderViewStyle"
           :grouping-settings="groupingSettings"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -60,7 +65,7 @@
             <pagination :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="filteredItems.length > 0" class="w-full my-2" />
           </template>
-        </resource-table>
+        </component>
       </template>
     </files-view-wrapper>
     <file-side-bar
@@ -77,6 +82,7 @@ import {
   useAppsStore,
   useCapabilityStore,
   useConfigStore,
+  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
   useResourcesStore,
@@ -95,13 +101,14 @@ import { ContextActions } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, computed, unref } from 'vue'
+import { defineComponent, computed, unref, useTemplateRef, ComponentPublicInstance } from 'vue'
 import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import { folderViewsSharedWithOthers } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -138,6 +145,28 @@ export default defineComponent({
       viewMode
     } = resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
+
+    const extensionRegistry = useExtensionRegistry()
+
+    const folderView = computed(() => {
+      const viewMode = unref(resourcesViewDefaults.viewMode)
+      return unref(viewModes).find((v) => v.name === viewMode)
+    })
+
+    const viewModes = computed(() => {
+      return [
+        ...extensionRegistry.requestExtensions(folderViewsSharedWithOthers).map((e) => e.folderView)
+      ]
+    })
+
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+    const folderViewStyle = computed(() => {
+      return {
+        ...(unref(folderView)?.isScrollable === false && {
+          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+        })
+      }
+    })
 
     const shareTypes = computed(() => {
       const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
@@ -199,6 +228,10 @@ export default defineComponent({
       shareTypes,
       getMatchingSpace,
       loadPreview,
+      folderView,
+      folderViewStyle,
+      viewModes,
+      appBarRef,
 
       // CERN
       ...useGroupingSettings({ sortBy, sortDir })
