@@ -16,7 +16,8 @@ const actionMenuDropdownButton = `
    contains(@class, "resource-table-btn-action-dropdown"))
 ]
 `
-const actionsTriggerButton = '.oc-files-actions-%s-trigger'
+const actionsDropdownTriggerButton =
+  '//div[contains(@class, "oc-drop")]//button[contains(@class, "oc-files-actions-%s-trigger")]'
 const selectAllCheckbox =
   '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
 const acceptButton = '.oc-files-actions-enable-sync-trigger'
@@ -148,7 +149,7 @@ export const clickActionInContextMenu = async (
             resp.status() === 201 &&
             resp.request().method() === 'POST'
         ),
-        page.locator(util.format(actionsTriggerButton, action)).click()
+        page.locator(util.format(actionsDropdownTriggerButton, action)).click()
       ])
       break
     case 'disable-sync':
@@ -159,7 +160,7 @@ export const clickActionInContextMenu = async (
             resp.status() === 204 &&
             resp.request().method() === 'DELETE'
         ),
-        page.locator(util.format(actionsTriggerButton, action)).click()
+        page.locator(util.format(actionsDropdownTriggerButton, action)).click()
       ])
       break
   }
