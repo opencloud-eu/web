@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): translate default modal action button labels [[#1347](https://github.com/opencloud-eu/web/pull/1347)]
 - fix: mobile tiles view right click menu [[#1345](https://github.com/opencloud-eu/web/pull/1345)]
 - fix(admin-settings): redirect when accessing /admin-settings [[#1337](https://github.com/opencloud-eu/web/pull/1337)]
 - fix: disable echart loading in text editor [[#1332](https://github.com/opencloud-eu/web/pull/1332)]
