@@ -49,10 +49,11 @@ Feature: Accessibility checks
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
-    And "Alice" switches to the "tiles" view
-    And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
     And "Alice" switches to the "table-condensed" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
+    # check empty page
+    And "Brian" opens the "files" app
+    And "Brian" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
 
     # shares
     And "Alice" navigates to the shared with me page
@@ -150,8 +151,11 @@ Feature: Accessibility checks
     ## 6. space page
     And "Alice" navigates to the project space "my_space"
     And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
-
-
+    And "Brian" opens the "files" app
+    And "Brian" navigates to the projects space page
+    And "Brian" checks the accessibility of the DOM selector "#files-view" on the "project spaces page"
+    
+    
     ## 7. app-sidebar (right sidebar)
     And "Alice" opens the "files" app
     And "Alice" opens the right sidebar of the resource "lorem.txt"
@@ -161,19 +165,20 @@ Feature: Accessibility checks
     And "Alice" opens a "versions" panel of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-versions" on the "right sidebar->versions panel"
     And "Alice" opens a "activities" panel of the resource "lorem.txt"
-    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->activities panel"
+    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-activities" on the "right sidebar->activities panel"
     And "Alice" opens a "sharing" panel of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-sharing" on the "right sidebar->sharing panel"
 
     # check create public link modal and link role dropdown
     And "Alice" creates a public link of following resource using the sidebar panel
-      | resource         | role     | password |
-      | parent  | Secret File Drop | %public% |
+      | resource | role             | password |
+      | parent   | Secret File Drop | %public% |
 
     ## 8. public link page
     And "Anonymous" opens the public link "Unnamed link"
+    And "Anonymous" checks the accessibility of the DOM selector "#opencloud" on the "public link page->before unlock"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" checks the accessibility of the DOM selector "#web-content" on the "public link page"
+    And "Anonymous" checks the accessibility of the DOM selector "#files" on the "public link page"
 
     And "Alice" logs out
     And "Brian" logs out
