@@ -648,8 +648,10 @@ describe('ResourceTable', () => {
 
       const { wrapper } = getMountedWrapper({ resources: [resource] })
 
-      expect(wrapper.find('.resource-table-shared-with').exists()).toBeTruthy()
-      expect(wrapper.findAll('.resource-table-shared-with .oc-avatar').length).toBe(1)
+      expect(wrapper.find('[data-testid="resource-table-shared-with"]').exists()).toBeTruthy()
+      expect(wrapper.findAll('[data-testid="resource-table-shared-with"] .oc-avatar').length).toBe(
+        1
+      )
     })
   })
   describe('rename action', () => {
