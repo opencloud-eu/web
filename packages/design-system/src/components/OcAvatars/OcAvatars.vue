@@ -3,6 +3,7 @@
     <span
       ref="avatarsRef"
       v-oc-tooltip="tooltip"
+      role="img"
       class="oc-avatars inline-flex w-fit flex-nowrap flex-row"
       :aria-label="avatarsAriaLabel"
       :class="{

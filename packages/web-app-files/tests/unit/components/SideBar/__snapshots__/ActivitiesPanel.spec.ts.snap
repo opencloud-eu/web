@@ -4,28 +4,28 @@ exports[`ActivitiesPanel > should render a list of activities when data is prese
 "<div class="ml-2">
   <ul class="oc-list oc-timeline">
     <li>
-      <div class="flex items-center"><span class="mr-1 inline-flex"><span class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Marie Curie"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #8e5c11; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Marie Curie"><span class="avatar-initials" style="color: white;">MC</span></span>
+      <div class="flex items-center"><span class="mr-1 inline-flex"><span role="img" class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Marie Curie"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #8e5c11; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Marie Curie"><span class="avatar-initials" style="color: white;">MC</span></span>
         <!--v-if-->
         <!--v-if--></span>
         <!--v-if--></span> <span><strong>Marie Curie</strong> created <strong>new folder</strong>.</span>
       </div> <span class="text-role-on-surface-variant text-sm mt-2">Jul 29, 2024, 6:34 PM</span>
     </li>
     <li>
-      <div class="flex items-center"><span class="mr-1 inline-flex"><span class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Albert Einstein"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #c21c53; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: white;">AE</span></span>
+      <div class="flex items-center"><span class="mr-1 inline-flex"><span role="img" class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Albert Einstein"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #c21c53; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Albert Einstein"><span class="avatar-initials" style="color: white;">AE</span></span>
         <!--v-if-->
         <!--v-if--></span>
         <!--v-if--></span> <span><strong>Albert Einstein</strong> moved <strong>textfile.txt</strong>.</span>
       </div> <span class="text-role-on-surface-variant text-sm mt-2">Jul 29, 2023, 6:34 PM</span>
     </li>
     <li>
-      <div class="flex items-center"><span class="mr-1 inline-flex"><span class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Robert Oppenheimer"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #3F51B5; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Robert Oppenheimer"><span class="avatar-initials" style="color: white;">RO</span></span>
+      <div class="flex items-center"><span class="mr-1 inline-flex"><span role="img" class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Robert Oppenheimer"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #3F51B5; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Robert Oppenheimer"><span class="avatar-initials" style="color: white;">RO</span></span>
         <!--v-if-->
         <!--v-if--></span>
         <!--v-if--></span> <span><strong>Robert Oppenheimer</strong> deleted <strong>atom plans.pdf</strong>.</span>
       </div> <span class="text-role-on-surface-variant text-sm mt-2">Jul 29, 2022, 6:34 PM</span>
     </li>
     <li>
-      <div class="flex items-center"><span class="mr-1 inline-flex"><span class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Albert Schweitzer"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #673AB7; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Albert Schweitzer"><span class="avatar-initials" style="color: white;">AS</span></span>
+      <div class="flex items-center"><span class="mr-1 inline-flex"><span role="img" class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Albert Schweitzer"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #673AB7; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Albert Schweitzer"><span class="avatar-initials" style="color: white;">AS</span></span>
         <!--v-if-->
         <!--v-if--></span>
         <!--v-if--></span> <span><strong>Albert Schweitzer</strong> removed <strong>Selfie.png</strong>.</span>
