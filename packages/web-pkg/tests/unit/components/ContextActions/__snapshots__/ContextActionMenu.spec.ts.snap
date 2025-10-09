@@ -30,7 +30,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <div id="oc-files-context-actions-apps-drop-1" class="oc-drop shadow-md/20 rounded-sm w-auto oc-files-context-action-drop">
+      <div id="oc-files-context-actions-apps-drop-1" class="oc-drop shadow-md/20 rounded-sm w-3xs oc-files-context-action-drop">
         <div class="oc-card">
           <!--v-if-->
           <div class="oc-card-body p-2">
@@ -81,7 +81,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <div id="oc-files-context-actions-actions-drop-3" class="oc-drop shadow-md/20 rounded-sm w-auto oc-files-context-action-drop">
+      <div id="oc-files-context-actions-actions-drop-3" class="oc-drop shadow-md/20 rounded-sm w-3xs oc-files-context-action-drop">
         <div class="oc-card">
           <!--v-if-->
           <div class="oc-card-body p-2">
@@ -124,7 +124,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <div id="oc-files-context-actions-delete-drop-5" class="oc-drop shadow-md/20 rounded-sm w-auto oc-files-context-action-drop">
+      <div id="oc-files-context-actions-delete-drop-5" class="oc-drop shadow-md/20 rounded-sm w-3xs oc-files-context-action-drop">
         <div class="oc-card">
           <!--v-if-->
           <div class="oc-card-body p-2">
