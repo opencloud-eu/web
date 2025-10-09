@@ -95,6 +95,7 @@
           <template #indicators>
             <resource-status-indicators
               :space="space"
+              class="ml-2"
               :resource="resource"
               :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
               :disable-handler="isResourceDisabled(resource)"

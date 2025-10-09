@@ -9,8 +9,13 @@ import { locatorUtils } from '../../../utils'
 const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
 const quickShareButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
-const actionMenuDropdownButton =
-  '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "resource-table-btn-action-dropdown")]'
+const actionMenuDropdownButton = `
+//button[
+  @data-test-context-menu-resource-name="%s" and
+  (contains(@class, "resource-tiles-btn-action-dropdown") or
+   contains(@class, "resource-table-btn-action-dropdown"))
+]
+`
 const actionsTriggerButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "oc-files-actions-%s-trigger")]'
 const selectAllCheckbox =

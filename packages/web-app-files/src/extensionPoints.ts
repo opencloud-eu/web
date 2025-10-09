@@ -94,7 +94,8 @@ export const extensionPoints = () => {
       folderViewsProjectSpacesExtensionPoint,
       folderViewsTrashExtensionPoint,
       folderViewsTrashOverviewExtensionPoint,
-      folderViewsSharedViaLinkExtensionPoint
+      folderViewsSharedViaLinkExtensionPoint,
+      folderViewsSharedWithOthersExtensionPoint
     ]
   })
 }
