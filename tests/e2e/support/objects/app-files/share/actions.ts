@@ -13,8 +13,8 @@ const actionMenuDropdownButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "resource-table-btn-action-dropdown")]'
 const actionsTriggerButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "oc-files-actions-%s-trigger")]'
-const selecAllCheckbox = '#resource-table-select-all'
-const acceptButton = '.oc-files-actions-enable-sync-trigger'
+const selectAllCheckbox =
+  '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'const acceptButton = '.oc-files-actions-enable-sync-trigger'
 const pendingShareItem =
   '//div[@id="files-shared-with-me-pending-section"]//tr[contains(@class,"oc-tbody-tr")]'
 const showMoreOptionsButton = '#show-more-share-options-btn'
@@ -106,7 +106,7 @@ export const enableSync = async (args: ShareStatusArgs): Promise<void> => {
 }
 
 export const syncAllShares = async ({ page }: { page: Page }): Promise<void> => {
-  await page.locator(selecAllCheckbox).click()
+  await page.locator(selectAllCheckbox).click()
   const numberOfPendingShares = await page.locator(pendingShareItem).count()
   const checkResponses = []
   for (let i = 0; i < numberOfPendingShares; i++) {

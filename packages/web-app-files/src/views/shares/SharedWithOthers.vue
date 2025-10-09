@@ -108,7 +108,7 @@ import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import { folderViewsSharedWithOthers } from '../../extensionPoints'
+import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -155,7 +155,9 @@ export default defineComponent({
 
     const viewModes = computed(() => {
       return [
-        ...extensionRegistry.requestExtensions(folderViewsSharedWithOthers).map((e) => e.folderView)
+        ...extensionRegistry
+          .requestExtensions(folderViewsSharedWithOthersExtensionPoint)
+          .map((e) => e.folderView)
       ]
     })
 

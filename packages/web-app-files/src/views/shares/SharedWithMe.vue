@@ -1,7 +1,12 @@
 <template>
   <div class="flex">
     <files-view-wrapper class="flex-col">
-      <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen">
+      <app-bar
+        ref="appBarRef"
+        :has-bulk-actions="true"
+        :is-side-bar-open="isSideBarOpen"
+        :view-modes="viewModes"
+      >
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -73,6 +78,11 @@
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"
+          :folder-view="folderView"
+          :folder-view-style="folderViewStyle"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :title="shareSectionTitle"
           :empty-message="
             areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
@@ -100,12 +110,22 @@ import {
   InlineFilterOption,
   ItemFilter,
   useAppsStore,
+  useExtensionRegistry,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
-import { computed, defineComponent, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
 import { useGroupingSettings } from '@opencloud-eu/web-pkg'
@@ -114,6 +134,7 @@ import { useGettext } from 'vue3-gettext'
 import { useOpenWithDefaultApp, defaultFuseOptions } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { uniq } from 'lodash-es'
+import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -132,7 +153,11 @@ export default defineComponent({
     const appsStore = useAppsStore()
     const resourcesStore = useResourcesStore()
 
+    const resourcesViewDefaults = useResourcesViewDefaults<IncomingShareResource, any, any>()
+
     const {
+      viewMode,
+      viewSize,
       areResourcesLoading,
       sortFields,
       fileListHeaderY,
@@ -143,12 +168,36 @@ export default defineComponent({
       isSideBarOpen,
       paginatedResources,
       scrollToResourceFromRoute
-    } = useResourcesViewDefaults<IncomingShareResource, any, any>()
+    } = resourcesViewDefaults
 
     const { $gettext } = useGettext()
 
     const areHiddenFilesShown = ref(false)
     const filterTerm = ref('')
+
+    const extensionRegistry = useExtensionRegistry()
+
+    const folderView = computed(() => {
+      const viewMode = unref(resourcesViewDefaults.viewMode)
+      return unref(viewModes).find((v) => v.name === viewMode)
+    })
+
+    const viewModes = computed(() => {
+      return [
+        ...extensionRegistry
+          .requestExtensions(folderViewsSharedWithMeExtensionPoint)
+          .map((e) => e.folderView)
+      ]
+    })
+
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+    const folderViewStyle = computed(() => {
+      return {
+        ...(unref(folderView)?.isScrollable === false && {
+          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+        })
+      }
+    })
 
     const shareSectionTitle = computed(() => {
       return unref(areHiddenFilesShown) ? $gettext('Hidden Shares') : $gettext('Shares')
@@ -294,6 +343,14 @@ export default defineComponent({
       sortBy,
       sortDir,
       items,
+
+      appBarRef,
+      viewMode,
+      viewSize,
+      viewModes,
+      folderView,
+      folderViewStyle,
+      sortFields,
 
       // CERN
       ...useGroupingSettings({ sortBy: sortBy, sortDir: sortDir })
