@@ -19,7 +19,12 @@ export const getUserIdFromResponse = (response: APIResponse): string => {
   return response.headers()['location'].split('/').pop()
 }
 
-export const setupKeycloakAdminUser = (user: User) => {
-  user.id = config.keycloakAdminUser
-  user.password = config.keycloakAdminPassword
+export const getKeycloakAdminUser = () => {
+  return {
+    id: config.keycloakAdminUser,
+    username: config.keycloakAdminUser,
+    displayName: config.keycloakAdminUser,
+    password: config.keycloakAdminPassword,
+    email: `${config.keycloakAdminUser}@mail.test`
+  }
 }

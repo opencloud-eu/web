@@ -6,13 +6,13 @@ import { User } from '../types'
 
 export const initializeUser = async ({
   browser,
-  url = config.baseUrl,
   user,
+  url = config.baseUrl,
   waitForSelector = null
 }: {
   browser: Browser
-  url?: string
   user: User
+  url?: string
   tokenType?: TokenProviderType
   waitForSelector?: string
 }): Promise<void> => {
