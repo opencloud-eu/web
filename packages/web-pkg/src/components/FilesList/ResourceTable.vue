@@ -200,71 +200,45 @@
       />
     </template>
     <template #sharedBy="{ item }">
-      <oc-button
-        appearance="raw-inverse"
-        no-hover
-        @click.stop="
-          (e: MouseEvent) => {
-            if (interceptModifierClick(e, item)) {
-              return
-            }
-            openSharingSidebar(item, e)
-          }
-        "
+      <oc-avatars
+        class="flex items-center justify-end flex-row flex-nowrap"
+        :is-tooltip-displayed="true"
+        :items="getSharedByAvatarItems(item)"
+        :accessible-description="getSharedByAvatarDescription(item)"
+        hover-effect
       >
-        <oc-avatars
-          class="flex items-center justify-end flex-row flex-nowrap"
-          :is-tooltip-displayed="true"
-          :items="getSharedByAvatarItems(item)"
-          :accessible-description="getSharedByAvatarDescription(item)"
-          hover-effect
-        >
-          <template #userAvatars="{ avatars, width }">
-            <user-avatar
-              v-for="avatar in avatars"
-              :key="avatar.userId"
-              :user-id="avatar.userId"
-              :user-name="avatar.displayName"
-              :width="width"
-            />
-          </template>
-        </oc-avatars>
-      </oc-button>
+        <template #userAvatars="{ avatars, width }">
+          <user-avatar
+            v-for="avatar in avatars"
+            :key="avatar.userId"
+            :user-id="avatar.userId"
+            :user-name="avatar.displayName"
+            :width="width"
+          />
+        </template>
+      </oc-avatars>
     </template>
     <template #sharedWith="{ item }">
-      <oc-button
-        appearance="raw-inverse"
-        class="resource-table-shared-with"
-        no-hover
-        @click.stop="
-          (e: MouseEvent) => {
-            if (interceptModifierClick(e, item)) {
-              return
-            }
-            openSharingSidebar(item, e)
-          }
-        "
+      <oc-avatars
+        class="flex items-center justify-end flex-row flex-nowrap"
+        data-testid="resource-table-shared-with"
+        :items="getSharedWithAvatarItems(item)"
+        :stacked="true"
+        :max-displayed="3"
+        :is-tooltip-displayed="true"
+        :accessible-description="getSharedWithAvatarDescription(item)"
+        hover-effect
       >
-        <oc-avatars
-          class="flex items-center justify-end flex-row flex-nowrap"
-          :items="getSharedWithAvatarItems(item)"
-          :stacked="true"
-          :max-displayed="3"
-          :is-tooltip-displayed="true"
-          :accessible-description="getSharedWithAvatarDescription(item)"
-          hover-effect
-        >
-          <template #userAvatars="{ avatars, width }">
-            <user-avatar
-              v-for="avatar in avatars"
-              :key="avatar.userId"
-              :user-id="avatar.userId"
-              :user-name="avatar.displayName"
-              :width="width"
-            />
-          </template>
-        </oc-avatars>
-      </oc-button>
+        <template #userAvatars="{ avatars, width }">
+          <user-avatar
+            v-for="avatar in avatars"
+            :key="avatar.userId"
+            :user-id="avatar.userId"
+            :user-name="avatar.displayName"
+            :width="width"
+          />
+        </template>
+      </oc-avatars>
     </template>
     <template #actions="{ item }">
       <div v-if="showContextDrop(item)" class="flex items-center justify-end flex-row flex-nowrap">
@@ -1070,18 +1044,6 @@ export default defineComponent({
         return
       }
       this.$emit('fileClick', { space: this.getMatchingSpace(resource), resources: [resource] })
-    },
-    openSharingSidebar(file: Resource, event?: MouseEvent) {
-      if (event instanceof MouseEvent && this.interceptModifierClick(event, file)) {
-        return
-      }
-      let panelToOpen: unknown
-      if (file.type === 'space') {
-        panelToOpen = 'space-share'
-      } else {
-        panelToOpen = 'sharing'
-      }
-      eventBus.publish(SideBarEventTopics.openWithPanel, panelToOpen)
     },
     async fileDragged(file: Resource, event: DragEvent) {
       if (!this.dragDrop) {
