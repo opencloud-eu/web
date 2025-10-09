@@ -14,7 +14,8 @@ const actionMenuDropdownButton =
 const actionsTriggerButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "oc-files-actions-%s-trigger")]'
 const selectAllCheckbox =
-  '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'const acceptButton = '.oc-files-actions-enable-sync-trigger'
+  '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
+const acceptButton = '.oc-files-actions-enable-sync-trigger'
 const pendingShareItem =
   '//div[@id="files-shared-with-me-pending-section"]//tr[contains(@class,"oc-tbody-tr")]'
 const showMoreOptionsButton = '#show-more-share-options-btn'
