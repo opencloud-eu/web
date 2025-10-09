@@ -188,6 +188,7 @@ import {
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
 type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
@@ -237,6 +238,7 @@ const { getDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { interceptModifierClick } = useInterceptModifierClick()
 const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
+const { isMobile } = useIsMobile()
 const {
   isEnabled: isEmbedModeEnabled,
   fileTypes: embedModeFileTypes,
@@ -439,6 +441,15 @@ const showContextMenu = (
   if (!isResourceSelected(item)) {
     emitSelect([item.id])
   }
+
+  if (unref(isMobile)) {
+    // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
+    // this can be triggered by clicking the context menu button of the current row.
+    const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
+    el?.click()
+    return
+  }
+
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
