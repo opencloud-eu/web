@@ -12,7 +12,7 @@ exports[`OcTile component > renders default space correctly 1`] = `
   <div class="p-2">
     <div class="flex justify-between items-center">
       <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-        <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="." parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
+        <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfolderlink="[object Object]" parentfoldername="." parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
       </div>
       <div class="flex items-center">
         <!-- Slot for indicators !-->
@@ -37,7 +37,7 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
   <div class="p-2">
     <div class="flex justify-between items-center">
       <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
-        <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfoldername="." parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
+        <resource-list-item-stub resource="[object Object]" pathprefix="" ispathdisplayed="false" parentfolderlink="[object Object]" parentfoldername="." parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="false" isresourceclickable="true"></resource-list-item-stub>
       </div>
       <div class="flex items-center">
         <!-- Slot for indicators !-->
