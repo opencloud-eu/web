@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :is-side-bar-open="isSideBarOpen">
+      <app-bar ref="appBarRef" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -13,7 +13,8 @@
             <span v-text="$gettext('You have not shared any resource via link.')" />
           </template>
         </no-content-message>
-        <resource-table
+        <component
+          :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
@@ -23,6 +24,10 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :style="folderViewStyle"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -37,7 +42,7 @@
             <pagination :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
-        </resource-table>
+        </component>
       </template>
     </files-view-wrapper>
     <file-side-bar
@@ -52,6 +57,7 @@
 import {
   FileSideBar,
   useConfigStore,
+  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
   useResourcesStore
@@ -66,12 +72,13 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, unref } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, unref, useTemplateRef } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
+import { folderViewsSharedViaLink } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -95,9 +102,33 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
     const { totalResourcesCount } = storeToRefs(resourcesStore)
 
+    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>()
     const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
-      useResourcesViewDefaults<OutgoingShareResource, any, any[]>()
+      resourcesViewDefaults
+
     const { loadPreview } = useLoadPreview(viewMode)
+
+    const extensionRegistry = useExtensionRegistry()
+
+    const folderView = computed(() => {
+      const viewMode = unref(resourcesViewDefaults.viewMode)
+      return unref(viewModes).find((v) => v.name === viewMode)
+    })
+
+    const viewModes = computed(() => {
+      return [
+        ...extensionRegistry.requestExtensions(folderViewsSharedViaLink).map((e) => e.folderView)
+      ]
+    })
+
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+    const folderViewStyle = computed(() => {
+      return {
+        ...(unref(folderView)?.isScrollable === false && {
+          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+        })
+      }
+    })
 
     resourcesStore.$onAction((action) => {
       if (action.name !== 'updateResourceField') {
@@ -126,7 +157,11 @@ export default defineComponent({
       configOptions,
       getMatchingSpace,
       totalResourcesCount,
-      loadPreview
+      loadPreview,
+      folderView,
+      folderViewStyle,
+      viewModes,
+      appBarRef
     }
   },
 

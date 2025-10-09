@@ -1,12 +1,41 @@
-import { App, ComponentCustomProperties, Ref } from 'vue'
-import { RouteLocationRaw, Router, RouteRecordRaw } from 'vue-router'
-import { Extension, ExtensionPoint } from '../composables/piniaStores'
-import { IconFillType } from '../helpers'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { Translations } from 'vue3-gettext'
+import type { App, ComponentCustomProperties, Ref } from 'vue'
+import type { RouteLocationRaw, Router, RouteRecordRaw } from 'vue-router'
+import type { Extension, ExtensionPoint } from '../composables/piniaStores'
+import type { IconFillType } from '../helpers'
+import type { Ability, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import type { Language, Translations } from 'vue3-gettext'
+import type { Pinia } from 'pinia'
+import type {
+  AppProviderService,
+  ArchiverService,
+  ClientService,
+  LoadingService,
+  PasswordPolicyService,
+  PreviewService,
+  UppyService
+} from '../services'
+import type { AuthServiceInterface } from '../composables'
+import type { Wormhole } from 'portal-vue/types/types.js'
+
+export interface GlobalProperties extends ComponentCustomProperties, Language {
+  $ability: Ability
+  $appProviderService: AppProviderService
+  $archiverService: ArchiverService
+  $authService: AuthServiceInterface
+  $can: Ability['can']
+  $clientService: ClientService
+  $language: Language
+  $loadingService: LoadingService
+  $pinia: Pinia
+  $previewService: PreviewService
+  $router: Router
+  $uppyService: UppyService
+  $wormhole: Wormhole
+  passwordPolicyService: PasswordPolicyService
+}
 
 export interface AppReadyHookArgs {
-  globalProperties: ComponentCustomProperties & Record<string, any>
+  globalProperties: GlobalProperties
   router: Router
   instance?: App
   portal?: any
@@ -73,8 +102,8 @@ export interface ApplicationTranslations {
 /** ClassicApplicationScript reflects classic application script structure */
 export interface ClassicApplicationScript {
   appInfo?: ApplicationInformation
-  routes?: ((args: ComponentCustomProperties) => RouteRecordRaw[]) | RouteRecordRaw[]
-  navItems?: ((args: ComponentCustomProperties) => AppNavigationItem[]) | AppNavigationItem[]
+  routes?: ((args: GlobalProperties) => RouteRecordRaw[]) | RouteRecordRaw[]
+  navItems?: ((args: GlobalProperties) => AppNavigationItem[]) | AppNavigationItem[]
   translations?: ApplicationTranslations
   extensions?: Ref<Extension[]>
   extensionPoints?: Ref<ExtensionPoint<any>[]>
