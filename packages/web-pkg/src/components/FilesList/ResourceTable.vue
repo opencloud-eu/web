@@ -121,6 +121,10 @@
       </div>
       <slot name="additionalResourceContent" :resource="item" />
     </template>
+    <template #syncEnabled="{ item }">
+      <!-- @slot syncEnabled column -->
+      <slot name="syncEnabled" :resource="item" />
+    </template>
     <template #size="{ item }">
       <resource-size :size="item.size || Number.NaN" />
     </template>
@@ -363,6 +367,7 @@ export default defineComponent({
      * - modificationDate: The date of the last modification of the resource
      * - shareDate: The date when the share was created
      * - deletionDate: The date when the resource has been deleted
+     * - syncEnabled: The sync status of the share
      */
     resources: {
       type: Array as PropType<Resource[]>,
@@ -827,6 +832,14 @@ export default defineComponent({
             {
               name: 'size',
               title: this.$gettext('Size'),
+              type: 'slot',
+              alignH: 'right',
+              wrap: 'nowrap',
+              width: 'shrink'
+            },
+            {
+              name: 'syncEnabled',
+              title: this.$gettext('Info'),
               type: 'slot',
               alignH: 'right',
               wrap: 'nowrap',
@@ -1423,15 +1436,19 @@ export default defineComponent({
   }
 
   /* ---------------- SHARED WITH ME VIEW ---------------- */
-  /* Show SharedBy from sm */
+  /* Show SharedBy, SyncEnabled from sm */
   #files-shared-with-me-view .files-table .oc-table-header-cell-sharedBy,
-  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedBy {
+  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedBy,
+  #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
     @apply sm:table-cell;
   }
 
-  /* Hide SharedWith below xl */
+  /* Hide SharedWith, SyncEnabled below xl */
   #files-shared-with-me-view .files-table .oc-table-header-cell-sharedWith,
-  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith {
+  #files-shared-with-me-view .files-table .oc-table-data-cell-sharedWith,
+  #files-shared-with-me-view .files-table .oc-table-header-cell-syncEnabled,
+  #files-shared-with-me-view .files-table .oc-table-data-cell-syncEnabled {
     @apply hidden lg:table-cell;
   }
 
