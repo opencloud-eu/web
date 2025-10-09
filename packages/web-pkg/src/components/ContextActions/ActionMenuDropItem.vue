@@ -23,7 +23,7 @@
       :is-nested-element="true"
       :nested-parent-ref="parentDropRef"
       mode="hover"
-      class="w-auto oc-files-context-action-drop"
+      class="w-3xs oc-files-context-action-drop"
       padding-size="small"
       position="auto-start"
       close-on-click
