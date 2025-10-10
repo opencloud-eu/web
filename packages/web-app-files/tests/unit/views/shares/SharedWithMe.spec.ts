@@ -5,7 +5,10 @@ import {
   InlineFilterOption,
   useSort,
   useOpenWithDefaultApp,
-  ItemFilter
+  ItemFilter,
+  useExtensionRegistry,
+  ResourceTable,
+  FolderViewExtension
 } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { ref } from 'vue'
@@ -15,6 +18,13 @@ import { mock } from 'vitest-mock-extended'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes, IncomingShareResource, ShareType } from '@opencloud-eu/web-client'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
+import {
+  folderViewsFolderExtensionPoint,
+  folderViewsFavoritesExtensionPoint,
+  folderViewsProjectSpacesExtensionPoint,
+  folderViewsTrashOverviewExtensionPoint,
+  folderViewsSharedWithMeExtensionPoint
+} from '../../../../src/extensionPoints'
 
 vi.mock('../../../../src/composables/resourcesViewDefaults')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -167,12 +177,40 @@ function getMountedWrapper({
   loading?: boolean
   openWithDefaultAppQuery?: string
 } = {}) {
+  const plugins = [...defaultPlugins()]
+
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
       paginatedResources: ref(files),
       areResourcesLoading: ref(loading)
     })
   )
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
+        folderViewsFavoritesExtensionPoint.id,
+        folderViewsTrashOverviewExtensionPoint.id,
+        folderViewsSharedWithMeExtensionPoint.id
+      ],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue(extensions)
+
   vi.mocked(useSort).mockImplementation((options) => useSortMock({ items: ref(options.items) }))
   // selected share types
   vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
@@ -196,7 +234,7 @@ function getMountedWrapper({
     mocks: defaultMocks,
     wrapper: mount(SharedWithMe, {
       global: {
-        plugins: [...defaultPlugins()],
+        plugins,
         mocks: defaultMocks,
         stubs: { ...defaultStubs, itemFilterInline: true, ItemFilter: true }
       }

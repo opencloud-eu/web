@@ -53,6 +53,7 @@
         <resource-tile
           :ref="(el) => (tileRefs.tiles[resource.id] = el as ResourceTileRef)"
           :resource="resource"
+          :space="space"
           :resource-route="getRoute(resource)"
           :is-resource-selected="isResourceSelected(resource)"
           :is-resource-clickable="isResourceClickable(resource)"
@@ -95,6 +96,7 @@
           <template #indicators>
             <resource-status-indicators
               :space="space"
+              class="ml-2"
               :resource="resource"
               :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
               :disable-handler="isResourceDisabled(resource)"

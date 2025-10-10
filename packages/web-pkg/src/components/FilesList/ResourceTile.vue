@@ -114,7 +114,7 @@ import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
-import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
@@ -126,6 +126,7 @@ import { useFolderLink } from '../../composables'
 
 const {
   resource,
+  space,
   resourceRoute,
   isResourceSelected = false,
   isResourceClickable = true,
@@ -138,6 +139,7 @@ const {
 } = defineProps<{
   resource?: Resource
   resourceRoute?: RouteLocationRaw
+  space?: SpaceResource
   isResourceSelected?: boolean
   isResourceClickable?: boolean
   isResourceDisabled?: boolean
@@ -164,7 +166,9 @@ defineSlots<{
 
 const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
-const { getParentFolderName, getParentFolderLink } = useFolderLink()
+const { getParentFolderName, getParentFolderLink } = useFolderLink({
+  space: ref(space)
+})
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)

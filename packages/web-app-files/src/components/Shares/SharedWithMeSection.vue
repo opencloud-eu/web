@@ -10,7 +10,8 @@
         <span>{{ emptyMessage }}</span>
       </template>
     </no-content-message>
-    <resource-table
+    <component
+      :is="folderView.component"
       v-else
       v-model:selected-ids="selectedResourcesIds"
       :is-side-bar-open="isSideBarOpen"
@@ -21,42 +22,15 @@
       :header-position="fileListHeaderY"
       :sort-by="sortBy"
       :sort-dir="sortDir"
+      :sort-fields="sortFields.filter((field) => field.name === 'name')"
+      :view-mode="viewMode"
+      :view-size="viewSize"
+      :style="folderViewStyle"
       :grouping-settings="groupingSettings"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
       @sort="sortHandler"
     >
-      <template #syncEnabled="{ resource }">
-        <div
-          :key="resource.getDomSelector()"
-          class="whitespace-nowrap flex items-center justify-end"
-        >
-          <oc-icon
-            v-if="resource.shareRoles?.length"
-            v-oc-tooltip="$gettext(resource.shareRoles[0].displayName)"
-            :accessible-label="$gettext(resource.shareRoles[0].description)"
-            :name="resource.shareRoles[0].icon"
-            fill-type="line"
-            size="small"
-          />
-          <oc-icon
-            v-else-if="isExternalShare(resource)"
-            v-oc-tooltip="ShareTypes.remote.label"
-            :accessible-label="ShareTypes.remote.label"
-            :name="ShareTypes.remote.icon"
-            fill-type="line"
-            size="small"
-          />
-          <oc-icon
-            v-if="resource.syncEnabled"
-            v-oc-tooltip="$gettext('Synced with your devices')"
-            :accessible-label="$gettext('Synced with your devices')"
-            name="loop-right"
-            class="sync-enabled ml-2"
-            size="small"
-          />
-        </div>
-      </template>
       <template #contextMenu="{ resource, isOpen }">
         <context-actions
           v-if="isOpen && isResourceInSelection(resource)"
@@ -94,12 +68,13 @@
         </div>
         <list-info v-else class="w-full my-2" />
       </template>
-    </resource-table>
+    </component>
   </div>
 </template>
 
 <script lang="ts">
 import {
+  FolderView,
   ResourceTable,
   useCapabilityStore,
   useConfigStore,
@@ -119,6 +94,7 @@ import { useSelectedResources } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
+import { useResourcesViewDefaults } from '../../composables'
 
 export default defineComponent({
   components: {
@@ -161,6 +137,14 @@ export default defineComponent({
       type: Function as PropType<any>,
       required: true
     },
+    folderView: {
+      required: true,
+      type: Object as PropType<FolderView>
+    },
+    folderViewStyle: {
+      type: Object,
+      default: () => {}
+    },
     showMoreToggle: {
       type: Boolean,
       default: false
@@ -181,6 +165,7 @@ export default defineComponent({
       type: Number,
       default: 0
     },
+
     /**
      * This is only relevant for CERN and can be ignored in any other cases.
      */
@@ -194,7 +179,10 @@ export default defineComponent({
     const capabilityStore = useCapabilityStore()
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
-    const { loadPreview } = useLoadPreview()
+
+    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults()
+
+    const { loadPreview } = useLoadPreview(viewMode)
 
     const { triggerDefaultAction } = useFileActions()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -228,7 +216,10 @@ export default defineComponent({
       updateResourceField,
       isExternalShare,
       ShareTypes,
-      loadPreview
+      loadPreview,
+      viewMode,
+      viewSize,
+      sortFields
     }
   },
 
@@ -238,7 +229,7 @@ export default defineComponent({
 
   computed: {
     displayedFields() {
-      return ['name', 'syncEnabled', 'sharedBy', 'sdate', 'sharedWith']
+      return ['name', 'sharedBy', 'sdate', 'sharedWith']
     },
     toggleMoreLabel() {
       return this.showMore ? this.$gettext('Show less') : this.$gettext('Show more')
