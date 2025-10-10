@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @saw-jan, @tammi-23
 
 ### ✅ Tests
 
+- fix (test-e2e): proper use of keycloak admin user [[#1348](https://github.com/opencloud-eu/web/pull/1348)]
 - [localization-de] e2e. ensure German localization is correct [[#1193](https://github.com/opencloud-eu/web/pull/1193)]
 - fail accessibility tests on any violation [[#1319](https://github.com/opencloud-eu/web/pull/1319)]
 - [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
