@@ -302,15 +302,14 @@ onMounted(async () => {
   }
 
   await nextTick()
-  markInstance = new Mark('.trash-table')
+  markInstance = new Mark('.oc-resource-details')
 })
 
 watch(filterTerm, () => {
   markInstance?.unmark()
   markInstance?.mark(unref(filterTerm), {
     element: 'span',
-    className: 'mark-highlight',
-    exclude: ['th *', 'tfoot *']
+    className: 'mark-highlight'
   })
 })
 </script>
