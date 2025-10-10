@@ -101,6 +101,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const accentuateItem = async (id: string) => {
     await nextTick()
+    await nextTick()
     fileList.accentuateItem(id)
   }
   resourcesStore.$onAction((action) => {
