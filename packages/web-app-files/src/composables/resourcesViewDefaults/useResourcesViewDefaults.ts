@@ -104,9 +104,11 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     fileList.accentuateItem(id)
   }
   resourcesStore.$onAction((action) => {
-    if (action.name === 'upsertResource') {
-      accentuateItem(action.args[0].id)
-    }
+    action.after(() => {
+      if (action.name === 'upsertResource') {
+        accentuateItem(action.args[0].id)
+      }
+    })
   })
 
   return {
