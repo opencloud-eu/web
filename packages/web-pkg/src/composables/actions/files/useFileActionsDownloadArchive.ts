@@ -5,8 +5,6 @@ import {
   isLocationSpacesActive
 } from '../../../router'
 import { useIsFilesAppActive } from '../helpers'
-import path from 'path'
-import first from 'lodash-es/first'
 import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useLoadingService } from '../../loadingService'
@@ -34,20 +32,12 @@ export const useFileActionsDownloadArchive = () => {
       resources = resources.filter((r) => r.canDownload() && !isProjectSpaceResource(r))
     }
 
-    const fileOptions = unref(archiverService.fileIdsSupported)
-      ? {
-          fileIds: resources.map((resource) => resource.fileId)
-        }
-      : {
-          dir: path.dirname(first<Resource>(resources).path) || '/',
-          files: resources.map((resource) => resource.name)
-        }
     return archiverService
       .triggerDownload({
-        ...fileOptions,
+        fileIds: resources.map((resource) => resource.fileId),
         ...(space &&
           isPublicSpaceResource(space) && {
-            publicToken: space.id as string,
+            publicToken: space.id,
             publicLinkPassword: authStore.publicLinkPassword
           })
       })
@@ -123,12 +113,6 @@ export const useFileActionsDownloadArchive = () => {
             return false
           }
           if (isProjectSpaceResource(resources[0]) && resources[0].disabled) {
-            return false
-          }
-          if (
-            !unref(archiverService.fileIdsSupported) &&
-            isLocationCommonActive(router, 'files-common-favorites')
-          ) {
             return false
           }
 

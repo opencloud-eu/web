@@ -34,8 +34,12 @@
 <script setup lang="ts">
 import { ref, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import semver from 'semver'
-import { UpdateChannel, useCapabilityStore, useUpdatesStore } from '@opencloud-eu/web-pkg'
+import {
+  UpdateChannel,
+  useCapabilityStore,
+  useUpdatesStore,
+  compareVersions
+} from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 
 const { $gettext } = useGettext()
@@ -58,7 +62,7 @@ watch(
       return
     }
     const newestVersion = unref(updates).channels[serverEdition].current_version
-    if (semver.gt(newestVersion, currentServerVersionSanitized)) {
+    if (compareVersions(newestVersion, currentServerVersionSanitized) > 0) {
       updateAvailable.value = true
       updateData.value = unref(updates).channels[serverEdition]
     }

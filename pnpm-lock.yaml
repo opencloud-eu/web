@@ -882,9 +882,6 @@ importers:
       screenfull:
         specifier: ^6.0.2
         version: 6.0.2
-      semver:
-        specifier: ^7.6.3
-        version: 7.7.2
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -1010,9 +1007,6 @@ importers:
       qs:
         specifier: 6.14.0
         version: 6.14.0
-      semver:
-        specifier: 7.7.2
-        version: 7.7.2
       utf8:
         specifier: ^3.0.0
         version: 3.0.0

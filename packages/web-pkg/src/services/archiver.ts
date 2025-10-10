@@ -1,20 +1,11 @@
-// Workaround https://github.com/npm/node-semver/issues/381
-
-// @ts-ignore
-import major from 'semver/functions/major'
-
-// @ts-ignore
-import rcompare from 'semver/functions/rcompare'
-
 import { RuntimeError } from '../errors'
-import { HttpError } from '@opencloud-eu/web-client'
+import { HttpError, urlJoin } from '@opencloud-eu/web-client'
 import { ClientService } from '../services'
-import { urlJoin } from '@opencloud-eu/web-client'
 import { triggerDownloadWithFilename } from '../helpers/download'
-
 import { Ref, ref, computed, unref } from 'vue'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
 import { UserStore } from '../composables'
+import { compareVersions } from '../utils'
 
 interface TriggerDownloadOptions {
   dir?: string
@@ -31,7 +22,6 @@ export class ArchiverService {
   serverUrl: string
   capability: Ref<ArchiverCapability>
   available: Ref<boolean>
-  fileIdsSupported: Ref<boolean>
 
   constructor(
     clientService: ClientService,
@@ -45,16 +35,12 @@ export class ArchiverService {
     this.capability = computed(() => {
       const archivers = unref(archiverCapabilities)
         .filter((a) => a.enabled)
-        .sort((a1, a2) => rcompare(a1.version, a2.version))
+        .sort((a1, a2) => compareVersions(a2.version, a1.version))
       return archivers.length ? archivers[0] : null
     })
 
     this.available = computed(() => {
       return !!unref(this.capability)?.version
-    })
-
-    this.fileIdsSupported = computed(() => {
-      return major(unref(this.capability)?.version) >= 2
     })
   }
 
@@ -112,25 +98,8 @@ export class ArchiverService {
       queryParams.push(`public-token=${options.publicToken}`)
     }
 
-    const majorVersion = major(unref(this.capability).version)
-    switch (majorVersion) {
-      case 2: {
-        queryParams.push(...options.fileIds.map((id) => `id=${id}`))
-        return this.url + '?' + queryParams.join('&')
-      }
-      case 1: {
-        const downloadStartSecret = Math.random().toString(36).substring(2)
-        queryParams.push(
-          `dir=${encodeURIComponent(options.dir)}`,
-          ...options.files.map((name) => `files[]=${encodeURIComponent(name)}`),
-          `downloadStartSecret=${downloadStartSecret}`
-        )
-        return this.url + '?' + queryParams.join('&')
-      }
-      default: {
-        return undefined
-      }
-    }
+    queryParams.push(...options.fileIds.map((id) => `id=${id}`))
+    return this.url + '?' + queryParams.join('&')
   }
 
   private get url(): string {

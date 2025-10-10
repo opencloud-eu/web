@@ -47,7 +47,7 @@ describe('archiver', () => {
       new RuntimeError('no archiver available')
     )
   })
-  describe('with one v2 archiver capability', () => {
+  describe('with one archiver capability', () => {
     const archiverUrl = [serverUrl, 'archiver'].join('/')
     const capabilities = ref([
       {
@@ -60,10 +60,6 @@ describe('archiver', () => {
       }
     ])
 
-    it('is announcing itself as supporting fileIds', () => {
-      const archiverService = getArchiverServiceInstance(capabilities)
-      expect(unref(archiverService.fileIdsSupported)).toBe(true)
-    })
     it('fails to trigger a download if no files were given', async () => {
       const archiverService = getArchiverServiceInstance(capabilities)
       await expect(archiverService.triggerDownload({})).rejects.toThrow(
@@ -78,42 +74,6 @@ describe('archiver', () => {
       expect(window.URL.createObjectURL).toHaveBeenCalled()
       expect(url.startsWith(archiverUrl)).toBeTruthy()
       expect(url.indexOf(`id=${fileId}`)).toBeGreaterThan(-1)
-    })
-  })
-  describe('with one v1 archiver capability', () => {
-    const archiverUrl = [serverUrl, 'archiver'].join('/')
-    const capabilities = ref([
-      {
-        enabled: true,
-        version: 'v1.2.3',
-        archiver_url: archiverUrl,
-        formats: [],
-        max_num_files: '42',
-        max_size: '1073741824'
-      }
-    ])
-    it('is announcing itself as not supporting fileIds', () => {
-      const archiverService = getArchiverServiceInstance(capabilities)
-      expect(unref(archiverService.fileIdsSupported)).toBe(false)
-    })
-    it('fails to trigger a download if no files were given', async () => {
-      const archiverService = getArchiverServiceInstance(capabilities)
-      await expect(archiverService.triggerDownload({})).rejects.toThrow(
-        new RuntimeError('requested archive with empty list of resources')
-      )
-    })
-    it('returns a download url for a valid archive download trigger', async () => {
-      const archiverService = getArchiverServiceInstance(capabilities)
-      window.URL.createObjectURL = vi.fn(() => '')
-      const dir = '/some/path'
-      const fileName = 'qwer'
-      const url = await archiverService.triggerDownload({ dir, files: [fileName] })
-
-      expect(window.URL.createObjectURL).toHaveBeenCalled()
-      expect(url.startsWith(archiverUrl)).toBeTruthy()
-      expect(url.indexOf(`files[]=${fileName}`)).toBeGreaterThan(-1)
-      expect(url.indexOf(`dir=${encodeURIComponent(dir)}`)).toBeGreaterThan(-1)
-      expect(url.indexOf('downloadStartSecret=')).toBeGreaterThan(-1)
     })
   })
   describe('with multiple archiver capabilities of different versions', () => {
