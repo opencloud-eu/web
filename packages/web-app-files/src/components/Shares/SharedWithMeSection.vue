@@ -22,7 +22,7 @@
       :header-position="fileListHeaderY"
       :sort-by="sortBy"
       :sort-dir="sortDir"
-      :sort-fields="sortFields"
+      :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
       :style="folderViewStyle"
@@ -76,7 +76,6 @@
 import {
   FolderView,
   ResourceTable,
-  SortField,
   useCapabilityStore,
   useConfigStore,
   useFileActions,
@@ -95,6 +94,7 @@ import { useSelectedResources } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
+import { useResourcesViewDefaults } from '../../composables'
 
 export default defineComponent({
   components: {
@@ -136,18 +136,6 @@ export default defineComponent({
     sortHandler: {
       type: Function as PropType<any>,
       required: true
-    },
-    sortFields: {
-      required: true,
-      type: Array as PropType<SortField[]>
-    },
-    viewMode: {
-      required: true,
-      type: String
-    },
-    viewSize: {
-      required: true,
-      type: Number
     },
     folderView: {
       required: true,
@@ -191,7 +179,10 @@ export default defineComponent({
     const capabilityStore = useCapabilityStore()
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
-    const { loadPreview } = useLoadPreview()
+
+    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults()
+
+    const { loadPreview } = useLoadPreview(viewMode)
 
     const { triggerDefaultAction } = useFileActions()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -225,7 +216,10 @@ export default defineComponent({
       updateResourceField,
       isExternalShare,
       ShareTypes,
-      loadPreview
+      loadPreview,
+      viewMode,
+      viewSize,
+      sortFields
     }
   },
 
