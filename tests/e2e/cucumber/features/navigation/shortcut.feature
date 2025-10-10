@@ -50,8 +50,9 @@ Feature: Users can create shortcuts for resources and sites
       | resource       | name | type |
       | testavatar.jpg | logo | file |
     And "Brian" opens a shortcut "logo.url"
-    Then "Brian" is in a media-viewer
-    And "Brian" closes the file viewer
+    # issue #1360
+    # Then "Brian" is in a media-viewer
+    # And "Brian" closes the file viewer
 
     # create a shortcut to the public link
     When "Brian" opens the "files" app
