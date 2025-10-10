@@ -16,7 +16,7 @@ import {
   folderViewsFavoritesExtensionPoint,
   folderViewsFolderExtensionPoint,
   folderViewsProjectSpacesExtensionPoint,
-  folderViewsSharedViaLink,
+  folderViewsSharedViaLinkExtensionPoint,
   folderViewsTrashOverviewExtensionPoint
 } from '../../../../src/extensionPoints'
 
@@ -91,7 +91,7 @@ function getMountedWrapper({
         folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
         folderViewsTrashOverviewExtensionPoint.id,
-        folderViewsSharedViaLink.id
+        folderViewsSharedViaLinkExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',

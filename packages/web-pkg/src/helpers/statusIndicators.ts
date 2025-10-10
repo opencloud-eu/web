@@ -1,4 +1,6 @@
 import {
+  IncomingShareResource,
+  isIncomingShareResource,
   isPersonalSpaceResource,
   isProjectSpaceResource,
   Resource,
@@ -74,6 +76,42 @@ const getUserIndicator = ({
 
       eventBus.publish(SideBarEventTopics.openWithPanel, 'sharing#peopleShares')
     }
+  }
+}
+
+const getSyncedIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+  return {
+    id: `files-sharing-synced-${resource.getDomSelector()}`,
+    accessibleDescription: $gettext('This item is synced with your devices'),
+    label: $gettext('Synced with your devices'),
+    icon: 'loop-right',
+    category: 'sharing',
+    type: 'resource-synced',
+    fillType: 'line'
+  }
+}
+
+const getRoleIndicator = ({ resource }: { resource: IncomingShareResource }): ResourceIndicator => {
+  if (resource.shareRoles?.length) {
+    return {
+      id: `files-sharing-role-${resource.getDomSelector()}`,
+      accessibleDescription: $gettext(resource.shareRoles[0].description),
+      label: $gettext(resource.shareRoles[0].displayName),
+      icon: resource.shareRoles[0].icon,
+      category: 'sharing',
+      type: 'share-role',
+      fillType: 'line'
+    }
+  }
+
+  return {
+    id: `files-sharing-role-${resource.getDomSelector()}`,
+    accessibleDescription: ShareTypes.remote.label,
+    label: ShareTypes.remote.label,
+    icon: ShareTypes.remote.icon,
+    category: 'sharing',
+    type: 'share-role',
+    fillType: 'line'
   }
 }
 
@@ -175,6 +213,17 @@ export const getIndicators = ({
 
   if (isProjectSpaceResource(resource) && resource.disabled) {
     indicators.push(getSpaceDisabledIndicator({ resource }))
+  }
+
+  if (
+    isIncomingShareResource(resource) &&
+    (resource.shareTypes.includes(ShareTypes.remote.value) || resource.shareRoles?.length)
+  ) {
+    indicators.push(getRoleIndicator({ resource }))
+  }
+
+  if (isIncomingShareResource(resource) && resource.syncEnabled) {
+    indicators.push(getSyncedIndicator({ resource }))
   }
 
   const shareIndicatorsAllowed =

@@ -78,7 +78,7 @@ import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
-import { folderViewsSharedViaLink } from '../../extensionPoints'
+import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -117,7 +117,9 @@ export default defineComponent({
 
     const viewModes = computed(() => {
       return [
-        ...extensionRegistry.requestExtensions(folderViewsSharedViaLink).map((e) => e.folderView)
+        ...extensionRegistry
+          .requestExtensions(folderViewsSharedViaLinkExtensionPoint)
+          .map((e) => e.folderView)
       ]
     })
 

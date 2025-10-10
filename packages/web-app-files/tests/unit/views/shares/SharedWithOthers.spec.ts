@@ -10,7 +10,7 @@ import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
 import { ResourceTable, FolderViewExtension, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import {
-  folderViewsSharedWithOthers,
+  folderViewsSharedWithOthersExtensionPoint,
   folderViewsTrashOverviewExtensionPoint,
   folderViewsFavoritesExtensionPoint,
   folderViewsProjectSpacesExtensionPoint,
@@ -106,7 +106,7 @@ function getMountedWrapper({
         folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
         folderViewsTrashOverviewExtensionPoint.id,
-        folderViewsSharedWithOthers.id
+        folderViewsSharedWithOthersExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',

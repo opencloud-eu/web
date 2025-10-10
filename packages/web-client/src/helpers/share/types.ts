@@ -39,7 +39,7 @@ export interface OutgoingShareResource extends ShareResource {}
 export interface IncomingShareResource extends ShareResource {
   hidden: boolean
   syncEnabled: boolean
-  shareRoles: UnifiedRoleDefinition[]
+  shareRoles: ShareRole[]
   sharePermissions: GraphSharePermission[]
 }
 

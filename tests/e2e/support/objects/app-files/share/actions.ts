@@ -9,11 +9,17 @@ import { locatorUtils } from '../../../utils'
 const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
 const quickShareButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
-const actionMenuDropdownButton =
-  '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "resource-table-btn-action-dropdown")]'
-const actionsTriggerButton =
-  '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "oc-files-actions-%s-trigger")]'
-const selecAllCheckbox = '#resource-table-select-all'
+const actionMenuDropdownButton = `
+//button[
+  @data-test-context-menu-resource-name="%s" and
+  (contains(@class, "resource-tiles-btn-action-dropdown") or
+   contains(@class, "resource-table-btn-action-dropdown"))
+]
+`
+const actionsDropdownTriggerButton =
+  '//div[contains(@class, "oc-drop")]//button[contains(@class, "oc-files-actions-%s-trigger")]'
+const selectAllCheckbox =
+  '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
 const acceptButton = '.oc-files-actions-enable-sync-trigger'
 const pendingShareItem =
   '//div[@id="files-shared-with-me-pending-section"]//tr[contains(@class,"oc-tbody-tr")]'
@@ -106,7 +112,7 @@ export const enableSync = async (args: ShareStatusArgs): Promise<void> => {
 }
 
 export const syncAllShares = async ({ page }: { page: Page }): Promise<void> => {
-  await page.locator(selecAllCheckbox).click()
+  await page.locator(selectAllCheckbox).click()
   const numberOfPendingShares = await page.locator(pendingShareItem).count()
   const checkResponses = []
   for (let i = 0; i < numberOfPendingShares; i++) {
@@ -143,7 +149,7 @@ export const clickActionInContextMenu = async (
             resp.status() === 201 &&
             resp.request().method() === 'POST'
         ),
-        page.locator(util.format(actionsTriggerButton, resource, action)).click()
+        page.locator(util.format(actionsDropdownTriggerButton, action)).click()
       ])
       break
     case 'disable-sync':
@@ -154,7 +160,7 @@ export const clickActionInContextMenu = async (
             resp.status() === 204 &&
             resp.request().method() === 'DELETE'
         ),
-        page.locator(util.format(actionsTriggerButton, resource, action)).click()
+        page.locator(util.format(actionsDropdownTriggerButton, action)).click()
       ])
       break
   }

@@ -54,6 +54,7 @@ Feature: profile photo
     When "Brian" logs in
     Then "Brian" should see sharer avatar in the notification
     And "Brian" navigates to the shared with me page
+    And "Brian" switches to the "table" view
     And "Brian" should see "sharer" avatar for the resource "sharedFolder"
     And "Brian" should see "recipient" avatar for the resource "sharedFolder"
     And "Brian" logs out
