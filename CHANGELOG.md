@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.18.2 [[#1353](https://github.com/opencloud-eu/web/pull/1353)]
 - chore(deps): update dependency happy-dom to v20 [[#1354](https://github.com/opencloud-eu/web/pull/1354)]
 - fix(deps): update dependency @sentry/vue to v10.19.0 [[#1350](https://github.com/opencloud-eu/web/pull/1350)]
 - chore(deps): update collabora/code docker tag to v25.04.6.1.1 [[#1109](https://github.com/opencloud-eu/web/pull/1109)]
