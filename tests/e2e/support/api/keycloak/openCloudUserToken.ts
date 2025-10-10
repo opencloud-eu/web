@@ -2,6 +2,7 @@ import { TokenEnvironmentFactory } from '../../environment'
 import { config } from '../../../config'
 import { User } from '../../types'
 import { request, APIRequestContext } from '@playwright/test'
+import { getKeycloakAdminUser } from './utils'
 
 interface openCloudTokenForKeycloak {
   access_token: string
@@ -144,9 +145,10 @@ interface KeycloakToken {
   refresh_token: string
 }
 
-export const refreshAccessTokenForKeycloakUser = async (user: User): Promise<void> => {
+export const refreshKeycloakAdminAccessToken = async (): Promise<void> => {
+  const adminUser = getKeycloakAdminUser()
   const tokenEnvironment = TokenEnvironmentFactory('keycloak')
-  const refreshToken = tokenEnvironment.getToken({ user }).refreshToken
+  const refreshToken = tokenEnvironment.getToken({ user: adminUser }).refreshToken
   const context = await request.newContext()
 
   const refreshResponse = await context.post(tokenMasterEndpoint, {
@@ -166,24 +168,25 @@ export const refreshAccessTokenForKeycloakUser = async (user: User): Promise<voi
 
   // update tokens
   tokenEnvironment.setToken({
-    user: { ...user },
+    user: { ...adminUser },
     token: {
-      userId: user.username,
+      userId: adminUser.username,
       accessToken: resBody.access_token,
       refreshToken: resBody.refresh_token
     }
   })
 }
 
-export const setAccessTokenForKeycloakUser = async (user: User): Promise<void> => {
+export const setKeycloakAdminAccessToken = async (): Promise<void> => {
+  const adminUser = getKeycloakAdminUser()
   const context = await request.newContext()
   const response = await context.post(tokenMasterEndpoint, {
     // password grant type is used to get keycloak token.
     // This approach is not recommended and used only for the test
     form: {
       client_id: 'admin-cli',
-      username: config.keycloakAdminUser,
-      password: config.keycloakAdminUser,
+      username: adminUser.username,
+      password: adminUser.password,
       grant_type: 'password'
     }
   })
@@ -192,9 +195,9 @@ export const setAccessTokenForKeycloakUser = async (user: User): Promise<void> =
   const tokenEnvironment = TokenEnvironmentFactory('keycloak')
 
   tokenEnvironment.setToken({
-    user: { ...user },
+    user: { ...adminUser },
     token: {
-      userId: user.username,
+      userId: adminUser.username,
       accessToken: resBody.access_token,
       refreshToken: resBody.refresh_token
     }

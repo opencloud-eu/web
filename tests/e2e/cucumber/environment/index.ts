@@ -66,7 +66,7 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     const user = this.usersEnvironment.getUser({ key: 'admin' })
     if (config.keycloak) {
       await api.keycloak.setAccessTokenForKeycloakOpenCloudUser(user)
-      await api.keycloak.setAccessTokenForKeycloakUser(user)
+      await api.keycloak.setKeycloakAdminAccessToken()
     } else {
       await api.token.setAccessAndRefreshToken(user)
       if (isOcm(pickle)) {
@@ -156,12 +156,6 @@ BeforeAll(async (): Promise<void> => {
   }
 
   state.browser = await browsers[browserType]()
-
-  // setup keycloak admin user
-  if (config.keycloak) {
-    const usersEnvironment = new environment.UsersEnvironment()
-    api.keycloak.setupKeycloakAdminUser(usersEnvironment.getUser({ key: 'admin' }))
-  }
 })
 
 const defaults = {
@@ -180,7 +174,7 @@ After(async function (this: World, { result, willBeRetried, pickle }: ITestCaseH
   // refresh keycloak admin access token
   if (config.keycloak) {
     const user = this.usersEnvironment.getUser({ key: 'admin' })
-    await api.keycloak.refreshAccessTokenForKeycloakUser(user)
+    await api.keycloak.refreshKeycloakAdminAccessToken()
     await api.keycloak.refreshAccessTokenForKeycloakOpenCloudUser(user)
   }
 

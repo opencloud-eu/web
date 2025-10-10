@@ -8,6 +8,7 @@ import { keycloakRealmRoles } from '../../store'
 import { state } from '../../../cucumber/environment/shared'
 import { initializeUser } from '../../utils/tokenHelper'
 import { setAccessTokenForKeycloakOpenCloudUser } from './openCloudUserToken'
+import { getKeycloakAdminUser } from './utils'
 
 export const openCloudKeycloakUserRoles: Record<string, string> = {
   Admin: 'opencloudAdmin',
@@ -39,7 +40,7 @@ export const createUser = async ({ user }: { user: User }): Promise<User> => {
     method: 'POST',
     path: join(realmBasePath, 'users'),
     body,
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(creationRes, 'Failed while creating user')
@@ -75,7 +76,7 @@ export const assignRole = async ({ uuid, role }: { uuid: string; role: string })
       await getRealmRole(openCloudKeycloakUserRoles[role]),
       await getRealmRole('offline_access')
     ],
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
 }
@@ -86,7 +87,7 @@ export const unAssignRole = async ({ uuid, role }: { uuid: string; role: string 
     method: 'DELETE',
     path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
     body: [await getRealmRole(openCloudKeycloakUserRoles[role])],
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(response, 'Can not delete existing role ')
@@ -106,7 +107,7 @@ export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
       'users',
       usersEnvironment.getCreatedUser({ key: user.id }).keycloakUuid
     ),
-    user: getAdminUser()
+    user: getKeycloakAdminUser()
   })
   checkResponseStatus(response, 'Failed to delete keycloak user: ' + user.id)
   if (response.ok) {
@@ -128,7 +129,7 @@ export const getRealmRole = async (role: string): Promise<KeycloakRealmRole> => 
   const response = await request({
     method: 'GET',
     path: join(realmBasePath, 'roles'),
-    user: getAdminUser()
+    user: getKeycloakAdminUser()
   })
   checkResponseStatus(response, 'Failed while fetching realm roles')
   const roles = (await response.json()) as KeycloakRealmRole[]
