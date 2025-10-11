@@ -399,7 +399,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await nextTick()
-      markInstance = new Mark(unref(dropRef)?.$refs?.drop)
+      markInstance = new Mark(unref(dropRef)?.$refs?.drop as HTMLElement)
     })
 
     watch(

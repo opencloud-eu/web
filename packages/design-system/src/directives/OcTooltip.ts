@@ -48,7 +48,10 @@ export const destroy = (_tippy: Instance) => {
   }
 }
 
-const initOrUpdate = (el: HTMLElement & { tooltip: any }, { value = {} }: any) => {
+const initOrUpdate = (
+  el: HTMLElement & { tooltip: Instance },
+  { value = {} }: Record<string, any>
+) => {
   if (Object.prototype.toString.call(value) !== '[object Object]') {
     value = { content: value }
   }

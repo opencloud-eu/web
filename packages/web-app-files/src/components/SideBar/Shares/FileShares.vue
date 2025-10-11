@@ -32,14 +32,11 @@
           <collaborator-list-item
             :share="collaborator"
             :resource-name="resource.name"
-            :deniable="isShareDeniable(collaborator)"
             :modifiable="isShareModifiable(collaborator)"
             :removable="isShareRemovable(collaborator)"
-            :is-share-denied="isShareDenied(collaborator)"
             :shared-parent-route="getSharedParentRoute(collaborator)"
             :is-locked="resource.locked"
             @on-delete="deleteShareConfirmation"
-            @on-set-deny="setDenyShare"
           />
         </li>
         <portal-target
@@ -71,11 +68,8 @@
           <collaborator-list-item
             :share="collaborator"
             :resource-name="resource.name"
-            :deniable="isSpaceMemberDeniable(collaborator)"
             :modifiable="false"
-            :is-share-denied="isSpaceMemberDenied(collaborator)"
             :is-space-share="true"
-            @on-set-deny="setDenyShare"
           />
         </li>
       </ul>
@@ -116,8 +110,7 @@ import {
   isProjectSpaceResource,
   Resource,
   SpaceResource,
-  CollaboratorShare,
-  isSpaceResource
+  CollaboratorShare
 } from '@opencloud-eu/web-client'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
 import CopyPrivateLink from '../../Shares/CopyPrivateLink.vue'
@@ -212,7 +205,6 @@ export default defineComponent({
       toggleShareListCollapsed,
       memberListCollapsed,
       toggleMemberListCollapsed,
-      hasShareCanDenyAccess: capabilityRefs.sharingDenyAccess,
       filesPrivateLinks: capabilityRefs.filesPrivateLinks,
       getAncestorById,
       configStore,
@@ -302,78 +294,6 @@ export default defineComponent({
     }
   },
   methods: {
-    getDeniedShare(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return undefined
-    },
-
-    isShareDenied(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return false
-    },
-
-    getDeniedSpaceMember(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return undefined
-    },
-
-    isSpaceMemberDenied(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return false
-    },
-
-    isSpaceMemberDeniable(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return false
-    },
-
-    isShareDeniable(collaborator: CollaboratorShare) {
-      // FIXME: currently not supported by sharing NG
-      return false
-    },
-
-    async setDenyShare({ value, share }: { value: boolean; share: CollaboratorShare }) {
-      if (value === true) {
-        try {
-          await this.addShare({
-            clientService: this.$clientService,
-            space: this.space,
-            resource: this.resource,
-            options: {}
-          })
-          this.showMessage({
-            title: this.$gettext('Access was denied successfully')
-          })
-        } catch (e) {
-          console.error(e)
-          this.showErrorMessage({
-            title: this.$gettext('Failed to deny access'),
-            errors: [e]
-          })
-        }
-      } else {
-        try {
-          await this.deleteShare({
-            clientService: this.$clientService,
-            space: this.space,
-            resource: this.resource,
-            collaboratorShare: isSpaceResource(this.resource)
-              ? this.getDeniedSpaceMember(share)
-              : this.getDeniedShare(share)
-          })
-          this.showMessage({
-            title: this.$gettext('Access was granted successfully')
-          })
-        } catch (e) {
-          console.error(e)
-          this.showErrorMessage({
-            title: this.$gettext('Failed to grant access'),
-            errors: [e]
-          })
-        }
-      }
-    },
-
     deleteShareConfirmation(collaboratorShare: CollaboratorShare) {
       this.dispatchModal({
         title: this.$gettext('Remove share'),

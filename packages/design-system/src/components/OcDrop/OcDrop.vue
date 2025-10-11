@@ -23,21 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import tippy, { hideAll, Props as TippyProps, ReferenceElement, Instance } from 'tippy.js'
+import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { getTailwindPaddingClass, NestedDrop, SizeType, uniqueId } from '../../helpers'
+import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 import OcCard from '../OcCard/OcCard.vue'
@@ -64,13 +54,7 @@ export interface Props {
   /**
    * @docs The parent `OcDrop` ref of the nested drop.
    */
-  nestedParentRef?: Ref<
-    ComponentPublicInstance & {
-      show: () => void
-      hide: () => void
-      getElement: () => HTMLElement
-    }
-  >
+  nestedParentRef?: NestedDrop
   /**
    * @docs Determines the event that triggers the drop.
    * @default 'click'
@@ -78,8 +62,9 @@ export interface Props {
   mode?: 'click' | 'hover' | 'manual'
   /**
    * @docs The visual offset of the drop.
+   * @default [0, 0]
    */
-  offset?: string
+  offset?: TippyProps['offset']
   /**
    * @docs The padding size of the drop.
    * @default 'medium'
@@ -147,7 +132,7 @@ const {
   dropId = uniqueId('oc-drop-'),
   isNestedElement = false,
   mode = 'click',
-  offset,
+  offset = [0, 0],
   paddingSize = 'medium',
   popperOptions = {},
   position = 'bottom-start',
@@ -215,7 +200,9 @@ onBeforeUnmount(() => {
 const triggerMapping = computed(() => {
   return (
     {
-      hover: 'mouseenter focus'
+      hover: 'mouseenter focus',
+      click: undefined,
+      manual: undefined
     }[mode] || mode
   )
 })
@@ -250,7 +237,7 @@ const initializeTippy = () => {
   if (!to || !content) {
     return
   }
-  const config: any = {
+  const config: Partial<TippyProps> = {
     trigger: triggerMapping.value,
     placement: position,
     arrow: false,
@@ -259,9 +246,9 @@ const initializeTippy = () => {
     plugins: [hideOnEsc],
     theme: 'none',
     maxWidth: 416,
-    offset: offset ?? 0,
+    offset,
     ...(!isNestedElement && {
-      onShow: (instance: ReferenceElement) => {
+      onShow: (instance) => {
         emit('showDrop')
         hideAll({ exclude: instance })
       },
@@ -337,11 +324,9 @@ watch(
   }
 
   .oc-bottom-drawer li a,
-  .oc-bottom-drawer li .item-has-switch,
-  .oc-bottom-drawer li button:not([role='switch']),
+  .oc-bottom-drawer li button,
   .oc-drop li a,
-  .oc-drop li button:not([role='switch']),
-  .oc-drop li .item-has-switch {
+  .oc-drop li button {
     @apply p-2 w-full;
   }
 

@@ -8,31 +8,20 @@
     <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
       <div class="flex items-center">
         <div>
-          <template v-if="isShareDenied">
-            <oc-avatar-item
-              :width="36"
-              icon-size="medium"
-              icon="stop"
-              :name="$gettext('Access denied')"
-              class="files-collaborators-collaborator-indicator"
-            />
-          </template>
-          <template v-else>
-            <user-avatar
-              v-if="isAnyUserShareType"
-              :user-id="share.sharedWith.id"
-              :user-name="share.sharedWith.displayName"
-              class="files-collaborators-collaborator-indicator"
-            />
-            <oc-avatar-item
-              v-else
-              :width="36"
-              icon-size="medium"
-              :icon="shareTypeIcon"
-              :name="shareTypeKey"
-              class="files-collaborators-collaborator-indicator"
-            />
-          </template>
+          <user-avatar
+            v-if="isAnyUserShareType"
+            :user-id="share.sharedWith.id"
+            :user-name="share.sharedWith.displayName"
+            class="files-collaborators-collaborator-indicator"
+          />
+          <oc-avatar-item
+            v-else
+            :width="36"
+            icon-size="medium"
+            :icon="shareTypeIcon"
+            :name="shareTypeKey"
+            class="files-collaborators-collaborator-indicator"
+          />
         </div>
         <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
@@ -53,33 +42,25 @@
             />
           </div>
           <div>
-            <div
-              v-if="isShareDenied"
-              v-oc-tooltip="shareDeniedTooltip"
-              class="flex flex-nowrap items-center"
-              v-text="$gettext('Access denied')"
-            />
-            <template v-else>
-              <div v-if="modifiable" class="flex flex-nowrap items-center">
-                <role-dropdown
-                  :dom-selector="shareDomSelector"
-                  :existing-share-role="share.role"
-                  :existing-share-permissions="share.permissions"
-                  :is-locked="isLocked"
-                  :is-external="isExternalShare"
-                  class="files-collaborators-collaborator-role max-w-full"
-                  mode="edit"
-                  @option-change="shareRoleChanged"
-                />
-              </div>
-              <div v-else-if="share.role">
-                <span
-                  v-oc-tooltip="$gettext(share.role.description)"
-                  class="mr-1"
-                  v-text="$gettext(share.role.displayName)"
-                />
-              </div>
-            </template>
+            <div v-if="modifiable" class="flex flex-nowrap items-center">
+              <role-dropdown
+                :dom-selector="shareDomSelector"
+                :existing-share-role="share.role"
+                :existing-share-permissions="share.permissions"
+                :is-locked="isLocked"
+                :is-external="isExternalShare"
+                class="files-collaborators-collaborator-role max-w-full"
+                mode="edit"
+                @option-change="shareRoleChanged"
+              />
+            </div>
+            <div v-else-if="share.role">
+              <span
+                v-oc-tooltip="$gettext(share.role.description)"
+                class="mr-1"
+                v-text="$gettext(share.role.displayName)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -91,7 +72,7 @@
           :expiration-date="DateTime.fromISO(share.expirationDateTime)"
         />
         <oc-icon
-          v-if="!isShareDenied && sharedParentRoute"
+          v-if="sharedParentRoute"
           v-oc-tooltip="sharedViaTooltip"
           name="folder-shared"
           fill-type="line"
@@ -104,14 +85,11 @@
           :share-category="shareCategory"
           :can-edit="modifiable"
           :can-remove="removable"
-          :is-share-denied="isShareDenied"
           :is-locked="isLocked"
-          :deniable="deniable"
-          :shared-parent-route="!isShareDenied ? sharedParentRoute : undefined"
+          :shared-parent-route="sharedParentRoute"
           :access-details="accessDetails"
           @expiration-date-changed="shareExpirationChanged"
           @remove-share="removeShare"
-          @set-deny-share="setDenyShare"
           @notify-share="showNotifyShareModal"
         />
       </div>
@@ -156,10 +134,6 @@ export default defineComponent({
       type: Object as PropType<CollaboratorShare>,
       required: true
     },
-    isShareDenied: {
-      type: Boolean,
-      default: false
-    },
     modifiable: {
       type: Boolean,
       default: false
@@ -176,10 +150,6 @@ export default defineComponent({
       type: String,
       default: ''
     },
-    deniable: {
-      type: Boolean,
-      default: false
-    },
     isLocked: {
       type: Boolean,
       default: false
@@ -189,7 +159,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['onDelete', 'onSetDeny'],
+  emits: ['onDelete'],
   setup(props, { emit }) {
     const { showMessage, showErrorMessage } = useMessages()
     const userStore = useUserStore()
@@ -213,10 +183,6 @@ export default defineComponent({
     })
 
     const isExternalShare = computed(() => props.share.shareType === ShareTypes.remote.value)
-
-    const setDenyShare = (value: boolean) => {
-      emit('onSetDeny', { share: props.share, value })
-    }
 
     const showNotifyShareModal = () => {
       dispatchModal({
@@ -244,7 +210,6 @@ export default defineComponent({
       clientService,
       sharedParentDir,
       shareDate,
-      setDenyShare,
       showNotifyShareModal,
       showMessage,
       showErrorMessage,
@@ -285,13 +250,6 @@ export default defineComponent({
 
     shareCategory() {
       return ShareTypes.isIndividual(this.shareType) ? 'user' : 'group'
-    },
-
-    shareDeniedTooltip() {
-      return this.$gettext('%{shareType} cannot access %{resourceName}', {
-        shareType: this.shareTypeText,
-        resourceName: this.resourceName
-      })
     },
 
     shareDisplayName() {

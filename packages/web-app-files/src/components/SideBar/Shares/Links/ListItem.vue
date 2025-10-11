@@ -9,7 +9,6 @@
             v-if="isModifiable"
             :model-value="currentLinkType"
             :available-link-type-options="availableLinkTypeOptions"
-            drop-offset="0"
             @update:model-value="updateSelectedType"
           />
           <span

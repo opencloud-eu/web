@@ -58,7 +58,7 @@ export interface Indicator {
   id: string
   icon: string
   label: string
-  handler?: any
+  handler?: (...args: any) => void
   accessibleDescription?: string
   visible?: boolean
   type?: string

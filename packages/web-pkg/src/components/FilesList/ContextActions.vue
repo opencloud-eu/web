@@ -36,7 +36,7 @@ import {
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { NestedDrop } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -47,7 +47,7 @@ export default defineComponent({
       required: true
     },
     dropRef: {
-      type: Object as PropType<Ref<InstanceType<typeof OcDrop>>>,
+      type: Object as PropType<NestedDrop>,
       required: false,
       default: null
     }

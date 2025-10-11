@@ -15,7 +15,7 @@ export interface SideBarPanel<R extends Item, P extends Item, T extends Item> {
   title(context: SideBarPanelContext<R, P, T>): string
   isVisible(context: SideBarPanelContext<R, P, T>): boolean
   component: ReturnType<typeof defineComponent>
-  componentAttrs?(context: SideBarPanelContext<R, P, T>): any
+  componentAttrs?(context: SideBarPanelContext<R, P, T>): Record<string, any>
   /**
    * defines if the panel is a `root` level panel in the right sidebar.
    * In the long run this should be configured by admins or even users, as it's ideally not to be decided by extension developer.

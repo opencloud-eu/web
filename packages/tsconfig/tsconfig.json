@@ -10,10 +10,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
 
-    /* Strictness - TODO: switch next two values to true */
-    "strict": false,
-    "noUncheckedIndexedAccess": false,
-    "noImplicitThis": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "useUnknownInCatchVariables": false,
 
     "module": "preserve",
     "sourceMap": true,

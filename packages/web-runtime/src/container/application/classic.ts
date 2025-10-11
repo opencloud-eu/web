@@ -54,7 +54,7 @@ class ClassicApplication extends NextApplication {
         ...(instance && {
           portal: {
             open: (...args: unknown[]) =>
-              this.runtimeApi.openPortal.apply(instance, [instance, ...args])
+              this.runtimeApi.openPortal.apply<App, any, unknown>(instance, [instance, ...args])
           }
         }),
         instance,

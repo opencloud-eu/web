@@ -122,11 +122,14 @@ function getSettingsDefaultValue(setting: SettingsBundleSetting) {
   }
 
   if (setting.multiChoiceCollectionValue) {
-    return setting.multiChoiceCollectionValue.options.reduce((acc, curr) => {
-      acc[curr.key] = curr.value.boolValue.default
+    return setting.multiChoiceCollectionValue.options.reduce<Record<string, boolean>>(
+      (acc, curr) => {
+        acc[curr.key] = curr.value.boolValue.default
 
-      return acc
-    }, {})
+        return acc
+      },
+      {}
+    )
   }
 
   const error = new Error('Unsupported setting value')
@@ -148,17 +151,20 @@ export function getSettingsValue(
   }
 
   if (value.collectionValue) {
-    return setting.multiChoiceCollectionValue.options.reduce((acc, curr) => {
-      const val = value.collectionValue.values.find((v) => v.key === curr.key)
+    return setting.multiChoiceCollectionValue.options.reduce<Record<string, boolean>>(
+      (acc, curr) => {
+        const val = value.collectionValue.values.find((v) => v.key === curr.key)
 
-      if (val) {
-        acc[curr.key] = val.boolValue
+        if (val) {
+          acc[curr.key] = val.boolValue
+          return acc
+        }
+
+        acc[curr.key] = curr.value.boolValue.default
         return acc
-      }
-
-      acc[curr.key] = curr.value.boolValue.default
-      return acc
-    }, {})
+      },
+      {}
+    )
   }
 
   if (value.stringValue) {

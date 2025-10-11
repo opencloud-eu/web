@@ -17,7 +17,7 @@ const spaceMock = {
 const dataMock = {
   resources: [resourceMock],
   space: spaceMock,
-  missingFolderPaths: [],
+  missingFolderPaths: [] as string[],
   baseUrl: 'https://example.com'
 }
 

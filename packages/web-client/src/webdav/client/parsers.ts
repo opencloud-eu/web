@@ -57,7 +57,10 @@ export const parseMultiStatus = async (xmlBody: string) => {
 
 export const parseError = (xmlBody: string): { message: string; errorCode: DavErrorCode } => {
   const parser = new XMLParser()
-  const errorObj = { message: 'Unknown error', errorCode: undefined }
+  const errorObj: { message: string; errorCode: DavErrorCode | undefined } = {
+    message: 'Unknown error',
+    errorCode: undefined
+  }
 
   try {
     const parsed = parser.parse(xmlBody)
@@ -73,7 +76,7 @@ export const parseError = (xmlBody: string): { message: string; errorCode: DavEr
     if (parsed['d:error']['s:errorcode']) {
       const errorCode = parsed['d:error']['s:errorcode']
       if (typeof errorCode === 'string') {
-        errorObj.errorCode = errorCode
+        errorObj.errorCode = errorCode as DavErrorCode
       }
     }
   } catch {

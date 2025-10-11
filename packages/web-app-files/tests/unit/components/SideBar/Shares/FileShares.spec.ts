@@ -12,7 +12,7 @@ import {
   defaultStubs
 } from '@opencloud-eu/web-test-helpers'
 import CollaboratorListItem from '../../../../../src/components/SideBar/Shares/Collaborators/ListItem.vue'
-import { AncestorMetaData, CapabilityStore, useCanShare, useModals } from '@opencloud-eu/web-pkg'
+import { AncestorMetaData, useCanShare, useModals } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -167,10 +167,6 @@ function getWrapper({
 } = {}) {
   vi.mocked(useCanShare).mockReturnValue({ canShare: () => canShare })
 
-  const capabilities = {
-    files_sharing: { deny_access: false }
-  } satisfies Partial<CapabilityStore['capabilities']>
-
   if (spaceMembers.length) {
     collaborators = [...collaborators, ...spaceMembers]
   }
@@ -183,7 +179,6 @@ function getWrapper({
             piniaOptions: {
               stubActions: false,
               userState: { user },
-              capabilityState: { capabilities },
               configState: {
                 options: { contextHelpers: true }
               },

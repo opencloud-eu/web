@@ -228,9 +228,20 @@ const {
 const emit = defineEmits<{
   (e: 'fileDropped', id: string): void
   (e: 'rowMounted', resource: Resource, compnent: ResourceTileRef, dimension: ImageDimension): void
-  (e: 'sort', value: { sortBy: any; sortDir: any }): void
+  (e: 'sort', value: { sortBy: string; sortDir: SortDir }): void
   (e: 'itemVisible', resource: Resource): void
   (e: 'update:selectedIds', ids: string[]): void
+}>()
+
+defineSlots<{
+  image?: (props: { resource: Resource }) => unknown
+  actions?: (props: { resource: Resource }) => unknown
+  contextMenu?: (props: {
+    resource: Resource
+    isOpen: boolean
+    dropRef: HTMLElement | null
+  }) => unknown
+  footer?: () => unknown
 }>()
 
 const { $gettext } = useGettext()
@@ -509,7 +520,7 @@ const currentSortField = computed(() => {
   return sortFields.find((o) => o.name === sortBy && o.sortDir === sortDir) || sortFields[0]
 })
 const selectSorting = (field: SortField) => {
-  emit('sort', { sortBy: field.name, sortDir: field.sortDir })
+  emit('sort', { sortBy: field.name, sortDir: unref(field.sortDir) })
 }
 
 const resourceIconSize = computed<SizeType>(() => {

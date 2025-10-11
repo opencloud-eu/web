@@ -1,5 +1,5 @@
 import { Router } from 'vue-router'
-import { useTask } from 'vue-concurrency'
+import { Task, useTask } from 'vue-concurrency'
 import {
   useRouter,
   useClientService,
@@ -30,7 +30,7 @@ import {
   FolderLoaderTrashbin
 } from './loaders'
 
-export type FolderLoaderTask = any
+export type FolderLoaderTask<T = any, TT = any> = Task<T, TT[]>
 
 export type TaskContext = {
   clientService: ClientService

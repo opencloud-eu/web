@@ -44,7 +44,7 @@ async function* readDirectory(dirEntry: FileSystemDirectoryEntry): AsyncGenerato
 
 async function* getFile(
   entry: FileSystemEntry,
-  logDropError?: (error?: unknown) => void
+  logDropError?: (error?: Error) => void
 ): AsyncGenerator<File> {
   if (entry.isDirectory) {
     let hasFiles = false // check for empty directories later
@@ -83,7 +83,7 @@ async function* getFile(
 
 export const getDroppedFiles = async (
   dataTransfer: DataTransfer,
-  logDropError?: (error?: unknown) => void
+  logDropError?: (error?: Error) => void
 ): Promise<File[]> => {
   try {
     const files: File[] = []

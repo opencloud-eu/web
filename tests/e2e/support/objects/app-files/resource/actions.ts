@@ -1674,7 +1674,7 @@ export const expectThatResourcesAreDisplayedAs = async (args: {
     'table-condensed': '#files-view .oc-table.oc-table-condensed'
   }
 
-  const selector = viewSelectors[viewMode]
+  const selector = viewSelectors[viewMode as keyof typeof viewSelectors]
   await expect(page.locator(selector)).toBeVisible()
 }
 

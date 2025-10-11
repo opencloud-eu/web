@@ -55,8 +55,12 @@ describe('downloadArchive', () => {
 
 function getWrapper({
   searchLocation = false,
-  triggerDownloadMock = vi.fn() as (...args: unknown[]) => unknown,
+  triggerDownloadMock = vi.fn(),
   setup = () => undefined
+}: {
+  searchLocation?: boolean
+  triggerDownloadMock?: (...args: unknown[]) => unknown
+  setup?: () => unknown
 } = {}) {
   const routeName = searchLocation ? 'files-common-search' : 'files-spaces-generic'
 

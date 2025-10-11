@@ -45,11 +45,10 @@
 
 <script setup lang="ts">
 import ActionMenuItem from './ActionMenuItem.vue'
-import { AppearanceType, uniqueId } from '@opencloud-eu/design-system/helpers'
+import { AppearanceType, NestedDrop, uniqueId } from '@opencloud-eu/design-system/helpers'
 import type { ActionOptions } from '../../composables'
 import { MenuSectionDrop } from './types'
 import { OcDrop } from '@opencloud-eu/design-system/components'
-import { Ref } from 'vue'
 
 const {
   menuSectionDrop,
@@ -60,7 +59,7 @@ const {
   menuSectionDrop: MenuSectionDrop
   appearance: AppearanceType
   actionOptions: ActionOptions
-  parentDropRef?: Ref<InstanceType<typeof OcDrop>>
+  parentDropRef?: NestedDrop | null
 }>()
 
 const dropId = uniqueId(`oc-files-context-actions-${menuSectionDrop.name}-drop-`)

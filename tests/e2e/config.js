@@ -1,5 +1,6 @@
 const withHttp = (url) => (/^https?:\/\//i.test(url) ? url : `https://${url}`)
 
+// keep in sync with the type in config.ts
 export const config = {
   // environment
   assets: './tests/e2e/filesForUpload',

@@ -77,7 +77,6 @@ export interface Resource {
   canShare?(args?: { user?: User; ability?: Ability }): boolean
   canRename?(args?: { user?: User; ability?: Ability }): boolean
   canBeDeleted?(args?: { user?: User; ability?: Ability }): boolean
-  canDeny?(): boolean
   canEditTags?(): boolean
 
   getDomSelector?(): string

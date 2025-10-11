@@ -80,7 +80,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, onMounted, onUnmounted, ref, unref } from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import isEmpty from 'lodash-es/isEmpty'
 import escape from 'lodash-es/escape'
 import {
@@ -113,7 +113,7 @@ export default {
     const clientService = useClientService()
     const language = useGettext()
 
-    const notifications = ref<Notification[]>([])
+    const notifications: Ref<Notification[]> = ref([])
     const notificationsInterval = ref<ReturnType<typeof setInterval>>()
 
     const loading = computed(() => {

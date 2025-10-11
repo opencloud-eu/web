@@ -54,7 +54,10 @@ export const acceptInvitation = async (args: { page: Page; sharer: string }): Pr
   ])
 }
 
-export const connectionExists = async (args: { page: Page; info }): Promise<boolean> => {
+export const connectionExists = async (args: {
+  page: Page
+  info: Record<string, any>
+}): Promise<boolean> => {
   const { page, info } = args
   await expect(page.locator(util.format(invitationConnectionRow, info.user))).toBeVisible()
   return true

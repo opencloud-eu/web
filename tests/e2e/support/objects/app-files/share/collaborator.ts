@@ -41,12 +41,6 @@ export interface RemoveExpirationDateFromCollaboratorArgs
   collaborator: Omit<ICollaborator, 'role'>
 }
 
-export interface SetDenyShareForCollaboratorArgs extends Omit<CollaboratorArgs, 'collaborator'> {
-  collaborator: Omit<ICollaborator, 'role'>
-
-  deny: boolean
-}
-
 export interface IAccessDetails {
   Name?: string
   'Additional info'?: string
@@ -76,8 +70,6 @@ export default class Collaborator {
     '%s//button[contains(@class,"files-recipient-role-select-btn")]/span[text()="%s"]'
   private static readonly removeCollaboratorButton =
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"remove-share")]'
-  private static readonly denyShareCollaboratorButton =
-    '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//span[contains(@class,"deny-share")]//button[contains(@aria-checked,"%s")]'
   private static readonly setExpirationDateCollaboratorButton =
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"recipient-datepicker-btn")]'
   private static readonly removeExpirationDateCollaboratorButton =

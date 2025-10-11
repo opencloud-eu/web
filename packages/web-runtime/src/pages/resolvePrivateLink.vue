@@ -35,7 +35,7 @@ import { unref, defineComponent, computed, onMounted, ref, Ref } from 'vue'
 import { dirname } from 'path'
 import { createFileRouteOptions, useGetResourceContext } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
-import { isShareSpaceResource, Resource, SHARE_JAIL_ID } from '@opencloud-eu/web-client'
+import { call, isShareSpaceResource, Resource, SHARE_JAIL_ID } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 
@@ -81,7 +81,7 @@ export default defineComponent({
       } catch (e) {
         // error means the resurce is an unaccepted/unsynced share
         isUnacceptedShareError.value = true
-        throw Error(e)
+        throw e
       }
 
       const { space, resource } = result
@@ -99,7 +99,9 @@ export default defineComponent({
         resourceIsNestedInShare = path !== '/'
         if (!resourceIsNestedInShare) {
           // FIXME: get drive item by id as soon as server supports it
-          const driveItems = yield clientService.graphAuthenticated.driveItems.listSharedWithMe()
+          const driveItems = yield* call(
+            clientService.graphAuthenticated.driveItems.listSharedWithMe()
+          )
           const share = driveItems.find(({ remoteItem }) => remoteItem.id === resource.id)
 
           isHiddenShare = share?.['@UI.Hidden']

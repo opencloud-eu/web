@@ -241,7 +241,7 @@ function filterTracingReports(status: string) {
   }
 }
 
-const cleanUpUser = async (createdUserStore, adminUser: User) => {
+const cleanUpUser = async (createdUserStore: Map<string, User>, adminUser: User) => {
   const requests: Promise<User>[] = []
   createdUserStore.forEach((user) => {
     if (config.keycloak) {
@@ -291,7 +291,7 @@ const cleanUpGroup = async (adminUser: User) => {
   store.createdGroupStore.clear()
 }
 
-const isOcm = (pickle): boolean => {
+const isOcm = (pickle: ITestCaseHookParameter['pickle']): boolean => {
   const tags = pickle.tags.map((tag) => tag.name)
   if (tags.includes('@ocm')) {
     return true

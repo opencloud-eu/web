@@ -124,7 +124,7 @@ export interface Props {
   /**
    * @docs The filter function for the select. Defaults to searching by label.
    */
-  filter?: (items: unknown[], search: string, { label }: { label?: string }) => unknown[]
+  filter?: (items: any[], search: string, { label }: { label?: string }) => unknown[]
   /**
    * @docs Determines if the select is disabled.
    * @default false
@@ -218,7 +218,11 @@ export interface Slots {
   /**
    * @docs Slot for when an option is selected.
    */
-  selectedOption?: () => unknown
+  'selected-option'?: () => unknown
+  /**
+   * @docs This component inherits all slots from `vue-select`. See https://vue-select.org/api/slots for more information.
+   */
+  [dynamicSlot: string]: () => unknown
 }
 
 // the keycode property is deprecated in the JS event API, vue-select still works with it though

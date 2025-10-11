@@ -7,7 +7,7 @@ describe('getDroppedFiles', () => {
       getAsEntry: () => ({
         isFile: true,
         isDirectory: false,
-        file: (resolve) => resolve(expectedFileObj)
+        file: (resolve: (file: File) => void) => resolve(expectedFileObj)
       })
     } as any
 
@@ -22,7 +22,7 @@ describe('getDroppedFiles', () => {
     const file = {
       isFile: true,
       isDirectory: false,
-      file: (resolve) => resolve(expectedFileObj)
+      file: (resolve: (file: File) => void) => resolve(expectedFileObj)
     } as any
 
     let folderInsideFinished = false
@@ -89,7 +89,7 @@ describe('getDroppedFiles', () => {
         getAsEntry: () => ({
           isFile: true,
           isDirectory: false,
-          file: (resolve, reject) => reject(error)
+          file: (resolve: (file: File) => void, reject: (error: Error) => void) => reject(error)
         })
       } as any
 

@@ -53,19 +53,24 @@ describe('OcDrop', () => {
     }
   })
 
-  it.each(['xsmall', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'remove'])(
-    'handles padding size prop for value %s',
-    async (size: SizeType | 'remove') => {
-      const { wrapper } = dom({ paddingSize: size })
+  it.each<SizeType | 'remove'>([
+    'xsmall',
+    'small',
+    'medium',
+    'large',
+    'xlarge',
+    'xxlarge',
+    'remove'
+  ])('handles padding size prop for value %s', async (size) => {
+    const { wrapper } = dom({ paddingSize: size })
 
-      const drop = wrapper.findComponent({ name: 'oc-drop' })
-      await nextTick()
+    const drop = wrapper.findComponent({ name: 'oc-drop' })
+    await nextTick()
 
-      const tailwindClassObj = getTailwindPaddingClass(size)
-      const tailwindClass = Object.entries(tailwindClassObj).find(([, v]) => v)?.[0]
-      expect(drop.html().includes(tailwindClass)).toBeTruthy()
-    }
-  )
+    const tailwindClassObj = getTailwindPaddingClass(size)
+    const tailwindClass = Object.entries(tailwindClassObj).find(([, v]) => v)?.[0]
+    expect(drop.html().includes(tailwindClass)).toBeTruthy()
+  })
 
   describe('tippy', () => {
     it('inits tippy', async () => {

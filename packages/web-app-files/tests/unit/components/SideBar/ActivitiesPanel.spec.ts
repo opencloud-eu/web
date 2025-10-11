@@ -3,6 +3,7 @@ import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
+import { Activity } from '@opencloud-eu/web-client/graph/generated'
 
 const defaultActivities = [
   {
@@ -102,7 +103,7 @@ describe('ActivitiesPanel', () => {
 function getMountedWrapper({
   activities = defaultActivities
 }: {
-  activities?: any[]
+  activities?: Activity[]
   isActive?: boolean
 } = {}) {
   const mocks = {

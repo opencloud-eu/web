@@ -21,7 +21,7 @@ describe('AudioMeta SideBar Panel', () => {
         discCount: 12
       })
     })
-    const expectedValues = {
+    const expectedValues: Record<string, string> = {
       title: resource.audio.title,
       duration: '08:30',
       artist: resource.audio.artist,

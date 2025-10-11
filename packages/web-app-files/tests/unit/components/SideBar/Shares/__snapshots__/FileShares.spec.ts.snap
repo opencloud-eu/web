@@ -16,16 +16,16 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
   <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
   <ul id="files-collaborators-list" class="oc-list oc-list-divider m-0" aria-label="Share receivers">
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="true" removable="true" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="true" removable="true" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="true" removable="true" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="true" removable="true" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
   </ul>
@@ -53,7 +53,7 @@ exports[`FileShares > current space > loads space members if a space is given an
   <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
   <ul id="files-collaborators-list" class="oc-list oc-list-divider mb-4" aria-label="Share receivers">
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="false" removable="false" resourcename="[Function]" deniable="false" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="false" removable="false" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
     <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
   </ul>
@@ -63,10 +63,10 @@ exports[`FileShares > current space > loads space members if a space is given an
   </div>
   <ul id="space-collaborators-list" class="oc-list oc-list-divider overflow-hidden m-0" aria-label="Space members">
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="false" removable="false" resourcename="[Function]" deniable="false" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="false" removable="false" resourcename="[Function]" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
     </li>
     <li>
-      <collaborator-list-item-stub share="[object Object]" issharedenied="false" modifiable="false" removable="false" resourcename="[Function]" deniable="false" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
+      <collaborator-list-item-stub share="[object Object]" modifiable="false" removable="false" resourcename="[Function]" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
     </li>
   </ul>
   <!--v-if-->

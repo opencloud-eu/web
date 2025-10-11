@@ -17,18 +17,15 @@ describe('OcRadio', () => {
     expect(wrapper.find('label').attributes('for')).toBe('test-radio-input')
   })
   describe('size prop', () => {
-    it.each([
+    it.each<{ size: 'small' | 'medium' | 'large'; expected: string }>([
       { size: 'small', expected: 'size-3' },
       { size: 'medium', expected: 'size-4' },
       { size: 'large', expected: 'size-5' }
-    ])(
-      'should set input class according to the provided size',
-      ({ size, expected }: { size: 'small' | 'medium' | 'large'; expected: string }) => {
-        const wrapper = getWrapper({ size })
-        const radioInput = wrapper.find(radioElementSelector)
-        expect(radioInput.attributes('class')).toContain(expected)
-      }
-    )
+    ])('should set input class according to the provided size', ({ size, expected }) => {
+      const wrapper = getWrapper({ size })
+      const radioInput = wrapper.find(radioElementSelector)
+      expect(radioInput.attributes('class')).toContain(expected)
+    })
   })
   describe('label', () => {
     it('should render the provided label for the input', () => {

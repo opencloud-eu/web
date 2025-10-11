@@ -273,10 +273,10 @@ const items = computed(() => {
   return orderBy(
     filter(unref(spaces), unref(filterTerm)),
     [
-      (item: SpaceResource) =>
-        typeof item[unref(sortBy)] === 'string'
-          ? item[unref(sortBy)].toLowerCase()
-          : item[unref(sortBy)]
+      (item: SpaceResource) => {
+        const prop = item[unref(sortBy) as keyof SpaceResource]
+        return typeof prop === 'string' ? prop.toLowerCase() : prop
+      }
     ],
     unref(sortDir)
   )
