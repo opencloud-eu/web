@@ -47,6 +47,7 @@
             :style="folderViewStyle"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
+            @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           >
             <template #contextMenu="{ resource, isOpen }">
               <trash-context-actions
@@ -104,6 +105,8 @@ import {
   SortDir,
   useClientService,
   useExtensionRegistry,
+  useGetMatchingSpace,
+  useLoadPreview,
   useResourcesStore,
   useRouter,
   useSpacesStore,
@@ -129,11 +132,14 @@ const router = useRouter()
 const { $gettext, $ngettext } = useGettext()
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
+const { getMatchingSpace } = useGetMatchingSpace()
 
 const resourcesViewDefaults = useResourcesViewDefaults()
 
 const { isSideBarOpen, fileListHeaderY, sideBarActivePanel, viewMode, viewSize, sortFields } =
   resourcesViewDefaults
+
+const { loadPreview } = useLoadPreview(viewMode)
 
 const folderView = computed(() => {
   const viewMode = unref(resourcesViewDefaults.viewMode)
@@ -296,15 +302,14 @@ onMounted(async () => {
   }
 
   await nextTick()
-  markInstance = new Mark('.trash-table')
+  markInstance = new Mark('.oc-resource-details')
 })
 
 watch(filterTerm, () => {
   markInstance?.unmark()
   markInstance?.mark(unref(filterTerm), {
     element: 'span',
-    className: 'mark-highlight',
-    exclude: ['th *', 'tfoot *']
+    className: 'mark-highlight'
   })
 })
 </script>

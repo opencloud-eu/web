@@ -303,8 +303,7 @@ watch(filterTerm, async () => {
   markInstance?.unmark()
   markInstance?.mark(unref(filterTerm), {
     element: 'span',
-    className: 'mark-highlight',
-    exclude: ['th *', 'tfoot *']
+    className: 'mark-highlight'
   })
 })
 
@@ -371,7 +370,7 @@ onMounted(async () => {
   )
   scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
   nextTick(() => {
-    markInstance = new Mark('.spaces-list')
+    markInstance = new Mark('.oc-resource-details')
   })
 })
 
