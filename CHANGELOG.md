@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: rounded bottom corner on tile preview hover [[#1363](https://github.com/opencloud-eu/web/pull/1363)]
 - fix: show previews in trash overview [[#1362](https://github.com/opencloud-eu/web/pull/1362)]
 - fix: remove share avatar click handler in files table [[#1349](https://github.com/opencloud-eu/web/pull/1349)]
 - fix(design-system): translate default modal action button labels [[#1347](https://github.com/opencloud-eu/web/pull/1347)]
