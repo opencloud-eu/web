@@ -6,6 +6,25 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899, @saw-jan, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix: show previews in trash overview [[#1362](https://github.com/opencloud-eu/web/pull/1362)]
+- fix: remove share avatar click handler in files table [[#1349](https://github.com/opencloud-eu/web/pull/1349)]
+- fix(design-system): translate default modal action button labels [[#1347](https://github.com/opencloud-eu/web/pull/1347)]
+- fix: mobile tiles view right click menu [[#1345](https://github.com/opencloud-eu/web/pull/1345)]
+- fix(admin-settings): redirect when accessing /admin-settings [[#1337](https://github.com/opencloud-eu/web/pull/1337)]
+- fix: disable echart loading in text editor [[#1332](https://github.com/opencloud-eu/web/pull/1332)]
+- fix: sidebar versions loading (performance) [[#1285](https://github.com/opencloud-eu/web/pull/1285)]
+- fix: normalize file and folder names to NFC when uploading [[#1327](https://github.com/opencloud-eu/web/pull/1327)]
+- fix: prevent uploading the same file again during upload [[#1277](https://github.com/opencloud-eu/web/pull/1277)]
+- fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
+- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
+- fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
+- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
+- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
+- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
+- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
+
 ### 📈 Enhancement
 
 - feat: add tiles view for shared with me view [[#1352](https://github.com/opencloud-eu/web/pull/1352)]
@@ -30,24 +49,6 @@
 - [localization-de] e2e. ensure German localization is correct [[#1193](https://github.com/opencloud-eu/web/pull/1193)]
 - fail accessibility tests on any violation [[#1319](https://github.com/opencloud-eu/web/pull/1319)]
 - [full-ci][tests-only] Increase playwright timeout [[#1267](https://github.com/opencloud-eu/web/pull/1267)]
-
-### 🐛 Bug Fixes
-
-- fix: remove share avatar click handler in files table [[#1349](https://github.com/opencloud-eu/web/pull/1349)]
-- fix(design-system): translate default modal action button labels [[#1347](https://github.com/opencloud-eu/web/pull/1347)]
-- fix: mobile tiles view right click menu [[#1345](https://github.com/opencloud-eu/web/pull/1345)]
-- fix(admin-settings): redirect when accessing /admin-settings [[#1337](https://github.com/opencloud-eu/web/pull/1337)]
-- fix: disable echart loading in text editor [[#1332](https://github.com/opencloud-eu/web/pull/1332)]
-- fix: sidebar versions loading (performance) [[#1285](https://github.com/opencloud-eu/web/pull/1285)]
-- fix: normalize file and folder names to NFC when uploading [[#1327](https://github.com/opencloud-eu/web/pull/1327)]
-- fix: prevent uploading the same file again during upload [[#1277](https://github.com/opencloud-eu/web/pull/1277)]
-- fix: resolve axe violations (button-name, empty-table-header, spinner) [[#1296](https://github.com/opencloud-eu/web/pull/1296)]
-- fix: clean failed uploads when closing upload overlay [[#1300](https://github.com/opencloud-eu/web/pull/1300)]
-- fix: user group assignment options, details panel alignment [[#1298](https://github.com/opencloud-eu/web/pull/1298)]
-- fix: topbar save icon hover color and thumbnail compression [[#1294](https://github.com/opencloud-eu/web/pull/1294)]
-- fix(admin-settings): space list and sidebar issues [[#1286](https://github.com/opencloud-eu/web/pull/1286)]
-- fix: sync color role defaults with opencloud theme.json [[#1274](https://github.com/opencloud-eu/web/pull/1274)]
-- fix: add missing web-pkg types and fix type errors [[#1266](https://github.com/opencloud-eu/web/pull/1266)]
 
 ### 📦️ Dependencies
 
