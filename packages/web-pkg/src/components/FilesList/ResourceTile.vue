@@ -55,8 +55,7 @@
               v-if="resource.thumbnail"
               class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
               :class="{
-                'rounded-sm': isResourceSelected,
-                'hover:rounded-sm': !isResourceSelected
+                'rounded-sm': isResourceSelected
               }"
               :src="resource.thumbnail"
               :data-test-thumbnail-resource-name="resource.name"
@@ -221,6 +220,15 @@ if (!lazy) {
   emit('itemVisible')
 }
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  .oc-tile-card-preview:hover img {
+    @apply rounded-sm;
+  }
+}
+</style>
 <style lang="scss">
 .oc-tile-card {
   // needs to be scss because of the linear-gradient
