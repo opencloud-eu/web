@@ -32,7 +32,7 @@
     "required": false,
     "description": "The parent `OcDrop` ref of the nested drop.",
     "default": "",
-    "type": "Ref<\n    ComponentPublicInstance & {\n      show: () => void\n      hide: () => void\n      getElement: () => HTMLElement\n    }\n  >"
+    "type": "NestedDrop"
   },
   {
     "name": "mode",
@@ -45,8 +45,8 @@
     "name": "offset",
     "required": false,
     "description": "The visual offset of the drop.",
-    "default": "",
-    "type": "string"
+    "default": "[0, 0]",
+    "type": "TippyProps['offset']"
   },
   {
     "name": "paddingSize",

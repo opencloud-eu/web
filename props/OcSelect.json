@@ -11,7 +11,7 @@
     "required": false,
     "description": "The filter function for the select. Defaults to searching by label.",
     "default": "",
-    "type": "(items: unknown[], search: string, { label }: { label?: string }) => unknown[]"
+    "type": "(items: any[], search: string, { label }: { label?: string }) => unknown[]"
   },
   {
     "name": "disabled",

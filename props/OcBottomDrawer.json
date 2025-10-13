@@ -53,6 +53,6 @@
     "required": false,
     "description": "The parent `OcBottomDrawer` ref of the nested bottom drawer.",
     "default": "",
-    "type": "Ref<\n    ComponentPublicInstance & {\n      show: () => void\n      hide: () => void\n      getElement: () => HTMLElement\n    }\n  >"
+    "type": "NestedDrop | null"
   }
 ]
