@@ -12,6 +12,7 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 import { createLocationSpaces } from '@opencloud-eu/web-pkg'
 import omit from 'lodash-es/omit'
+import { RouteLocationRaw } from 'vue-router'
 
 // 'personal/home' is used as personal drive alias from static contexts
 // (i.e. places where we can't load the actual personal space)
@@ -60,7 +61,7 @@ export default defineComponent({
             ...params
           },
           query
-        })
+        } as RouteLocationRaw)
         // avoid NavigationDuplicated error in console
         .catch(() => {})
     }

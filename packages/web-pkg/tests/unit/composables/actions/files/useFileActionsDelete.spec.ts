@@ -138,6 +138,12 @@ function getWrapper({
   searchLocation = false,
   filesListDeleteMock = vi.fn(),
   setup = () => undefined
+}: {
+  deletePermanent?: boolean
+  invalidLocation?: boolean
+  searchLocation?: boolean
+  filesListDeleteMock?: (resources: Resource[]) => void[]
+  setup?: () => unknown
 } = {}) {
   const routeName = invalidLocation
     ? 'files-shares-via-link'

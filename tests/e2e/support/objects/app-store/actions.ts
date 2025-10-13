@@ -58,7 +58,7 @@ export const selectApp = (args: { page: Page; app: string }): Promise<void> => {
   return page.locator(util.format(selectors.selectAppTitle, app)).click()
 }
 
-export const waitForAppDetailsIsVisible = (args: { page: Page; app }): Promise<void> => {
+export const waitForAppDetailsIsVisible = (args: { page: Page; app: string }): Promise<void> => {
   const { page, app } = args
   return page.locator(util.format(selectors.appDetailsTitle, app)).waitFor()
 }

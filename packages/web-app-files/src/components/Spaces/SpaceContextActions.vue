@@ -48,7 +48,7 @@ import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { NestedDrop } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'SpaceContextActions',
@@ -63,7 +63,7 @@ export default defineComponent({
       default: false
     },
     dropRef: {
-      type: Object as PropType<Ref<InstanceType<typeof OcDrop>>>,
+      type: Object as PropType<NestedDrop>,
       required: false,
       default: null
     }

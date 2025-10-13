@@ -46,7 +46,7 @@ export default {
     }
   ],
   useVersionPrefixV: true,
-  getLatestTag: ({ exec }) => {
+  getLatestTag: ({ exec }: any) => {
     // the plugin uses the latest tag to determine the next version
     // and the changes that are included in the upcoming release.
     const branch = getBranch(exec)
@@ -65,7 +65,7 @@ export default {
 
     return tags.pop() || 'v0.0.0'
   },
-  useLatestRelease: ({ exec, nextVersion }) => {
+  useLatestRelease: ({ exec, nextVersion }: any) => {
     // check if the release should be marked as latest release on GitHub.
     const tags = getTags(exec)
     const latestTag = tags.pop() || 'v0.0.0'

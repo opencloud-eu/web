@@ -413,7 +413,11 @@ When(
 
 When(
   '{string} switches to the {string} view',
-  async function (this: World, stepUser: string, viewMode: string): Promise<void> {
+  async function (
+    this: World,
+    stepUser: string,
+    viewMode: 'table' | 'tiles' | 'table-condensed'
+  ): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     await resourceObject.switchViewMode(viewMode)

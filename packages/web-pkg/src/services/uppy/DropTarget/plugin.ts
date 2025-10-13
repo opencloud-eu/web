@@ -8,7 +8,7 @@ import { convertToMinimalUppyFile } from '../utils'
 const defaultOpts = {
   target: null,
   uppyService: null
-} satisfies DropTargetOptions
+} as DropTargetOptions
 
 /**
  * This is an adaption of the official Uppy DropTarget plugin, extended by the
@@ -16,7 +16,7 @@ const defaultOpts = {
  * https://github.com/transloadit/uppy/tree/main/packages/%40uppy/drop-target
  */
 export default class DropTarget<M extends Meta, B extends Body> extends BasePlugin<
-  DefinePluginOpts<DropTargetOptions, keyof typeof defaultOpts>,
+  Partial<DefinePluginOpts<DropTargetOptions, keyof typeof defaultOpts>>,
   M,
   B
 > {

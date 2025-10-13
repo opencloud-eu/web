@@ -31,7 +31,7 @@ describe('Exif SideBar Panel', () => {
           takenDateTime: '2017-02-11T14:54:50Z'
         })
       })
-      const expectedValues = {
+      const expectedValues: Record<string, string> = {
         cameraMake: resource.photo.cameraMake,
         cameraModel: resource.photo.cameraModel,
         focalLength: `${resource.photo.focalLength} mm`,

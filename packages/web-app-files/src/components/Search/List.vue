@@ -219,7 +219,7 @@ export default defineComponent({
   props: {
     searchResult: {
       type: Object as PropType<SearchResult>,
-      default: function () {
+      default: function (): SearchResult {
         return { totalResults: null, values: [] }
       }
     },

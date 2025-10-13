@@ -32,13 +32,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, Ref } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
 import { ActionOptions } from '../../composables'
-import { AppearanceType } from '@opencloud-eu/design-system/helpers'
+import { AppearanceType, NestedDrop } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
 import { MenuSection } from './types'
-import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'ContextActionMenu',
@@ -57,7 +56,7 @@ export default defineComponent({
       required: true
     },
     dropRef: {
-      type: Object as PropType<Ref<InstanceType<typeof OcDrop>>>,
+      type: Object as PropType<NestedDrop>,
       required: false,
       default: null
     }

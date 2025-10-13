@@ -16,7 +16,7 @@ export const useNotificationsSettings = (
       return {}
     }
 
-    return unref(bundle).settings.reduce((acc, curr) => {
+    return unref(bundle).settings.reduce<Record<string, unknown>>((acc, curr) => {
       if (!SETTINGS_NOTIFICATION_BUNDLE_IDS.includes(curr.id)) {
         return acc
       }
@@ -50,7 +50,7 @@ export const useNotificationsSettings = (
       return {}
     }
 
-    return unref(bundle).settings.reduce((acc, curr) => {
+    return unref(bundle).settings.reduce<Record<string, unknown>>((acc, curr) => {
       if (!SETTINGS_EMAIL_NOTIFICATION_BUNDLE_IDS.includes(curr.id)) {
         return acc
       }

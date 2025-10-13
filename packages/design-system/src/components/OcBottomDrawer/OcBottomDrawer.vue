@@ -49,21 +49,13 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { FocusTrap } from 'focus-trap-vue'
 import { onKeyStroke } from '@vueuse/core'
 import OcButton from '../OcButton/OcButton.vue'
 import OcCard from '../OcCard/OcCard.vue'
+import { NestedDrop } from '../../helpers'
 
 export interface Props {
   /**
@@ -103,13 +95,7 @@ export interface Props {
   /**
    * @docs The parent `OcBottomDrawer` ref of the nested bottom drawer.
    */
-  nestedParentRef?: Ref<
-    ComponentPublicInstance & {
-      show: () => void
-      hide: () => void
-      getElement: () => HTMLElement
-    }
-  >
+  nestedParentRef?: NestedDrop | null
 }
 
 const {

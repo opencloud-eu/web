@@ -50,5 +50,5 @@ export interface WebDAV {
   // because of a limitation in our WebDAV library, we cannot differentiate between
   // the same tag in two different namespaces. Make sure to use unique tag names despite
   // differing namespaces.
-  registerExtraProp(name: string)
+  registerExtraProp(name: string): void
 }

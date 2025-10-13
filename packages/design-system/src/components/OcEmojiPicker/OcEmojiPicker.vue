@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+import { Emoji } from 'emoji-mart'
 import { nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
@@ -77,7 +78,7 @@ watch(
     const data = (await import('@emoji-mart/data')).default
 
     const pickerOptions = {
-      onEmojiSelect: (emoji: any) => emit('emojiSelect', emoji.native),
+      onEmojiSelect: (emoji: Emoji['component']) => emit('emojiSelect', emoji.native),
       onClickOutside: () => emit('clickOutside'),
       i18n,
       data,

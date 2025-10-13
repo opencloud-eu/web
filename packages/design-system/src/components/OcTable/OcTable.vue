@@ -266,6 +266,10 @@ export interface Slots {
    * @slot The footer of the table.
    */
   footer?: () => unknown
+  /**
+   * @docs Each field can have it's own slot.
+   */
+  [dynamicSlot: string]: () => unknown
 }
 
 const {
