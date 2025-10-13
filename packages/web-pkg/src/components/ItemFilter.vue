@@ -61,11 +61,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   ComponentPublicInstance,
-  PropType,
-  defineComponent,
   nextTick,
   onMounted,
   ref,
@@ -81,179 +79,136 @@ import { defaultFuseOptions } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 
-type Item = unknown
+type Item = Record<string, any>
 
-export default defineComponent({
-  name: 'ItemFilter',
-  props: {
-    filterLabel: {
-      type: String,
-      required: true
-    },
-    filterName: {
-      type: String,
-      required: true
-    },
-    optionFilterLabel: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    showOptionFilter: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    items: {
-      type: Array as PropType<Item[]>,
-      required: true
-    },
-    allowMultiple: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    idAttribute: {
-      type: String,
-      required: false,
-      default: 'id'
-    },
-    displayNameAttribute: {
-      type: String,
-      required: false,
-      default: 'name'
-    },
-    filterableAttributes: {
-      type: Array as PropType<FuseOptionKey<Item>[]>,
-      required: false,
-      default: (): FuseOptionKey<Item>[] => []
-    },
-    closeOnClick: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['selectionChange'],
-  setup: function (props, { emit, expose }) {
-    const router = useRouter()
-    const currentRoute = useRoute()
-    const filterInputRef =
-      useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('filterInputRef')
-    const selectedItems = ref<Item[]>([])
-    const displayedItems = ref(props.items)
-    const itemFilterListRef = useTemplateRef('itemFilterListRef')
+const {
+  filterLabel,
+  filterName,
+  items,
+  optionFilterLabel = '',
+  showOptionFilter = false,
+  allowMultiple = false,
+  idAttribute = 'id',
+  displayNameAttribute = 'name',
+  filterableAttributes = [],
+  closeOnClick = false
+} = defineProps<{
+  filterLabel: string
+  filterName: string
+  items: Item[]
+  optionFilterLabel?: string
+  showOptionFilter?: boolean
+  allowMultiple?: boolean
+  idAttribute?: string
+  displayNameAttribute?: string
+  filterableAttributes?: FuseOptionKey<Item>[]
+  closeOnClick?: boolean
+}>()
 
-    const queryParam = `q_${props.filterName}`
-    const currentRouteQuery = useRouteQuery(queryParam)
+const emit = defineEmits<{
+  (e: 'selectionChange', selectedItems: Item[]): void
+}>()
 
-    const getId = (item: Item) => {
-      return item[props.idAttribute as keyof Item]
-    }
+const router = useRouter()
+const currentRoute = useRoute()
+const filterInputRef = useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('filterInputRef')
+const selectedItems = ref<Item[]>([])
+const displayedItems = ref(items)
+const itemFilterListRef = useTemplateRef('itemFilterListRef')
 
-    const setRouteQuery = () => {
-      return router.push({
-        query: {
-          ...omit(unref(currentRoute).query, [queryParam]),
-          ...(!!unref(selectedItems).length && {
-            [queryParam]: unref(selectedItems)
-              .reduce<string>((acc, item) => {
-                acc += `${getId(item)}+`
-                return acc
-              }, '')
-              .slice(0, -1)
-          })
-        }
+const queryParam = `q_${filterName}`
+const currentRouteQuery = useRouteQuery(queryParam)
+
+const getId = (item: Item) => {
+  return item[idAttribute as keyof Item]
+}
+
+const setRouteQuery = () => {
+  return router.push({
+    query: {
+      ...omit(unref(currentRoute).query, [queryParam]),
+      ...(!!unref(selectedItems).length && {
+        [queryParam]: unref(selectedItems)
+          .reduce<string>((acc, item) => {
+            acc += `${getId(item)}+`
+            return acc
+          }, '')
+          .slice(0, -1)
       })
     }
+  })
+}
 
-    const isItemSelected = (item: Item) => {
-      return !!unref(selectedItems).find((s) => getId(s) === getId(item))
-    }
+const isItemSelected = (item: Item) => {
+  return !!unref(selectedItems).find((s) => getId(s) === getId(item))
+}
 
-    const toggleItemSelection = async (item: Item) => {
-      if (isItemSelected(item)) {
-        selectedItems.value = unref(selectedItems).filter((s) => getId(s) !== getId(item))
-      } else {
-        if (!props.allowMultiple) {
-          selectedItems.value = []
-        }
-        selectedItems.value.push(item)
-      }
-      await setRouteQuery()
-      emit('selectionChange', unref(selectedItems))
-    }
-
-    const filterTerm = ref<string>()
-    const filter = (items: Item[], filterTerm: string) => {
-      if (!(filterTerm || '').trim()) {
-        return items
-      }
-      const fuse = new Fuse(items, {
-        ...defaultFuseOptions,
-        keys: props.filterableAttributes
-      })
-
-      const results = fuse.search(filterTerm).map((r) => r.item)
-      return items.filter((item) => results.includes(item))
-    }
-    const clearFilter = () => {
+const toggleItemSelection = async (item: Item) => {
+  if (isItemSelected(item)) {
+    selectedItems.value = unref(selectedItems).filter((s) => getId(s) !== getId(item))
+  } else {
+    if (!allowMultiple) {
       selectedItems.value = []
-      emit('selectionChange', unref(selectedItems))
-      setRouteQuery()
     }
-
-    const setDisplayedItems = (items: Item[]) => {
-      displayedItems.value = items
-    }
-
-    const showDrop = async () => {
-      setDisplayedItems(props.items)
-      await nextTick()
-      unref(filterInputRef)?.focus()
-    }
-
-    let markInstance: Mark | undefined
-    watch(filterTerm, () => {
-      setDisplayedItems(filter(props.items, unref(filterTerm)))
-      if (unref(itemFilterListRef)) {
-        markInstance = new Mark(unref(itemFilterListRef))
-        markInstance.unmark()
-        markInstance.mark(unref(filterTerm), {
-          element: 'span',
-          className: 'mark-highlight'
-        })
-      }
-    })
-
-    const setSelectedItemsBasedOnQuery = () => {
-      const queryStr = queryItemAsString(unref(currentRouteQuery))
-      if (queryStr) {
-        const ids = queryStr.split('+')
-        selectedItems.value = props.items.filter((s) => ids.includes(getId(s)))
-      }
-    }
-
-    expose({ setSelectedItemsBasedOnQuery })
-
-    onMounted(() => {
-      setSelectedItemsBasedOnQuery()
-    })
-
-    return {
-      clearFilter,
-      displayedItems,
-      filterInputRef,
-      filterTerm,
-      isItemSelected,
-      itemFilterListRef,
-      queryParam,
-      selectedItems,
-      setDisplayedItems,
-      showDrop,
-      toggleItemSelection,
-      // expose to type
-      setSelectedItemsBasedOnQuery
-    }
+    selectedItems.value.push(item)
   }
+  await setRouteQuery()
+  emit('selectionChange', unref(selectedItems))
+}
+
+const filterTerm = ref<string>()
+const filter = (items: Item[], filterTerm: string) => {
+  if (!(filterTerm || '').trim()) {
+    return items
+  }
+  const fuse = new Fuse(items, {
+    ...defaultFuseOptions,
+    keys: filterableAttributes
+  })
+
+  const results = fuse.search(filterTerm).map((r) => r.item)
+  return items.filter((item) => results.includes(item))
+}
+const clearFilter = () => {
+  selectedItems.value = []
+  emit('selectionChange', unref(selectedItems))
+  setRouteQuery()
+}
+
+const setDisplayedItems = (items: Item[]) => {
+  displayedItems.value = items
+}
+
+const showDrop = async () => {
+  setDisplayedItems(items)
+  await nextTick()
+  unref(filterInputRef)?.focus()
+}
+
+let markInstance: Mark | undefined
+watch(filterTerm, () => {
+  setDisplayedItems(filter(items, unref(filterTerm)))
+  if (unref(itemFilterListRef)) {
+    markInstance = new Mark(unref(itemFilterListRef))
+    markInstance.unmark()
+    markInstance.mark(unref(filterTerm), {
+      element: 'span',
+      className: 'mark-highlight'
+    })
+  }
+})
+
+const setSelectedItemsBasedOnQuery = () => {
+  const queryStr = queryItemAsString(unref(currentRouteQuery))
+  if (queryStr) {
+    const ids = queryStr.split('+')
+    selectedItems.value = items.filter((s) => ids.includes(getId(s)))
+  }
+}
+
+defineExpose({ setSelectedItemsBasedOnQuery })
+
+onMounted(() => {
+  setSelectedItemsBasedOnQuery()
 })
 </script>

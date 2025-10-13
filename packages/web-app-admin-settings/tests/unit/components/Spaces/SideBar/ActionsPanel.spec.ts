@@ -13,7 +13,7 @@ import {
   useSpaceActionsEditQuota,
   useSpaceActionsRename
 } from '@opencloud-eu/web-pkg'
-import { computed, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import { Action } from '@opencloud-eu/web-pkg'
 
 function createMockActionComposables(module: Record<string, any>) {
@@ -28,7 +28,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const original = await importOriginal()
   return {
     ...createMockActionComposables(original),
-    ActionMenuItem: (h) => h('action-menu-item')
+    ActionMenuItem: () => h('action-menu-item')
   }
 })
 

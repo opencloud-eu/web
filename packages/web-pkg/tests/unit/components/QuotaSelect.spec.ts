@@ -102,21 +102,15 @@ describe('QuotaSelect', () => {
   })
 })
 
-function getWrapper({ totalQuota = 10 * Math.pow(10, 9), maxQuota = 0 } = {}) {
+function getWrapper({
+  totalQuota = 10 * Math.pow(10, 9),
+  maxQuota = 0
+}: { totalQuota?: number; maxQuota?: number } = {}) {
   return {
     wrapper: shallowMount(QuotaSelect, {
-      data: () => {
-        return {
-          selectedOption: {
-            value: 10 * Math.pow(10, 9)
-          },
-          options: []
-        }
-      },
       props: {
         totalQuota,
-        maxQuota,
-        title: 'Personal quota'
+        maxQuota
       },
       global: {
         plugins: [...defaultPlugins()]

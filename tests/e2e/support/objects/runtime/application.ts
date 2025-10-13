@@ -71,7 +71,7 @@ export class Application {
     await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
   }
 
-  async openUrl(url): Promise<void> {
+  async openUrl(url: string): Promise<void> {
     await this.#page.goto(url)
   }
 
@@ -105,7 +105,7 @@ export class Application {
 
   async waitForTokenRenewalViaIframe(): Promise<void> {
     const waitForIframe = this.#page.evaluateHandle(() => {
-      let iframe = null
+      let iframe: Node | null = null
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.type === 'childList') {

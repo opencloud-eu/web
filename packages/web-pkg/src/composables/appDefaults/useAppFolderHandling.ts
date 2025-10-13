@@ -23,7 +23,7 @@ export interface AppFolderHandlingResult {
   isFolderLoading: Ref<boolean>
   activeFiles: Ref<Array<Resource>>
 
-  loadFolderForFileContext(context: MaybeRef<FileContext>): Promise<any>
+  loadFolderForFileContext(context: MaybeRef<FileContext>): Promise<void>
 }
 
 export function useAppFolderHandling({

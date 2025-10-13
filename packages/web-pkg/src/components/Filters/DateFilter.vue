@@ -96,7 +96,9 @@
               :is-clearable="true"
               :current-date="fromDate"
               :is-dark="currentTheme.isDark"
-              @date-changed="(value) => setDateRangeDate(value, 'from')"
+              @date-changed="
+                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'from')
+              "
             />
             <oc-datepicker
               :label="$gettext('To')"
@@ -104,7 +106,9 @@
               :current-date="toDate"
               :min-date="fromDate ? fromDate : undefined"
               :is-dark="currentTheme.isDark"
-              @date-changed="(value) => setDateRangeDate(value, 'to')"
+              @date-changed="
+                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'to')
+              "
             />
           </div>
           <div class="date-filter-apply-btn text-end">

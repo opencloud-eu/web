@@ -96,6 +96,13 @@ function getWrapper({
   imagesLoading = [],
   readmesLoading = [],
   memberCount = 0
+}: {
+  space?: SpaceResource
+  isSideBarOpen?: boolean
+  isMobileWidth?: boolean
+  imagesLoading?: string[]
+  readmesLoading?: string[]
+  memberCount?: number
 }) {
   const mocks = defaultComponentMocks()
   mocks.$previewService.loadPreview.mockResolvedValue('blob:image')

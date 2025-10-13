@@ -625,7 +625,8 @@ export default defineComponent({
       return [
         ...unref(downloadFileActions).map((originalAction) => ({
           ...originalAction,
-          handler: (args) => downloadFileActionInterceptor(args, originalAction.handler)
+          handler: (args: FileActionOptions) =>
+            downloadFileActionInterceptor(args, originalAction.handler)
         })),
         ...unref(deleteFileActions)
       ].filter((item) => item.isVisible(unref(actionOptions)))

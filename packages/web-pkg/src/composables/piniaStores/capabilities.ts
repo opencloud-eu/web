@@ -106,7 +106,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   const filesUndelete = computed(() => unref(capabilities).files.undelete)
 
   const sharingApiEnabled = computed(() => unref(capabilities).files_sharing.api_enabled)
-  const sharingDenyAccess = computed(() => unref(capabilities).files_sharing.deny_access)
   const sharingCanRename = computed(() => unref(capabilities).files_sharing.can_rename)
   const sharingAllowCustom = computed(() => unref(capabilities).files_sharing.allow_custom)
   const sharingPublicEnabled = computed(() => unref(capabilities).files_sharing.public?.enabled)
@@ -169,7 +168,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     filesTags,
     filesUndelete,
     sharingApiEnabled,
-    sharingDenyAccess,
     sharingCanRename,
     sharingAllowCustom,
     sharingPublicEnabled,

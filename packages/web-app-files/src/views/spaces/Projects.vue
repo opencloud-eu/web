@@ -273,10 +273,10 @@ const items = computed(() => {
   return orderBy(
     filter(unref(spaces), unref(filterTerm)),
     [
-      (item: SpaceResource) =>
-        typeof item[unref(sortBy)] === 'string'
-          ? item[unref(sortBy)].toLowerCase()
-          : item[unref(sortBy)]
+      (item: SpaceResource) => {
+        const prop = item[unref(sortBy) as keyof SpaceResource]
+        return typeof prop === 'string' ? prop.toLowerCase() : prop
+      }
     ],
     unref(sortDir)
   )
@@ -303,8 +303,7 @@ watch(filterTerm, async () => {
   markInstance?.unmark()
   markInstance?.mark(unref(filterTerm), {
     element: 'span',
-    className: 'mark-highlight',
-    exclude: ['th *', 'tfoot *']
+    className: 'mark-highlight'
   })
 })
 
@@ -371,7 +370,7 @@ onMounted(async () => {
   )
   scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
   nextTick(() => {
-    markInstance = new Mark('.spaces-list')
+    markInstance = new Mark('.oc-resource-details')
   })
 })
 

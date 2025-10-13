@@ -24,7 +24,6 @@
     :toggle="`#link-role-dropdown-toggle-${dropUuid}`"
     padding-size="small"
     mode="click"
-    :offset="dropOffset"
     close-on-click
   >
     <oc-list class="role-dropdown-list">
@@ -73,8 +72,7 @@ export default defineComponent({
   name: 'LinkRoleDropdown',
   props: {
     modelValue: { type: Object as PropType<SharingLinkType>, required: true },
-    availableLinkTypeOptions: { type: Array as PropType<SharingLinkType[]>, required: true },
-    dropOffset: { type: String, default: undefined }
+    availableLinkTypeOptions: { type: Array as PropType<SharingLinkType[]>, required: true }
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {

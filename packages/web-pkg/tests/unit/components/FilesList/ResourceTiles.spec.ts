@@ -275,6 +275,12 @@ describe('ResourceTiles component', () => {
     stubs = {},
     canBeOpenedWithSecureView = true,
     deleteQueue = []
+  }: {
+    props?: Record<string, unknown>
+    slots?: Record<string, string>
+    stubs?: Record<string, boolean>
+    canBeOpenedWithSecureView?: boolean
+    deleteQueue?: string[]
   } = {}) {
     const mocks = defaultComponentMocks()
 

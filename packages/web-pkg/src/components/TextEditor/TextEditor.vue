@@ -46,7 +46,7 @@
       ]"
       :read-only="isReadOnly"
       auto-focus
-      @on-change="(value) => $emit('update:currentContent', value)"
+      @on-change="(value: string) => $emit('update:currentContent', value)"
     />
   </div>
 </template>

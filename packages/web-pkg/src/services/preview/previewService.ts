@@ -42,7 +42,7 @@ export class PreviewService {
   ): Promise<string | undefined> {
     const { space, resource } = options
 
-    if (!resource.canDownload() || !resource.hasPreview()) {
+    if (!resource.canDownload() || !resource.hasPreview?.()) {
       return undefined
     }
 

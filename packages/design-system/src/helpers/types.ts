@@ -1,3 +1,4 @@
+import { ComponentPublicInstance, Ref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface ContextualHelperDataListItem {
@@ -45,7 +46,7 @@ export type FieldType = {
   title?: string
   headerType?: string
   type?: string
-  callback?: any
+  callback?: (item: any) => void
   alignH?: 'left' | 'center' | 'right'
   alignV?: 'top' | 'middle' | 'bottom'
   width?: 'auto' | 'shrink' | 'expand'
@@ -86,3 +87,11 @@ export type JustifyContentType =
   | 'space-around'
   | 'space-between'
   | 'space-evenly'
+
+export type NestedDrop = Ref<
+  ComponentPublicInstance & {
+    show: () => void
+    hide: () => void
+    getElement: () => HTMLElement
+  }
+>

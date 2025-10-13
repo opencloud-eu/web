@@ -34,7 +34,6 @@
       mode="click"
       padding-size="small"
       class="files-recipient-role-drop w-md"
-      offset="0"
       close-on-click
     >
       <oc-list
@@ -101,7 +100,7 @@ export default defineComponent({
     existingSharePermissions: {
       type: Array as PropType<string[]>,
       required: false,
-      default: () => []
+      default: (): string[] => []
     },
     domSelector: {
       type: String,

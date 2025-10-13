@@ -111,13 +111,16 @@
               >
                 <span class="checkbox-cell-wrapper">
                   <oc-checkbox
-                    :model-value="notificationsValues[option.id][choice.key]"
+                    :model-value="
+                      (notificationsValues[option.id] as Record<string, boolean>)[choice.key]
+                    "
                     size="large"
                     :label="choice.displayValue"
                     :label-hidden="!isMobileWidth"
                     :disabled="choice.attribute === 'disabled'"
                     @update:model-value="
-                      (value) => updateMultiChoiceSettingsValue(option.name, choice.key, value)
+                      (value: boolean | string) =>
+                        updateMultiChoiceSettingsValue(option.name, choice.key, value)
                     "
                   />
                 </span>
@@ -138,7 +141,10 @@
                 :options="option.singleChoiceValue.options"
                 :clearable="false"
                 option-label="displayValue"
-                @update:model-value="(value) => updateSingleChoiceValue(option.name, value)"
+                @update:model-value="
+                  (value: { displayValue: string; value: { stringValue: string } }) =>
+                    updateSingleChoiceValue(option.name, value)
+                "
               />
             </oc-table-td>
           </oc-table-tr>

@@ -3,7 +3,7 @@ import { getAuthHeader } from '../api/http'
 import { User } from '../types'
 
 const sseEventStore: Record<string, string[]> = {}
-const sseConnections = []
+const sseConnections: AbortController[] = []
 
 export const listenSSE = (baseUrl: string, user: User): Promise<void> => {
   const sseUrl = new URL('ocs/v2.php/apps/notifications/api/v1/notifications/sse', baseUrl).href

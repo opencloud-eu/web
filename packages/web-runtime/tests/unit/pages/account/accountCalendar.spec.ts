@@ -34,11 +34,7 @@ describe('account calendar page', () => {
   })
 
   it('does not render content if CalDAV is not available', () => {
-    const wrapper = getWrapper({
-      props: {
-        isCalDavAvailable: false
-      }
-    })
+    const wrapper = getWrapper()
 
     expect(wrapper.find('.calendar-not-configured-message').exists()).toBeTruthy()
   })
@@ -59,7 +55,7 @@ describe('account calendar page', () => {
   })
 })
 
-function getWrapper(overrides: { props?: any } = {}) {
+function getWrapper() {
   const mocks = {
     ...defaultComponentMocks()
   }
@@ -92,10 +88,6 @@ function getWrapper(overrides: { props?: any } = {}) {
       plugins: plugins,
       mocks,
       provide: mocks
-    },
-    props: {
-      isCalDavAvailable: true,
-      ...overrides.props
     }
   })
 }

@@ -200,7 +200,7 @@ export function buildSpace(
     spaceImageData,
     spaceReadmeData,
     hasTrashedItems: data['@libre.graph.hasTrashedItems'] || false,
-    graphPermissions: undefined,
+    graphPermissions: undefined as string[],
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
         return true
@@ -302,7 +302,6 @@ export function buildSpace(
     isShareRoot: function () {
       return ['share', 'mountpoint', 'public'].includes(data.driveType)
     },
-    canDeny: () => false,
     getDomSelector: () => extractDomSelector(data.id),
     getDriveAliasAndItem({ path }: Resource): string {
       return urlJoin(this.driveAlias, path, {

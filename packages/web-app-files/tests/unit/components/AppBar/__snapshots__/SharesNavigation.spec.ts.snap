@@ -23,7 +23,7 @@ exports[`SharesNavigation component > renders a shares navigation for both mobil
     <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="shares_navigation_mobile" class="p-1"><span>Shared with me</span>
       <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="arrow-drop-down" size="medium" type="span"></oc-icon-stub>
     </oc-button-stub>
-    <oc-drop-stub title="Navigation" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#shares_navigation_mobile" enforcedroponmobile="false">
+    <oc-drop-stub title="Navigation" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#shares_navigation_mobile" enforcedroponmobile="false">
       <oc-list-stub raw="false">
         <li>
           <oc-button-stub to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="bg-role-secondary-container">

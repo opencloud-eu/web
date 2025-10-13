@@ -1,6 +1,6 @@
 import DesignSystem from '@opencloud-eu/design-system'
 import { createGettext } from 'vue3-gettext'
-import { App, Plugin, h } from 'vue'
+import { App, Plugin, defineComponent, h } from 'vue'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 import { AbilityRule } from '@opencloud-eu/web-client'
@@ -21,7 +21,7 @@ export const defaultPlugins = ({
   pinia = true,
   piniaOptions = {}
 }: DefaultPluginsOptions = {}): Plugin[] => {
-  const plugins = []
+  const plugins: Plugin[] = []
 
   plugins.push({
     install(app: App) {
@@ -52,32 +52,36 @@ export const defaultPlugins = ({
 
   plugins.push({
     install(app: App) {
-      app.component('RouterLink', {
-        name: 'RouterLink',
-        props: {
-          tag: { type: String, default: 'a' },
-          to: { type: [String, Object], default: '' }
-        },
-        setup(props) {
-          let path = props.to
+      app.component(
+        'RouterLink',
+        defineComponent({
+          name: 'RouterLink',
+          props: {
+            tag: { type: String, default: 'a' },
+            to: { type: [String, Object], default: '' }
+          },
+          setup(props) {
+            const to = props.to
+            let path: string
 
-          if (!!path && typeof path !== 'string') {
-            path = props.to.path || props.to.name
+            if (!!to && typeof to !== 'string') {
+              path = to.path || to.name
 
-            if (props.to.params) {
-              path += '/' + Object.values(props.to.params).join('/')
+              if (to.params) {
+                path += '/' + Object.values(to.params).join('/')
+              }
+
+              if (to.query) {
+                path += '?' + Object.values(to.query).join('&')
+              }
             }
 
-            if (props.to.query) {
-              path += '?' + Object.values(props.to.query).join('&')
-            }
+            return () => h(props.tag, { attrs: { href: path || to } })
           }
-
-          return () => h(props.tag, { attrs: { href: path } })
-        }
-      })
+        })
+      )
     }
-  })
+  } as Plugin)
 
   return plugins
 }
