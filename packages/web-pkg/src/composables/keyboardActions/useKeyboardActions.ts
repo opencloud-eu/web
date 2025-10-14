@@ -12,6 +12,7 @@ export enum Key {
   X = 'x',
   A = 'a',
   S = 's',
+  Z = 'z',
   Plus = '+',
   Minus = '-',
   Space = ' ',

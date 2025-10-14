@@ -6,7 +6,7 @@
     <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
       <div class="flex items-center justify-between w-full">
         <div class="flex items-center">
-          <oc-icon name="information" fill-type="line" class="mr-2" />
+          <oc-icon v-if="showInfoIcon" name="information" fill-type="line" class="mr-2" />
           <div class="oc-notification-message-title text-lg">
             {{ title }}
           </div>
@@ -32,6 +32,7 @@
           <oc-icon :name="showErrorLog ? 'arrow-up-s' : 'arrow-down-s'" />
         </oc-button>
       </div>
+      <slot name="actions" />
       <oc-error-log v-if="showErrorLog" class="mt-4" :content="errorLogContent" />
     </div>
   </div>
@@ -66,6 +67,11 @@ export interface Props {
    * @default 5
    */
   timeout?: number
+  /**
+   * @docs Whether to show an info icon prior to the title.
+   * @default true
+   */
+  showInfoIcon?: boolean
 }
 
 export interface Emits {
@@ -75,9 +81,24 @@ export interface Emits {
   (e: 'close'): void
 }
 
-const { title, errorLogContent, message, status = 'passive', timeout = 5 } = defineProps<Props>()
+export interface Slots {
+  /**
+   * @docs Slot for action buttons.
+   */
+  actions?: () => unknown
+}
+
+const {
+  title,
+  errorLogContent,
+  message,
+  status = 'passive',
+  timeout = 5,
+  showInfoIcon = true
+} = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
+defineSlots<Slots>()
 
 const showErrorLog = ref(false)
 
