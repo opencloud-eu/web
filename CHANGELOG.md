@@ -1,6 +1,14 @@
 # Changelog
 
-## [4.1.1](https://github.com/opencloud-eu/web/releases/tag/v4.1.1) - 2025-10-14
+## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-10-14
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 📈 Enhancement
+
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
 ### 📦️ Dependencies
 
