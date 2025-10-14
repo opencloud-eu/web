@@ -32,22 +32,36 @@ describe('delete', () => {
           resources: [{ canBeDeleted: () => false }] as Resource[],
           invalidLocation: false,
           expectedStatus: false
-        },
-        {
-          resources: [{ canBeDeleted: () => true, locked: true }] as Resource[],
-          invalidLocation: false,
-          expectedStatus: false
         }
-      ])('should be set correctly', (inputData) => {
+      ])('should be set correctly', ({ resources, expectedStatus, invalidLocation }) => {
         getWrapper({
-          invalidLocation: inputData.invalidLocation,
+          invalidLocation,
           setup: () => {
             const { actions } = useFileActionsDelete()
-
-            const resources = inputData.resources
-            expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(
-              inputData.expectedStatus
-            )
+            expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(expectedStatus)
+          }
+        })
+      })
+    })
+    describe('delete isDisabled property of returned element', () => {
+      it.each<{ resources: Resource[]; expectedStatus: boolean }>([
+        {
+          resources: [{ locked: true } as Resource],
+          expectedStatus: true
+        },
+        {
+          resources: [{ locked: false } as Resource],
+          expectedStatus: false
+        },
+        {
+          resources: [{ locked: true }, { locked: false }] as Resource[],
+          expectedStatus: false
+        }
+      ])('should be set correctly', ({ resources, expectedStatus }) => {
+        getWrapper({
+          setup: () => {
+            const { actions } = useFileActionsDelete()
+            expect(unref(actions)[0].isDisabled({ space: null, resources })).toBe(expectedStatus)
           }
         })
       })
