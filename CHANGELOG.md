@@ -6,6 +6,10 @@
 
 @JammingBen
 
+### 🐛 Bug Fixes
+
+- fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
 ### 📈 Enhancement
 
 - feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
