@@ -114,7 +114,7 @@ const sharesNavigationButtonSelector = '.oc-sidebar-nav [data-nav-name="files-sh
 const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
 const sideBarActions =
-  '//ul[@id="oc-files-actions-sidebar"]//span[contains(@class,"oc-files-context-action-label")]/span'
+  '//ul[@id="oc-files-actions-sidebar"]//button[not(@disabled)]//span[contains(@class,"oc-files-context-action-label")]/span'
 const selectAllCheckbox =
   '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
 const firstResourceCheckbox =
