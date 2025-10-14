@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/opencloud-eu/web/releases/tag/v4.1.1) - 2025-10-14
+
+### 📦️ Dependencies
+
+- chore(deps): update typescript-eslint monorepo to v8.46.1 [[#1368](https://github.com/opencloud-eu/web/pull/1368)]
+- chore(deps): update dependency dompurify to v3.3.0 [[#1367](https://github.com/opencloud-eu/web/pull/1367)]
+
 ## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-13
 
 ### ❤️ Thanks to all contributors! ❤️
