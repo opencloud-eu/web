@@ -6,13 +6,14 @@
 
 @JammingBen
 
+### 📈 Enhancement
+
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
+
 ### 🐛 Bug Fixes
 
 - fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
-
-### 📈 Enhancement
-
-- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
 ### 📦️ Dependencies
 
