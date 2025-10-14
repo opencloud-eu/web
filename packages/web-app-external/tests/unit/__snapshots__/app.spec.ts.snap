@@ -1,7 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`The app provider extension > should be able to load an iFrame via get 1`] = `
-"<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
+"<!--v-if-->
+
+<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
 
 <!--v-if-->"
 `;
@@ -9,16 +11,21 @@ exports[`The app provider extension > should be able to load an iFrame via get 1
 exports[`The app provider extension > should be able to load an iFrame via post 1`] = `
 "<!--v-if-->
 
+<!--v-if-->
+
 <div class="size-full">
   <form action="https://example.test/d12ab86/loe009157-MzBw" target="app-iframe" method="post"><input type="submit" class="hidden" value="[object Object]">
     <div><input name="access_token" type="hidden" value="asdfsadfsadf"></div>
     <div><input name="access_token_ttl" type="hidden" value="123456"></div>
+    <!--v-if-->
   </form> <iframe name="app-iframe" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
 </div>"
 `;
 
 exports[`The app provider extension > should fail for unauthenticated users 1`] = `
-"<div class="size-full flex justify-center items-center">
+"<!--v-if-->
+
+<div class="size-full flex justify-center items-center">
   <oc-spinner-stub size="large"></oc-spinner-stub>
 </div>
 

@@ -1,4 +1,5 @@
 <template>
+  <div v-if="isCollabora" id="chrome-colors" class="bg-role-chrome text-role-on-chrome hidden" />
   <div v-if="isLoading" class="size-full flex justify-center items-center">
     <oc-spinner size="large" />
   </div>
@@ -15,6 +16,7 @@
       <div v-for="(item, key, index) in formParameters" :key="index">
         <input :name="key" :value="item" type="hidden" />
       </div>
+      <input v-if="isCollabora" name="css_variables" :value="getCollaboraCss()" type="hidden" />
     </form>
     <iframe
       ref="appIframe"
@@ -111,9 +113,9 @@ const appName = computed(() => {
 })
 
 const appUrl = ref<string>()
-const formParameters = ref({})
+const formParameters = ref<Record<string, string>>({})
 const method = ref<string>()
-const subm = useTemplateRef<HTMLInputElement>('subm')
+const subm = useTemplateRef('subm')
 const isLoading = computed(() => loadAppUrl.isRunning || getSharedDriveItemTask.isRunning)
 
 const iFrameTitle = computed(() => {
@@ -128,6 +130,17 @@ const errorPopup = (error: string) => {
     desc: error,
     errors: [new Error(error)]
   })
+}
+
+const getCollaboraCss = () => {
+  const chromeEl = document.getElementById('chrome-colors')
+  if (!chromeEl) {
+    return ''
+  }
+  const chromeStyle = window.getComputedStyle(chromeEl)
+  const chromeColor = chromeStyle.getPropertyValue('background-color')
+  const onChromeColor = chromeStyle.getPropertyValue('color')
+  return `--co-body-bg=${chromeColor};--co-color-main-text=${onChromeColor}`
 }
 
 const loadAppUrl = useTask(function* (signal, viewMode: string) {
