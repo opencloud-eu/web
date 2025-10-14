@@ -18,6 +18,7 @@ exports[`The app provider extension > should be able to load an iFrame via post 
     <div><input name="access_token" type="hidden" value="asdfsadfsadf"></div>
     <div><input name="access_token_ttl" type="hidden" value="123456"></div>
     <!--v-if-->
+    <!--v-if-->
   </form> <iframe name="app-iframe" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
 </div>"
 `;

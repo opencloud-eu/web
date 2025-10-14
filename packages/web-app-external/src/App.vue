@@ -16,6 +16,12 @@
       <div v-for="(item, key, index) in formParameters" :key="index">
         <input :name="key" :value="item" type="hidden" />
       </div>
+      <input
+        v-if="isCollabora"
+        name="ui_defaults"
+        :value="getCollaboraUiDefaults()"
+        type="hidden"
+      />
       <input v-if="isCollabora" name="css_variables" :value="getCollaboraCss()" type="hidden" />
     </form>
     <iframe
@@ -67,7 +73,8 @@ import {
   useClientService,
   useSharesStore,
   useModals,
-  useRouter
+  useRouter,
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
 
@@ -93,6 +100,7 @@ const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient } = useClientService()
 const { dispatchModal } = useModals()
 const { webdav } = useClientService()
+const { currentTheme } = useThemeStore()
 
 const viewModeQuery = useRouteQuery('view_mode')
 const viewModeQueryValue = computed(() => {
@@ -130,6 +138,11 @@ const errorPopup = (error: string) => {
     desc: error,
     errors: [new Error(error)]
   })
+}
+
+const getCollaboraUiDefaults = () => {
+  const theme = currentTheme.isDark ? 'dark' : 'light'
+  return `UITheme=${theme}`
 }
 
 const getCollaboraCss = () => {
@@ -232,8 +245,12 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
   try {
     const message = JSON.parse(event.data || '{}')
 
-    if (message.MessageId === 'App_LoadingStatus' && message.Values?.Status === 'Frame_Ready') {
-      postMessageToCollabora('Host_PostmessageReady')
+    if (message.MessageId === 'App_LoadingStatus') {
+      postMessageToCollabora('Hide_Button', { id: 'toggledarktheme' })
+
+      if (message.Values?.Status === 'Frame_Ready') {
+        postMessageToCollabora('Host_PostmessageReady')
+      }
       return
     }
 
