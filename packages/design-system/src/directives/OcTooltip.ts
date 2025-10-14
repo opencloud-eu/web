@@ -77,6 +77,7 @@ const initOrUpdate = (
   if (!el.tooltip) {
     el.tooltip = tippy(el, {
       ...props,
+      zIndex: 10000,
       plugins: [hideOnEsc, customProps]
     })
     return

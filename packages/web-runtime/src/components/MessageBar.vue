@@ -8,29 +8,41 @@
       :status="item.status"
       :timeout="item.timeout"
       :error-log-content="item.errorLogContent"
+      :show-info-icon="false"
       @close="deleteMessage(item)"
-    />
+    >
+      <template #actions>
+        <oc-list v-if="getVisibleActions(item).length" class="flex gap-2 mt-3 w-full">
+          <action-menu-item
+            v-for="(action, index) in getVisibleActions(item)"
+            :key="index"
+            :action="action"
+            :action-options="item.actionOptions"
+            size="small"
+            appearance="outline"
+            :shortcut-hint="false"
+          />
+        </oc-list>
+      </template>
+    </oc-notification-message>
   </oc-notifications>
 </template>
 
-<script lang="ts">
-import { Message, useMessages } from '@opencloud-eu/web-pkg'
-import { computed, defineComponent } from 'vue'
+<script setup lang="ts">
+import { Message, useMessages, ActionMenuItem } from '@opencloud-eu/web-pkg'
+import { computed } from 'vue'
 
-export default defineComponent({
-  name: 'MessageBar',
-  setup() {
-    const messageStore = useMessages()
+const messageStore = useMessages()
 
-    const limitedMessages = computed(() => {
-      return messageStore.messages ? messageStore.messages.slice(0, 5) : []
-    })
-
-    const deleteMessage = (message: Message) => {
-      messageStore.removeMessage(message)
-    }
-
-    return { limitedMessages, deleteMessage }
-  }
+const limitedMessages = computed(() => {
+  return messageStore.messages ? messageStore.messages.slice(0, 5) : []
 })
+
+const deleteMessage = (message: Message) => {
+  messageStore.removeMessage(message)
+}
+
+const getVisibleActions = (item: Message) => {
+  return item.actions?.filter((action) => action.isVisible(item.actionOptions)) || []
+}
 </script>

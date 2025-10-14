@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { v4 as uuidV4 } from 'uuid'
 import { ref, unref } from 'vue'
 import { HttpError } from '@opencloud-eu/web-client'
+import { Action, ActionOptions } from '../actions'
 
 type MessageError = Error | HttpError
 
@@ -13,6 +14,8 @@ export interface Message {
   errorLogContent?: string
   timeout?: number
   status?: 'passive' | 'primary' | 'success' | 'warning' | 'danger'
+  actions?: Action[]
+  actionOptions?: ActionOptions
 }
 
 export const useMessages = defineStore('messages', () => {
