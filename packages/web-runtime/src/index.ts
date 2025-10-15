@@ -218,9 +218,10 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       })
 
       await announceGroupware({
-        groupwareConfigStore,
         clientService,
-        capabilityStore
+        configStore,
+        capabilityStore,
+        groupwareConfigStore
       })
 
       // Register SSE event listeners

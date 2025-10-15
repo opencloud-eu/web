@@ -85,7 +85,6 @@ import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
-import Group from '../../../design-system/docs/components/OcRadio/group.vue'
 
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
@@ -808,55 +807,26 @@ export const announceCustomStyles = ({ configStore }: { configStore?: ConfigStor
  *
  * @param clientService
  * @param capabilityStore
+ * @param configStore
  * @param groupwareConfigStore
  */
-export const announceGroupware = ({
+export const announceGroupware = async ({
   clientService,
+  configStore,
   capabilityStore,
   groupwareConfigStore
 }: {
   clientService: ClientService
+  configStore: ConfigStore
   capabilityStore: CapabilityStore
   groupwareConfigStore: GroupwareConfigStore
 }) => {
-  const groupwareResponse = {
-    version: '0.0.1',
-    capabilities: ['mail:1'],
-    limits: {
-      maxSizeUpload: 50000000,
-      maxConcurrentUpload: 4,
-      maxSizeRequest: 10000000,
-      maxConcurrentRequests: 4
-    },
-    accounts: {
-      b: {
-        name: 'Admin',
-        isPersonal: true,
-        isReadOnly: false,
-        capabilities: {
-          mail: {
-            maxMailboxDepth: 10,
-            maxSizeMailboxName: 255,
-            maxMailboxesPerEmail: 0,
-            maxSizeAttachmentsPerEmail: 50000000,
-            mayCreateTopLevelMailbox: true,
-            maxDelayedSend: 2592000
-          },
-          sieve: {
-            maxSizeScriptName: 1048576,
-            maxSizeScript: 1048576,
-            maxNumberScripts: 256,
-            maxNumberRedirects: 1
-          }
-        },
-        identities: [{ id: 'b', name: 'Admin', email: 'admin@example.org', mayDelete: true }]
-      }
-    },
-    primaryAccounts: { mail: 'b', submission: 'b', blob: 'b', vacationResponse: 'b', sieve: 'b' }
+  try {
+    const { data } = await clientService.httpAuthenticated.get(configStore.groupwareUrl)
+    groupwareConfigStore.loadGroupwareConfig(RawGroupwareConfigSchema.parse(data))
+  } catch (e) {
+    console.error(`Unable to load groupware config ${e}`)
   }
-  const data = RawGroupwareConfigSchema.parse(groupwareResponse)
-  groupwareConfigStore.loadGroupwareConfig(data)
-  console.log('Groupware config loaded', groupwareConfigStore.capabilities)
 }
 
 export const registerSSEEventListeners = ({
