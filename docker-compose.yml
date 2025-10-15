@@ -267,6 +267,10 @@ services:
       - './dev/docker/traefik/certificates:/certificates'
       - './dev/docker/traefik/configs:/configs'
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    networks:
+      traefik:
+        aliases:
+          - ${STALWART_DOMAIN:-stalwart.opencloud.test}
 
   tika-service:
     image: dadarek/wait-for-dependencies:latest
@@ -299,6 +303,9 @@ services:
   stalwart:
     image: ghcr.io/stalwartlabs/stalwart:v0.13.4-alpine
     hostname: ${STALWART_DOMAIN:-stalwart.opencloud.test}
+    depends_on:
+      opencloud:
+        condition: service_started
     networks:
       - traefik
     ports:
@@ -306,21 +313,22 @@ services:
       - "127.0.0.1:993:993"
       - "127.0.0.1:1465:465"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - "./config/stalwart/${STALWART_AUTH_DIRECTORY:-idmldap}.toml:/opt/stalwart/etc/config.toml"
+      - ./dev/docker/stalwart/localtime:/etc/localtime:ro
+      - ./dev/docker/stalwart/config.toml:/opt/stalwart/etc/config.toml
       - stalwart-data:/opt/stalwart/data
     environment:
       STALWART_AUTH_DIRECTORY: "${STALWART_AUTH_DIRECTORY:-idmldap}"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.stalwart.entrypoints=https"
-      - "traefik.http.routers.stalwart.rule=Host(`${STALWART_DOMAIN:-stalwart.opencloud.test}`)"
-      - "traefik.http.routers.stalwart.tls.certresolver=http"
-      - "traefik.http.routers.stalwart.service=stalwart"
-      - "traefik.http.services.stalwart.loadbalancer.server.port=8080"
+      traefik.enable: true
+      traefik.http.routers.stalwart.entrypoints: websecure
+      #traefik.http.routers.stalwart.entrypoints: https
+      #traefik.http.routers.stalwart.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
+      traefik.http.routers.stalwart.rule: Host(`stalwart.opencloud.test`)
+      #traefik.http.routers.stalwart.tls.certresolver: http
+      traefik.http.routers.stalwart.service: stalwart
+      traefik.http.services.stalwart.loadbalancer.server.port: 8080
     logging:
       driver: ${LOG_DRIVER:-local}
-    restart: always
 
 volumes:
   uploads:
