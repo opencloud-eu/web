@@ -29,7 +29,8 @@ import {
   announceGettext,
   announceArchiverService,
   announceAppProviderService,
-  announceUpdates
+  announceUpdates,
+  announceGroupware
 } from './container/bootstrap'
 import { applicationStore } from './container/store'
 import {
@@ -202,16 +203,21 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         return
       }
 
+      const clientService = app.config.globalProperties.$clientService
+      const previewService = app.config.globalProperties.$previewService
+      const passwordPolicyService = app.config.globalProperties.passwordPolicyService
+      passwordPolicyService.initialize(capabilityStore)
+
       await announceConfiguration({
         path: configurationPath,
         configStore,
         token: authStore.accessToken
       })
 
-      const clientService = app.config.globalProperties.$clientService
-      const previewService = app.config.globalProperties.$previewService
-      const passwordPolicyService = app.config.globalProperties.passwordPolicyService
-      passwordPolicyService.initialize(capabilityStore)
+      await announceGroupware({
+        clientService,
+        capabilityStore
+      })
 
       // Register SSE event listeners
       if (capabilityStore.supportSSE) {
