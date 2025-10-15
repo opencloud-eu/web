@@ -68,7 +68,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     messagesStore,
     sharesStore,
     webWorkersStore,
-    updatesStore
+    updatesStore,
+    groupwareConfigStore
   } = announcePiniaStores()
 
   extensionRegistry.registerExtensionPoints(extensionPoints())
@@ -217,6 +218,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       })
 
       await announceGroupware({
+        groupwareConfigStore,
         clientService,
         capabilityStore
       })
