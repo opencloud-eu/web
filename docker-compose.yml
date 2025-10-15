@@ -35,6 +35,7 @@ x-opencloud-server: &opencloud-service
 
     # IDP
     IDP_LDAP_BIND_PASSWORD: '${IDP_LDAP_BIND_PASSWORD:-some-ldap-idp-password}'
+    IDM_LDAPS_ADDR: 0.0.0.0:9235
 
     # STORAGE
     STORAGE_USERS_DRIVER: '${STORAGE_USERS_DRIVER:-posix}'
@@ -85,6 +86,7 @@ services:
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
+      OC_ADD_RUN_SERVICES: groupware
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
       OCM_WEBAPP_TEMPLATE: https://host.docker.internal:9201/o/{{.Token}}/{relative-path-to-shared-resource}
       # make the registry available to the app provider containers
@@ -140,7 +142,7 @@ services:
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
 
   collaboration:
-    image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+    image: ${OC_IMAGE:-opencloudeu/opencloud:dev}
     depends_on:
       opencloud:
         condition: service_started
@@ -294,10 +296,37 @@ services:
       - ./dev/docker/radicale/data:/data
     restart: unless-stopped
 
+  stalwart:
+    image: ghcr.io/stalwartlabs/stalwart:v0.13.4-alpine
+    hostname: ${STALWART_DOMAIN:-stalwart.opencloud.test}
+    networks:
+      - traefik
+    ports:
+      - "127.0.0.1:143:143"
+      - "127.0.0.1:993:993"
+      - "127.0.0.1:1465:465"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "./config/stalwart/${STALWART_AUTH_DIRECTORY:-idmldap}.toml:/opt/stalwart/etc/config.toml"
+      - stalwart-data:/opt/stalwart/data
+    environment:
+      STALWART_AUTH_DIRECTORY: "${STALWART_AUTH_DIRECTORY:-idmldap}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stalwart.entrypoints=https"
+      - "traefik.http.routers.stalwart.rule=Host(`${STALWART_DOMAIN:-stalwart.opencloud.test}`)"
+      - "traefik.http.routers.stalwart.tls.certresolver=http"
+      - "traefik.http.routers.stalwart.service=stalwart"
+      - "traefik.http.services.stalwart.loadbalancer.server.port=8080"
+    logging:
+      driver: ${LOG_DRIVER:-local}
+    restart: always
+
 volumes:
   uploads:
   opencloud-config:
   opencloud-federated-config:
+  stalwart-data:
 
 networks:
   traefik:
