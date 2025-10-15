@@ -315,15 +315,15 @@ services:
     networks:
       - traefik
     ports:
-      - "127.0.0.1:143:143"
-      - "127.0.0.1:993:993"
-      - "127.0.0.1:1465:465"
+      - '127.0.0.1:143:143'
+      - '127.0.0.1:993:993'
+      - '127.0.0.1:1465:465'
     volumes:
       - ./dev/docker/stalwart/localtime:/etc/localtime:ro
       - ./dev/docker/stalwart/config.toml:/opt/stalwart/etc/config.toml
       - stalwart-data:/opt/stalwart/data
     environment:
-      STALWART_AUTH_DIRECTORY: "${STALWART_AUTH_DIRECTORY:-idmldap}"
+      STALWART_AUTH_DIRECTORY: '${STALWART_AUTH_DIRECTORY:-idmldap}'
     labels:
       traefik.enable: true
       traefik.http.routers.stalwart.entrypoints: websecure
