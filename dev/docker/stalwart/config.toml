@@ -5,18 +5,20 @@ authentication.master.user = "master"
 directory.idmldap.attributes.class = "objectClass"
 directory.idmldap.attributes.description = "displayName"
 directory.idmldap.attributes.email = "mail"
+directory.idmldap.attributes.email-alias = "mailAlias"
 directory.idmldap.attributes.groups = "memberOf"
 directory.idmldap.attributes.name = "uid"
 directory.idmldap.attributes.secret = "userPassword"
+directory.idmldap.attributes.secret-changed = "pwdChangedTime"
 directory.idmldap.base-dn = "o=libregraph-idm"
 directory.idmldap.bind.auth.method = "default"
 directory.idmldap.bind.dn = "uid=reva,ou=sysusers,o=libregraph-idm"
-directory.idmldap.bind.secret = "admin"
+directory.idmldap.bind.secret = "some-ldap-reva-password"
 directory.idmldap.cache.size = 1048576
 directory.idmldap.cache.ttl.negative = "10m"
 directory.idmldap.cache.ttl.positive = "1h"
-directory.idmldap.filter.email = "(&(|(objectClass=person)(objectClass=groupOfNames))(mail=?))"
-directory.idmldap.filter.name = "(&(|(objectClass=person)(objectClass=groupOfNames))(uid=?))"
+directory.idmldap.filter.email = "(|(mail=?)(mailAlias=?))"
+directory.idmldap.filter.name = "(uid=?)"
 directory.idmldap.timeout = "15s"
 directory.idmldap.tls.allow-invalid-certs = true
 directory.idmldap.tls.enable = true
@@ -59,12 +61,13 @@ directory.ldap.url = "ldap://ldap-server:1389"
 http.allowed-endpoint = 200
 http.hsts = true
 http.permissive-cors = false
-http.url = "'https://' + config_get('server.hostname')"
+http.url = "protocol + '://' + config_get('server.hostname') + ':' + local_port"
+http.server.hostname = "stalwart.opencloud.test"
 http.use-x-forwarded = true
 metrics.prometheus.auth.secret = "secret"
 metrics.prometheus.auth.username = "metrics"
 metrics.prometheus.enable = true
-server.listener.http.bind = "0.0.0.0:8080"
+server.listener.http.bind = ["[::]:8080"]
 server.listener.http.protocol = "http"
 server.listener.https.bind = "0.0.0.0:443"
 server.listener.https.protocol = "http"
