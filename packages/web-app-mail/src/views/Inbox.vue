@@ -1,9 +1,9 @@
 <template>MOIN MOIN</template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { defineComponent, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 
 const configStore = useConfigStore()
