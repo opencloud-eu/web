@@ -223,7 +223,7 @@ export default defineComponent({
       default: null
     },
     itemId: {
-      type: [String, Number],
+      type: String,
       required: false,
       default: null
     }
