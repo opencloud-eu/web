@@ -1,6 +1,7 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
 import { computed, unref } from 'vue'
+
 import {
   AppMenuItemExtension,
   defineWebApplication,
@@ -28,7 +29,7 @@ export default defineWebApplication({
         path: '/',
         name: 'root',
         component: () => import('./LayoutContainer.vue'),
-        redirect: urlJoin(appInfo.id, 'list'),
+        redirect: urlJoin(appInfo.id, 'all', 'inbox'),
 
         meta: {
           authContext: 'user'
@@ -37,6 +38,7 @@ export default defineWebApplication({
           {
             path: 'all',
             name: 'all',
+            component: () => import('./EmptyLayoutContainer.vue'),
             meta: {
               authContext: 'user'
             },
@@ -68,7 +70,6 @@ export default defineWebApplication({
     const extensions = computed(() => {
       const result: Extension[] = []
 
-      // Appaktiv wenn if groupware=true
       result.push(menuItemExtension)
 
       return result
