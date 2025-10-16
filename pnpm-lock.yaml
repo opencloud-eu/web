@@ -597,6 +597,49 @@ importers:
         specifier: workspace:*
         version: link:../web-test-helpers
 
+  packages/web-app-mail:
+    dependencies:
+      '@opencloud-eu/design-system':
+        specifier: workspace:^
+        version: link:../design-system
+      '@opencloud-eu/web-client':
+        specifier: workspace:*
+        version: link:../web-client
+      '@opencloud-eu/web-pkg':
+        specifier: workspace:*
+        version: link:../web-pkg
+      axios:
+        specifier: 1.12.2
+        version: 1.12.2
+      fuse.js:
+        specifier: 7.1.0
+        version: 7.1.0
+      lodash-es:
+        specifier: 4.17.21
+        version: 4.17.21
+      mark.js:
+        specifier: ^8.11.1
+        version: 8.11.1
+      pinia:
+        specifier: 3.0.3
+        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+      vue-concurrency:
+        specifier: 5.0.3
+        version: 5.0.3(vue@3.5.22(typescript@5.9.3))
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.22(typescript@5.9.3))
+      vue3-gettext:
+        specifier: 2.4.0
+        version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
+      zod:
+        specifier: 4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
+
   packages/web-app-ocm:
     dependencies:
       '@opencloud-eu/design-system':
