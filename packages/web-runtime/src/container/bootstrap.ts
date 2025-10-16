@@ -803,7 +803,7 @@ export const announceCustomStyles = ({ configStore }: { configStore?: ConfigStor
 }
 
 /**
- * announceCustomStyles injects custom header styles.
+ * announce Groupware.
  *
  * @param clientService
  * @param capabilityStore
