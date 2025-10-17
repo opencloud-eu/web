@@ -1,5 +1,5 @@
 <template>
-  <app-loading-spinner v-if="isLoading" />
+  <app-loading-spinner v-if="isMailSummaryLoading" />
   <div v-else class="flex">
     <div class="w-1/4 border-r-2 pr-2">
       <h1 v-text="$gettext('All emails')" />
@@ -17,7 +17,7 @@
             :sender="mail.sender"
             :subject="mail.subject"
             :is-unread="!mail.keywords?.['$seen']"
-            @click="loadMailDetails(mail)"
+            @click="selectedMail = mail"
           />
         </li>
       </oc-list>
@@ -28,8 +28,8 @@
           <span v-text="$gettext('No mail selected')" />
         </template>
       </no-content-message>
-      <app-loading-spinner v-else-if="isMailDetailsLoading" />
-      <MailDetails v-else-if="selectedMailDetails" :mail="selectedMailDetails" />
+      <app-loading-spinner v-else-if="isMailLoading" />
+      <MailDetails v-else-if="mail" :mail="mail" />
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { NoContentMessage, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { ref, computed, onMounted, unref } from 'vue'
+import { ref, computed, onMounted, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailListItem from '../components/MailListItem.vue'
 import MailDetails from '../components/MailDetails.vue'
@@ -48,15 +48,16 @@ import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 const configStore = useConfigStore()
 const clientService = useClientService()
 
-const mails = ref<Mail[]>([])
+const mail = ref<Mail>(null)
 const selectedMail = ref<Mail>(null)
-const selectedMailDetails = ref<Mail>(null)
-const isLoading = computed(() => loadAllMailsTask.isRunning && !loadAllMailsTask.last)
-const isMailDetailsLoading = computed(
-  () => loadMailDetailsTask.isRunning && !loadMailDetailsTask.last
+const mails = ref<Mail[]>([])
+
+const isMailSummaryLoading = computed(
+  () => loadMailSummaryTask.isRunning && !loadMailSummaryTask.last
 )
-//loadAllEmailsTask
-const loadAllMailsTask = useTask(function* (signal) {
+const isMailLoading = computed(() => loadMailDetailsTask.isRunning && !loadMailDetailsTask.last)
+
+const loadMailSummaryTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
       // we need to change this to /all if it is available
@@ -72,7 +73,7 @@ const loadAllMailsTask = useTask(function* (signal) {
   }
 })
 
-const loadMailDetailsTask = useTask(function* (signal) {
+const loadMailTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
@@ -84,18 +85,21 @@ const loadMailDetailsTask = useTask(function* (signal) {
       }
     )
     console.log(data)
-    selectedMailDetails.value = MailSchema.parse(data)
+    mail.value = MailSchema.parse(data)
   } catch (e) {
     console.error(e)
   }
 })
 
-const loadMailDetails = (mail: Mail) => {
-  selectedMail.value = mail
-  loadMailDetailsTask.perform()
-}
+watch(
+  selectedMail,
+  () => {
+    loadMailTask.perform()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
-  loadAllMailsTask.perform()
+  loadMailSummaryTask.perform()
 })
 </script>
