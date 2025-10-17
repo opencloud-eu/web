@@ -111,7 +111,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="truncate inline-block text-sm max-w-full [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
+              class="truncate block text-sm [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->

@@ -124,6 +124,9 @@
               </template>
             </context-menu-quick-action>
           </template>
+          <template #additionalResourceContent>
+            <slot name="additionalResourceContent" :resource="resource" />
+          </template>
         </resource-tile>
       </li>
       <li
@@ -242,6 +245,7 @@ defineSlots<{
     dropRef: HTMLElement | null
   }) => unknown
   footer?: () => unknown
+  additionalResourceContent?: (props: { resource: Resource }) => unknown
 }>()
 
 const { $gettext } = useGettext()
