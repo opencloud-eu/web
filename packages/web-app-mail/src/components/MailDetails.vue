@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { Mail, MailAddress } from '../types'
+import { Mail } from '../types'
 import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
