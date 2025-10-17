@@ -72,7 +72,7 @@
     "eslint": "9.37.0",
     "franc-min": "^6.2.0",
     "glob": "11.0.3",
-    "happy-dom": "20.0.0",
+    "happy-dom": "20.0.2",
     "jsdom": "^27.0.0",
     "license-checker-rseidelsohn": "4.4.2",
     "node-fetch": "3.3.2",
