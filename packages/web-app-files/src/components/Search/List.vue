@@ -2,9 +2,11 @@
   <div class="flex">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
+        :view-modes="viewModes"
       />
       <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
         <div class="mr-4 flex items-center">
@@ -83,7 +85,8 @@
             </p>
           </template>
         </no-content-message>
-        <resource-table
+        <component
+          :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
@@ -96,6 +99,10 @@
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :resource-dom-selector="resourceDomSelector"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :style="folderViewStyle"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -124,7 +131,7 @@
             />
             <list-info v-else-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
-        </resource-table>
+        </component>
       </template>
     </files-view-wrapper>
     <file-side-bar
@@ -142,6 +149,7 @@ import {
   SearchResult,
   useCapabilityStore,
   useConfigStore,
+  useExtensionRegistry,
   useResourcesStore,
   useSearch
 } from '@opencloud-eu/web-pkg'
@@ -151,6 +159,7 @@ import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { AppBar } from '@opencloud-eu/web-pkg'
 import {
+  ComponentPublicInstance,
   computed,
   defineComponent,
   nextTick,
@@ -159,6 +168,7 @@ import {
   Ref,
   ref,
   unref,
+  useTemplateRef,
   watch
 } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
@@ -191,6 +201,7 @@ import {
 } from '../../composables/keyboardActions'
 import { extractDomSelector } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
+import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
 
 type Tag = {
   id: string
@@ -268,6 +279,30 @@ export default defineComponent({
     const lastModifiedParam = useRouteQuery('q_lastModified')
     const mediaTypeParam = useRouteQuery('q_mediaType')
     const titleOnlyParam = useRouteQuery('q_titleOnly')
+
+    const extensionRegistry = useExtensionRegistry()
+
+    const folderView = computed(() => {
+      const viewMode = unref(resourcesView.viewMode)
+      return unref(viewModes).find((v) => v.name === viewMode)
+    })
+
+    const viewModes = computed(() => {
+      return [
+        ...extensionRegistry
+          .requestExtensions(folderViewsSearchExtensionPoint)
+          .map((e) => e.folderView)
+      ]
+    })
+
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+    const folderViewStyle = computed(() => {
+      return {
+        ...(unref(folderView)?.isScrollable === false && {
+          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
+        })
+      }
+    })
 
     const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 
@@ -442,6 +477,9 @@ export default defineComponent({
       ...useFileActions(),
       ...resourcesView,
       configOptions,
+      folderView,
+      viewModes,
+      folderViewStyle,
       loadAvailableTagsTask,
       fileListHeaderY,
       fullTextSearchEnabled,
