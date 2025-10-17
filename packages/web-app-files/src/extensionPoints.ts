@@ -79,6 +79,11 @@ export const folderViewsSharedWithMeExtensionPoint: ExtensionPoint<FolderViewExt
   extensionType: 'folderView'
 }
 
+export const folderViewsSearchExtensionPoint: ExtensionPoint<FolderViewExtension> = {
+  id: 'app.files.folder-views.search',
+  extensionType: 'folderView'
+}
+
 export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
@@ -95,7 +100,8 @@ export const extensionPoints = () => {
       folderViewsTrashExtensionPoint,
       folderViewsTrashOverviewExtensionPoint,
       folderViewsSharedViaLinkExtensionPoint,
-      folderViewsSharedWithOthersExtensionPoint
+      folderViewsSharedWithOthersExtensionPoint,
+      folderViewsSearchExtensionPoint
     ]
   })
 }

@@ -1,28 +1,37 @@
 import { merge } from 'lodash-es'
-import { shallowMount } from '@vue/test-utils'
+import { flushPromises, shallowMount } from '@vue/test-utils'
 import List from '../../../../src/components/Search/List.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
-import { AppBar, ItemFilter, queryItemAsString, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  FolderViewExtension,
+  ItemFilter,
+  queryItemAsString,
+  ResourceTable,
+  useExtensionRegistry,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
+import { folderViewsSearchExtensionPoint } from '../../../../src/extensionPoints'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
   useAppDefaults: vi.fn(),
-  useFileActions: vi.fn()
+  useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
 
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
-  resourceTableStub: 'resource-table-stub',
+  resourceTableStub: '[viewmode=resource-table]',
   tagFilter: '.files-search-filter-tags',
   lastModifiedFilter: '.files-search-filter-last-modified',
   titleOnlyFilter: '.files-search-filter-title-only',
@@ -46,7 +55,7 @@ describe('List component', () => {
   })
   it('should emit search event on mount', async () => {
     const { wrapper } = getWrapper()
-    await wrapper.vm.loadAvailableTagsTask.last
+    await flushPromises()
     expect(wrapper.emitted('search').length).toBeGreaterThan(0)
   })
   it('should emit search only if one of the queries changes', async () => {
@@ -78,7 +87,7 @@ describe('List component', () => {
       replacementCounter++
     }
 
-    await wrapper.vm.loadAvailableTagsTask.last
+    await flushPromises()
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
   })
@@ -99,7 +108,7 @@ describe('List component', () => {
     describe('general', () => {
       it('should not be rendered if no filtering is available', async () => {
         const { wrapper } = getWrapper({ fullTextSearchEnabled: false, availableTags: [] })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
         expect(wrapper.find(selectors.filter).exists()).toBeFalsy()
       })
     })
@@ -107,7 +116,7 @@ describe('List component', () => {
       it('should show all available tags', async () => {
         const tag = 'tag1'
         const { wrapper } = getWrapper({ availableTags: [tag] })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
         expect(wrapper.find(selectors.tagFilter).exists()).toBeTruthy()
         expect(
           wrapper.findComponent<typeof ItemFilter>(selectors.tagFilter).props('items')
@@ -121,7 +130,7 @@ describe('List component', () => {
           searchTerm,
           tagFilterQuery: availableTags.join('+')
         })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
         expect(wrapper.emitted('search')[0][0]).toEqual(
           `(name:"*${searchTerm}*" OR content:"${searchTerm}") AND tag:("${availableTags[0]}" OR "${availableTags[1]}")`
         )
@@ -160,7 +169,7 @@ describe('List component', () => {
           availableLastModifiedValues: lastModifiedValues,
           availableTags: ['tag']
         })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
 
         expect(wrapper.find(selectors.lastModifiedFilter).exists()).toBeTruthy()
         expect(
@@ -174,7 +183,7 @@ describe('List component', () => {
           searchTerm,
           lastModifiedFilterQuery
         })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
         expect(wrapper.emitted('search')[0][0]).toEqual(
           `(name:"*${searchTerm}*" OR content:"${searchTerm}") AND mtime:${lastModifiedFilterQuery}`
         )
@@ -197,7 +206,7 @@ describe('List component', () => {
           titleOnlyFilterQuery: 'true',
           fullTextSearchEnabled: true
         })
-        await wrapper.vm.loadAvailableTagsTask.last
+        await flushPromises()
         expect(wrapper.emitted('search')[0][0]).toEqual(`name:"*${searchTerm}*"`)
       })
     })
@@ -252,6 +261,28 @@ function getWrapper({
     }
   } satisfies Partial<Capabilities['capabilities']>
 
+  const plugins = [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [folderViewsSearchExtensionPoint.id],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue(extensions)
+
   return {
     mocks: localMocks,
     wrapper: shallowMount(List, {
@@ -261,7 +292,7 @@ function getWrapper({
         stubs: {
           FilesViewWrapper: false
         },
-        plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
+        plugins
       }
     })
   }

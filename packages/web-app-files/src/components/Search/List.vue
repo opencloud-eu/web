@@ -2,9 +2,11 @@
   <div class="flex">
     <files-view-wrapper>
       <app-bar
+        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
+        :view-modes="viewModes"
       />
       <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
         <div class="mr-4 flex items-center">
@@ -83,7 +85,8 @@
             </p>
           </template>
         </no-content-message>
-        <resource-table
+        <component
+          :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
           :is-side-bar-open="isSideBarOpen"
@@ -96,6 +99,10 @@
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :resource-dom-selector="resourceDomSelector"
+          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :style="folderViewStyle"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -104,7 +111,7 @@
             <!-- eslint-disable vue/no-v-html -->
             <span
               v-if="resource.highlights"
-              class="truncate inline-block text-sm max-w-full [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
+              class="truncate block text-sm [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
               v-html="resource.highlights"
             />
             <!--eslint-enable-->
@@ -124,7 +131,7 @@
             />
             <list-info v-else-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
-        </resource-table>
+        </component>
       </template>
     </files-view-wrapper>
     <file-side-bar
@@ -135,30 +142,29 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { useResourcesViewDefaults } from '../../composables'
 import {
   AppLoadingSpinner,
   SearchResult,
   useCapabilityStore,
-  useConfigStore,
+  useExtensionRegistry,
   useResourcesStore,
   useSearch
 } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { AppBar } from '@opencloud-eu/web-pkg'
 import {
+  ComponentPublicInstance,
   computed,
-  defineComponent,
   nextTick,
   onMounted,
-  PropType,
   Ref,
   ref,
   unref,
+  useTemplateRef,
   watch
 } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
@@ -191,6 +197,7 @@ import {
 } from '../../composables/keyboardActions'
 import { extractDomSelector } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
+import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
 
 type Tag = {
   id: string
@@ -201,314 +208,304 @@ type LastModifiedKeyword = {
   label: string
 }
 
-export default defineComponent({
-  components: {
-    AppBar,
-    FileSideBar,
-    AppLoadingSpinner,
-    ContextActions,
-    ListInfo,
-    Pagination,
-    NoContentMessage,
-    ResourceIcon,
-    ResourceTable,
-    FilesViewWrapper,
-    ItemFilter,
-    ItemFilterToggle
-  },
-  props: {
-    searchResult: {
-      type: Object as PropType<SearchResult>,
-      default: function (): SearchResult {
-        return { totalResults: null, values: [] }
-      }
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['search'],
-  setup(props, { emit }) {
-    const capabilityStore = useCapabilityStore()
-    const router = useRouter()
-    const route = useRoute()
-    const { $gettext } = useGettext()
-    const { y: fileListHeaderY } = useFileListHeaderPosition()
-    const clientService = useClientService()
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const { buildSearchTerm } = useSearch()
+const { searchResult = { totalResults: null, values: [] }, loading = false } = defineProps<{
+  searchResult?: SearchResult
+  loading?: boolean
+}>()
 
-    const resourcesStore = useResourcesStore()
-    const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
-    const { totalResourcesCount } = storeToRefs(resourcesStore)
+const emit = defineEmits<{
+  (e: 'search', query: string): void
+}>()
 
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
+const capabilityStore = useCapabilityStore()
+const router = useRouter()
+const route = useRoute()
+const { $gettext } = useGettext()
+const { y: fileListHeaderY } = useFileListHeaderPosition()
+const clientService = useClientService()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { buildSearchTerm } = useSearch()
 
-    const searchTermQuery = useRouteQuery('term')
-    const scopeQuery = useRouteQuery('scope')
-    const doUseScope = useRouteQuery('useScope')
+const resourcesStore = useResourcesStore()
+const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
+const { totalResourcesCount } = storeToRefs(resourcesStore)
 
-    const resourcesView = useResourcesViewDefaults<Resource, any, any[]>()
-    const { loadPreview } = useLoadPreview(resourcesView.viewMode)
-    const keyActions = useKeyboardActions()
-    useKeyboardFileNavigation(keyActions, resourcesView.paginatedResources, resourcesView.viewMode)
-    useKeyboardFileMouseActions(keyActions, resourcesView.viewMode)
-    useKeyboardFileActions(keyActions)
+const searchTermQuery = useRouteQuery('term')
+const scopeQuery = useRouteQuery('scope')
+const doUseScope = useRouteQuery('useScope')
 
-    const searchTerm = computed(() => {
-      return queryItemAsString(unref(searchTermQuery))
+const { triggerDefaultAction } = useFileActions()
+
+const {
+  isSideBarOpen,
+  paginatedResources,
+  paginationPage,
+  paginationPages,
+  selectedResources,
+  selectedResourcesIds,
+  selectedResourceSpace,
+  sideBarActivePanel,
+  sortBy,
+  sortDir,
+  sortFields,
+  viewMode,
+  viewSize,
+  handleSort,
+  isResourceInSelection,
+  scrollToResourceFromRoute
+} = useResourcesViewDefaults<SearchResource, any, any[]>()
+
+const { loadPreview } = useLoadPreview(viewMode)
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
+useKeyboardFileActions(keyActions)
+
+const searchTerm = computed(() => {
+  return queryItemAsString(unref(searchTermQuery))
+})
+
+const availableTags = ref<Tag[]>([])
+const tagFilter = useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('tagFilter')
+const mediaTypeFilter =
+  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+
+const tagParam = useRouteQuery('q_tags')
+const lastModifiedParam = useRouteQuery('q_lastModified')
+const mediaTypeParam = useRouteQuery('q_mediaType')
+const titleOnlyParam = useRouteQuery('q_titleOnly')
+
+const extensionRegistry = useExtensionRegistry()
+
+const folderView = computed(() => {
+  return unref(viewModes).find((v) => v.name === unref(viewMode))
+})
+
+const viewModes = computed(() => {
+  return [
+    ...extensionRegistry.requestExtensions(folderViewsSearchExtensionPoint).map((e) => e.folderView)
+  ]
+})
+
+const folderViewStyle = computed(() => {
+  return {
+    ...(unref(folderView)?.isScrollable === false && {
+      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
     })
-
-    const availableTags = ref<Tag[]>([])
-    const tagFilter = ref<InstanceType<typeof ItemFilter> | null>(null)
-    const mediaTypeFilter = ref<InstanceType<typeof ItemFilter> | null>()
-    const tagParam = useRouteQuery('q_tags')
-    const lastModifiedParam = useRouteQuery('q_lastModified')
-    const mediaTypeParam = useRouteQuery('q_mediaType')
-    const titleOnlyParam = useRouteQuery('q_titleOnly')
-
-    const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
-
-    const displayFilter = computed(() => {
-      return (
-        unref(fullTextSearchEnabled) ||
-        unref(availableTags).length ||
-        capabilityStore.searchLastMofifiedDate?.enabled
-      )
-    })
-
-    const loadAvailableTagsTask = useTask(function* (signal) {
-      const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
-      availableTags.value = [...tags.map((t) => ({ id: t, label: t }))]
-    })
-
-    onBeforeRouteLeave(() => {
-      eventBus.publish('app.search.term.clear')
-    })
-
-    // transifex hack b/c dynamically fetched values from backend will otherwise not be automatically translated
-    const lastModifiedTranslations: Record<string, string> = {
-      today: $gettext('today'),
-      yesterday: $gettext('yesterday'),
-      'this week': $gettext('this week'),
-      'last week': $gettext('last week'),
-      'last 7 days': $gettext('last 7 days'),
-      'this month': $gettext('this month'),
-      'last month': $gettext('last month'),
-      'last 30 days': $gettext('last 30 days'),
-      'this year': $gettext('this year'),
-      'last year': $gettext('last year')
-    }
-
-    const lastModifiedFilter = ref<InstanceType<typeof ItemFilter> | null>()
-    const availableLastModifiedValues = ref<LastModifiedKeyword[]>(
-      capabilityStore.searchLastMofifiedDate.keywords?.map((k: string) => ({
-        id: k,
-        label: lastModifiedTranslations[k]
-      })) || []
-    )
-
-    const mediaTypeMapping: Record<string, { label: string; icon: string }> = {
-      file: { label: $gettext('File'), icon: 'txt' },
-      folder: { label: $gettext('Folder'), icon: 'folder' },
-      document: { label: $gettext('Document'), icon: 'doc' },
-      spreadsheet: { label: $gettext('Spreadsheet'), icon: 'xls' },
-      presentation: { label: $gettext('Presentation'), icon: 'ppt' },
-      pdf: { label: $gettext('PDF'), icon: 'pdf' },
-      image: { label: $gettext('Image'), icon: 'jpg' },
-      video: { label: $gettext('Video'), icon: 'mp4' },
-      audio: { label: $gettext('Audio'), icon: 'mp3' },
-      archive: { label: $gettext('Archive'), icon: 'zip' }
-    }
-
-    const availableMediaTypeValues = computed(() => {
-      return (
-        capabilityStore.searchMediaType.keywords?.filter((key) => mediaTypeMapping[key]) || []
-      ).map((key) => ({ id: key, ...mediaTypeMapping[key] }))
-    })
-
-    const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
-      return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
-    }
-
-    const doSearch = (manuallyUpdateFilterChip = false) => {
-      const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'
-      const tags = queryItemAsString(unref(tagParam))
-      const lastModified = queryItemAsString(unref(lastModifiedParam))
-      const mediaType = queryItemAsString(unref(mediaTypeParam))
-
-      const query = buildSearchTerm({
-        term: unref(searchTerm),
-        isTitleOnlySearch,
-        tags,
-        lastModified,
-        mediaType,
-        scope: queryItemAsString(unref(scopeQuery)),
-        useScope: unref(doUseScope) === 'true'
-      })
-
-      const updateFilter = (v: Ref<InstanceType<typeof ItemFilter>>) => {
-        if (manuallyUpdateFilterChip && unref(v)) {
-          /**
-           * Handles edge cases where a filter is not being applied via the filter directly,
-           * e.g. when clicking on a tag in the files list.
-           * We need to manually update the selected items in the ItemFilter component because normally
-           * it only does this on mount or when interacting with the filter directly.
-           */
-          unref(v).setSelectedItemsBasedOnQuery()
-        }
-      }
-
-      if (tags) {
-        updateFilter(tagFilter)
-      }
-
-      if (lastModified) {
-        updateFilter(lastModifiedFilter)
-      }
-
-      if (mediaType) {
-        updateFilter(mediaTypeFilter)
-      }
-
-      return query
-    }
-
-    const breadcrumbs = computed(() => {
-      return [
-        {
-          text: unref(searchTerm)
-            ? $gettext('Search results for "%{searchTerm}"', { searchTerm: unref(searchTerm) })
-            : $gettext('Search')
-        }
-      ]
-    })
-
-    const resourceDomSelector = ({ id, remoteItemId }: Resource) => {
-      let selectorStr = id.toString()
-      if (remoteItemId) {
-        selectorStr += remoteItemId
-      }
-      return extractDomSelector(selectorStr)
-    }
-
-    onMounted(async () => {
-      // Store resources are shared across table views, therefore
-      // the store state needs a reset to prevent the old list of resources
-      // from being rendered while the request retrieves the new resources from the server.
-      clearResourceList()
-      setAncestorMetaData({})
-
-      if (capabilityStore.filesTags) {
-        await loadAvailableTagsTask.perform()
-      }
-      emit('search', doSearch())
-    })
-
-    watch(
-      () => unref(route).query,
-      (newVal, oldVal) => {
-        // return early if this view is not active, no search needed
-        {
-          const isSearchViewActive = isLocationCommonActive(router, 'files-common-search')
-          if (!isSearchViewActive) {
-            return
-          }
-        }
-
-        // return early if the search term or filter has not changed, no search needed
-        {
-          const isSameTerm = newVal?.term === oldVal?.term
-          const isSameFilter = [
-            'q_titleOnly',
-            'q_tags',
-            'q_lastModified',
-            'q_mediaType',
-            'useScope'
-          ].every((key) => newVal[key] === oldVal[key])
-          if (isSameTerm && isSameFilter) {
-            return
-          }
-        }
-
-        emit('search', doSearch(true))
-      },
-      { deep: true }
-    )
-
-    return {
-      ...useFileActions(),
-      ...resourcesView,
-      configOptions,
-      loadAvailableTagsTask,
-      fileListHeaderY,
-      fullTextSearchEnabled,
-      getMatchingSpace,
-      availableTags,
-      tagFilter,
-      breadcrumbs,
-      displayFilter,
-      availableLastModifiedValues,
-      lastModifiedFilter,
-      mediaTypeFilter,
-      availableMediaTypeValues,
-      getFakeResourceForIcon,
-      resourceDomSelector,
-      initResourceList,
-      clearResourceList,
-      totalResourcesCount,
-      loadPreview
-    }
-  },
-  computed: {
-    itemCount() {
-      return this.totalResourcesCount.files + this.totalResourcesCount.folders
-    },
-    rangeSupported() {
-      return this.searchResult.totalResults
-    },
-    searchResultExceedsLimit() {
-      return (
-        !this.rangeSupported ||
-        (this.searchResult.totalResults && this.searchResult.totalResults > searchLimit)
-      )
-    },
-    searchResultExceedsLimitText() {
-      if (!this.rangeSupported) {
-        return this.$gettext('Showing up to %{searchLimit} results', {
-          searchLimit: searchLimit.toString()
-        })
-      }
-
-      return this.$gettext(
-        'Found %{totalResults}, showing the %{itemCount} best matching results',
-        {
-          itemCount: this.itemCount.toString(),
-          totalResults: this.searchResult.totalResults.toString()
-        }
-      )
-    }
-  },
-  watch: {
-    searchResult: {
-      handler: async function () {
-        if (!this.searchResult) {
-          return
-        }
-
-        this.clearResourceList()
-        this.initResourceList<SearchResource>({
-          currentFolder: null,
-          resources: this.searchResult.values.length
-            ? this.searchResult.values.map((searchResult) => searchResult.data as SearchResource)
-            : []
-        })
-        await nextTick()
-        this.scrollToResourceFromRoute(this.paginatedResources, 'files-app-bar')
-      }
-    }
   }
 })
+
+const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
+
+const displayFilter = computed(() => {
+  return (
+    unref(fullTextSearchEnabled) ||
+    unref(availableTags).length ||
+    capabilityStore.searchLastMofifiedDate?.enabled
+  )
+})
+
+const loadAvailableTagsTask = useTask(function* (signal) {
+  const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
+  availableTags.value = [...tags.map((t) => ({ id: t, label: t }))]
+})
+
+onBeforeRouteLeave(() => {
+  eventBus.publish('app.search.term.clear')
+})
+
+// transifex hack b/c dynamically fetched values from backend will otherwise not be automatically translated
+const lastModifiedTranslations: Record<string, string> = {
+  today: $gettext('today'),
+  yesterday: $gettext('yesterday'),
+  'this week': $gettext('this week'),
+  'last week': $gettext('last week'),
+  'last 7 days': $gettext('last 7 days'),
+  'this month': $gettext('this month'),
+  'last month': $gettext('last month'),
+  'last 30 days': $gettext('last 30 days'),
+  'this year': $gettext('this year'),
+  'last year': $gettext('last year')
+}
+
+const lastModifiedFilter =
+  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('lastModifiedFilter')
+const availableLastModifiedValues = ref<LastModifiedKeyword[]>(
+  capabilityStore.searchLastMofifiedDate.keywords?.map((k: string) => ({
+    id: k,
+    label: lastModifiedTranslations[k]
+  })) || []
+)
+
+const mediaTypeMapping: Record<string, { label: string; icon: string }> = {
+  file: { label: $gettext('File'), icon: 'txt' },
+  folder: { label: $gettext('Folder'), icon: 'folder' },
+  document: { label: $gettext('Document'), icon: 'doc' },
+  spreadsheet: { label: $gettext('Spreadsheet'), icon: 'xls' },
+  presentation: { label: $gettext('Presentation'), icon: 'ppt' },
+  pdf: { label: $gettext('PDF'), icon: 'pdf' },
+  image: { label: $gettext('Image'), icon: 'jpg' },
+  video: { label: $gettext('Video'), icon: 'mp4' },
+  audio: { label: $gettext('Audio'), icon: 'mp3' },
+  archive: { label: $gettext('Archive'), icon: 'zip' }
+}
+
+const availableMediaTypeValues = computed(() => {
+  return (
+    capabilityStore.searchMediaType.keywords?.filter((key) => mediaTypeMapping[key]) || []
+  ).map((key) => ({ id: key, ...mediaTypeMapping[key] }))
+})
+
+const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
+  return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+}
+
+const doSearch = (manuallyUpdateFilterChip = false) => {
+  const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'
+  const tags = queryItemAsString(unref(tagParam))
+  const lastModified = queryItemAsString(unref(lastModifiedParam))
+  const mediaType = queryItemAsString(unref(mediaTypeParam))
+
+  const query = buildSearchTerm({
+    term: unref(searchTerm),
+    isTitleOnlySearch,
+    tags,
+    lastModified,
+    mediaType,
+    scope: queryItemAsString(unref(scopeQuery)),
+    useScope: unref(doUseScope) === 'true'
+  })
+
+  const updateFilter = (v: Ref<ComponentPublicInstance<typeof ItemFilter>>) => {
+    if (manuallyUpdateFilterChip && unref(v)) {
+      /**
+       * Handles edge cases where a filter is not being applied via the filter directly,
+       * e.g. when clicking on a tag in the files list.
+       * We need to manually update the selected items in the ItemFilter component because normally
+       * it only does this on mount or when interacting with the filter directly.
+       */
+      unref(v).setSelectedItemsBasedOnQuery()
+    }
+  }
+
+  if (tags) {
+    updateFilter(tagFilter)
+  }
+
+  if (lastModified) {
+    updateFilter(lastModifiedFilter)
+  }
+
+  if (mediaType) {
+    updateFilter(mediaTypeFilter)
+  }
+
+  return query
+}
+
+const breadcrumbs = computed(() => {
+  return [
+    {
+      text: unref(searchTerm)
+        ? $gettext('Search results for "%{searchTerm}"', { searchTerm: unref(searchTerm) })
+        : $gettext('Search')
+    }
+  ]
+})
+
+const resourceDomSelector = ({ id, remoteItemId }: Resource) => {
+  let selectorStr = id.toString()
+  if (remoteItemId) {
+    selectorStr += remoteItemId
+  }
+  return extractDomSelector(selectorStr)
+}
+
+const itemCount = computed(() => {
+  return unref(totalResourcesCount).files + unref(totalResourcesCount).folders
+})
+const rangeSupported = computed(() => {
+  return searchResult.totalResults
+})
+const searchResultExceedsLimit = computed(() => {
+  return (
+    !unref(rangeSupported) || (searchResult.totalResults && searchResult.totalResults > searchLimit)
+  )
+})
+const searchResultExceedsLimitText = computed(() => {
+  if (!unref(rangeSupported)) {
+    return $gettext('Showing up to %{searchLimit} results', {
+      searchLimit: searchLimit.toString()
+    })
+  }
+
+  return $gettext('Found %{totalResults}, showing the %{itemCount} best matching results', {
+    itemCount: unref(itemCount).toString(),
+    totalResults: searchResult.totalResults.toString()
+  })
+})
+
+onMounted(async () => {
+  // Store resources are shared across table views, therefore
+  // the store state needs a reset to prevent the old list of resources
+  // from being rendered while the request retrieves the new resources from the server.
+  clearResourceList()
+  setAncestorMetaData({})
+
+  if (capabilityStore.filesTags) {
+    await loadAvailableTagsTask.perform()
+  }
+  emit('search', doSearch())
+})
+
+watch(
+  () => unref(route).query,
+  (newVal, oldVal) => {
+    // return early if this view is not active, no search needed
+    {
+      const isSearchViewActive = isLocationCommonActive(router, 'files-common-search')
+      if (!isSearchViewActive) {
+        return
+      }
+    }
+
+    // return early if the search term or filter has not changed, no search needed
+    {
+      const isSameTerm = newVal?.term === oldVal?.term
+      const isSameFilter = [
+        'q_titleOnly',
+        'q_tags',
+        'q_lastModified',
+        'q_mediaType',
+        'useScope'
+      ].every((key) => newVal[key] === oldVal[key])
+      if (isSameTerm && isSameFilter) {
+        return
+      }
+    }
+
+    emit('search', doSearch(true))
+  },
+  { deep: true }
+)
+
+watch(
+  () => searchResult,
+  async () => {
+    if (!searchResult) {
+      return
+    }
+
+    clearResourceList()
+    initResourceList<SearchResource>({
+      currentFolder: null,
+      resources: searchResult.values.length
+        ? searchResult.values.map((searchResult) => searchResult.data as SearchResource)
+        : []
+    })
+    await nextTick()
+    scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+  }
+)
 </script>

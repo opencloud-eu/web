@@ -103,6 +103,7 @@
         <p v-if="resourceDescription" class="text-left my-0 truncate">
           <span class="text-sm" v-text="resourceDescription" />
         </p>
+        <slot name="additionalResourceContent" :item="resource" />
       </div>
     </template>
   </oc-card>
@@ -161,6 +162,7 @@ defineSlots<{
   imageField?: (props: { item: Resource }) => unknown
   indicators?: (props: { item: Resource }) => unknown
   selection?: (props: { item: Resource }) => unknown
+  additionalResourceContent?: (props: { item: Resource }) => unknown
 }>()
 
 const { toggleTile } = useToggleTile()
