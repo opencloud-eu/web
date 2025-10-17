@@ -1,12 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper class="flex-col">
-      <app-bar
-        ref="appBarRef"
-        :has-bulk-actions="true"
-        :is-side-bar-open="isSideBarOpen"
-        :view-modes="viewModes"
-      >
+      <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -79,7 +74,6 @@
           :sort-dir="sortDir"
           :sort-handler="handleSort"
           :folder-view="folderView"
-          :folder-view-style="folderViewStyle"
           :title="shareSectionTitle"
           :empty-message="
             areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
@@ -112,16 +106,7 @@ import {
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
-import {
-  ComponentPublicInstance,
-  computed,
-  defineComponent,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, defineComponent, onMounted, ref, unref, watch } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
 import { useGroupingSettings } from '@opencloud-eu/web-pkg'
@@ -149,11 +134,8 @@ export default defineComponent({
     const appsStore = useAppsStore()
     const resourcesStore = useResourcesStore()
 
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-
     const resourcesViewDefaults = useResourcesViewDefaults<IncomingShareResource, any, any>({
-      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
-      appBarRef
+      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
     })
 
     const {
@@ -161,7 +143,6 @@ export default defineComponent({
       viewModes,
       viewSize,
       folderView,
-      folderViewStyle,
       areResourcesLoading,
       sortFields,
       fileListHeaderY,
@@ -324,12 +305,10 @@ export default defineComponent({
       sortDir,
       items,
 
-      appBarRef,
       viewMode,
       viewSize,
       viewModes,
       folderView,
-      folderViewStyle,
       sortFields,
 
       // CERN

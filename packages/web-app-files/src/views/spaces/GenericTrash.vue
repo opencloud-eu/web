@@ -2,7 +2,6 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
@@ -55,7 +54,6 @@
           :has-actions="showActions"
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-size="viewSize"
-          :style="folderViewStyle"
           @sort="handleSort"
         >
           <template #contextMenu="{ resource, isOpen }">
@@ -76,14 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {
@@ -116,11 +107,8 @@ const { $gettext } = useGettext()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-
 const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
-  folderViewExtensionPoint: folderViewsTrashExtensionPoint,
-  appBarRef
+  folderViewExtensionPoint: folderViewsTrashExtensionPoint
 })
 
 const {
@@ -140,7 +128,6 @@ const {
   viewMode,
   viewModes,
   folderView,
-  folderViewStyle,
   viewSize,
   sortFields
 } = resourcesViewDefaults

@@ -2,7 +2,6 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-view-options="true"
         :has-hidden-files="false"
@@ -44,7 +43,6 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
-            :style="folderViewStyle"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -79,16 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -133,11 +122,8 @@ const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-
 const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>({
-  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
-  appBarRef
+  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint
 })
 
 const {
@@ -148,8 +134,7 @@ const {
   viewModes,
   viewSize,
   sortFields,
-  folderView,
-  folderViewStyle
+  folderView
 } = resourcesViewDefaults
 
 const { loadPreview } = useLoadPreview(viewMode)

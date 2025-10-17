@@ -1,4 +1,4 @@
-import { nextTick, computed, unref, Ref, ComponentPublicInstance } from 'vue'
+import { nextTick, computed, unref, Ref } from 'vue'
 import { fileList } from '../../helpers/ui'
 import {
   usePagination,
@@ -10,7 +10,6 @@ import {
   useExtensionRegistry,
   ExtensionPoint,
   FolderViewExtension,
-  AppBar,
   FolderView
 } from '@opencloud-eu/web-pkg'
 import { useSideBar } from '@opencloud-eu/web-pkg'
@@ -37,7 +36,6 @@ import { useGettext } from 'vue3-gettext'
 interface ResourcesViewDefaultsOptions<T, U extends any[]> {
   loadResourcesTask?: Task<T, U>
   folderViewExtensionPoint?: ExtensionPoint<FolderViewExtension>
-  appBarRef?: Ref<ComponentPublicInstance<typeof AppBar>>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -56,7 +54,6 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   viewMode: ReadOnlyRef<string>
   viewModes: ReadOnlyRef<FolderView[]>
   folderView: ReadOnlyRef<FolderView>
-  folderViewStyle: ReadOnlyRef<Record<string, string>>
   viewSize: ReadOnlyRef<number>
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
@@ -105,15 +102,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     return unref(viewModes).find((v) => v.name === unref(viewMode))
   })
 
-  const folderViewStyle = computed(() => {
-    return {
-      ...(unref(folderView)?.isScrollable === false &&
-        options.appBarRef && {
-          height: `calc(100% - ${unref(options.appBarRef).$el.getBoundingClientRect().height}px)`
-        })
-    }
-  })
-
   const sortFields = computed((): SortField[] => {
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
       return translateSortFields(determineResourceTilesSortFields(unref(storeItems)[0]), language)
@@ -152,7 +140,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     viewSize,
     viewModes,
     folderView,
-    folderViewStyle,
     paginatedResources,
     paginationPages,
     paginationPage,

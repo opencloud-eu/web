@@ -3,7 +3,6 @@
     <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :breadcrumbs-context-actions-items="[currentFolder]"
         :has-bulk-actions="displayFullAppBar"
@@ -73,7 +72,6 @@
               :header-position="fileListHeaderY /* table */"
               :sort-fields="sortFields /* tiles */"
               :view-size="viewSize /* tiles */"
-              :style="folderViewStyle"
               v-bind="folderView.componentAttrs?.()"
               @file-dropped="fileDropped"
               @file-click="triggerDefaultAction"
@@ -120,8 +118,7 @@ import {
   onBeforeUnmount,
   onMounted,
   unref,
-  ref,
-  useTemplateRef
+  ref
 } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
@@ -413,11 +410,8 @@ export default defineComponent({
       }
     }
 
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-
     const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
-      folderViewExtensionPoint: folderViewsFolderExtensionPoint,
-      appBarRef
+      folderViewExtensionPoint: folderViewsFolderExtensionPoint
     })
     const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
 
@@ -568,7 +562,6 @@ export default defineComponent({
       isCurrentFolderEmpty,
       resourceTargetRouteCallback,
       performLoaderTask,
-      appBarRef,
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
       ),

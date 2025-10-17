@@ -2,7 +2,6 @@
   <div class="flex">
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
@@ -102,7 +101,6 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
-          :style="folderViewStyle"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -234,11 +232,9 @@ const scopeQuery = useRouteQuery('scope')
 const doUseScope = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 
 const {
   folderView,
-  folderViewStyle,
   isSideBarOpen,
   paginatedResources,
   paginationPage,
@@ -257,8 +253,7 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSearchExtensionPoint,
-  appBarRef
+  folderViewExtensionPoint: folderViewsSearchExtensionPoint
 })
 
 const { loadPreview } = useLoadPreview(viewMode)

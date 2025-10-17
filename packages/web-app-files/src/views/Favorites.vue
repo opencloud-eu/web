@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar ref="appBarRef" :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
+      <app-bar :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
@@ -19,7 +19,6 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
-          :style="folderViewStyle"
           v-bind="folderView.componentAttrs?.()"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -50,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { defineComponent, onBeforeUnmount, onMounted } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useConfigStore, useResourcesStore, useLoadPreview } from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
@@ -90,11 +89,9 @@ export default defineComponent({
     const { options: configOptions } = storeToRefs(configStore)
 
     const resourcesStore = useResourcesStore()
-    const appBarRef = ref<ComponentPublicInstance | null>()
 
     const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
-      folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
-      appBarRef
+      folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
     })
     const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
 
@@ -117,7 +114,6 @@ export default defineComponent({
       ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
-      appBarRef,
       loadPreview
     }
   },

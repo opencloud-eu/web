@@ -25,7 +25,6 @@
       :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
-      :style="folderViewStyle"
       :grouping-settings="groupingSettings"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -140,10 +139,6 @@ export default defineComponent({
     folderView: {
       required: true,
       type: Object as PropType<FolderView>
-    },
-    folderViewStyle: {
-      type: Object,
-      default: () => {}
     },
     showMoreToggle: {
       type: Boolean,

@@ -45,7 +45,6 @@ export const useResourcesViewDefaultsMock = (
     viewSize: ref(1),
     viewModes: computed(() => [folderView]),
     folderView: computed(() => folderView),
-    folderViewStyle: ref({}),
     ...options
   }
 }

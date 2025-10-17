@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar ref="appBarRef" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -27,7 +27,6 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
-          :style="folderViewStyle"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -71,7 +70,7 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { ComponentPublicInstance, defineComponent, unref, useTemplateRef } from 'vue'
+import { defineComponent, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
@@ -100,11 +99,8 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
     const { totalResourcesCount } = storeToRefs(resourcesStore)
 
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-
     const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
-      folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
-      appBarRef
+      folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint
     })
     const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
       resourcesViewDefaults
@@ -138,8 +134,7 @@ export default defineComponent({
       configOptions,
       getMatchingSpace,
       totalResourcesCount,
-      loadPreview,
-      appBarRef
+      loadPreview
     }
   },
 
