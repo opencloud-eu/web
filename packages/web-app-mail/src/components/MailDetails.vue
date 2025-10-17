@@ -1,7 +1,7 @@
 <template>
   <div class="mail-details ml-2 p-2">
     <div class="mail-details-subject font-bold mt-1">
-      <h1 class="block truncate" v-text="mail.subject" />
+      <h2 class="block truncate" v-text="mail.subject" />
     </div>
     <div class="mail-details-subheader mt-2 flex justify-between">
       <oc-avatar :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
