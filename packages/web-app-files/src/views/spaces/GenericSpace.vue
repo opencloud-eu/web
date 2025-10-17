@@ -3,7 +3,6 @@
     <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :breadcrumbs-context-actions-items="[currentFolder]"
         :has-bulk-actions="displayFullAppBar"
@@ -73,7 +72,6 @@
               :header-position="fileListHeaderY /* table */"
               :sort-fields="sortFields /* tiles */"
               :view-size="viewSize /* tiles */"
-              :style="folderViewStyle"
               v-bind="folderView.componentAttrs?.()"
               @file-dropped="fileDropped"
               @file-click="triggerDefaultAction"
@@ -137,17 +135,13 @@ import {
   ResourceTransfer,
   TransferType,
   useConfigStore,
-  useExtensionRegistry,
   useFileActions,
   useFileActionsCreateNewFolder,
   useLoadPreview,
   usePasteWorker,
   useResourcesStore,
   useRouter,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
-
-import {
+  useUserStore,
   AppBar,
   AppLoadingSpinner,
   ContextActions,
@@ -255,15 +249,6 @@ export default defineComponent({
 
     const canUpload = computed(() => {
       return unref(currentFolder)?.canUpload({ user: userStore.user })
-    })
-
-    const extensionRegistry = useExtensionRegistry()
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsFolderExtensionPoint)
-          .map((e) => e.folderView)
-      ]
     })
 
     const resourceTargetRouteCallback = ({
@@ -425,21 +410,10 @@ export default defineComponent({
       }
     }
 
-    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>()
+    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
+      folderViewExtensionPoint: folderViewsFolderExtensionPoint
+    })
     const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
-
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-    const appBarRef = ref<ComponentPublicInstance | null>()
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     const keyActions = useKeyboardActions()
     useKeyboardFileNavigation(
@@ -588,10 +562,6 @@ export default defineComponent({
       isCurrentFolderEmpty,
       resourceTargetRouteCallback,
       performLoaderTask,
-      viewModes,
-      appBarRef,
-      folderView,
-      folderViewStyle,
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
       ),

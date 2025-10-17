@@ -25,7 +25,6 @@
       :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
-      :style="folderViewStyle"
       :grouping-settings="groupingSettings"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -95,6 +94,7 @@ import { RouteLocationNamedRaw } from 'vue-router'
 import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
+import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -141,10 +141,6 @@ export default defineComponent({
       required: true,
       type: Object as PropType<FolderView>
     },
-    folderViewStyle: {
-      type: Object,
-      default: () => {}
-    },
     showMoreToggle: {
       type: Boolean,
       default: false
@@ -180,7 +176,9 @@ export default defineComponent({
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults()
+    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults({
+      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
+    })
 
     const { loadPreview } = useLoadPreview(viewMode)
 

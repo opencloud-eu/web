@@ -1,7 +1,7 @@
 import Favorites from '../../../src/views/Favorites.vue'
 import { useResourcesViewDefaults } from '../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../tests/mocks/useResourcesViewDefaultsMock'
-import { h, ref } from 'vue'
+import { ref } from 'vue'
 import { mockDeep, mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -11,12 +11,6 @@ import {
   defaultComponentMocks
 } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { FolderViewExtension, useExtensionRegistry } from '@opencloud-eu/web-pkg'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint
-} from '../../../src/extensionPoints'
 
 vi.mock('../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -46,7 +40,7 @@ describe('Favorites view', () => {
     it('shows the files table when files are available', () => {
       const { wrapper } = getMountedWrapper({ files: [mockDeep<Resource>()] })
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
-      expect(wrapper.find('.resource-table').exists()).toBeTruthy()
+      expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
   })
 })
@@ -64,29 +58,6 @@ function getMountedWrapper({
       areResourcesLoading: ref(loading)
     })
   })
-
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: h('div', { class: 'resource-table' })
-      }
-    }
-  ] satisfies FolderViewExtension[]
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   const defaultMocks = {
     ...defaultComponentMocks({

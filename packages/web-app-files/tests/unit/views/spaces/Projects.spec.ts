@@ -19,11 +19,8 @@ import {
   PiniaMockOptions
 } from '@opencloud-eu/web-test-helpers'
 import { AbilityRule, SpaceResource } from '@opencloud-eu/web-client'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint
-} from '../../../../src/extensionPoints'
+import { folderViewsProjectSpacesExtensionPoint } from '../../../../src/extensionPoints'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -87,34 +84,34 @@ describe('Projects view', () => {
     })
     it('shows the no-content-message after loading', async () => {
       const { wrapper } = getMountedWrapper()
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
     it('lists all available project spaces', async () => {
       const spaces = spacesResources
-      const { wrapper } = getMountedWrapper({ spaces })
-      await (wrapper.vm as any).loadResourcesTask.last
+      const { wrapper } = getMountedWrapper({ spaces, stubResourceTable: true })
+      await flushPromises()
       expect(wrapper.html()).toMatchSnapshot()
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('.spaces-list').exists()).toBeTruthy()
     })
     it('shows only filtered spaces if filter applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources })
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       wrapper.find('input').setValue('Some other space')
       await nextTick()
       expect(wrapper.findAll('tbody tr').length).toEqual(1)
     })
     it('shows only enabled spaces if includeDisabled filter is not applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources })
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       await nextTick()
       expect(wrapper.findAll('tbody tr').length).toEqual(2)
     })
     it('shows all spaces if includeDisabled filter is applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources, includeDisabled: true })
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       await nextTick()
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
@@ -152,7 +149,8 @@ function getMountedWrapper({
   abilities = [],
   stubAppBar = true,
   includeDisabled = false,
-  store = {}
+  store = {},
+  stubResourceTable = false
 }: {
   mocks?: Record<string, unknown>
   spaces?: SpaceResource[]
@@ -160,6 +158,7 @@ function getMountedWrapper({
   stubAppBar?: boolean
   includeDisabled?: boolean
   store?: PiniaMockOptions
+  stubResourceTable?: boolean
 } = {}) {
   const plugins = defaultPlugins({
     abilities,
@@ -177,11 +176,7 @@ function getMountedWrapper({
     {
       id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
       type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
-      ],
+      extensionPointIds: [folderViewsProjectSpacesExtensionPoint.id],
       folderView: {
         name: 'resource-table',
         label: 'Switch to default view',
@@ -214,7 +209,8 @@ function getMountedWrapper({
           ...defaultStubs,
           'space-context-actions': true,
           'app-bar': stubAppBar,
-          CreateSpace: true
+          CreateSpace: true,
+          'resource-table': stubResourceTable
         }
       }
     })

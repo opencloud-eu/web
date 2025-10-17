@@ -5,7 +5,7 @@
     class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-20"
     :class="{ 'files-app-bar-squashed': isSideBarOpen, sticky: isSticky }"
   >
-    <div class="files-topbar py-2">
+    <div class="files-topbar py-2 w-full">
       <h1 class="sr-only" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div

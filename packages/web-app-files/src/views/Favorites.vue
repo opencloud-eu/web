@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar ref="appBarRef" :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
+      <app-bar :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
@@ -19,7 +19,6 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
-          :style="folderViewStyle"
           v-bind="folderView.componentAttrs?.()"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -50,22 +49,9 @@
 </template>
 
 <script lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  unref
-} from 'vue'
+import { defineComponent, onBeforeUnmount, onMounted } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
-import {
-  useExtensionRegistry,
-  useConfigStore,
-  useResourcesStore,
-  useLoadPreview
-} from '@opencloud-eu/web-pkg'
+import { useConfigStore, useResourcesStore, useLoadPreview } from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { FileSideBar, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -104,29 +90,10 @@ export default defineComponent({
 
     const resourcesStore = useResourcesStore()
 
-    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>()
+    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
+      folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
+    })
     const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
-
-    const extensionRegistry = useExtensionRegistry()
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsFavoritesExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-    const appBarRef = ref<ComponentPublicInstance | null>()
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     let loadResourcesEventToken: string
     onMounted(() => {
@@ -147,10 +114,6 @@ export default defineComponent({
       ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
-      viewModes,
-      appBarRef,
-      folderView,
-      folderViewStyle,
       loadPreview
     }
   },

@@ -344,6 +344,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
 export default defineComponent({
+  name: 'ResourceTable',
   components: {
     UserAvatar,
     ContextMenuQuickAction,

@@ -13,19 +13,7 @@ import {
   PartialComponentProps,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import {
-  AppBar,
-  FolderViewExtension,
-  NoContentMessage,
-  ResourceTable,
-  useExtensionRegistry
-} from '@opencloud-eu/web-pkg'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint,
-  folderViewsTrashExtensionPoint
-} from '../../../../src/extensionPoints'
+import { AppBar, NoContentMessage, ResourceTable } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 
@@ -70,7 +58,9 @@ describe('GenericTrash view', () => {
       expect(
         wrapper.findComponent<typeof NoContentMessage>({ name: 'no-content-message' }).exists()
       ).toBeFalsy()
-      expect(wrapper.findComponent<typeof ResourceTable>('.oc-table').exists()).toBeTruthy()
+      expect(
+        wrapper.findComponent<typeof ResourceTable>('resource-table-stub').exists()
+      ).toBeTruthy()
     })
   })
 })
@@ -93,30 +83,6 @@ function getMountedWrapper({
       areResourcesLoading: ref(loading)
     })
   )
-
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: ResourceTable
-      }
-    }
-  ] satisfies FolderViewExtension[]
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   const defaultMocks = {
     ...defaultComponentMocks({

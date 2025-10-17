@@ -2,7 +2,6 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-view-options="true"
         :has-hidden-files="false"
@@ -44,7 +43,6 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
-            :style="folderViewStyle"
             :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -79,16 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -104,7 +93,6 @@ import {
   NoContentMessage,
   SortDir,
   useClientService,
-  useExtensionRegistry,
   useGetMatchingSpace,
   useLoadPreview,
   useResourcesStore,
@@ -134,37 +122,24 @@ const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-const resourcesViewDefaults = useResourcesViewDefaults()
+const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>({
+  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint
+})
 
-const { isSideBarOpen, fileListHeaderY, sideBarActivePanel, viewMode, viewSize, sortFields } =
-  resourcesViewDefaults
+const {
+  isSideBarOpen,
+  fileListHeaderY,
+  sideBarActivePanel,
+  viewMode,
+  viewModes,
+  viewSize,
+  sortFields,
+  folderView
+} = resourcesViewDefaults
 
 const { loadPreview } = useLoadPreview(viewMode)
 
-const folderView = computed(() => {
-  const viewMode = unref(resourcesViewDefaults.viewMode)
-  return unref(viewModes).find((v) => v.name === viewMode)
-})
-
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
-
-const extensionRegistry = useExtensionRegistry()
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry
-      .requestExtensions(folderViewsTrashOverviewExtensionPoint)
-      .map((e) => e.folderView)
-  ]
-})
-
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-const folderViewStyle = computed(() => {
-  return {
-    ...(unref(folderView)?.isScrollable === false && {
-      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-    })
-  }
-})
 
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
