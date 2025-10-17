@@ -94,6 +94,7 @@ import { RouteLocationNamedRaw } from 'vue-router'
 import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
+import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -175,7 +176,9 @@ export default defineComponent({
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults()
+    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults({
+      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
+    })
 
     const { loadPreview } = useLoadPreview(viewMode)
 

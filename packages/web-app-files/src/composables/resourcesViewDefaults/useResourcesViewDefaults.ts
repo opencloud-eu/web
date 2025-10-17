@@ -34,8 +34,8 @@ import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 interface ResourcesViewDefaultsOptions<T, U extends any[]> {
+  folderViewExtensionPoint: ExtensionPoint<FolderViewExtension>
   loadResourcesTask?: Task<T, U>
-  folderViewExtensionPoint?: ExtensionPoint<FolderViewExtension>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -53,7 +53,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   sortDir: ReadOnlyRef<SortDir>
   viewMode: ReadOnlyRef<string>
   viewModes: ReadOnlyRef<FolderView[]>
-  folderView: ReadOnlyRef<FolderView>
+  folderView: ReadOnlyRef<FolderView | undefined>
   viewSize: ReadOnlyRef<number>
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
@@ -65,7 +65,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   ScrollToResult
 
 export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[]>(
-  options: ResourcesViewDefaultsOptions<TT, TU> = {}
+  options: ResourcesViewDefaultsOptions<TT, TU>
 ): ResourcesViewDefaultsResult<T, TT, TU> => {
   const loadResourcesTask = options.loadResourcesTask || folderService.getTask()
   const areResourcesLoading = computed(() => {
@@ -99,7 +99,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   })
 
   const folderView = computed(() => {
-    return unref(viewModes).find((v) => v.name === unref(viewMode))
+    return unref(viewModes).find((v) => v.name === unref(viewMode)) || unref(viewModes)[0]
   })
 
   const sortFields = computed((): SortField[] => {
