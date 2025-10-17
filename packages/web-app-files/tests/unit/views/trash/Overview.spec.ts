@@ -11,18 +11,9 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import {
-  FolderViewExtension,
-  ResourceTable,
-  SortDir,
-  useExtensionRegistry
-} from '@opencloud-eu/web-pkg'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint,
-  folderViewsTrashOverviewExtensionPoint
-} from '../../../../src/extensionPoints'
+import { ResourceTable, SortDir } from '@opencloud-eu/web-pkg'
+
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/composables')
 
@@ -59,12 +50,12 @@ const spaceMocks = [
 describe('TrashOverview', () => {
   it('should render no content message if no spaces exist', async () => {
     const { wrapper } = getWrapper({ spaces: [] })
-    await (wrapper.vm as any).loadResourcesTask.last
+    await flushPromises()
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
   })
   it('should navigate to single space trash if only one space exists', async () => {
-    const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
-    await (wrapper.vm as any).loadResourcesTask.last
+    const { mocks } = getWrapper({ spaces: [spaceMocks[0]] })
+    await flushPromises()
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
@@ -79,14 +70,14 @@ describe('TrashOverview', () => {
     })
     it('should render trash list', async () => {
       const { wrapper } = getWrapper()
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       expect(wrapper.html()).toMatchSnapshot()
     })
   })
   describe('sorting', () => {
     it('sorts by property name', async () => {
       const { wrapper } = getWrapper()
-      await (wrapper.vm as any).loadResourcesTask.last
+      await flushPromises()
       let sortedSpaces = []
       ;(wrapper.vm as any).sortBy = 'name'
 
@@ -136,37 +127,13 @@ function getWrapper({ spaces = spaceMocks }: { spaces?: SpaceResource[] } = {}) 
   const plugins = [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => useResourcesViewDefaultsMock())
 
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashOverviewExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: ResourceTable
-      }
-    }
-  ] satisfies FolderViewExtension[]
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
-
   mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue(spaceMocks)
 
   return {
     mocks,
     wrapper: mount(TrashOverview, {
       global: {
-        stubs: { ...defaultStubs, NoContentMessage: true, 'resource-table': false },
+        stubs: { ...defaultStubs, NoContentMessage: true },
         mocks,
         provide: mocks,
         plugins

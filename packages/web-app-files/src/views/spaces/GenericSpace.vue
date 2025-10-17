@@ -120,7 +120,8 @@ import {
   onBeforeUnmount,
   onMounted,
   unref,
-  ref
+  ref,
+  useTemplateRef
 } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
@@ -137,17 +138,13 @@ import {
   ResourceTransfer,
   TransferType,
   useConfigStore,
-  useExtensionRegistry,
   useFileActions,
   useFileActionsCreateNewFolder,
   useLoadPreview,
   usePasteWorker,
   useResourcesStore,
   useRouter,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
-
-import {
+  useUserStore,
   AppBar,
   AppLoadingSpinner,
   ContextActions,
@@ -255,15 +252,6 @@ export default defineComponent({
 
     const canUpload = computed(() => {
       return unref(currentFolder)?.canUpload({ user: userStore.user })
-    })
-
-    const extensionRegistry = useExtensionRegistry()
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsFolderExtensionPoint)
-          .map((e) => e.folderView)
-      ]
     })
 
     const resourceTargetRouteCallback = ({
@@ -425,21 +413,13 @@ export default defineComponent({
       }
     }
 
-    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>()
-    const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
+    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
+      folderViewExtensionPoint: folderViewsFolderExtensionPoint,
+      appBarRef
     })
-    const appBarRef = ref<ComponentPublicInstance | null>()
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
+    const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
 
     const keyActions = useKeyboardActions()
     useKeyboardFileNavigation(
@@ -588,10 +568,7 @@ export default defineComponent({
       isCurrentFolderEmpty,
       resourceTargetRouteCallback,
       performLoaderTask,
-      viewModes,
       appBarRef,
-      folderView,
-      folderViewStyle,
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
       ),

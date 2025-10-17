@@ -97,14 +97,13 @@ import {
   NoContentMessage,
   useDocumentTitle,
   useFileActionsEmptyTrashBin,
-  useUserStore,
-  useExtensionRegistry
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { useResourcesViewDefaults } from '../../composables'
-import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
 import { folderViewsTrashExtensionPoint } from '../../extensionPoints'
 
 const props = defineProps<{
@@ -116,7 +115,13 @@ const { $gettext } = useGettext()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const resourcesViewDefaults = useResourcesViewDefaults()
+
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+
+const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
+  folderViewExtensionPoint: folderViewsTrashExtensionPoint,
+  appBarRef
+})
 
 const {
   areResourcesLoading,
@@ -133,29 +138,12 @@ const {
   selectedResources,
   isResourceInSelection,
   viewMode,
+  viewModes,
+  folderView,
+  folderViewStyle,
   viewSize,
   sortFields
 } = resourcesViewDefaults
-
-const extensionRegistry = useExtensionRegistry()
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry.requestExtensions(folderViewsTrashExtensionPoint).map((e) => e.folderView)
-  ]
-})
-
-const folderView = computed(() => {
-  const viewMode = unref(resourcesViewDefaults.viewMode)
-  return unref(viewModes).find((v) => v.name === viewMode)
-})
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-const folderViewStyle = computed(() => {
-  return {
-    ...(unref(folderView)?.isScrollable === false && {
-      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-    })
-  }
-})
 
 const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).length < 1)
 

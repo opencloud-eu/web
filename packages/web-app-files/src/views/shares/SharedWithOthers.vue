@@ -82,7 +82,6 @@ import {
   useAppsStore,
   useCapabilityStore,
   useConfigStore,
-  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
   useResourcesStore,
@@ -135,7 +134,12 @@ export default defineComponent({
 
     const resourcesStore = useResourcesStore()
 
-    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>()
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+
+    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
+      folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
+      appBarRef
+    })
     const {
       sortBy,
       sortDir,
@@ -145,30 +149,6 @@ export default defineComponent({
       viewMode
     } = resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
-
-    const extensionRegistry = useExtensionRegistry()
-
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsSharedWithOthersExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     const shareTypes = computed(() => {
       const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
@@ -230,9 +210,6 @@ export default defineComponent({
       shareTypes,
       getMatchingSpace,
       loadPreview,
-      folderView,
-      folderViewStyle,
-      viewModes,
       appBarRef,
 
       // CERN

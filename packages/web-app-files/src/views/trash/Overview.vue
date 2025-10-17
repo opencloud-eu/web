@@ -104,7 +104,6 @@ import {
   NoContentMessage,
   SortDir,
   useClientService,
-  useExtensionRegistry,
   useGetMatchingSpace,
   useLoadPreview,
   useResourcesStore,
@@ -134,37 +133,28 @@ const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-const resourcesViewDefaults = useResourcesViewDefaults()
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 
-const { isSideBarOpen, fileListHeaderY, sideBarActivePanel, viewMode, viewSize, sortFields } =
-  resourcesViewDefaults
+const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>({
+  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
+  appBarRef
+})
+
+const {
+  isSideBarOpen,
+  fileListHeaderY,
+  sideBarActivePanel,
+  viewMode,
+  viewModes,
+  viewSize,
+  sortFields,
+  folderView,
+  folderViewStyle
+} = resourcesViewDefaults
 
 const { loadPreview } = useLoadPreview(viewMode)
 
-const folderView = computed(() => {
-  const viewMode = unref(resourcesViewDefaults.viewMode)
-  return unref(viewModes).find((v) => v.name === viewMode)
-})
-
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
-
-const extensionRegistry = useExtensionRegistry()
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry
-      .requestExtensions(folderViewsTrashOverviewExtensionPoint)
-      .map((e) => e.folderView)
-  ]
-})
-
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-const folderViewStyle = computed(() => {
-  return {
-    ...(unref(folderView)?.isScrollable === false && {
-      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-    })
-  }
-})
 
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)

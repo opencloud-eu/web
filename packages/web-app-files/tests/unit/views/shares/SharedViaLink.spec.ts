@@ -11,14 +11,7 @@ import {
   defaultStubs,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { ResourceTable, useExtensionRegistry, FolderViewExtension } from '@opencloud-eu/web-pkg'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint,
-  folderViewsSharedViaLinkExtensionPoint,
-  folderViewsTrashOverviewExtensionPoint
-} from '../../../../src/extensionPoints'
+import { ResourceTable } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -81,31 +74,6 @@ function getMountedWrapper({
       areResourcesLoading: ref(loading)
     })
   )
-
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashOverviewExtensionPoint.id,
-        folderViewsSharedViaLinkExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: ResourceTable
-      }
-    }
-  ] satisfies FolderViewExtension[]
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   return {
     mocks: defaultMocks,

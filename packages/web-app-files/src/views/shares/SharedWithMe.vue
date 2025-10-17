@@ -107,7 +107,6 @@ import {
   InlineFilterOption,
   ItemFilter,
   useAppsStore,
-  useExtensionRegistry,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
@@ -150,11 +149,19 @@ export default defineComponent({
     const appsStore = useAppsStore()
     const resourcesStore = useResourcesStore()
 
-    const resourcesViewDefaults = useResourcesViewDefaults<IncomingShareResource, any, any>()
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+
+    const resourcesViewDefaults = useResourcesViewDefaults<IncomingShareResource, any, any>({
+      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
+      appBarRef
+    })
 
     const {
       viewMode,
+      viewModes,
       viewSize,
+      folderView,
+      folderViewStyle,
       areResourcesLoading,
       sortFields,
       fileListHeaderY,
@@ -171,30 +178,6 @@ export default defineComponent({
 
     const areHiddenFilesShown = ref(false)
     const filterTerm = ref('')
-
-    const extensionRegistry = useExtensionRegistry()
-
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsSharedWithMeExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     const shareSectionTitle = computed(() => {
       return unref(areHiddenFilesShown) ? $gettext('Hidden Shares') : $gettext('Shares')

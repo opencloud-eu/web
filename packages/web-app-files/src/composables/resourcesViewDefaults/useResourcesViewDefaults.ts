@@ -1,4 +1,4 @@
-import { nextTick, computed, unref, Ref } from 'vue'
+import { nextTick, computed, unref, Ref, ComponentPublicInstance } from 'vue'
 import { fileList } from '../../helpers/ui'
 import {
   usePagination,
@@ -6,7 +6,12 @@ import {
   SortDir,
   SortField,
   useResourcesStore,
-  folderService
+  folderService,
+  useExtensionRegistry,
+  ExtensionPoint,
+  FolderViewExtension,
+  AppBar,
+  FolderView
 } from '@opencloud-eu/web-pkg'
 import { useSideBar } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -31,6 +36,8 @@ import { useGettext } from 'vue3-gettext'
 
 interface ResourcesViewDefaultsOptions<T, U extends any[]> {
   loadResourcesTask?: Task<T, U>
+  folderViewExtensionPoint?: ExtensionPoint<FolderViewExtension>
+  appBarRef?: Ref<ComponentPublicInstance<typeof AppBar>>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -47,6 +54,9 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   sortBy: ReadOnlyRef<string>
   sortDir: ReadOnlyRef<SortDir>
   viewMode: ReadOnlyRef<string>
+  viewModes: ReadOnlyRef<FolderView[]>
+  folderView: ReadOnlyRef<FolderView>
+  folderViewStyle: ReadOnlyRef<Record<string, string>>
   viewSize: ReadOnlyRef<number>
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
@@ -67,6 +77,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const language = useGettext()
   const resourcesStore = useResourcesStore()
+  const extensionRegistry = useExtensionRegistry()
   const storeItems = computed(() => resourcesStore.activeResources) as unknown as Ref<T[]>
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
@@ -81,6 +92,27 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const currentTilesSizeQuery = useRouteQuery('tiles-size', '1')
   const currentTilesSize = computed((): string => String(currentTilesSizeQuery.value))
   const viewSize = useViewSize(currentTilesSize)
+
+  const viewModes = computed(() => {
+    return [
+      ...extensionRegistry
+        .requestExtensions(options.folderViewExtensionPoint)
+        .map((e) => e.folderView)
+    ]
+  })
+
+  const folderView = computed(() => {
+    return unref(viewModes).find((v) => v.name === unref(viewMode))
+  })
+
+  const folderViewStyle = computed(() => {
+    return {
+      ...(unref(folderView)?.isScrollable === false &&
+        options.appBarRef && {
+          height: `calc(100% - ${unref(options.appBarRef).$el.getBoundingClientRect().height}px)`
+        })
+    }
+  })
 
   const sortFields = computed((): SortField[] => {
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
@@ -118,6 +150,9 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     sortFields,
     viewMode,
     viewSize,
+    viewModes,
+    folderView,
+    folderViewStyle,
     paginatedResources,
     paginationPages,
     paginationPage,

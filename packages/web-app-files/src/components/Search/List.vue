@@ -148,7 +148,6 @@ import {
   AppLoadingSpinner,
   SearchResult,
   useCapabilityStore,
-  useExtensionRegistry,
   useResourcesStore,
   useSearch
 } from '@opencloud-eu/web-pkg'
@@ -235,8 +234,11 @@ const scopeQuery = useRouteQuery('scope')
 const doUseScope = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
+const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 
 const {
+  folderView,
+  folderViewStyle,
   isSideBarOpen,
   paginatedResources,
   paginationPage,
@@ -249,11 +251,15 @@ const {
   sortDir,
   sortFields,
   viewMode,
+  viewModes,
   viewSize,
   handleSort,
   isResourceInSelection,
   scrollToResourceFromRoute
-} = useResourcesViewDefaults<SearchResource, any, any[]>()
+} = useResourcesViewDefaults<SearchResource, any, any[]>({
+  folderViewExtensionPoint: folderViewsSearchExtensionPoint,
+  appBarRef
+})
 
 const { loadPreview } = useLoadPreview(viewMode)
 const keyActions = useKeyboardActions()
@@ -269,32 +275,11 @@ const availableTags = ref<Tag[]>([])
 const tagFilter = useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('tagFilter')
 const mediaTypeFilter =
   useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
 
 const tagParam = useRouteQuery('q_tags')
 const lastModifiedParam = useRouteQuery('q_lastModified')
 const mediaTypeParam = useRouteQuery('q_mediaType')
 const titleOnlyParam = useRouteQuery('q_titleOnly')
-
-const extensionRegistry = useExtensionRegistry()
-
-const folderView = computed(() => {
-  return unref(viewModes).find((v) => v.name === unref(viewMode))
-})
-
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry.requestExtensions(folderViewsSearchExtensionPoint).map((e) => e.folderView)
-  ]
-})
-
-const folderViewStyle = computed(() => {
-  return {
-    ...(unref(folderView)?.isScrollable === false && {
-      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-    })
-  }
-})
 
 const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 

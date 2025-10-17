@@ -50,22 +50,9 @@
 </template>
 
 <script lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  unref
-} from 'vue'
+import { ComponentPublicInstance, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
-import {
-  useExtensionRegistry,
-  useConfigStore,
-  useResourcesStore,
-  useLoadPreview
-} from '@opencloud-eu/web-pkg'
+import { useConfigStore, useResourcesStore, useLoadPreview } from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { FileSideBar, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -103,30 +90,13 @@ export default defineComponent({
     const { options: configOptions } = storeToRefs(configStore)
 
     const resourcesStore = useResourcesStore()
-
-    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>()
-    const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
-
-    const extensionRegistry = useExtensionRegistry()
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsFavoritesExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
     const appBarRef = ref<ComponentPublicInstance | null>()
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
+
+    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
+      folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
+      appBarRef
     })
+    const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
 
     let loadResourcesEventToken: string
     onMounted(() => {
@@ -147,10 +117,7 @@ export default defineComponent({
       ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
-      viewModes,
       appBarRef,
-      folderView,
-      folderViewStyle,
       loadPreview
     }
   },

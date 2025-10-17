@@ -57,7 +57,6 @@
 import {
   FileSideBar,
   useConfigStore,
-  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
   useResourcesStore
@@ -72,8 +71,7 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { ComponentPublicInstance, computed, defineComponent, unref, useTemplateRef } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { ComponentPublicInstance, defineComponent, unref, useTemplateRef } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
@@ -102,35 +100,16 @@ export default defineComponent({
     const resourcesStore = useResourcesStore()
     const { totalResourcesCount } = storeToRefs(resourcesStore)
 
-    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>()
+    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
+
+    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
+      folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
+      appBarRef
+    })
     const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
       resourcesViewDefaults
 
     const { loadPreview } = useLoadPreview(viewMode)
-
-    const extensionRegistry = useExtensionRegistry()
-
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsSharedViaLinkExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     resourcesStore.$onAction((action) => {
       if (action.name !== 'updateResourceField') {
@@ -155,14 +134,11 @@ export default defineComponent({
 
     return {
       ...useFileActions(),
-      ...useResourcesViewDefaults<Resource, any, any[]>(),
+      ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
       totalResourcesCount,
       loadPreview,
-      folderView,
-      folderViewStyle,
-      viewModes,
       appBarRef
     }
   },
