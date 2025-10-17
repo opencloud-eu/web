@@ -54,8 +54,6 @@ const receivedAtRelativeDate = computed(() => {
 })
 
 function getPartIdsFromHtmlBody(parts?: MailBodyPart[]): string[] {
-  // partyId from htmlBody to get Id for bodyValues
-  console.log('parts', parts)
   if (!parts?.length) {
     return []
   }
@@ -68,7 +66,6 @@ function getPartIdsFromHtmlBody(parts?: MailBodyPart[]): string[] {
       partIds.push(...getPartIdsFromHtmlBody(p.subParts))
     }
   }
-  console.log('partIds', partIds)
   return partIds
 }
 
@@ -79,7 +76,6 @@ function buildMailBody(mail: Mail): string {
     .map((partId) => values[partId]?.value || '')
     .filter(Boolean)
     .join('')
-  console.log('htmlbody', htmlbody)
   return htmlbody
   // wenn kein html body dann text body fhlt noch
 }
