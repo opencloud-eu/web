@@ -1,6 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <div class="flex" v-else>
+  <div v-else class="flex">
     <div class="w-1/4 border-r-2 pr-2">
       <h1 v-text="$gettext('All emails')" />
       <oc-list>
@@ -29,8 +29,7 @@
         </template>
       </no-content-message>
       <app-loading-spinner v-else-if="isMailDetailsLoading" />
-      <MailDetails v-else :mail="selectedMailDetails" />
-      {{ selectedMailDetails }}
+      <MailDetails v-else-if="selectedMailDetails" :mail="selectedMailDetails" />
     </div>
   </div>
 </template>
@@ -75,7 +74,6 @@ const loadAllMailsTask = useTask(function* (signal) {
 
 const loadMailDetailsTask = useTask(function* (signal) {
   try {
-    console.log('loading mail details for', unref(selectedMail))
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
         configStore.groupwareUrl,
@@ -87,7 +85,6 @@ const loadMailDetailsTask = useTask(function* (signal) {
     )
     console.log(data)
     selectedMailDetails.value = MailSchema.parse(data)
-    console.log('loaded mail details', unref(selectedMailDetails))
   } catch (e) {
     console.error(e)
   }
