@@ -47,9 +47,7 @@ const sendToNames = computed(() => {
   return mail.to.map((t) => t.name || t.email).join(', ')
 })
 
-const mailBody = computed(() => {
-  buildMailBody(mail)
-})
+const mailBody = computed(() => buildMailBody(mail))
 
 const receivedAtRelativeDate = computed(() => {
   return formatRelativeDateFromISO(mail.receivedAt, currentLanguage)
