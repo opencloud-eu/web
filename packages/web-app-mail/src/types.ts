@@ -13,13 +13,13 @@ export const MailSchema = z.object({
   accountId: z.string(),
   threadId: z.string(),
 
-  subject: z.string(),
+  subject: z.string().optional(),
   preview: z.string().optional(),
 
-  receivedAt: z.string().optional(),
+  receivedAt: z.string(),
   sentAt: z.string().optional(),
 
-  size: z.number().optional(),
+  size: z.number(),
 
   mailboxIds: MailboxIdsSchema,
 
