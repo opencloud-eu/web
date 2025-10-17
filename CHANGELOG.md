@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
 - feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
 - feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
