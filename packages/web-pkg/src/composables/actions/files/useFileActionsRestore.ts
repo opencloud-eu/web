@@ -23,7 +23,13 @@ import type { FileAction, FileActionOptions } from '../types'
 import { useMessages, useSpacesStore, useUserStore, useResourcesStore } from '../../piniaStores'
 import { useRestoreWorker } from '../../webWorkers/restoreWorker'
 
-export const useFileActionsRestore = () => {
+export const useFileActionsRestore = ({
+  showSuccessMessage = true,
+  onRestoreComplete
+}: {
+  showSuccessMessage?: boolean
+  onRestoreComplete?: (result: FileActionOptions) => void
+} = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
   const userStore = useUserStore()
   const router = useRouter()
@@ -130,7 +136,10 @@ export const useFileActionsRestore = () => {
             resourceCount: successful.length.toString()
           })
         }
-        showMessage({ title })
+
+        if (showSuccessMessage) {
+          showMessage({ title })
+        }
 
         // user hasn't navigated to another location meanwhile
         if (
@@ -149,6 +158,7 @@ export const useFileActionsRestore = () => {
           field: 'spaceQuota',
           value: updatedSpace.spaceQuota
         })
+        onRestoreComplete?.({ space, resources: successful })
       }
 
       if (failed.length) {
