@@ -7,6 +7,7 @@ import {
   folderViewsSharedViaLinkExtensionPoint,
   folderViewsSharedWithMeExtensionPoint,
   folderViewsSharedWithOthersExtensionPoint,
+  folderViewsSearchExtensionPoint,
   folderViewsTrashExtensionPoint,
   folderViewsTrashOverviewExtensionPoint
 } from '../../extensionPoints'
@@ -25,7 +26,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         folderViewsProjectSpacesExtensionPoint.id,
         folderViewsSharedWithMeExtensionPoint.id,
         folderViewsSharedViaLinkExtensionPoint.id,
-        folderViewsSharedWithOthersExtensionPoint.id
+        folderViewsSharedWithOthersExtensionPoint.id,
+        folderViewsSearchExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table-condensed',
@@ -48,7 +50,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         folderViewsTrashOverviewExtensionPoint.id,
         folderViewsSharedWithMeExtensionPoint.id,
         folderViewsSharedViaLinkExtensionPoint.id,
-        folderViewsSharedWithOthersExtensionPoint.id
+        folderViewsSharedWithOthersExtensionPoint.id,
+        folderViewsSearchExtensionPoint.id
       ],
       folderView: {
         name: 'resource-table',
@@ -71,7 +74,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         folderViewsTrashOverviewExtensionPoint.id,
         folderViewsSharedWithMeExtensionPoint.id,
         folderViewsSharedViaLinkExtensionPoint.id,
-        folderViewsSharedWithOthersExtensionPoint.id
+        folderViewsSharedWithOthersExtensionPoint.id,
+        folderViewsSearchExtensionPoint.id
       ],
       folderView: {
         name: 'resource-tiles',
