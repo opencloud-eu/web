@@ -5,7 +5,8 @@
   "description": "OpenCloud groupware mail app",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@opencloud-eu/web-test-helpers": "workspace:*"
+    "@opencloud-eu/web-test-helpers": "workspace:*",
+    "dompurify": "^3.2.3"
   },
   "peerDependencies": {
     "@opencloud-eu/design-system": "workspace:^",

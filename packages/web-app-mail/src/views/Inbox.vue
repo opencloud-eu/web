@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isMailSummaryLoading" />
   <div v-else class="flex">
-    <div class="w-1/4 border-r-2 pr-2">
+    <div class="w-1/4 border-r-2 pr-2 overflow-scroll">
       <h1 v-text="$gettext('All emails')" />
       <oc-list>
         <no-content-message v-if="!mails.length" icon="mail-forbid" icon-fill-type="line">

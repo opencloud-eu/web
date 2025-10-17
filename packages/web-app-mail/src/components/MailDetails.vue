@@ -24,6 +24,7 @@ import { Mail, MailBodyPart } from '../types'
 import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
+import DOMPurify from 'dompurify'
 
 const { mail } = defineProps<{
   mail: Mail
@@ -76,7 +77,7 @@ function buildMailBody(mail: Mail): string {
     .map((partId) => values[partId]?.value || '')
     .filter(Boolean)
     .join('')
-  return htmlbody
+  return DOMPurify.sanitize(htmlbody, { USE_PROFILES: { html: true } })
   // wenn kein html body dann text body fhlt noch
 }
 </script>
