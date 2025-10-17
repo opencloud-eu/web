@@ -55,7 +55,7 @@ const mails = ref<Mail[]>([])
 const isMailSummaryLoading = computed(
   () => loadMailSummaryTask.isRunning && !loadMailSummaryTask.last
 )
-const isMailLoading = computed(() => loadMailDetailsTask.isRunning && !loadMailDetailsTask.last)
+const isMailLoading = computed(() => loadMailTask.isRunning && !loadMailTask.last)
 
 const loadMailSummaryTask = useTask(function* (signal) {
   try {
