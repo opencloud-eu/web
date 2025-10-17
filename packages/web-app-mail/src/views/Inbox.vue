@@ -2,7 +2,12 @@
   <app-loading-spinner v-if="isLoading" />
   <div v-else>
     <oc-list>
-      <li class="px-2 py-4 border-b-2" v-for="mail in mails" :key="mail.id">
+      <no-content-message v-if="!mails.length" icon="mail-forbid">
+        <template #message>
+          <span v-text="$gettext('No mails in this inbox')" />
+        </template>
+      </no-content-message>
+      <li v-for="mail in mails" v-else :key="mail.id" class="px-2 py-4 border-b-2">
         <MailListItem
           :from="mail.from"
           :preview="mail.preview"
@@ -19,11 +24,12 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useClientService, useConfigStore, useGroupwareConfigStore } from '@opencloud-eu/web-pkg'
+import { NoContentMessage, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { ref, computed, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailListItem from '../components/MailListItem.vue'
 import { Mail, MailSchema } from '../types'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 
 const configStore = useConfigStore()
 const clientService = useClientService()
@@ -49,6 +55,5 @@ const loadAllMailsTask = useTask(function* (signal) {
 
 onMounted(() => {
   loadAllMailsTask.perform()
-  console.log('Inbox mounted')
 })
 </script>

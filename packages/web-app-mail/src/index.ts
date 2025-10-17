@@ -1,13 +1,11 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 
 import {
   AppMenuItemExtension,
   defineWebApplication,
-  Extension,
-  useAbility,
-  useUserStore
+  Extension
 } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { RouteRecordRaw } from 'vue-router'
