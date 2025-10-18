@@ -1,41 +1,55 @@
 <template>
   <app-loading-spinner v-if="isMailSummaryLoading" />
   <template v-else>
-    <h1 v-text="$gettext('All emails')" />
-    <div class="flex h-[calc(100vh-12rem)] overflow-hidden">
-      <div class="w-1/4 border-r-2 pr-2 overflow-y-auto">
+    <div class="flex h-full">
+      <div
+        :class="[
+          'border-r-0 md:border-r-2 pr-2 overflow-y-auto ',
+          selectedMail ? 'hidden md:block' : 'block',
+          'w-full md:w-1/4'
+        ]"
+      >
+        <h1 v-text="$gettext('All emails')" />
         <oc-list>
           <no-content-message v-if="!mails.length" icon="mail-forbid" icon-fill-type="line">
             <template #message>
               <span v-text="$gettext('No mails in this inbox')" />
             </template>
           </no-content-message>
-          <li
-            v-for="mail in mails"
-            v-else
-            :key="mail.id"
-            class="px-2 py-4 border-b-2 cursor-pointer hover:bg-gray-100"
-            @click="selectedMail = mail"
-          >
-            <MailListItem
-              :from="mail.from"
-              :preview="mail.preview"
-              :received-at="mail.receivedAt"
-              :sender="mail.sender"
-              :subject="mail.subject"
-              :is-unread="!mail.keywords?.['$seen']"
-            />
+          <li v-for="mail in mails" v-else :key="mail.id" class="border-b-2">
+            <oc-button
+              class="px-2 py-4 text-left"
+              justify-content="left"
+              appearance="raw"
+              gap-size="none"
+              @click="selectedMail = mail"
+            >
+              <MailListItem
+                :from="mail.from"
+                :preview="mail.preview"
+                :received-at="mail.receivedAt"
+                :sender="mail.sender"
+                :subject="mail.subject"
+                :is-unread="!mail.keywords?.['$seen']"
+              />
+            </oc-button>
           </li>
         </oc-list>
       </div>
-      <div class="w-3/4 overflow-y-auto px-4">
+      <div
+        :class="[
+          'overflow-y-auto px-4',
+          selectedMail ? 'block' : 'hidden md:block',
+          'w-full md:w-3/4'
+        ]"
+      >
         <no-content-message v-if="!selectedMail" icon="mail" icon-fill-type="line">
           <template #message>
             <span v-text="$gettext('No mail selected')" />
           </template>
         </no-content-message>
         <app-loading-spinner v-else-if="isMailLoading" />
-        <MailDetails v-else-if="mail" :mail="mail" />
+        <MailDetails v-else-if="mail" :mail="mail" @back="selectedMail = null" />
       </div>
     </div>
   </template>
