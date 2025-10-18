@@ -1,5 +1,5 @@
 x-opencloud-server: &opencloud-service
-  image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+  image: ${OC_IMAGE:-opencloudeu/opencloud:dev}
   entrypoint: /bin/sh
   command: ['-c', 'opencloud init || true && opencloud server']
   environment: &opencloud-environment
@@ -35,6 +35,7 @@ x-opencloud-server: &opencloud-service
 
     # IDP
     IDP_LDAP_BIND_PASSWORD: '${IDP_LDAP_BIND_PASSWORD:-some-ldap-idp-password}'
+    IDM_LDAPS_ADDR: 0.0.0.0:9235
 
     # STORAGE
     STORAGE_USERS_DRIVER: '${STORAGE_USERS_DRIVER:-posix}'
@@ -82,9 +83,12 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
+    networks:
+      - traefik
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
+      OC_ADD_RUN_SERVICES: groupware
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
       OCM_WEBAPP_TEMPLATE: https://host.docker.internal:9201/o/{{.Token}}/{relative-path-to-shared-resource}
       # make the registry available to the app provider containers
@@ -96,6 +100,7 @@ services:
       GRAPH_AVAILABLE_ROLES: b1e2218d-eef8-4d4c-b82d-0f1a1b48f3b5,a8d5fe5e-96e3-418d-825b-534dbdf22b99,fb6c3e19-e378-47e5-b277-9732f9de6e21,58c63c02-1d89-4572-916a-870abc5a1b7d,2d00ce52-1fc2-4dbc-8b95-a73b73395f5a,1c996275-f1c9-4e71-abdf-a42f6495e960,312c0871-5ef7-4b3a-85b6-0e4074c64049,aa97fe03-7980-45ac-9e50-b325749fd7e6,63e64e19-8d43-42ec-a738-2b6af2610efa
     labels:
       traefik.enable: true
+      traefik.docker.network: traefik
       traefik.http.routers.opencloud.tls: true
       traefik.http.routers.opencloud.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.opencloud.entrypoints: opencloud
@@ -117,6 +122,8 @@ services:
   opencloud-federated:
     <<: *opencloud-service
     container_name: web_opencloud_federated
+    networks:
+      - traefik
     environment:
       <<: *opencloud-environment
       OC_URL: https://oc.opencloud.test:10200
@@ -124,6 +131,7 @@ services:
       OCM_WEBAPP_TEMPLATE: https://oc.opencloud.test:10201/o/{{.Token}}/{relative-path-to-shared-resource}
     labels:
       traefik.enable: true
+      traefik.docker.network: traefik
       traefik.http.routers.opencloud-federated.tls: true
       traefik.http.routers.opencloud-federated.rule: Host(`oc.opencloud.test`) && PathPrefix(`/`)
       traefik.http.routers.opencloud-federated.entrypoints: opencloud-federated
@@ -140,7 +148,7 @@ services:
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
 
   collaboration:
-    image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+    image: ${OC_IMAGE:-opencloudeu/opencloud:dev}
     depends_on:
       opencloud:
         condition: service_started
@@ -264,6 +272,10 @@ services:
       - './dev/docker/traefik/certificates:/certificates'
       - './dev/docker/traefik/configs:/configs'
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    networks:
+      traefik:
+        aliases:
+          - ${STALWART_DOMAIN:-stalwart.opencloud.test}
 
   tika-service:
     image: dadarek/wait-for-dependencies:latest
@@ -293,10 +305,41 @@ services:
       - ./dev/docker/radicale/data:/data
     restart: unless-stopped
 
+  stalwart:
+    image: ghcr.io/stalwartlabs/stalwart:v0.13.4-alpine
+    hostname: ${STALWART_DOMAIN:-stalwart.opencloud.test}
+    depends_on:
+      opencloud:
+        condition: service_started
+    networks:
+      - traefik
+    ports:
+      - '127.0.0.1:143:143'
+      - '127.0.0.1:993:993'
+      - '127.0.0.1:1465:465'
+    volumes:
+      - ./dev/docker/stalwart/localtime:/etc/localtime:ro
+      - ./dev/docker/stalwart/config.toml:/opt/stalwart/etc/config.toml
+      - stalwart-data:/opt/stalwart/data
+    environment:
+      STALWART_AUTH_DIRECTORY: '${STALWART_AUTH_DIRECTORY:-idmldap}'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.stalwart.entrypoints: websecure
+      #traefik.http.routers.stalwart.entrypoints: https
+      #traefik.http.routers.stalwart.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
+      traefik.http.routers.stalwart.rule: Host(`stalwart.opencloud.test`)
+      #traefik.http.routers.stalwart.tls.certresolver: http
+      traefik.http.routers.stalwart.service: stalwart
+      traefik.http.services.stalwart.loadbalancer.server.port: 8080
+    logging:
+      driver: ${LOG_DRIVER:-local}
+
 volumes:
   uploads:
   opencloud-config:
   opencloud-federated-config:
+  stalwart-data:
 
 networks:
   traefik:

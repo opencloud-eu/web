@@ -61,6 +61,9 @@ export const useConfigStore = defineStore('config', () => {
   const serverUrl = computed(() =>
     urlJoin(unref(server) || window.location.origin, { trailingSlash: true })
   )
+  const groupwareUrl = computed(() =>
+    urlJoin(unref(serverUrl), 'groupware', { trailingSlash: true })
+  )
 
   const isOAuth2 = computed(() => !!unref(oAuth2))
   const isOIDC = computed(() => !!unref(openIdConnect))
@@ -110,6 +113,7 @@ export const useConfigStore = defineStore('config', () => {
     scripts,
     styles,
     serverUrl,
+    groupwareUrl,
     loadConfig
   }
 })
