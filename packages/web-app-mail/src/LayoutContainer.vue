@@ -1,5 +1,5 @@
 <template>
-  <main id="mail" class="p-4 overflow-auto">
+  <main id="mail" class="p-4 h-full overflow-hidden">
     <router-view data-testid="mail-router-view" />
   </main>
 </template>

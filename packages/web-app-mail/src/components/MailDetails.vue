@@ -1,5 +1,9 @@
 <template>
   <div class="mail-details ml-2 p-2">
+    <oc-button class="md:hidden mb-2" appearance="raw" @click="$emit('back')">
+      <oc-icon name="arrow-left" fill-type="line" />
+    </oc-button>
+
     <div class="mail-details-subject font-bold mt-1">
       <h2 class="block truncate" v-text="mail.subject" />
     </div>
@@ -28,6 +32,10 @@ import DOMPurify from 'dompurify'
 
 const { mail } = defineProps<{
   mail: Mail
+}>()
+
+defineEmits<{
+  (e: 'back'): void
 }>()
 
 const { current: currentLanguage } = useGettext()
