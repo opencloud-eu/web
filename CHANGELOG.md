@@ -1,5 +1,31 @@
 # Changelog
 
+## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-10-18
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 📈 Enhancement
+
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
+
+### 🐛 Bug Fixes
+
+- fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency happy-dom to v20.0.2 [security] [[#1385](https://github.com/opencloud-eu/web/pull/1385)]
+- chore(deps): update dependency eslint-plugin-vue to v10.5.1 [[#1383](https://github.com/opencloud-eu/web/pull/1383)]
+- fix(deps): update dependency @sentry/vue to v10.20.0 - autoclosed [[#1384](https://github.com/opencloud-eu/web/pull/1384)]
+- fix(deps): update dependency vue-router to v4.6.3 [[#1375](https://github.com/opencloud-eu/web/pull/1375)]
+- chore(deps): update pnpm to v10.18.3 [[#1374](https://github.com/opencloud-eu/web/pull/1374)]
+- chore(deps): update typescript-eslint monorepo to v8.46.1 [[#1368](https://github.com/opencloud-eu/web/pull/1368)]
+- chore(deps): update dependency dompurify to v3.3.0 [[#1367](https://github.com/opencloud-eu/web/pull/1367)]
+
 ## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-13
 
 ### ❤️ Thanks to all contributors! ❤️
