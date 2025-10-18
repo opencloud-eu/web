@@ -4,7 +4,7 @@
     <div class="flex h-full">
       <div
         :class="[
-          'border-r-0 md:border-r-2 pr-2 overflow-y-auto ',
+          'border-r-0 md:border-r-2 md:pr-2 overflow-y-auto ',
           selectedMail ? 'hidden md:block' : 'block',
           'w-full md:w-1/4'
         ]"
@@ -18,7 +18,7 @@
           </no-content-message>
           <li v-for="mail in mails" v-else :key="mail.id" class="border-b-2">
             <oc-button
-              class="px-2 py-4 text-left"
+              class="px-2 py-4 text-left w-full"
               justify-content="left"
               appearance="raw"
               gap-size="none"

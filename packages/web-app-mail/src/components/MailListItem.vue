@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-list-item flex">
+  <div class="mail-list-item flex w-full">
     <div class="mail-list-item-avatar">
       <div class="flex items-center">
         <span class="mail-list-item-indicator flex w-[12px]">
