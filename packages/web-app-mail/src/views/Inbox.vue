@@ -22,7 +22,7 @@
               justify-content="left"
               appearance="raw"
               gap-size="none"
-              @click="selectedMail = mail"
+              @click="selectedMailId = mail.id"
             >
               <MailListItem
                 :from="mail.from"
@@ -49,7 +49,7 @@
           </template>
         </no-content-message>
         <app-loading-spinner v-else-if="isMailLoading" />
-        <MailDetails v-else-if="mail" :mail="mail" @back="selectedMail = null" />
+        <MailDetails v-else-if="mail" :mail="mail" @back="selectedMailId = null" />
       </div>
     </div>
   </template>
@@ -65,13 +65,18 @@ import MailListItem from '../components/MailListItem.vue'
 import MailDetails from '../components/MailDetails.vue'
 import { Mail, MailSchema } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
 const configStore = useConfigStore()
 const clientService = useClientService()
+const selectedMailId = useRouteQuery('mailId')
 
 const mail = ref<Mail>(null)
-const selectedMail = ref<Mail>(null)
 const mails = ref<Mail[]>([])
+
+const selectedMail = computed(() => {
+  return unref(mails).find((m) => m.id === unref(selectedMailId))
+})
 
 const isMailSummaryLoading = computed(
   () => loadMailSummaryTask.isRunning && !loadMailSummaryTask.last
@@ -112,11 +117,14 @@ const loadMailTask = useTask(function* (signal) {
 })
 
 watch(
-  selectedMail,
+  [selectedMailId, mails],
   () => {
+    if (!unref(selectedMailId)) {
+      return
+    }
     loadMailTask.perform()
   },
-  { deep: true }
+  { immediate: true }
 )
 
 onMounted(() => {
