@@ -50,8 +50,9 @@
         </no-content-message>
         <app-loading-spinner v-else-if="isMailLoading" />
         <MailDetails
-          class="md:ml-2 md:p-2"
           v-else-if="mail"
+          :key="mail.id"
+          class="md:ml-2 md:p-2"
           :mail="mail"
           @back="selectedMailId = null"
         />
