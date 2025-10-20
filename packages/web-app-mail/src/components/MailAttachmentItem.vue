@@ -15,7 +15,7 @@
     </div>
     <div class="mail-attachment-item-actions">
       <oc-button appearance="raw" @click="download">
-        <oc-icon size="large" name="download-2" fill-type="line" />
+        <oc-icon size="medium" name="download-2" fill-type="line" />
       </oc-button>
     </div>
   </div>
