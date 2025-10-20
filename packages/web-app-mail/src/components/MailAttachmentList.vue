@@ -1,5 +1,5 @@
 <template>
-  <div v-if="attachments?.length" class="mail-attachment-list">
+  <div class="mail-attachment-list">
     <oc-card
       title="mail-attachments"
       header-class="items-start pl-0"
@@ -16,7 +16,7 @@
         </div>
       </template>
       <div v-for="(attachment, index) in attachments" :key="index">
-        <MailAttachmentItem v-if="attachment.name" :attachment="attachment" />
+        <MailAttachmentItem :attachment="attachment" />
       </div>
     </oc-card>
   </div>

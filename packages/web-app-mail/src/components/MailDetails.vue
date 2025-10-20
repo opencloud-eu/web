@@ -20,9 +20,11 @@
       <span class="truncate" v-text="sendToNames" />
     </div>
     <div class="mail-details-body mt-6" v-html="mailBody" />
-    <div class="mail-details-attachments mt-6">
-      <MailAttachmentList :attachments="mail.attachments" />
-    </div>
+    <MailAttachmentList
+      v-if="filteredAttachments.length"
+      class="mail-details-attachments mt-6"
+      :attachments="filteredAttachments"
+    />
   </div>
 </template>
 
@@ -60,5 +62,9 @@ const mailBody = computed(() => buildMailBody(mail))
 
 const receivedAtRelativeDate = computed(() => {
   return formatRelativeDateFromISO(mail.receivedAt, currentLanguage)
+})
+
+const filteredAttachments = computed(() => {
+  return mail.attachments.filter((attachment) => !!attachment.name)
 })
 </script>
