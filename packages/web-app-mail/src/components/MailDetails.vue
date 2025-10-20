@@ -24,11 +24,10 @@
 </template>
 
 <script setup lang="ts">
-import { Mail, MailBodyPart } from '../types'
+import { Mail } from '../types'
 import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
-import DOMPurify from 'dompurify'
 import { buildMailBody } from '../helpers'
 
 const { mail } = defineProps<{
