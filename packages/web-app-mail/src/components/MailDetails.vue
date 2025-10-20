@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-details ml-2 p-2">
+  <div class="mail-details">
     <oc-button class="md:hidden mb-2" appearance="raw" @click="$emit('back')">
       <oc-icon name="arrow-left" fill-type="line" />
     </oc-button>
