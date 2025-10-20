@@ -20,6 +20,9 @@
       <span class="truncate" v-text="sendToNames" />
     </div>
     <div class="mail-details-body mt-6" v-html="mailBody" />
+    <div class="mail-details-attachments mt-6">
+      <MailAttachmentList :attachments="mail.attachments" />
+    </div>
   </div>
 </template>
 
@@ -29,6 +32,7 @@ import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
 import { buildMailBody } from '../helpers'
+import MailAttachmentList from './MailAttachmentList.vue'
 
 const { mail } = defineProps<{
   mail: Mail
