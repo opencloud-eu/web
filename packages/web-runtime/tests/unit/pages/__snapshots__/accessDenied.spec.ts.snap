@@ -2,7 +2,7 @@
 
 exports[`access denied page > renders component 1`] = `
 "<div class="h-screen flex flex-col justify-center items-center">
-  <div class="oc-card bg-role-surface-container rounded-lg">
+  <div class="oc-card rounded-lg">
     <div class="oc-card-header"><img src="themes/opencloud/assets/logo.svg" alt="" aria-hidden="true" class="max-w-48 max-h-48 absolute -translate-y-16">
       <h2 class="mt-0">Not logged in</h2>
     </div>

@@ -1,10 +1,6 @@
 <template>
   <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
-    <oc-card
-      :title="headerTitle"
-      body-class="w-lg text-center"
-      class="bg-role-surface-container rounded-lg"
-    >
+    <oc-card :title="headerTitle" body-class="w-lg text-center" class="rounded-lg">
       <oc-spinner v-if="loading" data-testid="loading-spinner" :aria-hidden="true" />
       <p v-else-if="errorMessage" data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
     </oc-card>

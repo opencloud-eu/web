@@ -4,7 +4,7 @@
       :logo-url="logoImg"
       :title="headerTitle"
       body-class="w-lg text-center"
-      class="bg-role-surface-container rounded-lg"
+      class="rounded-lg"
     >
       <p v-if="errorMessage" data-testid="error-message" class="text-xl">
         {{ errorMessage }}

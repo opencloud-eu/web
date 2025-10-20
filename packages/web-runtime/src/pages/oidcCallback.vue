@@ -4,7 +4,7 @@
       :logo-url="logoImg"
       :title="cardTitle"
       body-class="w-sm text-center"
-      class="bg-role-surface-container rounded-lg"
+      class="rounded-lg"
     >
       <p v-text="cardHint" />
       <template #footer>

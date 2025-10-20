@@ -7,7 +7,7 @@
       :logo-url="logoImg"
       :title="$gettext('Missing or invalid config')"
       body-class="text-center"
-      class="bg-role-surface-container rounded-lg"
+      class="rounded-lg"
     >
       <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
       <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
