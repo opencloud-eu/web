@@ -3,41 +3,32 @@
     <h1 class="sr-only" v-text="pageTitle" />
     <router-view />
     <img
-      v-if="!backgroundImg"
+      v-if="!backgroundImg && route.fullPath !== '/'"
       alt="OpenCloud emblem"
       src="/packages/design-system/src/assets/images/icon-lilac.svg"
     />
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, defineComponent, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useRouteMeta, useThemeStore } from '@opencloud-eu/web-pkg'
+import { useRoute } from 'vue-router'
 
-export default defineComponent({
-  name: 'PlainLayout',
-  setup() {
-    const { $gettext } = useGettext()
-    const themeStore = useThemeStore()
-    const { currentTheme } = storeToRefs(themeStore)
+const { $gettext } = useGettext()
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
-    const title = useRouteMeta('title')
+const title = useRouteMeta('title')
+const route = useRoute()
 
-    const pageTitle = computed(() => {
-      return $gettext(unref(title) || '')
-    })
-    const backgroundImg = computed(() => unref(currentTheme).background)
-    const backgroundImgStyle = computed(() => {
-      return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
-    })
-
-    return {
-      pageTitle,
-      backgroundImg,
-      backgroundImgStyle
-    }
-  }
+const pageTitle = computed(() => {
+  return $gettext(unref(title) || '')
+})
+const backgroundImg = computed(() => unref(currentTheme).background)
+const backgroundImgStyle = computed(() => {
+  return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
 })
 </script>
