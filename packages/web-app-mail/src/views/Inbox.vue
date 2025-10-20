@@ -81,7 +81,6 @@ const isMailLoading = computed(() => loadMailTask.isRunning && !loadMailTask.las
 const loadMailSummaryTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
-      // we need to change this to /all if it is available
       urlJoin(configStore.groupwareUrl, 'accounts/all/emails/latest/summary?limit=50&seen=true'),
       {
         signal
