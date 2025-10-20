@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-attachment-list" v-if="attachments?.length">
+  <div v-if="attachments?.length" class="mail-attachment-list">
     <oc-card
       title="mail-attachments"
       header-class="items-start pl-0"
@@ -16,14 +16,14 @@
         </div>
       </template>
       <div v-for="(attachment, index) in attachments" :key="index">
-        <MailAttachmentItem :attachment="attachment" />
+        <MailAttachmentItem v-if="attachment.name" :attachment="attachment" />
       </div>
     </oc-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Mail, MailBodyPart } from '../types'
+import { MailBodyPart } from '../types'
 import MailAttachmentItem from './MailAttachmentItem.vue'
 
 const { attachments } = defineProps<{
