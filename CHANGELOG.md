@@ -6,18 +6,20 @@
 
 @JammingBen
 
+### 🐛 Bug Fixes
+
+- fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
+- fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
 ### 📈 Enhancement
 
 - feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
 - feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
 - feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
-### 🐛 Bug Fixes
-
-- fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
-
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-unused-imports to v4.3.0 [[#1395](https://github.com/opencloud-eu/web/pull/1395)]
 - chore(deps): update dependency happy-dom to v20.0.2 [security] [[#1385](https://github.com/opencloud-eu/web/pull/1385)]
 - chore(deps): update dependency eslint-plugin-vue to v10.5.1 [[#1383](https://github.com/opencloud-eu/web/pull/1383)]
 - fix(deps): update dependency @sentry/vue to v10.20.0 - autoclosed [[#1384](https://github.com/opencloud-eu/web/pull/1384)]
