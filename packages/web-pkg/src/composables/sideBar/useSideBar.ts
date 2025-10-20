@@ -14,6 +14,8 @@ interface SideBarOptions {
   bus?: EventBus
 }
 
+// FIXME: this should be global store to avoid registering multiple event listeners on the same topics
+// https://github.com/opencloud-eu/web/issues/1397
 export const useSideBar = (options?: SideBarOptions): SideBarResult => {
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
   const eventBus = options?.bus || defaultEventBus
