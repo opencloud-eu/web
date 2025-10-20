@@ -49,7 +49,12 @@
           </template>
         </no-content-message>
         <app-loading-spinner v-else-if="isMailLoading" />
-        <MailDetails v-else-if="mail" :mail="mail" @back="selectedMailId = null" />
+        <MailDetails
+          class="md:ml-2 md:p-2"
+          v-else-if="mail"
+          :mail="mail"
+          @back="selectedMailId = null"
+        />
       </div>
     </div>
   </template>

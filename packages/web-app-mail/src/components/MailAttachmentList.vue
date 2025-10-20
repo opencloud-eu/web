@@ -1,26 +1,32 @@
 <template>
-  <div class="mail-details-body-attachment-list" v-if="attachments?.length">
-    <div class="mail-details-body-attachment-list-header gap-2 flex items-center">
-      <h3 class="text-base font-bold" v-text="$gettext('Attachments')" />
-      <span
-        class="inline-flex items-center justify-center rounded-full bg-gray-200 px-2"
-        v-text="attachments.length"
-      />
-    </div>
-    <div
-      class="mail-details-body-attachment-list-items rounded-xl border-gray-200 bg-gray-200 space-y-2 p-4 rounded-lg"
+  <div class="mail-attachment-list" v-if="attachments?.length">
+    <oc-card
+      title="mail-attachments"
+      header-class="items-start pl-0"
+      body-class="bg-role-surface-container rounded-xl mt-2"
+      appearance="outlined"
     >
+      <template #header>
+        <div class="flex items-center">
+          <span
+            class="font-bold"
+            v-text="$ngettext('Attachment', 'Attachments', attachments.length)"
+          />
+          <oc-tag class="ml-2" :rounded="true" appearance="filled" v-text="attachments.length" />
+        </div>
+      </template>
       <div v-for="(attachment, index) in attachments" :key="index">
         <MailAttachmentItem :attachment="attachment" />
       </div>
-    </div>
+    </oc-card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Mail, MailBodyPart } from '../types'
 import MailAttachmentItem from './MailAttachmentItem.vue'
 
 const { attachments } = defineProps<{
-  attachments: Array<any>
+  attachments: MailBodyPart[]
 }>()
 </script>
