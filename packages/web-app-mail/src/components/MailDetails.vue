@@ -40,10 +40,6 @@ defineEmits<{
 
 const { current: currentLanguage } = useGettext()
 
-const fromText = computed(() => {
-  return mail.from[0]?.name || mail.sender[0]?.name || mail.from[0]?.email || mail.sender[0]?.email
-})
-
 const fromEmail = computed(() => {
   return mail.from[0]?.email || mail.sender[0]?.email
 })
