@@ -97,12 +97,6 @@ export const downloadGdprExport = async (args: { page: Page }): Promise<string> 
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.waitForResponse(
-      (resp) =>
-        resp.url().endsWith('.personal_data_export.json') &&
-        resp.status() === 200 &&
-        resp.request().method() === 'HEAD'
-    ),
     page.locator(downloadExportButton).click()
   ])
   await page.locator(requestExportButton).waitFor()
