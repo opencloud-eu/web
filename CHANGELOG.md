@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
 - fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
 - fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
 
