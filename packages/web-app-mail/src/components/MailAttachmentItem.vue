@@ -1,6 +1,6 @@
 <template>
   <div class="mail-attachment-item flex justify-between items-center">
-    <div class="mail-attachment-item-info flex items-center">
+    <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
       <resource-icon
         size="xlarge"
         :resource="{
@@ -8,8 +8,8 @@
           extension: extractExtensionFromFile({ name: attachment.name })
         }"
       />
-      <div class="mail-attachment-item-details flex ml-2 flex-col">
-        <span class="mail-attachment-item-filename" v-text="attachment.name" />
+      <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
+        <span class="mail-attachment-item-filename truncate block" v-text="attachment.name" />
         <span class="mail-attachment-item-size mt-1" v-text="readableFileSize" />
       </div>
     </div>
