@@ -188,7 +188,8 @@ import {
   useGetMatchingSpace,
   embedModeFilePickMessageData,
   routeToContextQuery,
-  useRouter
+  useRouter,
+  useSideBar
 } from '../../composables'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
@@ -267,6 +268,7 @@ const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
   return Math.min(unref(viewSizeMax), viewSize)
 })
+const { isSideBarOpen } = useSideBar()
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
@@ -654,13 +656,18 @@ const isResourceInDeleteQueue = (id: string): boolean => {
 
 watch(
   tileSizePixels,
-  (px: number) => {
-    document.documentElement.style.setProperty(`--oc-size-tiles-actual`, `${px}px`)
+  (px: number | undefined) => {
+    if (px && !isNaN(px)) {
+      document.documentElement.style.setProperty(`--oc-size-tiles-actual`, `${px}px`)
+    }
   },
   { immediate: true }
 )
 watch(maxTilesAll, (all) => {
   viewSizeMax.value = Math.max(all.length, 1)
+})
+watch(isSideBarOpen, () => {
+  updateViewWidth()
 })
 
 onMounted(() => {
