@@ -54,6 +54,7 @@ export const MailSchema = z.object({
   blobId: z.string().optional(),
   accountId: z.string().optional(),
   threadId: z.string(),
+  threadSize: z.number().optional(),
 
   mailboxIds: MailboxIdsSchema,
   keywords: KeywordsSchema.optional().default({}),

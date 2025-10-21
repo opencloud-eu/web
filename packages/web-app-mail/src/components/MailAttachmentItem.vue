@@ -13,7 +13,7 @@
         <span class="mail-attachment-item-size mt-1" v-text="readableFileSize" />
       </div>
     </div>
-    <div class="mail-attachment-item-actions">
+    <div class="mail-attachment-item-actions ml-1">
       <oc-button appearance="raw" @click="download">
         <oc-icon size="medium" name="download-2" fill-type="line" />
       </oc-button>

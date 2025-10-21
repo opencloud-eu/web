@@ -22,12 +22,15 @@
           </oc-button>
         </div>
       </template>
-      <MailAttachmentItem
-        v-for="attachment in attachments"
-        :key="attachment.blobId"
-        :attachment="attachment"
-        :account-id="accountId"
-      />
+      <oc-list class="mail-attachment-itemslist [&>li:not(:first-child)]:mt-4">
+        <li
+          class="mail-attachment-item rounded-xl bg-role-surface-container-lowest pl-2 pr-4 py-2"
+          v-for="attachment in attachments"
+          :key="attachment.blobId"
+        >
+          <MailAttachmentItem :attachment="attachment" :account-id="accountId" />
+        </li>
+      </oc-list>
     </oc-card>
   </div>
 </template>
