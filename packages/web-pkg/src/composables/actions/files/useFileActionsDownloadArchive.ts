@@ -7,22 +7,19 @@ import {
 import { useIsFilesAppActive } from '../helpers'
 import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
-import { useLoadingService } from '../../loadingService'
 import { useRouter } from '../../router'
 
 import { FileAction, FileActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
 import { useArchiverService } from '../../archiverService'
 import { formatFileSize } from '../../../helpers/filesize'
-import { useAuthStore, useMessages } from '../../piniaStores'
+import { useMessages } from '../../piniaStores'
 
 export const useFileActionsDownloadArchive = () => {
   const { showErrorMessage } = useMessages()
   const router = useRouter()
-  const loadingService = useLoadingService()
   const archiverService = useArchiverService()
   const { $ngettext, $gettext, current } = useGettext()
-  const authStore = useAuthStore()
   const isFilesAppActive = useIsFilesAppActive()
 
   const handler = ({ space, resources }: FileActionOptions) => {
@@ -37,8 +34,7 @@ export const useFileActionsDownloadArchive = () => {
         fileIds: resources.map((resource) => resource.fileId),
         ...(space &&
           isPublicSpaceResource(space) && {
-            publicToken: space.id,
-            publicLinkPassword: authStore.publicLinkPassword
+            publicToken: space.id
           })
       })
       .catch((e) => {
@@ -73,8 +69,8 @@ export const useFileActionsDownloadArchive = () => {
       {
         name: 'download-archive',
         icon: 'inbox-archive',
-        handler: async (args) => {
-          await loadingService.addTask(() => handler(args))
+        handler: (args) => {
+          handler(args)
         },
         label: () => $gettext('Download'),
         disabledTooltip: ({ resources }) => {
