@@ -3,9 +3,14 @@
     <div class="mail-list-item-avatar">
       <div class="flex items-center">
         <span class="mail-list-item-indicator flex w-[12px]">
-          <oc-icon v-if="isUnread" size="xsmall" name="circle" color="var(--oc-role-error)" />
+          <oc-icon
+            v-if="mail.keywords?.['$seen']"
+            size="xsmall"
+            name="circle"
+            color="var(--oc-role-error)"
+          />
         </span>
-        <oc-avatar class="ml-1" :user-name="from[0]?.name || sender[0]?.name" />
+        <oc-avatar class="ml-1" :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
       </div>
     </div>
     <div class="mail-list-item-content ml-5 min-w-0 w-full">
@@ -15,45 +20,35 @@
           <span class="mail-list-item-received-at" v-text="receivedAtRelativeDate" />
         </div>
       </div>
-      <div class="mail-list-item-subject font-bold mt-1">
-        <span class="block font-bold truncate" v-text="subject" />
+      <div class="mail-list-item-subject mt-1 flex justify-between items-center">
+        <span class="block font-bold truncate" v-text="mail.subject" />
+        <mail-indicators :mail="mail" />
       </div>
       <div class="mail-list-item-preview text-role-on-surface-variant mt-1">
-        <span class="line-clamp-2" v-text="preview"></span>
+        <span class="line-clamp-2" v-text="mail.preview"></span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MailAddress } from '../types'
+import { Mail } from '../types'
 import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
+import MailIndicators from './MailIndicators.vue'
 
-const {
-  from,
-  sender,
-  subject,
-  preview = '',
-  receivedAt = '',
-  isUnread = false
-} = defineProps<{
-  from: MailAddress[]
-  sender: MailAddress[]
-  subject: string
-  preview?: string
-  receivedAt?: string
-  isUnread?: boolean
+const { mail } = defineProps<{
+  mail: Mail
 }>()
 
 const { current: currentLanguage } = useGettext()
 
 const fromText = computed(() => {
-  return from[0]?.name || sender[0]?.name || from[0]?.email || sender[0]?.email
+  return mail.from[0]?.name || mail.sender[0]?.name || mail.from[0]?.email || mail.sender[0]?.email
 })
 
 const receivedAtRelativeDate = computed(() => {
-  return formatRelativeDateFromISO(receivedAt, currentLanguage)
+  return formatRelativeDateFromISO(mail.receivedAt, currentLanguage)
 })
 </script>

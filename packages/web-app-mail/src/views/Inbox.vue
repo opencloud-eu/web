@@ -24,14 +24,7 @@
               gap-size="none"
               @click="selectedMailId = mail.id"
             >
-              <MailListItem
-                :from="mail.from"
-                :preview="mail.preview"
-                :received-at="mail.receivedAt"
-                :sender="mail.sender"
-                :subject="mail.subject"
-                :is-unread="!mail.keywords?.['$seen']"
-              />
+              <MailListItem :mail="mail" />
             </oc-button>
           </li>
         </oc-list>
