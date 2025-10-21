@@ -80,10 +80,6 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    isPasswordEnforced: {
-      type: Boolean,
-      default: false
-    },
     isPasswordRemovable: {
       type: Boolean,
       default: false
@@ -98,7 +94,8 @@ export default defineComponent({
     const { dispatchModal } = useModals()
     const { $gettext } = useGettext()
     const { can } = useAbility()
-    const { getAvailableLinkTypes, getLinkRoleByType } = useLinkTypes()
+    const { getAvailableLinkTypes, getLinkRoleByType, isPasswordEnforcedForLinkType } =
+      useLinkTypes()
 
     const space = inject<Ref<SpaceResource>>('space')
     const resource = inject<Ref<Resource>>('resource')
@@ -115,7 +112,7 @@ export default defineComponent({
 
       const needsNoPw = unref(canDeleteReadOnlyPublicLinkPassword) && type === SharingLinkType.View
 
-      if (!linkShare.hasPassword && !needsNoPw && props.isPasswordEnforced) {
+      if (!linkShare.hasPassword && !needsNoPw && isPasswordEnforcedForLinkType(type)) {
         showPasswordModal(() =>
           emit('updateLink', { linkShare: { ...linkShare }, options: { type } })
         )

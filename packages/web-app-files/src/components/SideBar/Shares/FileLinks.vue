@@ -16,7 +16,6 @@
           :can-rename="true"
           :is-folder-share="resource.isFolder"
           :is-modifiable="canEditLink"
-          :is-password-enforced="isPasswordEnforcedForLinkType(link.type)"
           :is-password-removable="canDeletePublicLinkPassword(link)"
           :link-share="link"
           @update-link="handleLinkUpdate"
@@ -234,7 +233,6 @@ export default defineComponent({
       clientService,
       space,
       resource,
-      isPasswordEnforcedForLinkType,
       indirectLinkListCollapsed,
       linkListCollapsed,
       linkShares,
