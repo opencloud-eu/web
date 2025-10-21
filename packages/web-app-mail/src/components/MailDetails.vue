@@ -21,9 +21,10 @@
     </div>
     <div class="mail-details-body mt-6" v-html="mailBody" />
     <MailAttachmentList
-      v-if="filteredAttachments.length"
+      v-if="mail.attachments.length"
       class="mail-details-attachments mt-6"
-      :attachments="filteredAttachments"
+      :attachments="mail.attachments"
+      :account-id="mail.accountId"
     />
   </div>
 </template>
@@ -62,9 +63,5 @@ const mailBody = computed(() => buildMailBody(mail))
 
 const receivedAtRelativeDate = computed(() => {
   return formatRelativeDateFromISO(mail.receivedAt, currentLanguage)
-})
-
-const filteredAttachments = computed(() => {
-  return mail.attachments.filter((attachment) => !!attachment.name)
 })
 </script>

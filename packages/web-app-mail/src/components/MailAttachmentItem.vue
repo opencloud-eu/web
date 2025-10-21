@@ -35,8 +35,9 @@ import { useGettext } from 'vue3-gettext'
 import ResourceIcon from '@opencloud-eu/web-pkg/src/components/FilesList/ResourceIcon.vue'
 import { extractExtensionFromFile } from '@opencloud-eu/web-client'
 
-const { attachment } = defineProps<{
+const { attachment, accountId } = defineProps<{
   attachment: MailBodyPart
+  accountId: string
 }>()
 
 const clientService = useClientService()
@@ -52,7 +53,7 @@ const readableFileSize = computed(() => {
 const download = async () => {
   const url = urlJoin(
     configStore.groupwareUrl,
-    `blob/${attachment.blobId}/${encodeURIComponent(attachment.name)}`
+    `/accounts/${accountId}/blobs/${attachment.blobId}/${encodeURIComponent(attachment.name)}`
   )
 
   try {

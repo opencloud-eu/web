@@ -102,7 +102,7 @@ const loadMailTask = useTask(function* (signal) {
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
         configStore.groupwareUrl,
-        `accounts/${unref(selectedMail).accountId}/emails/${unref(selectedMail).id}`
+        `accounts/${unref(selectedMail).accountId}/emails/${unref(selectedMail).id}?markAsSeen=true`
       ),
       {
         signal
