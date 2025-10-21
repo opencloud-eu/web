@@ -26,6 +26,7 @@
         v-for="attachment in attachments"
         :key="attachment.blobId"
         :attachment="attachment"
+        :account-id="accountId"
       />
     </oc-card>
   </div>
@@ -38,6 +39,7 @@ import { ref } from 'vue'
 
 const { attachments } = defineProps<{
   attachments: MailBodyPart[]
+  accountId: string
 }>()
 const collapsed = ref(attachments.length > 3)
 </script>

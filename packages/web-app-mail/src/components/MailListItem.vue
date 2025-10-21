@@ -4,7 +4,7 @@
       <div class="flex items-center">
         <span class="mail-list-item-indicator flex w-[12px]">
           <oc-icon
-            v-if="mail.keywords?.['$seen']"
+            v-if="!mail.keywords?.['$seen']"
             size="xsmall"
             name="circle"
             color="var(--oc-role-error)"
