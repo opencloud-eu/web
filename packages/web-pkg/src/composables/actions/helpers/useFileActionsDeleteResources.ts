@@ -17,8 +17,7 @@ import {
   useModals,
   useSpacesStore,
   useConfigStore,
-  useResourcesStore,
-  Message
+  useResourcesStore
 } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
@@ -28,7 +27,7 @@ import { Key, Modifier, useKeyboardActions } from '../../keyboardActions'
 
 export const useFileActionsDeleteResources = () => {
   const configStore = useConfigStore()
-  const { showMessage, showErrorMessage } = useMessages()
+  const { showMessage, showErrorMessage, removeMessage } = useMessages()
   const router = useRouter()
   const language = useGettext()
   const { getMatchingSpace } = useGetMatchingSpace()
@@ -42,8 +41,7 @@ export const useFileActionsDeleteResources = () => {
     concurrentRequests: configStore.options.concurrentRequests.resourceBatchActions
   })
 
-  const successMessage = ref<Message>()
-  const { actions: undoActions } = useFileActionsUndoDelete({ deleteMessage: successMessage })
+  const { actions: undoActions } = useFileActionsUndoDelete()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -88,20 +86,32 @@ export const useFileActionsDeleteResources = () => {
     const undoAction = unref(undoActions)[0]
     const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
 
-    if (undoAvailable) {
-      const keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
-        removeKeyAction(keyActionId)
-        return undoAction.handler({ space, resources: deletedFiles })
-      })
-      setTimeout(() => removeKeyAction(keyActionId), messageTimeout * 1000)
-    }
-
-    successMessage.value = showMessage({
+    const message = showMessage({
       title,
       timeout: messageTimeout,
       actions: [undoAction],
-      actionOptions: { space, resources: deletedFiles }
+      actionOptions: {
+        space,
+        resources: deletedFiles,
+        callback: () => {
+          removeMessage(message)
+        }
+      }
     })
+
+    if (undoAvailable) {
+      const keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
+        removeKeyAction(keyActionId)
+        return undoAction.handler({
+          space,
+          resources: deletedFiles,
+          callback: () => {
+            removeMessage(message)
+          }
+        })
+      })
+      setTimeout(() => removeKeyAction(keyActionId), messageTimeout * 1000)
+    }
   }
 
   const dialogTitle = computed(() => {

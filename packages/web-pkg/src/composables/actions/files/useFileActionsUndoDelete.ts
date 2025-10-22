@@ -1,20 +1,18 @@
-import { computed, Ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { FileAction, FileActionOptions } from '../types'
+import type { Action, FileActionOptions } from '../types'
 import { useMessages, useResourcesStore } from '../../piniaStores'
 import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
-import { Message, useCapabilityStore, useClientService } from '../../'
+import { useCapabilityStore, useClientService } from '../../'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { isMacOs } from '../../../helpers'
 
-export const useFileActionsUndoDelete = ({
-  deleteMessage
-}: {
-  deleteMessage?: Ref<Message | undefined>
-} = {}) => {
+type UndoActionOptions = FileActionOptions & { callback?: () => void }
+
+export const useFileActionsUndoDelete = () => {
   const { $gettext } = useGettext()
-  const { showErrorMessage, removeMessage } = useMessages()
+  const { showErrorMessage } = useMessages()
   const { webdav } = useClientService()
   const capabilityStore = useCapabilityStore()
   const resourcesStore = useResourcesStore()
@@ -38,7 +36,7 @@ export const useFileActionsUndoDelete = ({
     return id.includes('!') ? id.split('!')[1] : id
   }
 
-  const undoDeleteHandler = async ({ space, resources }: FileActionOptions) => {
+  const undoDeleteHandler = async ({ space, resources, callback }: UndoActionOptions) => {
     const resourcesToRestore = resources.map((res) => ({
       ...res,
       id: transformToTrashId(res.id)
@@ -47,9 +45,7 @@ export const useFileActionsUndoDelete = ({
     try {
       const restoreAction = unref(restoreActions)[0]
       await restoreAction.handler({ space, resources: resourcesToRestore })
-      if (unref(deleteMessage)) {
-        removeMessage(unref(deleteMessage))
-      }
+      callback()
     } catch (e) {
       console.error(e)
       showErrorMessage({
@@ -66,7 +62,7 @@ export const useFileActionsUndoDelete = ({
     return $gettext('Ctrl + Z')
   })
 
-  const actions = computed<FileAction[]>(() => {
+  const actions = computed<Action<UndoActionOptions>[]>(() => {
     return [
       {
         name: 'undoDelete',
@@ -79,7 +75,7 @@ export const useFileActionsUndoDelete = ({
           return isProjectSpaceResource(space) || isPersonalSpaceResource(space)
         },
         label: () => $gettext('Undo'),
-        handler: ({ space, resources }) => undoDeleteHandler({ space, resources })
+        handler: undoDeleteHandler
       }
     ]
   })

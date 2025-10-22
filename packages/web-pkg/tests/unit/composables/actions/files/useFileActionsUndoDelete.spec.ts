@@ -5,8 +5,8 @@ import {
 } from '../../../../../src/composables/actions'
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, Message, useMessages } from '../../../../../src/composables/piniaStores'
-import { computed, ref, unref } from 'vue'
+import { CapabilityStore, Message } from '../../../../../src/composables/piniaStores'
+import { computed, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { SpaceResource } from '@opencloud-eu/web-client'
 
@@ -57,25 +57,13 @@ describe('undoDelete', () => {
       getWrapper({
         setup: async ({ actions }, { restoreHandlerMock }) => {
           const space = mock<SpaceResource>()
+          const callback = vi.fn()
           const resources = [{ id: '1$2!3' } as Resource]
-          await unref(actions)[0].handler({ space, resources })
+          await unref(actions)[0].handler({ space, resources, callback })
 
           expect(restoreHandlerMock).toHaveBeenCalledWith({ space, resources: [{ id: '3' }] })
+          expect(callback).toHaveBeenCalled()
         }
-      })
-    })
-    it('removes the message if given', () => {
-      const deleteMessage = mock<Message>()
-      getWrapper({
-        setup: async ({ actions }) => {
-          const space = mock<SpaceResource>()
-          const resources = [mock<Resource>({ id: '1' })]
-          const messagesStore = useMessages()
-          await unref(actions)[0].handler({ space, resources })
-
-          expect(messagesStore.removeMessage).toHaveBeenCalled()
-        },
-        deleteMessage
       })
     })
   })
@@ -111,7 +99,7 @@ function getWrapper({
     mocks,
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsUndoDelete({ deleteMessage: ref(deleteMessage) })
+        const instance = useFileActionsUndoDelete()
         setup(instance, {
           restoreHandlerMock
         })
