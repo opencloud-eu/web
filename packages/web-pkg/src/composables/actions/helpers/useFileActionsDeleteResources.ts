@@ -22,10 +22,12 @@ import {
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
 import { useEventBus } from '../../eventBus'
+import { useFileActionsUndoDelete } from '../files'
+import { Key, Modifier, useKeyboardActions } from '../../keyboardActions'
 
 export const useFileActionsDeleteResources = () => {
   const configStore = useConfigStore()
-  const messageStore = useMessages()
+  const { showMessage, showErrorMessage, removeMessage } = useMessages()
   const router = useRouter()
   const language = useGettext()
   const { getMatchingSpace } = useGetMatchingSpace()
@@ -34,9 +36,12 @@ export const useFileActionsDeleteResources = () => {
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
   const eventBus = useEventBus()
+  const { bindKeyAction, removeKeyAction } = useKeyboardActions()
   const { startWorker } = useDeleteWorker({
     concurrentRequests: configStore.options.concurrentRequests.resourceBatchActions
   })
+
+  const { actions: undoActions } = useFileActionsUndoDelete()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -56,6 +61,58 @@ export const useFileActionsDeleteResources = () => {
   const resources = computed(() => {
     return cloneStateObject<Resource[]>(unref(resourcesToDelete))
   })
+
+  const showSuccessMessage = ({
+    space,
+    filesToDelete,
+    deletedFiles
+  }: {
+    space: SpaceResource
+    filesToDelete: Resource[]
+    deletedFiles: Resource[]
+  }) => {
+    const title =
+      deletedFiles.length === 1 && filesToDelete.length === 1
+        ? $gettext('"%{item}" was moved to trash bin', { item: deletedFiles[0].name })
+        : $ngettext(
+            '%{itemCount} item was moved to trash bin',
+            '%{itemCount} items were moved to trash bin',
+            deletedFiles.length,
+            { itemCount: deletedFiles.length.toString() },
+            true
+          )
+
+    const messageTimeout = 7 // in seconds
+    const undoAction = unref(undoActions)[0]
+    const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
+
+    const message = showMessage({
+      title,
+      timeout: messageTimeout,
+      actions: [undoAction],
+      actionOptions: {
+        space,
+        resources: deletedFiles,
+        callback: () => {
+          removeMessage(message)
+        }
+      }
+    })
+
+    if (undoAvailable) {
+      const keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
+        removeKeyAction(keyActionId)
+        return undoAction.handler({
+          space,
+          resources: deletedFiles,
+          callback: () => {
+            removeMessage(message)
+          }
+        })
+      })
+      setTimeout(() => removeKeyAction(keyActionId), messageTimeout * 1000)
+    }
+  }
 
   const dialogTitle = computed(() => {
     const currentResources = unref(resources)
@@ -130,12 +187,12 @@ export const useFileActionsDeleteResources = () => {
                   true
                 )
 
-          messageStore.showMessage({ title })
+          showMessage({ title })
         }
 
         failed.forEach(({ resource }) => {
           const title = $gettext('Failed to delete "%{item}"', { item: resource.name })
-          messageStore.showErrorMessage({ title, errors: [new Error()] })
+          showErrorMessage({ title, errors: [new Error()] })
         })
 
         // user hasn't navigated to another location meanwhile
@@ -181,18 +238,11 @@ export const useFileActionsDeleteResources = () => {
           { topic: 'fileListDelete', space: spaceForDeletion, resources: resourcesForDeletion },
           async ({ successful, failed }) => {
             if (successful.length) {
-              const title =
-                successful.length === 1 && resources.length === 1
-                  ? $gettext('"%{item}" was moved to trash bin', { item: successful[0].name })
-                  : $ngettext(
-                      '%{itemCount} item was moved to trash bin',
-                      '%{itemCount} items were moved to trash bin',
-                      successful.length,
-                      { itemCount: successful.length.toString() },
-                      true
-                    )
-
-              messageStore.showMessage({ title })
+              showSuccessMessage({
+                space: spaceForDeletion,
+                filesToDelete: resourcesForDeletion,
+                deletedFiles: successful
+              })
               eventBus.publish('runtime.resource.deleted', successful)
             }
 
@@ -207,7 +257,7 @@ export const useFileActionsDeleteResources = () => {
                 })
               }
 
-              messageStore.showErrorMessage({ title, errors: [error] })
+              showErrorMessage({ title, errors: [error] })
             })
 
             // user hasn't navigated to another location meanwhile
