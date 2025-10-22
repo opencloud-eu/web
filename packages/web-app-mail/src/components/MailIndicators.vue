@@ -18,7 +18,7 @@
     <oc-tag
       v-if="mail?.keywords?.['$phishing'] || mail?.keywords?.['$junk']"
       class="mail-spam-indicator"
-      :rounded="false"
+      size="small"
       appearance="filled"
     >
       <oc-icon size="small" name="spam" fill-type="fill" color="#996102" />
@@ -38,6 +38,7 @@ const { mail } = defineProps<{
 <style scoped>
 .mail-spam-indicator {
   background-color: #fff0d7 !important;
+  border-color: #fff0d7 !important;
   color: #996102 !important;
 }
 </style>
