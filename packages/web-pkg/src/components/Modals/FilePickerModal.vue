@@ -102,17 +102,17 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-modal.open-with-app-modal {
+  .file-picker-modal {
     @apply overflow-hidden;
     max-width: 80vw;
   }
-  .oc-modal.open-with-app-modal .oc-modal-title {
+  .file-picker-modal .oc-modal-title {
     @apply hidden;
   }
-  .oc-modal.open-with-app-modal .oc-modal-body {
+  .file-picker-modal .oc-modal-body {
     @apply p-0;
   }
-  .oc-modal.open-with-app-modal .oc-modal-body-message {
+  .file-picker-modal .oc-modal-body-message {
     @apply m-0 h-[60vh];
   }
 }
