@@ -75,10 +75,10 @@ import {
   useModals,
   useRouter,
   useThemeStore,
-  useFolderLink
+  useFolderLink,
+  FilePickerModal
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
-import FilePickerModal from '@opencloud-eu/web-pkg/src/components/Modals/FilePickerModal.vue'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
