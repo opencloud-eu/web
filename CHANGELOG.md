@@ -20,6 +20,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v22.21.0 [[#1402](https://github.com/opencloud-eu/web/pull/1402)]
+- fix(deps): update dependency @sentry/vue to v10.21.0 [[#1408](https://github.com/opencloud-eu/web/pull/1408)]
 - chore(deps): update devdependencies (non-major) [[#1404](https://github.com/opencloud-eu/web/pull/1404)]
 - chore(deps): update collabora/code docker tag to v25.04.6.2.1 [[#1388](https://github.com/opencloud-eu/web/pull/1388)]
 - chore(deps): update devdependencies (non-major) [[#1322](https://github.com/opencloud-eu/web/pull/1322)]
