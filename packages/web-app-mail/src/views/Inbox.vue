@@ -16,7 +16,13 @@
               <span v-text="$gettext('No mails in this inbox')" />
             </template>
           </no-content-message>
-          <li v-for="mail in mails" v-else :key="mail.id" class="border-b-2">
+          <li
+            v-for="mail in mails"
+            v-else
+            :key="mail.id"
+            class="border-b-2"
+            :class="{ 'bg-role-secondary-container': selectedMailId === mail.id }"
+          >
             <oc-button
               class="px-2 py-4 text-left w-full"
               justify-content="left"
