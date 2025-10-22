@@ -6,6 +6,7 @@ import { DavHttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
 import { ref } from 'vue'
 import { DavErrorCode } from '@opencloud-eu/web-client/webdav'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../src/services/auth')
 
@@ -36,21 +37,21 @@ describe('resolvePublicLink', () => {
   describe('password required form', () => {
     it('should display if password is required', async () => {
       const { wrapper } = getWrapper({ passwordRequired: true })
-      await wrapper.vm.loadPublicSpaceTask.last
+      await flushPromises()
 
       expect(wrapper.find('form').html()).toMatchSnapshot()
     })
     describe('submit button', () => {
       it('should be set as disabled if "password" is empty', async () => {
         const { wrapper } = getWrapper({ passwordRequired: true })
-        await wrapper.vm.loadPublicSpaceTask.last
+        await flushPromises()
 
         expect(wrapper.find(selectors.submitButton).attributes().disabled).toBe('true')
       })
       it('should be set as enabled if "password" is not empty', async () => {
         const { wrapper } = getWrapper({ passwordRequired: true })
-        await wrapper.vm.loadPublicSpaceTask.last
-        wrapper.vm.password = 'password'
+        await flushPromises()
+        ;(wrapper.vm as any).password = 'password'
         await wrapper.vm.$nextTick()
 
         expect(wrapper.find(selectors.submitButton).attributes().disabled).toBe('false')
@@ -58,12 +59,11 @@ describe('resolvePublicLink', () => {
       it('should resolve the public link on click', async () => {
         const resolvePublicLinkSpy = vi.spyOn(authService, 'resolvePublicLink')
         const { wrapper } = getWrapper({ passwordRequired: true })
-        await wrapper.vm.loadPublicSpaceTask.last
-
-        wrapper.vm.password = 'password'
+        await flushPromises()
+        ;(wrapper.vm as any).password = 'password'
         await wrapper.vm.$nextTick()
         await wrapper.find(selectors.submitButton).trigger('submit')
-        await wrapper.vm.resolvePublicLinkTask.last
+        await flushPromises()
 
         expect(resolvePublicLinkSpy).toHaveBeenCalled()
       })
@@ -73,10 +73,7 @@ describe('resolvePublicLink', () => {
     it('should display an error message if the space cannot be resolved', async () => {
       console.error = vi.fn()
       const { wrapper } = getWrapper({ getFileInfoErrorStatusCode: 404 })
-
-      try {
-        await wrapper.vm.loadPublicSpaceTask.last
-      } catch {}
+      await flushPromises()
 
       expect(wrapper.find(selectors.errorMessage).text()).toContain(
         'The resource could not be located, it may not exist anymore.'
@@ -88,8 +85,8 @@ describe('resolvePublicLink', () => {
         passwordRequired: true,
         getFileInfoErrorStatusCode: 404
       })
-      await wrapper.vm.loadPublicSpaceTask.last
-      await expect(wrapper.vm.resolvePublicLinkTask.perform(true)).rejects.toThrow()
+      await flushPromises()
+      await expect((wrapper.vm as any).resolvePublicLinkTask.perform(true)).rejects.toThrow()
 
       expect(wrapper.find(selectors.errorMessage).text()).toContain(
         'The resource could not be located, it may not exist anymore.'
