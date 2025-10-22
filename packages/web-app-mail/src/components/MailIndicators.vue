@@ -1,19 +1,57 @@
 <template>
   <div class="mail-indicators ml-2 flex items-center">
-    <oc-tag v-if="mail.threadSize > 1" class="!py-[1px] items-center" size="small">
+    <oc-tag
+      v-if="mail.threadSize > 1"
+      :aria-label="
+        $gettext('%{number} messages in this thread', { number: mail.threadSize.toString() })
+      "
+      class="!py-[1px] items-center"
+      size="small"
+      v-oc-tooltip="$gettext('Thread')"
+    >
       <oc-icon size="xsmall" name="arrow-go-back" fill-type="line" />
       <span v-text="mail.threadSize" />
     </oc-tag>
-    <oc-icon v-if="mail.hasAttachment" size="small" name="attachment-2" fill-type="none" />
-    <oc-icon v-if="mail.keywords?.['$draft']" size="small" name="pencil" fill-type="line" />
-    <oc-icon v-if="mail.keywords?.['$flagged']" size="small" name="flag" fill-type="fill" />
-    <oc-icon v-if="mail.keywords?.['$answered']" size="small" name="reply" fill-type="fill" />
+    <oc-icon
+      v-if="mail.hasAttachment"
+      :aria-label="$gettext('This mail has attachments')"
+      size="small"
+      name="attachment-2"
+      fill-type="none"
+      v-oc-tooltip="$gettext('Attachment')"
+    />
+    <oc-icon
+      v-if="mail.keywords?.['$draft']"
+      :aria-label="$gettext('This mail is a draft')"
+      size="small"
+      name="pencil"
+      fill-type="line"
+      v-oc-tooltip="$gettext('Draft')"
+    />
+    <oc-icon
+      v-if="mail.keywords?.['$flagged']"
+      :aria-label="$gettext('This mail is flagged')"
+      size="small"
+      name="flag"
+      fill-type="fill"
+      v-oc-tooltip="$gettext('Flagged')"
+    />
+    <oc-icon
+      v-if="mail.keywords?.['$answered']"
+      :aria-label="$gettext('This mail has been answered')"
+      size="small"
+      name="reply"
+      fill-type="fill"
+      v-oc-tooltip="$gettext('Answered')"
+    />
     <oc-icon
       v-if="mail.keywords?.['$forwarded']"
+      :aria-label="$gettext('This mail has been forwarded')"
       class="rotate-180 scale-y-[-1]"
       size="small"
       name="reply"
       fill-type="fill"
+      v-oc-tooltip="$gettext('Forwarded')"
     />
     <oc-tag
       v-if="mail?.keywords?.['$phishing'] || mail?.keywords?.['$junk']"
