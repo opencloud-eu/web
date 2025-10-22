@@ -3,7 +3,6 @@
     <oc-button class="md:hidden mb-2" appearance="raw" no-hover @click="$emit('back')">
       <oc-icon name="arrow-left" fill-type="line" />
     </oc-button>
-
     <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
       <h2 class="block truncate" v-text="mail.subject" />
       <MailIndicators :mail="mail" />
