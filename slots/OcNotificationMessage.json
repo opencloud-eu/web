@@ -1,0 +1,7 @@
+[
+  {
+    "name": "actions",
+    "description": "Slot for action buttons.",
+    "type": "() => unknown"
+  }
+]

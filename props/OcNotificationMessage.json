@@ -33,5 +33,12 @@
     "description": "The timeout in seconds after which the notification message will be closed.",
     "default": "5",
     "type": "number"
+  },
+  {
+    "name": "showInfoIcon",
+    "required": false,
+    "description": "Whether to show an info icon prior to the title.",
+    "default": "true",
+    "type": "boolean"
   }
 ]
