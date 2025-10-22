@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, PropType, ref } from 'vue'
+import { defineComponent, onBeforeUnmount, onMounted, PropType, ref, unref } from 'vue'
 import {
   Modal,
   useModals,
