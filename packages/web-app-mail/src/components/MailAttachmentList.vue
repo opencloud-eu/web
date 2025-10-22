@@ -17,16 +17,16 @@
               <span v-text="attachments.length" />
             </oc-tag>
           </div>
-          <oc-button appearance="raw" @click="collapsed = !collapsed">
+          <oc-button appearance="raw" no-hover @click="collapsed = !collapsed">
             <oc-icon :name="collapsed ? 'arrow-down-s' : 'arrow-up-s'" fill-type="line" />
           </oc-button>
         </div>
       </template>
       <oc-list class="mail-attachment-itemslist [&>li:not(:first-child)]:mt-4">
         <li
-          class="mail-attachment-item rounded-xl bg-role-surface-container-lowest pl-2 pr-4 py-2"
           v-for="attachment in attachments"
           :key="attachment.blobId"
+          class="mail-attachment-item rounded-xl bg-role-surface-container-lowest pl-2 pr-4 py-2"
         >
           <MailAttachmentItem :attachment="attachment" :account-id="accountId" />
         </li>
