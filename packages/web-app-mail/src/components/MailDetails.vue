@@ -1,6 +1,6 @@
 <template>
   <div class="mail-details">
-    <oc-button class="md:hidden mb-2" appearance="raw" @click="$emit('back')">
+    <oc-button class="md:hidden mb-2" appearance="raw" no-hover @click="$emit('back')">
       <oc-icon name="arrow-left" fill-type="line" />
     </oc-button>
 

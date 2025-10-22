@@ -22,6 +22,7 @@
               justify-content="left"
               appearance="raw"
               gap-size="none"
+              no-hover
               @click="selectedMailId = mail.id"
             >
               <MailListItem :mail="mail" />
