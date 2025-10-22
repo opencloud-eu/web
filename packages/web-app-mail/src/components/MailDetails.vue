@@ -4,8 +4,9 @@
       <oc-icon name="arrow-left" fill-type="line" />
     </oc-button>
 
-    <div class="mail-details-subject font-bold mt-1">
+    <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
       <h2 class="block truncate" v-text="mail.subject" />
+      <MailIndicators :mail="mail" />
     </div>
     <div class="mail-details-subheader mt-2 flex justify-between">
       <oc-avatar :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
@@ -36,6 +37,7 @@ import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
 import { buildMailBody } from '../helpers'
 import MailAttachmentList from './MailAttachmentList.vue'
+import MailIndicators from './MailIndicators.vue'
 
 const { mail } = defineProps<{
   mail: Mail
