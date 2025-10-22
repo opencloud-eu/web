@@ -20,6 +20,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1404](https://github.com/opencloud-eu/web/pull/1404)]
 - chore(deps): update collabora/code docker tag to v25.04.6.2.1 [[#1388](https://github.com/opencloud-eu/web/pull/1388)]
 - chore(deps): update devdependencies (non-major) [[#1322](https://github.com/opencloud-eu/web/pull/1322)]
 - chore(deps): update dependency eslint-plugin-unused-imports to v4.3.0 [[#1395](https://github.com/opencloud-eu/web/pull/1395)]
