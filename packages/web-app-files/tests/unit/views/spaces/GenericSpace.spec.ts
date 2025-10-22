@@ -13,20 +13,9 @@ import {
   ComponentProps,
   PartialComponentProps
 } from '@opencloud-eu/web-test-helpers'
-import {
-  AppBar,
-  FolderViewExtension,
-  useBreadcrumbsFromPath,
-  useExtensionRegistry
-} from '@opencloud-eu/web-pkg'
+import { AppBar, useBreadcrumbsFromPath } from '@opencloud-eu/web-pkg'
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
-import { h } from 'vue'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-import {
-  folderViewsFavoritesExtensionPoint,
-  folderViewsFolderExtensionPoint,
-  folderViewsProjectSpacesExtensionPoint
-} from '../../../../src/extensionPoints'
 
 const mockCreateFolder = vi.fn()
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
@@ -94,7 +83,7 @@ describe('GenericSpace view', () => {
     it('shows the files table when files are available', () => {
       const { wrapper } = getMountedWrapper({ files: [mock<Resource>()] })
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
-      expect(wrapper.find('.resource-table').exists()).toBeTruthy()
+      expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
   })
   describe('breadcrumbs', () => {
@@ -286,29 +275,6 @@ function getMountedWrapper({
   vi.mocked(useBreadcrumbsFromPath).mockImplementation(() =>
     useBreadcrumbsFromPathMock({ breadcrumbsFromPath: vi.fn(() => breadcrumbsFromPath) })
   )
-
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: h('div', { class: 'resource-table' })
-      }
-    }
-  ] satisfies FolderViewExtension[]
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   const defaultMocks = {
     ...defaultComponentMocks({ currentRoute: mock<RouteLocation>(currentRoute) }),

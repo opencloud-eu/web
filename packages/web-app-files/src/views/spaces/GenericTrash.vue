@@ -2,7 +2,6 @@
   <div class="flex w-full">
     <files-view-wrapper>
       <app-bar
-        ref="appBarRef"
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
         :is-side-bar-open="isSideBarOpen"
@@ -55,7 +54,6 @@
           :has-actions="showActions"
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-size="viewSize"
-          :style="folderViewStyle"
           @sort="handleSort"
         >
           <template #contextMenu="{ resource, isOpen }">
@@ -76,14 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {
@@ -97,14 +88,13 @@ import {
   NoContentMessage,
   useDocumentTitle,
   useFileActionsEmptyTrashBin,
-  useUserStore,
-  useExtensionRegistry
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { useResourcesViewDefaults } from '../../composables'
-import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
 import { folderViewsTrashExtensionPoint } from '../../extensionPoints'
 
 const props = defineProps<{
@@ -116,7 +106,10 @@ const { $gettext } = useGettext()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const resourcesViewDefaults = useResourcesViewDefaults()
+
+const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
+  folderViewExtensionPoint: folderViewsTrashExtensionPoint
+})
 
 const {
   areResourcesLoading,
@@ -133,29 +126,11 @@ const {
   selectedResources,
   isResourceInSelection,
   viewMode,
+  viewModes,
+  folderView,
   viewSize,
   sortFields
 } = resourcesViewDefaults
-
-const extensionRegistry = useExtensionRegistry()
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry.requestExtensions(folderViewsTrashExtensionPoint).map((e) => e.folderView)
-  ]
-})
-
-const folderView = computed(() => {
-  const viewMode = unref(resourcesViewDefaults.viewMode)
-  return unref(viewModes).find((v) => v.name === viewMode)
-})
-const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-const folderViewStyle = computed(() => {
-  return {
-    ...(unref(folderView)?.isScrollable === false && {
-      height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-    })
-  }
-})
 
 const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).length < 1)
 

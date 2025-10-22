@@ -6,7 +6,11 @@ import {
   SortDir,
   SortField,
   useResourcesStore,
-  folderService
+  folderService,
+  useExtensionRegistry,
+  ExtensionPoint,
+  FolderViewExtension,
+  FolderView
 } from '@opencloud-eu/web-pkg'
 import { useSideBar } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -30,6 +34,7 @@ import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 interface ResourcesViewDefaultsOptions<T, U extends any[]> {
+  folderViewExtensionPoint: ExtensionPoint<FolderViewExtension>
   loadResourcesTask?: Task<T, U>
 }
 
@@ -47,6 +52,8 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   sortBy: ReadOnlyRef<string>
   sortDir: ReadOnlyRef<SortDir>
   viewMode: ReadOnlyRef<string>
+  viewModes: ReadOnlyRef<FolderView[]>
+  folderView: ReadOnlyRef<FolderView | undefined>
   viewSize: ReadOnlyRef<number>
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
@@ -58,7 +65,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   ScrollToResult
 
 export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[]>(
-  options: ResourcesViewDefaultsOptions<TT, TU> = {}
+  options: ResourcesViewDefaultsOptions<TT, TU>
 ): ResourcesViewDefaultsResult<T, TT, TU> => {
   const loadResourcesTask = options.loadResourcesTask || folderService.getTask()
   const areResourcesLoading = computed(() => {
@@ -67,6 +74,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const language = useGettext()
   const resourcesStore = useResourcesStore()
+  const extensionRegistry = useExtensionRegistry()
   const storeItems = computed(() => resourcesStore.activeResources) as unknown as Ref<T[]>
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
@@ -81,6 +89,18 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const currentTilesSizeQuery = useRouteQuery('tiles-size', '1')
   const currentTilesSize = computed((): string => String(currentTilesSizeQuery.value))
   const viewSize = useViewSize(currentTilesSize)
+
+  const viewModes = computed(() => {
+    return [
+      ...extensionRegistry
+        .requestExtensions(options.folderViewExtensionPoint)
+        .map((e) => e.folderView)
+    ]
+  })
+
+  const folderView = computed(() => {
+    return unref(viewModes).find((v) => v.name === unref(viewMode)) || unref(viewModes)[0]
+  })
 
   const sortFields = computed((): SortField[] => {
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
@@ -118,6 +138,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     sortFields,
     viewMode,
     viewSize,
+    viewModes,
+    folderView,
     paginatedResources,
     paginationPages,
     paginationPage,
