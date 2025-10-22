@@ -74,7 +74,8 @@ import {
   useSharesStore,
   useModals,
   useRouter,
-  useThemeStore
+  useThemeStore,
+  useFolderLink
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
 import FilePickerModal from '@opencloud-eu/web-pkg/src/components/Modals/FilePickerModal.vue'
@@ -334,7 +335,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
         customComponentAttrs: () => ({
           parentFolderLink: getParentFolderLink(resource),
           allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
-          callbackFn: ({ resource }) => {
+          callbackFn: ({ resource }: { resource: Resource }) => {
             postMessageToCollabora('Action_InsertGraphic', {
               url: resource.downloadURL
             })
