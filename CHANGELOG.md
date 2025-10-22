@@ -20,6 +20,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency md-editor-v3 to v6.1.0 [[#1355](https://github.com/opencloud-eu/web/pull/1355)]
 - chore(deps): update pnpm to v10.19.0 [[#1407](https://github.com/opencloud-eu/web/pull/1407)]
 - chore(deps): update typescript-eslint monorepo to v8.46.2 [[#1400](https://github.com/opencloud-eu/web/pull/1400)]
 - chore(deps): update node.js to v22.21.0 [[#1402](https://github.com/opencloud-eu/web/pull/1402)]
