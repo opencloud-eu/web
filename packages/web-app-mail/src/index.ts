@@ -2,7 +2,12 @@ import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
 
-import { AppMenuItemExtension, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
+import {
+  AppMenuItemExtension,
+  defineWebApplication,
+  Extension,
+  useCapabilityStore
+} from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { RouteRecordRaw } from 'vue-router'
 import { APPID } from './appid'
@@ -10,6 +15,7 @@ import { APPID } from './appid'
 export default defineWebApplication({
   setup({ applicationConfig }) {
     const { $gettext } = useGettext()
+    const capabilityStore = useCapabilityStore()
 
     const appInfo = {
       name: $gettext('Mail'),
@@ -64,7 +70,9 @@ export default defineWebApplication({
     const extensions = computed(() => {
       const result: Extension[] = []
 
-      result.push(menuItemExtension)
+      if (capabilityStore.capabilities.groupware?.enabled) {
+        result.push(menuItemExtension)
+      }
 
       return result
     })
