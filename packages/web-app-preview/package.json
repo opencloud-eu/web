@@ -13,7 +13,7 @@
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "@vueuse/core": "^13.0.0",
+    "@vueuse/core": "^13.0.0 || ^14.0.0",
     "lodash-es": "^4.17.21",
     "vue3-gettext": "2.4.0",
     "vue-router": "4.6.3"

@@ -46,7 +46,7 @@
     "@uppy/xhr-upload": "^5.0.0",
     "@vavt/cm-extension": "^1.6.0",
     "@vue/shared": "^3.5.11",
-    "@vueuse/core": "^13.0.0",
+    "@vueuse/core": "^14.0.0",
     "axios": "^1.7.7",
     "cropperjs": "^1.6.2",
     "deepmerge": "^4.2.2",
