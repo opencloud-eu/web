@@ -24,6 +24,7 @@ x-opencloud-server: &opencloud-service
     #FRONTEND
     FRONTEND_SEARCH_MIN_LENGTH: '2'
     FRONTEND_FULL_TEXT_SEARCH_ENABLED: 'true'
+    FRONTEND_GROUPWARE_ENABLED: 'true'
     GRAPH_INCLUDE_OCM_SHAREES: 'true'
 
     # IDM

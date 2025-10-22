@@ -821,6 +821,9 @@ export const announceGroupware = async ({
   capabilityStore: CapabilityStore
   groupwareConfigStore: GroupwareConfigStore
 }) => {
+  if (!capabilityStore.capabilities.groupware?.enabled) {
+    return
+  }
   try {
     const { data } = await clientService.httpAuthenticated.get(configStore.groupwareUrl)
     groupwareConfigStore.loadGroupwareConfig(RawGroupwareConfigSchema.parse(data))
