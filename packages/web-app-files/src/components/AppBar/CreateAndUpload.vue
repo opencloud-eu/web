@@ -201,12 +201,7 @@ import ResourceUpload from './Upload/ResourceUpload.vue'
 
 import { computed, onMounted, onBeforeUnmount, unref, watch, ref } from 'vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import {
-  Resource,
-  SpaceResource,
-  isPublicSpaceResource,
-  isShareSpaceResource
-} from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, isPublicSpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../../HandleUpload'
 import { useGettext } from 'vue3-gettext'
@@ -216,15 +211,10 @@ import { v4 as uuidV4 } from 'uuid'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../../extensionPoints'
 
-const {
-  space,
-  item,
-  itemId,
-  limitedScreenSpace = false
-} = defineProps<{
+const { space, limitedScreenSpace = false } = defineProps<{
   space: SpaceResource
   item?: string
-  itemId?: string | number
+  itemId?: string
   limitedScreenSpace?: boolean
 }>()
 
@@ -334,38 +324,70 @@ useEventListener(document, 'paste', (event: ClipboardEvent) => {
 })
 
 const onUploadComplete = async (result: UploadResult) => {
-  if (result.successful) {
-    const file = result.successful[0]
+  const file = result.successful?.[0]
+  if (!file) {
+    return
+  }
 
-    if (!file) {
-      return
+  const { spaceId, currentFolderId: uploadFolderId, driveType } = file.meta
+  if (!isPublicSpaceResource(unref(computedSpace))) {
+    const isOwnSpace = spacesStore.spaces.find(({ id }) => id === spaceId)?.isOwner(userStore.user)
+
+    if (driveType === 'project' || isOwnSpace) {
+      const client = clientService.graphAuthenticated
+      const updatedSpace = await client.drives.getDrive(spaceId)
+      spacesStore.updateSpaceField({
+        id: updatedSpace.id,
+        field: 'spaceQuota',
+        value: updatedSpace.spaceQuota
+      })
     }
+  }
 
-    const { spaceId, currentFolder, currentFolderId, driveType } = file.meta
-    if (!isPublicSpaceResource(unref(computedSpace))) {
-      const isOwnSpace = spacesStore.spaces
-        .find(({ id }) => id === spaceId)
-        ?.isOwner(userStore.user)
+  const userChangedFolder = uploadFolderId !== unref(currentFolder)?.id
+  if (userChangedFolder) {
+    // no store update needed if user navigated into another space/folder after starting the upload
+    return
+  }
 
-      if (driveType === 'project' || isOwnSpace) {
-        const client = clientService.graphAuthenticated
-        const updatedSpace = await client.drives.getDrive(spaceId)
-        spacesStore.updateSpaceField({
-          id: updatedSpace.id,
-          field: 'spaceQuota',
-          value: updatedSpace.spaceQuota
-        })
+  const topLevelItems: string[] = []
+  for (let i = 0; i < result.successful.length; i++) {
+    const f = result.successful[i]
+    if (!f.meta.relativeFolder) {
+      // top-level file
+      topLevelItems.push(f.meta.name)
+      continue
+    }
+    const relativeFolderArr = urlJoin(f.meta.relativeFolder, { leadingSlash: true }).split('/')
+    const isTopLevel = relativeFolderArr.length === 2
+    if (isTopLevel) {
+      const folderName = relativeFolderArr[1]
+      if (!topLevelItems.includes(folderName)) {
+        // top-level folder
+        topLevelItems.push(folderName)
       }
     }
+  }
 
-    const sameFolder =
-      itemId && !isShareSpaceResource(unref(computedSpace))
-        ? itemId.toString().startsWith(currentFolderId.toString())
-        : currentFolder === item
-    const fileIsInCurrentPath = spaceId === unref(computedSpace).id && sameFolder
-    if (fileIsInCurrentPath) {
-      eventBus.publish('app.files.list.load')
-    }
+  // threshold to control how many requests we send to the server to retrieve files/folders.
+  // if there are more top-level items, we simply reload the whole folder.
+  const FOLDER_RELOAD_THRESHOLD = 5
+
+  if (topLevelItems.length <= FOLDER_RELOAD_THRESHOLD) {
+    const promises = topLevelItems.map((name) =>
+      clientService.webdav
+        .getFileInfo(unref(computedSpace), {
+          path: urlJoin(unref(currentFolder)?.path || '', name)
+        })
+        .then((res) => {
+          if (uploadFolderId === unref(currentFolder)?.id) {
+            resourcesStore.upsertResource(res)
+          }
+        })
+    )
+    await Promise.all(promises)
+  } else {
+    eventBus.publish('app.files.list.load')
   }
 }
 

@@ -11,7 +11,8 @@ import {
   useFileActionsPaste,
   useExtensionRegistry,
   OcUppyFile,
-  ClipboardActions
+  ClipboardActions,
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
@@ -156,7 +157,9 @@ describe('CreateAndUpload component', () => {
       { driveType: 'share', updated: 0 },
       { driveType: 'public', updated: 0 }
     ])('updates the space quota for supported drive types: %s', async ({ driveType, updated }) => {
-      const file = mock<OcUppyFile>({ meta: { driveType, spaceId: '1' } })
+      const file = mock<OcUppyFile>({
+        meta: { driveType, spaceId: '1', relativeFolder: undefined }
+      })
       const spaces = [
         mock<SpaceResource>({ id: file.meta.spaceId, isOwner: () => driveType === 'personal' })
       ]
@@ -167,18 +170,48 @@ describe('CreateAndUpload component', () => {
       const spacesStore = useSpacesStore()
       expect(spacesStore.updateSpaceField).toHaveBeenCalledTimes(updated)
     })
-    it('reloads the file list if files were uploaded to the current path', async () => {
-      const eventSpy = vi.spyOn(eventBus, 'publish')
-      const itemId = 'itemId'
-      const space = mock<SpaceResource>({ id: '1' })
-      const { mocks } = getWrapper({ itemId, space })
-      const file = mock<OcUppyFile>({
-        meta: { driveType: 'project', spaceId: space.id, currentFolderId: itemId }
-      })
+
+    const itemId = 'itemId'
+    const space = mock<SpaceResource>({ id: '1' })
+    const file = mock<OcUppyFile>({
+      meta: {
+        driveType: 'project',
+        spaceId: space.id,
+        currentFolderId: itemId,
+        relativeFolder: undefined
+      }
+    })
+
+    it('updates the store if the amount of uploaded files <=5', async () => {
+      const currentFolder = mock<Resource>({ id: itemId })
+      const { mocks } = getWrapper({ itemId, space, currentFolder })
       const graphMock = mocks.$clientService.graphAuthenticated
       graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
-      await unref(mocks.onUploadCompleteCallback)({ successful: [file], failed: [] })
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file] })
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.upsertResource).toHaveBeenCalled()
+    })
+    it('reloads the file list if the amount of uploaded files is >5', async () => {
+      const eventSpy = vi.spyOn(eventBus, 'publish')
+      const currentFolder = mock<Resource>({ id: itemId })
+      const { mocks } = getWrapper({ itemId, space, currentFolder })
+      const graphMock = mocks.$clientService.graphAuthenticated
+      graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
+      await unref(mocks.onUploadCompleteCallback)({
+        successful: [file, file, file, file, file, file]
+      })
       expect(eventSpy).toHaveBeenCalled()
+    })
+    it('does not update the store nor reloads the file list if user changed folder', async () => {
+      const eventSpy = vi.spyOn(eventBus, 'publish')
+      const currentFolder = mock<Resource>({ id: '2' })
+      const { mocks } = getWrapper({ itemId, space, currentFolder })
+      const graphMock = mocks.$clientService.graphAuthenticated
+      graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file] })
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.upsertResource).not.toHaveBeenCalled()
+      expect(eventSpy).not.toHaveBeenCalled()
     })
   })
   describe('drop target', () => {
@@ -261,6 +294,7 @@ function getWrapper({
     onUploadCompleteCallback.value = callback
     return null
   })
+  defaultMocks.$clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
 
   const mocks = {
     ...defaultMocks,
