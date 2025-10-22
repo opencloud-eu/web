@@ -8,6 +8,7 @@ export type FolderView = {
     name: string
     fillType: IconFillType
   }
+  /** @deprecated style your view with proper CSS instead */
   isScrollable?: boolean
   component: Component
   componentAttrs?: () => Record<string, unknown>

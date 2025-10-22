@@ -6,20 +6,11 @@ import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourc
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
-import {
-  AppBar,
-  FolderViewExtension,
-  ItemFilter,
-  queryItemAsString,
-  ResourceTable,
-  useExtensionRegistry,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
+import { AppBar, ItemFilter, queryItemAsString, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
-import { folderViewsSearchExtensionPoint } from '../../../../src/extensionPoints'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -31,7 +22,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
-  resourceTableStub: '[viewmode=resource-table]',
+  resourceTableStub: 'resource-table-stub',
   tagFilter: '.files-search-filter-tags',
   lastModifiedFilter: '.files-search-filter-last-modified',
   titleOnlyFilter: '.files-search-filter-title-only',
@@ -261,28 +252,6 @@ function getWrapper({
     }
   } satisfies Partial<Capabilities['capabilities']>
 
-  const plugins = [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
-
-  const extensions = [
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
-      type: 'folderView',
-      extensionPointIds: [folderViewsSearchExtensionPoint.id],
-      folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
-        icon: {
-          name: 'menu-line',
-          fillType: 'none'
-        },
-        component: ResourceTable
-      }
-    }
-  ] satisfies FolderViewExtension[]
-
-  const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
-
   return {
     mocks: localMocks,
     wrapper: shallowMount(List, {
@@ -292,7 +261,7 @@ function getWrapper({
         stubs: {
           FilesViewWrapper: false
         },
-        plugins
+        plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }
     })
   }

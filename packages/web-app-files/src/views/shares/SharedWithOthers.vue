@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar ref="appBarRef" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -49,7 +49,6 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
-          :style="folderViewStyle"
           :grouping-settings="groupingSettings"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
@@ -82,7 +81,6 @@ import {
   useAppsStore,
   useCapabilityStore,
   useConfigStore,
-  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
   useResourcesStore,
@@ -101,7 +99,7 @@ import { ContextActions } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, computed, unref, useTemplateRef, ComponentPublicInstance } from 'vue'
+import { defineComponent, computed, unref } from 'vue'
 import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
@@ -135,7 +133,9 @@ export default defineComponent({
 
     const resourcesStore = useResourcesStore()
 
-    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>()
+    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
+      folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
+    })
     const {
       sortBy,
       sortDir,
@@ -145,30 +145,6 @@ export default defineComponent({
       viewMode
     } = resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
-
-    const extensionRegistry = useExtensionRegistry()
-
-    const folderView = computed(() => {
-      const viewMode = unref(resourcesViewDefaults.viewMode)
-      return unref(viewModes).find((v) => v.name === viewMode)
-    })
-
-    const viewModes = computed(() => {
-      return [
-        ...extensionRegistry
-          .requestExtensions(folderViewsSharedWithOthersExtensionPoint)
-          .map((e) => e.folderView)
-      ]
-    })
-
-    const appBarRef = useTemplateRef<ComponentPublicInstance<typeof AppBar>>('appBarRef')
-    const folderViewStyle = computed(() => {
-      return {
-        ...(unref(folderView)?.isScrollable === false && {
-          height: `calc(100% - ${unref(appBarRef)?.$el.getBoundingClientRect().height}px)`
-        })
-      }
-    })
 
     const shareTypes = computed(() => {
       const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
@@ -230,10 +206,6 @@ export default defineComponent({
       shareTypes,
       getMatchingSpace,
       loadPreview,
-      folderView,
-      folderViewStyle,
-      viewModes,
-      appBarRef,
 
       // CERN
       ...useGroupingSettings({ sortBy, sortDir })

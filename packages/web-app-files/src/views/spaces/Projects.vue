@@ -149,12 +149,9 @@ import {
   AppLoadingSpinner,
   useResourcesStore,
   useSpacesStore,
-  useExtensionRegistry,
-  useLoadPreview
-} from '@opencloud-eu/web-pkg'
-
-import { AppBar, CreateSpace } from '@opencloud-eu/web-pkg'
-import {
+  useLoadPreview,
+  AppBar,
+  CreateSpace,
   useAbility,
   useClientService,
   FolderViewModeConstants,
@@ -217,13 +214,18 @@ const loadResourcesTask = useTask(function* (signal) {
 const {
   viewSize,
   viewMode,
+  viewModes,
+  folderView,
   fileListHeaderY,
   scrollToResourceFromRoute,
   areResourcesLoading,
   selectedResourcesIds,
   selectedResources,
   isResourceInSelection
-} = useResourcesViewDefaults({ loadResourcesTask })
+} = useResourcesViewDefaults({
+  loadResourcesTask,
+  folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint
+})
 
 let loadPreviewToken: string = null
 
@@ -323,15 +325,6 @@ watch(selectedResourcesIds, async (ids) => {
 
 const hasCreatePermission = computed(() => can('create-all', 'Drive'))
 
-const extensionRegistry = useExtensionRegistry()
-const viewModes = computed(() => {
-  return [
-    ...extensionRegistry
-      .requestExtensions(folderViewsProjectSpacesExtensionPoint)
-      .map((e) => e.folderView)
-  ]
-})
-
 const { loadPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
@@ -409,11 +402,6 @@ const footerTextFilter = computed(() => {
   return $gettext('%{spaceCount} matching spaces', {
     spaceCount: unref(items).length.toString()
   })
-})
-
-const folderView = computed(() => {
-  const viewModeName = unref(viewMode) || FolderViewModeConstants.name.tiles
-  return unref(viewModes).find((v) => v.name === viewModeName)
 })
 
 const spacesHelpList = computed(() => {

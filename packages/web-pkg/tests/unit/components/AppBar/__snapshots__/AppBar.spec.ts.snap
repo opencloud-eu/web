@@ -2,7 +2,7 @@
 
 exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle 1`] = `
 "<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-20 sticky">
-  <div class="files-topbar py-2">
+  <div class="files-topbar py-2 w-full">
     <h1 class="sr-only">ExampleTitle</h1>
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
@@ -24,7 +24,7 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
 
 exports[`AppBar component > renders > if given, with content in the actions slot 1`] = `
 "<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-20 sticky">
-  <div class="files-topbar py-2">
+  <div class="files-topbar py-2 w-full">
     <h1 class="sr-only">ExampleTitle</h1>
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
@@ -46,7 +46,7 @@ exports[`AppBar component > renders > if given, with content in the actions slot
 
 exports[`AppBar component > renders > if given, with content in the content slot 1`] = `
 "<div id="files-app-bar" class="px-4 bg-role-surface rounded-t-xl [display:inherit] top-0 z-20 sticky">
-  <div class="files-topbar py-2">
+  <div class="files-topbar py-2 w-full">
     <h1 class="sr-only">ExampleTitle</h1>
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-13 justify-end">
