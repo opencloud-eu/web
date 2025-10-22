@@ -1,10 +1,11 @@
 <template>
-  <div class="h-screen flex flex-col justify-center items-center">
+  <div class="h-screen flex flex-col justify-center items-center p-4">
     <oc-card
       :logo-url="logoImg"
       :title="cardTitle"
-      body-class="w-sm text-center"
-      class="rounded-lg"
+      body-class="text-center"
+      header-class="text-center"
+      class="w-full sm:w-sm rounded-lg"
     >
       <p v-text="cardHint" />
       <oc-button
@@ -23,7 +24,7 @@
     </oc-card>
     <oc-button
       id="exitAnchor"
-      class="mt-4 w-sm"
+      class="mt-4 w-full sm:w-sm"
       size="large"
       appearance="filled"
       color-role="primary"

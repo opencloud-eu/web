@@ -1,10 +1,11 @@
 <template>
-  <div class="oc-link-resolve h-screen flex flex-col justify-center items-center">
+  <div class="oc-link-resolve h-screen flex flex-col justify-center items-center p-4">
     <oc-card
       :logo-url="logoImg"
       :title="headerTitle"
-      body-class="w-lg text-center"
-      class="rounded-lg"
+      body-class="text-center"
+      header-class="text-center"
+      class="w-auto md:w-lg rounded-lg"
     >
       <p v-if="errorMessage" data-testid="error-message" class="text-xl">
         {{ errorMessage }}
