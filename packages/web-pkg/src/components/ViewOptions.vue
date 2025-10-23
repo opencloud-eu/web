@@ -6,7 +6,8 @@
         v-oc-tooltip="$gettext('Switch view mode')"
         :aria-label="$gettext('Switch view mode')"
         appearance="raw"
-        class="my-2 mx-1 p-1 align-middle sm:hidden"
+        class="my-2 mx-1 p-1 align-middle"
+        :class="{ 'sm:hidden': !isSideBarOpen, 'md:hidden': isSideBarOpen }"
       >
         <oc-icon name="list-view" fill-type="none" />
       </oc-button>
@@ -45,7 +46,8 @@
     </template>
     <div
       v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group hidden sm:inline-flex mr-2"
+      class="viewmode-switch-buttons oc-button-group hidden mr-2"
+      :class="{ 'sm:inline-flex': !isSideBarOpen, 'md:inline-flex': isSideBarOpen }"
     >
       <oc-button
         v-for="viewMode in viewModes"
@@ -160,6 +162,7 @@ import {
   useRouteQuery,
   useRouteQueryPersisted,
   useRouter,
+  useSideBar,
   useViewSizeMax
 } from '../composables'
 import { FolderView } from '../ui/types'
@@ -201,6 +204,7 @@ export default defineComponent({
     const router = useRouter()
     const currentRoute = useRoute()
     const { $gettext } = useGettext()
+    const { isSideBarOpen } = useSideBar()
 
     const resourcesStore = useResourcesStore()
     const {
@@ -283,6 +287,7 @@ export default defineComponent({
       setAreFileExtensionsShown,
       setAreDisabledSpacesShown,
       setAreEmptyTrashesShown,
+      isSideBarOpen,
       viewOptionsButtonLabel: $gettext('Display customization options of the files list'),
       isProjectsLocation: useActiveLocation(isLocationSpacesActive, 'files-spaces-projects'),
       isTrashOverViewLocation: useActiveLocation(isLocationTrashActive, 'files-trash-overview')
