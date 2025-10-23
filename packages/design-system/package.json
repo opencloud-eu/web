@@ -121,7 +121,7 @@
     "@opencloud-eu/web-test-helpers": "workspace:*",
     "@tailwindcss/vite": "^4.1.11",
     "@vitejs/plugin-vue": "6.0.1",
-    "clean-publish": "^5.0.0",
+    "clean-publish": "^6.0.0",
     "glob": "^11.0.0",
     "markdown-it-container": "^4.0.0",
     "postcss": "^8.5.2",
