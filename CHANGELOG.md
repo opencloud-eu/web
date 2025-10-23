@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: plain views on mobile [[#1415](https://github.com/opencloud-eu/web/pull/1415)]
 - fix(extension-sdk): handle 'require' (wrapped in single quotes) in pa… [[#1414](https://github.com/opencloud-eu/web/pull/1414)]
 - fix(extension-sdk): ensure asset imports work [[#1412](https://github.com/opencloud-eu/web/pull/1412)]
 - fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
