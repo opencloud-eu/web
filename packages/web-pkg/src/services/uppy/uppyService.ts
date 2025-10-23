@@ -157,7 +157,7 @@ export class UppyService {
     onBeforeRequest,
     headers
   }: TusOptions<OcUppyMeta, OcUppyBody>) {
-    const tusPluginOptions: TusOptions<OcUppyMeta, OcUppyBody> = {
+    const tusPluginOptions: TusOptions<any, OcUppyBody> = {
       chunkSize,
       removeFingerprintOnSuccess: true,
       overridePatchMethod,
