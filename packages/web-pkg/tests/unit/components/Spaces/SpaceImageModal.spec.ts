@@ -8,23 +8,7 @@ import { useSpaceHelpers } from '../../../../src/composables/spaces/useSpaceHelp
 vi.mock('../../../../src/composables/spaces/useSpaceHelpers', () => ({
   useSpaceHelpers: vi.fn()
 }))
-vi.mock('cropperjs', () => {
-  return {
-    default: vi.fn().mockImplementation(() => ({
-      getCroppedCanvas: vi.fn(() => ({
-        toBlob: vi.fn((cb) => cb(new Blob())),
-        toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
-      })),
-      destroy: vi.fn(),
-      replace: vi.fn(),
-      reset: vi.fn(),
-      crop: vi.fn(),
-      move: vi.fn(),
-      rotate: vi.fn(),
-      scale: vi.fn()
-    }))
-  }
-})
+vi.mock('cropperjs')
 
 window.URL.createObjectURL = vi.fn(() => '')
 

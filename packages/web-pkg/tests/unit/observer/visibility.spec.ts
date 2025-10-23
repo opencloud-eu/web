@@ -3,17 +3,20 @@ import { VisibilityObserver } from '../../../src/observer'
 let callback: (
   arg: { isIntersecting: boolean; intersectionRatio: number; target: HTMLElement }[]
 ) => void
-let mockIntersectionObserver: IntersectionObserver
+
+const observeMock = vi.fn()
+const unobserveMock = vi.fn()
 const reset = () => {
-  mockIntersectionObserver = {
-    observe: vi.fn(),
-    disconnect: vi.fn(),
-    unobserve: vi.fn()
-  } as unknown as IntersectionObserver
-  window.IntersectionObserver = vi.fn().mockImplementation((cb) => {
-    callback = cb
-    return mockIntersectionObserver
-  })
+  window.IntersectionObserver = vi.fn(
+    class {
+      constructor(cb: typeof callback) {
+        callback = cb
+      }
+      observe = observeMock
+      unobserve = unobserveMock
+      disconnect = vi.fn()
+    }
+  ) as any
 }
 
 beforeEach(reset)
@@ -29,10 +32,10 @@ describe('VisibilityObserver', () => {
       onExit: vi.fn()
     },
     {}
-  ])('observes %p', (cb) => {
+  ])('observes %s', (cb) => {
     const observer = new VisibilityObserver()
     observer.observe(document.getElementById('target'), cb)
-    expect(mockIntersectionObserver.observe).toHaveBeenCalledTimes(Object.keys(cb).length ? 1 : 0)
+    expect(observeMock).toHaveBeenCalledTimes(Object.keys(cb).length ? 1 : 0)
   })
 
   it('handles entered and exited callbacks', () => {
@@ -58,7 +61,7 @@ describe('VisibilityObserver', () => {
     expect(onExit).toHaveBeenCalledTimes(2)
   })
 
-  it.each(['disconnect', 'unobserve'] as const)('handles %p', (m) => {
+  it.each(['disconnect', 'unobserve'] as const)('handles %s', (m) => {
     const onEnter = vi.fn()
     const onExit = vi.fn()
     const observer = new VisibilityObserver()
@@ -94,15 +97,15 @@ describe('VisibilityObserver', () => {
     callback([{ isIntersecting: false, intersectionRatio: -1, target }])
     expect(onEnter).toHaveBeenCalledTimes(0)
     expect(onExit).toHaveBeenCalledTimes(0)
-    expect(mockIntersectionObserver.unobserve).toHaveBeenCalledTimes(0)
+    expect(unobserveMock).toHaveBeenCalledTimes(0)
     callback([{ isIntersecting: true, intersectionRatio: 1, target }])
     expect(onEnter).toHaveBeenCalledTimes(1)
     expect(onExit).toHaveBeenCalledTimes(0)
-    expect(mockIntersectionObserver.unobserve).toHaveBeenCalledTimes(0)
+    expect(unobserveMock).toHaveBeenCalledTimes(0)
     callback([{ isIntersecting: false, intersectionRatio: -1, target }])
     expect(onEnter).toHaveBeenCalledTimes(1)
     expect(onExit).toHaveBeenCalledTimes(1)
-    expect(mockIntersectionObserver.unobserve).toHaveBeenCalledTimes(1)
+    expect(unobserveMock).toHaveBeenCalledTimes(1)
     callback([{ isIntersecting: true, intersectionRatio: 1, target }])
     expect(onEnter).toHaveBeenCalledTimes(1)
     expect(onExit).toHaveBeenCalledTimes(1)
