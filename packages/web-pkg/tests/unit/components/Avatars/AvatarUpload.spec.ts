@@ -10,23 +10,20 @@ import { useMessages } from '../../../../src'
 import { describe } from 'vitest'
 
 vi.mock('cropperjs', () => {
-  return {
-    default: vi.fn().mockImplementation(() => ({
-      getCroppedCanvas: vi.fn(() => ({
+  const Cropper = vi.fn(
+    class {
+      getCroppedCanvas = vi.fn(() => ({
         toBlob: vi.fn((cb) => cb(new Blob())),
         toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
-      })),
-      destroy: vi.fn(),
-      replace: vi.fn(),
-      reset: vi.fn(),
-      crop: vi.fn(),
-      move: vi.fn(),
-      rotate: vi.fn(),
-      scale: vi.fn(),
-      ready: vi.fn(() => true)
-    }))
-  }
+      }))
+      destroy = vi.fn()
+      ready = vi.fn(() => true)
+    }
+  )
+  return { default: Cropper }
 })
+
+window.URL.createObjectURL = vi.fn(() => 'foo')
 
 const selectors = {
   removeAvatarButton: '.avatar-upload-remove-button',

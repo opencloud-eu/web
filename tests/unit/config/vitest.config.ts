@@ -5,6 +5,8 @@ import { compilerOptions } from '../../../vite.config.common'
 
 const root = path.resolve(__dirname, '../../../')
 
+process.env.TZ = 'UTC'
+
 export default defineConfig({
   plugins: [vue({ template: { compilerOptions } })],
   css: {

@@ -17,10 +17,20 @@ import {
   OcUppyBody
 } from '@opencloud-eu/web-pkg'
 import { Language } from 'vue3-gettext'
-import { UploadResourceConflict } from '../../src/helpers/resource/actions'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
-vi.mock('../../src/helpers/resource/actions')
+let getConflictsMock = vi.fn()
+let displayOverwriteDialogMock = vi.fn()
+
+vi.mock('../../src/helpers/resource/actions', () => {
+  const UploadResourceConflict = vi.fn(
+    class {
+      getConflicts = getConflictsMock
+      displayOverwriteDialog = displayOverwriteDialogMock
+    }
+  )
+  return { UploadResourceConflict }
+})
 
 type UppyPlugin = UnknownPlugin<OcUppyMeta, OcUppyBody, Record<string, unknown>>
 
@@ -247,14 +257,14 @@ describe('HandleUpload', () => {
     })
     describe('conflict handling check', () => {
       it('checks for conflicts if check enabled', async () => {
-        const { instance, mocks } = getWrapper()
+        const { instance } = getWrapper()
         await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
-        expect(mocks.resourceConflict.getConflicts).toHaveBeenCalled()
+        expect(getConflictsMock).toHaveBeenCalled()
       })
       it('does not check for conflicts if check disabled', async () => {
-        const { instance, mocks } = getWrapper({ conflictHandlingEnabled: false })
+        const { instance } = getWrapper({ conflictHandlingEnabled: false })
         await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
-        expect(mocks.resourceConflict.getConflicts).not.toHaveBeenCalled()
+        expect(getConflictsMock).not.toHaveBeenCalled()
       })
       it('does not start upload if all files were skipped in conflict handling', async () => {
         const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult: [] })
@@ -300,10 +310,8 @@ const getWrapper = ({
   conflictHandlerResult = [],
   spaces = []
 } = {}) => {
-  const resourceConflict = mock<UploadResourceConflict>()
-  resourceConflict.getConflicts.mockReturnValue(conflicts)
-  resourceConflict.displayOverwriteDialog.mockResolvedValue(conflictHandlerResult)
-  vi.mocked(UploadResourceConflict).mockImplementation(() => resourceConflict)
+  getConflictsMock = vi.fn(() => conflicts)
+  displayOverwriteDialogMock = vi.fn().mockResolvedValue(conflictHandlerResult)
 
   const route = mock<RouteLocationNormalizedLoaded>()
   route.params.driveAliasAndItem = '1'
@@ -334,7 +342,7 @@ const getWrapper = ({
     quotaCheckEnabled
   }
 
-  const mocks = { uppy, opts, resourceConflict }
+  const mocks = { uppy, opts }
   const instance = new HandleUpload(uppy, opts)
   return { instance, mocks }
 }
