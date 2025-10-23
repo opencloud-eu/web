@@ -11,7 +11,7 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "@uppy/core": "5.1.0",
+    "@uppy/core": "5.1.1",
     "@vueuse/core": "^14.0.0",
     "axios": "1.12.2",
     "email-validator": "^2.0.4",
