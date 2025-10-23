@@ -1,12 +1,13 @@
 <template>
   <div
-    class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden flex flex-col justify-center items-center"
+    class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden flex flex-col justify-center items-center p-4"
   >
     <h1 class="sr-only" v-text="$gettext('Error')" />
     <oc-card
       :logo-url="logoImg"
       :title="$gettext('Missing or invalid config')"
       body-class="text-center"
+      header-class="text-center"
       class="rounded-lg"
     >
       <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
