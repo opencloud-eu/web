@@ -4,22 +4,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { authService } from '../services/auth'
-import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
-import { defineComponent, unref } from 'vue'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useRouteQuery, AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import { unref } from 'vue'
 
-export default defineComponent({
-  name: 'LoginPage',
-  components: {
-    AppLoadingSpinner
-  },
-  setup() {
-    const redirectUrl = useRouteQuery('redirectUrl')
-    authService.loginUser(queryItemAsString(unref(redirectUrl)))
-
-    return {}
-  }
-})
+const redirectUrl = useRouteQuery('redirectUrl')
+authService.loginUser(queryItemAsString(unref(redirectUrl)))
 </script>

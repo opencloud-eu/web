@@ -3,6 +3,7 @@ import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-
 import { mock } from 'vitest-mock-extended'
 import { queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
 import { Resource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -27,8 +28,8 @@ describe('resolvePrivateLink', () => {
     const driveAliasAndItem = 'personal/home'
     const space = mock<SpaceResource>({ getDriveAliasAndItem: () => driveAliasAndItem })
     const resource = mock<Resource>({ fileId })
-    const { wrapper, mocks } = getWrapper({ space, resource, fileId, path: '/' })
-    await wrapper.vm.resolvePrivateLinkTask.last
+    const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
+    await flushPromises()
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-spaces-generic',
@@ -46,8 +47,8 @@ describe('resolvePrivateLink', () => {
         getDriveAliasAndItem: () => driveAliasAndItem
       })
       const resource = mock<Resource>({ fileId, type: 'file' })
-      const { wrapper, mocks } = getWrapper({ space, resource, fileId, path: '/' })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
       )
@@ -56,8 +57,8 @@ describe('resolvePrivateLink', () => {
       `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`,
       `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}!${SHARE_JAIL_ID}`
     ])('resolves for the share jail id', async (fileId) => {
-      const { wrapper, mocks } = getWrapper({ fileId })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      const { mocks } = getWrapper({ fileId })
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
       )
@@ -70,14 +71,14 @@ describe('resolvePrivateLink', () => {
         getDriveAliasAndItem: () => driveAliasAndItem
       })
       const resource = mock<Resource>({ fileId, id: fileId, type: 'file' })
-      const { wrapper, mocks } = getWrapper({
+      const { mocks } = getWrapper({
         space,
         resource,
         fileId,
         path: '/',
         hiddenShare: true
       })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.objectContaining({ 'q_share-visibility': 'hidden' })
@@ -87,31 +88,29 @@ describe('resolvePrivateLink', () => {
   })
   it('passes the details query param if given via query', async () => {
     const details = 'sharing'
-    const { wrapper, mocks } = getWrapper({ details, path: '/' })
-    await wrapper.vm.resolvePrivateLinkTask.last
+    const { mocks } = getWrapper({ details, path: '/' })
+    await flushPromises()
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({ query: expect.objectContaining({ details }) })
     )
   })
   it('throws an error if the path is empty', async () => {
     const { wrapper } = getWrapper()
-    try {
-      await wrapper.vm.resolvePrivateLinkTask.last
-    } catch {}
+    await flushPromises()
 
     expect(wrapper.find(selectors.errorMessage).text()).toEqual('The file or folder does not exist')
   })
   describe('openWithDefaultApp', () => {
     it('correctly passes the openWithDefaultApp param if enabled and given via query', async () => {
-      const { wrapper, mocks } = getWrapper({ path: '/' })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      const { mocks } = getWrapper({ path: '/' })
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ query: expect.objectContaining({ openWithDefaultApp: 'true' }) })
       )
     })
     it('does not pass the openWithDefaultApp param when details param is given', async () => {
-      const { wrapper, mocks } = getWrapper({ details: 'sharing', path: '/' })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      const { mocks } = getWrapper({ details: 'sharing', path: '/' })
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.not.objectContaining({ openWithDefaultApp: 'true' })
@@ -119,8 +118,8 @@ describe('resolvePrivateLink', () => {
       )
     })
     it('does not pass the openWithDefaultApp param when not requested via query', async () => {
-      const { wrapper, mocks } = getWrapper({ openWithDefaultAppQuery: 'false', path: '/' })
-      await wrapper.vm.resolvePrivateLinkTask.last
+      const { mocks } = getWrapper({ openWithDefaultAppQuery: 'false', path: '/' })
+      await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.not.objectContaining({ openWithDefaultApp: 'true' })
