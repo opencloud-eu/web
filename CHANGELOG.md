@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update uppy monorepo [[#1393](https://github.com/opencloud-eu/web/pull/1393)]
 - chore(deps): update devdependencies (non-major) [[#1418](https://github.com/opencloud-eu/web/pull/1418)]
 - chore(deps): update vitest monorepo to v4 (major) [[#1417](https://github.com/opencloud-eu/web/pull/1417)]
 - fix(deps): update dependency @vueuse/core to v14 [[#1411](https://github.com/opencloud-eu/web/pull/1411)]
