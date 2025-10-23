@@ -4,6 +4,8 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 
+vi.mock('@panzoom/panzoom')
+
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),

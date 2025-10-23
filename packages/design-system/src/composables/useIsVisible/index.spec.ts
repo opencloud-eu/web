@@ -4,16 +4,21 @@ import { mount } from '@opencloud-eu/web-test-helpers'
 
 const mockIntersectionObserver = () => {
   const enable = () => {
-    const mock = {
-      observe: vi.fn(),
-      disconnect: vi.fn(),
-      unobserve: vi.fn()
-    }
-
-    window.IntersectionObserver = vi.fn().mockImplementation(() => mock)
+    const observeMock = vi.fn()
+    const unobserveMock = vi.fn()
+    const disconnectMock = vi.fn()
+    window.IntersectionObserver = vi.fn(
+      class {
+        observe = observeMock
+        unobserve = unobserveMock
+        disconnect = disconnectMock
+      }
+    ) as any
 
     return {
-      mock,
+      observeMock,
+      unobserveMock,
+      disconnectMock,
       callback: (args: unknown[], fastForward = 0) => {
         ;(window.IntersectionObserver as any).mock.calls[0][0](args)
         vi.advanceTimersByTime(fastForward)
@@ -64,15 +69,15 @@ describe('useIsVisible', () => {
   })
 
   it('observes the target', async () => {
-    const { mock: observerMock } = enableIntersectionObserver()
+    const { observeMock } = enableIntersectionObserver()
     createWrapper()
     await nextTick()
 
-    expect(observerMock.observe).toHaveBeenCalledTimes(1)
+    expect(observeMock).toHaveBeenCalledTimes(1)
   })
 
   it('only shows once and then gets unobserved if the the composable is in the default show mode', async () => {
-    const { mock: observerMock, callback: observerCallback } = enableIntersectionObserver()
+    const { unobserveMock, callback: observerCallback } = enableIntersectionObserver()
     const wrapper = createWrapper()
 
     await nextTick()
@@ -81,11 +86,11 @@ describe('useIsVisible', () => {
     observerCallback([{ isIntersecting: true }])
     await nextTick()
     expect((wrapper.vm.$refs.target as any).innerHTML).toBe('true')
-    expect(observerMock.unobserve).toHaveBeenCalledTimes(1)
+    expect(unobserveMock).toHaveBeenCalledTimes(1)
   })
 
   it('shows and hides multiple times if the the composable is in showHide mode', async () => {
-    const { mock: observerMock, callback: observerCallback } = enableIntersectionObserver()
+    const { unobserveMock, callback: observerCallback } = enableIntersectionObserver()
     const wrapper = createWrapper({ mode: 'showHide' })
 
     await nextTick()
@@ -94,15 +99,15 @@ describe('useIsVisible', () => {
     observerCallback([{ isIntersecting: true }])
     await nextTick()
     expect((wrapper.vm.$refs.target as any).innerHTML).toBe('true')
-    expect(observerMock.unobserve).toHaveBeenCalledTimes(0)
+    expect(unobserveMock).toHaveBeenCalledTimes(0)
   })
 
   it('disconnects the observer before component gets unmounted', () => {
-    const { mock: observerMock } = enableIntersectionObserver()
+    const { disconnectMock } = enableIntersectionObserver()
     const wrapper = createWrapper()
 
-    expect(observerMock.disconnect).toHaveBeenCalledTimes(0)
+    expect(disconnectMock).toHaveBeenCalledTimes(0)
     wrapper.unmount()
-    expect(observerMock.disconnect).toHaveBeenCalledTimes(1)
+    expect(disconnectMock).toHaveBeenCalledTimes(1)
   })
 })

@@ -1,5 +1,5 @@
-import { WebThemeType, useThemeStore, ThemeConfigType } from '@opencloud-eu/web-pkg'
-import { mock, mockDeep } from 'vitest-mock-extended'
+import { useThemeStore, ThemeConfigType } from '@opencloud-eu/web-pkg'
+import { mockDeep } from 'vitest-mock-extended'
 import ThemeSwitcher from '../../../../src/components/Account/ThemeSwitcher.vue'
 import { defaultPlugins, defaultStubs, mount } from '@opencloud-eu/web-test-helpers'
 
@@ -49,10 +49,10 @@ function getWrapper({ hasOnlyOneTheme = false } = {}) {
               stubActions: false,
               themeState: {
                 availableThemes,
-                currentTheme: mock<WebThemeType>({
+                currentTheme: {
                   ...themeConfig.clients.web.defaults,
                   ...themeConfig.clients.web.themes[0]
-                })
+                }
               }
             }
           })
