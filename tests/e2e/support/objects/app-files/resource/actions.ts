@@ -599,8 +599,11 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
   }
 
   await page.locator(resourceUploadButton).click()
+  const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
+  await page.locator(inputSelector).waitFor({ state: 'visible' })
+
   let uploadAction: Promise<void> = page
-    .locator(type === 'folder' ? folderUploadInput : fileUploadInput)
+    .locator(inputSelector)
     .setInputFiles(resources.map((file) => file.path))
 
   if (option) {
