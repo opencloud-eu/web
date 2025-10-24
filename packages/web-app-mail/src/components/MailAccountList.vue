@@ -3,7 +3,7 @@
     <oc-list>
       <li v-for="account in accounts" :key="account.accountId">
         <oc-button v-oc-tooltip="account.name" no-hover appearance="raw">
-          <oc-avatar class="ml-1" :user-name="account.name" />
+          <oc-avatar :user-name="account.name" />
         </oc-button>
       </li>
     </oc-list>
