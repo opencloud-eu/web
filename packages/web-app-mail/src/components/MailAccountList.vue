@@ -10,20 +10,20 @@
 
 <script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
-import { AccountSchema, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
+import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { computed, onMounted, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { z } from 'zod'
-import { Account } from '../types'
+import { MailAccount, MailAccountSchema } from '../types'
 
 const { account = {} } = defineProps<{
-  account?: Account
+  account?: MailAccount
 }>()
 
 const clientService = useClientService()
 const configStore = useConfigStore()
 
-const accounts = ref<Account[]>()
+const accounts = ref<MailAccount[]>()
 
 const groupwareBaseUrl = computed(() => configStore.groupwareUrl)
 
@@ -41,7 +41,7 @@ const loadMailAccountsTask = useTask(function* (signal) {
       parsedData.push(data[key])
     })
     console.log('Parsed Data: ', parsedData)
-    accounts.value = z.array(AccountSchema).parse(parsedData)
+    accounts.value = z.array(MailAccountSchema).parse(parsedData)
   } catch (e) {
     console.error(e)
   }

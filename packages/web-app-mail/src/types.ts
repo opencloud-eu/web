@@ -109,88 +109,14 @@ export const MailboxSchema = z.object({
   isSubscribed: z.boolean().optional()
 })
 
-export const EmailQuerySortOptionSchema = z.enum([
-  'receivedAt',
-  'size',
-  'from',
-  'to',
-  'subject',
-  'sentAt',
-  'hasKeyword',
-  'allInThreadHaveKeyword',
-  'someInThreadHaveKeyword'
-])
+export const MailAccountSchema = z.object({
+  name: z.string().optional(),
+  isPersonal: z.boolean().optional(),
+  isReadOnly: z.boolean().optional(),
+  accountCapabilities: z.record(z.string(), z.object({})).optional()
+})
 
-export const JmapMailCapabilitySchema = z
-  .object({
-    maxMailboxesPerEmail: z.number().optional(),
-    maxMailboxDepth: z.number().optional(),
-    maxSizeMailboxName: z.number().optional(),
-    maxSizeAttachmentsPerEmail: z.number().optional(),
-    emailQuerySortOptions: z.array(EmailQuerySortOptionSchema).optional(),
-    mayCreateTopLevelMailbox: z.boolean().optional()
-  })
-  .partial()
-
-export const JmapSubmissionCapabilitySchema = z
-  .object({
-    maxDelayedSend: z.number().optional(),
-    submissionExtensions: z.record(z.string(), z.array(z.string())).optional()
-  })
-  .partial()
-
-export const JmapVacationCapabilitySchema = z.object({}).passthrough().optional()
-
-export const JmapSieveCapabilitySchema = z
-  .object({
-    maxSizeScriptName: z.number().optional(),
-    maxSizeScript: z.number().optional(),
-    maxNumberScripts: z.number().optional(),
-    maxNumberRedirects: z.number().optional(),
-    sieveExtensions: z.array(z.string()).optional(),
-    notificationMethods: z.array(z.string()).optional(),
-    externalLists: z.array(z.string()).nullable().optional()
-  })
-  .partial()
-
-export const JmapBlobCapabilitySchema = z
-  .object({
-    maxSizeBlobSet: z.number().optional(),
-    maxDataSources: z.number().optional(),
-    supportedTypeNames: z.array(z.string()).optional(),
-    supportedDigestAlgorithms: z.array(z.string()).optional()
-  })
-  .partial()
-
-export const JmapQuotaCapabilitySchema = z.object({}).passthrough().optional()
-
-export const AccountCapabilitiesSchema = z
-  .object({
-    'urn:ietf:params:jmap:mail': JmapMailCapabilitySchema.optional(),
-    'urn:ietf:params:jmap:submission': JmapSubmissionCapabilitySchema.optional(),
-    'urn:ietf:params:jmap:vacationresponse': JmapVacationCapabilitySchema.optional(),
-    'urn:ietf:params:jmap:sieve': JmapSieveCapabilitySchema.optional(),
-    'urn:ietf:params:jmap:blob': JmapBlobCapabilitySchema.optional(),
-    'urn:ietf:params:jmap:quota': JmapQuotaCapabilitySchema.optional()
-  })
-  .catchall(z.unknown())
-
-export const AccountSchema = z
-  .object({
-    name: z.string().optional(),
-    isPersonal: z.boolean().optional(),
-    isReadOnly: z.boolean().optional()
-  })
-  .partial()
-
-export type JmapMailCapability = z.infer<typeof JmapMailCapabilitySchema>
-export type JmapSubmissionCapability = z.infer<typeof JmapSubmissionCapabilitySchema>
-export type JmapVacationCapability = z.infer<typeof JmapVacationCapabilitySchema>
-export type JmapSieveCapability = z.infer<typeof JmapSieveCapabilitySchema>
-export type JmapBlobCapability = z.infer<typeof JmapBlobCapabilitySchema>
-export type JmapQuotaCapability = z.infer<typeof JmapQuotaCapabilitySchema>
-export type AccountCapabilities = z.infer<typeof AccountCapabilitiesSchema>
-export type Account = z.infer<typeof AccountSchema>
+export type MailAccount = z.infer<typeof MailAccountSchema>
 export type Mail = z.infer<typeof MailSchema>
 export type MailAddress = z.infer<typeof MailAddressSchema>
 export type MailboxIds = z.infer<typeof MailboxIdsSchema>
