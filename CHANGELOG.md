@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @dschmidt
+@JammingBen, @ScharfViktor, @dschmidt
+
+### ✅ Tests
+
+- fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
 
 ### 🐛 Bug Fixes
 
