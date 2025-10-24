@@ -5,14 +5,12 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { Modal, useModals, WebThemeType } from '../../../../src/composables/piniaStores'
 import { RouteLocation } from 'vue-router'
 
-window.open = vi.fn()
-
 describe('FilePickerModal', () => {
   describe('iframe', () => {
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
       expect(wrapper.vm.iframeSrc).toEqual(
-        'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=file&embed-delegate-authentication=false&embed-file-types=text%2Cmd%2Ctext%2Frtf'
+        'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=file&embed-delegate-authentication=false&embed-file-types=text%2Frtf'
       )
     })
     it('sets the iframe title correctly', () => {
@@ -24,9 +22,9 @@ describe('FilePickerModal', () => {
     it('does nothing if the event message does not equal "opencloud-embed:file-pick"', () => {
       const { wrapper } = getWrapper()
       wrapper.vm.onFilePick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
-      expect(window.open).not.toHaveBeenCalled()
+      expect(wrapper.vm.callbackFn).not.toHaveBeenCalled()
     })
-    it('opens resource in new window when message does equal "opencloud-embed:file-pick"', () => {
+    it('calls callback function when message does equal "opencloud-embed:file-pick"', () => {
       const { wrapper } = getWrapper()
       const modalStore = useModals()
       wrapper.vm.onFilePick(
@@ -40,8 +38,8 @@ describe('FilePickerModal', () => {
           }
         })
       )
+      expect(wrapper.vm.callbackFn).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
-      expect(window.open).toHaveBeenCalled()
     })
   })
 })
@@ -55,10 +53,8 @@ function getWrapper() {
       props: {
         modal: mock<Modal>(),
         resource: mock<Resource>(),
-        app: {
-          name: 'text-editor',
-          extensions: [{ extension: 'text' }, { extension: 'md' }, { mimeType: 'text/rtf' }]
-        },
+        allowedFileTypes: ['text/rtf'],
+        callbackFn: vi.fn(),
         parentFolderLink: {
           name: 'files-spaces-generic',
           params: {
