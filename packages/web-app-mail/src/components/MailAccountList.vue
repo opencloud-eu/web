@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="flex justify-center mt-4">
     <oc-list>
-      <li v-for="account in accounts" :key="account">
-        <oc-avatar class="ml-1" :user-name="account.name" />
+      <li v-for="account in accounts" :key="account.accountId">
+        <oc-button v-oc-tooltip="account.name" no-hover appearance="raw">
+          <oc-avatar class="ml-1" :user-name="account.name" />
+        </oc-button>
       </li>
     </oc-list>
   </div>
@@ -36,12 +38,7 @@ const loadMailAccountsTask = useTask(function* (signal) {
       }
     )
     console.log('Load Account (data):', data)
-    const parsedData: Account[] = []
-    Object.keys(data).forEach((key) => {
-      parsedData.push(data[key])
-    })
-    console.log('Parsed Data: ', parsedData)
-    accounts.value = z.array(MailAccountSchema).parse(parsedData)
+    accounts.value = z.array(MailAccountSchema).parse(data)
   } catch (e) {
     console.error(e)
   }

@@ -110,6 +110,7 @@ export const MailboxSchema = z.object({
 })
 
 export const MailAccountSchema = z.object({
+  accountId: z.string().optional(),
   name: z.string().optional(),
   isPersonal: z.boolean().optional(),
   isReadOnly: z.boolean().optional(),
