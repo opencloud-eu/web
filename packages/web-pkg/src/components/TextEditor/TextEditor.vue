@@ -125,6 +125,11 @@ export default defineComponent({
             options: {}
           }
         ]
+      },
+      codeMirrorExtensions(extensions) {
+        const linkShortener = extensions.find((extension) => extension.type === 'linkShortener')
+        linkShortener.options.maxLength = 120
+        return extensions
       }
     })
 
@@ -164,9 +169,11 @@ export default defineComponent({
   .md-editor-preview > * {
     @apply break-keep;
   }
+
   .md-editor-code-flag {
     @apply hidden;
   }
+
   .md-editor-code-head {
     @apply !justify-end;
   }
@@ -180,6 +187,7 @@ export default defineComponent({
     background-color: var(--oc-role-surface-container);
   }
 }
+
 #text-editor-preview-component {
   background-color: transparent;
 }
