@@ -88,25 +88,25 @@ export const MailSchema = z.object({
 })
 
 export const MailboxSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  role: z.string(),
-  totalEmails: z.number(),
-  unreadEmails: z.number(),
-  totalThreads: z.number(),
-  unreadThreads: z.number(),
+  id: z.string().optional(),
+  name: z.string().optional(),
+  role: z.string().optional(),
+  totalEmails: z.number().optional(),
+  unreadEmails: z.number().optional(),
+  totalThreads: z.number().optional(),
+  unreadThreads: z.number().optional(),
   myRights: z.object({
-    mayReadItems: z.boolean(),
-    mayAddItems: z.boolean(),
-    mayRemoveItems: z.boolean(),
-    maySetSeen: z.boolean(),
-    maySetKeywords: z.boolean(),
-    mayCreateChild: z.boolean(),
-    mayRename: z.boolean(),
-    mayDelete: z.boolean(),
-    maySubmit: z.boolean()
+    mayReadItems: z.boolean().optional(),
+    mayAddItems: z.boolean().optional(),
+    mayRemoveItems: z.boolean().optional(),
+    maySetSeen: z.boolean().optional(),
+    maySetKeywords: z.boolean().optional(),
+    mayCreateChild: z.boolean().optional(),
+    mayRename: z.boolean().optional(),
+    mayDelete: z.boolean().optional(),
+    maySubmit: z.boolean().optional()
   }),
-  isSubscribed: z.boolean()
+  isSubscribed: z.boolean().optional()
 })
 
 export type Mail = z.infer<typeof MailSchema>
