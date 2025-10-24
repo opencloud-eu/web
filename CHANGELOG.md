@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.22.0 [[#1425](https://github.com/opencloud-eu/web/pull/1425)]
 - chore(deps): update devdependencies (non-major) [[#1422](https://github.com/opencloud-eu/web/pull/1422)]
 - chore(deps): update dependency @babel/eslint-parser to v7.28.5 [[#1421](https://github.com/opencloud-eu/web/pull/1421)]
 - chore(deps): update dependency clean-publish to v6 [[#1416](https://github.com/opencloud-eu/web/pull/1416)]
