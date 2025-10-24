@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- e2e tests. fix open shortcut [[#1429](https://github.com/opencloud-eu/web/pull/1429)]
 - fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
 
 ### 🐛 Bug Fixes
