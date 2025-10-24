@@ -128,7 +128,9 @@ export default defineComponent({
       },
       codeMirrorExtensions(extensions) {
         const linkShortener = extensions.find((extension) => extension.type === 'linkShortener')
-        linkShortener.options.maxLength = 120
+        if (linkShortener) {
+          linkShortener.options.maxLength = 120
+        }
         return extensions
       }
     })
