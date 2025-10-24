@@ -2,16 +2,27 @@
   <app-loading-spinner v-if="isMailSummaryLoading" />
   <template v-else>
     <div class="flex h-full">
-      <div
-        :class="[
-          'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
-          selectedMail ? 'hidden md:block' : 'block',
-          'w-full md:w-1/4'
-        ]"
-      >
-        <MailboxTree class="" :selected-mailbox="mailbox" @select="onSelectMailbox" />
-      </div>
+      <div class="w-full md:w-1/4 flex flex-row">
+        <div
+          :class="[
+            'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
+            selectedMail ? 'hidden md:block' : 'block',
+            'basis-1/4 shrink-0'
+          ]"
+        >
+          <MailAccountList />
+        </div>
 
+        <div
+          :class="[
+            'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
+            selectedMail ? 'hidden md:block' : 'block',
+            ' basis-3/4'
+          ]"
+        >
+          <MailboxTree class="" :selected-mailbox="mailbox" @select="onSelectMailbox" />
+        </div>
+      </div>
       <div
         :class="[
           'border-r-0 md:border-r-2 overflow-y-auto min-w-0',
@@ -62,6 +73,7 @@ import MailboxTree from '../components/MailboxTree.vue'
 import { Mail, Mailbox, MailSchema } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
+import MailAccountList from '../components/MailAccountList.vue'
 
 const configStore = useConfigStore()
 const clientService = useClientService()
