@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1422](https://github.com/opencloud-eu/web/pull/1422)]
 - chore(deps): update dependency @babel/eslint-parser to v7.28.5 [[#1421](https://github.com/opencloud-eu/web/pull/1421)]
 - chore(deps): update dependency clean-publish to v6 [[#1416](https://github.com/opencloud-eu/web/pull/1416)]
 - fix(deps): update uppy monorepo [[#1393](https://github.com/opencloud-eu/web/pull/1393)]
