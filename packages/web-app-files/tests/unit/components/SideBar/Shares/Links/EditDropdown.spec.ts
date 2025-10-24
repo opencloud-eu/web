@@ -111,8 +111,7 @@ function getWrapper({
       props: {
         canRename,
         linkShare,
-        isModifiable,
-        isPasswordEnforced: false
+        isModifiable
       },
       global: {
         mocks,
