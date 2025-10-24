@@ -2,14 +2,14 @@ import UserMenu from '../../../../src/components/Topbar/UserMenu.vue'
 import {
   defaultComponentMocks,
   defaultPlugins,
-  defaultStubs,
-  mount,
-  RouteLocation
+  RouteLocation,
+  shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
 import { WebThemeType } from '@opencloud-eu/web-pkg'
+import { OcButton } from '@opencloud-eu/design-system/components'
 
 const totalQuota = 1000
 const basicQuota = 300
@@ -123,6 +123,23 @@ describe('User Menu component', () => {
       expect(output).toContain('https://accessibility.url')
     })
   })
+  describe('account settings route', () => {
+    it('should link to account-information when user is logged in', () => {
+      const wrapper = getMountedWrapper({}, email)
+      const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
+
+      expect((button.props('to') as RouteLocation).name).toEqual('account-information')
+    })
+    it('should link to account-preferences when user is not logged in', () => {
+      const wrapper = getMountedWrapper({}, noEmail, true)
+      const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
+
+      expect((button.props('to') as RouteLocation).name).toEqual('account-preferences')
+      expect((button.props('to') as RouteLocation).query.contextRouteName).toEqual(
+        'files-public-link'
+      )
+    })
+  })
 })
 
 const getMountedWrapper = (
@@ -137,7 +154,7 @@ const getMountedWrapper = (
     })
   }
 
-  return mount(UserMenu, {
+  return shallowMount(UserMenu, {
     global: {
       provide: mocks,
       renderStubDefaultSlot: true,
@@ -171,18 +188,17 @@ const getMountedWrapper = (
                   driveType: 'personal'
                 })
               ]
+            },
+            authState: {
+              userContextReady: !noUser,
+              publicLinkContextReady: noUser
             }
           }
         })
       ],
       stubs: {
-        ...defaultStubs,
-        'oc-button': true,
-        'oc-drop': true,
-        'oc-list': true,
-        'avatar-image': true,
-        'oc-icon': true,
-        'oc-progress': true
+        OcAvatar: false,
+        UserAvatar: false
       },
       mocks
     }
