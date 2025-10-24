@@ -23,6 +23,7 @@
           :items="breadcrumbs"
           :max-width="breadcrumbMaxWidth"
           :truncation-offset="breadcrumbTruncationOffset"
+          :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
           @item-dropped-breadcrumb="fileDroppedBreadcrumb"
         >
           <template #contextMenu>

@@ -4,7 +4,14 @@
     :class="`oc-breadcrumb oc-breadcrumb-${variation} overflow-visible`"
     :aria-label="$gettext('Breadcrumbs')"
   >
-    <ol class="oc-breadcrumb-list hidden sm:flex items-baseline m-0 p-0 flex-nowrap">
+    <ol
+      class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap"
+      :class="{
+        'sm:flex': mobileBreakpoint === 'sm',
+        'md:flex': mobileBreakpoint === 'md',
+        'lg:flex': mobileBreakpoint === 'lg'
+      }"
+    >
       <li
         v-for="(item, index) in displayItems"
         :key="index"
@@ -110,14 +117,24 @@
       type="router-link"
       :aria-label="$gettext('Navigate one level up')"
       :to="parentFolderTo"
-      class="oc-breadcrumb-mobile-navigation sm:hidden block"
+      class="oc-breadcrumb-mobile-navigation flex"
+      :class="{
+        'sm:hidden': mobileBreakpoint === 'sm',
+        'md:hidden': mobileBreakpoint === 'md',
+        'lg:hidden': mobileBreakpoint === 'lg'
+      }"
     >
       <oc-icon name="arrow-left-s" fill-type="line" size="large" />
     </oc-button>
   </nav>
   <div
     v-if="displayItems.length > 1"
-    class="oc-breadcrumb-mobile-current sm:hidden flex justify-center items-center w-0 flex-1"
+    class="oc-breadcrumb-mobile-current flex justify-center items-center w-0 flex-1"
+    :class="{
+      'sm:hidden': mobileBreakpoint === 'sm',
+      'md:hidden': mobileBreakpoint === 'md',
+      'lg:hidden': mobileBreakpoint === 'lg'
+    }"
   >
     <span class="truncate" aria-current="page" v-text="currentFolder.text" />
   </div>
@@ -151,6 +168,11 @@ export interface Props {
    * @default -1
    */
   maxWidth?: number
+  /**
+   * @docs The Tailwind breakpoint at which the mobile version of the breadcrumb is shown.
+   * @default sm
+   */
+  mobileBreakpoint?: 'sm' | 'md' | 'lg'
   /**
    * @docs Determines if the context actions are shown for the last breadcrumb item.
    * @default false
@@ -187,6 +209,7 @@ const {
   contextMenuPadding = 'medium',
   id = uniqueId('oc-breadcrumbs-'),
   maxWidth = -1,
+  mobileBreakpoint = 'sm',
   showContextActions = false,
   truncationOffset = 2,
   variation = 'default'

@@ -6,7 +6,8 @@
         v-oc-tooltip="$gettext('Switch view mode')"
         :aria-label="$gettext('Switch view mode')"
         appearance="raw"
-        class="my-2 mx-1 p-1 align-middle sm:hidden"
+        class="my-2 mx-1 p-1 align-middle"
+        :class="{ 'sm:hidden': !isSideBarOpen, 'md:hidden': isSideBarOpen }"
       >
         <oc-icon name="list-view" fill-type="none" />
       </oc-button>
@@ -21,8 +22,8 @@
         <oc-list>
           <li v-for="viewMode in viewModes" :key="viewMode.name">
             <oc-button
-              :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'raw'"
-              :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
+              :appearance="viewModeQuery === viewMode.name ? 'filled' : 'raw'"
+              :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
               justify-content="left"
               @click="setViewMode(viewMode)"
             >
@@ -36,7 +37,7 @@
                   />
                   <span v-text="viewMode.label" />
                 </span>
-                <oc-icon v-if="viewModeCurrent === viewMode.name" name="check" size="medium" />
+                <oc-icon v-if="viewModeQuery === viewMode.name" name="check" size="medium" />
               </div>
             </oc-button>
           </li>
@@ -45,16 +46,17 @@
     </template>
     <div
       v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group hidden sm:inline-flex mr-2"
+      class="viewmode-switch-buttons oc-button-group hidden mr-2"
+      :class="{ 'sm:inline-flex': !isSideBarOpen, 'md:inline-flex': isSideBarOpen }"
     >
       <oc-button
         v-for="viewMode in viewModes"
         :key="viewMode.name"
         v-oc-tooltip="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
-        :no-hover="viewModeCurrent === viewMode.name"
+        :no-hover="viewModeQuery === viewMode.name"
         :class="[viewMode.name]"
-        :appearance="viewModeCurrent === viewMode.name ? 'filled' : 'outline'"
-        :color-role="viewModeCurrent === viewMode.name ? 'secondaryContainer' : 'secondary'"
+        :appearance="viewModeQuery === viewMode.name ? 'filled' : 'outline'"
+        :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
         :aria-label="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
         @click="setViewMode(viewMode)"
       >
@@ -64,9 +66,9 @@
     <oc-button
       id="files-view-options-btn"
       key="files-view-options-btn"
-      v-oc-tooltip="viewOptionsButtonLabel"
+      v-oc-tooltip="$gettext('Display customization options of the files list')"
       data-testid="files-view-options-btn"
-      :aria-label="viewOptionsButtonLabel"
+      :aria-label="$gettext('Display customization options of the files list')"
       appearance="raw"
       class="my-2 mx-1 p-1 align-middle"
     >
@@ -100,7 +102,7 @@
         <li v-if="hasPagination" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-page-size
             v-if="!queryParamsLoading"
-            :selected="queryItemAsString(itemsPerPageCurrent)"
+            :selected="queryItemAsString(itemsPerPageQuery)"
             data-testid="files-pagination-size"
             :label="$gettext('Items per page')"
             :options="paginationOptions"
@@ -128,13 +130,13 @@
           />
         </li>
         <li
-          v-if="viewModeCurrent === FolderViewModeConstants.name.tiles"
+          v-if="viewModeQuery === FolderViewModeConstants.name.tiles"
           class="mt-2 mb-4 last:mb-0 flex justify-between items-center [&>*]:flex [&>*]:justify-between"
         >
           <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
           <input
             id="tiles-size-slider"
-            v-model="viewSizeCurrent"
+            v-model="viewSizeQuery"
             type="range"
             :min="1"
             :max="viewSizeMax"
@@ -147,8 +149,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FolderViewModeConstants,
@@ -160,187 +162,151 @@ import {
   useRouteQuery,
   useRouteQueryPersisted,
   useRouter,
+  useSideBar,
   useViewSizeMax
 } from '../composables'
 import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
 import { isLocationSpacesActive, isLocationTrashActive } from '../router'
 
-export default defineComponent({
-  props: {
-    hasHiddenFiles: { type: Boolean, default: true },
-    hasFileExtensions: { type: Boolean, default: true },
-    hasPagination: { type: Boolean, default: true },
-    paginationOptions: {
-      type: Array as PropType<string[]>,
-      default: () => PaginationConstants.options
-    },
-    perPageQueryName: {
-      type: String,
-      default: () => PaginationConstants.perPageQueryName
-    },
-    perPageDefault: {
-      type: String,
-      default: () => PaginationConstants.perPageDefault
-    },
-    perPageStoragePrefix: {
-      type: String,
-      required: true
-    },
-    viewModeDefault: {
-      type: String,
-      required: false,
-      default: () => FolderViewModeConstants.defaultModeName
-    },
-    viewModes: {
-      type: Array as PropType<FolderView[]>,
-      default: (): FolderView[] => []
+const {
+  perPageStoragePrefix,
+  hasHiddenFiles = true,
+  hasFileExtensions = true,
+  hasPagination = true,
+  paginationOptions = PaginationConstants.options,
+  perPageQueryName = PaginationConstants.perPageQueryName,
+  perPageDefault = PaginationConstants.perPageDefault,
+  viewModeDefault = FolderViewModeConstants.defaultModeName,
+  viewModes = []
+} = defineProps<{
+  perPageStoragePrefix: string
+  hasHiddenFiles?: boolean
+  hasFileExtensions?: boolean
+  hasPagination?: boolean
+  paginationOptions?: string[]
+  perPageQueryName?: string
+  perPageDefault?: string
+  viewModeDefault?: string
+  viewModes?: FolderView[]
+}>()
+
+const router = useRouter()
+const currentRoute = useRoute()
+const { $gettext } = useGettext()
+const { isSideBarOpen } = useSideBar()
+
+const resourcesStore = useResourcesStore()
+const {
+  setAreHiddenFilesShown,
+  setAreFileExtensionsShown,
+  setAreDisabledSpacesShown,
+  setAreEmptyTrashesShown
+} = resourcesStore
+const {
+  areHiddenFilesShown,
+  areFileExtensionsShown,
+  areDisabledSpacesShown,
+  areEmptyTrashesShown
+} = storeToRefs(resourcesStore)
+
+const queryParamsLoading = ref(false)
+
+const isProjectsLocation = useActiveLocation(isLocationSpacesActive, 'files-spaces-projects')
+const isTrashOverViewLocation = useActiveLocation(isLocationTrashActive, 'files-trash-overview')
+
+const currentPageQuery = useRouteQuery('page')
+const currentPage = computed(() => {
+  if (!unref(currentPageQuery)) {
+    return 1
+  }
+  return parseInt(queryItemAsString(unref(currentPageQuery)))
+})
+const itemsPerPageQuery = useRouteQueryPersisted({
+  name: perPageQueryName,
+  defaultValue: perPageDefault,
+  storagePrefix: perPageStoragePrefix
+})
+
+const viewModeQuery = useRouteQueryPersisted({
+  name: FolderViewModeConstants.queryName,
+  defaultValue: viewModeDefault
+})
+
+const viewSizeQuery = useRouteQueryPersisted({
+  name: FolderViewModeConstants.tilesSizeQueryName,
+  defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
+})
+
+const setItemsPerPage = (itemsPerPage: string) => {
+  return router.replace({
+    query: {
+      ...unref(currentRoute).query,
+      [perPageQueryName]: itemsPerPage,
+      ...(unref(currentPage) > 1 && { page: '1' })
     }
+  })
+}
+
+const setViewMode = (mode: FolderView) => {
+  viewModeQuery.value = mode.name
+}
+
+watch(
+  [itemsPerPageQuery, viewModeQuery, viewSizeQuery],
+  (params) => {
+    queryParamsLoading.value = params.some((p) => !p)
   },
-  setup(props) {
-    const router = useRouter()
-    const currentRoute = useRoute()
-    const { $gettext } = useGettext()
+  { immediate: true, deep: true }
+)
 
-    const resourcesStore = useResourcesStore()
-    const {
-      setAreHiddenFilesShown,
-      setAreFileExtensionsShown,
-      setAreDisabledSpacesShown,
-      setAreEmptyTrashesShown
-    } = resourcesStore
-    const {
-      areHiddenFilesShown,
-      areFileExtensionsShown,
-      areDisabledSpacesShown,
-      areEmptyTrashesShown
-    } = storeToRefs(resourcesStore)
+const viewSizeMax = useViewSizeMax()
 
-    const queryParamsLoading = ref(false)
-
-    const currentPageQuery = useRouteQuery('page')
-    const currentPage = computed(() => {
-      if (!unref(currentPageQuery)) {
-        return 1
-      }
-      return parseInt(queryItemAsString(unref(currentPageQuery)))
-    })
-    const itemsPerPageQuery = useRouteQueryPersisted({
-      name: props.perPageQueryName,
-      defaultValue: props.perPageDefault,
-      storagePrefix: props.perPageStoragePrefix
-    })
-
-    const viewModeQuery = useRouteQueryPersisted({
-      name: FolderViewModeConstants.queryName,
-      defaultValue: props.viewModeDefault
-    })
-
-    const viewSizeQuery = useRouteQueryPersisted({
-      name: FolderViewModeConstants.tilesSizeQueryName,
-      defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
-    })
-
-    const setItemsPerPage = (itemsPerPage: string) => {
-      return router.replace({
-        query: {
-          ...unref(currentRoute).query,
-          [props.perPageQueryName]: itemsPerPage,
-          ...(unref(currentPage) > 1 && { page: '1' })
-        }
-      })
-    }
-
-    const setViewMode = (mode: FolderView) => {
-      viewModeQuery.value = mode.name
-    }
-
-    watch(
-      [itemsPerPageQuery, viewModeQuery, viewSizeQuery],
-      (params) => {
-        queryParamsLoading.value = params.some((p) => !p)
-      },
-      { immediate: true, deep: true }
-    )
-
-    const viewSizeMax = useViewSizeMax()
-
-    return {
-      FolderViewModeConstants,
-      viewModeCurrent: viewModeQuery,
-      viewSizeCurrent: viewSizeQuery,
-      viewSizeMax,
-      itemsPerPageCurrent: itemsPerPageQuery,
-      queryParamsLoading,
-      queryItemAsString,
-      setItemsPerPage,
-      setViewMode,
-      areHiddenFilesShown,
-      areFileExtensionsShown,
-      areDisabledSpacesShown,
-      areEmptyTrashesShown,
-      setAreHiddenFilesShown,
-      setAreFileExtensionsShown,
-      setAreDisabledSpacesShown,
-      setAreEmptyTrashesShown,
-      viewOptionsButtonLabel: $gettext('Display customization options of the files list'),
-      isProjectsLocation: useActiveLocation(isLocationSpacesActive, 'files-spaces-projects'),
-      isTrashOverViewLocation: useActiveLocation(isLocationTrashActive, 'files-trash-overview')
-    }
+const hiddenFilesShownModel = computed({
+  get() {
+    return unref(areHiddenFilesShown)
   },
-  computed: {
-    hiddenFilesShownModel: {
-      get() {
-        return this.areHiddenFilesShown
-      },
-
-      set(value: boolean) {
-        this.setAreHiddenFilesShown(value)
-      }
-    },
-    fileExtensionsShownModel: {
-      get() {
-        return this.areFileExtensionsShown
-      },
-
-      set(value: boolean) {
-        this.setAreFileExtensionsShown(value)
-      }
-    },
-    disabledSpacesShownModel: {
-      get() {
-        return this.areDisabledSpacesShown
-      },
-
-      set(value: boolean) {
-        this.setAreDisabledSpacesShown(value)
-      }
-    },
-    emptyTrashesShownModel: {
-      get() {
-        return this.areEmptyTrashesShown
-      },
-
-      set(value: boolean) {
-        this.setAreEmptyTrashesShown(value)
-      }
-    }
-  },
-  methods: {
-    updateHiddenFilesShownModel(event: boolean) {
-      this.hiddenFilesShownModel = event
-    },
-    updateFileExtensionsShownModel(event: boolean) {
-      this.fileExtensionsShownModel = event
-    },
-    updateDisabledSpacesShownModel(event: boolean) {
-      this.disabledSpacesShownModel = event
-    },
-    updateEmptyTrashesShownModel(event: boolean) {
-      this.emptyTrashesShownModel = event
-    }
+  set(value: boolean) {
+    setAreHiddenFilesShown(value)
   }
 })
+const fileExtensionsShownModel = computed({
+  get() {
+    return unref(areFileExtensionsShown)
+  },
+  set(value: boolean) {
+    setAreFileExtensionsShown(value)
+  }
+})
+const disabledSpacesShownModel = computed({
+  get() {
+    return unref(areDisabledSpacesShown)
+  },
+  set(value: boolean) {
+    setAreDisabledSpacesShown(value)
+  }
+})
+const emptyTrashesShownModel = computed({
+  get() {
+    return unref(areEmptyTrashesShown)
+  },
+  set(value: boolean) {
+    setAreEmptyTrashesShown(value)
+  }
+})
+
+const updateHiddenFilesShownModel = (event: boolean) => {
+  hiddenFilesShownModel.value = event
+}
+const updateFileExtensionsShownModel = (event: boolean) => {
+  fileExtensionsShownModel.value = event
+}
+const updateDisabledSpacesShownModel = (event: boolean) => {
+  disabledSpacesShownModel.value = event
+}
+const updateEmptyTrashesShownModel = (event: boolean) => {
+  emptyTrashesShownModel.value = event
+}
 </script>
 
 <style lang="scss" scoped>
