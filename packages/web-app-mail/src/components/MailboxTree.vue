@@ -1,41 +1,32 @@
 <template>
-  <div class="mailbox-tree h-full">
-    <no-content-message v-if="0" icon="folder-reduce" icon-fill-type="line">
-      <template #message>
-        <span v-text="$gettext('No accounts found')" />
-      </template>
-    </no-content-message>
-    <div v-else>
-      <span class="mailbox-name text-role-on-surface-variant" v-text="'test@asd.org'" />
-
-      <oc-list class="mailbox-tree mt-1">
-        <li class="pl-2 pr-4 py-2">
-          <oc-button
-            class="w-full justify-start rounded-xl"
-            appearance="raw"
-            size="large"
-            @click="emitSelectedMailbox('', 'all', $gettext('All emails'))"
-          >
-            <oc-icon name="folder" class="" fill-type="fill" />
-            <span class="ml-2" v-text="$gettext('All emails')" />
-          </oc-button>
-        </li>
-        <li
-          v-for="mb in mailboxes"
-          :key="mb.key"
-          class="mailbox-tree-item rounded-xl bg-role-surface-container-lowest pl-2 pr-4 py-2"
-        >
-          <oc-button
-            appearance="raw"
-            size="small"
-            @click="emitSelectedMailbox(mb.accountId, mb.id, mb.name)"
-          >
-            <oc-icon name="folder" class="mr-2" fill-type="line" />
-            <span v-text="mb.name" />
-          </oc-button>
-        </li>
-      </oc-list>
-    </div>
+  <div class="mailbox-tree h-full px-1">
+    <h1 class="text-lg ml-4" v-text="$gettext('test@setwhenaccloaded.org')" />
+    <app-loading-spinner v-if="isMailboxesLoading" />
+    <template v-else>
+      <no-content-message v-if="!mailboxes.length" icon="folder-reduce" icon-fill-type="line">
+        <template #message>
+          <span v-text="$gettext('No mailboxes found')" />
+        </template>
+      </no-content-message>
+      <div v-else>
+        <oc-list class="mailbox-tree mt-1">
+          <li v-for="mailbox in mailboxes" :key="mailbox.key" class="pb-1 px-2">
+            <oc-button
+              class="w-full p-2 hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest"
+              :class="{ '!bg-role-secondary-container': selectedMailbox?.id === mailbox.id }"
+              no-hover
+              justify-content="left"
+              appearance="raw"
+              size="small"
+              @click="$emit('select', mailbox)"
+            >
+              <oc-icon name="folder" class="mr-2" fill-type="line" />
+              <span v-text="mailbox.name" />
+            </oc-button>
+          </li>
+        </oc-list>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -44,66 +35,39 @@ import { computed, onMounted, ref, unref } from 'vue'
 import { NoContentMessage, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 import { urlJoin } from '@opencloud-eu/web-client'
+import { Mailbox, MailboxSchema } from '../types'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { useTask } from 'vue-concurrency'
 
-const emit = defineEmits<{
-  (e: 'select', payload: { accountId: string; mailboxId: string; mailboxName: string }): void
+const { selectedMailbox = {} } = defineProps<{
+  selectedMailbox?: Mailbox
 }>()
-
-const emitSelectedMailbox = (accountId: string, mailboxId: string, mailboxName: string) => {
-  emit('select', { accountId, mailboxId, mailboxName })
-}
+defineEmits<{
+  (e: 'select', payload: Mailbox): void
+}>()
 
 const clientService = useClientService()
 const configStore = useConfigStore()
 const groupwareBaseUrl = computed(() => configStore.groupwareUrl)
 
-const loadedData = ref<any>(null)
+const isMailboxesLoading = computed(() => loadMailboxesTask.isRunning || !loadMailboxesTask.last)
 
-type UiMailbox = {
-  accountId: string
-  id: string
-  name: string
-  role?: string | null
-  unreadEmails?: number
-  key: string
-}
+const mailboxes = ref<any>(null)
 
-const mailboxes = computed<UiMailbox[]>(() => {
-  if (
-    !unref(loadedData) ||
-    typeof unref(loadedData) !== 'object' ||
-    Array.isArray(unref(loadedData))
-  )
-    return []
-
-  return Object.entries<any>(unref(loadedData)).flatMap(([accId, payload]) =>
-    Array.isArray(payload?.mailboxes)
-      ? payload.mailboxes.map(
-          (mb: any): UiMailbox => ({
-            accountId: String(accId),
-            id: String(mb.id),
-            name: String(mb.name ?? mb.role ?? 'Mailbox'),
-            role: mb.role ?? null,
-            unreadEmails: typeof mb.unreadEmails === 'number' ? mb.unreadEmails : undefined,
-            key: `${accId}:${mb.id}`
-          })
-        )
-      : []
-  )
-})
-
-const loadMailboxes = async () => {
+const loadMailboxesTask = useTask(function* (signal) {
   try {
-    const { data } = await clientService.httpAuthenticated.get(
-      urlJoin(unref(groupwareBaseUrl), 'accounts/all/mailboxes')
+    // We need to send the real account id (as soon we have an account tree)
+    const { data }: { data: { mailboxes: Mailbox[] } } = yield clientService.httpAuthenticated.get(
+      urlJoin(unref(groupwareBaseUrl), 'accounts/b/mailboxes')
     )
-    loadedData.value = data
+    console.log(data)
+    mailboxes.value = MailboxSchema.array().parse(data)
   } catch (e) {
     console.error(e)
   }
-}
+})
 
 onMounted(() => {
-  loadMailboxes()
+  loadMailboxesTask.perform()
 })
 </script>

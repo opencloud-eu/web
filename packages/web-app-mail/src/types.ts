@@ -87,9 +87,32 @@ export const MailSchema = z.object({
   hasAttachment: z.boolean().optional()
 })
 
+export const MailboxSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  role: z.string(),
+  totalEmails: z.number(),
+  unreadEmails: z.number(),
+  totalThreads: z.number(),
+  unreadThreads: z.number(),
+  myRights: z.object({
+    mayReadItems: z.boolean(),
+    mayAddItems: z.boolean(),
+    mayRemoveItems: z.boolean(),
+    maySetSeen: z.boolean(),
+    maySetKeywords: z.boolean(),
+    mayCreateChild: z.boolean(),
+    mayRename: z.boolean(),
+    mayDelete: z.boolean(),
+    maySubmit: z.boolean()
+  }),
+  isSubscribed: z.boolean()
+})
+
 export type Mail = z.infer<typeof MailSchema>
 export type MailAddress = z.infer<typeof MailAddressSchema>
 export type MailboxIds = z.infer<typeof MailboxIdsSchema>
 export type Keywords = z.infer<typeof KeywordsSchema>
 export type MailHeader = z.infer<typeof MailHeaderSchema>
 export type MailBodyValue = z.infer<typeof MailBodyValueSchema>
+export type Mailbox = z.infer<typeof MailboxSchema>

@@ -5,7 +5,7 @@
       <oc-icon name="arrow-left" fill-type="line" />
     </oc-button>
     <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
-      <h2 class="block truncate" v-text="mail.subject" />
+      <h3 class="text-lg block truncate" v-text="mail.subject" />
       <MailIndicators :mail="mail" />
     </div>
     <div class="mail-details-subheader mt-2 flex justify-between">
