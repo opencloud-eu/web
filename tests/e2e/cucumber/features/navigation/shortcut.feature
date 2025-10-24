@@ -41,7 +41,7 @@ Feature: Users can create shortcuts for resources and sites
     Then "Alice" is in a text-editor
     And "Alice" closes the file viewer
     And "Alice" opens the "files" app
-    Then "Alice" can open a shortcut "companyNews.url" with external url "https://opencloud.eu/news/"
+    Then "Alice" can open a shortcut "companyNews.url" with external url "https://opencloud.eu/en/blog-news"
     And "Alice" logs out
 
     # create a shortcut to the shared file
