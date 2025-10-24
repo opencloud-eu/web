@@ -44,7 +44,6 @@
         'htmlPreview',
         'pageFullscreen'
       ]"
-      :read-only="isReadOnly"
       auto-focus
       @on-change="(value: string) => $emit('update:currentContent', value)"
     />
@@ -127,10 +126,16 @@ export default defineComponent({
         ]
       },
       codeMirrorExtensions(extensions) {
+        if (!unref(isMarkdown)) {
+          return extensions.filter((extension) =>
+            ['lineWrapping', 'keymap', 'floatingToolbar'].includes(extension.type)
+          )
+        }
         const linkShortener = extensions.find((extension) => extension.type === 'linkShortener')
         if (linkShortener) {
           linkShortener.options.maxLength = 120
         }
+
         return extensions
       }
     })
