@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!mailbox" icon="inbox" icon-fill-type="line">
+    <no-content-message v-if="!mailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
       </template>
