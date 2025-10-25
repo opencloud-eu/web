@@ -1,5 +1,59 @@
 # Changelog
 
+## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-10-25
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen, @ScharfViktor, @dschmidt
+
+### ✅ Tests
+
+- e2e tests. fix open shortcut [[#1429](https://github.com/opencloud-eu/web/pull/1429)]
+- fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
+
+### 🐛 Bug Fixes
+
+- fix: plain views on mobile [[#1415](https://github.com/opencloud-eu/web/pull/1415)]
+- fix(extension-sdk): handle 'require' (wrapped in single quotes) in pa… [[#1414](https://github.com/opencloud-eu/web/pull/1414)]
+- fix(extension-sdk): ensure asset imports work [[#1412](https://github.com/opencloud-eu/web/pull/1412)]
+- fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
+- fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
+- fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
+### 📈 Enhancement
+
+- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.22.0 [[#1425](https://github.com/opencloud-eu/web/pull/1425)]
+- chore(deps): update devdependencies (non-major) [[#1422](https://github.com/opencloud-eu/web/pull/1422)]
+- chore(deps): update dependency @babel/eslint-parser to v7.28.5 [[#1421](https://github.com/opencloud-eu/web/pull/1421)]
+- chore(deps): update dependency clean-publish to v6 [[#1416](https://github.com/opencloud-eu/web/pull/1416)]
+- fix(deps): update uppy monorepo [[#1393](https://github.com/opencloud-eu/web/pull/1393)]
+- chore(deps): update devdependencies (non-major) [[#1418](https://github.com/opencloud-eu/web/pull/1418)]
+- chore(deps): update vitest monorepo to v4 (major) [[#1417](https://github.com/opencloud-eu/web/pull/1417)]
+- fix(deps): update dependency @vueuse/core to v14 [[#1411](https://github.com/opencloud-eu/web/pull/1411)]
+- chore(deps): update dependency md-editor-v3 to v6.1.0 [[#1355](https://github.com/opencloud-eu/web/pull/1355)]
+- chore(deps): update pnpm to v10.19.0 [[#1407](https://github.com/opencloud-eu/web/pull/1407)]
+- chore(deps): update typescript-eslint monorepo to v8.46.2 [[#1400](https://github.com/opencloud-eu/web/pull/1400)]
+- chore(deps): update node.js to v22.21.0 [[#1402](https://github.com/opencloud-eu/web/pull/1402)]
+- fix(deps): update dependency @sentry/vue to v10.21.0 [[#1408](https://github.com/opencloud-eu/web/pull/1408)]
+- chore(deps): update devdependencies (non-major) [[#1404](https://github.com/opencloud-eu/web/pull/1404)]
+- chore(deps): update collabora/code docker tag to v25.04.6.2.1 [[#1388](https://github.com/opencloud-eu/web/pull/1388)]
+- chore(deps): update devdependencies (non-major) [[#1322](https://github.com/opencloud-eu/web/pull/1322)]
+- chore(deps): update dependency eslint-plugin-unused-imports to v4.3.0 [[#1395](https://github.com/opencloud-eu/web/pull/1395)]
+- chore(deps): update dependency happy-dom to v20.0.2 [security] [[#1385](https://github.com/opencloud-eu/web/pull/1385)]
+- chore(deps): update dependency eslint-plugin-vue to v10.5.1 [[#1383](https://github.com/opencloud-eu/web/pull/1383)]
+- fix(deps): update dependency @sentry/vue to v10.20.0 - autoclosed [[#1384](https://github.com/opencloud-eu/web/pull/1384)]
+- fix(deps): update dependency vue-router to v4.6.3 [[#1375](https://github.com/opencloud-eu/web/pull/1375)]
+- chore(deps): update pnpm to v10.18.3 [[#1374](https://github.com/opencloud-eu/web/pull/1374)]
+- chore(deps): update typescript-eslint monorepo to v8.46.1 [[#1368](https://github.com/opencloud-eu/web/pull/1368)]
+- chore(deps): update dependency dompurify to v3.3.0 [[#1367](https://github.com/opencloud-eu/web/pull/1367)]
+
 ## [4.1.0](https://github.com/opencloud-eu/web/releases/tag/v4.1.0) - 2025-10-13
 
 ### ❤️ Thanks to all contributors! ❤️
