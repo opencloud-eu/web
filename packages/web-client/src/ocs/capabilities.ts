@@ -176,6 +176,9 @@ export interface Capabilities {
         edit_login_allowed_disabled?: boolean
       }
     }
+    groupware?: {
+      enabled?: boolean
+    }
   }
   version: {
     edition?: string
