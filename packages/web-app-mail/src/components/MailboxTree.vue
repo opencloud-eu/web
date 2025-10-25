@@ -1,6 +1,6 @@
 <template>
   <div class="mailbox-tree h-full px-1">
-    <h1 class="text-lg ml-4" v-text="$gettext('Mailboxes')" />
+    <h1 class="text-lg ml-4" v-text="account.name" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <no-content-message v-if="!mailboxes.length" icon="folder-reduce" icon-fill-type="line">
@@ -33,17 +33,19 @@
 <script setup lang="ts">
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
-import type { Mailbox } from '../types'
+import type { MailAccount, Mailbox } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 
 const {
-  selectedMailbox = {},
-  mailboxes = [],
-  isLoading = false
+  mailboxes,
+  account,
+  isLoading,
+  selectedMailbox = {}
 } = defineProps<{
   selectedMailbox?: Mailbox
   mailboxes?: Mailbox[]
   isLoading?: boolean
+  account: MailAccount
 }>()
 
 defineEmits<{
