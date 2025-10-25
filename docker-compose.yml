@@ -269,7 +269,7 @@ services:
       - '10200:10200'
       - '9980:9980'
       - '8880:8880'
-      - '9981:443'
+      - '443:443'
     volumes:
       - './dev/docker/traefik/certificates:/certificates'
       - './dev/docker/traefik/configs:/configs'
