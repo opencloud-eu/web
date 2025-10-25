@@ -1,5 +1,5 @@
 <template>
-  <app-loading-spinner v-if="isMailLoading" />
+  <app-loading-spinner v-if="isLoading" />
   <div v-else-if="mail" class="mail-details">
     <oc-button class="md:hidden mb-2" appearance="raw" no-hover @click="$emit('back')">
       <oc-icon name="arrow-left" fill-type="line" />
@@ -31,83 +31,45 @@
 </template>
 
 <script setup lang="ts">
-import { Mail, MailSchema } from '../types'
-import { computed, ref, unref, watch } from 'vue'
-import {
-  formatRelativeDateFromISO,
-  useClientService,
-  useConfigStore
-} from '@opencloud-eu/web-pkg/src'
+import type { Mail } from '../types'
+import { computed, unref } from 'vue'
+import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
 import { buildMailBody } from '../helpers'
 import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
-import { useTask } from 'vue-concurrency'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 
-const { accountId, mailId } = defineProps<{
-  accountId: string
-  mailId: string
+const { mail, isLoading = false } = defineProps<{
+  mail?: Mail
+  isLoading?: boolean
 }>()
 
 defineEmits<{
   (e: 'back'): void
 }>()
-const clientService = useClientService()
-const configStore = useConfigStore()
+
 const { current: currentLanguage } = useGettext()
 
-const mail = ref<Mail>()
-
-const groupwareBaseUrl = computed(() => configStore.groupwareUrl)
-
 const fromEmail = computed(() => {
-  return unref(mail).from[0]?.email || unref(mail).sender[0]?.email
+  return unref(mail)?.from[0]?.email || unref(mail)?.sender[0]?.email
 })
 
 const fromName = computed(() => {
-  return unref(mail).from[0]?.name || unref(mail).sender[0]?.name
+  return unref(mail)?.from[0]?.name || unref(mail)?.sender[0]?.name
 })
 
 const sendToNames = computed(() => {
-  return unref(mail)
-    .to.map((t) => t.name || t.email)
-    .join(', ')
+  const m = unref(mail)
+  if (!m) return ''
+  return m.to.map((t) => t.name || t.email).join(', ')
 })
 
-const mailBody = computed(() => buildMailBody(unref(mail)))
-
-const isMailLoading = computed(() => loadMailTask.isRunning && !loadMailTask.last)
+const mailBody = computed(() => (unref(mail) ? buildMailBody(unref(mail)) : ''))
 
 const receivedAtRelativeDate = computed(() => {
-  return formatRelativeDateFromISO(unref(mail).receivedAt, currentLanguage)
+  const m = unref(mail)
+  if (!m?.receivedAt) return ''
+  return formatRelativeDateFromISO(m.receivedAt, currentLanguage)
 })
-
-const loadMailTask = useTask(function* (signal) {
-  try {
-    const { data } = yield clientService.httpAuthenticated.get(
-      urlJoin(unref(groupwareBaseUrl), `accounts/${accountId}/emails/${mailId}?markAsSeen=true`),
-      {
-        signal
-      }
-    )
-    console.log(data)
-    mail.value = MailSchema.parse(data)
-  } catch (e) {
-    console.error(e)
-  }
-})
-
-watch(
-  [() => mailId, () => accountId],
-  () => {
-    if (!mailId || !accountId) {
-      return
-    }
-    loadMailTask.perform()
-  },
-  {
-    immediate: true
-  }
-)
 </script>

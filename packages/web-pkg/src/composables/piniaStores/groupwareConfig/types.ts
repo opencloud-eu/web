@@ -43,7 +43,7 @@ export const LimitsSchema = z.object({
   maxConcurrentRequests: z.number()
 })
 
-export const AccountsSchema = z.record(z.string(), AccountSchema)
+export const AccountsSchema = z.array(AccountSchema)
 
 export const PrimaryAccountsSchema = z.record(z.string(), z.string())
 
