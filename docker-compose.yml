@@ -231,7 +231,7 @@ services:
       - '--pilot.dashboard=false'
       - '--log.level=DEBUG'
       - '--api.dashboard=true'
-      - '--api.insecure=true'
+      - '--api.insecure=false'
       - '--providers.file.directory=/configs'
       - '--providers.docker=true'
       - '--providers.docker.exposedbydefault=false'
@@ -245,6 +245,7 @@ services:
       - '--entrypoints.websecure.address=:443'
       - '--entrypoints.websecure.http.middlewares=https_config@docker'
       - '--entrypoints.websecure.http.tls.options=default'
+      - '--entrypoints.web8080.address=:8080'
     labels:
       traefik.enable: true
       traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
@@ -262,7 +263,7 @@ services:
 
     ports:
       - '80:80'
-      - '8090:8080'
+      - '8080:8080'
       - '9200:9200'
       - '9300:9300'
       - '9302:9302'
@@ -333,6 +334,9 @@ services:
       traefik.http.routers.stalwart.rule: Host(`stalwart.opencloud.test`)
       #traefik.http.routers.stalwart.tls.certresolver: http
       traefik.http.routers.stalwart.service: stalwart
+      traefik.http.routers.stalwart-http.entrypoints: web8080
+      traefik.http.routers.stalwart-http.rule: Host(`stalwart.opencloud.test`)
+      traefik.http.routers.stalwart-http.service: stalwart
       traefik.http.services.stalwart.loadbalancer.server.port: 8080
     logging:
       driver: ${LOG_DRIVER:-local}
