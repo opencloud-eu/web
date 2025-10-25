@@ -157,6 +157,19 @@ const isMailsLoading = computed(
 
 const isMailLoading = computed(() => unref(loadMailTask.isRunning))
 
+const onSelectMailbox = async (selectedMailbox: Mailbox) => {
+  mailbox.value = selectedMailbox
+  selectedMailboxIdQuery.value = selectedMailbox.id
+  selectedMailIdQuery.value = null
+  mailDetails.value = null
+  await loadMailSummaryTask.perform()
+}
+
+const onSelectMail = async (selectedMail: Mail) => {
+  selectedMailIdQuery.value = selectedMail.id
+  await loadMailTask.perform(selectedMail.id)
+}
+
 const onSelectAccount = async (selectedAccount: MailAccount) => {
   account.value = selectedAccount
   selectedAccountIdQuery.value = selectedAccount.accountId
@@ -169,19 +182,6 @@ const onSelectAccount = async (selectedAccount: MailAccount) => {
   selectedMailboxIdQuery.value = unref(mailbox).id
 
   await loadMailSummaryTask.perform()
-}
-
-const onSelectMailbox = async (selectedMailbox: Mailbox) => {
-  mailbox.value = selectedMailbox
-  selectedMailboxIdQuery.value = selectedMailbox.id
-  selectedMailIdQuery.value = null
-  mailDetails.value = null
-  await loadMailSummaryTask.perform()
-}
-
-const onSelectMail = async (selectedMail: Mail) => {
-  selectedMailIdQuery.value = selectedMail.id
-  await loadMailTask.perform(selectedMail.id)
 }
 
 const onDeselectMail = () => {
@@ -199,7 +199,7 @@ const onDeselectMailbox = () => {
 
 onMounted(async () => {
   await loadAccountsTask.perform()
-  console.log('Accounts', unref(mailboxes))
+  console.log('Accounts', unref(accounts))
 
   if (unref(selectedAccountIdQuery)) {
     account.value = unref(accounts).find(
@@ -221,7 +221,7 @@ onMounted(async () => {
   }
 
   await loadMailSummaryTask.perform()
-  console.log('Mails', unref(mailboxes))
+  console.log('Mails', unref(mails))
 
   if (unref(selectedMailIdQuery)) {
     await loadMailTask.perform(unref(selectedMailIdQuery))
