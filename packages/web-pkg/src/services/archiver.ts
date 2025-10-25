@@ -1,5 +1,5 @@
 import { RuntimeError } from '../errors'
-import { HttpError, urlJoin } from '@opencloud-eu/web-client'
+import { urlJoin } from '@opencloud-eu/web-client'
 import { ClientService } from '../services'
 import { triggerDownloadWithFilename } from '../helpers/download'
 import { Ref, ref, computed, unref } from 'vue'
@@ -8,12 +8,9 @@ import { UserStore } from '../composables'
 import { compareVersions } from '../utils'
 
 interface TriggerDownloadOptions {
-  dir?: string
   files?: string[]
   fileIds?: string[]
-  downloadSecret?: string
   publicToken?: string
-  publicLinkPassword?: string
 }
 
 export class ArchiverService {
@@ -60,36 +57,13 @@ export class ArchiverService {
 
     const url = options.publicToken
       ? downloadUrl
-      : await this.clientService.ocsUserContext.signUrl(
+      : await this.clientService.ocs.signUrl(
           downloadUrl,
           this.userStore.user?.onPremisesSamAccountName
         )
 
-    try {
-      // use fetch because we can't reliably retrieve large data streams with axios
-      const response = await fetch(url, {
-        headers: {
-          ...this.clientService.getRequestHeaders({ useAuth: !options.publicLinkPassword }),
-          ...(!!options.publicLinkPassword && {
-            Authorization:
-              'Basic ' +
-              Buffer.from(['public', options.publicLinkPassword].join(':')).toString('base64')
-          })
-        }
-      })
-
-      if (!response.ok) {
-        throw new HttpError('', response)
-      }
-
-      const blob = await response.blob()
-      const objectUrl = URL.createObjectURL(blob)
-      const fileName = this.getFileNameFromResponseHeaders(response.headers)
-      triggerDownloadWithFilename(objectUrl, fileName)
-      return url
-    } catch (e) {
-      throw new HttpError('archive could not be fetched', e.response)
-    }
+    triggerDownloadWithFilename(url)
+    return url
   }
 
   private buildDownloadUrl(options: TriggerDownloadOptions): string {
@@ -111,10 +85,5 @@ export class ArchiverService {
       return capability.archiver_url
     }
     return urlJoin(this.serverUrl, capability.archiver_url)
-  }
-
-  private getFileNameFromResponseHeaders(headers: Headers) {
-    const fileName = headers.get('content-disposition')?.split('"')[1]
-    return decodeURI(fileName)
   }
 }

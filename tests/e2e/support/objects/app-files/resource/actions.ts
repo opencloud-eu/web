@@ -1,4 +1,4 @@
-import { Download, Locator, Page, Response, expect } from '@playwright/test'
+import { Download, Locator, Page, expect } from '@playwright/test'
 import util from 'util'
 import path from 'path'
 import { waitForResources } from './utils'
@@ -1266,21 +1266,14 @@ export interface downloadResourceVersionArgs {
 export const downloadResourceVersion = async (args: downloadResourceVersionArgs) => {
   const { page, files, folder } = args
   const fileName = files.map((file) => path.basename(file.name))
-  const downloads: Response[] = []
   await clickResource({ page, path: folder })
   await sidebar.open({ page, resource: fileName[0] })
   await sidebar.openPanel({ page, name: 'versions' })
-  const [download] = await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes('/v/') && resp.status() === 200 && resp.request().method() === 'HEAD'
-    ),
+  await Promise.all([
     page.waitForEvent('download'),
     page.locator('//*[@data-testid="file-versions-download-button"]').first().click()
   ])
   await sidebar.close({ page: page })
-  downloads.push(download)
-  return downloads
 }
 
 export interface deleteResourceTrashbinArgs {

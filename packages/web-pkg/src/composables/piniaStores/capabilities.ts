@@ -74,6 +74,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     isInitialized.value = true
   }
 
+  /** @deprecated the server always supports this */
   const supportUrlSigning = computed(() => unref(capabilities).core['support-url-signing'])
   const supportSSE = computed(() => unref(capabilities).core['support-sse'])
   const personalDataExport = computed(() => unref(capabilities).graph['personal-data-export'])

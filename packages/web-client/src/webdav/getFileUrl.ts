@@ -16,7 +16,7 @@ export const GetFileUrlFactory = (
       resource: Resource,
       {
         disposition = 'attachment',
-        isUrlSigningEnabled = false,
+        isUrlSigningEnabled = true,
         signUrlTimeout = 86400,
         version = null,
         doHeadRequest = false,
@@ -24,7 +24,9 @@ export const GetFileUrlFactory = (
         ...opts
       }: {
         disposition?: 'inline' | 'attachment'
+        /** @deprecated no need to specify, the server always supports this */
         isUrlSigningEnabled?: boolean
+        /** @deprecated this has no effect */
         signUrlTimeout?: number
         version?: string
         doHeadRequest?: boolean
@@ -34,23 +36,19 @@ export const GetFileUrlFactory = (
       const inlineDisposition = disposition === 'inline'
       let { downloadURL } = resource
 
-      let signed = true
       if (!downloadURL && !inlineDisposition) {
         // compute unsigned url
         downloadURL = version
           ? dav.getFileUrl(urlJoin('meta', resource.fileId, 'v', version))
           : dav.getFileUrl(resource.webDavPath)
 
-        if (username && doHeadRequest) {
-          await axiosClient.head(downloadURL)
-        }
+        if (username) {
+          if (doHeadRequest) {
+            await axiosClient.head(downloadURL)
+          }
 
-        // sign url
-        if (isUrlSigningEnabled && username) {
           const ocsClient = ocs(baseUrl, axiosClient)
           downloadURL = await ocsClient.signUrl(downloadURL, username)
-        } else {
-          signed = false
         }
       }
 
@@ -64,7 +62,7 @@ export const GetFileUrlFactory = (
       // const combinedQuery = [queryStr, signedQuery].filter(Boolean).join('&')
       // downloadURL = [url, combinedQuery].filter(Boolean).join('?')
 
-      if (!signed || inlineDisposition) {
+      if (inlineDisposition) {
         const response = await getFileContentsFactory.getFileContents(space, resource, {
           responseType: 'blob',
           ...opts

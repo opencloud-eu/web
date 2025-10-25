@@ -8,7 +8,7 @@ import { FileResource, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
 import { ListFilesOptions } from '@opencloud-eu/web-client/webdav'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { useCapabilityStore, useUserStore } from '../piniaStores'
+import { useUserStore } from '../piniaStores'
 
 interface AppFileHandlingOptions {
   clientService: ClientService
@@ -39,7 +39,6 @@ export function useAppFileHandling({
   clientService
 }: AppFileHandlingOptions): AppFileHandlingResult {
   clientService = clientService || useClientService()
-  const capabilityStore = useCapabilityStore()
   const userStore = useUserStore()
 
   const getUrlForResource = (
@@ -48,7 +47,6 @@ export function useAppFileHandling({
     options?: UrlForResourceOptions
   ) => {
     return clientService.webdav.getFileUrl(space, resource, {
-      isUrlSigningEnabled: capabilityStore.supportUrlSigning,
       username: userStore.user?.onPremisesSamAccountName,
       ...options
     })
