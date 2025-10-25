@@ -161,9 +161,7 @@ const isAccountsLoading = computed(
 const isMailboxesLoading = computed(
   () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
 )
-const isMailSummaryLoadingPart = computed(
-  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
-)
+
 const isMailLoading = computed(() => unref(loadMailTask.isRunning) || !unref(loadMailTask.last))
 
 const onSelectAccount = async (selectedAccount: MailAccount) => {
