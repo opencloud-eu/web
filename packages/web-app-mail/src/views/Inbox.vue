@@ -161,11 +161,12 @@ const onSelectAccount = async (selectedAccount: MailAccount) => {
   account.value = selectedAccount
   selectedAccountIdQuery.value = selectedAccount.accountId
 
-  selectedMailboxIdQuery.value = null
   selectedMailIdQuery.value = null
+  mailDetails.value = null
 
-  await loadMailSummaryTask.perform()
+  await loadMailboxesTask.perform()
   mailbox.value = unref(mailboxes)[0]
+  selectedMailboxIdQuery.value = unref(mailbox).id
 
   await loadMailSummaryTask.perform()
 }
