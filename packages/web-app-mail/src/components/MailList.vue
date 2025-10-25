@@ -24,7 +24,7 @@
         appearance="raw"
         gap-size="none"
         no-hover
-        @click="$emit('select-mail', mail.id)"
+        @click="$emit('select-mail', mail)"
       >
         <MailListItem :mail="mail" />
       </oc-button>
@@ -48,6 +48,6 @@ const {
 }>()
 
 defineEmits<{
-  (e: 'select-mail', mailId: string): void
+  (e: 'select-mail', mail: Mail): void
 }>()
 </script>

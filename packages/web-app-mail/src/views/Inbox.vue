@@ -1,5 +1,5 @@
 <template>
-  <app-loading-spinner v-if="isMailSummaryLoading" />
+  <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <div class="flex h-full">
       <div class="w-full md:w-1/4 flex flex-row">
@@ -10,7 +10,12 @@
             'basis-1/4 shrink-0'
           ]"
         >
-          <MailAccountList />
+          <MailAccountList
+            :accounts="accounts"
+            :selected-account="account"
+            :is-loading="isAccountsLoading"
+            @select="onSelectAccount"
+          />
         </div>
 
         <div
@@ -20,7 +25,13 @@
             ' basis-3/4'
           ]"
         >
-          <MailboxTree class="" :selected-mailbox="mailbox" @select="onSelectMailbox" />
+          <MailboxTree
+            class=""
+            :mailboxes="mailboxes"
+            :is-loading="isMailboxesLoading"
+            :selected-mailbox="mailbox"
+            @select="onSelectMailbox"
+          />
         </div>
       </div>
       <div
@@ -34,7 +45,7 @@
           :mails="mails"
           :mailbox="mailbox"
           :selected-mail="selectedMail"
-          @select-mail="selectedMailId = $event"
+          @select-mail="onSelectMail"
         />
       </div>
       <div
@@ -52,9 +63,9 @@
         <MailDetails
           v-else
           class="md:px-2"
-          :account-id="selectedAccountId"
-          :mail-id="selectedMail.id"
-          @back="selectedMailId = null"
+          :mail="mailDetails"
+          :is-loading="isMailLoading"
+          @back="selectedMailIdQuery = null"
         />
       </div>
     </div>
@@ -65,12 +76,12 @@
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { NoContentMessage, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { ref, computed, unref, watch } from 'vue'
+import { ref, computed, unref, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
-import { Mail, Mailbox, MailSchema } from '../types'
+import { Mail, MailAccount, Mailbox, MailSchema, MailAccountSchema, MailboxSchema } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import MailAccountList from '../components/MailAccountList.vue'
@@ -78,53 +89,139 @@ import MailAccountList from '../components/MailAccountList.vue'
 const configStore = useConfigStore()
 const clientService = useClientService()
 
-const selectedMailId = useRouteQuery('mailId')
-const selectedAccountId = useRouteQuery('accountId', 'b')
-const selectedMailboxId = useRouteQuery('mailboxId')
-
-const mails = ref<Mail[]>([])
+const accounts = ref<MailAccount[]>([])
+const account = ref<MailAccount>(null)
+const mailboxes = ref<Mailbox[]>([])
 const mailbox = ref<Mailbox>(null)
+const mails = ref<Mail[]>([])
+const mailDetails = ref<Mail>(null)
+const isLoading = ref<boolean>(true)
+
+const selectedMailIdQuery = useRouteQuery('mailId')
+const selectedAccountIdQuery = useRouteQuery('accountId')
+const selectedMailboxIdQuery = useRouteQuery('mailboxId')
 
 const selectedMail = computed(() => {
-  return unref(mails).find((m) => m.id === unref(selectedMailId))
+  return unref(mails).find((m) => m.id === unref(selectedMailIdQuery))
 })
 
-const isMailSummaryLoading = computed(
-  () => loadMailSummaryTask.isRunning && !loadMailSummaryTask.last
-)
+const loadAccountsTask = useTask(function* (signal) {
+  try {
+    const { data } = yield clientService.httpAuthenticated.get(
+      urlJoin(unref(configStore.groupwareUrl), `accounts`)
+    )
+    accounts.value = z.array(MailAccountSchema).parse(data)
+  } catch (e) {
+    console.error(e)
+  }
+})
 
-const groupwareBaseUrl = computed(() => configStore.groupwareUrl)
+const loadMailboxesTask = useTask(function* (signal) {
+  try {
+    const { data } = yield clientService.httpAuthenticated.get(
+      urlJoin(unref(configStore.groupwareUrl), `accounts/${unref(account).accountId}/mailboxes`)
+    )
+    mailboxes.value = z.array(MailboxSchema).parse(data)
+  } catch (e) {
+    console.error(e)
+  }
+})
 
 const loadMailSummaryTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
-        unref(groupwareBaseUrl),
-        `accounts/b/mailboxes/${unref(mailbox).id}/emails`
-        // we need to add summary?limit=50&seen=true if it get available in the future
-      ),
-      {
-        signal
-      }
+        unref(configStore.groupwareUrl),
+        `accounts/${unref(account).accountId}/mailboxes/${unref(mailbox).id}/emails`
+      )
     )
-    console.log('loadMailSummaryTask (data):', data)
     mails.value = z.array(MailSchema).parse(data.emails || [])
   } catch (e) {
     console.error(e)
   }
 })
 
-const onSelectMailbox = (selectedMailbox: Mailbox) => {
-  mailbox.value = selectedMailbox
-  selectedMailboxId.value = unref(mailbox).id
-  selectedMailId.value = null
+const loadMailTask = useTask(function* (signal, mailId) {
+  try {
+    const { data } = yield clientService.httpAuthenticated.get(
+      urlJoin(
+        unref(configStore.groupwareUrl),
+        `accounts/${unref(account).accountId}/emails/${mailId}?markAsSeen=true`
+      )
+    )
+    mailDetails.value = MailSchema.parse(data)
+  } catch (e) {
+    console.error(e)
+  }
+})
+
+const isAccountsLoading = computed(
+  () => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last)
+)
+const isMailboxesLoading = computed(
+  () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
+)
+const isMailSummaryLoadingPart = computed(
+  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
+)
+const isMailLoading = computed(() => unref(loadMailTask.isRunning) || !unref(loadMailTask.last))
+
+const onSelectAccount = async (selectedAccount: MailAccount) => {
+  account.value = selectedAccount
+  selectedAccountIdQuery.value = selectedAccount.accountId
+
+  selectedMailboxIdQuery.value = null
+  selectedMailIdQuery.value = null
+
+  await loadMailSummaryTask.perform()
+  mailbox.value = unref(mailboxes)[0]
+
+  await loadMailSummaryTask.perform()
 }
 
-watch(
-  mailbox,
-  () => {
-    loadMailSummaryTask.perform()
-  },
-  { immediate: true }
-)
+const onSelectMailbox = async (selectedMailbox: Mailbox) => {
+  mailbox.value = selectedMailbox
+  selectedMailboxIdQuery.value = selectedMailbox.id
+  selectedMailIdQuery.value = null
+  await loadMailSummaryTask.perform()
+}
+
+const onSelectMail = async (selectedMail: Mail) => {
+  selectedMailIdQuery.value = selectedMail.id
+  await loadMailTask.perform(selectedMail.id)
+}
+
+onMounted(async () => {
+  await loadAccountsTask.perform()
+  console.log('Accounts', unref(mailboxes))
+
+  if (unref(selectedAccountIdQuery)) {
+    account.value = unref(accounts).find(
+      (account) => account.accountId === unref(selectedAccountIdQuery)
+    )
+  } else {
+    account.value = unref(accounts)[0]
+    selectedAccountIdQuery.value = unref(account).accountId
+  }
+
+  await loadMailboxesTask.perform()
+  console.log('Mailboxes', unref(mailboxes))
+
+  if (unref(selectedMailboxIdQuery)) {
+    mailbox.value = unref(mailboxes).find((mailbox) => mailbox.id === unref(selectedMailboxIdQuery))
+  } else {
+    mailbox.value = unref(mailboxes)[0]
+    selectedMailboxIdQuery.value = unref(mailbox).id
+  }
+
+  await loadMailSummaryTask.perform()
+  console.log('Mails', unref(mailboxes))
+
+  if (unref(selectedMailIdQuery)) {
+    await loadMailTask.perform(unref(selectedMailIdQuery))
+    console.log('Mail', unref(mailDetails))
+  }
+
+  isLoading.value = false
+})
 </script>
