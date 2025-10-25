@@ -242,9 +242,10 @@ services:
       - '--entrypoints.wopi.address=:8880'
       - '--entrypoints.collaboration.address=:9300'
       - '--entrypoints.collaboration-oo.address=:9302'
-      - '--entrypoints.websecure.address=:443'
-      - '--entrypoints.websecure.http.middlewares=https_config@docker'
-      - '--entrypoints.websecure.http.tls.options=default'
+      - '--entrypoints.stalwart-tls.address=:443'
+      - '--entrypoints.stalwart-tls.http.middlewares=https_config@docker'
+      - '--entrypoints.stalwart-tls.http.tls.options=default'
+      - '--entrypoints.stalwart.address=:8180'
     labels:
       traefik.enable: true
       traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
@@ -263,6 +264,7 @@ services:
     ports:
       - '80:80'
       - '8090:8080'
+      - '8180:8180'
       - '9200:9200'
       - '9300:9300'
       - '9302:9302'
@@ -327,16 +329,16 @@ services:
       STALWART_AUTH_DIRECTORY: '${STALWART_AUTH_DIRECTORY:-idmldap}'
     labels:
       traefik.enable: true
-      traefik.http.routers.stalwart.entrypoints: websecure
+      traefik.http.routers.stalwart.entrypoints: stalwart-tls
       #traefik.http.routers.stalwart.entrypoints: https
       #traefik.http.routers.stalwart.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.stalwart.rule: Host(`stalwart.opencloud.test`)
       #traefik.http.routers.stalwart.tls.certresolver: http
       traefik.http.routers.stalwart.service: stalwart
-      traefik.http.routers.stalwart-http.entrypoints: web8080
+      traefik.http.routers.stalwart-http.entrypoints: stalwart
       traefik.http.routers.stalwart-http.rule: Host(`stalwart.opencloud.test`)
       traefik.http.routers.stalwart-http.service: stalwart
-      traefik.http.services.stalwart.loadbalancer.server.port: 8080
+      traefik.http.services.stalwart.loadbalancer.server.port: 8180
     logging:
       driver: ${LOG_DRIVER:-local}
 
