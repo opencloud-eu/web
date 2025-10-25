@@ -2,11 +2,10 @@
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <div class="flex h-full">
-      <div class="w-full md:w-1/4 flex flex-row">
+      <div class="w-full md:w-1/4 flex flex-row" :class="{ 'hidden md:block': selectedMail }">
         <div
           :class="[
             'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
-            selectedMail ? 'hidden md:block' : 'block',
             'basis-1/4 shrink-0'
           ]"
         >
@@ -20,7 +19,7 @@
 
         <div
           :class="[
-            'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
+            'overflow-y-auto min-w-0 bg-role-surface-container',
             selectedMail ? 'hidden md:block' : 'block',
             ' basis-3/4'
           ]"
@@ -63,7 +62,7 @@
         </no-content-message>
         <MailDetails
           v-else
-          class="md:px-2"
+          class="px-2 pt-4 md:pt-0"
           :mail="mailDetails"
           :is-loading="isMailLoading"
           @back="selectedMailIdQuery = null"
