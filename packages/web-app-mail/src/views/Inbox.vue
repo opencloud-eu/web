@@ -2,12 +2,9 @@
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <div class="flex h-full">
-      <div class="w-full md:w-1/4 flex flex-row" :class="{ 'hidden md:block': selectedMail }">
+      <div class="w-full md:w-1/4 flex flex-row flex">
         <div
-          :class="[
-            'border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container',
-            'basis-1/4 shrink-0'
-          ]"
+          class="border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container basis-1/4 shrink-0"
         >
           <MailAccountList
             :accounts="accounts"
@@ -18,19 +15,15 @@
         </div>
 
         <div
-          :class="[
-            'overflow-y-auto min-w-0 bg-role-surface-container',
-            selectedMail ? 'hidden md:block' : 'block',
-            ' basis-3/4'
-          ]"
+          class="overflow-y-auto border-r-0 md:border-r-2 min-w-0 bg-role-surface-container basis-3/4"
         >
           <MailboxTree
-            class=""
             :account="account"
             :mailboxes="mailboxes"
             :is-loading="isMailboxesLoading"
             :selected-mailbox="mailbox"
             @select="onSelectMailbox"
+            @back="onDeselectMailbox"
           />
         </div>
       </div>
@@ -45,6 +38,7 @@
           :mails="mails"
           :mailbox="mailbox"
           :selected-mail="selectedMail"
+          :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
         />
       </div>
@@ -65,7 +59,7 @@
           class="px-2 pt-4 md:pt-0"
           :mail="mailDetails"
           :is-loading="isMailLoading"
-          @back="selectedMailIdQuery = null"
+          @back="onDeselectMail"
         />
       </div>
     </div>
@@ -162,6 +156,10 @@ const isMailboxesLoading = computed(
   () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
 )
 
+const isMailsLoading = computed(
+  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
+)
+
 const isMailLoading = computed(() => unref(loadMailTask.isRunning) || !unref(loadMailTask.last))
 
 const onSelectAccount = async (selectedAccount: MailAccount) => {
@@ -187,6 +185,19 @@ const onSelectMailbox = async (selectedMailbox: Mailbox) => {
 const onSelectMail = async (selectedMail: Mail) => {
   selectedMailIdQuery.value = selectedMail.id
   await loadMailTask.perform(selectedMail.id)
+}
+
+const onDeselectMail = () => {
+  mailDetails.value = null
+  selectedMailIdQuery.value = null
+}
+
+const onDeselectMailbox = () => {
+  mailbox.value = null
+  mails.value = null
+  mailDetails.value = null
+  selectedMailboxIdQuery.value = null
+  selectedMailIdQuery.value = null
 }
 
 onMounted(async () => {
