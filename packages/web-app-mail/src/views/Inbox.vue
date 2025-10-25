@@ -27,6 +27,7 @@
         >
           <MailboxTree
             class=""
+            :account="account"
             :mailboxes="mailboxes"
             :is-loading="isMailboxesLoading"
             :selected-mailbox="mailbox"
