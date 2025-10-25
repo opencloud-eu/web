@@ -231,7 +231,7 @@ services:
       - '--pilot.dashboard=false'
       - '--log.level=DEBUG'
       - '--api.dashboard=true'
-      - '--api.insecure=false'
+      - '--api.insecure=true'
       - '--providers.file.directory=/configs'
       - '--providers.docker=true'
       - '--providers.docker.exposedbydefault=false'
@@ -245,7 +245,6 @@ services:
       - '--entrypoints.websecure.address=:443'
       - '--entrypoints.websecure.http.middlewares=https_config@docker'
       - '--entrypoints.websecure.http.tls.options=default'
-      - '--entrypoints.web8080.address=:8080'
     labels:
       traefik.enable: true
       traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
@@ -263,7 +262,7 @@ services:
 
     ports:
       - '80:80'
-      - '8080:8080'
+      - '8090:8080'
       - '9200:9200'
       - '9300:9300'
       - '9302:9302'
