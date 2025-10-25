@@ -2,9 +2,14 @@
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <div class="flex h-full">
-      <div class="w-full md:w-1/4 flex flex-row flex">
+      <div
+        class="w-full md:w-1/4 flex flex-row flex"
+        :class="{
+          'hidden md:flex': mailbox
+        }"
+      >
         <div
-          class="border-r-0 md:border-r-2 overflow-y-auto min-w-0 bg-role-surface-container basis-1/4 shrink-0"
+          class="border-r-2 overflow-y-auto min-w-0 bg-role-surface-container basis-1/4 shrink-0"
         >
           <MailAccountList
             :accounts="accounts"
@@ -14,25 +19,21 @@
           />
         </div>
 
-        <div
-          class="overflow-y-auto border-r-0 md:border-r-2 min-w-0 bg-role-surface-container basis-3/4"
-        >
+        <div class="overflow-y-auto md:border-r-2 min-w-0 bg-role-surface-container basis-3/4">
           <MailboxTree
             :account="account"
             :mailboxes="mailboxes"
             :is-loading="isMailboxesLoading"
             :selected-mailbox="mailbox"
             @select="onSelectMailbox"
-            @back="onDeselectMailbox"
           />
         </div>
       </div>
       <div
-        :class="[
-          'border-r-0 md:border-r-2 overflow-y-auto min-w-0',
-          selectedMail ? 'hidden md:block' : 'block',
-          'w-full md:w-1/4'
-        ]"
+        class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4"
+        :class="{
+          'hidden md:block': selectedMail || !mailbox
+        }"
       >
         <MailList
           :mails="mails"
@@ -40,22 +41,16 @@
           :selected-mail="selectedMail"
           :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
+          @back="onDeselectMailbox"
         />
       </div>
       <div
-        :class="[
-          'overflow-y-auto px-4 min-w-0',
-          selectedMail ? 'block' : 'hidden md:block',
-          'w-full md:w-2/4'
-        ]"
+        class="overflow-y-auto px-4 min-w-0 w-full md:w-2/4"
+        :class="{
+          'hidden md:block': !mailDetails
+        }"
       >
-        <no-content-message v-if="!selectedMail" icon="mail" icon-fill-type="line">
-          <template #message>
-            <span v-text="$gettext('No mail selected')" />
-          </template>
-        </no-content-message>
         <MailDetails
-          v-else
           class="px-2 pt-4 md:pt-0"
           :mail="mailDetails"
           :is-loading="isMailLoading"
@@ -69,7 +64,7 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { NoContentMessage, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
+import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { ref, computed, unref, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailList from '../components/MailList.vue'
@@ -160,7 +155,7 @@ const isMailsLoading = computed(
   () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
 )
 
-const isMailLoading = computed(() => unref(loadMailTask.isRunning) || !unref(loadMailTask.last))
+const isMailLoading = computed(() => unref(loadMailTask.isRunning))
 
 const onSelectAccount = async (selectedAccount: MailAccount) => {
   account.value = selectedAccount
@@ -179,6 +174,7 @@ const onSelectMailbox = async (selectedMailbox: Mailbox) => {
   mailbox.value = selectedMailbox
   selectedMailboxIdQuery.value = selectedMailbox.id
   selectedMailIdQuery.value = null
+  mailDetails.value = null
   await loadMailSummaryTask.perform()
 }
 
