@@ -1,11 +1,6 @@
 <template>
   <div class="mailbox-tree h-full px-1">
-    <div class="flex">
-      <oc-button class="md:hidden mb-2" appearance="raw" no-hover @click="$emit('back')">
-        <oc-icon name="arrow-left" fill-type="line" />
-      </oc-button>
-      <h1 class="text-lg ml-4" v-text="account.name" />
-    </div>
+    <h1 class="text-lg ml-4" v-text="account.name" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <no-content-message v-if="!mailboxes.length" icon="folder-reduce" icon-fill-type="line">
@@ -55,6 +50,5 @@ const {
 
 defineEmits<{
   (e: 'select', payload: Mailbox): void
-  (e: 'back'): void
 }>()
 </script>
