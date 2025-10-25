@@ -23,7 +23,7 @@
     <div class="mail-details-body mt-6" v-html="mailBody" />
     <MailAttachmentList
       v-if="mail.attachments.length"
-      class="mail-details-attachments mt-6"
+      class="mail-details-attachments my-6"
       :attachments="mail.attachments"
       :account-id="mail.accountId"
     />
