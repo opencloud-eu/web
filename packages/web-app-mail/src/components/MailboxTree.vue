@@ -3,7 +3,7 @@
     <h1 class="text-lg ml-4" v-text="account.name" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
-      <no-content-message v-if="!mailboxes.length" icon="folder-reduce" icon-fill-type="line">
+      <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
         <template #message>
           <span v-text="$gettext('No mailboxes found')" />
         </template>
@@ -37,15 +37,15 @@ import type { MailAccount, Mailbox } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 
 const {
-  mailboxes,
   account,
-  isLoading,
-  selectedMailbox = {}
+  mailboxes = null,
+  isLoading = false,
+  selectedMailbox = null
 } = defineProps<{
-  selectedMailbox?: Mailbox
-  mailboxes?: Mailbox[]
-  isLoading?: boolean
   account: MailAccount
+  mailboxes?: Mailbox[]
+  selectedMailbox?: Mailbox
+  isLoading?: boolean
 }>()
 
 defineEmits<{

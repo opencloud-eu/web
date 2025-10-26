@@ -31,14 +31,14 @@
         v-if="mail.attachments.length"
         class="mail-details-attachments my-6"
         :attachments="mail.attachments"
-        :account-id="mail.accountId"
+        :account-id="account.accountId"
       />
     </div>
   </template>
 </template>
 
 <script setup lang="ts">
-import type { Mail } from '../types'
+import type { Mail, MailAccount } from '../types'
 import { computed, unref } from 'vue'
 import { formatRelativeDateFromISO, NoContentMessage } from '@opencloud-eu/web-pkg/src'
 import { useGettext } from 'vue3-gettext'
@@ -47,7 +47,12 @@ import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 
-const { mail, isLoading = false } = defineProps<{
+const {
+  account,
+  mail = null,
+  isLoading = false
+} = defineProps<{
+  account: MailAccount
   mail?: Mail
   isLoading?: boolean
 }>()

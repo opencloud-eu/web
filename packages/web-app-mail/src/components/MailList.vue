@@ -28,7 +28,7 @@
           v-for="mail in mails"
           :key="mail.id"
           class="border-b-2"
-          :class="{ 'bg-role-secondary-container': selectedMail.id === mail.id }"
+          :class="{ 'bg-role-secondary-container': selectedMail?.id === mail.id }"
         >
           <oc-button
             class="px-2 py-4 text-left w-full"
@@ -52,9 +52,9 @@ import MailListItem from './MailListItem.vue'
 import { Mail, Mailbox } from '../types'
 
 const {
-  mails = [],
-  mailbox = {},
-  selectedMail = {},
+  mails = null,
+  mailbox = null,
+  selectedMail = null,
   isLoading = false
 } = defineProps<{
   mails?: Mail[]

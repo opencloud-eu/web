@@ -32,26 +32,26 @@
       <div
         class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4"
         :class="{
-          'hidden md:block': selectedMail || !mailbox
+          'hidden md:block': mailDetails || !mailbox
         }"
       >
         <MailList
           :mails="mails"
           :mailbox="mailbox"
-          :selected-mail="selectedMail"
+          :selected-mail="mailDetails"
           :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
           @back="onDeselectMailbox"
         />
       </div>
       <div
-        class="overflow-y-auto px-4 min-w-0 w-full md:w-2/4"
+        class="overflow-y-auto px-4 min-w-0 w-full md:w-2/4 px-2 pt-4 md:pt-0"
         :class="{
           'hidden md:block': !mailDetails
         }"
       >
         <MailDetails
-          class="px-2 pt-4 md:pt-0"
+          :account="account"
           :mail="mailDetails"
           :is-loading="isMailLoading"
           @back="onDeselectMail"
@@ -78,21 +78,17 @@ import MailAccountList from '../components/MailAccountList.vue'
 const configStore = useConfigStore()
 const clientService = useClientService()
 
-const accounts = ref<MailAccount[]>([])
-const account = ref<MailAccount>(null)
-const mailboxes = ref<Mailbox[]>([])
-const mailbox = ref<Mailbox>(null)
-const mails = ref<Mail[]>([])
-const mailDetails = ref<Mail>(null)
+const accounts = ref<MailAccount[]>()
+const account = ref<MailAccount>()
+const mailboxes = ref<Mailbox[]>()
+const mailbox = ref<Mailbox>()
+const mails = ref<Mail[]>()
+const mailDetails = ref<Mail>()
 const isLoading = ref<boolean>(true)
 
 const selectedMailIdQuery = useRouteQuery('mailId')
 const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
-
-const selectedMail = computed(() => {
-  return unref(mails).find((m) => m.id === unref(selectedMailIdQuery))
-})
 
 const loadAccountsTask = useTask(function* (signal) {
   try {
@@ -100,6 +96,7 @@ const loadAccountsTask = useTask(function* (signal) {
       urlJoin(unref(configStore.groupwareUrl), `accounts`)
     )
     accounts.value = z.array(MailAccountSchema).parse(data)
+    console.log('Accounts', unref(accounts))
   } catch (e) {
     console.error(e)
   }
@@ -111,6 +108,7 @@ const loadMailboxesTask = useTask(function* (signal) {
       urlJoin(unref(configStore.groupwareUrl), `accounts/${unref(account).accountId}/mailboxes`)
     )
     mailboxes.value = z.array(MailboxSchema).parse(data)
+    console.log('Mailboxes', unref(mailboxes))
   } catch (e) {
     console.error(e)
   }
@@ -125,6 +123,7 @@ const loadMailSummaryTask = useTask(function* (signal) {
       )
     )
     mails.value = z.array(MailSchema).parse(data.emails || [])
+    console.log('Mails', unref(mails))
   } catch (e) {
     console.error(e)
   }
@@ -139,6 +138,7 @@ const loadMailTask = useTask(function* (signal, mailId) {
       )
     )
     mailDetails.value = MailSchema.parse(data)
+    console.log('Mail', unref(mailDetails))
   } catch (e) {
     console.error(e)
   }
@@ -166,6 +166,7 @@ const onSelectMailbox = async (selectedMailbox: Mailbox) => {
 }
 
 const onSelectMail = async (selectedMail: Mail) => {
+  console.log("'selected")
   selectedMailIdQuery.value = selectedMail.id
   await loadMailTask.perform(selectedMail.id)
 }
@@ -199,33 +200,26 @@ const onDeselectMailbox = () => {
 
 onMounted(async () => {
   await loadAccountsTask.perform()
-  console.log('Accounts', unref(accounts))
-
   if (unref(selectedAccountIdQuery)) {
     account.value = unref(accounts).find(
       (account) => account.accountId === unref(selectedAccountIdQuery)
     )
   } else {
-    account.value = unref(accounts)[0]
-    selectedAccountIdQuery.value = unref(account).accountId
+    account.value = unref(accounts)?.[0]
+    selectedAccountIdQuery.value = unref(account)?.accountId
   }
 
   await loadMailboxesTask.perform()
-  console.log('Mailboxes', unref(mailboxes))
-
   if (unref(selectedMailboxIdQuery)) {
     mailbox.value = unref(mailboxes).find((mailbox) => mailbox.id === unref(selectedMailboxIdQuery))
   } else {
-    mailbox.value = unref(mailboxes)[0]
-    selectedMailboxIdQuery.value = unref(mailbox).id
+    mailbox.value = unref(mailboxes)?.[0]
+    selectedMailboxIdQuery.value = unref(mailbox)?.id
   }
 
   await loadMailSummaryTask.perform()
-  console.log('Mails', unref(mails))
-
   if (unref(selectedMailIdQuery)) {
     await loadMailTask.perform(unref(selectedMailIdQuery))
-    console.log('Mail', unref(mailDetails))
   }
 
   isLoading.value = false
