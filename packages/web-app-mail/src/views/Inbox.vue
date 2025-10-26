@@ -166,7 +166,6 @@ const onSelectMailbox = async (selectedMailbox: Mailbox) => {
 }
 
 const onSelectMail = async (selectedMail: Mail) => {
-  console.log("'selected")
   selectedMailIdQuery.value = selectedMail.id
   await loadMailTask.perform(selectedMail.id)
 }
