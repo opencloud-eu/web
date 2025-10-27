@@ -8,9 +8,7 @@
           'hidden md:flex': mailbox
         }"
       >
-        <div
-          class="border-r-2 overflow-y-auto min-w-0 bg-role-surface-container basis-1/4 shrink-0"
-        >
+        <div class="border-r-2 overflow-y-auto bg-role-surface-container w-[100px]">
           <MailAccountList
             :accounts="accounts"
             :selected-account="account"
@@ -19,7 +17,7 @@
           />
         </div>
 
-        <div class="overflow-y-auto md:border-r-2 min-w-0 bg-role-surface-container basis-3/4">
+        <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
           <MailboxTree
             :account="account"
             :mailboxes="mailboxes"
