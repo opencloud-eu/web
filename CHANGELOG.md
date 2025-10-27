@@ -6,6 +6,14 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt
 
+### 📈 Enhancement
+
+- perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
+- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
+
 ### 🐛 Bug Fixes
 
 - fix: only shorten links in markdown editor if character count is long… [[#1427](https://github.com/opencloud-eu/web/pull/1427)]
@@ -23,13 +31,6 @@
 
 - e2e tests. fix open shortcut [[#1429](https://github.com/opencloud-eu/web/pull/1429)]
 - fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
-
-### 📈 Enhancement
-
-- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
-- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
-- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
-- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
 ### 📦️ Dependencies
 
