@@ -44,7 +44,6 @@
         'htmlPreview',
         'pageFullscreen'
       ]"
-      :read-only="isReadOnly"
       auto-focus
       @on-change="(value: string) => $emit('update:currentContent', value)"
     />
@@ -125,6 +124,19 @@ export default defineComponent({
             options: {}
           }
         ]
+      },
+      codeMirrorExtensions(extensions) {
+        if (!unref(isMarkdown)) {
+          return extensions.filter((extension) =>
+            ['lineWrapping', 'keymap', 'floatingToolbar'].includes(extension.type)
+          )
+        }
+        const linkShortener = extensions.find((extension) => extension.type === 'linkShortener')
+        if (linkShortener) {
+          linkShortener.options.maxLength = 120
+        }
+
+        return extensions
       }
     })
 
@@ -164,9 +176,11 @@ export default defineComponent({
   .md-editor-preview > * {
     @apply break-keep;
   }
+
   .md-editor-code-flag {
     @apply hidden;
   }
+
   .md-editor-code-head {
     @apply !justify-end;
   }
@@ -180,6 +194,7 @@ export default defineComponent({
     background-color: var(--oc-role-surface-container);
   }
 }
+
 #text-editor-preview-component {
   background-color: transparent;
 }
