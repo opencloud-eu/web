@@ -15,11 +15,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn(() => 'blob:image')
   }),
-  TextEditor: {
-    name: 'TextEditor',
-    props: ['isReadOnly', 'currentContent'],
-    template: '<div class="text-editor-stub" />'
-  }
+  TextEditor: vi.fn()
 }))
 
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
@@ -136,7 +132,8 @@ function getWrapper({
       ],
       provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
       stubs: {
-        'space-context-actions': true
+        'space-context-actions': true,
+        TextEditor: true
       }
     }
   })
