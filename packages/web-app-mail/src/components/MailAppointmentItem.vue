@@ -30,7 +30,7 @@ const isLoading = computed(() => {
 const loadAppointmentTask = useTask(function* (signal) {
   const url = urlJoin(
     configStore.groupwareUrl,
-    `/accounts/${accountId}/blobs/${appointment.blobId}/${encodeURIComponent(appointment.name)}`
+    `/accounts/${accountId}/blobs/${appointment.blobId}/${encodeURIComponent(appointment.name)}?type=${appointment.type}`
   )
 
   try {
@@ -38,10 +38,15 @@ const loadAppointmentTask = useTask(function* (signal) {
       responseType: 'text'
     })
 
-    const comp = new ICAL.Component(data)
+    const jcalData = ICAL.parse(data)
+    const comp = new ICAL.Component(jcalData)
+
     const vevent = comp.getFirstSubcomponent('vevent')
+    console.log(vevent)
+
     const event = new ICAL.Event(vevent)
     const summary = event.summary
+
     console.log(summary)
   } catch (e) {
     console.error(e)
