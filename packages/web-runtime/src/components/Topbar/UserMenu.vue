@@ -2,14 +2,13 @@
   <nav :aria-label="$gettext('Account menu')">
     <oc-button
       id="_userMenuButton"
-      ref="menuButton"
       v-oc-tooltip="$gettext('My Account')"
       appearance="raw"
       no-hover
       :aria-label="$gettext('My Account')"
     >
       <user-avatar
-        v-if="onPremisesSamAccountName"
+        v-if="user?.onPremisesSamAccountName"
         class="oc-topbar-avatar oc-topbar-personal-avatar inline-flex justify-center items-center"
         :user-id="user.id"
         :user-name="user.displayName"
@@ -28,7 +27,6 @@
       />
     </oc-button>
     <oc-drop
-      ref="menu"
       :title="$gettext('Account')"
       drop-id="account-info-container"
       toggle="#_userMenuButton"
@@ -38,7 +36,7 @@
       class="overflow-hidden"
     >
       <oc-list class="user-menu-list">
-        <template v-if="!onPremisesSamAccountName">
+        <template v-if="!user?.onPremisesSamAccountName">
           <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
@@ -75,7 +73,7 @@
             <span :class="{ 'py-1': !user.mail }">
               <span class="block" v-text="user.displayName" />
               <span v-if="user.mail" class="text-sm" v-text="user.mail" />
-              <quota-information v-if="quotaEnabled" :quota="quota" class="text-sm mt-1" />
+              <quota-information v-if="quota" :quota="quota" class="text-sm mt-1" />
             </span>
           </li>
           <li class="flex items-center">
@@ -95,7 +93,7 @@
               id="oc-topbar-account-logout"
               appearance="raw"
               justify-content="left"
-              @click="logout"
+              @click="authService.logoutUser()"
             >
               <oc-icon name="logout-box-r" fill-type="line" />
               <span v-text="$gettext('Log out')" />
@@ -146,9 +144,9 @@
   </nav>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ComponentPublicInstance, computed, defineComponent, unref } from 'vue'
+import { computed, unref } from 'vue'
 import {
   routeToContextQuery,
   useAuthService,
@@ -159,74 +157,42 @@ import {
   useThemeStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { OcDrop } from '@opencloud-eu/design-system/components'
 import QuotaInformation from '../Account/QuotaInformation.vue'
 
-export default defineComponent({
-  components: { UserAvatar, QuotaInformation },
-  setup() {
-    const route = useRoute()
-    const userStore = useUserStore()
-    const themeStore = useThemeStore()
-    const spacesStore = useSpacesStore()
-    const authService = useAuthService()
-    const authStore = useAuthStore()
+const route = useRoute()
+const userStore = useUserStore()
+const themeStore = useThemeStore()
+const spacesStore = useSpacesStore()
+const authService = useAuthService()
+const authStore = useAuthStore()
 
-    const { user } = storeToRefs(userStore)
+const { user } = storeToRefs(userStore)
 
-    const accountPageRoute = computed(() => ({
-      name: authStore.userContextReady ? 'account-information' : 'account-preferences',
-      query: routeToContextQuery(unref(route))
-    }))
-
-    const loginLink = computed(() => {
-      return {
-        name: 'login',
-        query: { redirectUrl: unref(route).fullPath }
-      }
-    })
-    const logout = () => {
-      authService.logoutUser()
-    }
-
-    const imprintUrl = computed(() => themeStore.currentTheme.urls.imprint)
-    const privacyUrl = computed(() => themeStore.currentTheme.urls.privacy)
-    const accessibilityUrl = computed(() => themeStore.currentTheme.urls.accessibility)
-
-    const showFooter = computed(() => {
-      return !!(unref(imprintUrl) || unref(privacyUrl) || unref(accessibilityUrl))
-    })
-
-    const quota = computed(() => {
-      return spacesStore.personalSpace?.spaceQuota
-    })
-
-    return {
-      user,
-      loginLink,
-      imprintUrl,
-      privacyUrl,
-      accessibilityUrl,
-      showFooter,
-      quota,
-      logout,
-      accountPageRoute
-    }
-  },
-  computed: {
-    onPremisesSamAccountName() {
-      return this.user?.onPremisesSamAccountName
-    },
-    quotaEnabled() {
-      return !!this.quota
-    }
-  },
-  mounted() {
-    ;(this.$refs.menu as InstanceType<typeof OcDrop>)?.tippy?.setProps({
-      onHidden: () => (this.$refs.menuButton as ComponentPublicInstance).$el.focus(),
-      onShown: () =>
-        (this.$refs.menu as ComponentPublicInstance).$el.querySelector('a:first-of-type').focus()
-    })
+const accountPageRoute = computed(() => ({
+  name: authStore.userContextReady ? 'account-information' : 'account-preferences',
+  query: {
+    ...routeToContextQuery(unref(route)),
+    ...(!authStore.userContextReady &&
+      authStore.publicLinkContextReady && { contextRouteName: 'files-public-link' })
   }
+}))
+
+const loginLink = computed(() => {
+  return {
+    name: 'login',
+    query: { redirectUrl: unref(route).fullPath }
+  }
+})
+
+const imprintUrl = computed(() => themeStore.currentTheme.urls.imprint)
+const privacyUrl = computed(() => themeStore.currentTheme.urls.privacy)
+const accessibilityUrl = computed(() => themeStore.currentTheme.urls.accessibility)
+
+const showFooter = computed(() => {
+  return !!(unref(imprintUrl) || unref(privacyUrl) || unref(accessibilityUrl))
+})
+
+const quota = computed(() => {
+  return spacesStore.personalSpace?.spaceQuota
 })
 </script>

@@ -16,7 +16,6 @@
           :can-rename="true"
           :is-folder-share="resource.isFolder"
           :is-modifiable="canEditLink"
-          :is-password-enforced="isPasswordEnforcedForLinkType(link.type)"
           :is-password-removable="canDeletePublicLinkPassword(link)"
           :link-share="link"
           @update-link="handleLinkUpdate"
@@ -85,8 +84,8 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, inject, ref, Ref, unref } from 'vue'
+<script setup lang="ts">
+import { computed, inject, ref, Ref, unref } from 'vue'
 import {
   useAbility,
   useFileActionsCreateLink,
@@ -98,234 +97,200 @@ import {
   useResourcesStore,
   useLinkTypes,
   useCanShare,
-  UpdateLinkOptions
+  UpdateLinkOptions,
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import { shareViaLinkHelp, shareViaIndirectLinkHelp } from '../../../helpers/contextualHelpers'
-import { isSpaceResource, LinkShare } from '@opencloud-eu/web-client'
+import { isSpaceResource, LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import ListItem from './Links/ListItem.vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { isLocationSharesActive, useSharesStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 
-export default defineComponent({
-  name: 'FileLinks',
-  components: { ListItem },
-  setup() {
-    const { showMessage, showErrorMessage } = useMessages()
-    const { $gettext } = useGettext()
-    const ability = useAbility()
-    const clientService = useClientService()
-    const { can } = ability
-    const { dispatchModal } = useModals()
-    const { removeResources } = useResourcesStore()
-    const { isPasswordEnforcedForLinkType } = useLinkTypes()
-    const { canShare } = useCanShare()
+const router = useRouter()
+const { showMessage, showErrorMessage } = useMessages()
+const { $gettext } = useGettext()
+const ability = useAbility()
+const clientService = useClientService()
+const { can } = ability
+const { dispatchModal } = useModals()
+const { removeResources } = useResourcesStore()
+const { isPasswordEnforcedForLinkType } = useLinkTypes()
+const { canShare } = useCanShare()
 
-    const canCreateLinks = computed(() => {
-      if (!ability.can('create-all', 'PublicLink')) {
-        return false
-      }
-      return canShare({ space: unref(space), resource: unref(resource) })
+const canCreateLinks = computed(() => {
+  if (!ability.can('create-all', 'PublicLink')) {
+    return false
+  }
+  return canShare({ space: unref(space), resource: unref(resource) })
+})
+
+const sharesStore = useSharesStore()
+const { updateLink, deleteLink } = sharesStore
+const { linkShares } = storeToRefs(sharesStore)
+
+const configStore = useConfigStore()
+const { options: configOptions } = storeToRefs(configStore)
+
+const { actions: createLinkActions } = useFileActionsCreateLink()
+const createLinkAction = computed<FileAction>(() =>
+  unref(createLinkActions).find(({ name }) => name === 'create-links')
+)
+
+const space = inject<Ref<SpaceResource>>('space')
+const resource = inject<Ref<Resource>>('resource')
+
+const linkListCollapsed = ref(true)
+const indirectLinkListCollapsed = ref(true)
+const directLinks = computed(() =>
+  unref(linkShares)
+    .filter((l) => !l.indirect)
+    .sort((a, b) => b.createdDateTime.localeCompare(a.createdDateTime))
+    .map((share) => {
+      return { ...share, key: 'direct-link-' + share.id }
     })
-
-    const sharesStore = useSharesStore()
-    const { updateLink, deleteLink } = sharesStore
-    const { linkShares } = storeToRefs(sharesStore)
-
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
-
-    const { actions: createLinkActions } = useFileActionsCreateLink()
-    const createLinkAction = computed<FileAction>(() =>
-      unref(createLinkActions).find(({ name }) => name === 'create-links')
-    )
-
-    const space = inject<Ref<SpaceResource>>('space')
-    const resource = inject<Ref<Resource>>('resource')
-
-    const linkListCollapsed = ref(true)
-    const indirectLinkListCollapsed = ref(true)
-    const directLinks = computed(() =>
-      unref(linkShares)
-        .filter((l) => !l.indirect)
-        .sort((a, b) => b.createdDateTime.localeCompare(a.createdDateTime))
-        .map((share) => {
-          return { ...share, key: 'direct-link-' + share.id }
-        })
-    )
-    const indirectLinks = computed(() =>
-      unref(linkShares)
-        .filter((l) => l.indirect)
-        .sort((a, b) => b.createdDateTime.localeCompare(a.createdDateTime))
-        .map((share) => {
-          return { ...share, key: 'indirect-link-' + share.id }
-        })
-    )
-
-    const canDeleteReadOnlyPublicLinkPassword = computed(() =>
-      can('delete-all', 'ReadOnlyPublicLinkPassword')
-    )
-
-    const canEditLink = computed(() => {
-      return unref(canCreateLinks) && can('create-all', 'PublicLink')
+)
+const indirectLinks = computed(() =>
+  unref(linkShares)
+    .filter((l) => l.indirect)
+    .sort((a, b) => b.createdDateTime.localeCompare(a.createdDateTime))
+    .map((share) => {
+      return { ...share, key: 'indirect-link-' + share.id }
     })
+)
 
-    const addNewLink = () => {
-      const handlerArgs = { space: unref(space), resources: [unref(resource)] }
-      return unref(createLinkAction)?.handler(handlerArgs)
-    }
+const canDeleteReadOnlyPublicLinkPassword = computed(() =>
+  can('delete-all', 'ReadOnlyPublicLinkPassword')
+)
 
-    const canDeletePublicLinkPassword = (linkShare: LinkShare) => {
-      const isPasswordEnforced = isPasswordEnforcedForLinkType(linkShare.type)
+const canEditLink = computed(() => {
+  return unref(canCreateLinks) && can('create-all', 'PublicLink')
+})
 
-      if (!isPasswordEnforced) {
-        return true
-      }
+const addNewLink = () => {
+  const handlerArgs = { space: unref(space), resources: [unref(resource)] }
+  return unref(createLinkAction)?.handler(handlerArgs)
+}
 
-      return linkShare.type === SharingLinkType.View && unref(canDeleteReadOnlyPublicLinkPassword)
-    }
+const canDeletePublicLinkPassword = (linkShare: LinkShare) => {
+  const isPasswordEnforced = isPasswordEnforcedForLinkType(linkShare.type)
 
-    const handleLinkUpdate = async ({
+  if (!isPasswordEnforced) {
+    return true
+  }
+
+  return linkShare.type === SharingLinkType.View && unref(canDeleteReadOnlyPublicLinkPassword)
+}
+
+const handleLinkUpdate = async ({
+  linkShare,
+  options
+}: {
+  linkShare: LinkShare
+  options: UpdateLinkOptions['options']
+}) => {
+  try {
+    await updateLink({
+      clientService,
+      space: unref(space),
+      resource: unref(resource),
       linkShare,
       options
-    }: {
-      linkShare: LinkShare
-      options: UpdateLinkOptions['options']
-    }) => {
+    })
+    showMessage({ title: $gettext('Link was updated successfully') })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({
+      title: $gettext('Failed to update link'),
+      errors: [e]
+    })
+  }
+}
+
+const toggleLinkListCollapsed = () => {
+  linkListCollapsed.value = !unref(linkListCollapsed)
+}
+
+const toggleIndirectLinkListCollapsed = () => {
+  indirectLinkListCollapsed.value = !unref(indirectLinkListCollapsed)
+}
+
+const noLinksLabel = computed(() => {
+  if (isSpaceResource(unref(resource))) {
+    return $gettext('This space has no public links.')
+  }
+  if (unref(resource).isFolder) {
+    return $gettext('This folder has no public link.')
+  }
+  return $gettext('This file has no public link.')
+})
+
+const collapseButtonTitle = computed(() => {
+  return unref(linkListCollapsed) ? $gettext('Show more') : $gettext('Show less')
+})
+const indirectCollapseButtonTitle = computed(() => {
+  return unref(indirectLinkListCollapsed) ? $gettext('Show') : $gettext('Hide')
+})
+
+const helpersEnabled = computed(() => {
+  return unref(configOptions).contextHelpers
+})
+
+const viaLinkHelp = computed(() => {
+  return shareViaLinkHelp({ configStore })
+})
+const indirectLinkHelp = computed(() => {
+  return shareViaIndirectLinkHelp({ configStore })
+})
+const indirectLinksHeading = computed(() => {
+  return $gettext('Indirect (%{ count })', {
+    count: unref(indirectLinks).length.toString()
+  })
+})
+
+const displayLinks = computed(() => {
+  if (unref(directLinks).length > 3 && unref(linkListCollapsed)) {
+    return unref(directLinks).slice(0, 3)
+  }
+  return unref(directLinks)
+})
+
+const deleteLinkConfirmation = ({ link }: { link: LinkShare }) => {
+  dispatchModal({
+    title: $gettext('Delete link'),
+    message: $gettext(
+      'Are you sure you want to delete this link? Recreating the same link again is not possible.'
+    ),
+    confirmText: $gettext('Delete'),
+    onConfirm: async () => {
+      let lastLinkId = unref(linkShares).length === 1 ? unref(linkShares)[0].id : undefined
+
       try {
-        await updateLink({
+        await deleteLink({
           clientService,
           space: unref(space),
           resource: unref(resource),
-          linkShare,
-          options
+          linkShare: link
         })
-        showMessage({ title: $gettext('Link was updated successfully') })
+
+        showMessage({ title: $gettext('Link was deleted successfully') })
+
+        if (lastLinkId && isLocationSharesActive(router, 'files-shares-via-link')) {
+          if (isSpaceResource(unref(resource))) {
+            // spaces need their actual id instead of their share id to be removed from the file list
+            lastLinkId = unref(resource).id
+          }
+          removeResources([{ id: lastLinkId }] as Resource[])
+        }
       } catch (e) {
         console.error(e)
         showErrorMessage({
-          title: $gettext('Failed to update link'),
+          title: $gettext('Failed to delete link'),
           errors: [e]
         })
       }
     }
-
-    const toggleLinkListCollapsed = () => {
-      linkListCollapsed.value = !unref(linkListCollapsed)
-    }
-
-    const toggleIndirectLinkListCollapsed = () => {
-      indirectLinkListCollapsed.value = !unref(indirectLinkListCollapsed)
-    }
-
-    const noLinksLabel = computed(() => {
-      if (isSpaceResource(unref(resource))) {
-        return $gettext('This space has no public links.')
-      }
-      if (unref(resource).isFolder) {
-        return $gettext('This folder has no public link.')
-      }
-      return $gettext('This file has no public link.')
-    })
-
-    return {
-      clientService,
-      space,
-      resource,
-      isPasswordEnforcedForLinkType,
-      indirectLinkListCollapsed,
-      linkListCollapsed,
-      linkShares,
-      directLinks,
-      indirectLinks,
-      deleteLink,
-      configStore,
-      configOptions,
-      canCreateLinks,
-      noLinksLabel,
-      canEditLink,
-      handleLinkUpdate,
-      addNewLink,
-      dispatchModal,
-      showMessage,
-      showErrorMessage,
-      removeResources,
-      canDeletePublicLinkPassword,
-      toggleIndirectLinkListCollapsed,
-      toggleLinkListCollapsed
-    }
-  },
-  computed: {
-    collapseButtonTitle() {
-      return this.linkListCollapsed ? this.$gettext('Show more') : this.$gettext('Show less')
-    },
-    indirectCollapseButtonTitle() {
-      return this.indirectLinkListCollapsed ? this.$gettext('Show') : this.$gettext('Hide')
-    },
-
-    helpersEnabled() {
-      return this.configOptions.contextHelpers
-    },
-
-    viaLinkHelp() {
-      return shareViaLinkHelp({ configStore: this.configStore })
-    },
-    indirectLinkHelp() {
-      return shareViaIndirectLinkHelp({ configStore: this.configStore })
-    },
-    indirectLinksHeading() {
-      return this.$gettext('Indirect (%{ count })', {
-        count: this.indirectLinks.length.toString()
-      })
-    },
-
-    displayLinks() {
-      if (this.directLinks.length > 3 && this.linkListCollapsed) {
-        return this.directLinks.slice(0, 3)
-      }
-      return this.directLinks
-    }
-  },
-  methods: {
-    deleteLinkConfirmation({ link }: { link: LinkShare }) {
-      this.dispatchModal({
-        title: this.$gettext('Delete link'),
-        message: this.$gettext(
-          'Are you sure you want to delete this link? Recreating the same link again is not possible.'
-        ),
-        confirmText: this.$gettext('Delete'),
-        onConfirm: async () => {
-          let lastLinkId = this.linkShares.length === 1 ? this.linkShares[0].id : undefined
-
-          try {
-            await this.deleteLink({
-              clientService: this.clientService,
-              space: this.space,
-              resource: this.resource,
-              linkShare: link
-            })
-
-            this.showMessage({ title: this.$gettext('Link was deleted successfully') })
-
-            if (lastLinkId && isLocationSharesActive(this.$router, 'files-shares-via-link')) {
-              if (isSpaceResource(this.resource)) {
-                // spaces need their actual id instead of their share id to be removed from the file list
-                lastLinkId = this.resource.id.toString()
-              }
-              this.removeResources([{ id: lastLinkId }] as Resource[])
-            }
-          } catch (e) {
-            console.error(e)
-            this.showErrorMessage({
-              title: this.$gettext('Failed to delete link'),
-              errors: [e]
-            })
-          }
-        }
-      })
-    }
-  }
-})
+  })
+}
 </script>

@@ -1,4 +1,4 @@
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Breadcrumb from './OcBreadcrumb.vue'
 
 const items = [
@@ -48,9 +48,28 @@ describe('OcBreadcrumb', () => {
       expect(wrapper.find('.oc-breadcrumb-mobile-current').exists()).toBe(shows)
     })
   })
+  describe('mobile breakpoint', () => {
+    it.each<{ breakpoint: 'sm' | 'md' | 'lg'; listClass: string }>([
+      { breakpoint: 'sm', listClass: 'sm:flex' },
+      { breakpoint: 'md', listClass: 'md:flex' },
+      { breakpoint: 'lg', listClass: 'lg:flex' }
+    ])('sets the correct tailwind class on the breadcrumb list', ({ breakpoint, listClass }) => {
+      const { wrapper } = getWrapper({ items, mobileBreakpoint: breakpoint })
+      expect(wrapper.find('.oc-breadcrumb-list').classes()).toContain(listClass)
+    })
+    it.each<{ breakpoint: 'sm' | 'md' | 'lg'; listClass: string }>([
+      { breakpoint: 'sm', listClass: 'sm:hidden' },
+      { breakpoint: 'md', listClass: 'md:hidden' },
+      { breakpoint: 'lg', listClass: 'lg:hidden' }
+    ])('sets the correct tailwind class on the mobile breadcrumbs', ({ breakpoint, listClass }) => {
+      const { wrapper } = getWrapper({ items, mobileBreakpoint: breakpoint })
+      expect(wrapper.find('.oc-breadcrumb-mobile-navigation').classes()).toContain(listClass)
+      expect(wrapper.find('.oc-breadcrumb-mobile-current').classes()).toContain(listClass)
+    })
+  })
 })
 
-const getWrapper = (props = {}) => {
+const getWrapper = (props: PartialComponentProps<typeof Breadcrumb> = {}) => {
   return {
     wrapper: shallowMount(Breadcrumb, {
       props: {

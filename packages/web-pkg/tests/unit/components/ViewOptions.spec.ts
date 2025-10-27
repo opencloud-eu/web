@@ -48,7 +48,7 @@ describe('ViewOptions component', () => {
       const perPage = '100'
       const newItemsPerPage = '500'
       const { wrapper, mocks } = getWrapper({ perPage })
-      wrapper.vm.setItemsPerPage(newItemsPerPage)
+      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
       expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.objectContaining({ 'items-per-page': newItemsPerPage })
@@ -59,7 +59,7 @@ describe('ViewOptions component', () => {
       const perPage = '100'
       const newItemsPerPage = '500'
       const { wrapper, mocks } = getWrapper({ perPage, currentPage: '2' })
-      wrapper.vm.setItemsPerPage(newItemsPerPage)
+      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
       expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.objectContaining({ 'items-per-page': newItemsPerPage, page: '1' })
