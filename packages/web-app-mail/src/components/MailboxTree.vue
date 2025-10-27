@@ -1,6 +1,6 @@
 <template>
   <div class="mailbox-tree h-full px-1">
-    <h1 class="text-lg ml-4" v-text="account.name" />
+    <h1 class="text-lg ml-4 truncate" v-text="account.name" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">

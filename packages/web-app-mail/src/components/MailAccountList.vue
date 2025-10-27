@@ -1,9 +1,10 @@
 <template>
-  <div class="flex justify-center mt-4">
+  <div class="flex justify-center">
     <app-loading-spinner v-if="isLoading" />
     <oc-list v-else>
       <li v-for="account in accounts" :key="account.accountId">
         <oc-button
+          class="account-list-item mt-4"
           v-oc-tooltip="account.name"
           no-hover
           appearance="raw"
