@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v4.0.4 [[#1441](https://github.com/opencloud-eu/web/pull/1441)]
 - chore(deps): update devdependencies (non-major) [[#1430](https://github.com/opencloud-eu/web/pull/1430)]
 - chore(deps): update dependency @vavt/cm-extension to v1.11.2 [[#1433](https://github.com/opencloud-eu/web/pull/1433)]
 - fix(deps): update dependency focus-trap to v7.6.6 [[#1432](https://github.com/opencloud-eu/web/pull/1432)]
