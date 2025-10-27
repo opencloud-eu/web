@@ -1,5 +1,4 @@
 import { isLocationSpacesActive } from '../../../router'
-import { usePreviewService } from '../../previewService'
 import { useClientService } from '../../clientService'
 import { useLoadingService } from '../../loadingService'
 import { useRouter } from '../../router'
@@ -8,6 +7,7 @@ import { computed } from 'vue'
 import { FileAction, FileActionOptions } from '../types'
 import { useModals, useUserStore } from '../../piniaStores'
 import SpaceImageModal from '../../../components/Spaces/SpaceImageModal.vue'
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsSetImage = () => {
   const userStore = useUserStore()
@@ -15,7 +15,6 @@ export const useFileActionsSetImage = () => {
   const { $gettext } = useGettext()
   const clientService = useClientService()
   const loadingService = useLoadingService()
-  const previewService = usePreviewService()
   const { dispatchModal } = useModals()
 
   const handler = async ({ space, resources }: FileActionOptions) => {
@@ -56,7 +55,9 @@ export const useFileActionsSetImage = () => {
         if (!space) {
           return false
         }
-
+        if (!isProjectSpaceResource(space)) {
+          return false
+        }
         return space.canEditImage({ user: userStore.user })
       },
       class: 'oc-files-actions-set-space-image-trigger'
