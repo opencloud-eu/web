@@ -30,7 +30,7 @@
         </div>
       </div>
       <div
-        class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4"
+        class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4 px-4 md:px-0"
         :class="{
           'hidden md:block': mailDetails || !mailbox
         }"
@@ -45,7 +45,7 @@
         />
       </div>
       <div
-        class="overflow-y-auto px-4 min-w-0 w-full md:w-2/4 px-2 pt-4 md:pt-0"
+        class="overflow-y-auto min-w-0 w-full md:w-2/4 px-4 pt-4 md:pt-0"
         :class="{
           'hidden md:block': !mailDetails
         }"
