@@ -78,10 +78,10 @@ importers:
         version: 6.0.1(vite@7.1.12(@types/node@22.16.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
       '@vitest/coverage-v8':
         specifier: ^4.0.0
-        version: 4.0.2(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
+        version: 4.0.3(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
       '@vitest/web-worker':
         specifier: ^4.0.0
-        version: 4.0.2(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
+        version: 4.0.3(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
       '@vue/compiler-dom':
         specifier: 3.5.22
         version: 3.5.22
@@ -98,8 +98,8 @@ importers:
         specifier: ^4.0.0
         version: 4.1.3(browserslist@4.25.1)
       commander:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       ejs:
         specifier: 3.1.10
         version: 3.1.10
@@ -185,8 +185,8 @@ importers:
         specifier: 0.14.10
         version: 0.14.10(vue@3.5.22(typescript@5.9.3))
       vue-tsc:
-        specifier: 3.1.1
-        version: 3.1.1(typescript@5.9.3)
+        specifier: 3.1.2
+        version: 3.1.2(typescript@5.9.3)
       vue3-gettext:
         specifier: 2.4.0
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3))
@@ -918,7 +918,7 @@ importers:
         version: 4.17.12
       '@vitest/web-worker':
         specifier: ^4.0.0
-        version: 4.0.2(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
+        version: 4.0.3(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
       clean-publish:
         specifier: 6.0.1
         version: 6.0.1
@@ -3135,11 +3135,11 @@ packages:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0
       vue: ^3.2.25
 
-  '@vitest/coverage-v8@4.0.2':
-    resolution: {integrity: sha512-daQs7CNoq4KKJ+3mgnxwbX8NLkT3nNxK/ZARdWyy/VtNwe0LoKIHgXFvj0hCKXclgfHaihpqbv1UHkQOgyEZng==}
+  '@vitest/coverage-v8@4.0.3':
+    resolution: {integrity: sha512-I+MlLwyJRBjmJr1kFYSxoseINbIdpxIAeK10jmXgB0FUtIfdYsvM3lGAvBu5yk8WPyhefzdmbCHCc1idFbNRcg==}
     peerDependencies:
-      '@vitest/browser': 4.0.2
-      vitest: 4.0.2
+      '@vitest/browser': 4.0.3
+      vitest: 4.0.3
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -3158,9 +3158,6 @@ packages:
       vite:
         optional: true
 
-  '@vitest/pretty-format@4.0.2':
-    resolution: {integrity: sha512-PhrSiljryCz5nUDhHla5ihXYy2iRCBob+rNqlu34dA+KZIllVR39rUGny5R3kLgDgw3r8GW1ptOo64WbieMkeQ==}
-
   '@vitest/pretty-format@4.0.3':
     resolution: {integrity: sha512-N7gly/DRXzxa9w9sbDXwD9QNFYP2hw90LLLGDobPNwiWgyW95GMxsCt29/COIKKh3P7XJICR38PSDePenMBtsw==}
 
@@ -3173,16 +3170,13 @@ packages:
   '@vitest/spy@4.0.3':
     resolution: {integrity: sha512-82vVL8Cqz7rbXaNUl35V2G7xeNMAjBdNOVaHbrzznT9BmiCiPOzhf0FhU3eP41nP1bLDm/5wWKZqkG4nyU95DQ==}
 
-  '@vitest/utils@4.0.2':
-    resolution: {integrity: sha512-H9jFzZb/5B5Qh7ajPUWMJ8UYGxQ4EQTaNLSm3icXs/oXkzQ1jqfcWDEJ4U3LkFPZOd6QW8M2MYjz32poW+KKqg==}
-
   '@vitest/utils@4.0.3':
     resolution: {integrity: sha512-qV6KJkq8W3piW6MDIbGOmn1xhvcW4DuA07alqaQ+vdx7YA49J85pnwnxigZVQFQw3tWnQNRKWwhz5wbP6iv/GQ==}
 
-  '@vitest/web-worker@4.0.2':
-    resolution: {integrity: sha512-rTW31MHqJdVXaufrxr8Xx0oZMG8axTPfHxvaB4ChCYkp+u+OGZNHs0WdtSOIGIFq+L/GI02i2EJs5vVbrp5WWw==}
+  '@vitest/web-worker@4.0.3':
+    resolution: {integrity: sha512-bWweWZfgSpePhVWhPCvyOKeqlU8d3kogOZKGEoE/CpdOnokgXTcr66SRX1EWFtrYWHicTLiL+xx30fiRvuJGtA==}
     peerDependencies:
-      vitest: 4.0.2
+      vitest: 4.0.3
 
   '@volar/language-core@2.4.23':
     resolution: {integrity: sha512-hEEd5ET/oSmBC6pi1j6NaNYRWoAiDhINbT8rmwtINugR39loROSlufGdYMF9TaKGfz+ViGs1Idi3mAhnuPcoGQ==}
@@ -3228,8 +3222,8 @@ packages:
       typescript:
         optional: true
 
-  '@vue/language-core@3.1.1':
-    resolution: {integrity: sha512-qjMY3Q+hUCjdH+jLrQapqgpsJ0rd/2mAY02lZoHG3VFJZZZKLjAlV+Oo9QmWIT4jh8+Rx8RUGUi++d7T9Wb6Mw==}
+  '@vue/language-core@3.1.2':
+    resolution: {integrity: sha512-PyFDCqpdfYUT+oMLqcc61oHfJlC6yjhybaefwQjRdkchIihToOEpJ2Wu/Ebq2yrnJdd1EsaAvZaXVAqcxtnDxQ==}
     peerDependencies:
       typescript: '*'
     peerDependenciesMeta:
@@ -3720,8 +3714,8 @@ packages:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
     engines: {node: '>=18'}
 
-  commander@14.0.1:
-    resolution: {integrity: sha512-2JkV3gUZUVrbNA+1sjBOYLsMZ5cEEl8GTFP2a4AVz5hvasAMCQ1D2l2le/cX+pV4N6ZU17zjUahLpIXRrnWL8A==}
+  commander@14.0.2:
+    resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
     engines: {node: '>=20'}
 
   commander@2.20.3:
@@ -6531,8 +6525,8 @@ packages:
     peerDependencies:
       vue: 3.x
 
-  vue-tsc@3.1.1:
-    resolution: {integrity: sha512-fyixKxFniOVgn+L/4+g8zCG6dflLLt01Agz9jl3TO45Bgk87NZJRmJVPsiK+ouq3LB91jJCbOV+pDkzYTxbI7A==}
+  vue-tsc@3.1.2:
+    resolution: {integrity: sha512-3fd4DY0rFczs5f+VB3OhcLU83V6+3Puj2yLBe0Ak65k7ERk+STVNKaOAi0EBo6Lc15UiJB6LzU6Mxy4+h/pKew==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
@@ -7841,7 +7835,7 @@ snapshots:
       capital-case: 1.0.4
       chalk: 4.1.2
       cli-table3: 0.6.5
-      commander: 14.0.1
+      commander: 14.0.2
       debug: 4.4.3(supports-color@8.1.1)
       error-stack-parser: 2.1.4
       figures: 3.2.0
@@ -9045,10 +9039,10 @@ snapshots:
       vite: 7.1.12(@types/node@22.16.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1)
       vue: 3.5.22(typescript@5.9.3)
 
-  '@vitest/coverage-v8@4.0.2(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))':
+  '@vitest/coverage-v8@4.0.3(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/utils': 4.0.2
+      '@vitest/utils': 4.0.3
       ast-v8-to-istanbul: 0.3.8
       debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
@@ -9079,10 +9073,6 @@ snapshots:
     optionalDependencies:
       vite: 7.1.12(@types/node@22.16.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1)
 
-  '@vitest/pretty-format@4.0.2':
-    dependencies:
-      tinyrainbow: 3.0.3
-
   '@vitest/pretty-format@4.0.3':
     dependencies:
       tinyrainbow: 3.0.3
@@ -9100,17 +9090,12 @@ snapshots:
 
   '@vitest/spy@4.0.3': {}
 
-  '@vitest/utils@4.0.2':
-    dependencies:
-      '@vitest/pretty-format': 4.0.2
-      tinyrainbow: 3.0.3
-
   '@vitest/utils@4.0.3':
     dependencies:
       '@vitest/pretty-format': 4.0.3
       tinyrainbow: 3.0.3
 
-  '@vitest/web-worker@4.0.2(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))':
+  '@vitest/web-worker@4.0.3(vitest@4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       vitest: 4.0.3(@types/node@22.16.0)(happy-dom@20.0.8)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1)
@@ -9197,7 +9182,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  '@vue/language-core@3.1.1(typescript@5.9.3)':
+  '@vue/language-core@3.1.2(typescript@5.9.3)':
     dependencies:
       '@volar/language-core': 2.4.23
       '@vue/compiler-dom': 3.5.22
@@ -9728,7 +9713,7 @@ snapshots:
 
   commander@13.1.0: {}
 
-  commander@14.0.1: {}
+  commander@14.0.2: {}
 
   commander@2.20.3: {}
 
@@ -12662,10 +12647,10 @@ snapshots:
     dependencies:
       vue: 3.5.22(typescript@5.9.3)
 
-  vue-tsc@3.1.1(typescript@5.9.3):
+  vue-tsc@3.1.2(typescript@5.9.3):
     dependencies:
       '@volar/typescript': 2.4.23
-      '@vue/language-core': 3.1.1(typescript@5.9.3)
+      '@vue/language-core': 3.1.2(typescript@5.9.3)
       typescript: 5.9.3
 
   vue3-gettext@2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.22)(vue@3.5.22(typescript@5.9.3)):
