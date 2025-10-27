@@ -9,7 +9,7 @@
         }"
       >
         <div
-          class="border-r-2 overflow-y-auto min-w-0 max-w-[80px] bg-role-surface-container basis-1/4 shrink-0"
+          class="border-r-2 overflow-y-auto min-w-0 bg-role-surface-container basis-1/4 shrink-0"
         >
           <MailAccountList
             :accounts="accounts"
