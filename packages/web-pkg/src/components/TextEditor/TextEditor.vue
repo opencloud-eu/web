@@ -66,6 +66,7 @@ import { AppConfigObject } from '../../apps'
 import screenfull from 'screenfull'
 
 import Cropper from 'cropperjs'
+import { lineNumbers } from '@codemirror/view'
 import 'cropperjs/dist/cropper.css'
 
 export default defineComponent({
@@ -136,7 +137,13 @@ export default defineComponent({
           linkShortener.options.maxLength = 120
         }
 
-        return extensions
+        return [
+          ...extensions,
+          {
+            type: 'lineNumbers',
+            extension: lineNumbers()
+          }
+        ]
       }
     })
 
