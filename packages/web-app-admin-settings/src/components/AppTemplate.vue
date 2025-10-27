@@ -15,6 +15,7 @@
                 v-if="!isMobileWidth"
                 id="admin-settings-breadcrumb"
                 :items="breadcrumbs"
+                :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
               />
               <portal-target name="app.runtime.mobile.nav" />
               <div class="flex">
