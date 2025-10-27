@@ -26,6 +26,11 @@
         <span class="mr-4" v-text="$gettext('To:')" />
         <span class="truncate" v-text="sendToNames" />
       </div>
+      <mail-appointment-list
+        v-if="appointments?.length"
+        :account-id="account.accountId"
+        :appointments="appointments"
+      />
       <div class="mail-details-body mt-6" v-html="mailBody" />
       <MailAttachmentList
         v-if="mail.attachments.length"
@@ -46,6 +51,7 @@ import { buildMailBody } from '../helpers'
 import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import MailAppointmentList from './MailAppointmentList.vue'
 
 const {
   account,
@@ -83,5 +89,9 @@ const receivedAtRelativeDate = computed(() => {
   const m = unref(mail)
   if (!m?.receivedAt) return ''
   return formatRelativeDateFromISO(m.receivedAt, currentLanguage)
+})
+
+const appointments = computed(() => {
+  return mail.attachments?.filter((attachment) => attachment.type === 'text/calendar')
 })
 </script>
