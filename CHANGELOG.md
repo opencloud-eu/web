@@ -6,19 +6,22 @@
 
 @JammingBen, @ScharfViktor, @dschmidt
 
-### ✅ Tests
-
-- e2e tests. fix open shortcut [[#1429](https://github.com/opencloud-eu/web/pull/1429)]
-- fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
-
 ### 🐛 Bug Fixes
 
+- fix: reloading settings on public link page [[#1424](https://github.com/opencloud-eu/web/pull/1424)]
+- fix: view options and breadcrumbs on mobile with right sidebar  [[#1419](https://github.com/opencloud-eu/web/pull/1419)]
+- fix: password link enforcement [[#1405](https://github.com/opencloud-eu/web/pull/1405)]
 - fix: plain views on mobile [[#1415](https://github.com/opencloud-eu/web/pull/1415)]
 - fix(extension-sdk): handle 'require' (wrapped in single quotes) in pa… [[#1414](https://github.com/opencloud-eu/web/pull/1414)]
 - fix(extension-sdk): ensure asset imports work [[#1412](https://github.com/opencloud-eu/web/pull/1412)]
 - fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
 - fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
 - fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
+### ✅ Tests
+
+- e2e tests. fix open shortcut [[#1429](https://github.com/opencloud-eu/web/pull/1429)]
+- fix: add wait for upload input before setInputFiles [[#1428](https://github.com/opencloud-eu/web/pull/1428)]
 
 ### 📈 Enhancement
 
