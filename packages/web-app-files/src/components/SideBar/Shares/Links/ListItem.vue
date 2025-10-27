@@ -51,12 +51,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { DateTime } from 'luxon'
 import { LinkRoleDropdown, useAbility, useLinkTypes, useModals } from '@opencloud-eu/web-pkg'
-import { LinkShare } from '@opencloud-eu/web-client'
-import { computed, defineComponent, inject, PropType, Ref, ref, unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { computed, inject, Ref, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import SetLinkPasswordModal from '../../../Modals/SetLinkPasswordModal.vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -64,101 +63,71 @@ import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
 import CopyLink from './CopyLink.vue'
 import EditDropdown from './EditDropdown.vue'
 
-export default defineComponent({
-  name: 'ListItem',
-  components: { LinkRoleDropdown, ExpirationDateIndicator, CopyLink, EditDropdown },
-  props: {
-    canRename: {
-      type: Boolean,
-      default: false
-    },
-    isFolderShare: {
-      type: Boolean,
-      default: false
-    },
-    isModifiable: {
-      type: Boolean,
-      default: false
-    },
-    isPasswordEnforced: {
-      type: Boolean,
-      default: false
-    },
-    isPasswordRemovable: {
-      type: Boolean,
-      default: false
-    },
-    linkShare: {
-      type: Object as PropType<LinkShare>,
-      required: true
-    }
-  },
-  emits: ['removePublicLink', 'updateLink'],
-  setup(props, { emit }) {
-    const { dispatchModal } = useModals()
-    const { $gettext } = useGettext()
-    const { can } = useAbility()
-    const { getAvailableLinkTypes, getLinkRoleByType } = useLinkTypes()
+const {
+  linkShare,
+  canRename = false,
+  isFolderShare = false,
+  isModifiable = false,
+  isPasswordRemovable = false
+} = defineProps<{
+  linkShare: LinkShare
+  canRename?: boolean
+  isFolderShare?: boolean
+  isModifiable?: boolean
+  isPasswordRemovable?: boolean
+}>()
 
-    const space = inject<Ref<SpaceResource>>('space')
-    const resource = inject<Ref<Resource>>('resource')
+const emit = defineEmits<{
+  (e: 'removePublicLink', linkShare: LinkShare): void
+  (e: 'updateLink', payload: { linkShare: LinkShare; options: { type: SharingLinkType } }): void
+}>()
 
-    const currentLinkType = ref<SharingLinkType>(props.linkShare.type)
+const { dispatchModal } = useModals()
+const { $gettext } = useGettext()
+const { can } = useAbility()
+const { getAvailableLinkTypes, getLinkRoleByType, isPasswordEnforcedForLinkType } = useLinkTypes()
 
-    const canDeleteReadOnlyPublicLinkPassword = computed(() =>
-      can('delete-all', 'ReadOnlyPublicLinkPassword')
-    )
+const space = inject<Ref<SpaceResource>>('space')
+const resource = inject<Ref<Resource>>('resource')
 
-    const updateSelectedType = (type: SharingLinkType) => {
-      currentLinkType.value = type
-      const linkShare = props.linkShare
+const currentLinkType = ref<SharingLinkType>(linkShare.type)
 
-      const needsNoPw = unref(canDeleteReadOnlyPublicLinkPassword) && type === SharingLinkType.View
+const canDeleteReadOnlyPublicLinkPassword = computed(() =>
+  can('delete-all', 'ReadOnlyPublicLinkPassword')
+)
 
-      if (!linkShare.hasPassword && !needsNoPw && props.isPasswordEnforced) {
-        showPasswordModal(() =>
-          emit('updateLink', { linkShare: { ...linkShare }, options: { type } })
-        )
-        return
-      }
+const updateSelectedType = (type: SharingLinkType) => {
+  currentLinkType.value = type
+  const needsNoPw = unref(canDeleteReadOnlyPublicLinkPassword) && type === SharingLinkType.View
 
-      emit('updateLink', { linkShare, options: { type } })
-    }
-
-    const showPasswordModal = (callbackFn: () => void = undefined) => {
-      dispatchModal({
-        title: props.linkShare.hasPassword ? $gettext('Edit password') : $gettext('Add password'),
-        customComponent: SetLinkPasswordModal,
-        customComponentAttrs: () => ({
-          space: unref(space),
-          resource: unref(resource),
-          link: props.linkShare,
-          ...(callbackFn && { callbackFn })
-        })
-      })
-    }
-
-    const availableLinkTypeOptions = computed(() =>
-      getAvailableLinkTypes({ isFolder: props.isFolderShare })
-    )
-
-    const currentLinkRoleDescription = computed(() => {
-      return getLinkRoleByType(unref(currentLinkType))?.description || ''
-    })
-
-    const currentLinkRoleLabel = computed(() => {
-      return getLinkRoleByType(unref(currentLinkType))?.displayName || ''
-    })
-
-    return {
-      updateSelectedType,
-      currentLinkType,
-      showPasswordModal,
-      availableLinkTypeOptions,
-      currentLinkRoleDescription,
-      currentLinkRoleLabel,
-      DateTime
-    }
+  if (!linkShare.hasPassword && !needsNoPw && isPasswordEnforcedForLinkType(type)) {
+    showPasswordModal(() => emit('updateLink', { linkShare: { ...linkShare }, options: { type } }))
+    return
   }
+
+  emit('updateLink', { linkShare, options: { type } })
+}
+
+const showPasswordModal = (callbackFn: () => void = undefined) => {
+  dispatchModal({
+    title: linkShare.hasPassword ? $gettext('Edit password') : $gettext('Add password'),
+    customComponent: SetLinkPasswordModal,
+    customComponentAttrs: () => ({
+      space: unref(space),
+      resource: unref(resource),
+      link: linkShare,
+      ...(callbackFn && { callbackFn })
+    })
+  })
+}
+
+const availableLinkTypeOptions = computed(() => getAvailableLinkTypes({ isFolder: isFolderShare }))
+
+const currentLinkRoleDescription = computed(() => {
+  return getLinkRoleByType(unref(currentLinkType))?.description || ''
+})
+
+const currentLinkRoleLabel = computed(() => {
+  return getLinkRoleByType(unref(currentLinkType))?.displayName || ''
 })
 </script>
