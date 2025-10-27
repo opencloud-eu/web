@@ -131,7 +131,8 @@ function getWrapper({
       ],
       provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
       stubs: {
-        'space-context-actions': true
+        'space-context-actions': true,
+        TextEditor: true
       }
     }
   })
