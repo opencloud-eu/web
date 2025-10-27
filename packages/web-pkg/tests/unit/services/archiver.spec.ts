@@ -6,7 +6,6 @@ import { unref, ref, Ref } from 'vue'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useUserStore } from '../../../src/composables/piniaStores'
-import { Mock } from 'vitest'
 
 const serverUrl = 'https://demo.opencloud.eu'
 const getArchiverServiceInstance = (capabilities: Ref<ArchiverCapability[]>) => {
@@ -14,22 +13,12 @@ const getArchiverServiceInstance = (capabilities: Ref<ArchiverCapability[]>) => 
   const userStore = useUserStore()
 
   const clientServiceMock = mockDeep<ClientService>()
-  clientServiceMock.ocsUserContext.signUrl.mockImplementation((url) => Promise.resolve(url))
+  clientServiceMock.ocs.signUrl.mockImplementation((url) => Promise.resolve(url))
 
   return new ArchiverService(clientServiceMock, userStore, serverUrl, capabilities)
 }
 
 describe('archiver', () => {
-  beforeEach(() => {
-    global.window.fetch = vi.fn(() =>
-      Promise.resolve({
-        blob: () => Promise.resolve({ data: new ArrayBuffer(8) }),
-        headers: { get: () => 'filename="download.tar"' },
-        ok: true
-      })
-    ) as Mock
-  })
-
   describe('availability', () => {
     it('is unavailable if no version given via capabilities', () => {
       const capabilities = ref([mock<ArchiverCapability>({ version: undefined })])
@@ -68,10 +57,8 @@ describe('archiver', () => {
     })
     it('returns a download url for a valid archive download trigger', async () => {
       const archiverService = getArchiverServiceInstance(capabilities)
-      window.URL.createObjectURL = vi.fn(() => '')
       const fileId = 'asdf'
       const url = await archiverService.triggerDownload({ fileIds: [fileId] })
-      expect(window.URL.createObjectURL).toHaveBeenCalled()
       expect(url.startsWith(archiverUrl)).toBeTruthy()
       expect(url.indexOf(`id=${fileId}`)).toBeGreaterThan(-1)
     })

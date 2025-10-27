@@ -1,4 +1,4 @@
-import { Download, Locator, Page, Response } from '@playwright/test'
+import { Download, Locator, Page } from '@playwright/test'
 import * as po from './actions'
 import { Space } from '../../../types'
 import { showShareIndicator } from './utils'
@@ -114,11 +114,10 @@ export class Resource {
     await this.#page.goto(startUrl)
   }
 
-  async downloadVersion(args: Omit<po.downloadResourceVersionArgs, 'page'>): Promise<Response[]> {
+  async downloadVersion(args: Omit<po.downloadResourceVersionArgs, 'page'>) {
     const startUrl = this.#page.url()
-    const downloads = await po.downloadResourceVersion({ ...args, page: this.#page })
+    await po.downloadResourceVersion({ ...args, page: this.#page })
     await this.#page.goto(startUrl)
-    return downloads
   }
 
   async deleteTrashBin(args: Omit<po.deleteResourceTrashbinArgs, 'page'>): Promise<string> {

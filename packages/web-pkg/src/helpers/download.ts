@@ -1,4 +1,4 @@
-export const triggerDownloadWithFilename = (url: string, name: string) => {
+export const triggerDownloadWithFilename = (url: string, name = '') => {
   const a = document.createElement('a')
   a.style.display = 'none'
   document.body.appendChild(a)
