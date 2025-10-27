@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @dschmidt
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt
 
 ### 🐛 Bug Fixes
 
+- fix: only shorten links in markdown editor if character count is long… [[#1427](https://github.com/opencloud-eu/web/pull/1427)]
 - fix: reloading settings on public link page [[#1424](https://github.com/opencloud-eu/web/pull/1424)]
 - fix: view options and breadcrumbs on mobile with right sidebar  [[#1419](https://github.com/opencloud-eu/web/pull/1419)]
 - fix: password link enforcement [[#1405](https://github.com/opencloud-eu/web/pull/1405)]
