@@ -22,9 +22,7 @@
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
         :data-test-thumbnail-resource-name="resource.name"
-        class="rounded-xs size-8 object-cover"
-        width="40"
-        height="40"
+        class="rounded-xs size-8 object-cover max-w-fit"
         :aria-label="tooltipLabelIcon"
         alt=""
       />
