@@ -39,7 +39,7 @@
           :selected-mail="mailDetails"
           :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
-          @back="onDeselectMailbox"
+          @back="onNavigateBackMailbox"
         />
       </div>
       <div
@@ -52,7 +52,7 @@
           :account="account"
           :mail="mailDetails"
           :is-loading="isMailLoading"
-          @back="onDeselectMail"
+          @back="onNavigateBackMail"
         />
       </div>
     </div>
@@ -63,7 +63,7 @@
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { ref, computed, unref, onMounted } from 'vue'
+import { ref, computed, unref, onMounted, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
@@ -157,43 +157,57 @@ const isMailLoading = computed(() => unref(loadMailTask.isRunning))
 
 const onSelectMailbox = async (selectedMailbox: Mailbox) => {
   mailbox.value = selectedMailbox
-  selectedMailboxIdQuery.value = selectedMailbox.id
-  selectedMailIdQuery.value = null
   mailDetails.value = null
   await loadMailSummaryTask.perform()
 }
 
 const onSelectMail = async (selectedMail: Mail) => {
-  selectedMailIdQuery.value = selectedMail.id
   await loadMailTask.perform(selectedMail.id)
 }
 
 const onSelectAccount = async (selectedAccount: MailAccount) => {
   account.value = selectedAccount
-  selectedAccountIdQuery.value = selectedAccount.accountId
-
-  selectedMailIdQuery.value = null
   mailDetails.value = null
 
   await loadMailboxesTask.perform()
   mailbox.value = unref(mailboxes)[0]
-  selectedMailboxIdQuery.value = unref(mailbox).id
 
   await loadMailSummaryTask.perform()
 }
 
-const onDeselectMail = () => {
+const onNavigateBackMail = () => {
   mailDetails.value = null
-  selectedMailIdQuery.value = null
 }
 
-const onDeselectMailbox = () => {
+const onNavigateBackMailbox = () => {
   mailbox.value = null
   mails.value = null
   mailDetails.value = null
-  selectedMailboxIdQuery.value = null
-  selectedMailIdQuery.value = null
 }
+
+watch(
+  account,
+  () => {
+    selectedAccountIdQuery.value = unref(account)?.accountId
+  },
+  { deep: true }
+)
+
+watch(
+  mailbox,
+  () => {
+    selectedMailboxIdQuery.value = unref(mailbox)?.id
+  },
+  { deep: true }
+)
+
+watch(
+  mailDetails,
+  () => {
+    selectedMailIdQuery.value = unref(mailDetails)?.id
+  },
+  { deep: true }
+)
 
 onMounted(async () => {
   await loadAccountsTask.perform()
@@ -203,7 +217,6 @@ onMounted(async () => {
     )
   } else {
     account.value = unref(accounts)?.[0]
-    selectedAccountIdQuery.value = unref(account)?.accountId
   }
 
   await loadMailboxesTask.perform()
@@ -211,7 +224,6 @@ onMounted(async () => {
     mailbox.value = unref(mailboxes).find((mailbox) => mailbox.id === unref(selectedMailboxIdQuery))
   } else {
     mailbox.value = unref(mailboxes)?.[0]
-    selectedMailboxIdQuery.value = unref(mailbox)?.id
   }
 
   await loadMailSummaryTask.perform()
