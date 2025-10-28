@@ -50,7 +50,11 @@
               />
             </oc-drop>
           </template>
-          <span v-if="hasAutosave" class="flex items-center">
+          <span
+            v-if="hasAutosave && !isReadOnly"
+            class="flex items-center"
+            data-testid="autosave-indicator"
+          >
             <oc-icon
               v-oc-tooltip="autoSaveTooltipText"
               :accessible-label="autoSaveTooltipText"
@@ -125,7 +129,8 @@ const {
   mainActions = [],
   hasAutoSave = true,
   isEditor = false,
-  resource = null
+  resource = null,
+  isReadOnly = true
 } = defineProps<{
   dropDownMenuSections?: MenuSection[]
   dropDownActionOptions?: FileActionOptions
@@ -133,6 +138,7 @@ const {
   hasAutoSave?: boolean
   isEditor?: boolean
   resource?: Resource
+  isReadOnly?: boolean
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
