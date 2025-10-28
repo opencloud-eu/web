@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: hide update check if server is not available, show update check in admin settings [[#1455](https://github.com/opencloud-eu/web/pull/1455)]
 - Update Font Metadata [[#1459](https://github.com/opencloud-eu/web/pull/1459)]
 - feat: show line numbers in text/markdown editor, fix lists not rendered correctly [[#1449](https://github.com/opencloud-eu/web/pull/1449)]
 - perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
