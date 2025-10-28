@@ -18,6 +18,7 @@
         target="_blank"
         gap-size="small"
         appearance="raw"
+        no-hover
       >
         <span
           class="text-xs"
