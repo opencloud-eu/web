@@ -127,23 +127,27 @@ export default defineComponent({
         ]
       },
       codeMirrorExtensions(extensions) {
-        if (!unref(isMarkdown)) {
-          return extensions.filter((extension) =>
-            ['lineWrapping', 'keymap', 'floatingToolbar'].includes(extension.type)
-          )
-        }
-        const linkShortener = extensions.find((extension) => extension.type === 'linkShortener')
-        if (linkShortener) {
-          linkShortener.options.maxLength = 120
-        }
-
-        return [
+        const combinedExtensions = [
           ...extensions,
           {
             type: 'lineNumbers',
             extension: lineNumbers()
           }
         ]
+
+        if (!unref(isMarkdown)) {
+          return combinedExtensions.filter((extension) =>
+            ['lineWrapping', 'keymap', 'floatingToolbar', 'lineNumbers'].includes(extension.type)
+          )
+        }
+        const linkShortener = combinedExtensions.find(
+          (extension) => extension.type === 'linkShortener'
+        )
+        if (linkShortener) {
+          linkShortener.options.maxLength = 120
+        }
+
+        return combinedExtensions
       }
     })
 
@@ -182,6 +186,11 @@ export default defineComponent({
 @layer utilities {
   .md-editor-preview > * {
     @apply break-keep;
+  }
+
+  .md-editor-preview > ol,
+  ul {
+    @apply !list-[auto];
   }
 
   .md-editor-code-flag {
