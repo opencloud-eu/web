@@ -1,8 +1,21 @@
 <template>
   <div>
     <h2 class="py-2" v-text="$gettext('Info')" />
-    <oc-definition-list :items="infoItems" />
-    <version-check class="mt-2" />
+    <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
+      <dt v-text="$gettext('Edition')" />
+      <dd v-text="backendProductName" />
+      <template v-if="backendEdition">
+        <dt v-text="$gettext('Edition')" />
+        <dt v-text="backendEdition" />
+      </template>
+      <dt v-text="$gettext('Version')" />
+      <dd>
+        <div class="flex items-start flex-col">
+          <span v-text="backendVersion" />
+          <version-check />
+        </div>
+      </dd>
+    </dl>
   </div>
 </template>
 
@@ -30,17 +43,10 @@ export default defineComponent({
       backendEdition = backendStatus.edition
     }
 
-    const infoItems = [
-      { term: $gettext('OpenCloud'), definition: backendProductName },
-      ...(backendEdition ? [{ term: $gettext('Edition'), definition: backendEdition }] : []),
-      { term: $gettext('Version'), definition: backendVersion }
-    ]
-
     return {
       backendProductName,
       backendVersion,
-      backendEdition,
-      infoItems
+      backendEdition
     }
   }
 })
