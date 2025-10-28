@@ -40,6 +40,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @uppy/utils to v7.1.2 [[#1458](https://github.com/opencloud-eu/web/pull/1458)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v2.4.0 [[#1447](https://github.com/opencloud-eu/web/pull/1447)]
 - fix(deps): update dependency axios to v1.13.0 [[#1450](https://github.com/opencloud-eu/web/pull/1450)]
 - [full-ci] bump-opencloud-3.6.0. run all tests [[#1442](https://github.com/opencloud-eu/web/pull/1442)]
