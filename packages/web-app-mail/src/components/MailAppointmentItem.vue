@@ -34,8 +34,8 @@
       </div>
     </template>
     <div class="mail-appointment-list-body text-role-on-surface-variant">
-      <div v-if="icalEvent.location" class="flex items-center gap-2">
-        <oc-icon name="map-pin" size="small" fill-type="line" />
+      <div v-if="icalEvent.location" class="flex items-center mt-3 gap-2">
+        <oc-icon name="map-pin" size="small" fill-type="line" class="" />
         <span v-text="icalEvent.location" class="truncate" />
       </div>
       <div class="grid grid-cols-[auto_1fr] gap-x-2 items-start mt-3">
@@ -67,6 +67,10 @@
         <div v-if="attendees.length > MAX_ATTENDEES_DISPLAY_COUNT" class="col-start-2 text-sm mt-1">
           <span v-text="attendeeOverflowLabel" />
         </div>
+      </div>
+      <div v-if="icalEvent.description" class="flex gap-2 mt-3">
+        <oc-icon name="sticky-note" size="small" fill-type="line" class="self-starts" />
+        <span v-text="icalEvent.description" class="grid grid-cols-[auto_1fr]" />
       </div>
       <div class="mt-6">
         <oc-button class="w-full" appearance="outline" size="large" @click="download">
