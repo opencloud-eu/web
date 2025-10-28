@@ -171,14 +171,10 @@ export default defineComponent({
       codeMirrorExtensions(extensions) {
         const combinedExtensions = [
           ...extensions,
-          ...(unref(showLineNumbers)
-            ? [
-                {
-                  type: 'lineNumbers',
-                  extension: lineNumbers()
-                }
-              ]
-            : [])
+          {
+            type: 'lineNumbers',
+            extension: lineNumbers()
+          }
         ]
 
         const linkShortener = combinedExtensions.find(
