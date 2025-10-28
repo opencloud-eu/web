@@ -3,17 +3,17 @@
   <oc-card
     v-else
     class="bg-role-surface-container rounded-xl mt-4"
-    :header-class="['items-start', 'px-3', collapsed ? 'py-2' : 'pt-2 pb-3']"
-    :body-class="['px-3', 'pt-1', collapsed ? 'hidden' : '']"
+    :header-class="['items-start', 'px-4', collapsed ? 'pb-4' : '']"
+    :body-class="[collapsed ? 'hidden' : '']"
     appearance="outlined"
   >
     <template #header>
       <div class="flex justify-between w-full">
         <div>
           <span class="font-bold text-lg mt-1"><span v-text="icalEvent.summary" /></span>
-          <div class="text-sm text-role-on-surface-variant flex items-center gap-2 mt-1">
+          <div class="text-sm text-role-on-surface-variant flex items-center gap-2">
             <span v-text="startDate" />
-            <span v-text="'·'" class="text-xl" />
+            <span class="text-xl" v-text="'·'" />
             <span>
               <span v-text="startTime" />
               <span v-text="'-'" />
@@ -34,9 +34,9 @@
       </div>
     </template>
     <div class="mail-appointment-list-body text-role-on-surface-variant">
-      <div v-if="icalEvent.location" class="flex items-center mt-3 gap-2">
+      <div v-if="icalEvent.location" class="flex items-center gap-2">
         <oc-icon name="map-pin" size="small" fill-type="line" class="" />
-        <span v-text="icalEvent.location" class="truncate" />
+        <span class="truncate" v-text="icalEvent.location" />
       </div>
       <div class="grid grid-cols-[auto_1fr] gap-x-2 items-start mt-3">
         <oc-icon name="user" size="small" fill-type="line" />
@@ -70,14 +70,12 @@
       </div>
       <div v-if="icalEvent.description" class="flex gap-2 mt-3">
         <oc-icon name="sticky-note" size="small" fill-type="line" class="self-starts" />
-        <span v-text="icalEvent.description" class="grid grid-cols-[auto_1fr]" />
+        <span class="grid grid-cols-[auto_1fr]" v-text="icalEvent.description" />
       </div>
-      <div class="mt-6">
-        <oc-button class="w-full" appearance="outline" size="large" @click="download">
-          <oc-icon class="mr-2" size="medium" name="download-2" fill-type="line" />
-          <span v-text="$gettext('Download')" />
-        </oc-button>
-      </div>
+      <oc-button class="w-full mt-4" appearance="outline" size="large" @click="download">
+        <oc-icon class="mr-2" size="medium" name="download-2" fill-type="line" />
+        <span v-text="$gettext('Download')" />
+      </oc-button>
     </div>
   </oc-card>
 </template>
@@ -119,7 +117,6 @@ const isLoading = computed(() => {
 })
 
 const startDate = computed(() => {
-  console.log('INFO!!!:', icalEvent.startDate.toJSDate())
   return formatDateFromJSDate(icalEvent.startDate.toJSDate(), currentLanguage, DateTime.DATE_MED)
 })
 
@@ -196,6 +193,8 @@ const loadAppointmentTask = useTask(function* (signal) {
       responseType: 'text'
     })
 
+    console.log('ical', data)
+
     const jcalData = ICAL.parse(data)
     const comp = new ICAL.Component(jcalData)
 
@@ -203,8 +202,6 @@ const loadAppointmentTask = useTask(function* (signal) {
 
     const event = new ICAL.Event(vevent)
     icalEvent = event
-    console.log(icalEvent)
-    console.log('attendees: ', icalEvent.attendees)
   } catch (e) {
     console.error(e)
   }
