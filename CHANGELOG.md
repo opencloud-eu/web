@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: prevent thumbnail squashing in file list [[#1440](https://github.com/opencloud-eu/web/pull/1440)]
 - fix: hide save buttons in topbar for read-only files [[#1452](https://github.com/opencloud-eu/web/pull/1452)]
 - fix: only shorten links in markdown editor if character count is long… [[#1427](https://github.com/opencloud-eu/web/pull/1427)]
 - fix: reloading settings on public link page [[#1424](https://github.com/opencloud-eu/web/pull/1424)]
