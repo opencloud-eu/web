@@ -14,7 +14,12 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   }),
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn(() => 'blob:image')
-  })
+  }),
+  TextEditor: {
+    name: 'TextEditor',
+    props: ['isReadOnly', 'currentContent'],
+    template: '<div class="text-editor-stub" />'
+  }
 }))
 
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
