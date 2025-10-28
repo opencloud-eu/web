@@ -21,13 +21,14 @@
               @click="$emit('select', mailbox)"
             >
               <div class="flex items-center justify-between w-full">
-                <div class="flex items-center max-w-[70%]">
+                <div class="flex items-center truncate">
                   <oc-icon name="folder" class="mr-2" fill-type="line" />
                   <span class="truncate" v-text="mailbox.name" />
                 </div>
                 <oc-tag
                   v-if="mailbox.unreadEmails"
                   v-oc-tooltip="$gettext('Unread emails')"
+                  class="ml-2"
                   appearance="filled"
                   :rounded="true"
                   ><span v-text="mailbox.unreadEmails"
