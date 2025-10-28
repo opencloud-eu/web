@@ -36,6 +36,7 @@
   "dependencies": {
     "@casl/ability": "^6.7.1",
     "@casl/vue": "^2.2.2",
+    "@codemirror/view": "^6.38.6",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
