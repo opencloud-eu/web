@@ -20,8 +20,19 @@
               size="small"
               @click="$emit('select', mailbox)"
             >
-              <oc-icon name="folder" class="mr-2" fill-type="line" />
-              <span v-text="mailbox.name" />
+              <div class="flex items-center justify-between w-full">
+                <div class="flex items-center">
+                  <oc-icon name="folder" class="mr-2" fill-type="line" />
+                  <span v-text="mailbox.name" />
+                </div>
+                <oc-tag
+                  v-if="mailbox.unreadEmails"
+                  v-oc-tooltip="$gettext('Unread emails')"
+                  appearance="filled"
+                  :rounded="true"
+                  ><span v-text="mailbox.unreadEmails"
+                /></oc-tag>
+              </div>
             </oc-button>
           </li>
         </oc-list>
@@ -31,10 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 import type { MailAccount, Mailbox } from '../types'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 
 const {
   account,
