@@ -38,6 +38,15 @@ describe('setImage', () => {
         }
       })
     })
+    it.each(['personal', 'share'])('should be false when space is of type %s', (driveType) => {
+      const space = mock<SpaceResource>({ canEditImage: () => true, driveType })
+
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(unref(actions)[0].isVisible({ space, resources: [space] })).toBe(false)
+        }
+      })
+    })
   })
 
   describe('handler', () => {
