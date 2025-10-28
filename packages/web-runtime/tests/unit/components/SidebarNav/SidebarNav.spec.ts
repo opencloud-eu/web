@@ -44,16 +44,6 @@ describe('OcSidebarNav', () => {
       }
     })
   })
-  describe('VersionCheck component', () => {
-    it('renders when capability "check-for-updates" is true', () => {
-      const { wrapper } = getWrapper({ closed: false, checkForUpdates: true })
-      expect(wrapper.findComponent({ name: 'version-check' }).exists()).toBeTruthy()
-    })
-    it('does not render when capability "check-for-updates" is false', () => {
-      const { wrapper } = getWrapper({ closed: false, checkForUpdates: false })
-      expect(wrapper.findComponent({ name: 'version-check' }).exists()).toBeFalsy()
-    })
-  })
 })
 
 function getWrapper({ closed = false, checkForUpdates = true, slots = {} } = {}) {
@@ -74,7 +64,6 @@ function getWrapper({ closed = false, checkForUpdates = true, slots = {} } = {})
               capabilityState: {
                 capabilities: {
                   core: {
-                    'check-for-updates': checkForUpdates,
                     status: { productversion: '3.5.0' }
                   }
                 }

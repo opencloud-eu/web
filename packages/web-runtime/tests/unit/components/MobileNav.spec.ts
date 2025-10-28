@@ -37,7 +37,10 @@ function getWrapper() {
       },
       global: {
         plugins: [...defaultPlugins()],
-        mocks
+        mocks,
+        stubs: {
+          VersionCheck: true
+        }
       }
     })
   }
