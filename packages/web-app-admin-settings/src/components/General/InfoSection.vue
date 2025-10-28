@@ -2,16 +2,18 @@
   <div>
     <h2 class="py-2" v-text="$gettext('Info')" />
     <oc-definition-list :items="infoItems" />
+    <version-check class="mt-2" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, VersionCheck } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'InfoSection',
+  components: { VersionCheck },
   setup() {
     const capabilityStore = useCapabilityStore()
     const { $gettext } = useGettext()
