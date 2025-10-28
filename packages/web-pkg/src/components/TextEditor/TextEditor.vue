@@ -135,16 +135,17 @@ export default defineComponent({
           }
         ]
 
-        if (!unref(isMarkdown)) {
-          return combinedExtensions.filter((extension) =>
-            ['lineWrapping', 'keymap', 'floatingToolbar', 'lineNumbers'].includes(extension.type)
-          )
-        }
         const linkShortener = combinedExtensions.find(
           (extension) => extension.type === 'linkShortener'
         )
         if (linkShortener) {
           linkShortener.options.maxLength = 120
+        }
+
+        if (!unref(isMarkdown)) {
+          return combinedExtensions.filter((extension) =>
+            ['lineWrapping', 'keymap', 'floatingToolbar', 'lineNumbers'].includes(extension.type)
+          )
         }
 
         return combinedExtensions
