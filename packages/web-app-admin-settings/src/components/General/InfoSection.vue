@@ -1,17 +1,30 @@
 <template>
   <div>
     <h2 class="py-2" v-text="$gettext('Info')" />
-    <oc-definition-list :items="infoItems" />
+    <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
+      <template v-if="backendEdition">
+        <dt v-text="$gettext('Edition')" />
+        <dt v-text="backendEdition" />
+      </template>
+      <dt class="flex items-start" v-text="$gettext('Version')" />
+      <dd>
+        <div class="flex flex-col">
+          <span v-text="backendVersion" />
+          <version-check />
+        </div>
+      </dd>
+    </dl>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, VersionCheck } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'InfoSection',
+  components: { VersionCheck },
   setup() {
     const capabilityStore = useCapabilityStore()
     const { $gettext } = useGettext()
@@ -28,17 +41,10 @@ export default defineComponent({
       backendEdition = backendStatus.edition
     }
 
-    const infoItems = [
-      { term: $gettext('OpenCloud'), definition: backendProductName },
-      ...(backendEdition ? [{ term: $gettext('Edition'), definition: backendEdition }] : []),
-      { term: $gettext('Version'), definition: backendVersion }
-    ]
-
     return {
       backendProductName,
       backendVersion,
-      backendEdition,
-      infoItems
+      backendEdition
     }
   }
 })

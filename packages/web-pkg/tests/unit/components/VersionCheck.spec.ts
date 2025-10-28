@@ -1,6 +1,6 @@
-import VersionCheck from '../../../src/components/VersionCheck.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { nextTick } from 'vue'
+import { VersionCheck } from '../../../src'
 
 describe('VersionCheck component', () => {
   it('shows loading spinner while loading', async () => {
@@ -45,7 +45,9 @@ function getWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
-              capabilityState: { capabilities: { core: { status: { productversion } } } },
+              capabilityState: {
+                capabilities: { core: { status: { productversion }, 'check-for-updates': true } }
+              },
               updatesState: {
                 isLoading,
                 hasError,
