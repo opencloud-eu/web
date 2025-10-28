@@ -55,7 +55,7 @@
         class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"
       >
         <span v-text="backendVersion" />
-        <version-check v-if="checkForUpdates" />
+        <version-check />
       </div>
     </slot>
   </div>
@@ -77,8 +77,7 @@ import { v4 as uuidV4 } from 'uuid'
 import SidebarNavItem from './SidebarNavItem.vue'
 import { NavItem } from '../../helpers/navItems'
 import { getBackendVersion } from '../../container/versions'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
-import VersionCheck from '../VersionCheck.vue'
+import { useCapabilityStore, VersionCheck } from '@opencloud-eu/web-pkg'
 
 type NavItemRef = InstanceType<typeof SidebarNavItem>
 
@@ -100,7 +99,6 @@ export default defineComponent({
     const navItemRefs = ref<Record<string, NavItemRef>>({})
     const highlighterAttrs = ref<Record<string, unknown>>({})
     const capabilityStore = useCapabilityStore()
-    const checkForUpdates = capabilityStore.capabilities.core['check-for-updates']
 
     const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
 
@@ -150,7 +148,7 @@ export default defineComponent({
       { deep: true, immediate: true }
     )
 
-    return { highlighterAttrs, navItemRefs, backendVersion, checkForUpdates }
+    return { highlighterAttrs, navItemRefs, backendVersion }
   },
   computed: {
     toggleSidebarButtonIcon() {
