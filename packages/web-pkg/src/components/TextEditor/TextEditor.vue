@@ -22,7 +22,7 @@
     <md-editor
       v-else
       id="text-editor-component"
-      :key="showLineNumbers ? 'ln-on' : 'ln-off'"
+      :class="{ 'no-line-numbers': !showLineNumbers }"
       class="[&_.cm-content]:!font-(family-name:--oc-font-family)"
       :model-value="currentContent"
       no-katex
@@ -40,10 +40,14 @@
       <template #defToolbars>
         <NormalToolbar
           :title="showLineNumbers ? $gettext('hide line numbers') : $gettext('show line numbers')"
-          :active="showLineNumbers"
           @on-click="showLineNumbers = !showLineNumbers"
         >
-          <oc-icon size="xsmall" name="hashtag" fill-type="none" />
+          <oc-icon
+            class="!flex items-center justify-center w-[24px] h-[24px]"
+            size="small"
+            name="hashtag"
+            fill-type="none"
+          />
         </NormalToolbar>
       </template>
     </md-editor>
@@ -254,6 +258,10 @@ export default defineComponent({
     // overwrite vendor styling
     background-color: var(--oc-role-surface-container);
   }
+}
+
+#text-editor-component.no-line-numbers .cm-gutters {
+  display: none !important;
 }
 
 #text-editor-preview-component {
