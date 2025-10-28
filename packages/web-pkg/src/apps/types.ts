@@ -36,7 +36,6 @@ export interface GlobalProperties extends ComponentCustomProperties, Language {
 
 export interface AppReadyHookArgs {
   globalProperties: GlobalProperties
-  router: Router
   instance?: App
   portal?: any
 }

@@ -58,7 +58,6 @@ class ClassicApplication extends NextApplication {
           }
         }),
         instance,
-        router: this.runtimeApi.requestRouter(),
         globalProperties: this.app.config.globalProperties as GlobalProperties
       })
   }

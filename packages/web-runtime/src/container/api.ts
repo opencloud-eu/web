@@ -8,7 +8,7 @@ import {
   ExtensionRegistry,
   SidebarNavExtension
 } from '@opencloud-eu/web-pkg'
-import { isEqual, isObject, isArray } from 'lodash-es'
+import { isObject, isArray } from 'lodash-es'
 import { App, Component, computed, h } from 'vue'
 import { AppNavigationItem } from '@opencloud-eu/web-pkg'
 
@@ -122,21 +122,6 @@ const openPortal = (
 }
 
 /**
- * expose router to the application
- *
- * @deprecated use with caution
- *
- * @param router
- */
-const requestRouter = (router: Router): Router => {
-  if (isEqual(process.env.NODE_ENV, 'development')) {
-    console.warn('requestRouter // router api is deprecated, use with caution')
-  }
-
-  return router
-}
-
-/**
  * exposed runtime api, this wraps all available api actions in a closure and provides application
  * specific data to the implementations.
  *
@@ -166,7 +151,6 @@ export const buildRuntimeApi = ({
       announceRoutes(applicationId, router, routes),
     announceNavigationItems: (navigationItems: AppNavigationItem[]): void =>
       announceNavigationItems(applicationId, extensionRegistry, navigationItems),
-    requestRouter: (): Router => requestRouter(router),
     openPortal: (
       instance: App,
       toApp: string,
