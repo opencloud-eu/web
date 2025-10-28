@@ -2,15 +2,13 @@
   <div>
     <h2 class="py-2" v-text="$gettext('Info')" />
     <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
-      <dt v-text="$gettext('Edition')" />
-      <dd v-text="backendProductName" />
       <template v-if="backendEdition">
         <dt v-text="$gettext('Edition')" />
         <dt v-text="backendEdition" />
       </template>
-      <dt v-text="$gettext('Version')" />
+      <dt class="flex items-start" v-text="$gettext('Version')" />
       <dd>
-        <div class="flex items-start flex-col">
+        <div class="flex flex-col">
           <span v-text="backendVersion" />
           <version-check />
         </div>
