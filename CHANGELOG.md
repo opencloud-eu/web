@@ -1,10 +1,14 @@
 # Changelog
 
-## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-09-16
+## [2.1.2](https://github.com/opencloud-eu/web/releases/tag/v2.1.2) - 2025-10-28
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+
+### ✅ Tests
+
+- fix: open shortcut test [[#1463](https://github.com/opencloud-eu/web/pull/1463)]
 
 ### 🐛 Bug Fixes
 
