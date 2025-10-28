@@ -9,6 +9,7 @@
       :has-auto-save="hasAutoSave"
       :is-editor="isEditor"
       :resource="resource"
+      :is-read-only="isReadOnly"
       @close="closeApp"
     />
     <loading-screen v-if="loading" />
@@ -556,8 +557,8 @@ export default defineComponent({
         {
           name: 'save-file',
           disabledTooltip: () => '',
-          isVisible: () => unref(isEditor),
-          isDisabled: () => isReadOnly.value || !isDirty.value,
+          isVisible: () => unref(isEditor) && !unref(isReadOnly),
+          isDisabled: () => !unref(isDirty),
           icon: 'save',
           id: 'app-save-action',
           label: () => $gettext('Save'),
@@ -759,7 +760,8 @@ export default defineComponent({
       pageTitle,
       resource,
       space,
-      slotAttrs
+      slotAttrs,
+      isReadOnly
     }
   }
 })
