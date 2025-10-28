@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency axios to v1.13.0 [[#1450](https://github.com/opencloud-eu/web/pull/1450)]
 - [full-ci] bump-opencloud-3.6.0. run all tests [[#1442](https://github.com/opencloud-eu/web/pull/1442)]
 - chore(deps): update devdependencies (non-major) to v4.0.4 [[#1441](https://github.com/opencloud-eu/web/pull/1441)]
 - chore(deps): update devdependencies (non-major) [[#1430](https://github.com/opencloud-eu/web/pull/1430)]
