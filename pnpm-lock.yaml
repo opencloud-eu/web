@@ -827,7 +827,7 @@ importers:
         version: 5.0.2(@uppy/core@5.1.1)
       '@uppy/utils':
         specifier: ^7.0.0
-        version: 7.1.1
+        version: 7.1.2
       '@uppy/xhr-upload':
         specifier: ^5.0.0
         version: 5.0.2(@uppy/core@5.1.1)
@@ -963,8 +963,8 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@uppy/core@5.1.1)
       '@uppy/utils':
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.1.2
+        version: 7.1.2
       '@uppy/xhr-upload':
         specifier: 5.0.2
         version: 5.0.2(@uppy/core@5.1.1)
@@ -3107,8 +3107,8 @@ packages:
     peerDependencies:
       '@uppy/core': ^5.1.1
 
-  '@uppy/utils@7.1.1':
-    resolution: {integrity: sha512-4jKH3WKmQs6SCOGHCbZkLHykiaJgQo3DZsET144K8mhaoaOxfVupCYohI/UKurTQll1FhCr9dKS95Qcm0T4w7g==}
+  '@uppy/utils@7.1.2':
+    resolution: {integrity: sha512-fBfXk3gLg9yksM8p2QKYOyzLqvFbZ5No1oDwwnerbWtgy9PBE8xwbhf2br7HUYpOe7sdG+KLcLJ5v9Ic2RWHGQ==}
 
   '@uppy/xhr-upload@5.0.2':
     resolution: {integrity: sha512-AM2+MM2EZT1HkQOOJKqXLXHoxVJK0eaqSlF+nf7jDOWK6W75f8VwgO/AVNM34UxV6Xe1B9bfrt9CTDgRb+AXdQ==}
@@ -8990,7 +8990,7 @@ snapshots:
   '@uppy/companion-client@5.1.1(@uppy/core@5.1.1)':
     dependencies:
       '@uppy/core': 5.1.1
-      '@uppy/utils': 7.1.1
+      '@uppy/utils': 7.1.2
       namespace-emitter: 2.0.1
       p-retry: 6.2.1
 
@@ -8998,7 +8998,7 @@ snapshots:
     dependencies:
       '@transloadit/prettier-bytes': 0.3.5
       '@uppy/store-default': 5.0.0
-      '@uppy/utils': 7.1.1
+      '@uppy/utils': 7.1.2
       lodash: 4.17.21
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
@@ -9011,10 +9011,10 @@ snapshots:
     dependencies:
       '@uppy/companion-client': 5.1.1(@uppy/core@5.1.1)
       '@uppy/core': 5.1.1
-      '@uppy/utils': 7.1.1
+      '@uppy/utils': 7.1.2
       tus-js-client: 4.3.1
 
-  '@uppy/utils@7.1.1':
+  '@uppy/utils@7.1.2':
     dependencies:
       lodash: 4.17.21
       preact: 10.27.2
@@ -9023,7 +9023,7 @@ snapshots:
     dependencies:
       '@uppy/companion-client': 5.1.1(@uppy/core@5.1.1)
       '@uppy/core': 5.1.1
-      '@uppy/utils': 7.1.1
+      '@uppy/utils': 7.1.2
 
   '@vavt/cm-extension@1.11.2': {}
 
