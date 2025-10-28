@@ -6,6 +6,15 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt
 
+### 📈 Enhancement
+
+- feat: show line numbers in text/markdown editor, fix lists not rendered correctly [[#1449](https://github.com/opencloud-eu/web/pull/1449)]
+- perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
+- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent thumbnail squashing in file list [[#1440](https://github.com/opencloud-eu/web/pull/1440)]
@@ -20,14 +29,6 @@
 - fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
 - fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
 - fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
-
-### 📈 Enhancement
-
-- perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
-- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
-- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
-- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
-- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
 ### ✅ Tests
 
