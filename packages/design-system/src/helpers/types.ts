@@ -1,4 +1,3 @@
-import { ComponentPublicInstance, Ref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface ContextualHelperDataListItem {
@@ -87,11 +86,3 @@ export type JustifyContentType =
   | 'space-around'
   | 'space-between'
   | 'space-evenly'
-
-export type NestedDrop = Ref<
-  ComponentPublicInstance & {
-    show: () => void
-    hide: () => void
-    getElement: () => HTMLElement
-  }
->

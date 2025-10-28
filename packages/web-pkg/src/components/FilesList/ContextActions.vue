@@ -1,9 +1,5 @@
 <template>
-  <context-action-menu
-    :menu-sections="menuSections"
-    :action-options="actionOptions"
-    :drop-ref="dropRef"
-  />
+  <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
 </template>
 
 <script lang="ts">
@@ -36,7 +32,6 @@ import {
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
-import { NestedDrop } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -45,11 +40,6 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<FileActionOptions>,
       required: true
-    },
-    dropRef: {
-      type: Object as PropType<NestedDrop>,
-      required: false,
-      default: null
     }
   },
   setup(props) {
