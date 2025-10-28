@@ -28,6 +28,13 @@
     "type": "number"
   },
   {
+    "name": "mobileBreakpoint",
+    "required": false,
+    "description": "The Tailwind breakpoint at which the mobile version of the breadcrumb is shown.",
+    "default": "sm",
+    "type": "'sm' | 'md' | 'lg'"
+  },
+  {
     "name": "showContextActions",
     "required": false,
     "description": "Determines if the context actions are shown for the last breadcrumb item.",
