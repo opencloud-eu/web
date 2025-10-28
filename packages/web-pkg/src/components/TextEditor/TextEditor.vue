@@ -190,7 +190,7 @@ export default defineComponent({
   }
 
   .md-editor-preview > ol,
-  ul {
+  .md-editor-preview > ul {
     @apply !list-[auto];
   }
 
