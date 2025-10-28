@@ -14,7 +14,7 @@
     "@sentry/vue": "10.22.0",
     "@uppy/core": "5.1.1",
     "@uppy/tus": "5.0.2",
-    "@uppy/utils": "7.1.1",
+    "@uppy/utils": "7.1.2",
     "@uppy/xhr-upload": "5.0.2",
     "@vueuse/core": "^14.0.0",
     "@vueuse/head": "2.0.0",
