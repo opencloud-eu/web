@@ -14,7 +14,6 @@ x-opencloud-server: &opencloud-service
     OC_PASSWORD_POLICY_MIN_SPECIAL_CHARACTERS: '0'
     OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST: '/etc/opencloud/password-policy-banned-passwords.txt'
     OC_SHOW_USER_EMAIL_IN_RESULTS: 'true'
-    OC_URL_SIGNING_SHARED_SECRET: '${OC_URL_SIGNING_SHARED_SECRET:-default-secret}'
     ACTIVITYLOG_WRITE_BUFFER_DURATION: '0'
 
     # WEB
@@ -183,9 +182,8 @@ services:
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
-      aliasgroup1: https://.*:443
       DONT_GEN_SSL_CERT: YES
-      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200}
+      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
