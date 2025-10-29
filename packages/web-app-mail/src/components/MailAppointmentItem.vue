@@ -3,17 +3,16 @@
   <oc-card
     v-else
     class="bg-role-surface-container rounded-xl mt-4"
-    :header-class="['items-start', 'px-4', collapsed ? 'pb-4' : '']"
+    :header-class="['px-4', collapsed ? 'pb-4' : '']"
     :body-class="[collapsed ? 'hidden' : '']"
-    appearance="outlined"
   >
     <template #header>
-      <div class="flex justify-between w-full">
+      <div class="flex justify-between w-full text-role-on-surface-variant">
         <div>
-          <span class="font-bold text-lg mt-1"><span v-text="icalEvent.summary" /></span>
-          <div class="text-sm text-role-on-surface-variant flex items-center gap-2">
+          <span class="font-bold text-lg" v-text="icalEvent.summary" />
+          <div class="text-sm mt-1">
             <span v-text="startDate" />
-            <span class="text-xl" v-text="'·'" />
+            <span v-text="'·'" />
             <span>
               <span v-text="startTime" />
               <span v-text="'-'" />
@@ -22,7 +21,6 @@
           </div>
         </div>
         <oc-button
-          class="self-start mt-1"
           appearance="raw"
           no-hover
           :aria-expanded="!collapsed"
@@ -35,33 +33,26 @@
     </template>
     <div class="mail-appointment-list-body text-role-on-surface-variant">
       <div v-if="icalEvent.location" class="flex items-center gap-2">
-        <oc-icon name="map-pin" size="small" fill-type="line" class="" />
+        <oc-icon name="map-pin" size="small" fill-type="line" />
         <span class="truncate" v-text="icalEvent.location" />
       </div>
-      <div class="grid grid-cols-[auto_1fr] gap-x-2 items-start mt-3">
+      <div class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
         <oc-icon name="user" size="small" fill-type="line" />
         <span class="font-medium" v-text="$gettext('Organizer')" />
         <div class="col-start-2 text-sm">
           <span v-text="icalEvent.organizer.replace(/^mailto:/i, '')" />
         </div>
       </div>
-      <div
-        v-if="attendees && attendees.length"
-        class="grid grid-cols-[auto_1fr] gap-x-2 items-start mt-3"
-      >
+      <div v-if="attendees && attendees.length" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
         <oc-icon name="group" size="small" fill-type="line" />
         <span class="font-medium" v-text="$gettext('Participants')" />
-        <oc-list class="col-start-2 mt-1 [&>li:not(:first-child)]:mt-1">
+        <oc-list class="col-start-2">
           <li
             v-for="attendee in (attendees || []).slice(0, MAX_ATTENDEES_DISPLAY_COUNT)"
             :key="attendee.email || attendee.name"
-            class="text-sm"
+            class="text-sm mt-1"
           >
-            <span v-if="attendee.name" class="mr-1" v-text="attendee.name"></span>
-            <span
-              v-if="attendee.email"
-              v-text="attendee.name ? `<${attendee.email}>` : attendee.email"
-            ></span>
+            <span v-text="attendee.email || attendee.name"></span>
           </li>
         </oc-list>
         <div v-if="attendees.length > MAX_ATTENDEES_DISPLAY_COUNT" class="col-start-2 text-sm mt-1">
@@ -69,11 +60,11 @@
         </div>
       </div>
       <div v-if="icalEvent.description" class="flex gap-2 mt-3">
-        <oc-icon name="sticky-note" size="small" fill-type="line" class="self-starts" />
+        <oc-icon name="sticky-note" size="small" fill-type="line" />
         <span class="grid grid-cols-[auto_1fr]" v-text="icalEvent.description" />
       </div>
       <oc-button class="w-full mt-4" appearance="outline" size="large" @click="download">
-        <oc-icon class="mr-2" size="medium" name="download-2" fill-type="line" />
+        <oc-icon size="medium" name="download-2" fill-type="line" />
         <span v-text="$gettext('Download')" />
       </oc-button>
     </div>
