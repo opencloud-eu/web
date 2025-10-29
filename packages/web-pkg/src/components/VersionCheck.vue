@@ -13,7 +13,7 @@
         v-else
         class="version-check-update text-role-on-surface-variant"
         size="small"
-        type="router-link"
+        type="a"
         :href="updateData.url"
         target="_blank"
         gap-size="small"
