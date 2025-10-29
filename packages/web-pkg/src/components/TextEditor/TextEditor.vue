@@ -17,8 +17,7 @@
       :theme="theme"
       auto-focus
       read-only
-    >
-    </md-preview>
+    />
     <md-editor
       v-else
       id="text-editor-component"
