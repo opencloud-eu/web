@@ -182,8 +182,9 @@ services:
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
+      aliasgroup1: https://${WOPISERVER_DOMAIN:-host.docker.internal}:443
       DONT_GEN_SSL_CERT: YES
-      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200}
+      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
