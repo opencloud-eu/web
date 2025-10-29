@@ -14,6 +14,19 @@
         <h2 class="text-lg ml-4" v-text="mailbox.name"></h2>
         <div class="paceholder" />
       </div>
+      <div class="mt-2 px-6">
+        <oc-button
+          id="new-email-menu-btn"
+          class="w-full"
+          v-oc-tooltip="$gettext('Create new email')"
+          :aria-label="$gettext('Create new email')"
+          appearance="filled"
+          @click="openMailcompose"
+        >
+          <oc-icon name="add" />
+          <span v-text="$gettext('Create new')" />
+        </oc-button>
+      </div>
       <no-content-message
         v-if="!mails || !mails.length"
         class="mail-list-empty"
@@ -51,6 +64,7 @@
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import { Mail, Mailbox } from '../types'
+import { useRoute, useRouter } from 'vue-router'
 
 const {
   mails = null,
@@ -68,4 +82,11 @@ defineEmits<{
   (e: 'select-mail', mail: Mail): void
   (e: 'back'): void
 }>()
+const router = useRouter()
+const route = useRoute()
+
+const openMailcompose = () => {
+  const nextQuery = { ...route.query, draftId: 'new' }
+  router.push({ query: nextQuery })
+}
 </script>
