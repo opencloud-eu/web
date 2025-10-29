@@ -41,6 +41,11 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v20.0.10 - autoclosed [[#1469](https://github.com/opencloud-eu/web/pull/1469)]
+- fix(deps): update dependency axios to v1.13.1 [[#1470](https://github.com/opencloud-eu/web/pull/1470)]
+- chore(deps): update pnpm to v10.20.0 [[#1471](https://github.com/opencloud-eu/web/pull/1471)]
+- chore(deps): update node.js to v24 [[#1472](https://github.com/opencloud-eu/web/pull/1472)]
+- chore(deps): update traefik docker tag to v3.5.4 [[#1467](https://github.com/opencloud-eu/web/pull/1467)]
 - fix(deps): update dependency @uppy/utils to v7.1.2 [[#1458](https://github.com/opencloud-eu/web/pull/1458)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v2.4.0 [[#1447](https://github.com/opencloud-eu/web/pull/1447)]
 - fix(deps): update dependency axios to v1.13.0 [[#1450](https://github.com/opencloud-eu/web/pull/1450)]
