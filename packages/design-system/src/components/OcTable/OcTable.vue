@@ -550,7 +550,7 @@ const handleSort = (field: FieldType) => {
   .oc-table-hover tr {
     @apply transition-colors duration-200 ease-in-out;
   }
-  .oc-table-accentuated,
+  .item-accentuated,
   .oc-table-highlighted,
   .oc-table .highlightedDropTarget {
     @apply bg-role-secondary-container;

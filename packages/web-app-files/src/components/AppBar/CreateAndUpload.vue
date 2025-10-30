@@ -200,13 +200,7 @@ import {
 import ResourceUpload from './Upload/ResourceUpload.vue'
 
 import { computed, onMounted, onBeforeUnmount, unref, watch, ref } from 'vue'
-import { eventBus } from '@opencloud-eu/web-pkg'
-import {
-  Resource,
-  SpaceResource,
-  isPublicSpaceResource,
-  isShareSpaceResource
-} from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
 import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../../HandleUpload'
 import { useGettext } from 'vue3-gettext'
@@ -216,15 +210,10 @@ import { v4 as uuidV4 } from 'uuid'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../../extensionPoints'
 
-const {
-  space,
-  item,
-  itemId,
-  limitedScreenSpace = false
-} = defineProps<{
+const { space, limitedScreenSpace = false } = defineProps<{
   space: SpaceResource
   item?: string
-  itemId?: string | number
+  itemId?: string
   limitedScreenSpace?: boolean
 }>()
 
@@ -334,39 +323,37 @@ useEventListener(document, 'paste', (event: ClipboardEvent) => {
 })
 
 const onUploadComplete = async (result: UploadResult) => {
-  if (result.successful) {
-    const file = result.successful[0]
+  const file = result.successful?.[0]
+  if (!file) {
+    return
+  }
 
-    if (!file) {
-      return
-    }
+  const { spaceId, driveType } = file.meta
+  if (!isPublicSpaceResource(unref(computedSpace))) {
+    const isOwnSpace = spacesStore.spaces.find(({ id }) => id === spaceId)?.isOwner(userStore.user)
 
-    const { spaceId, currentFolder, currentFolderId, driveType } = file.meta
-    if (!isPublicSpaceResource(unref(computedSpace))) {
-      const isOwnSpace = spacesStore.spaces
-        .find(({ id }) => id === spaceId)
-        ?.isOwner(userStore.user)
-
-      if (driveType === 'project' || isOwnSpace) {
-        const client = clientService.graphAuthenticated
-        const updatedSpace = await client.drives.getDrive(spaceId)
-        spacesStore.updateSpaceField({
-          id: updatedSpace.id,
-          field: 'spaceQuota',
-          value: updatedSpace.spaceQuota
-        })
-      }
-    }
-
-    const sameFolder =
-      itemId && !isShareSpaceResource(unref(computedSpace))
-        ? itemId.toString().startsWith(currentFolderId.toString())
-        : currentFolder === item
-    const fileIsInCurrentPath = spaceId === unref(computedSpace).id && sameFolder
-    if (fileIsInCurrentPath) {
-      eventBus.publish('app.files.list.load')
+    if (driveType === 'project' || isOwnSpace) {
+      const client = clientService.graphAuthenticated
+      const updatedSpace = await client.drives.getDrive(spaceId)
+      spacesStore.updateSpaceField({
+        id: updatedSpace.id,
+        field: 'spaceQuota',
+        value: updatedSpace.spaceQuota
+      })
     }
   }
+
+  if (!unref(currentFolder) || spaceId !== unref(computedSpace).id) {
+    return
+  }
+
+  const { children } = await clientService.webdav.listFiles(unref(computedSpace), {
+    path: unref(currentFolder).path
+  })
+
+  const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
+  const newResources = children.filter((child) => !existingIds.has(child.id))
+  resourcesStore.upsertResources(newResources)
 }
 
 const isMovingIntoSameFolder = computed(() => {
