@@ -363,11 +363,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
             ...uppyFile,
             meta: { ...uppyFile.meta, fileId: folder?.fileId }
           })
-
-          if (isRoot && this.resourcesStore.currentFolder?.id === uploadFolder.id) {
-            // update file list for top level folders when the current folder is the upload target folder
-            this.resourcesStore.upsertResource(folder)
-          }
         } catch (error) {
           if (error.statusCode !== 405) {
             console.error(error)

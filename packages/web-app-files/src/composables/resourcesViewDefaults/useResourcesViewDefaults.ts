@@ -119,14 +119,21 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     page: paginationPage
   } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
 
-  const accentuateItem = async (id: string) => {
-    await nextTick()
-    fileList.accentuateItem(id)
-  }
   resourcesStore.$onAction((action) => {
-    if (action.name === 'upsertResource') {
-      accentuateItem(action.args[0].id)
-    }
+    action.after(async () => {
+      switch (action.name) {
+        case 'upsertResource':
+          await nextTick()
+          fileList.accentuateItem(action.args[0].id)
+          break
+        case 'upsertResources':
+          await nextTick()
+          for (const resource of action.args[0]) {
+            fileList.accentuateItem(resource.id)
+          }
+          break
+      }
+    })
   })
 
   return {

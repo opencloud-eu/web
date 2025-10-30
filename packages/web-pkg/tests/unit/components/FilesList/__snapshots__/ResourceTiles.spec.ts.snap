@@ -18,7 +18,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
   </div>
   <ul data-v-67d39700="" class="oc-list oc-tiles grid justify-start gap-3">
     <li data-v-67d39700="" class="oc-tiles-item has-item-context-menu">
-      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false">
+      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none [&amp;.item-accentuated]:bg-role-secondary-container bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false">
         <!--v-if-->
         <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
           <div class="p-2">
@@ -65,7 +65,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li data-v-67d39700="" class="oc-tiles-item has-item-context-menu">
-      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false">
+      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none [&amp;.item-accentuated]:bg-role-secondary-container bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false">
         <!--v-if-->
         <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
           <div class="p-2">

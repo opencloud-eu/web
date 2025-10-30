@@ -2,7 +2,7 @@
   <oc-card
     ref="observerTarget"
     body-class="p-0"
-    class="oc-tile-card flex flex-col h-full shadow-none"
+    class="oc-tile-card flex flex-col h-full shadow-none [&.item-accentuated]:bg-role-secondary-container"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':

@@ -5,8 +5,8 @@ export const accentuateItem = (id: string, clearTimeout = 3500): void => {
     return
   }
 
-  item.classList.add('oc-table-accentuated')
+  item.classList.add('item-accentuated')
   setTimeout(() => {
-    item.classList.remove('oc-table-accentuated')
+    item.classList.remove('item-accentuated')
   }, clearTimeout)
 }
