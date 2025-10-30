@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Update Font Metadata2 [[#1488](https://github.com/opencloud-eu/web/pull/1488)]
 - feat: add single resources to store after uploading [[#1361](https://github.com/opencloud-eu/web/pull/1361)]
 - feat: markdown editor add line numbers toggle button [[#1468](https://github.com/opencloud-eu/web/pull/1468)]
 - feat: collabora insert images from opencloud [[#924](https://github.com/opencloud-eu/web/pull/924)]
