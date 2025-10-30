@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add single resources to store after uploading [[#1361](https://github.com/opencloud-eu/web/pull/1361)]
 - feat: markdown editor add line numbers toggle button [[#1468](https://github.com/opencloud-eu/web/pull/1468)]
 - feat: collabora insert images from opencloud [[#924](https://github.com/opencloud-eu/web/pull/924)]
 - feat: hide update check if server is not available, show update check in admin settings [[#1455](https://github.com/opencloud-eu/web/pull/1455)]
