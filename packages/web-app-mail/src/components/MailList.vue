@@ -18,10 +18,8 @@
         <oc-button
           id="new-email-menu-btn"
           class="w-full"
-          v-oc-tooltip="$gettext('Create new email')"
-          :aria-label="$gettext('Create new email')"
           appearance="filled"
-          @click="openMailcompose"
+          @click="openMailCompose"
         >
           <oc-icon name="add" />
           <span v-text="$gettext('Create new')" />
@@ -85,7 +83,7 @@ defineEmits<{
 const router = useRouter()
 const route = useRoute()
 
-const openMailcompose = () => {
+const openMailCompose = () => {
   const nextQuery = { ...route.query, draftId: 'new' }
   router.push({ query: nextQuery })
 }
