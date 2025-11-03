@@ -45,6 +45,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency password-sheriff to v1.2.0 [[#1489](https://github.com/opencloud-eu/web/pull/1489)]
+- chore(deps): update dependency globals to v16.5.0 [[#1490](https://github.com/opencloud-eu/web/pull/1490)]
 - chore(deps): update devdependencies (non-major) [[#1482](https://github.com/opencloud-eu/web/pull/1482)]
 - chore(deps): update dependency happy-dom to v20.0.10 - autoclosed [[#1469](https://github.com/opencloud-eu/web/pull/1469)]
 - fix(deps): update dependency axios to v1.13.1 [[#1470](https://github.com/opencloud-eu/web/pull/1470)]
