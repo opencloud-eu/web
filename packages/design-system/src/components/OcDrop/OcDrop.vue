@@ -13,10 +13,10 @@
     <slot />
   </oc-bottom-drawer>
   <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
-    <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
+    <oc-card v-if="isOpen && $slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
       <slot />
     </oc-card>
-    <slot v-else name="special" />
+    <slot v-else-if="isOpen" name="special" />
   </div>
 </template>
 
@@ -140,6 +140,7 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { isMobile } = useIsMobile()
+const isOpen = ref(false)
 
 const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcBottomDrawer>('bottomDrawerRef')
@@ -182,10 +183,6 @@ const onFocusOut = (event: FocusEvent) => {
   }
 }
 
-onBeforeUnmount(() => {
-  drop.value?.removeEventListener('focusout', onFocusOut)
-})
-
 const triggerMapping = computed(() => {
   return (
     {
@@ -211,6 +208,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  unref(drop)?.removeEventListener('focusout', onFocusOut)
   destroy(unref(tippyInstance))
 })
 
@@ -236,15 +234,17 @@ const initializeTippy = () => {
     theme: 'none',
     maxWidth: 416,
     offset,
-    ...(!isNestedElement && {
-      onShow: (instance) => {
-        emit('showDrop')
+    onShow: (instance) => {
+      isOpen.value = true
+      emit('showDrop')
+      if (!isNestedElement) {
         hideAll({ exclude: instance })
-      },
-      onHide: () => {
-        emit('hideDrop')
       }
-    }),
+    },
+    onHide: () => {
+      isOpen.value = false
+      emit('hideDrop')
+    },
     popperOptions: {
       ...popperOptions,
       modifiers: [

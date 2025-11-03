@@ -23,16 +23,14 @@
       mode="click"
       padding-size="small"
       close-on-click
-      @show-drop="isOpen = true"
-      @hide-drop="isOpen = false"
     >
-      <slot name="contextMenu" :item="item" :is-open="isOpen" />
+      <slot name="contextMenu" :item="item" />
     </oc-drop>
   </oc-button>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { extractDomSelector, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
@@ -58,11 +56,9 @@ export default defineComponent({
   setup() {
     const { $gettext } = useGettext()
     const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const isOpen = ref(false)
 
     return {
-      contextMenuLabel,
-      isOpen
+      contextMenuLabel
     }
   }
 })
