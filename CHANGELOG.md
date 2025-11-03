@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: bottom drawer nesting issues [[#1460](https://github.com/opencloud-eu/web/pull/1460)]
 - bug: set as space image action appears on non-supported files [[#1491](https://github.com/opencloud-eu/web/pull/1491)]
 - fix: list styling [[#1461](https://github.com/opencloud-eu/web/pull/1461)]
 - fix: set space image action showing outside of project spaces [[#1439](https://github.com/opencloud-eu/web/pull/1439)]
