@@ -6,7 +6,7 @@
         :name="icon.name"
         :color="icon.color"
         size="large"
-        class="oc-resource-icon inline-flex items-center"
+        class="inline-flex items-center"
       />
       <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
         <span class="mail-attachment-item-filename truncate" v-text="attachment.name" />
