@@ -6,23 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @tbsbdr
 
-### 📈 Enhancement
-
-- Update Font Metadata2 [[#1488](https://github.com/opencloud-eu/web/pull/1488)]
-- feat: add single resources to store after uploading [[#1361](https://github.com/opencloud-eu/web/pull/1361)]
-- feat: markdown editor add line numbers toggle button [[#1468](https://github.com/opencloud-eu/web/pull/1468)]
-- feat: collabora insert images from opencloud [[#924](https://github.com/opencloud-eu/web/pull/924)]
-- feat: hide update check if server is not available, show update check in admin settings [[#1455](https://github.com/opencloud-eu/web/pull/1455)]
-- Update Font Metadata [[#1459](https://github.com/opencloud-eu/web/pull/1459)]
-- feat: show line numbers in text/markdown editor, fix lists not rendered correctly [[#1449](https://github.com/opencloud-eu/web/pull/1449)]
-- perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
-- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
-- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
-- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
-- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
-
 ### 🐛 Bug Fixes
 
+- bug: set as space image action appears on non-supported files [[#1491](https://github.com/opencloud-eu/web/pull/1491)]
 - fix: list styling [[#1461](https://github.com/opencloud-eu/web/pull/1461)]
 - fix: set space image action showing outside of project spaces [[#1439](https://github.com/opencloud-eu/web/pull/1439)]
 - fix: prevent thumbnail squashing in file list [[#1440](https://github.com/opencloud-eu/web/pull/1440)]
@@ -37,6 +23,21 @@
 - fix: sidebar messing with tile size [[#1398](https://github.com/opencloud-eu/web/pull/1398)]
 - fix: plain view logo UI [[#1396](https://github.com/opencloud-eu/web/pull/1396)]
 - fix(external): pixelated rounded corners with Collabora [[#1372](https://github.com/opencloud-eu/web/pull/1372)]
+
+### 📈 Enhancement
+
+- Update Font Metadata2 [[#1488](https://github.com/opencloud-eu/web/pull/1488)]
+- feat: add single resources to store after uploading [[#1361](https://github.com/opencloud-eu/web/pull/1361)]
+- feat: markdown editor add line numbers toggle button [[#1468](https://github.com/opencloud-eu/web/pull/1468)]
+- feat: collabora insert images from opencloud [[#924](https://github.com/opencloud-eu/web/pull/924)]
+- feat: hide update check if server is not available, show update check in admin settings [[#1455](https://github.com/opencloud-eu/web/pull/1455)]
+- Update Font Metadata [[#1459](https://github.com/opencloud-eu/web/pull/1459)]
+- feat: show line numbers in text/markdown editor, fix lists not rendered correctly [[#1449](https://github.com/opencloud-eu/web/pull/1449)]
+- perf: increase performance for folder and multiple file downloads [[#1403](https://github.com/opencloud-eu/web/pull/1403)]
+- feat: undo delete action [[#1381](https://github.com/opencloud-eu/web/pull/1381)]
+- feat: add tiles view to search result page [[#1389](https://github.com/opencloud-eu/web/pull/1389)]
+- feat(external): respect light/dark theme in Collabora [[#1376](https://github.com/opencloud-eu/web/pull/1376)]
+- feat: show disabled delete button for locked files [[#1366](https://github.com/opencloud-eu/web/pull/1366)]
 
 ### ✅ Tests
 
