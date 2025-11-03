@@ -8,6 +8,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency md-editor-v3 to v6.1.1 [[#1493](https://github.com/opencloud-eu/web/pull/1493)]
 - fix(deps): update dependency @uppy/utils to v7.1.3 [[#1496](https://github.com/opencloud-eu/web/pull/1496)]
 
 ## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-11-03
