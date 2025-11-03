@@ -89,20 +89,6 @@ const from = ref<string>('')
 const selectedFrom = ref<string>('')
 const fromOptions = ref<FromOption[]>([])
 
-/* const fromOptions = computed<FromOption[]>(() => {
-  return (allAccounts.value || []).flatMap((accounts: any) => {
-    const ids = Array.isArray(accounts.identities) ? accounts.identities : []
-    return ids
-      .filter((id: any) => !!id?.email)
-      .map((id: any) => ({
-        value: `${accounts.accountId}:${id.id}`,
-        label: id.name ? `${id.name} <${id.email}>` : id.email,
-        accountId: accounts.accountId,
-        email: id.email,
-        identityId: id.id
-      }))
-  })
-}) */
 const isLoading = computed(
   () => unref(loadMailIdentitiesTask.isRunning) || !unref(loadMailIdentitiesTask.last)
 )
@@ -142,18 +128,5 @@ const loadMailIdentitiesTask = useTask(function* (signal) {
 
 onMounted(() => {
   loadMailIdentitiesTask.perform()
-  /* const primaryId = groupwareConfigStore.primaryAccounts?.mail
-  console.log('PrimaryID:', primaryId)
-  const acc = allAccounts.value.find((a: any) => a.accountId === primaryId) ?? allAccounts.value[0]
-  console.log('acc', acc)
-  const firstId = acc?.identities?.[0]
-  console.log('firstID', firstId)
-  if (acc && firstId) {
-    selectedFrom.value = `${acc.name}:${firstId.email}`
-    from.value = firstId.email
-  } else if (fromOptions.value[0]) {
-    selectedFrom.value = fromOptions.value[0].value
-    from.value = fromOptions.value[0].email
-  } */
 })
 </script>
