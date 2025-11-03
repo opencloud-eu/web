@@ -43,7 +43,6 @@ import { createApp, watch } from 'vue'
 import PortalVue, { createWormhole } from 'portal-vue'
 import { createPinia } from 'pinia'
 import Avatar from './components/Avatar.vue'
-import focusMixin from './mixins/focusMixin'
 import { extensionPoints } from './extensionPoints'
 import { isSilentRedirectRoute } from './helpers/silentRedirect'
 import { extensions } from './extensions'
@@ -162,7 +161,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   app.use(createHead())
 
   app.component('AvatarImage', Avatar)
-  app.mixin(focusMixin)
 
   app.mount('#opencloud')
 

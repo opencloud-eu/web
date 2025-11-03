@@ -135,7 +135,6 @@ const isLoading = computed(() => {
 })
 
 const breadcrumbs = computed(() => [
-  { text: $gettext('Administration Settings'), to: { path: '/admin-settings' } },
   {
     text: $gettext('Spaces'),
     onClick: () => {
