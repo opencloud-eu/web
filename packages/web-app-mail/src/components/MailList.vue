@@ -21,8 +21,8 @@
           appearance="filled"
           @click="openMailCompose"
         >
-          <oc-icon name="add" />
-          <span v-text="$gettext('Create new')" />
+          <oc-icon name="edit-box" fill-type="line" />
+          <span v-text="$gettext('Write new Email')" />
         </oc-button>
       </div>
       <no-content-message
