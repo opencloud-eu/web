@@ -40,19 +40,5 @@
     "description": "The target of the portal, when in use.",
     "default": "app.runtime.bottom.drawer",
     "type": "string"
-  },
-  {
-    "name": "isNestedElement",
-    "required": false,
-    "description": "Determines if the bottom drawer element is nested.",
-    "default": "false",
-    "type": "boolean"
-  },
-  {
-    "name": "nestedParentRef",
-    "required": false,
-    "description": "The parent `OcBottomDrawer` ref of the nested bottom drawer.",
-    "default": "",
-    "type": "NestedDrop | null"
   }
 ]

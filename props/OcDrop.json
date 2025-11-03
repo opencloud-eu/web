@@ -28,13 +28,6 @@
     "type": "boolean"
   },
   {
-    "name": "nestedParentRef",
-    "required": false,
-    "description": "The parent `OcDrop` ref of the nested drop.",
-    "default": "",
-    "type": "NestedDrop"
-  },
-  {
     "name": "mode",
     "required": false,
     "description": "Determines the event that triggers the drop.",
