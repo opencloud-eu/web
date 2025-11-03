@@ -2,7 +2,6 @@
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
       <oc-icon
-        :key="`resource-icon-${icon.name}`"
         :name="icon.name"
         :color="icon.color"
         size="large"
