@@ -1,4 +1,4 @@
-import { Router, RouteRecordRaw } from 'vue-router'
+import { RouteRecordRaw } from 'vue-router'
 import { App, Component } from 'vue'
 import { AppNavigationItem } from '@opencloud-eu/web-pkg'
 
@@ -6,7 +6,6 @@ import { AppNavigationItem } from '@opencloud-eu/web-pkg'
 export interface RuntimeApi {
   announceRoutes: (routes: RouteRecordRaw[]) => void
   announceNavigationItems: (navigationItems: AppNavigationItem[]) => void
-  requestRouter: () => Router
   openPortal: (
     instance: App,
     toApp: string,

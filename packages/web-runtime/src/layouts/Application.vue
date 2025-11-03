@@ -84,26 +84,6 @@ const extensionNavItems = computed(() =>
   getExtensionNavItems({ extensionRegistry, appId: unref(activeApp) })
 )
 
-// FIXME: we can convert to a single router-view without name (thus without the loop) and without this watcher when we release v6.0.0
-watch(
-  useRoute(),
-  (route) => {
-    if (unref(route).matched.length) {
-      unref(route).matched.forEach((match) => {
-        const keys = Object.keys(match.components).filter((key) => key !== 'default')
-        if (keys.length) {
-          console.warn(
-            `named components are deprecated, use "default" instead of "${keys.join(
-              ', '
-            )}" on route ${String(route.name)}`
-          )
-        }
-      })
-    }
-  },
-  { immediate: true }
-)
-
 const requiredAuthContext = useRouteMeta('authContext')
 const { areSpacesLoading } = useSpacesLoading()
 const isLoading = computed(() => {
