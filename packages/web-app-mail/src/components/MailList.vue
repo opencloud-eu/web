@@ -14,7 +14,7 @@
         <h2 class="text-lg ml-4" v-text="mailbox.name"></h2>
         <div class="paceholder" />
       </div>
-      <div class="mt-2 px-6">
+      <div class="py-2 px-4">
         <oc-button
           id="new-email-menu-btn"
           class="w-full"
@@ -43,7 +43,7 @@
           :class="{ 'bg-role-secondary-container': selectedMail?.id === mail.id }"
         >
           <oc-button
-            class="px-2 py-4 text-left w-full"
+            class="px-4 py-4 text-left w-full"
             justify-content="left"
             appearance="raw"
             gap-size="none"
