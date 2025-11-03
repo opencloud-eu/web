@@ -45,6 +45,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1482](https://github.com/opencloud-eu/web/pull/1482)]
 - chore(deps): update dependency happy-dom to v20.0.10 - autoclosed [[#1469](https://github.com/opencloud-eu/web/pull/1469)]
 - fix(deps): update dependency axios to v1.13.1 [[#1470](https://github.com/opencloud-eu/web/pull/1470)]
 - chore(deps): update pnpm to v10.20.0 [[#1471](https://github.com/opencloud-eu/web/pull/1471)]
