@@ -2,6 +2,7 @@ import './tailwind.css'
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import './../../../src/styles/layers.css'
 import { createGettext } from 'vue3-gettext'
+import { createPinia } from 'pinia'
 import * as components from './../../../src/components'
 import * as directives from './../../../src/directives'
 import './custom.scss'
@@ -12,7 +13,9 @@ export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
     const gettext = createGettext()
+    const pinia = createPinia()
     app.use(gettext)
+    app.use(pinia)
 
     app.component('LiveCodeBlock', LiveCodeBlock)
     app.component('ComponentApi', ComponentApi)

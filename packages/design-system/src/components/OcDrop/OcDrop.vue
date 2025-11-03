@@ -6,8 +6,6 @@
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
-    :is-nested-element="isNestedElement"
-    :nested-parent-ref="nestedParentRef"
     use-portal
     @show="emit('showDrop')"
     @hide="emit('hideDrop')"
@@ -26,7 +24,7 @@
 import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getTailwindPaddingClass, NestedDrop, SizeType, uniqueId } from '../../helpers'
+import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
@@ -51,10 +49,6 @@ export interface Props {
    * @default false
    */
   isNestedElement?: boolean
-  /**
-   * @docs The parent `OcDrop` ref of the nested drop.
-   */
-  nestedParentRef?: NestedDrop
   /**
    * @docs Determines the event that triggers the drop.
    * @default 'click'
@@ -139,8 +133,7 @@ const {
   target,
   toggle = '',
   title = '',
-  enforceDropOnMobile = false,
-  nestedParentRef = null
+  enforceDropOnMobile = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -169,11 +162,7 @@ const hide = () => {
   unref(tippyInstance)?.hide()
 }
 
-const getElement = () => {
-  return unref(useBottomDrawer) ? unref(bottomDrawerRef).getElement() : unref(drop)
-}
-
-defineExpose({ show, hide, getElement, tippy: tippyInstance })
+defineExpose({ show, hide, tippy: tippyInstance })
 
 const onClick = (event: Event) => {
   const isNestedDropToggle = (event.target as HTMLElement)

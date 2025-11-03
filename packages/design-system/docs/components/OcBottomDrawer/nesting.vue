@@ -31,8 +31,6 @@
     drawer-id="example-bottom-drawer-child"
     toggle="#toggle-bottom-drawer-child"
     title="Example Bottom Drawer Child"
-    :is-nested-element="true"
-    :nested-parent-ref="parent"
   >
     <oc-list class="flex flex-col p-2">
       <oc-button justify-content="left" appearance="raw" no-hover aria-expanded="false">
@@ -44,8 +42,7 @@
 </template>
 <script setup lang="ts">
 import { OcBottomDrawer } from '../../../src/components'
-import { ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 
-const parent = useTemplateRef('parent')
 const renderChild = ref(false)
 </script>

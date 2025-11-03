@@ -2,6 +2,7 @@ import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import BottomDrawer from './OcBottomDrawer.vue'
 import { defineComponent, nextTick } from 'vue'
 import OcButton from '../OcButton/OcButton.vue'
+import { useBottomDrawer } from '../../composables'
 
 const selectors = {
   toggle: '#button-drawer-toggle',
@@ -42,8 +43,8 @@ describe('OcBottomDrawer', () => {
     expect(wrapper.find(selectors.drawer).exists()).toBe(true)
 
     wrapper.find(selectors.closeButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
     wrapper.unmount()
   })
 
@@ -54,8 +55,8 @@ describe('OcBottomDrawer', () => {
     expect(wrapper.find(selectors.drawer).exists()).toBe(true)
 
     await wrapper.find(selectors.background).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
     wrapper.unmount()
   })
 
@@ -68,8 +69,8 @@ describe('OcBottomDrawer', () => {
 
     const esc = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })
     document.dispatchEvent(esc)
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
     wrapper.unmount()
   })
 
@@ -81,8 +82,8 @@ describe('OcBottomDrawer', () => {
     expect(wrapper.find(selectors.drawer).exists()).toBe(true)
 
     wrapper.find(selectors.actionButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeDrawer).toHaveBeenCalled()
     wrapper.unmount()
   })
 
@@ -94,13 +95,21 @@ describe('OcBottomDrawer', () => {
     expect(wrapper.find(selectors.drawer).exists()).toBe(true)
 
     wrapper.find(selectors.actionButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeDrawer).not.toHaveBeenCalled()
+    expect(bottomDrawerStore.closeAllDrawers).not.toHaveBeenCalled()
     wrapper.unmount()
   })
 })
 
 const getWrapper = (props = { closeOnClick: false }) => {
+  const plugins = [...defaultPlugins()]
+
+  const drawer = { id: '1' }
+  const bottomDrawerStore = useBottomDrawer()
+  vi.mocked(bottomDrawerStore.showDrawer).mockReturnValue(drawer)
+  bottomDrawerStore.drawers = [drawer]
+
   const RootComponent = defineComponent({
     components: { BottomDrawer, OcButton },
     props: ['props'],
@@ -135,7 +144,7 @@ const getWrapper = (props = { closeOnClick: false }) => {
         ...props
       },
       attachTo: document.body,
-      global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] }
+      global: { renderStubDefaultSlot: true, plugins }
     })
   }
 }
