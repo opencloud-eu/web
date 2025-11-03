@@ -426,14 +426,15 @@ export default defineComponent({
       }
 
       const elements = unref(dropRef).$el.querySelectorAll('.selectable-item')
-
-      unref(dropRef).$el.scrollTo(
-        0,
-        unref(activeDropItemIndex) === null
-          ? 0
-          : elements[unref(activeDropItemIndex)].getBoundingClientRect().y -
-              elements[unref(activeDropItemIndex)].getBoundingClientRect().height
-      )
+      if (elements[unref(activeDropItemIndex)]) {
+        unref(dropRef).$el.scrollTo(
+          0,
+          unref(activeDropItemIndex) === null
+            ? 0
+            : elements[unref(activeDropItemIndex)].getBoundingClientRect().y -
+                elements[unref(activeDropItemIndex)].getBoundingClientRect().height
+        )
+      }
     })
 
     expose({ onConfirm })
