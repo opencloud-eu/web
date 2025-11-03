@@ -17,9 +17,10 @@
       <div class="py-2 px-4">
         <oc-button
           id="new-email-menu-btn"
+          type="router-link"
+          :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
           class="w-full"
           appearance="filled"
-          @click="$emit('compose-mail', 'new')"
         >
           <oc-icon name="edit-box" fill-type="line" />
           <span v-text="$gettext('Write new Email')" />
@@ -62,6 +63,7 @@
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import { Mail, Mailbox } from '../types'
+import { useRoute } from 'vue-router'
 
 const {
   mails = null,
@@ -75,9 +77,10 @@ const {
   isLoading?: boolean
 }>()
 
+const route = useRoute()
+
 defineEmits<{
   (e: 'select-mail', mail: Mail): void
-  (e: 'compose-mail', draftId: string): void
   (e: 'back'): void
 }>()
 </script>

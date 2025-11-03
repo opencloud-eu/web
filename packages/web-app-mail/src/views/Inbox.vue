@@ -30,7 +30,7 @@
       <div
         class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4 px-4 md:px-0"
         :class="{
-          'hidden md:block': mailDetails || !mailbox || isComposing
+          'hidden md:block': mailDetails || !mailbox
         }"
       >
         <MailList
@@ -40,18 +40,15 @@
           :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
           @back="onNavigateBackMailbox"
-          @compose-mail="onComposeMail"
         />
       </div>
       <div
         class="overflow-y-auto min-w-0 w-full md:w-2/4 px-4 pt-4 md:pt-0"
         :class="{
-          'hidden md:block': !mailDetails && !isComposing
+          'hidden md:block': !mailDetails
         }"
       >
-        <MailCompose v-if="isComposingMail" :account="account" @close="onCloseCompose" />
         <MailDetails
-          v-else
           :account="account"
           :mail="mailDetails"
           :is-loading="isMailLoading"
@@ -72,7 +69,6 @@ import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
 import MailAccountList from '../components/MailAccountList.vue'
-import MailCompose from '../components/MailCompose.vue'
 import { Mail, MailAccount, Mailbox, MailSchema, MailAccountSchema, MailboxSchema } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -91,9 +87,6 @@ const isLoading = ref<boolean>(true)
 const selectedMailIdQuery = useRouteQuery('mailId')
 const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
-const draftIdQuery = useRouteQuery('draftId')
-
-const isComposingMail = computed(() => !!unref(draftIdQuery))
 
 const isAccountsLoading = computed(
   () => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last)
@@ -139,13 +132,6 @@ const onNavigateBackMailbox = () => {
   mailbox.value = null
   mails.value = null
   mailDetails.value = null
-}
-
-const onComposeMail = (draftId: string) => {
-  draftIdQuery.value = draftId
-}
-const onCloseCompose = () => {
-  draftIdQuery.value = null
 }
 
 const loadAccountsTask = useTask(function* (signal) {

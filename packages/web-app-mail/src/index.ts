@@ -10,6 +10,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { APPID } from './appid'
+import { RouteRecordRaw } from 'vue-router'
 
 export default defineWebApplication({
   setup() {
@@ -23,17 +24,28 @@ export default defineWebApplication({
       color: '#0478d4'
     }
 
-    const routes = [
+    const routes: RouteRecordRaw[] = [
       {
         path: '/',
         name: 'root',
         component: () => import('./LayoutContainer.vue'),
-        redirect: urlJoin(appInfo.id, 'all', 'inbox'),
-
         meta: {
           authContext: 'user'
         },
         children: [
+          {
+            path: '',
+            redirect: urlJoin(appInfo.id, 'all', 'inbox')
+          },
+          {
+            path: 'create',
+            name: 'mail-create',
+            component: () => import('./views/MailCompose.vue'),
+            meta: {
+              authContext: 'user',
+              title: $gettext('Create new email')
+            }
+          },
           {
             path: 'all',
             name: 'all',
@@ -44,7 +56,7 @@ export default defineWebApplication({
             children: [
               {
                 path: 'inbox',
-                name: 'inbox',
+                name: 'all-inbox',
                 component: () => import('./views/Inbox.vue'),
                 meta: {
                   authContext: 'user',
