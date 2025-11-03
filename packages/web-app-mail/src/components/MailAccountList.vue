@@ -4,8 +4,8 @@
     <oc-list v-else>
       <li v-for="account in accounts" :key="account.accountId">
         <oc-button
-          class="account-list-item mt-4"
           v-oc-tooltip="account.name"
+          class="account-list-item mt-4"
           no-hover
           appearance="raw"
           @click="$emit('select', account)"
@@ -32,7 +32,7 @@ defineEmits<{
 
 const {
   accounts = [],
-  selectedAccount = {},
+  selectedAccount = null,
   isLoading = false
 } = defineProps<{
   accounts?: MailAccount[]
