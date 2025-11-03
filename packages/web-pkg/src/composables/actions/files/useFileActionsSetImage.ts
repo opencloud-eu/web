@@ -45,7 +45,8 @@ export const useFileActionsSetImage = () => {
         if (resources.length !== 1) {
           return false
         }
-        if (!resources[0].mimeType) {
+
+        if (!resources[0].hasPreview() || !resources[0].mimeType?.includes('image/')) {
           return false
         }
 
