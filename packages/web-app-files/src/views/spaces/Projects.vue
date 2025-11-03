@@ -106,12 +106,11 @@
                 <oc-icon name="group" fill-type="line" />
               </oc-button>
             </template>
-            <template #contextMenu="{ resource, isOpen, dropRef }">
+            <template #contextMenu="{ resource, isOpen }">
               <space-context-actions
                 v-if="isOpen && isResourceInSelection(resource)"
                 :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
-                :drop-ref="dropRef"
               />
             </template>
             <template #footer>
