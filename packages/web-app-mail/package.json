@@ -23,6 +23,7 @@
     "zod": "4.1.12"
   },
   "dependencies": {
-    "ical.js": "^2.2.1"
+    "ical.js": "^2.2.1",
+    "luxon": "^3.5.0"
   }
 }
