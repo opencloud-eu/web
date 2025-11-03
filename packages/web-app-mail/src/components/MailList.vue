@@ -19,7 +19,7 @@
           id="new-email-menu-btn"
           class="w-full"
           appearance="filled"
-          @click="openMailCompose"
+          @click="$emit('compose-mail', 'new')"
         >
           <oc-icon name="edit-box" fill-type="line" />
           <span v-text="$gettext('Write new Email')" />
@@ -62,7 +62,6 @@
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import { Mail, Mailbox } from '../types'
-import { useRoute, useRouter } from 'vue-router'
 
 const {
   mails = null,
@@ -78,13 +77,7 @@ const {
 
 defineEmits<{
   (e: 'select-mail', mail: Mail): void
+  (e: 'compose-mail', draftId: string): void
   (e: 'back'): void
 }>()
-const router = useRouter()
-const route = useRoute()
-
-const openMailCompose = () => {
-  const nextQuery = { ...route.query, draftId: 'new' }
-  router.push({ query: nextQuery })
-}
 </script>

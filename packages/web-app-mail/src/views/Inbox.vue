@@ -40,6 +40,7 @@
           :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
           @back="onNavigateBackMailbox"
+          @compose-mail="onComposeMail"
         />
       </div>
       <div
@@ -48,9 +49,9 @@
           'hidden md:block': !mailDetails && !isComposing
         }"
       >
-        <MailCompose v-if="isComposing" :account="account" @close="onCloseCompose" />
+        <MailCompose v-if="isComposingMail" :account="account" @close="onCloseCompose" />
         <MailDetails
-          v-else-if="mailDetails"
+          v-else
           :account="account"
           :mail="mailDetails"
           :is-loading="isMailLoading"
@@ -92,8 +93,57 @@ const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
 const draftIdQuery = useRouteQuery('draftId')
 
-const isComposing = computed(() => !!unref(draftIdQuery))
+const isComposingMail = computed(() => !!unref(draftIdQuery))
 
+const isAccountsLoading = computed(
+  () => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last)
+)
+const isMailboxesLoading = computed(
+  () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
+)
+
+const isMailsLoading = computed(
+  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
+)
+
+const isMailLoading = computed(() => unref(loadMailTask.isRunning))
+
+const onSelectMailbox = async (selectedMailbox: Mailbox) => {
+  mailbox.value = selectedMailbox
+  mailDetails.value = null
+  selectedMailIdQuery.value = null
+  await loadMailSummaryTask.perform()
+}
+
+const onSelectMail = async (selectedMail: Mail) => {
+  await loadMailTask.perform(selectedMail.id)
+  selectedMailIdQuery.value = selectedMail.id
+}
+
+const onSelectAccount = async (selectedAccount: MailAccount) => {
+  account.value = selectedAccount
+  mailDetails.value = null
+
+  await loadMailboxesTask.perform()
+  mailbox.value = unref(mailboxes)[0]
+
+  await loadMailSummaryTask.perform()
+}
+
+const onNavigateBackMail = () => {
+  mailDetails.value = null
+  selectedMailIdQuery.value = null
+}
+
+const onNavigateBackMailbox = () => {
+  mailbox.value = null
+  mails.value = null
+  mailDetails.value = null
+}
+
+const onComposeMail = (draftId: string) => {
+  draftIdQuery.value = draftId
+}
 const onCloseCompose = () => {
   draftIdQuery.value = null
 }
@@ -151,52 +201,6 @@ const loadMailTask = useTask(function* (signal, mailId) {
     console.error(e)
   }
 })
-
-const isAccountsLoading = computed(
-  () => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last)
-)
-const isMailboxesLoading = computed(
-  () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
-)
-
-const isMailsLoading = computed(
-  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
-)
-
-const isMailLoading = computed(() => unref(loadMailTask.isRunning))
-
-const onSelectMailbox = async (selectedMailbox: Mailbox) => {
-  mailbox.value = selectedMailbox
-  mailDetails.value = null
-  selectedMailIdQuery.value = null
-  await loadMailSummaryTask.perform()
-}
-
-const onSelectMail = async (selectedMail: Mail) => {
-  await loadMailTask.perform(selectedMail.id)
-  selectedMailIdQuery.value = selectedMail.id
-}
-
-const onSelectAccount = async (selectedAccount: MailAccount) => {
-  account.value = selectedAccount
-  mailDetails.value = null
-
-  await loadMailboxesTask.perform()
-  mailbox.value = unref(mailboxes)[0]
-
-  await loadMailSummaryTask.perform()
-}
-
-const onNavigateBackMail = () => {
-  mailDetails.value = null
-  selectedMailIdQuery.value = null
-}
-
-const onNavigateBackMailbox = () => {
-  mailbox.value = null
-  mails.value = null
-  mailDetails.value = null
-}
 
 watch(
   account,
