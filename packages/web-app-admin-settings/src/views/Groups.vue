@@ -194,7 +194,6 @@ export default defineComponent({
   computed: {
     breadcrumbs() {
       return [
-        { text: this.$gettext('Administration Settings'), to: { path: '/admin-settings' } },
         {
           text: this.$gettext('Groups'),
           onClick: () => {

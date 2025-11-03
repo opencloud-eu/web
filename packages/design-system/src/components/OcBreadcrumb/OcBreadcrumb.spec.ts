@@ -41,7 +41,6 @@ describe('OcBreadcrumb', () => {
   describe('mobile current folder', () => {
     it.each([
       { items: [], shows: false },
-      { items: [items[0]], shows: false },
       { items: [items[0], items[1]], shows: true }
     ])('shows if more than 1 breadcrumb item is given', ({ items, shows }) => {
       const { wrapper } = getWrapper({ items })

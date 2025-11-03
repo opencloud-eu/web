@@ -128,12 +128,13 @@
     </oc-button>
   </nav>
   <div
-    v-if="displayItems.length > 1"
-    class="oc-breadcrumb-mobile-current flex justify-center items-center w-0 flex-1"
+    v-if="displayItems.length"
+    class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1"
     :class="{
       'sm:hidden': mobileBreakpoint === 'sm',
       'md:hidden': mobileBreakpoint === 'md',
-      'lg:hidden': mobileBreakpoint === 'lg'
+      'lg:hidden': mobileBreakpoint === 'lg',
+      'justify-center': displayItems.length > 1
     }"
   >
     <span class="truncate" aria-current="page" v-text="currentFolder.text" />
