@@ -1,12 +1,12 @@
 <template>
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
-      <resource-icon
-        size="xlarge"
-        :resource="{
-          mimeType: attachment.type,
-          extension: extractExtensionFromFile({ name: attachment.name })
-        }"
+      <oc-icon
+        :key="`resource-icon-${icon.name}`"
+        :name="icon.name"
+        :color="icon.color"
+        size="large"
+        class="oc-resource-icon inline-flex items-center"
       />
       <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
         <span class="mail-attachment-item-filename truncate" v-text="attachment.name" />
@@ -23,17 +23,18 @@
 
 <script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
-import { computed, defineProps } from 'vue'
+import { computed, defineProps, inject } from 'vue'
 import { MailBodyPart } from '../types'
 import {
   useClientService,
   useConfigStore,
   formatFileSize,
-  useMessages
+  useMessages,
+  ResourceIconMapping,
+  resourceIconMappingInjectionKey,
+  createDefaultFileIconMapping
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import ResourceIcon from '@opencloud-eu/web-pkg/src/components/FilesList/ResourceIcon.vue'
-import { extractExtensionFromFile } from '@opencloud-eu/web-client'
 
 const { attachment, accountId } = defineProps<{
   attachment: MailBodyPart
@@ -45,9 +46,21 @@ const configStore = useConfigStore()
 const { showErrorMessage } = useMessages()
 const { current: currentLanguage } = useGettext()
 const { $gettext } = useGettext()
+const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
+const defaultFileIconMapping = createDefaultFileIconMapping()
 
 const readableFileSize = computed(() => {
   return formatFileSize(attachment.size, currentLanguage)
+})
+
+const icon = computed(() => {
+  const extension = attachment.name.split('.').pop()
+
+  return (
+    defaultFileIconMapping[extension] ||
+    iconMappingInjection?.mimeType[attachment.type] ||
+    iconMappingInjection?.extension[extension]
+  )
 })
 
 const download = async () => {

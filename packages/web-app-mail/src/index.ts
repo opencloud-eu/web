@@ -9,11 +9,10 @@ import {
   useCapabilityStore
 } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { RouteRecordRaw } from 'vue-router'
 import { APPID } from './appid'
 
 export default defineWebApplication({
-  setup({ applicationConfig }) {
+  setup() {
     const { $gettext } = useGettext()
     const capabilityStore = useCapabilityStore()
 
@@ -24,7 +23,7 @@ export default defineWebApplication({
       color: '#0478d4'
     }
 
-    const routes: RouteRecordRaw[] = [
+    const routes = [
       {
         path: '/',
         name: 'root',
