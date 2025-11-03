@@ -14,13 +14,15 @@
         <h3 class="text-lg block truncate" v-text="mail.subject" />
         <MailIndicators :mail="mail" />
       </div>
-      <div class="mail-details-subheader mt-2 flex justify-between">
-        <oc-avatar :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
-        <div class="mail-details-userinfo flex-1 ml-4">
+      <div class="mail-details-subheader mt-2 flex min-w-0 justify-between">
+        <div class="shrink-0">
+          <oc-avatar :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
+        </div>
+        <div class="mail-details-userinfo flex-1 min-w-0 ml-4">
           <div class="font-bold text-xl truncate flex-1" v-text="fromName" />
           <div class="truncate" v-text="fromEmail" />
         </div>
-        <span class="mail-details-received-at" v-text="receivedAtRelativeDate" />
+        <span class="mail-details-received-at shrink-0 ml-2" v-text="receivedAtRelativeDate" />
       </div>
       <div class="mail-details-to mt-4">
         <span class="mr-4" v-text="$gettext('To:')" />
