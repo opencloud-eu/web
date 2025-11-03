@@ -29,6 +29,7 @@ export const IdentitySchema = z.object({
 })
 
 export const AccountSchema = z.object({
+  accountId: z.string(),
   name: z.string(),
   isPersonal: z.boolean(),
   isReadOnly: z.boolean(),

@@ -30,7 +30,7 @@
       <div
         class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4 px-4 md:px-0"
         :class="{
-          'hidden md:block': mailDetails || !mailbox
+          'hidden md:block': mailDetails || !mailbox || isComposing
         }"
       >
         <MailList
@@ -45,10 +45,12 @@
       <div
         class="overflow-y-auto min-w-0 w-full md:w-2/4 px-4 pt-4 md:pt-0"
         :class="{
-          'hidden md:block': !mailDetails
+          'hidden md:block': !mailDetails && !isComposing
         }"
       >
+        <MailCompose v-if="isComposing" :account="account" @close="onCloseCompose" />
         <MailDetails
+          v-else-if="mailDetails"
           :account="account"
           :mail="mailDetails"
           :is-loading="isMailLoading"
@@ -68,10 +70,11 @@ import { useTask } from 'vue-concurrency'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
+import MailAccountList from '../components/MailAccountList.vue'
+import MailCompose from '../components/MailCompose.vue'
 import { Mail, MailAccount, Mailbox, MailSchema, MailAccountSchema, MailboxSchema } from '../types'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
-import MailAccountList from '../components/MailAccountList.vue'
 
 const configStore = useConfigStore()
 const clientService = useClientService()
@@ -87,6 +90,13 @@ const isLoading = ref<boolean>(true)
 const selectedMailIdQuery = useRouteQuery('mailId')
 const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
+const draftIdQuery = useRouteQuery('draftId')
+
+const isComposing = computed(() => !!unref(draftIdQuery))
+
+const onCloseCompose = () => {
+  draftIdQuery.value = null
+}
 
 const loadAccountsTask = useTask(function* (signal) {
   try {
@@ -158,11 +168,13 @@ const isMailLoading = computed(() => unref(loadMailTask.isRunning))
 const onSelectMailbox = async (selectedMailbox: Mailbox) => {
   mailbox.value = selectedMailbox
   mailDetails.value = null
+  selectedMailIdQuery.value = null
   await loadMailSummaryTask.perform()
 }
 
 const onSelectMail = async (selectedMail: Mail) => {
   await loadMailTask.perform(selectedMail.id)
+  selectedMailIdQuery.value = selectedMail.id
 }
 
 const onSelectAccount = async (selectedAccount: MailAccount) => {
@@ -177,6 +189,7 @@ const onSelectAccount = async (selectedAccount: MailAccount) => {
 
 const onNavigateBackMail = () => {
   mailDetails.value = null
+  selectedMailIdQuery.value = null
 }
 
 const onNavigateBackMailbox = () => {
