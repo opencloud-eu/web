@@ -36,11 +36,11 @@
         <oc-icon name="map-pin" size="small" fill-type="line" />
         <span class="truncate" v-text="icalEvent.location" />
       </div>
-      <div class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
+      <div v-if="organizer" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
         <oc-icon name="user" size="small" fill-type="line" />
         <span class="font-medium" v-text="$gettext('Organizer')" />
         <div class="col-start-2 text-sm">
-          <span v-text="icalEvent.organizer.replace(/^mailto:/i, '')" />
+          <span v-text="organizer" />
         </div>
       </div>
       <div v-if="attendees && attendees.length" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
@@ -129,6 +129,14 @@ const attendeeOverflowLabel = computed(() =>
     : ''
 )
 
+const organizer = computed<string>(() => {
+  return (
+    (
+      icalEvent?.component?.getFirstProperty?.('organizer')?.getFirstValue?.() as string | undefined
+    )?.replace(/^mailto:/i, '') || ''
+  )
+})
+
 const attendees = computed(() => {
   return icalEvent.component
     .getAllProperties('attendee')
@@ -183,8 +191,6 @@ const loadAppointmentTask = useTask(function* (signal) {
     const { data }: { data: string } = yield clientService.httpAuthenticated.get(url, {
       responseType: 'text'
     })
-
-    console.log('ical', data)
 
     const jcalData = ICAL.parse(data)
     const comp = new ICAL.Component(jcalData)
