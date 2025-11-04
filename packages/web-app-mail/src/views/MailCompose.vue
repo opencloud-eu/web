@@ -98,7 +98,7 @@ const allInboxRoute = computed(() => {
   const { draftId, ...restQuery } = route.query
 
   return {
-    name: 'all-inbox',
+    name: 'mail-all-inbox',
     query: restQuery
   }
 })
