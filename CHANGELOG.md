@@ -6,6 +6,10 @@
 
 @AlexAndBear, @ScharfViktor
 
+### 🐛 Bug Fixes
+
+- fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
 ### 📦️ Dependencies
 
 - chore(deps): update typescript-eslint monorepo to v8.46.3 [[#1502](https://github.com/opencloud-eu/web/pull/1502)]
