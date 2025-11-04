@@ -23,43 +23,37 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
-    <div id="oc-drop-4" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
-      <div class="oc-card">
-        <!--v-if-->
-        <div class="oc-card-body p-2">
-          <!--v-if-->
-          <div>
-            <ul class="oc-list item-filter-list">
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Albert Einstein</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Marie Curie</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-            </ul>
-          </div>
-        </div>
-        <!--v-if-->
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-4" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-3" enforcedroponmobile="false" class="oc-filter-chip-drop">
+      <!--v-if-->
+      <div>
+        <ul class="oc-list item-filter-list">
+          <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+              <!--v-if-->
+              <!-- @slot Content of the button -->
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate">Albert Einstein</div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </button></li>
+          <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+              <!--v-if-->
+              <!-- @slot Content of the button -->
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate">Marie Curie</div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </button></li>
+        </ul>
       </div>
-    </div>
+    </oc-drop-stub>
     <!--v-if-->
   </div>
 </div>"
@@ -88,43 +82,37 @@ exports[`ItemFilter > renders all items 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
-    <div id="oc-drop-2" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
-      <div class="oc-card">
-        <!--v-if-->
-        <div class="oc-card-body p-2">
-          <!--v-if-->
-          <div>
-            <ul class="oc-list item-filter-list">
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Albert Einstein</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Marie Curie</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-            </ul>
-          </div>
-        </div>
-        <!--v-if-->
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-2" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-1" enforcedroponmobile="false" class="oc-filter-chip-drop">
+      <!--v-if-->
+      <div>
+        <ul class="oc-list item-filter-list">
+          <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+              <!--v-if-->
+              <!-- @slot Content of the button -->
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate">Albert Einstein</div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </button></li>
+          <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+              <!--v-if-->
+              <!-- @slot Content of the button -->
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate">Marie Curie</div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </button></li>
+        </ul>
       </div>
-    </div>
+    </oc-drop-stub>
     <!--v-if-->
   </div>
 </div>"

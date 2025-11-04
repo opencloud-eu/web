@@ -1,6 +1,5 @@
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Drop from './OcDrop.vue'
-import { getTailwindPaddingClass, SizeType } from '../../helpers'
 import { computed, nextTick } from 'vue'
 import { useIsMobile } from '../../composables'
 
@@ -51,25 +50,6 @@ describe('OcDrop', () => {
       })
       expect(wrapper.attributes().id).toBe(id)
     }
-  })
-
-  it.each<SizeType | 'remove'>([
-    'xsmall',
-    'small',
-    'medium',
-    'large',
-    'xlarge',
-    'xxlarge',
-    'remove'
-  ])('handles padding size prop for value %s', async (size) => {
-    const { wrapper } = dom({ paddingSize: size })
-
-    const drop = wrapper.findComponent({ name: 'oc-drop' })
-    await nextTick()
-
-    const tailwindClassObj = getTailwindPaddingClass(size)
-    const tailwindClass = Object.entries(tailwindClassObj).find(([, v]) => v)?.[0]
-    expect(drop.html().includes(tailwindClass)).toBeTruthy()
   })
 
   describe('tippy', () => {

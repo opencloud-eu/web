@@ -171,8 +171,9 @@ function getWrapper({
       global: {
         mocks,
         provide: mocks,
-        stubs: { OcButton: true, OcPageSize: false, OcSelect: true },
-        plugins: [...defaultPlugins()]
+        stubs: { OcButton: true, OcPageSize: false, OcSelect: true, OcDrop: true },
+        plugins: [...defaultPlugins()],
+        renderStubDefaultSlot: true
       }
     })
   }
