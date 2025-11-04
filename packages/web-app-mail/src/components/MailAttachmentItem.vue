@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="mail-attachment-item-actions ml-1">
-      <oc-button appearance="raw" @click="download">
+      <oc-button appearance="raw" :aria-label="$gettext('Download attachment')" @click="download">
         <oc-icon size="medium" name="download-2" fill-type="line" />
       </oc-button>
     </div>
@@ -31,7 +31,8 @@ import {
   useMessages,
   ResourceIconMapping,
   resourceIconMappingInjectionKey,
-  createDefaultFileIconMapping
+  createDefaultFileIconMapping,
+  triggerDownloadWithFilename
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -74,13 +75,7 @@ const download = async () => {
     })
 
     const objectUrl = URL.createObjectURL(data)
-    const link = document.createElement('a')
-    link.href = objectUrl
-    link.download = attachment.name
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(objectUrl)
+    triggerDownloadWithFilename(objectUrl, attachment.name)
   } catch (e) {
     console.error(e)
     showErrorMessage({

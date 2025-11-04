@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { Mail } from '../types'
 import { computed } from 'vue'
-import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg/src'
+import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import MailIndicators from './MailIndicators.vue'
 

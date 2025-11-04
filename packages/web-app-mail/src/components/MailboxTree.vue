@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 import type { MailAccount, Mailbox } from '../types'
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 

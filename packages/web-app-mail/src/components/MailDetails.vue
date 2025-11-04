@@ -7,7 +7,13 @@
       </template>
     </no-content-message>
     <div v-else class="mail-details">
-      <oc-button class="md:hidden mb-2" appearance="raw" no-hover @click="$emit('back')">
+      <oc-button
+        class="md:hidden mb-2"
+        appearance="raw"
+        no-hover
+        :aria-label="$gettext('Navigate back')"
+        @click="$emit('back')"
+      >
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
       <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
@@ -47,12 +53,12 @@
 <script setup lang="ts">
 import type { Mail, MailAccount } from '../types'
 import { computed, unref } from 'vue'
-import { formatRelativeDateFromISO, NoContentMessage } from '@opencloud-eu/web-pkg/src'
+import { formatRelativeDateFromISO, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { buildMailBody } from '../helpers'
 import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import MailAppointmentList from './MailAppointmentList.vue'
 
 const {

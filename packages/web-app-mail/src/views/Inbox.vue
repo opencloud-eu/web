@@ -70,7 +70,7 @@ import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
 import MailAccountList from '../components/MailAccountList.vue'
 import { Mail, MailAccount, Mailbox, MailSchema, MailAccountSchema, MailboxSchema } from '../types'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
 const configStore = useConfigStore()
@@ -88,18 +88,12 @@ const selectedMailIdQuery = useRouteQuery('mailId')
 const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
 
-const isAccountsLoading = computed(
-  () => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last)
-)
-const isMailboxesLoading = computed(
-  () => unref(loadMailboxesTask.isRunning) || !unref(loadMailboxesTask.last)
-)
+const isAccountsLoading = computed(() => loadAccountsTask.isRunning || !loadAccountsTask.last)
+const isMailboxesLoading = computed(() => loadMailboxesTask.isRunning || !loadMailboxesTask.last)
 
-const isMailsLoading = computed(
-  () => unref(loadMailSummaryTask.isRunning) || !unref(loadMailSummaryTask.last)
-)
+const isMailsLoading = computed(() => loadMailSummaryTask.isRunning || !loadMailSummaryTask.last)
 
-const isMailLoading = computed(() => unref(loadMailTask.isRunning))
+const isMailLoading = computed(() => loadMailTask.isRunning)
 
 const onSelectMailbox = async (selectedMailbox: Mailbox) => {
   mailbox.value = selectedMailbox
@@ -137,7 +131,7 @@ const onNavigateBackMailbox = () => {
 const loadAccountsTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
-      urlJoin(unref(configStore.groupwareUrl), `accounts`)
+      urlJoin(configStore.groupwareUrl, `accounts`)
     )
     accounts.value = z.array(MailAccountSchema).parse(data)
     console.log('Accounts', unref(accounts))
@@ -149,7 +143,7 @@ const loadAccountsTask = useTask(function* (signal) {
 const loadMailboxesTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
-      urlJoin(unref(configStore.groupwareUrl), `accounts/${unref(account).accountId}/mailboxes`)
+      urlJoin(configStore.groupwareUrl, `accounts/${unref(account).accountId}/mailboxes`)
     )
     mailboxes.value = z.array(MailboxSchema).parse(data)
     console.log('Mailboxes', unref(mailboxes))
@@ -162,7 +156,7 @@ const loadMailSummaryTask = useTask(function* (signal) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
-        unref(configStore.groupwareUrl),
+        configStore.groupwareUrl,
         `accounts/${unref(account).accountId}/mailboxes/${unref(mailbox).id}/emails`
       )
     )
@@ -177,7 +171,7 @@ const loadMailTask = useTask(function* (signal, mailId) {
   try {
     const { data } = yield clientService.httpAuthenticated.get(
       urlJoin(
-        unref(configStore.groupwareUrl),
+        configStore.groupwareUrl,
         `accounts/${unref(account).accountId}/emails/${mailId}?markAsSeen=true`
       )
     )

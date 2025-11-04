@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import type { MailAccount } from '../types'
 
 defineEmits<{

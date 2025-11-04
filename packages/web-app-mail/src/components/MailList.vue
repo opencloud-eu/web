@@ -8,7 +8,13 @@
     </no-content-message>
     <template v-else>
       <div class="flex w-full items-center justify-between md:justify-normal">
-        <oc-button class="md:hidden block" appearance="raw" no-hover @click="$emit('back')">
+        <oc-button
+          class="md:hidden block"
+          appearance="raw"
+          no-hover
+          :aria-label="$gettext('Navigate back')"
+          @click="$emit('back')"
+        >
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
         <h2 class="text-lg ml-4" v-text="mailbox.name"></h2>

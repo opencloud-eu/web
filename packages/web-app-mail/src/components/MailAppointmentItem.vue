@@ -78,10 +78,11 @@ import { computed, onMounted, ref, unref } from 'vue'
 import {
   AppLoadingSpinner,
   formatDateFromJSDate,
+  triggerDownloadWithFilename,
   useClientService,
   useConfigStore,
   useMessages
-} from '@opencloud-eu/web-pkg/src'
+} from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import ICAL from 'ical.js'
 import { useGettext } from 'vue3-gettext'
@@ -163,15 +164,8 @@ const download = async () => {
     const { data }: { data: Blob } = await clientService.httpAuthenticated.get(url, {
       responseType: 'blob'
     })
-
     const objectUrl = URL.createObjectURL(data)
-    const link = document.createElement('a')
-    link.href = objectUrl
-    link.download = appointment.name
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(objectUrl)
+    triggerDownloadWithFilename(objectUrl, appointment.name)
   } catch (e) {
     console.error(e)
     showErrorMessage({

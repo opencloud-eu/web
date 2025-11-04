@@ -17,7 +17,12 @@
               <span v-text="attachments.length" />
             </oc-tag>
           </div>
-          <oc-button appearance="raw" no-hover @click="collapsed = !collapsed">
+          <oc-button
+            appearance="raw"
+            no-hover
+            :aria-label="collapsed ? $gettext('Expand') : $gettext('Collapse')"
+            @click="collapsed = !collapsed"
+          >
             <oc-icon :name="collapsed ? 'arrow-down-s' : 'arrow-up-s'" fill-type="line" />
           </oc-button>
         </div>

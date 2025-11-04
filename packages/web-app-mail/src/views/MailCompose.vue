@@ -7,12 +7,12 @@
         :to="allInboxRoute"
         appearance="raw"
         no-hover
-        aria-label="Close"
+        :aria-label="$gettext('Close')"
       >
         <oc-icon name="close" fill-type="line" />
       </oc-button>
       <h2 class="text-lg font-bold" v-text="$gettext('New message')" />
-      <oc-button appearance="raw" disabled aria-label="Send">
+      <oc-button appearance="raw" disabled :aria-label="$gettext('Send')">
         <oc-icon name="send" fill-type="line" />
       </oc-button>
     </div>
@@ -20,7 +20,7 @@
       <div class="py-3">
         <oc-select
           v-model="from"
-          label="From:"
+          :label="`${$gettext('From')}:`"
           :options="fromOptions"
           option-label="label"
           option-value="value"
@@ -92,7 +92,7 @@ const bccMail = ref<string>('')
 const subject = ref<string>('')
 const mailBody = ref<string>('')
 
-const isLoading = computed(() => unref(loadAccountsTask.isRunning) || !unref(loadAccountsTask.last))
+const isLoading = computed(() => loadAccountsTask.isRunning || !loadAccountsTask.last)
 
 const allInboxRoute = computed(() => {
   const { draftId, ...restQuery } = route.query

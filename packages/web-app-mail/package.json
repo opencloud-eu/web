@@ -5,8 +5,7 @@
   "description": "OpenCloud groupware mail app",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@opencloud-eu/web-test-helpers": "workspace:*",
-    "dompurify": "^3.2.3"
+    "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
     "@opencloud-eu/design-system": "workspace:^",
@@ -20,10 +19,11 @@
     "vue-concurrency": "5.0.3",
     "vue-router": "^4.2.5",
     "vue3-gettext": "2.4.0",
-    "zod": "4.1.12"
+    "zod": "4.1.12",
+    "dompurify": "^3.2.3",
+    "luxon": "^3.5.0"
   },
   "dependencies": {
-    "ical.js": "^2.2.1",
-    "luxon": "^3.5.0"
+    "ical.js": "^2.2.1"
   }
 }
