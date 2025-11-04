@@ -86,7 +86,7 @@ exports[`account information page > header section > edit url button > should be
 exports[`account information page > public link context > should render a limited view 1`] = `
 "<div id="account-information">
   <div class="flex justify-between items-center w-full">
-    <h1 class="mt-0">Account Information</h1>
+    <h1 class="mt-1 text-lg">Account Information</h1>
     <!--v-if-->
   </div>
   <div class="account-table account-page-info mt-6">
