@@ -3,7 +3,7 @@
   <template v-else>
     <div class="flex h-full">
       <div
-        class="w-full md:w-1/4 flex flex-row flex"
+        class="w-full md:w-1/4 flex flex-row"
         :class="{
           'hidden md:flex': mailbox
         }"
