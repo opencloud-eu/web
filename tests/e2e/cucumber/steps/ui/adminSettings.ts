@@ -552,3 +552,13 @@ When(
     await spacesObject.select({ key: value })
   }
 )
+
+Then(
+  '{string} sees profile photo of the user {string}',
+  async function (this: World, stepUser: string, key: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const userProfilePicture = usersObject.getUserProfilePicture({ key })
+    await expect(userProfilePicture).toHaveAttribute('src', /.+/)
+  }
+)
