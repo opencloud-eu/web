@@ -22,12 +22,15 @@
         )
       "
     />
-    <p
+    <no-content-message
       v-else-if="!appTokens.length"
-      class="ml-2"
+      icon="key-2"
       data-testid="no-app-tokens-available"
-      v-text="$gettext('No app tokens available.')"
-    />
+    >
+      <template #message>
+        <span v-text="$gettext('No app tokens available.')" />
+      </template>
+    </no-content-message>
     <div v-else>
       <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
         <template #label="{ item }">
@@ -84,6 +87,7 @@ import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage } from '@opencloud-eu/web-pkg/src'
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { dispatchModal } = useModals()
