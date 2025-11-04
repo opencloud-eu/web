@@ -1,6 +1,10 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
+import Inbox from './views/Inbox.vue'
+import MailCompose from './views/MailCompose.vue'
+import LayoutContainer from './LayoutContainer.vue'
+import EmptyLayoutContainer from './EmptyLayoutContainer.vue'
 
 import {
   AppMenuItemExtension,
@@ -26,21 +30,21 @@ export default defineWebApplication({
 
     const routes: RouteRecordRaw[] = [
       {
-        path: '/',
-        name: 'root',
-        component: () => import('./LayoutContainer.vue'),
+        path: '',
+        name: 'mail-root',
+        component: LayoutContainer,
         meta: {
           authContext: 'user'
         },
         children: [
           {
             path: '',
-            redirect: urlJoin(appInfo.id, 'all', 'inbox')
+            redirect: { name: 'mail-all-inbox' }
           },
           {
             path: 'create',
             name: 'mail-create',
-            component: () => import('./views/MailCompose.vue'),
+            component: MailCompose,
             meta: {
               authContext: 'user',
               title: $gettext('Create new email')
@@ -48,16 +52,17 @@ export default defineWebApplication({
           },
           {
             path: 'all',
-            name: 'all',
-            component: () => import('./EmptyLayoutContainer.vue'),
+            name: 'mail-all',
+            component: EmptyLayoutContainer,
+            redirect: { name: 'mail-all-inbox' },
             meta: {
               authContext: 'user'
             },
             children: [
               {
                 path: 'inbox',
-                name: 'all-inbox',
-                component: () => import('./views/Inbox.vue'),
+                name: 'mail-all-inbox',
+                component: Inbox,
                 meta: {
                   authContext: 'user',
                   title: $gettext('All emails')
