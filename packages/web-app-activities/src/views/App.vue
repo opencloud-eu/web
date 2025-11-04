@@ -1,5 +1,5 @@
 <template>
-  <h1 v-text="$gettext('Activities')" />
+  <h1 class="text-lg" v-text="$gettext('Activities')" />
   <div class="w-full mb-4">
     <item-filter
       ref="mediaTypeFilter"

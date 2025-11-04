@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h2 class="mt-0 app-list-headline">
+    <h1 class="mt-0 text-lg app-list-headline">
       {{ $gettext('App Store') }}
       <app-contextual-helper />
-    </h2>
+    </h1>
     <div class="flex items-center mb-4">
       <oc-text-input
         id="apps-filter"

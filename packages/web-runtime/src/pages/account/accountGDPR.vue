@@ -1,6 +1,6 @@
 <template>
   <div id="account-gdpr">
-    <h1 class="mt-0" v-text="$gettext('GDPR')" />
+    <h1 class="text-lg mt-1" v-text="$gettext('GDPR')" />
     <account-table
       :fields="[
         $gettext('GDPR action name'),
