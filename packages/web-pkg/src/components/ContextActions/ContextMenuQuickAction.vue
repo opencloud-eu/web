@@ -29,37 +29,25 @@
   </oc-button>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { extractDomSelector, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'ContextMenuQuickAction',
-  props: {
-    item: {
-      type: Object,
-      required: true
-    },
-    resourceDomSelector: {
-      type: Function,
-      required: false,
-      default: (resource: Resource) => extractDomSelector(resource.id)
-    },
-    title: {
-      type: String,
-      required: false,
-      default: ''
-    }
-  },
-  emits: ['quickActionClicked'],
-  setup() {
-    const { $gettext } = useGettext()
-    const contextMenuLabel = computed(() => $gettext('Show context menu'))
+const {
+  item,
+  resourceDomSelector = (resource: Resource) => extractDomSelector(resource.id),
+  title = ''
+} = defineProps<{
+  item: Resource
+  resourceDomSelector?: (resource: Resource) => string
+  title?: string
+}>()
 
-    return {
-      contextMenuLabel
-    }
-  }
-})
+defineEmits<{
+  (e: 'quickActionClicked', payload: { event: MouseEvent; dropdown: unknown }): void
+}>()
+
+const { $gettext } = useGettext()
+const contextMenuLabel = computed(() => $gettext('Show context menu'))
 </script>
