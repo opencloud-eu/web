@@ -1,5 +1,7 @@
+import { mock } from 'vitest-mock-extended'
 import ContextMenuQuickAction from '../../../../src/components/ContextActions/ContextMenuQuickAction.vue'
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
+import { Resource } from '../../../../../web-client/src/helpers'
 
 describe('ContextMenuQuickAction component', () => {
   it('renders component', () => {
@@ -13,7 +15,9 @@ describe('ContextMenuQuickAction component', () => {
   })
 })
 
-function getWrapper({ item = { id: '1' } } = {}) {
+function getWrapper({
+  item = mock<Resource>({ id: '1' })
+}: PartialComponentProps<typeof ContextMenuQuickAction> = {}) {
   return {
     wrapper: mount(ContextMenuQuickAction, {
       props: {
