@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
+### ✅ Tests
+
+- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
+
 ### 🐛 Bug Fixes
 
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
