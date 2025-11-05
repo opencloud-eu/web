@@ -21,6 +21,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @pinia/testing to v1.0.3 [[#1524](https://github.com/opencloud-eu/web/pull/1524)]
+- chore(deps): update dependency pinia to v3.0.4 [[#1525](https://github.com/opencloud-eu/web/pull/1525)]
 - fix(deps): update dependency axios to v1.13.2 - autoclosed [[#1515](https://github.com/opencloud-eu/web/pull/1515)]
 - chore(deps): update devdependencies (non-major) to v4.0.7 [[#1514](https://github.com/opencloud-eu/web/pull/1514)]
 - chore(deps): update dependency eslint to v9.39.1 [[#1503](https://github.com/opencloud-eu/web/pull/1503)]
