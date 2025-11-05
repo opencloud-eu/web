@@ -8,6 +8,7 @@ import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resour
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
+import { useResourcesStore } from '../../../../src'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => ({
@@ -120,6 +121,8 @@ describe('ResourceTiles component', () => {
         preventDefault: vi.fn()
       } as unknown as MouseEvent
 
+      const resourcesStore = useResourcesStore()
+      resourcesStore.selectedIds = [resources[0].id]
       await resourceTile.vm.$emit('click', mockMouseEvent)
       expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
       expect(wrapper.emitted('update:selectedIds')[0][0]).toEqual([resources[0].id])
