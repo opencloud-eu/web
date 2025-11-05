@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: only render drop content when opened [[#1498](https://github.com/opencloud-eu/web/pull/1498)]
 - fix: space batch actions not loading in spaces table [[#1517](https://github.com/opencloud-eu/web/pull/1517)]
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
