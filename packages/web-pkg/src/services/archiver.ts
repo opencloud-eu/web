@@ -1,5 +1,5 @@
 import { RuntimeError } from '../errors'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { HttpError, urlJoin } from '@opencloud-eu/web-client'
 import { ClientService } from '../services'
 import { triggerDownloadWithFilename } from '../helpers/download'
 import { Ref, ref, computed, unref } from 'vue'
@@ -11,6 +11,7 @@ interface TriggerDownloadOptions {
   files?: string[]
   fileIds?: string[]
   publicToken?: string
+  publicLinkPassword?: string
 }
 
 export class ArchiverService {
@@ -55,14 +56,38 @@ export class ArchiverService {
       throw new RuntimeError('download url could not be built')
     }
 
-    const url = options.publicToken
+    let url = options.publicToken
       ? downloadUrl
       : await this.clientService.ocs.signUrl(
           downloadUrl,
           this.userStore.user?.onPremisesSamAccountName
         )
 
-    triggerDownloadWithFilename(url)
+    let fileName: string
+    if (options.publicLinkPassword) {
+      // FIXME: remove as soon as we remove client-side URL signing https://github.com/opencloud-eu/opencloud/issues/1197
+      try {
+        const response = await fetch(url, {
+          headers: {
+            ...this.clientService.getRequestHeaders({ useAuth: false }),
+            Authorization:
+              'Basic ' +
+              Buffer.from(['public', options.publicLinkPassword].join(':')).toString('base64')
+          }
+        })
+
+        if (!response.ok) {
+          throw new HttpError('', response)
+        }
+
+        const blob = await response.blob()
+        url = URL.createObjectURL(blob)
+        fileName = decodeURI(response.headers.get('content-disposition')?.split('"')[1])
+      } catch (e) {
+        throw new Error('archive could not be fetched')
+      }
+    }
+    triggerDownloadWithFilename(url, fileName)
     return url
   }
 
