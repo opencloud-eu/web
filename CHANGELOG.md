@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: bottom drawer 'New'-menus appearance [[#1519](https://github.com/opencloud-eu/web/pull/1519)]
 - Cherry-pick font revert from PR #1507 to stable-4.2 [[#1509](https://github.com/opencloud-eu/web/pull/1509)]
 - [stable-4.2] fix: adjust headline sizes across the webui (#1504) [[#1506](https://github.com/opencloud-eu/web/pull/1506)]
 
