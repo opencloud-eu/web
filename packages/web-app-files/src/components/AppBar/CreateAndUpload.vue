@@ -25,8 +25,8 @@
       >
         <oc-list
           id="create-list"
-          :class="areFileExtensionsShown ? 'min-w-xs' : null"
-          class="py-2 first:pt-0 last:pb-0"
+          :class="areFileExtensionsShown ? 'sm:min-w-xs' : null"
+          class="py-2 sm:first:pt-0 sm:last:pb-0"
         >
           <li>
             <oc-button
@@ -36,7 +36,11 @@
               appearance="raw"
               @click="createNewFolderAction"
             >
-              <resource-icon :resource="folderIconResource" size="medium" class="h-full" />
+              <resource-icon
+                :resource="folderIconResource"
+                size="medium"
+                class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
+              />
               <span v-text="$gettext('Folder')" />
             </oc-button>
           </li>
@@ -44,7 +48,7 @@
         <oc-list
           v-for="(group, groupIndex) in createFileActionsGroups"
           :key="`file-creation-group-${groupIndex}`"
-          class="py-2 first:pt-0 last:pb-0 border-t"
+          class="py-2 sm:first:pt-0 sm:last:pb-0 border-t"
         >
           <li
             v-for="(fileAction, fileActionIndex) in group"
@@ -57,7 +61,11 @@
               :class="['new-file-btn-' + fileAction.ext]"
               @click="fileAction.handler"
             >
-              <resource-icon :resource="getIconResource(fileAction)" size="medium" class="h-full" />
+              <resource-icon
+                :resource="getIconResource(fileAction)"
+                size="medium"
+                class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
+              />
               <span>{{ fileAction.label() }}</span>
               <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
                 {{ fileAction.ext }}
@@ -65,7 +73,7 @@
             </oc-button>
           </li>
         </oc-list>
-        <oc-list class="py-2 first:pt-0 last:pb-0 border-t">
+        <oc-list class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
           <li>
             <oc-button
               id="new-shortcut-btn"
@@ -120,7 +128,7 @@
       padding-size="small"
       @show-drop="showDrop"
     >
-      <oc-list id="upload-list">
+      <oc-list id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
         <li>
           <resource-upload btn-class="w-full" />
         </li>
@@ -131,7 +139,7 @@
       <oc-list
         v-if="extensionActions.length"
         id="extension-list"
-        class="py-2 first:pt-0 last:pb-0 border-t"
+        class="py-2 sm:first:pt-0 sm:last:pb-0 border-t"
       >
         <li
           v-for="(action, key) in extensionActions"

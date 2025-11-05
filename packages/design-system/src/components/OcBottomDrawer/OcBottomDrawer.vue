@@ -18,7 +18,10 @@
             '[&.active]:bottom-0': isCurrentlyOnTop
           }"
         >
-          <oc-card class="bg-transparent" header-class="flex flex-row justify-between items-center">
+          <oc-card
+            class="bg-transparent overflow-x-hidden"
+            header-class="flex flex-row justify-between items-center"
+          >
             <template #header>
               <oc-button
                 v-if="drawers.length > 1"
