@@ -231,7 +231,7 @@ importers:
         version: 3.7.2
       pinia:
         specifier: ^3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       portal-vue:
         specifier: ^3.0.0
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.3))
@@ -373,7 +373,7 @@ importers:
         version: 3.7.2
       pinia:
         specifier: ^2.2.2 || ^3.0.0
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-concurrency:
         specifier: ^5.0.1
         version: 5.0.3(vue@3.5.22(typescript@5.9.3))
@@ -418,8 +418,8 @@ importers:
         specifier: ^8.11.1
         version: 8.11.1
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -458,8 +458,8 @@ importers:
         specifier: ^8.11.1
         version: 8.11.1
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.22(typescript@5.9.3))
@@ -508,8 +508,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       qs:
         specifier: ^6.13.0
         version: 6.14.0
@@ -572,8 +572,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       qs:
         specifier: 6.14.0
         version: 6.14.0
@@ -692,8 +692,8 @@ importers:
         specifier: ^8.11.1
         version: 8.11.1
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: 4.6.3
         version: 4.6.3(vue@3.5.22(typescript@5.9.3))
@@ -821,7 +821,7 @@ importers:
         version: link:../web-client
       '@sentry/vue':
         specifier: ^10.0.0
-        version: 10.22.0(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
+        version: 10.22.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@uppy/core':
         specifier: ^5.0.0
         version: 5.1.1
@@ -884,7 +884,7 @@ importers:
         version: 1.2.0
       pinia:
         specifier: ^3.0.0
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       portal-vue:
         specifier: ^3.0.0
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.3))
@@ -958,7 +958,7 @@ importers:
         version: link:../web-pkg
       '@sentry/vue':
         specifier: 10.22.0
-        version: 10.22.0(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
+        version: 10.22.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@uppy/core':
         specifier: 5.1.1
         version: 5.1.1
@@ -1011,8 +1011,8 @@ importers:
         specifier: 9.0.0
         version: 9.0.0
       pinia:
-        specifier: 3.0.3
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        specifier: 3.0.4
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       portal-vue:
         specifier: ^3.0.0
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.22(typescript@5.9.3))
@@ -1073,7 +1073,7 @@ importers:
         version: link:../web-pkg
       '@pinia/testing':
         specifier: ^1.0.0
-        version: 1.0.3(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))
+        version: 1.0.3(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -1082,7 +1082,7 @@ importers:
         version: 1.13.2
       pinia:
         specifier: ^3.0.0
-        version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       vitest-mock-extended:
         specifier: ^3.0.0
         version: 3.1.0(typescript@5.9.3)(vitest@4.0.7(@types/node@22.16.0)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@27.1.0)(lightningcss@1.30.2)(sass@1.93.1)(yaml@2.8.1))
@@ -5453,11 +5453,11 @@ packages:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
 
-  pinia@3.0.3:
-    resolution: {integrity: sha512-ttXO/InUULUXkMHpTdp9Fj4hLpD/2AoJdmAbAeW2yu1iy1k+pkFekQXw5VpC0/5p51IOR/jDaDRfRWRnMMsGOA==}
+  pinia@3.0.4:
+    resolution: {integrity: sha512-l7pqLUFTI/+ESXn6k3nu30ZIzW5E2WZF/LaHJEpoq6ElcLD+wduZoB2kBN19du6K/4FDpPMazY2wJr+IndBtQw==}
     peerDependencies:
-      typescript: '>=4.4.4'
-      vue: ^2.7.0 || ^3.5.11
+      typescript: '>=4.5.0'
+      vue: ^3.5.11
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -8475,9 +8475,9 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.1
     optional: true
 
-  '@pinia/testing@1.0.3(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))':
+  '@pinia/testing@1.0.3(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))':
     dependencies:
-      pinia: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+      pinia: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
 
   '@pinojs/redact@0.4.0': {}
 
@@ -8641,13 +8641,13 @@ snapshots:
 
   '@sentry/core@10.22.0': {}
 
-  '@sentry/vue@10.22.0(pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))':
+  '@sentry/vue@10.22.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))':
     dependencies:
       '@sentry/browser': 10.22.0
       '@sentry/core': 10.22.0
       vue: 3.5.22(typescript@5.9.3)
     optionalDependencies:
-      pinia: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+      pinia: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
 
   '@shikijs/core@2.5.0':
     dependencies:
@@ -11557,7 +11557,7 @@ snapshots:
 
   pify@4.0.1: {}
 
-  pinia@3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)):
+  pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 7.7.7
       vue: 3.5.22(typescript@5.9.3)
