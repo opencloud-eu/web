@@ -15,7 +15,7 @@ export type ResourceRouteResolverOptions = {
 
 export const useResourceRouteResolver = (
   options: ResourceRouteResolverOptions = {},
-  context?: any
+  context?: any // FIXME
 ) => {
   const targetRouteCallback = options.targetRouteCallback
   const { getMatchingSpace } = useGetMatchingSpace(options)
