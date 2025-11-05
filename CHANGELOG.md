@@ -6,14 +6,15 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
+### 🐛 Bug Fixes
+
+- fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
+- revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
+- fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
 ### ✅ Tests
 
 - check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
-
-### 🐛 Bug Fixes
-
-- revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
-- fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
 
 ### 📦️ Dependencies
 
