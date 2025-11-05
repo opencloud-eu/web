@@ -401,7 +401,7 @@ defineSlots<{
   usedQuota?: (props: { resource: Resource }) => unknown
   remainingQuota?: (props: { resource: Resource }) => unknown
   quickActions?: (props: { resource: Resource }) => unknown
-  contextMenu?: (props: { resource: Resource; isOpen: boolean }) => unknown
+  contextMenu?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
 }>()
 
@@ -1200,6 +1200,7 @@ const getSharedWithAvatarItems = (resource: Resource) => {
   .resource-table-resource-wrapper-limit-max-width {
     max-width: calc(100% - 4 * var(--spacing));
   }
+
   .oc-table.condensed > tbody > tr {
     @apply h-0;
   }

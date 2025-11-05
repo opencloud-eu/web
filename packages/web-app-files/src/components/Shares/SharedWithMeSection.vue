@@ -75,6 +75,7 @@
 import {
   FolderView,
   ResourceTable,
+  SortField,
   useCapabilityStore,
   useConfigStore,
   useFileActions,
@@ -93,8 +94,6 @@ import { useSelectedResources } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
-import { useResourcesViewDefaults } from '../../composables'
-import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   components: {
@@ -161,6 +160,18 @@ export default defineComponent({
       type: Number,
       default: 0
     },
+    viewMode: {
+      type: String,
+      required: true
+    },
+    viewSize: {
+      type: Number,
+      required: true
+    },
+    sortFields: {
+      type: Object as PropType<SortField[]>,
+      required: true
+    },
 
     /**
      * This is only relevant for CERN and can be ignored in any other cases.
@@ -171,16 +182,12 @@ export default defineComponent({
       default: null
     }
   },
-  setup() {
+  setup(props) {
     const capabilityStore = useCapabilityStore()
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults({
-      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
-    })
-
-    const { loadPreview } = useLoadPreview(viewMode)
+    const { loadPreview } = useLoadPreview(computed(() => props.viewMode))
 
     const { triggerDefaultAction } = useFileActions()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -214,10 +221,7 @@ export default defineComponent({
       updateResourceField,
       isExternalShare,
       ShareTypes,
-      loadPreview,
-      viewMode,
-      viewSize,
-      sortFields
+      loadPreview
     }
   },
 
