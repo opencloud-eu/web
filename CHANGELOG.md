@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-05
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @Copilot, @JammingBen
+
+### 🐛 Bug Fixes
+
+- Cherry-pick font revert from PR #1507 to stable-4.2 [[#1509](https://github.com/opencloud-eu/web/pull/1509)]
+- [stable-4.2] fix: adjust headline sizes across the webui (#1504) [[#1506](https://github.com/opencloud-eu/web/pull/1506)]
+
+### ✅ Tests
+
+- [stable-4.2] check user avatar in the admin settings->users (#1510) [[#1511](https://github.com/opencloud-eu/web/pull/1511)]
+
 ## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-11-03
 
 ### ❤️ Thanks to all contributors! ❤️
