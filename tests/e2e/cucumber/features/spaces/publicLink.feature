@@ -7,6 +7,7 @@ Feature: spaces public link
       | Brian |
       | Carol |
       | David |
+      | Edith |
     And "Admin" assigns following roles to the users using API
       | id    | role        |
       | Alice | Space Admin |
@@ -92,6 +93,20 @@ Feature: spaces public link
     And "David" closes the file viewer
     And "David" logs out
 
+    # @issue-1712 download a folder in the public link as authenticated user
+    When "Edith" logs in
+    And "Edith" opens the public link "folderLink"
+    And "Edith" unlocks the public link with password "%public%"
+    And "Edith" downloads the following public link resources using the sidebar panel
+      | resource  | type   |
+      | subFolder | folder |
+    And "Edith" logs out
+    # download a folder in the public link as anonymous user
+    And "Anonymous" opens the public link "folderLink"
+    And "Anonymous" unlocks the public link with password "%public%"
+    And "Anonymous" downloads the following public link resources using the sidebar panel
+      | resource  | type   |
+      | subFolder | folder |
 
   Scenario: crud operation to public link for space
     Given "Admin" creates following users using API
