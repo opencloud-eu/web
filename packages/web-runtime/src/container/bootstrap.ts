@@ -46,7 +46,10 @@ import {
   ClassicApplicationScript,
   UpdatesStore,
   useUpdatesStore,
-  Updates
+  Updates,
+  useGroupwareConfigStore,
+  GroupwareConfigStore,
+  RawGroupwareConfigSchema
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -392,6 +395,7 @@ export const announcePiniaStores = () => {
   const userStore = useUserStore()
   const webWorkersStore = useWebWorkersStore()
   const updatesStore = useUpdatesStore()
+  const groupwareConfigStore = useGroupwareConfigStore()
 
   return {
     appsStore,
@@ -406,7 +410,8 @@ export const announcePiniaStores = () => {
     spacesStore,
     userStore,
     webWorkersStore,
-    updatesStore
+    updatesStore,
+    groupwareConfigStore
   }
 }
 
@@ -795,6 +800,36 @@ export const announceCustomStyles = ({ configStore }: { configStore?: ConfigStor
     link.rel = 'stylesheet'
     document.head.appendChild(link)
   })
+}
+
+/**
+ * announce Groupware.
+ *
+ * @param clientService
+ * @param capabilityStore
+ * @param configStore
+ * @param groupwareConfigStore
+ */
+export const announceGroupware = async ({
+  clientService,
+  configStore,
+  capabilityStore,
+  groupwareConfigStore
+}: {
+  clientService: ClientService
+  configStore: ConfigStore
+  capabilityStore: CapabilityStore
+  groupwareConfigStore: GroupwareConfigStore
+}) => {
+  if (!capabilityStore.capabilities.groupware?.enabled) {
+    return
+  }
+  try {
+    const { data } = await clientService.httpAuthenticated.get(configStore.groupwareUrl)
+    groupwareConfigStore.loadGroupwareConfig(RawGroupwareConfigSchema.parse(data))
+  } catch (e) {
+    console.error(`Unable to load groupware config ${e}`)
+  }
 }
 
 export const registerSSEEventListeners = ({

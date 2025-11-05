@@ -108,13 +108,13 @@ const appearanceClasses = computed(() => {
 
   switch (color) {
     case 'primary':
-      classes.push('bg-role-primary', 'text-role-on-primary', 'border-role-on-primary')
+      classes.push('bg-role-primary', 'text-role-on-primary', 'border-role-primary')
       break
     case 'secondary':
-      classes.push('bg-role-secondary', 'text-role-on-secondary', 'border-role-on-secondary')
+      classes.push('bg-role-secondary', 'text-role-on-secondary', 'border-role-secondary')
       break
     case 'tertiary':
-      classes.push('bg-role-tertiary', 'text-role-on-tertiary', 'border-role-on-tertiary')
+      classes.push('bg-role-tertiary', 'text-role-on-tertiary', 'border-role-tertiary')
       break
   }
   return classes
