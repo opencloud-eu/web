@@ -15,7 +15,8 @@ export type ResourceRouteResolverOptions = {
 
 export const useResourceRouteResolver = (
   options: ResourceRouteResolverOptions = {},
-  context?: any // FIXME
+  /** @deprecated */
+  context?: any
 ) => {
   const targetRouteCallback = options.targetRouteCallback
   const { getMatchingSpace } = useGetMatchingSpace(options)
@@ -37,6 +38,7 @@ export const useResourceRouteResolver = (
     )
   }
 
+  /** @deprecated */
   const createFileAction = (resource: Resource) => {
     const space = unref(options.space) || getMatchingSpace(resource)
     /**

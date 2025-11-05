@@ -173,7 +173,6 @@ import {
   FolderViewModeConstants,
   SortDir,
   SortField,
-  useResourceRouteResolver,
   useTileSize,
   useResourcesStore,
   useViewSizeMax,
@@ -184,7 +183,9 @@ import {
   embedModeFilePickMessageData,
   routeToContextQuery,
   useRouter,
-  useSideBar
+  useSideBar,
+  useFolderLink,
+  FileActionOptions
 } from '../../composables'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
@@ -225,6 +226,7 @@ const {
 }>()
 
 const emit = defineEmits<{
+  (e: 'fileClick', options: FileActionOptions): void
   (e: 'fileDropped', id: string): void
   (e: 'rowMounted', resource: Resource, compnent: ResourceTileRef, dimension: ImageDimension): void
   (e: 'sort', value: { sortBy: string; sortDir: SortDir }): void
@@ -279,21 +281,14 @@ const tileRefs = ref({
   dropBtns: {} as Record<string, ContextMenuQuickActionRef>
 })
 
-const resourceRouteResolver = useResourceRouteResolver(
-  {
-    space: ref(space),
-    targetRouteCallback: computed(() => targetRouteCallback)
-  },
-  { emit }
-)
+const { getFolderLink } = useFolderLink({
+  space: ref(space),
+  targetRouteCallback: computed(() => targetRouteCallback)
+})
 
 const getRoute = (resource: Resource) => {
   if (resource.isFolder) {
-    return resourceRouteResolver.createFolderLink({
-      path: resource.path,
-      fileId: resource.fileId,
-      resource: resource
-    })
+    return getFolderLink(resource)
   }
 
   let s = space
@@ -325,9 +320,7 @@ const emitTileClick = (resource: Resource, event?: MouseEvent) => {
     toggleSelection(resource)
   }
 
-  if (resource.type !== 'space' && resource.type !== 'folder') {
-    resourceRouteResolver.createFileAction(resource as Resource)
-  }
+  emit('fileClick', { space: getMatchingSpace(resource), resources: [resource] })
 }
 
 const showContextMenuOnBtnClick = (
