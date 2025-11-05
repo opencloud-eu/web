@@ -18,7 +18,7 @@ exports[`Projects view > different files view states > lists all available proje
             <!--v-if-->
           </div>
         </div>
-        <resource-table-stub resources="[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" arethumbnailsdisplayed="true" selectedids="" hasactions="true" showrenamequickaction="true" areresourcesclickable="true" headerposition="0" isselectable="true" issidebaropen="false" paddingx="small" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="image,name,totalQuota,usedQuota,remainingQuota,indicators,mdate" sortdir="asc" resourcetype="space" lazy="true" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1"></resource-table-stub>
+        <resource-table-stub resources="[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" selectedids="" hasactions="true" showrenamequickaction="true" areresourcesclickable="true" headerposition="0" isselectable="true" issidebaropen="false" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="image,name,totalQuota,usedQuota,remainingQuota,indicators,mdate" sortdir="asc" resourcetype="space" lazy="true" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1"></resource-table-stub>
       </div>
     </div>
   </div>
