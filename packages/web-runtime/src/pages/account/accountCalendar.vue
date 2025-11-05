@@ -1,7 +1,7 @@
 <template>
   <div id="account-calendar">
     <h1 class="text-lg mt-1" v-text="$gettext('Calendar')" />
-    <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
+    <span v-if="isCalDavAvailable === false" class="flex flex-row items-center">
       <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
 
       <span
@@ -96,7 +96,7 @@ const { user } = storeToRefs(userStore)
 const configStore = useConfigStore()
 const clientService = useClientService()
 
-const isCalDavAvailable = ref(false)
+const isCalDavAvailable = ref<boolean | null>(null)
 const copiedIcon = 'check'
 const copyIcon = 'file-copy'
 
