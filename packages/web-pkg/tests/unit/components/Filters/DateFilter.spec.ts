@@ -7,6 +7,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../../src/composables/appDefaults'
 import { DateTime } from 'luxon'
+import { ocDropStub } from '@opencloud-eu/web-test-helpers/src/mocks/ocDropStub'
 
 vi.mock('../../../../src/composables/appDefaults')
 
@@ -145,10 +146,14 @@ function getWrapper({
         }
       },
       global: {
+        renderStubDefaultSlot: true,
         plugins: [...defaultPlugins()],
         mocks,
         provide: mocks,
-        stubs: { OcCheckbox: true }
+        stubs: {
+          OcCheckbox: true,
+          OcDrop: ocDropStub
+        }
       }
     })
   }

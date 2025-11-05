@@ -10,7 +10,7 @@ exports[`OcDrop > tippy > renders tippy 1`] = `
   </p>
   <div
     data-tippy-root=""
-    id="tippy-10"
+    id="tippy-3"
     style="z-index: 9999; visibility: visible; position: absolute; left: 0px; top: auto; margin: 0px; right: auto; bottom: 0px; transform: translate(0px, 0px); max-height: -20px; overflow-y: auto; overflow-x: hidden;"
   >
     <div
@@ -32,7 +32,7 @@ exports[`OcDrop > tippy > renders tippy 1`] = `
       >
         <div
           class="oc-drop shadow-md/20 rounded-sm"
-          id="oc-drop-15"
+          id="oc-drop-8"
         >
           <div
             class="oc-card"
@@ -68,7 +68,7 @@ exports[`OcDrop > tippy > renders tippy 2`] = `
   </p>
   <div
     data-tippy-root=""
-    id="tippy-10"
+    id="tippy-3"
     style="z-index: 9999; visibility: hidden; position: absolute; left: 0px; top: auto; margin: 0px; right: auto; bottom: 0px; transform: translate(0px, 0px); max-height: -20px; overflow-y: auto; overflow-x: hidden; pointer-events: none;"
   >
     <div
@@ -90,25 +90,9 @@ exports[`OcDrop > tippy > renders tippy 2`] = `
       >
         <div
           class="oc-drop shadow-md/20 rounded-sm"
-          id="oc-drop-15"
+          id="oc-drop-8"
         >
-          <div
-            class="oc-card"
-          >
-            <!--v-if-->
-             
-            <div
-              class="oc-card-body p-4"
-            >
-              
-              
-              show
-              
-              
-            </div>
-             
-            <!--v-if-->
-          </div>
+          <!--v-if-->
         </div>
       </div>
     </div>
@@ -126,7 +110,7 @@ exports[`OcDrop > tippy > renders tippy 3`] = `
   </p>
   <div
     data-tippy-root=""
-    id="tippy-10"
+    id="tippy-3"
     style="z-index: 9999; visibility: visible; position: absolute; left: 0px; top: auto; margin: 0px; right: auto; bottom: 0px; transform: translate(0px, 0px); max-height: -20px; overflow-y: auto; overflow-x: hidden;"
   >
     <div
@@ -148,7 +132,7 @@ exports[`OcDrop > tippy > renders tippy 3`] = `
       >
         <div
           class="oc-drop shadow-md/20 rounded-sm"
-          id="oc-drop-15"
+          id="oc-drop-8"
         >
           <div
             class="oc-card"

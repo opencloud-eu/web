@@ -182,7 +182,7 @@ describe('ResourceTiles component', () => {
       expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(sortField.label)
     })
     it('emits the "sort"-event', async () => {
-      const { wrapper } = getWrapper({ props: { sortFields } })
+      const { wrapper } = getWrapper({ props: { sortFields }, stubs: { OcDrop: true } })
       const filterChip = wrapper.findComponent<typeof OcFilterChip>({ name: 'oc-filter-chip' })
       await filterChip.trigger('click')
       const sortItem = filterChip.findAll('.oc-tiles-sort-filter-chip-item')
@@ -312,7 +312,8 @@ describe('ResourceTiles component', () => {
           ],
           mocks: mocks,
           provide: mocks,
-          stubs
+          stubs,
+          renderStubDefaultSlot: true
         }
       })
     }
