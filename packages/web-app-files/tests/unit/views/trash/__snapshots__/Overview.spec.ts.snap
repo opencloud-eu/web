@@ -17,7 +17,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
           <!--v-if-->
         </div>
       </div>
-      <resource-table-stub resources="[object Object],[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" arethumbnailsdisplayed="false" selectedids="" hasactions="true" showrenamequickaction="false" targetroutecallback="[Function]" areresourcesclickable="true" headerposition="0" isselectable="false" issidebaropen="false" paddingx="small" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="name" sortdir="asc" resourcetype="file" lazy="true" class="trash-table" sort-fields="" view-size="1"></resource-table-stub>
+      <resource-table-stub resources="[object Object],[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" selectedids="" hasactions="true" showrenamequickaction="false" targetroutecallback="[Function]" areresourcesclickable="true" headerposition="0" isselectable="false" issidebaropen="false" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="name" sortdir="asc" resourcetype="file" lazy="true" class="trash-table" sort-fields="" are-thumbnails-displayed="false" view-size="1"></resource-table-stub>
     </div>
   </div>
   <!--v-if-->

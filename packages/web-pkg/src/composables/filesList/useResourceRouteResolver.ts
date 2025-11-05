@@ -15,6 +15,7 @@ export type ResourceRouteResolverOptions = {
 
 export const useResourceRouteResolver = (
   options: ResourceRouteResolverOptions = {},
+  /** @deprecated */
   context?: any
 ) => {
   const targetRouteCallback = options.targetRouteCallback
@@ -37,6 +38,7 @@ export const useResourceRouteResolver = (
     )
   }
 
+  /** @deprecated */
   const createFileAction = (resource: Resource) => {
     const space = unref(options.space) || getMatchingSpace(resource)
     /**
