@@ -11,7 +11,7 @@
       :disabled="isRemoteUploadInProgress"
       @click="triggerUpload"
     >
-      <resource-icon :resource="resource" size="medium" class="h-full" />
+      <resource-icon :resource="resource" size="medium" class="[&_svg]:h-5.5! sm:[&_svg]:h-full" />
       <span :id="uploadLabelId">{{ buttonLabel }}</span>
     </oc-button>
     <input
