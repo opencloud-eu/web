@@ -39,8 +39,10 @@ function getWrapper() {
         plugins: [...defaultPlugins()],
         mocks,
         stubs: {
-          VersionCheck: true
-        }
+          VersionCheck: true,
+          OcDrop: true
+        },
+        renderStubDefaultSlot: true
       }
     })
   }

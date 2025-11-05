@@ -106,9 +106,9 @@
                 <oc-icon name="group" fill-type="line" />
               </oc-button>
             </template>
-            <template #contextMenu="{ resource, isOpen }">
+            <template #contextMenu="{ resource }">
               <space-context-actions
-                v-if="isOpen && isResourceInSelection(resource)"
+                v-if="isResourceInSelection(resource)"
                 :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />

@@ -182,7 +182,8 @@ function getWrapper({
         plugins: [...defaultPlugins()],
         mocks,
         provide: mocks,
-        stubs: { OcCheckbox: true }
+        stubs: { OcCheckbox: true, OcDrop: true },
+        renderStubDefaultSlot: true
       }
     })
   }

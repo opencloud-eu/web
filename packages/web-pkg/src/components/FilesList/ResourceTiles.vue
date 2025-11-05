@@ -114,8 +114,8 @@
               class="resource-tiles-btn-action-dropdown"
               @quick-action-clicked="showContextMenuOnBtnClick($event, resource, resource.id)"
             >
-              <template #contextMenu="{ isOpen }">
-                <slot name="contextMenu" :resource="resource" :is-open="isOpen" />
+              <template #contextMenu>
+                <slot name="contextMenu" :resource="resource" />
               </template>
             </context-menu-quick-action>
           </template>
@@ -237,7 +237,7 @@ const emit = defineEmits<{
 defineSlots<{
   image?: (props: { resource: Resource }) => unknown
   actions?: (props: { resource: Resource }) => unknown
-  contextMenu?: (props: { resource: Resource; isOpen: boolean }) => unknown
+  contextMenu?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
   additionalResourceContent?: (props: { resource: Resource }) => unknown
 }>()

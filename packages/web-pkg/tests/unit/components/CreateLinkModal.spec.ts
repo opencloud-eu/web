@@ -221,7 +221,8 @@ function getWrapper({
         ],
         mocks,
         provide: mocks,
-        stubs: { OcTextInput: true, OcDatepicker: true, OcButton: true }
+        stubs: { OcTextInput: true, OcDatepicker: true, OcButton: true, OcDrop: true },
+        renderStubDefaultSlot: true
       }
     })
   }
