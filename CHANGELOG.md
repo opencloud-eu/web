@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
 
 ### 🐛 Bug Fixes
 
