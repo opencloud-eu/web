@@ -435,6 +435,7 @@ def readyReleaseGo():
                     "settings": {
                         "git_email": "devops@opencloud.eu",
                         "forge_type": "github",
+                        "release_branch": "stable-4.2",
                         "forge_token": {
                             "from_secret": "github_token",
                         },
@@ -444,7 +445,7 @@ def readyReleaseGo():
             "when": [
                 {
                     "event": ["push"],
-                    "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                    "branch": "stable-4.2",
                 },
             ],
         },
