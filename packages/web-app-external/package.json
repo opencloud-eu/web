@@ -11,7 +11,7 @@
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "lodash-es": "4.17.21",
-    "pinia": "3.0.3",
+    "pinia": "3.0.4",
     "qs": "^6.13.0",
     "uuid": "13.0.0",
     "vue-concurrency": "5.0.3",
