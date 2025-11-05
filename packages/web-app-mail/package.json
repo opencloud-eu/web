@@ -1,0 +1,29 @@
+{
+  "name": "web-app-mail",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenCloud groupware mail app",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@opencloud-eu/web-test-helpers": "workspace:*"
+  },
+  "peerDependencies": {
+    "@opencloud-eu/design-system": "workspace:^",
+    "@opencloud-eu/web-client": "workspace:*",
+    "@opencloud-eu/web-pkg": "workspace:*",
+    "axios": "1.12.2",
+    "fuse.js": "7.1.0",
+    "lodash-es": "4.17.21",
+    "mark.js": "^8.11.1",
+    "pinia": "3.0.3",
+    "vue-concurrency": "5.0.3",
+    "vue-router": "^4.2.5",
+    "vue3-gettext": "2.4.0",
+    "zod": "4.1.12",
+    "dompurify": "^3.2.3",
+    "luxon": "^3.5.0"
+  },
+  "dependencies": {
+    "ical.js": "^2.2.1"
+  }
+}

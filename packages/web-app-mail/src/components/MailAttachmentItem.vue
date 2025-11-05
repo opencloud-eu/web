@@ -1,0 +1,87 @@
+<template>
+  <div class="mail-attachment-item flex justify-between items-center">
+    <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
+      <oc-icon
+        :name="icon.name"
+        :color="icon.color"
+        size="large"
+        class="inline-flex items-center"
+      />
+      <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
+        <span class="mail-attachment-item-filename truncate" v-text="attachment.name" />
+        <span class="mail-attachment-item-size mt-1" v-text="readableFileSize" />
+      </div>
+    </div>
+    <div class="mail-attachment-item-actions ml-1">
+      <oc-button appearance="raw" :aria-label="$gettext('Download attachment')" @click="download">
+        <oc-icon size="medium" name="download-2" fill-type="line" />
+      </oc-button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { urlJoin } from '@opencloud-eu/web-client'
+import { computed, defineProps, inject } from 'vue'
+import { MailBodyPart } from '../types'
+import {
+  useClientService,
+  useConfigStore,
+  formatFileSize,
+  useMessages,
+  ResourceIconMapping,
+  resourceIconMappingInjectionKey,
+  createDefaultFileIconMapping,
+  triggerDownloadWithFilename
+} from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
+
+const { attachment, accountId } = defineProps<{
+  attachment: MailBodyPart
+  accountId: string
+}>()
+
+const clientService = useClientService()
+const configStore = useConfigStore()
+const { showErrorMessage } = useMessages()
+const { current: currentLanguage } = useGettext()
+const { $gettext } = useGettext()
+const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
+const defaultFileIconMapping = createDefaultFileIconMapping()
+
+const readableFileSize = computed(() => {
+  return formatFileSize(attachment.size, currentLanguage)
+})
+
+const icon = computed(() => {
+  const extension = attachment.name.split('.').pop()
+
+  return (
+    defaultFileIconMapping[extension] ||
+    iconMappingInjection?.mimeType[attachment.type] ||
+    iconMappingInjection?.extension[extension]
+  )
+})
+
+const download = async () => {
+  const url = urlJoin(
+    configStore.groupwareUrl,
+    `/accounts/${accountId}/blobs/${attachment.blobId}/${encodeURIComponent(attachment.name)}`
+  )
+
+  try {
+    const { data }: { data: Blob } = await clientService.httpAuthenticated.get(url, {
+      responseType: 'blob'
+    })
+
+    const objectUrl = URL.createObjectURL(data)
+    triggerDownloadWithFilename(objectUrl, attachment.name)
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({
+      title: $gettext('Failed to download %{name}', { name: attachment.name }),
+      errors: [e]
+    })
+  }
+}
+</script>
