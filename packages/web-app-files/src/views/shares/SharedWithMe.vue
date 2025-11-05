@@ -79,6 +79,9 @@
             areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
           "
           :grouping-settings="groupingSettings"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :sort-fields="sortFields"
         />
       </template>
     </files-view-wrapper>
