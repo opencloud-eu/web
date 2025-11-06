@@ -299,8 +299,6 @@ services:
     container_name: web_tika
     ports:
       - 9998:9998
-    networks:
-      - traefik
     restart: unless-stopped
 
   radicale:
@@ -312,8 +310,6 @@ services:
       RADICALE_STORAGE_FILESYSTEM_FOLDER: /data
     ports:
       - '5232:5232'
-    networks:
-      - traefik
     volumes:
       - ./dev/docker/radicale/data:/data
     restart: unless-stopped
