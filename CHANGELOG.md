@@ -22,6 +22,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency axios to v1.13.2 [[#1537](https://github.com/opencloud-eu/web/pull/1537)]
+- fix(deps): update vue monorepo to v3.5.23 [[#1544](https://github.com/opencloud-eu/web/pull/1544)]
 - fix(deps): update dependency @sentry/vue to v10.23.0 [[#1542](https://github.com/opencloud-eu/web/pull/1542)]
 - fix(deps): update dependency pinia to v3.0.4 [[#1532](https://github.com/opencloud-eu/web/pull/1532)]
 - chore(deps): update dependency @pinia/testing to v1.0.3 [[#1524](https://github.com/opencloud-eu/web/pull/1524)]
