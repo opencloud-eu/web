@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.23.0 [[#1542](https://github.com/opencloud-eu/web/pull/1542)]
 - fix(deps): update dependency pinia to v3.0.4 [[#1532](https://github.com/opencloud-eu/web/pull/1532)]
 - chore(deps): update dependency @pinia/testing to v1.0.3 [[#1524](https://github.com/opencloud-eu/web/pull/1524)]
 - chore(deps): update dependency pinia to v3.0.4 [[#1525](https://github.com/opencloud-eu/web/pull/1525)]
