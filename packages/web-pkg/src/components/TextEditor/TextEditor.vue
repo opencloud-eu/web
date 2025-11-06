@@ -28,6 +28,7 @@
       no-mermaid
       no-prettier
       no-highlight
+      no-echarts
       :on-upload-img="onUploadImg"
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
