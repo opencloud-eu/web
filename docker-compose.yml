@@ -1,7 +1,7 @@
 x-opencloud-server: &opencloud-service
   image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
   entrypoint: /bin/sh
-  command: [ '-c', 'opencloud init || true && opencloud server' ]
+  command: ['-c', 'opencloud init || true && opencloud server']
   environment: &opencloud-environment
     OC_INSECURE: '${OC_INSECURE:-true}'
     OC_LOG_LEVEL: '${OC_LOG_LEVEL:-error}'
@@ -157,7 +157,7 @@ services:
         condition: service_healthy
     entrypoint:
       - /bin/sh
-    command: [ '-c', 'opencloud collaboration server' ]
+    command: ['-c', 'opencloud collaboration server']
     environment:
       COLLABORATION_GRPC_ADDR: 0.0.0.0:9301
       COLLABORATION_HTTP_ADDR: 0.0.0.0:9300
@@ -190,8 +190,8 @@ services:
 
   collabora:
     image: collabora/code:25.04.6.2.1
-    entrypoint: [ '/bin/bash', '-c' ]
-    command: [ 'coolconfig generate-proof-key && /start-collabora-online.sh' ]
+    entrypoint: ['/bin/bash', '-c']
+    command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
       aliasgroup1: https://${WOPISERVER_DOMAIN:-host.docker.internal}:443
       DONT_GEN_SSL_CERT: YES
