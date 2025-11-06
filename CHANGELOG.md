@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @Copilot, @JammingBen
+@AlexAndBear, @Copilot, @JammingBen, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: avoid flicker on CalDAV check (#1538) [[#1550](https://github.com/opencloud-eu/web/pull/1550)]
 - [stable-4.2] fix: private link doesn't reliably open default app [[#1530](https://github.com/opencloud-eu/web/pull/1530)]
 - [stable-4.2] fix: bottom drawer 'New'-menus appearance [[#1519](https://github.com/opencloud-eu/web/pull/1519)]
 - Cherry-pick font revert from PR #1507 to stable-4.2 [[#1509](https://github.com/opencloud-eu/web/pull/1509)]
