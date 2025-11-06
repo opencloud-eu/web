@@ -57,7 +57,12 @@ export const webdav = (baseURI: string, headers?: () => Headers): WebDAV => {
   const { getFileContents } = getFileContentsFactory
   const { putFileContents } = PutFileContentsFactory(dav, getFileInfoFactory, options)
 
-  const { getFileUrl, revokeUrl } = GetFileUrlFactory(dav, getFileContentsFactory, options)
+  const { getFileUrl, revokeUrl } = GetFileUrlFactory(
+    dav,
+    getFileContentsFactory,
+    getFileInfoFactory,
+    options
+  )
   const { getPublicFileUrl } = GetPublicFileUrlFactory(dav, options)
 
   const { copyFiles } = CopyFilesFactory(dav, options)
