@@ -3,6 +3,7 @@ packages/design-system/src/styles/
 packages/web-client/src/graph/generated/
 tests/woodpecker/csp.yaml
 pnpm-lock.yaml
+.github/settings.yml
 
 **/translations.json
 /CHANGELOG.md
