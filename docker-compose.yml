@@ -1,7 +1,7 @@
 x-opencloud-server: &opencloud-service
   image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
   entrypoint: /bin/sh
-  command: ['-c', 'opencloud init || true && opencloud server']
+  command: [ '-c', 'opencloud init || true && opencloud server' ]
   environment: &opencloud-environment
     OC_INSECURE: '${OC_INSECURE:-true}'
     OC_LOG_LEVEL: '${OC_LOG_LEVEL:-error}'
@@ -84,8 +84,6 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
-    networks:
-      - traefik
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
@@ -107,6 +105,8 @@ services:
       traefik.http.routers.opencloud.entrypoints: opencloud
       traefik.http.services.opencloud.loadbalancer.server.port: 9200
       traefik.http.routers.opencloud.middlewares: cors
+    networks:
+      - traefik
     volumes:
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
       - ./dev/docker/opencloud/proxy.yaml:/etc/opencloud/proxy.yaml
@@ -123,8 +123,6 @@ services:
   opencloud-federated:
     <<: *opencloud-service
     container_name: web_opencloud_federated
-    networks:
-      - traefik
     environment:
       <<: *opencloud-environment
       OC_URL: https://oc.opencloud.test:10200
@@ -138,6 +136,8 @@ services:
       traefik.http.routers.opencloud-federated.entrypoints: opencloud-federated
       traefik.http.services.opencloud-federated.loadbalancer.server.port: 9200
       traefik.http.routers.opencloud-federated.middlewares: cors
+    networks:
+      - traefik
     volumes:
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
@@ -157,7 +157,7 @@ services:
         condition: service_healthy
     entrypoint:
       - /bin/sh
-    command: ['-c', 'opencloud collaboration server']
+    command: [ '-c', 'opencloud collaboration server' ]
     environment:
       COLLABORATION_GRPC_ADDR: 0.0.0.0:9301
       COLLABORATION_HTTP_ADDR: 0.0.0.0:9300
@@ -174,22 +174,24 @@ services:
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
-    volumes:
-      - opencloud-config:/etc/opencloud
     labels:
       traefik.enable: true
       traefik.http.routers.collaboration.tls: true
       traefik.http.routers.collaboration.rule: PathPrefix(`/`)
       traefik.http.routers.collaboration.entrypoints: collaboration
       traefik.http.services.collaboration.loadbalancer.server.port: 9300
+    volumes:
+      - opencloud-config:/etc/opencloud
+    networks:
+      - traefik
     logging:
       driver: ${LOG_DRIVER:-local}
     restart: unless-stopped
 
   collabora:
     image: collabora/code:25.04.6.2.1
-    entrypoint: ['/bin/bash', '-c']
-    command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
+    entrypoint: [ '/bin/bash', '-c' ]
+    command: [ 'coolconfig generate-proof-key && /start-collabora-online.sh' ]
     environment:
       aliasgroup1: https://${WOPISERVER_DOMAIN:-host.docker.internal}:443
       DONT_GEN_SSL_CERT: YES
@@ -214,6 +216,8 @@ services:
       traefik.http.routers.collabora.rule: PathPrefix(`/`)
       traefik.http.routers.collabora.entrypoints: collabora
       traefik.http.services.collabora.loadbalancer.server.port: 9980
+    networks:
+      - traefik
     restart: unless-stopped
     depends_on:
       - traefik
@@ -287,12 +291,16 @@ services:
       - tika
     command:
       - 'wait-for -it tika:9998 -t 300'
+    networks:
+      - traefik
 
   tika:
     image: apache/tika:3.2.3.0
     container_name: web_tika
     ports:
       - 9998:9998
+    networks:
+      - traefik
     restart: unless-stopped
 
   radicale:
@@ -304,6 +312,8 @@ services:
       RADICALE_STORAGE_FILESYSTEM_FOLDER: /data
     ports:
       - '5232:5232'
+    networks:
+      - traefik
     volumes:
       - ./dev/docker/radicale/data:/data
     restart: unless-stopped
@@ -314,12 +324,12 @@ services:
     depends_on:
       opencloud:
         condition: service_started
-    networks:
-      - traefik
     ports:
       - '127.0.0.1:143:143'
       - '127.0.0.1:993:993'
       - '127.0.0.1:1465:465'
+    networks:
+      - traefik
     volumes:
       - ./dev/docker/stalwart/localtime:/etc/localtime:ro
       - ./dev/docker/stalwart/config.toml:/opt/stalwart/etc/config.toml
