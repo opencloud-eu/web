@@ -496,10 +496,8 @@ const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseE
 }
 
 const toggleSelection = (resource: Resource) => {
-  const selected = !isResourceSelected(resource)
-    ? [...selectedIds, resource.id]
-    : selectedIds.filter((id) => id !== resource.id)
-  emit('update:selectedIds', selected)
+  resourcesStore.toggleSelection(resource.id)
+  emit('update:selectedIds', [...resourcesStore.selectedIds])
 }
 
 const getResourceCheckboxLabel = (resource: Resource) => {
