@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: translation string typos [[#1564](https://github.com/opencloud-eu/web/pull/1564)]
 - fix: remove horizontal scrollbar when opening upload menu [[#1562](https://github.com/opencloud-eu/web/pull/1562)]
 - fix: account preferences page, left sidebar won't be translated on language change [[#1554](https://github.com/opencloud-eu/web/pull/1554)]
 - fix: avoid flicker on CalDAV check [[#1538](https://github.com/opencloud-eu/web/pull/1538)]
