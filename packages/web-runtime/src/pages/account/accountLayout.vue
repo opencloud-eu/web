@@ -32,6 +32,12 @@ const authStore = useAuthStore()
 
 const navBarClosed = ref<boolean>(false)
 
+const isAccountInformationActive = useActiveLocation(isLocationAccountActive, 'account-information')
+const isAccountPreferencesActive = useActiveLocation(isLocationAccountActive, 'account-preferences')
+const isAccountExtensionsActive = useActiveLocation(isLocationAccountActive, 'account-extensions')
+const isAccountCalendarActive = useActiveLocation(isLocationAccountActive, 'account-calendar')
+const isAccountGdprActive = useActiveLocation(isLocationAccountActive, 'account-gdpr')
+
 const preferencesPanelExtensions = computed(() => {
   return extensionRegistry.requestExtensions(preferencesPanelExtensionPoint)
 })
@@ -43,7 +49,7 @@ const navItems = computed(() => {
         name: $gettext('Preferences'),
         route: { name: 'account-preferences', query: routeToContextQuery(unref(route)) }, // Persist query for hybrid auth context
         icon: 'settings-4',
-        active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
+        active: unref(isAccountPreferencesActive)
       }
     ]
   }
@@ -53,31 +59,31 @@ const navItems = computed(() => {
       name: $gettext('Profile'),
       route: { name: 'account-information' },
       icon: 'id-card',
-      active: unref(useActiveLocation(isLocationAccountActive, 'account-information'))
+      active: unref(isAccountInformationActive)
     },
     {
       name: $gettext('Preferences'),
       route: { name: 'account-preferences' },
       icon: 'settings-4',
-      active: unref(useActiveLocation(isLocationAccountActive, 'account-preferences'))
+      active: unref(isAccountPreferencesActive)
     },
     {
       name: $gettext('Extensions'),
       route: { name: 'account-extensions' },
       icon: 'brush-2',
-      active: unref(useActiveLocation(isLocationAccountActive, 'account-extensions'))
+      active: unref(isAccountExtensionsActive)
     },
     {
       name: $gettext('Calendar'),
       route: { name: 'account-calendar' },
       icon: 'calendar',
-      active: unref(useActiveLocation(isLocationAccountActive, 'account-calendar'))
+      active: unref(isAccountCalendarActive)
     },
     {
       name: $gettext('GDPR'),
       route: { name: 'account-gdpr' },
       icon: 'git-repository',
-      active: unref(useActiveLocation(isLocationAccountActive, 'account-gdpr'))
+      active: unref(isAccountGdprActive)
     }
   ]
 
