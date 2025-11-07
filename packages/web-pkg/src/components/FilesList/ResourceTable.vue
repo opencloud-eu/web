@@ -672,7 +672,7 @@ export default defineComponent({
 
     const toggleSelection = (resourceId: string) => {
       resourcesStore.toggleSelection(resourceId)
-      emitSelect(resourcesStore.selectedIds)
+      emitSelect([...resourcesStore.selectedIds])
     }
 
     const getResourceLink = (resource: Resource) => {
