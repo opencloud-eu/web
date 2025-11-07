@@ -61,6 +61,7 @@ import {
   AppLoadingSpinner,
   useRouter,
   useClientService,
+  useMessages,
   FederatedConnection
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -103,6 +104,7 @@ export default defineComponent({
     const router = useRouter()
     const { $gettext } = useGettext()
     const clientService = useClientService()
+    const { showErrorMessage } = useMessages()
 
     const fields = computed<FieldType[]>(() => {
       return [
@@ -135,7 +137,7 @@ export default defineComponent({
     const helperContent = computed(() => {
       return {
         text: $gettext(
-          'Federated conections for mutual sharing. To share, go to "Files" app, select the resource click "Share" in the context menu and select account type "federated".'
+          'Federated connections for mutual sharing. To share, go to "Files" app, select the resource click "Share" in the context menu and select account type "federated".'
         ),
         title: $gettext('Federated connections')
       }
@@ -162,8 +164,13 @@ export default defineComponent({
         )
 
         emit('update:connections', updatedConnections)
-      } catch (e) {
-        console.error(e)
+      } catch (error) {
+        console.error('Failed to delete connection:', error)
+        showErrorMessage({
+          title: $gettext('Error'),
+          desc: $gettext('Failed to delete connection'),
+          errors: [error]
+        })
       }
     }
 

@@ -43,17 +43,18 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, unref } from 'vue'
-import { useClientService, useRoute, useRouter, useMessages } from '@opencloud-eu/web-pkg'
+import { useRoute, useRouter } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { useInvitationAcceptance } from '../composables/useInvitationAcceptance'
 
 export default defineComponent({
   emits: ['highlightNewConnections'],
   setup(props, { emit }) {
-    const { showErrorMessage } = useMessages()
     const router = useRouter()
     const route = useRoute()
-    const clientService = useClientService()
     const { $gettext } = useGettext()
+
+    const { acceptInvitation } = useInvitationAcceptance()
 
     const token = ref<string>(undefined)
     const decodedToken = ref<string>(undefined)
@@ -73,20 +74,11 @@ export default defineComponent({
       return !unref(decodedToken) || !unref(provider)
     })
 
-    const errorPopup = (error: Error) => {
-      console.error(error)
-      showErrorMessage({
-        title: $gettext('Error'),
-        desc: $gettext('An error occurred'),
-        errors: [error]
-      })
-    }
     const acceptInvite = async () => {
       try {
-        await clientService.httpAuthenticated.post('/sciencemesh/accept-invite', {
-          token: unref(decodedToken),
-          providerDomain: unref(provider)
-        })
+        // Use shared invitation acceptance logic
+        await acceptInvitation(unref(decodedToken), unref(provider))
+
         token.value = undefined
         provider.value = undefined
 
@@ -98,21 +90,33 @@ export default defineComponent({
 
         emit('highlightNewConnections')
       } catch (error) {
-        errorPopup(error)
+        // Error handling is already done in the shared logic, do not use showErrorMessage here
       }
     }
 
     const decodeInviteToken = (value: string) => {
       try {
-        const decoded = atob(value)
+        let decoded = value.trim()
+
+        // If value doesn't contain '@', assume it's base64 encoded
         if (!decoded.includes('@')) {
-          throw new Error()
+          decoded = atob(decoded)
         }
+
+        if (!decoded.includes('@')) {
+          throw new Error('Invalid token format')
+        }
+
         const [token, serverUrl] = decoded.split('@')
+        if (!token || !serverUrl) {
+          throw new Error('Invalid token format')
+        }
+
         provider.value = serverUrl
         decodedToken.value = token
         providerError.value = false
-      } catch (e) {
+      } catch (error) {
+        console.error('Failed to decode invite token:', error)
         provider.value = ''
         decodedToken.value = ''
         providerError.value = true
