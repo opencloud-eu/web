@@ -82,7 +82,7 @@ export default defineComponent({
           showMessage({
             title: $gettext('New federated connection'),
             status: 'success',
-            desc: $gettext('You can share with and recieve shares from %{user} now', {
+            desc: $gettext('You can share with and receive shares from %{user} now', {
               user: unref(highlightedConnections)[0].display_name
             })
           })
