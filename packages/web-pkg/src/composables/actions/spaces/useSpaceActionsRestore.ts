@@ -66,7 +66,7 @@ export const useSpaceActionsRestore = () => {
 
       const title =
         failed.length === 1 && spaces.length === 1
-          ? $gettext('Failed to enabled space »%{space}«', { space: spaces[0].name })
+          ? $gettext('Failed to enable space »%{space}«', { space: spaces[0].name })
           : $ngettext(
               'Failed to enable %{spaceCount} space',
               'Failed to enable %{spaceCount} spaces',
