@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v4.1.17 [[#1533](https://github.com/opencloud-eu/web/pull/1533)]
 - chore(deps): update dependency axios to v1.13.2 [[#1537](https://github.com/opencloud-eu/web/pull/1537)]
 - fix(deps): update vue monorepo to v3.5.23 [[#1544](https://github.com/opencloud-eu/web/pull/1544)]
 - fix(deps): update dependency @sentry/vue to v10.23.0 [[#1542](https://github.com/opencloud-eu/web/pull/1542)]
