@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.24 [[#1558](https://github.com/opencloud-eu/web/pull/1558)]
 - chore(deps): update dependency vite to v7.2.2 [[#1555](https://github.com/opencloud-eu/web/pull/1555)]
 - chore(deps): update devdependencies (non-major) to v4.1.17 [[#1533](https://github.com/opencloud-eu/web/pull/1533)]
 - chore(deps): update dependency axios to v1.13.2 [[#1537](https://github.com/opencloud-eu/web/pull/1537)]
