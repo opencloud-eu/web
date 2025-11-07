@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency password-sheriff to v1.3.0 [[#1560](https://github.com/opencloud-eu/web/pull/1560)]
 - fix(deps): update vue monorepo to v3.5.24 [[#1558](https://github.com/opencloud-eu/web/pull/1558)]
 - chore(deps): update dependency vite to v7.2.2 [[#1555](https://github.com/opencloud-eu/web/pull/1555)]
 - chore(deps): update devdependencies (non-major) to v4.1.17 [[#1533](https://github.com/opencloud-eu/web/pull/1533)]
