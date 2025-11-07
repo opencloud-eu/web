@@ -135,7 +135,7 @@ export default defineComponent({
     const helperContent = computed(() => {
       return {
         text: $gettext(
-          'Federated conections for mutual sharing. To share, go to "Files" app, select the resource click "Share" in the context menu and select account type "federated".'
+          'Federated connections for mutual sharing. To share, go to "Files" app, select the resource, click "Share" in the context menu and select account type "federated".'
         ),
         title: $gettext('Federated connections')
       }
