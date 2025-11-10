@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: archive download on password protected links [[#1575](https://github.com/opencloud-eu/web/pull/1575)]
 - [stable-4.2] bug: allow clipboard access to collabora (#1569) [[#1571](https://github.com/opencloud-eu/web/pull/1571)]
 - [stable-4.2] fix: only render drop content when opened [[#1526](https://github.com/opencloud-eu/web/pull/1526)]
 - [stable-4.2] fix: remove horizontal scrollbar when opening upload menu [[#1563](https://github.com/opencloud-eu/web/pull/1563)]
