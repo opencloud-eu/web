@@ -9,6 +9,7 @@
     class="size-full"
     :title="iFrameTitle"
     allowfullscreen
+    allow="clipboard-read *; clipboard-write *"
   />
   <div v-if="appUrl && method === 'POST' && formParameters" class="size-full">
     <form :action="appUrl" target="app-iframe" method="post">
@@ -30,6 +31,7 @@
       class="size-full"
       :title="iFrameTitle"
       allowfullscreen
+      allow="clipboard-read *; clipboard-write *"
     />
   </div>
 </template>
