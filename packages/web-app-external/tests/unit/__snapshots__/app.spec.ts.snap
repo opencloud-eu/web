@@ -3,7 +3,7 @@
 exports[`The app provider extension > should be able to load an iFrame via get 1`] = `
 "<!--v-if-->
 
-<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
+<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen="" allow="clipboard-read *; clipboard-write *"></iframe>
 
 <!--v-if-->"
 `;
@@ -19,7 +19,7 @@ exports[`The app provider extension > should be able to load an iFrame via post 
     <div><input name="access_token_ttl" type="hidden" value="123456"></div>
     <!--v-if-->
     <!--v-if-->
-  </form> <iframe name="app-iframe" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen=""></iframe>
+  </form> <iframe name="app-iframe" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen="" allow="clipboard-read *; clipboard-write *"></iframe>
 </div>"
 `;
 
