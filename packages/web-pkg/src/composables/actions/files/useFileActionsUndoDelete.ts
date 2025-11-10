@@ -6,7 +6,7 @@ import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
 import { useCapabilityStore, useClientService } from '../../'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { isMacOs } from '../../../helpers'
+import { isItemInCurrentFolder, isMacOs } from '../../../helpers'
 
 type UndoActionOptions = FileActionOptions & { callback?: () => void }
 
@@ -21,7 +21,7 @@ export const useFileActionsUndoDelete = () => {
   const { actions: restoreActions } = useFileActionsRestore({
     showSuccessMessage: false,
     onRestoreComplete: async ({ space, resources }) => {
-      if (unref(currentFolder)?.id === resources[0].parentFolderId) {
+      if (isItemInCurrentFolder({ resourcesStore, parentFolderId: resources[0].parentFolderId })) {
         // update local folder
         const { children } = await webdav.listFiles(space, { path: unref(currentFolder).path })
         resourcesStore.upsertResources(
