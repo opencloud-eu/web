@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: archive download on password protected links [[#1523](https://github.com/opencloud-eu/web/pull/1523)]
 - bug: allow clipboard access to collabora [[#1569](https://github.com/opencloud-eu/web/pull/1569)]
 - fix: translation string typos [[#1564](https://github.com/opencloud-eu/web/pull/1564)]
 - fix: remove horizontal scrollbar when opening upload menu [[#1562](https://github.com/opencloud-eu/web/pull/1562)]
