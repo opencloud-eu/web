@@ -1202,7 +1202,7 @@ const getSharedWithAvatarItems = (resource: Resource) => {
   }
 
   .oc-table.condensed > tbody > tr {
-    @apply h-0;
+    @apply h-8;
   }
 }
 </style>
