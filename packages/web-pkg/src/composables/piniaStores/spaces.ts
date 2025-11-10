@@ -215,7 +215,6 @@ export const useSpacesStore = defineStore('spaces', () => {
       ])
 
       addSpaces([...personalSpaces, ...projectSpaces])
-      spacesInitialized.value = true
     } finally {
       spacesLoading.value = false
     }
