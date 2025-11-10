@@ -23,47 +23,31 @@
       mode="click"
       padding-size="small"
       close-on-click
-      @show-drop="isOpen = true"
-      @hide-drop="isOpen = false"
     >
-      <slot name="contextMenu" :item="item" :is-open="isOpen" />
+      <slot name="contextMenu" :item="item" />
     </oc-drop>
   </oc-button>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { extractDomSelector, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'ContextMenuQuickAction',
-  props: {
-    item: {
-      type: Object,
-      required: true
-    },
-    resourceDomSelector: {
-      type: Function,
-      required: false,
-      default: (resource: Resource) => extractDomSelector(resource.id)
-    },
-    title: {
-      type: String,
-      required: false,
-      default: ''
-    }
-  },
-  emits: ['quickActionClicked'],
-  setup() {
-    const { $gettext } = useGettext()
-    const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const isOpen = ref(false)
+const {
+  item,
+  resourceDomSelector = (resource: Resource) => extractDomSelector(resource.id),
+  title = ''
+} = defineProps<{
+  item: Resource
+  resourceDomSelector?: (resource: Resource) => string
+  title?: string
+}>()
 
-    return {
-      contextMenuLabel,
-      isOpen
-    }
-  }
-})
+defineEmits<{
+  (e: 'quickActionClicked', payload: { event: MouseEvent; dropdown: unknown }): void
+}>()
+
+const { $gettext } = useGettext()
+const contextMenuLabel = computed(() => $gettext('Show context menu'))
 </script>

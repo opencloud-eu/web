@@ -78,9 +78,10 @@ function getWrapper(props: PartialComponentProps<typeof EditDropdown> = {}) {
         ...props
       },
       global: {
+        renderStubDefaultSlot: true,
         plugins: [...defaultPlugins()],
         provide: { resource: mock<Resource>() },
-        stubs: { OcDrop: false, OcCard: false, OcList: false, ContextMenuItem: false }
+        stubs: { OcCard: false, OcList: false, ContextMenuItem: false }
       }
     })
   }

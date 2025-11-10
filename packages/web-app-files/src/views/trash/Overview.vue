@@ -47,9 +47,8 @@
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           >
-            <template #contextMenu="{ resource, isOpen }">
+            <template #contextMenu="{ resource }">
               <trash-context-actions
-                v-if="isOpen"
                 :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />

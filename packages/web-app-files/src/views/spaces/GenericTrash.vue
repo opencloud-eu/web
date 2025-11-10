@@ -56,9 +56,9 @@
           :view-size="viewSize"
           @sort="handleSort"
         >
-          <template #contextMenu="{ resource, isOpen }">
+          <template #contextMenu="{ resource }">
             <context-actions
-              v-if="isOpen && isResourceInSelection(resource)"
+              v-if="isResourceInSelection(resource)"
               :action-options="{ space, resources: selectedResources }"
             />
           </template>
