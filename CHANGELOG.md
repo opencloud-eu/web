@@ -25,6 +25,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.6.0 [[#1566](https://github.com/opencloud-eu/web/pull/1566)]
+- chore(deps): update pnpm to v10.21.0 [[#1568](https://github.com/opencloud-eu/web/pull/1568)]
 - chore(deps): update dependency password-sheriff to v1.3.0 [[#1560](https://github.com/opencloud-eu/web/pull/1560)]
 - fix(deps): update vue monorepo to v3.5.24 [[#1558](https://github.com/opencloud-eu/web/pull/1558)]
 - chore(deps): update dependency vite to v7.2.2 [[#1555](https://github.com/opencloud-eu/web/pull/1555)]
