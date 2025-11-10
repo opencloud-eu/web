@@ -47,6 +47,7 @@ import Avatar from './components/Avatar.vue'
 import { extensionPoints } from './extensionPoints'
 import { isSilentRedirectRoute } from './helpers/silentRedirect'
 import { extensions } from './extensions'
+import { UnifiedRoleDefinition } from '@opencloud-eu/web-client/graph/generated'
 
 export const bootstrapApp = async (configurationPath: string, appsReadyCallback: () => void) => {
   const isSilentRedirect = isSilentRedirectRoute()
@@ -205,22 +206,26 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       }
 
       const clientService = app.config.globalProperties.$clientService
+
+      const [graphRoleDefinitions] = await Promise.all([
+        clientService.graphAuthenticated.permissions.listRoleDefinitions(),
+        spacesStore.loadSpaces({ graphClient: clientService.graphAuthenticated }),
+        announceConfiguration({
+          path: configurationPath,
+          configStore,
+          token: authStore.accessToken
+        }),
+        announceGroupware({
+          clientService,
+          configStore,
+          capabilityStore,
+          groupwareConfigStore
+        })
+      ])
+
       const previewService = app.config.globalProperties.$previewService
       const passwordPolicyService = app.config.globalProperties.passwordPolicyService
       passwordPolicyService.initialize(capabilityStore)
-
-      await announceConfiguration({
-        path: configurationPath,
-        configStore,
-        token: authStore.accessToken
-      })
-
-      await announceGroupware({
-        clientService,
-        configStore,
-        capabilityStore,
-        groupwareConfigStore
-      })
 
       // Register SSE event listeners
       if (capabilityStore.supportSSE) {
@@ -238,15 +243,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         })
       }
 
-      // load sharing roles from graph API
-      const graphRoleDefinitions =
-        await clientService.graphAuthenticated.permissions.listRoleDefinitions()
-      sharesStore.setGraphRoles(graphRoleDefinitions)
-
-      // Load spaces to make them available across the application
-      await spacesStore.loadSpaces({ graphClient: clientService.graphAuthenticated })
+      sharesStore.setGraphRoles(graphRoleDefinitions as UnifiedRoleDefinition[])
       const personalSpace = spacesStore.spaces.find(isPersonalSpaceResource)
-
       if (personalSpace) {
         spacesStore.updateSpaceField({
           id: personalSpace.id,
@@ -254,6 +252,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
           value: app.config.globalProperties.$gettext('Personal')
         })
       }
+      spacesStore.setSpacesInitialized(true)
     },
     {
       immediate: true
