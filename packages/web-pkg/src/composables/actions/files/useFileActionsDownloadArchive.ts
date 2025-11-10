@@ -13,13 +13,14 @@ import { FileAction, FileActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
 import { useArchiverService } from '../../archiverService'
 import { formatFileSize } from '../../../helpers/filesize'
-import { useMessages } from '../../piniaStores'
+import { useAuthStore, useMessages } from '../../piniaStores'
 
 export const useFileActionsDownloadArchive = () => {
   const { showErrorMessage } = useMessages()
   const router = useRouter()
   const archiverService = useArchiverService()
   const { $ngettext, $gettext, current } = useGettext()
+  const authStore = useAuthStore()
   const isFilesAppActive = useIsFilesAppActive()
 
   const handler = ({ space, resources }: FileActionOptions) => {
@@ -34,7 +35,8 @@ export const useFileActionsDownloadArchive = () => {
         fileIds: resources.map((resource) => resource.fileId),
         ...(space &&
           isPublicSpaceResource(space) && {
-            publicToken: space.id
+            publicToken: space.id,
+            publicLinkPassword: authStore.publicLinkPassword
           })
       })
       .catch((e) => {
