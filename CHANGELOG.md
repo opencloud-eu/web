@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- bug: hide addtional calendar data, if radicale is not set up [[#1573](https://github.com/opencloud-eu/web/pull/1573)]
 - fix: lazy loading indicator in condensed resource table [[#1572](https://github.com/opencloud-eu/web/pull/1572)]
 - fix: endless propfind requests when opening public links authenticated [[#1534](https://github.com/opencloud-eu/web/pull/1534)]
 - fix: archive download on password protected links [[#1523](https://github.com/opencloud-eu/web/pull/1523)]
