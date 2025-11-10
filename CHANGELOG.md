@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: add missing file list update after undo delete in space [[#1561](https://github.com/opencloud-eu/web/pull/1561)]
 - bug: hide addtional calendar data, if radicale is not set up [[#1573](https://github.com/opencloud-eu/web/pull/1573)]
 - fix: lazy loading indicator in condensed resource table [[#1572](https://github.com/opencloud-eu/web/pull/1572)]
 - fix: endless propfind requests when opening public links authenticated [[#1534](https://github.com/opencloud-eu/web/pull/1534)]
