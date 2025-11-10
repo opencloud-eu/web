@@ -1,5 +1,3 @@
-import { ResourcesStore } from '@opencloud-eu/web-pkg'
-import { extractNodeId } from '@opencloud-eu/web-client'
 import { eventSchema, SseEventWrapperOptions } from './types'
 
 export const sseEventWrapper = (options: SseEventWrapperOptions) => {
@@ -12,30 +10,4 @@ export const sseEventWrapper = (options: SseEventWrapperOptions) => {
   } catch (e) {
     console.error(`Unable to process sse event ${topic}`, e)
   }
-}
-export const isItemInCurrentFolder = ({
-  resourcesStore,
-  parentFolderId
-}: {
-  resourcesStore: ResourcesStore
-  parentFolderId: string
-}) => {
-  const currentFolder = resourcesStore.currentFolder
-  if (!currentFolder || !currentFolder.id) {
-    return false
-  }
-
-  if (!extractNodeId(currentFolder.id)) {
-    // if we don't have a nodeId here, we have a space (root) as current folder and can only check against the storageId
-    const spaceNodeId = currentFolder.id.split('$')[1]
-    if (`${currentFolder.id}!${spaceNodeId}` !== parentFolderId) {
-      return false
-    }
-  } else {
-    if (currentFolder.id !== parentFolderId) {
-      return false
-    }
-  }
-
-  return true
 }
