@@ -27,9 +27,9 @@
           <template #quickActions="props">
             <quick-actions class="hidden sm:block" :item="props.resource" />
           </template>
-          <template #contextMenu="{ resource, isOpen }">
+          <template #contextMenu="{ resource }">
             <context-actions
-              v-if="isOpen && isResourceInSelection(resource)"
+              v-if="isResourceInSelection(resource)"
               :action-options="{ space: getMatchingSpace(resource), resources: selectedResources }"
             />
           </template>
