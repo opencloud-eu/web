@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: only render drop content when opened [[#1526](https://github.com/opencloud-eu/web/pull/1526)]
 - [stable-4.2] fix: remove horizontal scrollbar when opening upload menu [[#1563](https://github.com/opencloud-eu/web/pull/1563)]
 - [stable-4.2] fix: space batch actions not loading in spaces table [[#1520](https://github.com/opencloud-eu/web/pull/1520)]
 - [stable-4.2] fix: account perefences page, left sidebar won't be translated on language change (#1554) [[#1556](https://github.com/opencloud-eu/web/pull/1556)]
