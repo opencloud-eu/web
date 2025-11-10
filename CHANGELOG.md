@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: endless propfind requests when opening public links authenticated [[#1534](https://github.com/opencloud-eu/web/pull/1534)]
 - fix: archive download on password protected links [[#1523](https://github.com/opencloud-eu/web/pull/1523)]
 - bug: allow clipboard access to collabora [[#1569](https://github.com/opencloud-eu/web/pull/1569)]
 - fix: translation string typos [[#1564](https://github.com/opencloud-eu/web/pull/1564)]
