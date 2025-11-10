@@ -26,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v25.04.7.1.1 [[#1516](https://github.com/opencloud-eu/web/pull/1516)]
 - chore(deps): update devdependencies (non-major) to v4.0.8 [[#1557](https://github.com/opencloud-eu/web/pull/1557)]
 - chore(deps): update traefik docker tag to v3.6.0 [[#1566](https://github.com/opencloud-eu/web/pull/1566)]
 - chore(deps): update pnpm to v10.21.0 [[#1568](https://github.com/opencloud-eu/web/pull/1568)]
