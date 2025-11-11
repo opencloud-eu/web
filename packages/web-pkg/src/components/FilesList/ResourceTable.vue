@@ -1457,7 +1457,7 @@ export default defineComponent({
     max-width: calc(100% - 4 * var(--spacing));
   }
   .oc-table.condensed > tbody > tr {
-    @apply h-0;
+    @apply h-8;
   }
 }
 </style>
