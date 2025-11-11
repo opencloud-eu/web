@@ -24,64 +24,66 @@
           <span v-text="$gettext('here')" />
         </oc-button>
       </span>
-      <p
-        class="text-sm mt-0 mb-4"
-        v-text="
-          $gettext(
-            'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
-          )
-        "
-      />
-      <account-table
-        :fields="[
-          $gettext('CalDAV information name'),
-          $gettext('CalCAV information value'),
-          $gettext('CalCAV information actions')
-        ]"
-      >
-        <oc-table-tr>
-          <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
-          <oc-table-td>
-            <span class="truncate">{{ configStore.serverUrl }}</span>
-          </oc-table-td>
-          <oc-table-td>
-            <oc-button
-              appearance="raw"
-              data-testid="copy-caldav-url"
-              size="small"
-              no-hover
-              @click="copyCalDavUrlToClipboard"
-            >
-              <oc-icon :name="copyCalDavUrlIcon" size="small" />
-              <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
-            </oc-button>
-          </oc-table-td>
-        </oc-table-tr>
-        <oc-table-tr>
-          <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
-          <oc-table-td>
-            <span>{{ user.onPremisesSamAccountName }}</span>
-          </oc-table-td>
-          <oc-table-td>
-            <oc-button
-              appearance="raw"
-              data-testid="copy-caldav-username"
-              size="small"
-              no-hover
-              @click="copyCalDavUsernameToClipboard"
-            >
-              <oc-icon :name="copyCalDavUsernameIcon" size="small" />
-              <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
-            </oc-button>
-          </oc-table-td>
-        </oc-table-tr>
-        <oc-table-tr>
-          <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
-          <oc-table-td colspan="2">
-            {{ $gettext('An app token needs to be generated and then can be used.') }}
-          </oc-table-td>
-        </oc-table-tr>
-      </account-table>
+      <template v-else>
+        <p
+          class="text-sm mt-0 mb-4"
+          v-text="
+            $gettext(
+              'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
+            )
+          "
+        />
+        <account-table
+          :fields="[
+            $gettext('CalDAV information name'),
+            $gettext('CalCAV information value'),
+            $gettext('CalCAV information actions')
+          ]"
+        >
+          <oc-table-tr>
+            <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
+            <oc-table-td>
+              <span class="truncate">{{ configStore.serverUrl }}</span>
+            </oc-table-td>
+            <oc-table-td>
+              <oc-button
+                appearance="raw"
+                data-testid="copy-caldav-url"
+                size="small"
+                no-hover
+                @click="copyCalDavUrlToClipboard"
+              >
+                <oc-icon :name="copyCalDavUrlIcon" size="small" />
+                <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
+              </oc-button>
+            </oc-table-td>
+          </oc-table-tr>
+          <oc-table-tr>
+            <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
+            <oc-table-td>
+              <span>{{ user.onPremisesSamAccountName }}</span>
+            </oc-table-td>
+            <oc-table-td>
+              <oc-button
+                appearance="raw"
+                data-testid="copy-caldav-username"
+                size="small"
+                no-hover
+                @click="copyCalDavUsernameToClipboard"
+              >
+                <oc-icon :name="copyCalDavUsernameIcon" size="small" />
+                <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
+              </oc-button>
+            </oc-table-td>
+          </oc-table-tr>
+          <oc-table-tr>
+            <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
+            <oc-table-td colspan="2">
+              {{ $gettext('An app token needs to be generated and then can be used.') }}
+            </oc-table-td>
+          </oc-table-tr>
+        </account-table>
+      </template>
     </template>
   </div>
 </template>
