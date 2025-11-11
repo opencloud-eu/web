@@ -86,6 +86,7 @@ export const useFileActionsDeleteResources = () => {
     const undoAction = unref(undoActions)[0]
     const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
 
+    let keyActionId: string | undefined
     const message = showMessage({
       title,
       timeout: messageTimeout,
@@ -95,12 +96,15 @@ export const useFileActionsDeleteResources = () => {
         resources: deletedFiles,
         callback: () => {
           removeMessage(message)
+          if (keyActionId) {
+            removeKeyAction(keyActionId)
+          }
         }
       }
     })
 
     if (undoAvailable) {
-      const keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
+      keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
         removeKeyAction(keyActionId)
         return undoAction.handler({
           space,
