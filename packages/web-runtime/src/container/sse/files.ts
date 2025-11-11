@@ -1,6 +1,9 @@
-import { createFileRouteOptions, ImageDimension } from '@opencloud-eu/web-pkg'
+import {
+  createFileRouteOptions,
+  ImageDimension,
+  isItemInCurrentFolder
+} from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
-import { isItemInCurrentFolder } from './helpers'
 
 export const onSSEItemRenamedEvent = async ({
   sseData,
