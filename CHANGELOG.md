@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-10
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] bug: hide addtional calendar data, if radicale is not set up [[#1577](https://github.com/opencloud-eu/web/pull/1577)]
 - [stable-4.2] fix: archive download on password protected links [[#1575](https://github.com/opencloud-eu/web/pull/1575)]
 - [stable-4.2] bug: allow clipboard access to collabora (#1569) [[#1571](https://github.com/opencloud-eu/web/pull/1571)]
 - [stable-4.2] fix: only render drop content when opened [[#1526](https://github.com/opencloud-eu/web/pull/1526)]
