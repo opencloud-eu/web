@@ -32,13 +32,13 @@ describe('CreateLinkModal', () => {
   describe('password input', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.find(selectors.passwordInput).exists()).toBeFalsy()
     })
     it('should be rendered', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       expect(wrapper.find(selectors.passwordInput).exists()).toBeTruthy()
     })
@@ -54,13 +54,13 @@ describe('CreateLinkModal', () => {
   describe('datepicker', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeFalsy()
     })
     it('should be rendered', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeTruthy()
     })
@@ -76,14 +76,14 @@ describe('CreateLinkModal', () => {
   describe('link role drop', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.find(selectors.linkRoleDropDownToggle).exists()).toBeFalsy()
     })
     it('lists all types as roles', async () => {
       const availableLinkTypes = [SharingLinkType.View, SharingLinkType.Edit]
       const { wrapper } = getWrapper({ availableLinkTypes })
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       await wrapper.find(selectors.linkRoleDropDownToggle).trigger('click')
 
@@ -126,7 +126,7 @@ describe('CreateLinkModal', () => {
     describe('confirm button', () => {
       it('is disabled when password policy is not fulfilled', async () => {
         const { wrapper } = getWrapper({ passwordPolicyFulfilled: false })
-        wrapper.vm.isAdvancedMode = true
+        ;(wrapper.vm as any).isAdvancedMode = true
         await nextTick()
         expect(wrapper.find(selectors.confirmBtn).attributes('disabled')).toBeTruthy()
       })
