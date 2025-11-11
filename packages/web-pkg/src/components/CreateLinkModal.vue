@@ -125,7 +125,9 @@ import {
   Modal,
   useSharesStore,
   useClientService,
-  useThemeStore
+  useThemeStore,
+  useModals,
+  useCopyLink
 } from '../composables'
 import { LinkShare, SpaceResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
@@ -136,29 +138,21 @@ import { storeToRefs } from 'pinia'
 
 type RoleRef = ComponentPublicInstance<typeof OcButton>
 
-interface CallbackArgs {
-  result: PromiseSettledResult<LinkShare>[]
-  password: string
-  options?: { copyPassword?: boolean }
-}
-
 export default defineComponent({
   name: 'CreateLinkModal',
   components: { LinkRoleDropdown },
   props: {
     modal: { type: Object as PropType<Modal>, required: true },
     resources: { type: Array as PropType<Resource[]>, required: true },
-    space: { type: Object as PropType<SpaceResource>, default: undefined },
-    callbackFn: {
-      type: Function as PropType<(args: CallbackArgs) => Promise<void> | void>,
-      default: undefined
-    }
+    space: { type: Object as PropType<SpaceResource>, default: undefined }
   },
   emits: ['cancel', 'confirm'],
   setup(props, { expose }) {
     const clientService = useClientService()
     const language = useGettext()
     const { $gettext } = language
+    const { removeModal } = useModals()
+    const { copyLink } = useCopyLink()
     const passwordPolicyService = usePasswordPolicyService()
     const { isEnabled: isEmbedEnabled, postMessage } = useEmbedMode()
     const {
@@ -252,7 +246,7 @@ export default defineComponent({
       return true
     })
 
-    const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
+    const createLinkHandler = async () => {
       const result = await createLinks()
 
       const succeeded = result.filter(({ status }) => status === 'fulfilled')
@@ -284,9 +278,15 @@ export default defineComponent({
         return Promise.reject()
       }
 
-      if (props.callbackFn) {
-        props.callbackFn({ result, password: password.value, options })
-      }
+      return result
+    }
+
+    const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
+      await copyLink({
+        createLinkHandler,
+        password: options.copyPassword ? unref(password).value : undefined
+      })
+      removeModal(props.modal.id)
     }
 
     expose({ onConfirm })
