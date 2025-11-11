@@ -149,6 +149,7 @@ const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[tex
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
+const undoBtn = 'action-handler'
 
 export const clickResource = async ({
   page,
@@ -742,7 +743,7 @@ export const cancelResourceUpload = async (page: Page): Promise<void> => {
 
 /**/
 
-interface resourceArgs {
+export interface resourceArgs {
   name: string
   type?: string
 }
@@ -2305,4 +2306,38 @@ export const openResourcePanel = async ({
 }): Promise<void> => {
   await sidebar.open({ page, resource })
   await sidebar.openPanel({ page, name: panel })
+}
+
+export const deleteAndUndo = async ({
+  page,
+  method,
+  resourcesWithInfo,
+  via,
+  folder
+}: {
+  page: Page
+  method: 'keyboard' | 'undo button'
+  resourcesWithInfo: resourceArgs[]
+  via: ActionViaType
+  folder?: string
+}): Promise<void> => {
+  await deleteResource({
+    page,
+    resourcesWithInfo,
+    via,
+    folder
+  })
+
+  const undoButton = page.getByTestId(undoBtn)
+  await expect(undoButton.first()).toBeVisible()
+
+  const responsePromise = page.waitForResponse(
+    (resp) => resp.request().method() === 'MOVE' && resp.status() === 201
+  )
+  if (method === 'keyboard') {
+    await page.keyboard.press('ControlOrMeta+z')
+  } else {
+    await undoButton.first().click()
+  }
+  await responsePromise
 }
