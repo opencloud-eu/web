@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: prevent undo delete multiple times for same file [[#1587](https://github.com/opencloud-eu/web/pull/1587)]
 - fix: initial default favicon [[#1584](https://github.com/opencloud-eu/web/pull/1584)]
 - fix: add missing file list update after undo delete in space [[#1561](https://github.com/opencloud-eu/web/pull/1561)]
 - bug: hide addtional calendar data, if radicale is not set up [[#1573](https://github.com/opencloud-eu/web/pull/1573)]
