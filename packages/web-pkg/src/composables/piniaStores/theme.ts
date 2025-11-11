@@ -64,6 +64,16 @@ export type ThemeConfigType = z.infer<typeof ThemeConfig>
 
 const themeStorageKey = 'oc_currentThemeName'
 
+const setFavicon = (url: string) => {
+  let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'icon'
+    document.head.appendChild(link)
+  }
+  link.href = url
+}
+
 export const useThemeStore = defineStore('theme', () => {
   const currentLocalStorageThemeName = useLocalStorage(themeStorageKey, null)
 
@@ -129,6 +139,10 @@ export const useThemeStore = defineStore('theme', () => {
       // fallback to surfaceContainer if chrome is not defined since it may not be set
       applyCustomProp('role-chrome', unref(currentTheme).designTokens?.roles?.surfaceContainer)
       applyCustomProp('role-on-chrome', unref(currentTheme).designTokens?.roles?.onSurface)
+    }
+
+    if (unref(currentTheme).favicon) {
+      setFavicon(unref(currentTheme).favicon)
     }
   }
 
