@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: add missing file list update after undo delete in space [[#1582](https://github.com/opencloud-eu/web/pull/1582)]
 - [stable-4.2] fix: lazy loading indicator in condensed resource table [[#1583](https://github.com/opencloud-eu/web/pull/1583)]
 - [stable-4.2] bug: hide addtional calendar data, if radicale is not set up [[#1577](https://github.com/opencloud-eu/web/pull/1577)]
 - [stable-4.2] fix: archive download on password protected links [[#1575](https://github.com/opencloud-eu/web/pull/1575)]
