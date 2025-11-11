@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
 
+### ✅ Tests
+
+- e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
+- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
+- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent undo delete multiple times for same file [[#1587](https://github.com/opencloud-eu/web/pull/1587)]
@@ -26,11 +32,6 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
-
-### ✅ Tests
-
-- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
-- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
 
 ### 📦️ Dependencies
 
