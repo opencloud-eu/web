@@ -3,9 +3,9 @@ import { useFileActionsCopyPermanentLink } from '../../../../../src/composables/
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
-import { useClipboard } from '../../../../../src/composables/clipboard'
+import { useClipboard } from '@vueuse/core'
 
-vi.mock('../../../../../src/composables/clipboard', () => ({
+vi.mock('@vueuse/core', () => ({
   useClipboard: vi.fn()
 }))
 
@@ -75,7 +75,9 @@ function getWrapper({
   ) => void
 }) {
   const copyToClipboardMock = vi.fn()
-  vi.mocked(useClipboard).mockReturnValue({ copyToClipboard: copyToClipboardMock })
+  vi.mocked(useClipboard).mockReturnValue(
+    mock<ReturnType<typeof useClipboard>>({ copy: copyToClipboardMock })
+  )
   const mocks = { ...defaultComponentMocks(), copyToClipboardMock }
 
   return {
