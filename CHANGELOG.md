@@ -6,13 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
 
-### ✅ Tests
-
-- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
-- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
-
 ### 🐛 Bug Fixes
 
+- fix: initial default favicon [[#1584](https://github.com/opencloud-eu/web/pull/1584)]
 - fix: add missing file list update after undo delete in space [[#1561](https://github.com/opencloud-eu/web/pull/1561)]
 - bug: hide addtional calendar data, if radicale is not set up [[#1573](https://github.com/opencloud-eu/web/pull/1573)]
 - fix: lazy loading indicator in condensed resource table [[#1572](https://github.com/opencloud-eu/web/pull/1572)]
@@ -29,6 +25,11 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
+### ✅ Tests
+
+- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
+- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
 
 ### 📦️ Dependencies
 
