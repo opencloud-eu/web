@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative z-[calc(var(--z-index-modal)+2)] w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
+    class="relative w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
   >
     <oc-text-input
       v-if="chooseFileName"
