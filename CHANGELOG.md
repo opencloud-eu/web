@@ -35,6 +35,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency jsdom to v27.2.0 [[#1601](https://github.com/opencloud-eu/web/pull/1601)]
 - chore(deps): update node.js to v24.11.1 [[#1600](https://github.com/opencloud-eu/web/pull/1600)]
 - fix(deps): update dependency @sentry/vue to v10.25.0 [[#1599](https://github.com/opencloud-eu/web/pull/1599)]
 - fix(deps): update dependency @sentry/vue to v10.24.0 [[#1574](https://github.com/opencloud-eu/web/pull/1574)]
