@@ -1,7 +1,7 @@
 {
   "name": "@opencloud-eu/tsconfig",
   "private": false,
-  "version": "4.2.0",
+  "version": "4.3.0-rc.1",
   "license": "AGPL-3.0",
   "author": "OpenCloud GmbH <info@opencloud.eu>",
   "homepage": "https://github.com/opencloud-eu/web/tree/main/packages/tsconfig",
