@@ -47,7 +47,7 @@ describe('FileSideBar', () => {
     it('should show when one resource selected', async () => {
       const item = mock<Resource>({ path: '/someFolder' })
       const { wrapper } = createWrapper({ item })
-      wrapper.vm.loadedResource = item
+      ;(wrapper.vm as any).loadedResource = item
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.fileInfoStub).exists()).toBeTruthy()
     })
@@ -58,7 +58,7 @@ describe('FileSideBar', () => {
     it('should not show when selected resource is a project space', async () => {
       const item = mock<SpaceResource>({ path: '/someFolder', driveType: 'project' })
       const { wrapper } = createWrapper({ item })
-      wrapper.vm.loadedResource = item
+      ;(wrapper.vm as any).loadedResource = item
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.fileInfoStub).exists()).toBeFalsy()
     })
@@ -67,7 +67,7 @@ describe('FileSideBar', () => {
     it('should show when one project space resource selected', async () => {
       const item = mock<SpaceResource>({ path: '/someFolder', driveType: 'project' })
       const { wrapper } = createWrapper({ item })
-      wrapper.vm.loadedResource = item
+      ;(wrapper.vm as any).loadedResource = item
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.spaceInfoStub).exists()).toBeTruthy()
     })
@@ -78,7 +78,7 @@ describe('FileSideBar', () => {
     it('should not show when selected resource is not a project space', async () => {
       const item = mock<Resource>({ path: '/someFolder' })
       const { wrapper } = createWrapper({ item })
-      wrapper.vm.loadedResource = item
+      ;(wrapper.vm as any).loadedResource = item
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.spaceInfoStub).exists()).toBeFalsy()
     })
@@ -95,7 +95,7 @@ describe('FileSideBar', () => {
       })
 
       const { setLoading } = useSharesStore()
-      await wrapper.vm.loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform(resource)
 
       expect(setLoading).toHaveBeenCalledTimes(2)
     })
@@ -112,7 +112,7 @@ describe('FileSideBar', () => {
       })
 
       const { setCollaboratorShares, setLinkShares } = useSharesStore()
-      await wrapper.vm.loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform(resource)
 
       expect(setCollaboratorShares).toHaveBeenCalledWith([expect.anything()])
       expect(setLinkShares).toHaveBeenCalledWith([expect.anything()])
@@ -137,7 +137,7 @@ describe('FileSideBar', () => {
       const resourcesStore = useResourcesStore()
       resourcesStore.ancestorMetaData = { '/foo': mock<AncestorMetaDataValue>({ id: '1' }) }
 
-      await wrapper.vm.loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform(resource)
 
       expect(
         mocks.$clientService.graphAuthenticated.permissions.listPermissions
@@ -155,7 +155,7 @@ describe('FileSideBar', () => {
 
       const { isAppEnabled } = useAppsStore()
       vi.mocked(isAppEnabled).mockReturnValue(true)
-      await wrapper.vm.loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform(resource)
 
       expect(
         mocks.$clientService.graphAuthenticated.permissions.listPermissions
@@ -173,7 +173,7 @@ describe('FileSideBar', () => {
         allowedRoles: []
       })
 
-      await wrapper.vm.loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform(resource)
       expect(loadAncestorMetaData).toHaveBeenCalled()
     })
 
@@ -191,7 +191,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await wrapper.vm.loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform(resource)
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([expect.anything()])
       })
@@ -208,7 +208,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await wrapper.vm.loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform(resource)
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
       })
@@ -225,7 +225,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await wrapper.vm.loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform(resource)
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
       })
