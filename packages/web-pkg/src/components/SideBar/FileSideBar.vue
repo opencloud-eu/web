@@ -338,6 +338,7 @@ export default defineComponent({
         }
 
         if (!props.isOpen) {
+          currentResourceMtime.value = undefined
           versions.value = []
           return
         }
