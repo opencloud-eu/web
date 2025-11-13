@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-13
+## [4.3.0](https://github.com/opencloud-eu/web/releases/tag/v4.3.0) - 2025-11-13
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -33,8 +33,13 @@
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
 
+### 📈 Enhancement
+
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
+
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.22.0 [[#1607](https://github.com/opencloud-eu/web/pull/1607)]
 - chore(deps): update dependency jsdom to v27.2.0 [[#1601](https://github.com/opencloud-eu/web/pull/1601)]
 - chore(deps): update node.js to v24.11.1 [[#1600](https://github.com/opencloud-eu/web/pull/1600)]
 - fix(deps): update dependency @sentry/vue to v10.25.0 [[#1599](https://github.com/opencloud-eu/web/pull/1599)]
