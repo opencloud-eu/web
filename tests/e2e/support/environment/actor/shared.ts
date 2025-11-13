@@ -25,7 +25,9 @@ export const buildBrowserContextOptions = (options: ActorOptions): BrowserContex
     const basePermissions: string[] = []
 
     // Clipboard permissions supports only in Chromium-based browsers
-    if (browserName === 'chromium' || browserName === 'chrome' || browserName === 'msedge') {
+    if (browserName === 'webkit') {
+      return [...basePermissions, 'clipboard-read']
+    } else if (['chromium', 'chrome', 'msedge'].includes(browserName)) {
       return [...basePermissions, 'clipboard-read', 'clipboard-write']
     }
     return basePermissions

@@ -3,7 +3,6 @@ import util from 'util'
 import { sidebar } from '../utils'
 import { getActualExpiryDate } from '../../../utils/datePicker'
 import { clickResource } from '../resource/actions'
-import { config } from '../../../../config'
 import { checkA11yOrLocalization } from '../../../utils/accessibility'
 
 export interface createLinkArgs {
@@ -162,14 +161,9 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
   ])
   await clearCurrentPopup(page)
 
-  // workaround for webkit (safari browser). See bug #1169
-  if (config.browser === 'webkit') {
-    return (await resp[0].json()).link.webUrl
-  } else {
-    const name =
-      process.env.RUN_LOCALIZATION_TEST_FOR_LANG === 'de' ? 'Unbenannter Link' : 'Unnamed link'
-    return await getRecentLinkUrl(page, name)
-  }
+  const name =
+    process.env.RUN_LOCALIZATION_TEST_FOR_LANG === 'de' ? 'Unbenannter Link' : 'Unnamed link'
+  return await getRecentLinkUrl(page, name)
 }
 
 export const changeRole = async (args: changeRoleArgs): Promise<string> => {
