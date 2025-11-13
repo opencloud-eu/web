@@ -4,16 +4,9 @@ import { FileAction, FileActionOptions } from '../../actions'
 import CreateLinkModal from '../../../components/CreateLinkModal.vue'
 import { useAbility } from '../../ability'
 import { LinkShare, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { useLinkTypes } from '../../links'
+import { useCopyLink, useLinkTypes } from '../../links'
 import { useLoadingService } from '../../loadingService'
-import {
-  useMessages,
-  useModals,
-  useUserStore,
-  useCapabilityStore,
-  useSharesStore
-} from '../../piniaStores'
-import { useClipboard } from '../../clipboard'
+import { useModals, useUserStore, useCapabilityStore, useSharesStore } from '../../piniaStores'
 import { useClientService } from '../../clientService'
 
 export const useFileActionsCreateLink = ({
@@ -23,7 +16,6 @@ export const useFileActionsCreateLink = ({
 } = {}) => {
   const clientService = useClientService()
   const userStore = useUserStore()
-  const { showMessage, showErrorMessage } = useMessages()
   const { $gettext, $ngettext } = useGettext()
   const capabilityStore = useCapabilityStore()
   const ability = useAbility()
@@ -31,60 +23,9 @@ export const useFileActionsCreateLink = ({
   const { defaultLinkType } = useLinkTypes()
   const { addLink } = useSharesStore()
   const { dispatchModal } = useModals()
-  const { copyToClipboard } = useClipboard()
+  const { copyLink } = useCopyLink()
 
-  const proceedResult = async ({
-    result,
-    password,
-    options = {}
-  }: {
-    result: PromiseSettledResult<LinkShare>[]
-    password?: string
-    options?: { copyPassword?: boolean }
-  }) => {
-    const succeeded = result.filter(
-      (val): val is PromiseFulfilledResult<LinkShare> => val.status === 'fulfilled'
-    )
-
-    if (succeeded.length) {
-      let successMessage = $gettext('Link has been created successfully')
-
-      if (result.length === 1) {
-        // Only copy to clipboard if the user tries to create one single link
-        try {
-          const copyToClipboardText = options.copyPassword
-            ? $gettext(
-                '%{link} Password:%{password}',
-                {
-                  link: succeeded[0].value.webUrl,
-                  password
-                },
-                true
-              )
-            : succeeded[0].value.webUrl
-
-          await copyToClipboard(copyToClipboardText)
-          successMessage = $gettext('The link has been copied to your clipboard.')
-        } catch (e) {
-          console.warn('Unable to copy link to clipboard', e)
-        }
-      }
-
-      showMessage({
-        title: $ngettext(successMessage, 'Links have been created successfully.', succeeded.length)
-      })
-    }
-
-    const failed = result.filter(({ status }) => status === 'rejected')
-    if (failed.length) {
-      showErrorMessage({
-        errors: (failed as PromiseRejectedResult[]).map(({ reason }) => reason),
-        title: $ngettext('Failed to create link', 'Failed to create links', failed.length)
-      })
-    }
-  }
-
-  const handler = async ({ space, resources }: FileActionOptions) => {
+  const handler = ({ space, resources }: FileActionOptions) => {
     const passwordEnforced = capabilityStore.sharingPublicPasswordEnforcedFor.read_only === true
     if (enforceModal || passwordEnforced) {
       dispatchModal({
@@ -95,11 +36,7 @@ export const useFileActionsCreateLink = ({
           { resourceName: resources[0].name }
         ),
         customComponent: CreateLinkModal,
-        customComponentAttrs: () => ({
-          space,
-          resources,
-          callbackFn: proceedResult
-        }),
+        customComponentAttrs: () => ({ space, resources }),
         hideActions: true
       })
       return
@@ -117,9 +54,9 @@ export const useFileActionsCreateLink = ({
         }
       })
     )
-    const result = await loadingService.addTask(() => Promise.allSettled<LinkShare>(promises))
-
-    proceedResult({ result })
+    const createLinkHandler = () =>
+      loadingService.addTask(() => Promise.allSettled<LinkShare>(promises))
+    copyLink({ createLinkHandler })
   }
 
   const isVisible = ({ resources }: FileActionOptions) => {

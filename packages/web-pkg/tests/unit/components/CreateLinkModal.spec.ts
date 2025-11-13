@@ -1,10 +1,5 @@
 import CreateLinkModal from '../../../src/components/CreateLinkModal.vue'
-import {
-  ComponentProps,
-  defaultComponentMocks,
-  defaultPlugins,
-  mount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { PasswordPolicyService } from '../../../src/services'
 import { usePasswordPolicyService } from '../../../src/composables/passwordPolicyService'
@@ -37,13 +32,13 @@ describe('CreateLinkModal', () => {
   describe('password input', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.find(selectors.passwordInput).exists()).toBeFalsy()
     })
     it('should be rendered', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       expect(wrapper.find(selectors.passwordInput).exists()).toBeTruthy()
     })
@@ -59,13 +54,13 @@ describe('CreateLinkModal', () => {
   describe('datepicker', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeFalsy()
     })
     it('should be rendered', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeTruthy()
     })
@@ -81,14 +76,14 @@ describe('CreateLinkModal', () => {
   describe('link role drop', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.isAdvancedMode = false
+      ;(wrapper.vm as any).isAdvancedMode = false
       await nextTick()
       expect(wrapper.find(selectors.linkRoleDropDownToggle).exists()).toBeFalsy()
     })
     it('lists all types as roles', async () => {
       const availableLinkTypes = [SharingLinkType.View, SharingLinkType.Edit]
       const { wrapper } = getWrapper({ availableLinkTypes })
-      wrapper.vm.isAdvancedMode = true
+      ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       await wrapper.find(selectors.linkRoleDropDownToggle).trigger('click')
 
@@ -97,14 +92,12 @@ describe('CreateLinkModal', () => {
   })
   describe('method "confirm"', () => {
     it('creates links for all resources', async () => {
-      const callbackFn = vi.fn()
       const resources = [mock<Resource>({ isFolder: false }), mock<Resource>({ isFolder: false })]
-      const { wrapper } = getWrapper({ resources, callbackFn })
+      const { wrapper } = getWrapper({ resources })
       await wrapper.vm.onConfirm()
 
       const { addLink } = useSharesStore()
       expect(addLink).toHaveBeenCalledTimes(resources.length)
-      expect(callbackFn).toHaveBeenCalledTimes(1)
     })
     it('emits event in embed mode including the created links', async () => {
       const resources = [mock<Resource>({ isFolder: false })]
@@ -128,19 +121,12 @@ describe('CreateLinkModal', () => {
 
       expect(consoleMock).toHaveBeenCalledTimes(1)
     })
-    it('calls the callback at the end if given', async () => {
-      const resources = [mock<Resource>({ isFolder: false })]
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ resources, callbackFn })
-      await wrapper.vm.onConfirm()
-      expect(callbackFn).toHaveBeenCalledTimes(1)
-    })
   })
   describe('action buttons', () => {
     describe('confirm button', () => {
       it('is disabled when password policy is not fulfilled', async () => {
         const { wrapper } = getWrapper({ passwordPolicyFulfilled: false })
-        wrapper.vm.isAdvancedMode = true
+        ;(wrapper.vm as any).isAdvancedMode = true
         await nextTick()
         expect(wrapper.find(selectors.confirmBtn).attributes('disabled')).toBeTruthy()
       })
@@ -155,7 +141,6 @@ function getWrapper({
   passwordEnforced = false,
   passwordPolicyFulfilled = true,
   embedModeEnabled = false,
-  callbackFn = undefined,
   availableLinkTypes = [SharingLinkType.View]
 }: {
   resources?: Resource[]
@@ -164,7 +149,6 @@ function getWrapper({
   passwordEnforced?: boolean
   passwordPolicyFulfilled?: boolean
   embedModeEnabled?: boolean
-  callbackFn?: ComponentProps<typeof CreateLinkModal>['callbackFn']
   availableLinkTypes?: SharingLinkType[]
 } = {}) {
   vi.mocked(usePasswordPolicyService).mockReturnValue(
@@ -212,7 +196,6 @@ function getWrapper({
     wrapper: mount(CreateLinkModal, {
       props: {
         resources,
-        callbackFn,
         modal: mock<Modal>()
       },
       global: {

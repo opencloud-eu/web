@@ -1,7 +1,6 @@
 import { ref, unref } from 'vue'
 import { useFileActionsCreateLink } from '../../../../../src/composables/actions/files/useFileActionsCreateLink'
 import {
-  useMessages,
   useModals,
   CapabilityStore,
   useSharesStore
@@ -65,8 +64,6 @@ describe('useFileActionsCreateLink', () => {
             space: undefined
           })
           expect(addLink).toHaveBeenCalledTimes(1)
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
         }
       })
     })

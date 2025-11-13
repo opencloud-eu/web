@@ -1,5 +1,8 @@
 import { useClipboard as _useClipboard } from '@vueuse/core'
 
+/**
+ * @deprecated use useClipboard from vueuse or useCopyLink for links instead
+ */
 export const useClipboard = () => {
   // doCopy creates the requested link and copies the url to the clipboard,
   // the copy action uses the clipboard // clipboardItem api to work around the webkit limitations.
