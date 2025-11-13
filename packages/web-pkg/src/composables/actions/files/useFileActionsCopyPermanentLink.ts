@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { FileAction } from '../types'
-import { useClipboard } from '../../clipboard'
+import { useClipboard } from '@vueuse/core'
 import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
 import { useInterceptModifierClick } from '../../keyboardActions'
@@ -10,12 +10,12 @@ import { FileActionOptionsWithEvent } from './useFileActions'
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
-  const { copyToClipboard } = useClipboard()
+  const { copy } = useClipboard()
   const { interceptModifierClick } = useInterceptModifierClick()
 
   const copyLinkToClipboard = async (url: string) => {
     try {
-      await copyToClipboard(url)
+      await copy(url)
       showMessage({ title: $gettext('The link has been copied to your clipboard.') })
     } catch (e) {
       showErrorMessage({
