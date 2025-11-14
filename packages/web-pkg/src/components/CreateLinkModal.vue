@@ -270,7 +270,7 @@ const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
     const result = await createLinkHandler()
     const succeeded = result.filter(({ status }) => status === 'fulfilled')
     if (succeeded.length) {
-      // **DEPRECATED**: Always emit the share url for backwards compatibility
+      /** @deprecated Always emit the share url for backwards compatibility */
       postMessage<string[]>(
         'opencloud-embed:share',
         (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => value.webUrl)
