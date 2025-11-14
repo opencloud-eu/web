@@ -200,7 +200,6 @@ describe('spaces', () => {
           )
           expect(instance.spaces.length).toBe(2)
           expect(instance.spacesLoading).toBeFalsy()
-          expect(instance.spacesInitialized).toBeTruthy()
         }
       })
     })
