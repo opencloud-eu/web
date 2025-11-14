@@ -4,7 +4,12 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @tammi-23
+
+### 📈 Enhancement
+
+- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### 🐛 Bug Fixes
 
@@ -33,10 +38,6 @@
 - e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
 - e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
 - check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
-
-### 📈 Enhancement
-
-- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### 📦️ Dependencies
 
