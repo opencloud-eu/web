@@ -1,10 +1,5 @@
 import CreateLinkModal from '../../../src/components/CreateLinkModal.vue'
-import {
-  ComponentProps,
-  defaultComponentMocks,
-  defaultPlugins,
-  mount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { PasswordPolicyService } from '../../../src/services'
 import { usePasswordPolicyService } from '../../../src/composables/passwordPolicyService'
@@ -97,14 +92,12 @@ describe('CreateLinkModal', () => {
   })
   describe('method "confirm"', () => {
     it('creates links for all resources', async () => {
-      const callbackFn = vi.fn()
       const resources = [mock<Resource>({ isFolder: false }), mock<Resource>({ isFolder: false })]
-      const { wrapper } = getWrapper({ resources, callbackFn })
+      const { wrapper } = getWrapper({ resources })
       await wrapper.vm.onConfirm()
 
       const { addLink } = useSharesStore()
       expect(addLink).toHaveBeenCalledTimes(resources.length)
-      expect(callbackFn).toHaveBeenCalledTimes(1)
     })
     it('emits event in embed mode including the created links', async () => {
       const resources = [mock<Resource>({ isFolder: false })]
@@ -128,13 +121,6 @@ describe('CreateLinkModal', () => {
 
       expect(consoleMock).toHaveBeenCalledTimes(1)
     })
-    it('calls the callback at the end if given', async () => {
-      const resources = [mock<Resource>({ isFolder: false })]
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ resources, callbackFn })
-      await wrapper.vm.onConfirm()
-      expect(callbackFn).toHaveBeenCalledTimes(1)
-    })
   })
   describe('action buttons', () => {
     describe('confirm button', () => {
@@ -155,7 +141,6 @@ function getWrapper({
   passwordEnforced = false,
   passwordPolicyFulfilled = true,
   embedModeEnabled = false,
-  callbackFn = undefined,
   availableLinkTypes = [SharingLinkType.View]
 }: {
   resources?: Resource[]
@@ -164,7 +149,6 @@ function getWrapper({
   passwordEnforced?: boolean
   passwordPolicyFulfilled?: boolean
   embedModeEnabled?: boolean
-  callbackFn?: ComponentProps<typeof CreateLinkModal>['callbackFn']
   availableLinkTypes?: SharingLinkType[]
 } = {}) {
   vi.mocked(usePasswordPolicyService).mockReturnValue(
@@ -212,7 +196,6 @@ function getWrapper({
     wrapper: mount(CreateLinkModal, {
       props: {
         resources,
-        callbackFn,
         modal: mock<Modal>()
       },
       global: {
