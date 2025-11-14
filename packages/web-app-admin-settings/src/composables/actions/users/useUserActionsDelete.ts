@@ -4,7 +4,9 @@ import {
   useCapabilityStore,
   useMessages,
   useModals,
-  useRouteQuery
+  useRouteQuery,
+  isPromiseFulfilled,
+  isPromiseRejected
 } from '@opencloud-eu/web-pkg'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import { UserAction, UserActionOptions } from '@opencloud-eu/web-pkg'
@@ -35,7 +37,7 @@ export const useUserActionsDelete = () => {
     const promises = users.map((user) => graphClient.users.deleteUser(user.id))
     const results = await Promise.allSettled(promises)
 
-    const succeeded = results.filter((r) => r.status === 'fulfilled')
+    const succeeded = results.filter(isPromiseFulfilled)
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && users.length === 1
@@ -50,7 +52,7 @@ export const useUserActionsDelete = () => {
       showMessage({ title })
     }
 
-    const failed = results.filter((r) => r.status === 'rejected')
+    const failed = results.filter(isPromiseRejected)
     if (failed.length) {
       failed.forEach(console.error)
 
@@ -66,7 +68,7 @@ export const useUserActionsDelete = () => {
             )
       showErrorMessage({
         title,
-        errors: (failed as PromiseRejectedResult[]).map((f) => f.reason)
+        errors: failed.map((f) => f.reason)
       })
     }
 
