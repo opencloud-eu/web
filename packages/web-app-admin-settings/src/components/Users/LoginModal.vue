@@ -19,7 +19,14 @@
 import { computed, defineComponent, onMounted, PropType, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useClientService, useUserStore, Modal, useMessages } from '@opencloud-eu/web-pkg'
+import {
+  useClientService,
+  useUserStore,
+  Modal,
+  useMessages,
+  isPromiseFulfilled,
+  isPromiseRejected
+} from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
 
 type LoginOption = {
@@ -82,13 +89,7 @@ export default defineComponent({
       )
       const results = await Promise.allSettled(promises)
 
-      function isFulfilled<T>(
-        result: PromiseSettledResult<T>
-      ): result is PromiseFulfilledResult<T> {
-        return result.status === 'fulfilled'
-      }
-
-      const succeeded = results.filter(isFulfilled)
+      const succeeded = results.filter(isPromiseFulfilled)
       if (succeeded.length) {
         const title =
           succeeded.length === 1 && affectedUsers.length === 1
@@ -105,11 +106,7 @@ export default defineComponent({
         showMessage({ title })
       }
 
-      function isRejected<T>(result: PromiseSettledResult<T>): result is PromiseRejectedResult {
-        return result.status === 'rejected'
-      }
-
-      const failed = results.filter(isRejected)
+      const failed = results.filter(isPromiseRejected)
       if (failed.length) {
         failed.forEach(console.error)
 
