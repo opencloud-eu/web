@@ -278,7 +278,7 @@ const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
 
       // Always emit new event with objects, include password only when copyPassword is enabled
       postMessage<Array<{ url: string; password?: string }>>(
-        'owncloud-embed:share-links',
+        'opencloud-embed:share-links',
         (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => ({
           url: value.webUrl,
           ...(options.copyPassword && { password: unref(password).value })
