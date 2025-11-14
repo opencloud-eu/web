@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative z-[calc(var(--z-index-modal)+2)] w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
+    class="relative w-full flex flex-wrap items-center justify-between my-2 text-role-on-chrome gap-2"
   >
     <oc-text-input
       v-if="chooseFileName"
@@ -55,13 +55,12 @@
   </section>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, unref } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref } from 'vue'
 import {
   embedModeLocationPickMessageData,
   FileAction,
   routeToContextQuery,
-  useAbility,
   useEmbedMode,
   useFileActionsCreateLink,
   useResourcesStore,
@@ -72,97 +71,62 @@ import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  setup() {
-    const ability = useAbility()
-    const { $gettext } = useGettext()
-    const {
-      isLocationPicker,
-      isFilePicker,
-      postMessage,
-      chooseFileName,
-      chooseFileNameSuggestion
-    } = useEmbedMode()
-    const spacesStore = useSpacesStore()
-    const router = useRouter()
-    const { currentSpace: space } = storeToRefs(spacesStore)
-    const resourcesStore = useResourcesStore()
-    const { currentFolder, selectedResources } = storeToRefs(resourcesStore)
-    const fileName = ref(unref(chooseFileNameSuggestion))
+const { $gettext } = useGettext()
+const { isLocationPicker, isFilePicker, postMessage, chooseFileName, chooseFileNameSuggestion } =
+  useEmbedMode()
+const spacesStore = useSpacesStore()
+const router = useRouter()
+const { currentSpace: space } = storeToRefs(spacesStore)
+const resourcesStore = useResourcesStore()
+const { currentFolder, selectedResources } = storeToRefs(resourcesStore)
+const fileName = ref(unref(chooseFileNameSuggestion))
 
-    const selectedFiles = computed<Resource[]>(() => {
-      if (isLocationPicker.value) {
-        return [unref(currentFolder)]
-      }
-
-      return unref(selectedResources)
-    })
-
-    const { actions: createLinkActions } = useFileActionsCreateLink({ enforceModal: true })
-    const createLinkAction = computed<FileAction>(() => unref(createLinkActions)[0])
-
-    const isAttachAsCopyButtonDisabled = computed<boolean>(() => selectedFiles.value.length < 1)
-
-    const isShareLinksButtonDisabled = computed<boolean>(
-      () =>
-        selectedFiles.value.length < 1 ||
-        !unref(createLinkAction).isVisible({
-          resources: unref(selectedFiles),
-          space: unref(space)
-        })
-    )
-
-    const isChooseButtonDisabled = computed<boolean>(() => {
-      return (
-        selectedFiles.value.length < 1 ||
-        !unref(currentFolder) ||
-        !unref(currentFolder)?.canCreate()
-      )
-    })
-
-    const canCreatePublicLinks = computed<boolean>(() => ability.can('create-all', 'PublicLink'))
-
-    const fileNameInputSelectionRange = computed(() => {
-      return [0, unref(fileName).split('.')[0].length] as [number, number]
-    })
-
-    const emitSelect = (): void => {
-      if (unref(chooseFileName)) {
-        postMessage<embedModeLocationPickMessageData>('opencloud-embed:select', {
-          resources: JSON.parse(JSON.stringify(selectedFiles.value)),
-          fileName: unref(fileName),
-          locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
-        })
-      }
-
-      // TODO: adjust type to embedModeLocationPickMessageData later (breaking)
-      postMessage<Resource[]>(
-        'opencloud-embed:select',
-        JSON.parse(JSON.stringify(selectedFiles.value))
-      )
-    }
-
-    const emitCancel = (): void => {
-      postMessage<null>('opencloud-embed:cancel', null)
-    }
-
-    return {
-      chooseFileName,
-      chooseFileNameSuggestion,
-      selectedFiles,
-      isAttachAsCopyButtonDisabled,
-      isShareLinksButtonDisabled,
-      isChooseButtonDisabled,
-      canCreatePublicLinks,
-      isLocationPicker,
-      isFilePicker,
-      emitCancel,
-      emitSelect,
-      space,
-      createLinkAction,
-      fileName,
-      fileNameInputSelectionRange
-    }
+const selectedFiles = computed<Resource[]>(() => {
+  if (isLocationPicker.value) {
+    return [unref(currentFolder)]
   }
+
+  return unref(selectedResources)
 })
+
+const { actions: createLinkActions } = useFileActionsCreateLink({ enforceModal: true })
+const createLinkAction = computed<FileAction>(() => unref(createLinkActions)[0])
+
+const isAttachAsCopyButtonDisabled = computed<boolean>(() => selectedFiles.value.length < 1)
+
+const isShareLinksButtonDisabled = computed<boolean>(
+  () =>
+    selectedFiles.value.length < 1 ||
+    !unref(createLinkAction).isVisible({
+      resources: unref(selectedFiles),
+      space: unref(space)
+    })
+)
+
+const isChooseButtonDisabled = computed<boolean>(() => {
+  return (
+    selectedFiles.value.length < 1 || !unref(currentFolder) || !unref(currentFolder)?.canCreate()
+  )
+})
+
+const fileNameInputSelectionRange = computed(() => {
+  return [0, unref(fileName).split('.')[0].length] as [number, number]
+})
+
+const emitSelect = (): void => {
+  if (unref(chooseFileName)) {
+    postMessage<embedModeLocationPickMessageData>('opencloud-embed:select', {
+      resources: JSON.parse(JSON.stringify(selectedFiles.value)),
+      fileName: unref(fileName),
+      locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
+    })
+  }
+
+  // TODO: adjust type to embedModeLocationPickMessageData later (breaking)
+  postMessage<Resource[]>('opencloud-embed:select', JSON.parse(JSON.stringify(selectedFiles.value)))
+}
+
+const emitCancel = (): void => {
+  postMessage<null>('opencloud-embed:cancel', null)
+}
 </script>

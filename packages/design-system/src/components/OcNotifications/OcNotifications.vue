@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-notification z-1040 mb-2 w-md max-w-full"
+    class="oc-notification z-1040 w-md max-w-full"
     :class="{
       fixed: position !== 'default',
       'top-2 left-2': position === 'top-left',

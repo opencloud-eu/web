@@ -1,5 +1,5 @@
 <template>
-  <oc-notifications>
+  <oc-notifications :class="{ 'mb-2': limitedMessages.length }">
     <oc-notification-message
       v-for="item in limitedMessages"
       :key="item.id"
