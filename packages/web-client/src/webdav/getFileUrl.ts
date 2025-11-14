@@ -4,10 +4,13 @@ import { GetFileContentsFactory } from './getFileContents'
 import { WebDavOptions } from './types'
 import { DAV, DAVRequestOptions } from './client'
 import { ocs } from '../ocs'
+import { GetFileInfoFactory } from './getFileInfo'
+import { DavProperty } from './constants'
 
 export const GetFileUrlFactory = (
   dav: DAV,
   getFileContentsFactory: ReturnType<typeof GetFileContentsFactory>,
+  getFileInfoFactory: ReturnType<typeof GetFileInfoFactory>,
   { axiosClient, baseUrl }: WebDavOptions
 ) => {
   return {
@@ -29,47 +32,45 @@ export const GetFileUrlFactory = (
         /** @deprecated this has no effect */
         signUrlTimeout?: number
         version?: string
+        /** @deprecated */
         doHeadRequest?: boolean
         username?: string
       } & DAVRequestOptions
     ): Promise<string> {
-      const inlineDisposition = disposition === 'inline'
-      let { downloadURL } = resource
-
-      if (!downloadURL && !inlineDisposition) {
-        // compute unsigned url
-        downloadURL = version
-          ? dav.getFileUrl(urlJoin('meta', resource.fileId, 'v', version))
-          : dav.getFileUrl(resource.webDavPath)
-
-        if (username) {
-          if (doHeadRequest) {
-            await axiosClient.head(downloadURL)
-          }
-
-          const ocsClient = ocs(baseUrl, axiosClient)
-          downloadURL = await ocsClient.signUrl(downloadURL, username)
-        }
-      }
-
       // FIXME: re-introduce query parameters
       // They are not supported by getFileContents() and as we don't need them right now, I'm disabling the feature completely for now
       //
-      // // Since the pre-signed url contains query parameters and the caller of this method
-      // // can also provide query parameters we have to combine them.
+      // Since the pre-signed url contains query parameters and the caller of this method
+      // can also provide query parameters we have to combine them.
       // const queryStr = qs.stringify(options.query || null)
       // const [url, signedQuery] = downloadURL.split('?')
       // const combinedQuery = [queryStr, signedQuery].filter(Boolean).join('&')
       // downloadURL = [url, combinedQuery].filter(Boolean).join('?')
-
-      if (inlineDisposition) {
+      if (disposition === 'inline') {
         const response = await getFileContentsFactory.getFileContents(space, resource, {
           responseType: 'blob',
           ...opts
         })
-        downloadURL = URL.createObjectURL(response.body)
+        return URL.createObjectURL(response.body)
       }
 
+      if (version) {
+        if (!username) {
+          throw new Error('username is required for URL signing')
+        }
+        // FIXME: remove as soon as we remove client side url signing https://github.com/opencloud-eu/opencloud/issues/1197
+        const downloadURL = dav.getFileUrl(urlJoin('meta', resource.fileId, 'v', version))
+        const ocsClient = ocs(baseUrl, axiosClient)
+        return await ocsClient.signUrl(downloadURL, username)
+      }
+
+      if (resource.downloadURL) {
+        return resource.downloadURL
+      }
+
+      const { downloadURL } = await getFileInfoFactory.getFileInfo(space, resource, {
+        davProperties: [DavProperty.DownloadURL]
+      })
       return downloadURL
     },
     revokeUrl: (url: string) => {

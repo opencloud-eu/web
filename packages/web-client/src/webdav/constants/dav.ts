@@ -144,7 +144,6 @@ export abstract class DavProperties {
     DavProperty.ETag,
     DavProperty.MimeType,
     DavProperty.ResourceType,
-    DavProperty.DownloadURL,
     DavProperty.Tags,
     DavProperty.Audio,
     DavProperty.Location,

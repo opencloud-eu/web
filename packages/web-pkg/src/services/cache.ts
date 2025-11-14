@@ -18,6 +18,7 @@ const avatarUrlCache = new Cache<
 >({ ttl: 10 * 1000, capacity: 250 })
 
 class CacheService {
+  /** @deprecated */
   public get avatarUrl() {
     return avatarUrlCache
   }

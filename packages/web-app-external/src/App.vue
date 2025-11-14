@@ -81,6 +81,7 @@ import {
   FilePickerModal
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
+import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -101,9 +102,8 @@ const appProviderService = useAppProviderService()
 const { makeRequest } = useRequest()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
-const { graphAuthenticated: graphClient } = useClientService()
+const { graphAuthenticated: graphClient, webdav } = useClientService()
 const { dispatchModal } = useModals()
-const { webdav } = useClientService()
 const { currentTheme } = useThemeStore()
 const { getParentFolderLink } = useFolderLink()
 
@@ -337,10 +337,12 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
         customComponentAttrs: () => ({
           parentFolderLink: getParentFolderLink(resource),
           allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
-          callbackFn: ({ resource }: { resource: Resource }) => {
-            postMessageToCollabora('Action_InsertGraphic', {
-              url: resource.downloadURL
+          callbackFn: async ({ resource }: { resource: Resource }) => {
+            const { downloadURL: url } = await webdav.getFileInfo(space, resource, {
+              davProperties: [DavProperty.DownloadURL]
             })
+
+            postMessageToCollabora('Action_InsertGraphic', { url })
           }
         }),
         focusTrapInitial: false

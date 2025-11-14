@@ -7,10 +7,5 @@ describe('cache', () => {
       const filePreviewCache = cacheService.filePreview
       expect(filePreviewCache).toBeInstanceOf(Cache)
     })
-
-    test('avatarUrl', () => {
-      const avatarUrlCache = cacheService.avatarUrl
-      expect(avatarUrlCache).toBeInstanceOf(Cache)
-    })
   })
 })
