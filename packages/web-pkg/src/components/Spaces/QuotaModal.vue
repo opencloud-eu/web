@@ -29,6 +29,7 @@ import {
   useResourcesStore,
   useRouter
 } from '../../composables'
+import { isPromiseFulfilled, isPromiseRejected } from '../../helpers'
 import { eventBus } from '../../services'
 import { ContextualHelperData } from '@opencloud-eu/design-system/helpers'
 import { storeToRefs } from 'pinia'
@@ -146,17 +147,17 @@ const onConfirm = async () => {
     })
   })
   const results = await Promise.allSettled<Array<unknown>>(requests)
-  const succeeded = results.filter((r) => r.status === 'fulfilled')
+  const succeeded = results.filter(isPromiseFulfilled)
   if (succeeded.length) {
     showMessage({ title: getSuccessMessage(succeeded.length) })
   }
-  const errors = results.filter((r) => r.status === 'rejected')
+  const errors = results.filter(isPromiseRejected)
   if (errors.length) {
     console.error(errors)
     errors.forEach(console.error)
     showErrorMessage({
       title: getErrorMessage(errors.length),
-      errors: (errors as PromiseRejectedResult[]).map((f) => f.reason)
+      errors: errors.map((f) => f.reason)
     })
   }
 }

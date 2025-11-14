@@ -120,6 +120,7 @@ import {
   useModals,
   useCopyLink
 } from '../composables'
+import { isPromiseFulfilled, isPromiseRejected } from '../helpers'
 import { LinkShare, SpaceResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
@@ -242,9 +243,9 @@ const createLinkHandler = async () => {
   const result = await createLinks()
 
   const userFacingErrors: Error[] = []
-  const failed = result.filter(({ status }) => status === 'rejected')
+  const failed = result.filter(isPromiseRejected)
   if (failed.length) {
-    ;(failed as PromiseRejectedResult[])
+    failed
       .map(({ reason }) => reason)
       .forEach((e) => {
         console.error(e)
@@ -268,18 +269,18 @@ const createLinkHandler = async () => {
 const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
   if (unref(isEmbedEnabled)) {
     const result = await createLinkHandler()
-    const succeeded = result.filter(({ status }) => status === 'fulfilled')
+    const succeeded = result.filter(isPromiseFulfilled)
     if (succeeded.length) {
       /** @deprecated Always emit the share url for backwards compatibility */
       postMessage<string[]>(
         'opencloud-embed:share',
-        (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => value.webUrl)
+        succeeded.map(({ value }) => value.webUrl)
       )
 
       // Always emit new event with objects, include password only when copyPassword is enabled
       postMessage<Array<{ url: string; password?: string }>>(
         'opencloud-embed:share-links',
-        (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => ({
+        succeeded.map(({ value }) => ({
           url: value.webUrl,
           ...(options.copyPassword && { password: unref(password).value })
         }))

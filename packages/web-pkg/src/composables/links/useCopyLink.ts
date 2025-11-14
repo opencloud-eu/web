@@ -2,6 +2,7 @@ import { useMessages } from '../piniaStores'
 import { useGettext } from 'vue3-gettext'
 import { LinkShare } from '@opencloud-eu/web-client'
 import { useClipboard } from '@vueuse/core'
+import { isPromiseFulfilled, isPromiseRejected } from '../../helpers'
 
 /**
  * Dedicated composable for copying created links to clipboard because it requires
@@ -22,9 +23,7 @@ export const useCopyLink = () => {
     result: PromiseSettledResult<LinkShare>[]
     password?: string
   }) => {
-    const succeeded = result.filter(
-      (val): val is PromiseFulfilledResult<LinkShare> => val.status === 'fulfilled'
-    )
+    const succeeded = result.filter(isPromiseFulfilled)
 
     let copyToClipboardText = ''
     if (succeeded.length) {
@@ -52,10 +51,10 @@ export const useCopyLink = () => {
       })
     }
 
-    const failed = result.filter(({ status }) => status === 'rejected')
+    const failed = result.filter(isPromiseRejected)
     if (failed.length) {
       showErrorMessage({
-        errors: (failed as PromiseRejectedResult[]).map(({ reason }) => reason),
+        errors: failed.map(({ reason }) => reason),
         title: $ngettext('Failed to create link', 'Failed to create links', failed.length)
       })
     }
