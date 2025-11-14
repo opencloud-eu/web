@@ -94,7 +94,7 @@
               justify-content="left"
               @click="$emit('confirm', { copyPassword: true })"
             >
-              {{ $gettext('Copy link and password') }}
+              {{ confirmPasswordButtonText }}
             </oc-button>
           </li>
         </oc-list>
@@ -170,6 +170,14 @@ const confirmButtonText = computed(() => {
   return $gettext('Copy link')
 })
 
+const confirmPasswordButtonText = computed(() => {
+  if (unref(isEmbedEnabled)) {
+    return $gettext('Share link(s) and password(s)')
+  }
+
+  return $gettext('Copy link and password')
+})
+
 const passwordInputKey = ref(uuidV4())
 const roleRefs = ref<Record<string, RoleRef>>({})
 
@@ -233,14 +241,6 @@ const confirmButtonDisabled = computed(() => {
 const createLinkHandler = async () => {
   const result = await createLinks()
 
-  const succeeded = result.filter(({ status }) => status === 'fulfilled')
-  if (succeeded.length && unref(isEmbedEnabled)) {
-    postMessage<string[]>(
-      'opencloud-embed:share',
-      (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => value.webUrl)
-    )
-  }
-
   const userFacingErrors: Error[] = []
   const failed = result.filter(({ status }) => status === 'rejected')
   if (failed.length) {
@@ -266,6 +266,29 @@ const createLinkHandler = async () => {
 }
 
 const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
+  if (unref(isEmbedEnabled)) {
+    const result = await createLinkHandler()
+    const succeeded = result.filter(({ status }) => status === 'fulfilled')
+    if (succeeded.length) {
+      /** @deprecated Always emit the share url for backwards compatibility */
+      postMessage<string[]>(
+        'opencloud-embed:share',
+        (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => value.webUrl)
+      )
+
+      // Always emit new event with objects, include password only when copyPassword is enabled
+      postMessage<Array<{ url: string; password?: string }>>(
+        'owncloud-embed:share-links',
+        (succeeded as PromiseFulfilledResult<LinkShare>[]).map(({ value }) => ({
+          url: value.webUrl,
+          ...(options.copyPassword && { password: unref(password).value })
+        }))
+      )
+    }
+    removeModal(modal.id)
+    return
+  }
+
   await copyLink({
     createLinkHandler,
     password: options.copyPassword ? unref(password).value : undefined
