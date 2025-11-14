@@ -41,6 +41,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v4.0.9 [[#1618](https://github.com/opencloud-eu/web/pull/1618)]
+- chore(deps): update traefik docker tag to v3.6.1 [[#1614](https://github.com/opencloud-eu/web/pull/1614)]
 - chore(deps): update pnpm to v10.22.0 [[#1607](https://github.com/opencloud-eu/web/pull/1607)]
 - chore(deps): update dependency jsdom to v27.2.0 [[#1601](https://github.com/opencloud-eu/web/pull/1601)]
 - chore(deps): update node.js to v24.11.1 [[#1600](https://github.com/opencloud-eu/web/pull/1600)]
