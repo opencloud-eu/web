@@ -1,0 +1,1 @@
+import{r as c,M as n,s,a0 as r,I as l,y as m,W as p,w as i,Y as _}from"./framework.Ds8a4HE7.js";import"./theme.DMe__u_c.js";const k=c({__name:"default",setup(u){const e=n(),t=o=>{e.value=o};return(o,d)=>{const a=_("oc-emoji-picker");return i(),s(p,null,[r(a,{onEmojiSelect:t}),l("p",null,"Selected emoji: "+m(e.value),1)],64)}}});export{k as default};
