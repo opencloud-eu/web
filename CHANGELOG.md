@@ -6,13 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @tammi-23
 
-### 📈 Enhancement
-
-- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
-- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
-
 ### 🐛 Bug Fixes
 
+- fix: version downloads and remove downloadUrl dav property default [[#1559](https://github.com/opencloud-eu/web/pull/1559)]
 - fix: copying created links in Safari [[#1594](https://github.com/opencloud-eu/web/pull/1594)]
 - fix: prevent undo delete multiple times for same file [[#1587](https://github.com/opencloud-eu/web/pull/1587)]
 - fix: initial default favicon [[#1584](https://github.com/opencloud-eu/web/pull/1584)]
@@ -32,6 +28,11 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
+### 📈 Enhancement
+
+- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### ✅ Tests
 
