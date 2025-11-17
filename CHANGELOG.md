@@ -41,6 +41,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-tsc to v3.1.4 [[#1621](https://github.com/opencloud-eu/web/pull/1621)]
 - chore(deps): update dependency @codemirror/view to v6.38.7 [[#1619](https://github.com/opencloud-eu/web/pull/1619)]
 - chore(deps): update devdependencies (non-major) to v4.0.9 [[#1618](https://github.com/opencloud-eu/web/pull/1618)]
 - chore(deps): update traefik docker tag to v3.6.1 [[#1614](https://github.com/opencloud-eu/web/pull/1614)]
