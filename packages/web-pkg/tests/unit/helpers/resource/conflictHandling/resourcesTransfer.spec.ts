@@ -132,7 +132,7 @@ describe('resourcesTransfer', () => {
 
     expect(resourcesTransfer.resolveFileExists).toHaveBeenCalled()
   })
-  it('should show error message if trying to overwrite parent', async () => {
+  it('should show error message if trying to overwrite parent', () => {
     const targetFolderItems = [
       {
         id: 'a',
@@ -146,17 +146,17 @@ describe('resourcesTransfer', () => {
       resourcesToMove,
       targetSpace,
       resourcesToMove[0],
-      computed(() => mock<Resource>()),
+      computed(() => mock<Resource>({ path: '/' })),
       clientServiceMock,
       vi.fn(),
       vi.fn()
     )
-    const namingClash = await resourcesTransfer.isOverwritingParentFolder(
+    const namingClash = resourcesTransfer.isOverwritingParentFolder(
       resourcesToMove[0],
       targetFolder,
       targetFolderItems
     )
-    const noNamingClash = await resourcesTransfer.isOverwritingParentFolder(
+    const noNamingClash = resourcesTransfer.isOverwritingParentFolder(
       resourcesToMove[1],
       targetFolder,
       targetFolderItems
