@@ -42,6 +42,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v4.0.10 [[#1625](https://github.com/opencloud-eu/web/pull/1625)]
 - chore(deps): update dependency @codemirror/view to v6.38.8 [[#1622](https://github.com/opencloud-eu/web/pull/1622)]
 - chore(deps): update dependency vue-tsc to v3.1.4 [[#1621](https://github.com/opencloud-eu/web/pull/1621)]
 - chore(deps): update dependency @codemirror/view to v6.38.7 [[#1619](https://github.com/opencloud-eu/web/pull/1619)]
