@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: embed actions z-index [[#1610](https://github.com/opencloud-eu/web/pull/1610)]
 - fix: version downloads and remove downloadUrl dav property default [[#1559](https://github.com/opencloud-eu/web/pull/1559)]
 - fix: copying created links in Safari [[#1594](https://github.com/opencloud-eu/web/pull/1594)]
 - fix: prevent undo delete multiple times for same file [[#1587](https://github.com/opencloud-eu/web/pull/1587)]
