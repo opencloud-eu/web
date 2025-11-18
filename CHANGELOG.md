@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency oidc-client-ts to v3.4.1 [[#1570](https://github.com/opencloud-eu/web/pull/1570)]
 - fix(deps): update dependency p-queue to v9.0.1 [[#1640](https://github.com/opencloud-eu/web/pull/1640)]
 - chore(deps): update typescript-eslint monorepo to v8.47.0 [[#1633](https://github.com/opencloud-eu/web/pull/1633)]
 - chore(deps): update dependency glob to v12 [[#1634](https://github.com/opencloud-eu/web/pull/1634)]
