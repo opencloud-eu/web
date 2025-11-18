@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-14
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,10 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: embed actions z-index [[#1626](https://github.com/opencloud-eu/web/pull/1626)]
+- [stable-4.2] fix: missing versions when closing and re-opening sidebar [[#1629](https://github.com/opencloud-eu/web/pull/1629)]
+- [stable-4.2] fix: version downloads and remove downloadUrl dav property default [[#1624](https://github.com/opencloud-eu/web/pull/1624)]
+- [stable-4.2] fix: endless propfind requests when opening public links authenticated [[#1576](https://github.com/opencloud-eu/web/pull/1576)]
 - [stable-4.2] fix: copying created links in Safari [[#1611](https://github.com/opencloud-eu/web/pull/1611)]
 - [stable-4.2] fix: initial default favicon [[#1585](https://github.com/opencloud-eu/web/pull/1585)]
 - [stable-4.2] fix: prevent undo delete multiple times for same file [[#1590](https://github.com/opencloud-eu/web/pull/1590)]
