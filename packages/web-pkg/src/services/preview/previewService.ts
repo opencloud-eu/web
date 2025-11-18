@@ -6,6 +6,7 @@ import { isPublicSpaceResource } from '@opencloud-eu/web-client'
 import { BuildQueryStringOptions, LoadPreviewOptions } from '.'
 import { AuthStore, ConfigStore, UserStore } from '../../composables' // @ts-ignore
 import { stringify } from 'qs'
+import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export class PreviewService {
   clientService: ClientService
@@ -147,10 +148,17 @@ export class PreviewService {
     options: LoadPreviewOptions,
     signal?: AbortSignal
   ): Promise<string> {
-    const { resource, dimensions, processor } = options
+    const { space, resource, dimensions, processor } = options
+    let { downloadURL } = resource
+    if (!downloadURL) {
+      const { downloadURL: url } = await this.clientService.webdav.getFileInfo(space, resource, {
+        davProperties: [DavProperty.DownloadURL]
+      })
+      downloadURL = url
+    }
     // In a public context, i.e. public shares, the downloadURL contains a pre-signed url to
     // download the file.
-    const [url, signedQuery] = resource.downloadURL.split('?')
+    const [url, signedQuery] = downloadURL.split('?')
 
     // Since the pre-signed url contains query parameters and the caller of this method
     // can also provide query parameters we have to combine them.
