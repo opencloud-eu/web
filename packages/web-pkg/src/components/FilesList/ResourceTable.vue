@@ -27,8 +27,14 @@
     :lazy="lazy"
     :grouping-settings="groupingSettings"
     padding-x="medium"
-    @highlight="fileClicked"
-    @row-mounted="rowMounted"
+    @highlight="
+      fileContainerClicked({
+        resource: $event[0],
+        event: $event[1],
+        selectedIds: unref(selectedIds)
+      })
+    "
+    @row-mounted="$emit('rowMounted', $event[0], $event[1], ImageDimension.Thumbnail)"
     @contextmenu-clicked="showContextMenu"
     @item-dropped="fileDropped"
     @item-dragged="fileDragged"
@@ -69,13 +75,7 @@
         :outline="isLatestSelectedItem(item)"
         :data-test-selection-resource-name="item.name"
         :data-test-selection-resource-path="item.path"
-        @click.stop="
-          (e: MouseEvent) => {
-            if (!interceptModifierClick(e, item)) {
-              toggleSelection(item.id)
-            }
-          }
-        "
+        @click.stop="fileCheckboxClicked({ resource: item, event: $event })"
       />
     </template>
     <template #name="{ item }">
@@ -99,7 +99,7 @@
             getParentFolderLinkIconAdditionalAttributes(item)
           "
           :class="{ 'opacity-70': isResourceCut(item) }"
-          @click="emitFileClick(item)"
+          @click.stop="fileNameClicked({ resource: item, event: $event })"
         />
         <oc-button
           v-if="hasRenameAction(item)"
@@ -281,9 +281,7 @@ import {
 } from '@opencloud-eu/web-client'
 
 import {
-  embedModeFilePickMessageData,
   FolderViewModeConstants,
-  routeToContextQuery,
   SortDir,
   useActiveLocation,
   useAuthStore,
@@ -296,6 +294,7 @@ import {
   useGetMatchingSpace,
   useIsTopBarSticky,
   useResourcesStore,
+  useResourceViewHelpers,
   useRouter,
   useSpaceActionsRename
 } from '../../composables'
@@ -423,14 +422,15 @@ const {
 const { isSticky } = useIsTopBarSticky()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { isMobile } = useIsMobile()
-const {
-  isLocationPicker,
-  isFilePicker,
-  postMessage,
-  isEnabled: isEmbedModeEnabled,
-  fileTypes: embedModeFileTypes
-} = useEmbedMode()
+const { isLocationPicker, isFilePicker } = useEmbedMode()
 const { getDefaultAction } = useFileActions()
+const {
+  fileContainerClicked,
+  fileNameClicked,
+  fileCheckboxClicked,
+  isResourceDisabled,
+  isResourceInDeleteQueue
+} = useResourceViewHelpers({ emit })
 
 const clipboardStore = useClipboardStore()
 const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
@@ -439,7 +439,7 @@ const authStore = useAuthStore()
 const { userContextReady } = storeToRefs(authStore)
 
 const resourcesStore = useResourcesStore()
-const { areFileExtensionsShown, latestSelectedId, deleteQueue } = storeToRefs(resourcesStore)
+const { areFileExtensionsShown, latestSelectedId } = storeToRefs(resourcesStore)
 
 const dragItem = ref<Resource>()
 const ghostElement =
@@ -461,17 +461,6 @@ const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0].handler)
 
 const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
 
-const isResourceDisabled = (resource: Resource) => {
-  if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {
-    return (
-      !unref(embedModeFileTypes).includes(resource.extension) &&
-      !unref(embedModeFileTypes).includes(resource.mimeType) &&
-      !resource.isFolder
-    )
-  }
-  return resource.processing === true || isResourceInDeleteQueue(resource.id)
-}
-
 const disabledResources = computed(() => {
   return resources?.filter(isResourceDisabled)?.map((resource) => resource.id) || []
 })
@@ -485,14 +474,8 @@ const isResourceClickable = (resource: Resource) => {
     return false
   }
 
-  if (!resource.isFolder) {
-    if (!resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
-      return false
-    }
-
-    if (unref(isEmbedModeEnabled) && !unref(isFilePicker)) {
-      return false
-    }
+  if (!resource.isFolder && !resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
+    return false
   }
 
   return !unref(disabledResources).includes(resource.id)
@@ -525,10 +508,6 @@ const getResourceLink = (resource: Resource) => {
   }
 
   return action.route({ space: matchingSpace, resources: [resource] })
-}
-
-const isResourceInDeleteQueue = (id: string): boolean => {
-  return unref(deleteQueue).includes(id)
 }
 
 const showContextDrop = (item: Resource | SpaceResource) => {
@@ -916,54 +895,6 @@ const showContextMenu = (
 
   displayPositionedDropdown(instance._tippy, event, unref(contextMenuButton))
 }
-const rowMounted = (resource: Resource, component: ComponentPublicInstance<typeof OcTableTr>) => {
-  emit('rowMounted', resource, component, ImageDimension.Thumbnail)
-}
-const fileClicked = (data: [Resource, MouseEvent]) => {
-  const resource = data[0]
-
-  if (isResourceDisabled(resource)) {
-    return
-  }
-
-  if (unref(isEmbedModeEnabled) && unref(isFilePicker) && !resource.isFolder) {
-    return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
-      resource: JSON.parse(JSON.stringify(resource)),
-      locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
-    })
-  }
-
-  const eventData = data[1]
-
-  if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
-    eventBus.publish('app.files.shiftAnchor.reset')
-  }
-
-  const isCheckboxClicked = (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
-  const contextActionClicked =
-    (eventData?.target as HTMLElement)?.closest('div')?.id === 'oc-files-context-menu'
-  if (contextActionClicked) {
-    return
-  }
-  if (eventData && eventData.metaKey) {
-    return eventBus.publish('app.files.list.clicked.meta', resource)
-  }
-  if (eventData && eventData.shiftKey) {
-    return eventBus.publish('app.files.list.clicked.shift', {
-      resource,
-      skipTargetSelection: false
-    })
-  }
-  if (isCheckboxClicked) {
-    return
-  }
-
-  if (isResourceSelected(resource)) {
-    return
-  }
-
-  return emitSelect([resource.id])
-}
 const formatDate = (date: string) => {
   return formatDateFromJSDate(new Date(date), currentLanguage)
 }
@@ -979,13 +910,6 @@ const toggleSelectionAll = () => {
       .filter((resource) => !unref(disabledResources).includes(resource.id))
       .map((resource) => resource.id)
   )
-}
-const emitFileClick = (resource: Resource, event?: MouseEvent) => {
-  if (interceptModifierClick(event, resource)) {
-    return
-  }
-
-  emit('fileClick', { space: getMatchingSpace(resource), resources: [resource] })
 }
 const getResourceCheckboxLabel = (resource: Resource) => {
   if (resource.type === 'folder') {
