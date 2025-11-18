@@ -1,4 +1,4 @@
-import { unref } from 'vue'
+import { computed, Ref, unref } from 'vue'
 import { useResourcesStore } from '../piniaStores'
 import { useRouter } from '../router'
 import { useEventBus } from '../eventBus'
@@ -7,11 +7,20 @@ import { embedModeFilePickMessageData, useEmbedMode } from '../embedMode'
 import { Resource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../appDefaults'
 import { useGetMatchingSpace } from '../spaces'
+import { useResourceViewDrag } from './useResourceViewDrag'
 
 /**
  * Shared helpers for resource view components (like ResourceTable and ResourceTiles).
  */
-export const useResourceViewHelpers = ({ emit }: { emit: (...args: any[]) => void }) => {
+export const useResourceViewHelpers = ({
+  resources,
+  selectedIds,
+  emit
+}: {
+  resources: Ref<Resource[]>
+  selectedIds: Ref<string[]>
+  emit: (...args: any[]) => void
+}) => {
   const resourcesStore = useResourcesStore()
   const router = useRouter()
   const eventBus = useEventBus()
@@ -23,6 +32,14 @@ export const useResourceViewHelpers = ({ emit }: { emit: (...args: any[]) => voi
     isFilePicker,
     postMessage
   } = useEmbedMode()
+
+  const selectedResources = computed(() => {
+    return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))
+  })
+
+  const isResourceSelected = (item: Resource) => {
+    return unref(selectedIds).includes(item.id)
+  }
 
   const isResourceInDeleteQueue = (id: string): boolean => {
     return resourcesStore.deleteQueue.includes(id)
@@ -45,15 +62,7 @@ export const useResourceViewHelpers = ({ emit }: { emit: (...args: any[]) => voi
   }
 
   // tr or tile containing the file clicked
-  const fileContainerClicked = ({
-    resource,
-    event,
-    selectedIds
-  }: {
-    resource: Resource
-    event: MouseEvent
-    selectedIds: string[]
-  }) => {
+  const fileContainerClicked = ({ resource, event }: { resource: Resource; event: MouseEvent }) => {
     if (isResourceDisabled(resource)) {
       return
     }
@@ -89,7 +98,7 @@ export const useResourceViewHelpers = ({ emit }: { emit: (...args: any[]) => voi
       return
     }
 
-    if (selectedIds.includes(resource.id)) {
+    if (isResourceSelected(resource)) {
       return
     }
 
@@ -132,10 +141,13 @@ export const useResourceViewHelpers = ({ emit }: { emit: (...args: any[]) => voi
   }
 
   return {
+    selectedResources,
+    isResourceSelected,
     isResourceInDeleteQueue,
     isResourceDisabled,
     fileContainerClicked,
     fileNameClicked,
-    fileCheckboxClicked
+    fileCheckboxClicked,
+    ...useResourceViewDrag({ selectedIds, selectedResources, emit })
   }
 }
