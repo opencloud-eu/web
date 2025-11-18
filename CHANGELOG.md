@@ -44,6 +44,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.47.0 [[#1633](https://github.com/opencloud-eu/web/pull/1633)]
+- chore(deps): update dependency glob to v12 [[#1634](https://github.com/opencloud-eu/web/pull/1634)]
+- chore(deps): update collabora/code docker tag to v25.04.7.2.1 [[#1631](https://github.com/opencloud-eu/web/pull/1631)]
 - chore(deps): update devdependencies (non-major) to v4.0.10 [[#1625](https://github.com/opencloud-eu/web/pull/1625)]
 - chore(deps): update dependency @codemirror/view to v6.38.8 [[#1622](https://github.com/opencloud-eu/web/pull/1622)]
 - chore(deps): update dependency vue-tsc to v3.1.4 [[#1621](https://github.com/opencloud-eu/web/pull/1621)]
