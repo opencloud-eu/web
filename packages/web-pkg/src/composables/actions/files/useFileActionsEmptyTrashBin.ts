@@ -59,7 +59,9 @@ export const useFileActionsEmptyTrashBin = () => {
   const actions = computed((): SpaceAction[] => [
     {
       name: 'empty-trash-bin',
-      icon: ({ resources }) => (resources[0].hasTrashedItems ? 'delete-bin-2' : 'delete-bin-7'),
+      icon: ({ resources }: SpaceActionOptions) => {
+        return resources[0]?.hasTrashedItems ? 'delete-bin-2' : 'delete-bin-7'
+      },
       label: () => $gettext('Empty trash bin'),
       handler,
       isVisible: ({ resources }) => {
