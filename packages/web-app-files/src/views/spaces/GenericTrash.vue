@@ -138,9 +138,7 @@ const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
 const emptyTrashBinAction = computed(() => unref(emptyTrashBinActions)[0])
 const emptyTrashBinActionIcon = computed(() => {
   const action = unref(emptyTrashBinAction)
-  return typeof action.icon === 'function'
-    ? action.icon({ resources: [props.space] })
-    : action.icon
+  return typeof action.icon === 'function' ? action.icon({ resources: [props.space] }) : action.icon
 })
 
 const breadcrumbs = computed(() => {

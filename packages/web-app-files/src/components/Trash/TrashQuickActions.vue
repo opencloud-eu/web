@@ -37,8 +37,6 @@ const filteredActions = computed(() => {
 })
 
 const getActionIcon = (action: Action) => {
-  return typeof action.icon === 'function'
-    ? action.icon({ resources: [props.space] })
-    : action.icon
+  return typeof action.icon === 'function' ? action.icon({ resources: [props.space] }) : action.icon
 }
 </script>

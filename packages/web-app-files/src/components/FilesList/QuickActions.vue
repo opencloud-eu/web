@@ -10,7 +10,6 @@
       :class="`files-quick-action-${action.name}`"
       @click="(e: MouseEvent) => action.handler({ space, resources: [item], event: e })"
     >
-      aa
       <oc-icon :name="getIconFromAction(action)" fill-type="line" />
     </oc-button>
   </div>
