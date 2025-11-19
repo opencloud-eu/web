@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v31 [[#1644](https://github.com/opencloud-eu/web/pull/1644)]
 - chore(deps): update dependency @vitejs/plugin-vue to v6.0.2 [[#1632](https://github.com/opencloud-eu/web/pull/1632)]
 - chore(deps): update traefik docker tag to v3.6.2 [[#1643](https://github.com/opencloud-eu/web/pull/1643)]
 - chore(deps): update dependency oidc-client-ts to v3.4.1 [[#1570](https://github.com/opencloud-eu/web/pull/1570)]
