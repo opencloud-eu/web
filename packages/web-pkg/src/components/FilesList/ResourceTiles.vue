@@ -75,9 +75,7 @@
           @drop="fileDropped(resource, $event)"
           @dragover="$event.preventDefault()"
           @item-visible="$emit('itemVisible', resource)"
-          @tile-clicked="
-            fileContainerClicked({ resource, event: $event[1], selectedIds: unref(selectedIds) })
-          "
+          @tile-clicked="fileContainerClicked({ resource, event: $event[1] })"
         >
           <template #selection>
             <oc-checkbox
@@ -135,7 +133,7 @@
       />
     </oc-list>
     <Teleport v-if="dragItem" to="body">
-      <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
+      <resource-ghost-element ref="ghostElement" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
     <div class="p-1 text-sm">
       <slot name="footer" />
@@ -147,21 +145,15 @@
 import {
   computed,
   ComponentPublicInstance,
-  nextTick,
   onBeforeUnmount,
   onBeforeUpdate,
   onMounted,
   ref,
   unref,
-  watch,
-  useTemplateRef
+  watch
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-
-// Constants should match what is being used in OcTable/ResourceTable
-// Alignment regarding naming would be an API-breaking change and can
-// Be done at a later point in time?
 import { ContextMenuQuickAction } from '../ContextActions'
 import {
   ContextMenuBtnClickEventData,
@@ -256,12 +248,24 @@ const viewSizeCurrent = computed(() => {
 })
 const { isSideBarOpen } = useSideBar()
 const {
+  selectedResources,
+  isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,
   isResourceDisabled,
-  isResourceInDeleteQueue
-} = useResourceViewHelpers({ emit })
+  isResourceInDeleteQueue,
+  ghostElement,
+  dragItem,
+  dragSelection,
+  dragStart,
+  fileDropped,
+  setDropStyling
+} = useResourceViewHelpers({
+  resources: computed(() => resources),
+  selectedIds: computed(() => selectedIds),
+  emit
+})
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
@@ -271,10 +275,6 @@ const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsSh
 const selectAllCheckboxLabel = computed(() => {
   return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
 })
-
-const dragItem = ref<Resource>()
-const ghostElementRef =
-  useTemplateRef<ComponentPublicInstance<typeof ResourceGhostElement>>('ghostElementRef')
 
 const tileRefs = ref({
   tiles: {} as Record<string, ResourceTileRef>,
@@ -321,14 +321,6 @@ const showContextMenuOnBtnClick = (
   resourcesStore.setSelection([item.id])
   displayPositionedDropdown(dropdown.tippy, event, unref(tileRefs).dropBtns[index])
 }
-
-const isResourceSelected = (resource: Resource) => {
-  return selectedIds.includes(resource.id)
-}
-
-const selectedResources = computed(() => {
-  return resources.filter((resource) => selectedIds.includes(resource.id))
-})
 
 const isResourceClickable = (resource: Resource) => {
   if (!areResourcesClickable) {
@@ -417,11 +409,6 @@ const showContextMenu = (
   displayPositionedDropdown(drop._tippy, event, reference)
 }
 
-const toggleSelection = (resource: Resource) => {
-  resourcesStore.toggleSelection(resource.id)
-  emit('update:selectedIds', [...resourcesStore.selectedIds])
-}
-
 const getResourceCheckboxLabel = (resource: Resource) => {
   switch (resource.type) {
     case 'folder':
@@ -458,59 +445,6 @@ onBeforeUpdate(() => {
     dropBtns: {}
   }
 })
-
-const setDropStyling = (
-  resource: Resource,
-  leaving: boolean,
-  event: MouseEvent | KeyboardEvent | DragEvent
-) => {
-  const hasFilePayload = ((event as DragEvent).dataTransfer?.types || []).some((e) => e === 'Files')
-  if (
-    hasFilePayload ||
-    (event.currentTarget as HTMLElement)?.contains(
-      (event as MouseEvent).relatedTarget as HTMLElement
-    ) ||
-    selectedIds.includes(resource.id) ||
-    resource.type !== 'folder'
-  ) {
-    return
-  }
-  const el = unref(tileRefs).tiles[resource.id]
-  if (leaving) {
-    el.$el.classList.remove('bg-role-secondary-container')
-    return
-  }
-  el.$el.classList.add('bg-role-secondary-container')
-}
-const dragSelection = computed(() => {
-  return unref(selectedResources).filter(({ id }) => id !== unref(dragItem)?.id)
-})
-const setDragItem = async (item: Resource, event: DragEvent) => {
-  dragItem.value = item
-  await nextTick()
-  unref(ghostElementRef).$el.ariaHidden = 'true'
-  unref(ghostElementRef).$el.style.left = '-99999px'
-  unref(ghostElementRef).$el.style.top = '-99999px'
-  event.dataTransfer.setDragImage(unref(ghostElementRef).$el, 0, 0)
-  event.dataTransfer.dropEffect = 'move'
-  event.dataTransfer.effectAllowed = 'move'
-}
-const dragStart = async (resource: Resource, event: DragEvent) => {
-  if (!isResourceSelected(resource)) {
-    toggleSelection(resource)
-  }
-  await setDragItem(resource, event)
-}
-
-const fileDropped = (resource: Resource, event: DragEvent) => {
-  const hasFilePayload = (event.dataTransfer.types || []).some((e) => e === 'Files')
-  if (hasFilePayload) {
-    return
-  }
-  dragItem.value = null
-  setDropStyling(resource, true, event)
-  emit('fileDropped', resource.id)
-}
 
 const viewWidth = ref(0)
 const updateViewWidth = () => {
