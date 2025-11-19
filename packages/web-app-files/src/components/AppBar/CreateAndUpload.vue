@@ -315,7 +315,7 @@ const isActionDisabled = (action: Action) => {
 }
 
 const getActionIcon = (action: Action) => {
-  return typeof action.icon === 'function' ? action.icon() : action.icon
+  return typeof action.icon === 'function' ? action.icon({ space: unref(computedSpace) }) : action.icon
 }
 
 useEventListener(document, 'paste', (event: ClipboardEvent) => {
