@@ -19,7 +19,7 @@
             class="mr-2"
             @click="emptyTrashBinAction.handler({ resources: [space] })"
           >
-            <oc-icon :name="emptyTrashBinAction.icon" size="medium" />
+            <oc-icon :name="emptyTrashBinActionIcon" size="medium" />
             {{ emptyTrashBinAction.label() }}
           </oc-button>
         </template>
@@ -136,6 +136,12 @@ const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).l
 
 const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
 const emptyTrashBinAction = computed(() => unref(emptyTrashBinActions)[0])
+const emptyTrashBinActionIcon = computed(() => {
+  const action = unref(emptyTrashBinAction)
+  return typeof action.icon === 'function'
+    ? action.icon({ resources: [props.space] })
+    : action.icon
+})
 
 const breadcrumbs = computed(() => {
   let currentNodeName = props.space?.name

@@ -10,14 +10,15 @@
       :class="`files-quick-action-${action.name}`"
       @click="(e: MouseEvent) => action.handler({ space, resources: [item], event: e })"
     >
-      <oc-icon :name="action.icon" fill-type="line" />
+      aa
+      <oc-icon :name="getIconFromAction(action)" fill-type="line" />
     </oc-button>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { Action, useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 import { quickActionsExtensionPoint } from '../../extensionPoints'
@@ -45,7 +46,12 @@ export default defineComponent({
         .filter(({ isVisible }) => isVisible({ space: props.space, resources: [props.item] }))
     })
 
+    const getIconFromAction = (action: Action) => {
+      return typeof action.icon === 'function' ? action.icon() : action.icon
+    }
+
     return {
+      getIconFromAction,
       filteredActions,
       isEmbedModeEnabled
     }

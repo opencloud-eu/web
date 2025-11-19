@@ -23,7 +23,7 @@
             appearance="filled"
             @click="createGroupAction.handler()"
           >
-            <oc-icon :name="createGroupAction.icon" />
+            <oc-icon :name="createGroupActionIcon" />
             <span v-if="!limitedScreenSpace" v-text="createGroupAction.label()" />
           </oc-button>
         </div>
@@ -103,6 +103,10 @@ export default defineComponent({
 
     const { actions: createGroupActions } = useGroupActionsCreateGroup()
     const createGroupAction = computed(() => unref(createGroupActions)[0])
+    const createGroupActionIcon = computed(() => {
+      const action = unref(createGroupAction)
+      return typeof action.icon === 'function' ? action.icon() : action.icon
+    })
 
     const loadResourcesTask = useTask(function* (signal) {
       const loadedGroups = yield* call(
@@ -187,6 +191,7 @@ export default defineComponent({
       sideBarAvailablePanels,
       sideBarPanelContext,
       createGroupAction,
+      createGroupActionIcon,
       groupSettingsStore,
       isLoading
     }

@@ -156,7 +156,7 @@
             :disabled="isActionDisabled(action)"
             @click="action.handler"
           >
-            <oc-icon :name="action.icon" fill-type="line" />
+            <oc-icon :name="getActionIcon(action)" fill-type="line" />
             <span v-text="action.label()"
           /></oc-button>
         </li>
@@ -312,6 +312,10 @@ const showDrop = () => {
 }
 const isActionDisabled = (action: Action) => {
   return action.isDisabled ? action.isDisabled() : false
+}
+
+const getActionIcon = (action: Action) => {
+  return typeof action.icon === 'function' ? action.icon() : action.icon
 }
 
 useEventListener(document, 'paste', (event: ClipboardEvent) => {
