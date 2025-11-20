@@ -157,7 +157,7 @@ export const defineConfig = (overrides = {}) => {
             '**/.{idea,git,cache,output,temp}/**',
             '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
             '.pnpm-store/*',
-            'e2e/**'
+            '**/e2e/**'
           ],
           coverage: {
             provider: 'v8',
