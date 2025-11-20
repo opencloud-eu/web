@@ -44,6 +44,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.26.0 [[#1649](https://github.com/opencloud-eu/web/pull/1649)]
+- chore(deps): update dependency glob to v13 [[#1651](https://github.com/opencloud-eu/web/pull/1651)]
 - chore(deps): update dependency @cucumber/messages to v31 [[#1644](https://github.com/opencloud-eu/web/pull/1644)]
 - chore(deps): update dependency @vitejs/plugin-vue to v6.0.2 [[#1632](https://github.com/opencloud-eu/web/pull/1632)]
 - chore(deps): update traefik docker tag to v3.6.2 [[#1643](https://github.com/opencloud-eu/web/pull/1643)]
