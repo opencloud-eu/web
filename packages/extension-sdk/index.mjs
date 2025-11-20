@@ -79,37 +79,6 @@ const manifestPlugin = () => {
   }
 }
 
-// UPSTREAM: https://github.com/vitejs/vite/pull/20861
-// We are trying to upstream this plugin, it can be removed once the PR above or an alternative approach has been merged
-// TL;DR of the issue: vite uses the require variable for certain features but doesn't ensure it's injected into AMD modules
-// thus the global require variable is used which does not have the correct base path set, so relative imports
-// with ?url or ?worker break
-const completeAmdWrapPlugin = () => {
-  const AmdWrapRE = /\bdefine\((?:\s*\[([^\]]*)\],)?\s*(?:\(\s*)?function\s*\(([^)]*)\)\s*\{/
-
-  return {
-    name: 'vite:force-amd-wrap-require',
-    enforce: 'pre',
-    renderChunk(code, _chunk, opts) {
-      if (opts.format !== 'amd') return
-
-      return {
-        code: code.replace(AmdWrapRE, (_, deps, params) => {
-          if (deps?.includes(`"require"`) || deps?.includes(`'require'`)) {
-            return `define([${deps}], (function(${params}) {`
-          }
-
-          const newDeps = deps ? `"require", ${deps}` : '"require"'
-          const newParams = params.trim() ? `require, ${params}` : 'require'
-
-          return `define([${newDeps}], (function(${newParams}) {`
-        }),
-        map: null // no need to generate sourcemap as no mapping exists for the wrapper
-      }
-    }
-  }
-}
-
 export const defineConfig = (overrides = {}) => {
   return ({ mode }) => {
     const isProduction = mode === 'production'
@@ -163,7 +132,6 @@ export const defineConfig = (overrides = {}) => {
           }
         },
         plugins: [
-          completeAmdWrapPlugin(),
           vue({
             // set to true when switching to esm
             customElement: false,
@@ -189,7 +157,7 @@ export const defineConfig = (overrides = {}) => {
             '**/.{idea,git,cache,output,temp}/**',
             '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
             '.pnpm-store/*',
-            'e2e/**'
+            '**/e2e/**'
           ],
           coverage: {
             provider: 'v8',
