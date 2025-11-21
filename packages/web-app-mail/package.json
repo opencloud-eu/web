@@ -12,6 +12,7 @@
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "axios": "1.13.2",
+    "dompurify": "^3.2.3",
     "fuse.js": "7.1.0",
     "lodash-es": "4.17.22",
     "mark.js": "^8.11.1",
@@ -24,6 +25,10 @@
     "luxon": "^3.5.0"
   },
   "dependencies": {
+    "@tiptap/extension-image": "^3.10.7",
+    "@tiptap/extension-link": "^3.10.7",
+    "@tiptap/starter-kit": "^3.10.7",
+    "@tiptap/vue-3": "^3.10.7",
     "ical.js": "^2.2.1"
   }
 }
