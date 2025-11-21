@@ -11,14 +11,14 @@
       :disabled="action.isDisabled({ resources: [space] })"
       @click="action.handler({ resources: [space] })"
     >
-      <oc-icon :name="action.icon" fill-type="line" />
+      <oc-icon :name="getActionIcon(action)" fill-type="line" />
     </oc-button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import { useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { Action, useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { trashQuickActionsExtensionPoint } from '../../extensionPoints'
 
@@ -35,4 +35,8 @@ const filteredActions = computed(() => {
     .map((e) => e.action)
     .filter(({ isVisible }) => isVisible({ resources: [props.space] }))
 })
+
+const getActionIcon = (action: Action) => {
+  return typeof action.icon === 'function' ? action.icon({ resources: [props.space] }) : action.icon
+}
 </script>
