@@ -32,7 +32,6 @@ const extensionRegistry = useExtensionRegistry()
 const route = useRoute()
 const authStore = useAuthStore()
 const capabilityStore = useCapabilityStore()
-
 const { supportRadicale } = storeToRefs(capabilityStore)
 
 const navBarClosed = ref<boolean>(false)
