@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: catching errors in sse events [[#1654](https://github.com/opencloud-eu/web/pull/1654)]
 - fix: missing versions when closing and re-opening sidebar [[#1602](https://github.com/opencloud-eu/web/pull/1602)]
 - fix: embed actions z-index [[#1610](https://github.com/opencloud-eu/web/pull/1610)]
 - fix: version downloads and remove downloadUrl dav property default [[#1559](https://github.com/opencloud-eu/web/pull/1559)]
