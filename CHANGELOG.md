@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-18
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-21
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: editing and loading tags for received shares [[#1659](https://github.com/opencloud-eu/web/pull/1659)]
+- [stable-4.2] fix: catching errors in sse events [[#1658](https://github.com/opencloud-eu/web/pull/1658)]
 - [stable-4.2] fix: embed actions z-index [[#1626](https://github.com/opencloud-eu/web/pull/1626)]
 - [stable-4.2] fix: missing versions when closing and re-opening sidebar [[#1629](https://github.com/opencloud-eu/web/pull/1629)]
 - [stable-4.2] fix: version downloads and remove downloadUrl dav property default [[#1624](https://github.com/opencloud-eu/web/pull/1624)]
