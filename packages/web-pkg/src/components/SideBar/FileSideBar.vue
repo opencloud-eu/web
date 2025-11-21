@@ -63,7 +63,8 @@ import {
   isLinkShare,
   isShareSpaceResource,
   isIncomingShareResource,
-  isPersonalSpaceResource
+  isPersonalSpaceResource,
+  isOutgoingShareResource
 } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
@@ -407,7 +408,7 @@ export default defineComponent({
           }
         }
 
-        if (!unref(isShareLocation)) {
+        if (!isOutgoingShareResource(resource) && !isIncomingShareResource(resource)) {
           loadedResource.value = resource
           sharesLoading.value = false
           return
