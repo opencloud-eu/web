@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: move folder replace [[#1627](https://github.com/opencloud-eu/web/pull/1627)]
 - fix: editing and loading tags for received shares [[#1650](https://github.com/opencloud-eu/web/pull/1650)]
 - fix: catching errors in sse events [[#1654](https://github.com/opencloud-eu/web/pull/1654)]
 - fix: missing versions when closing and re-opening sidebar [[#1602](https://github.com/opencloud-eu/web/pull/1602)]
