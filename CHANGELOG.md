@@ -6,8 +6,13 @@
 
 @AlexAndBear, @Copilot, @JammingBen, @kulmann, @tammi-23
 
+### 🔒 Security
+
+- [stable-4.2] chore: bump sub-dependencies that cause vulnerability alerts [[#1657](https://github.com/opencloud-eu/web/pull/1657)]
+
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: move folder replace [[#1662](https://github.com/opencloud-eu/web/pull/1662)]
 - [stable-4.2] fix: editing and loading tags for received shares [[#1659](https://github.com/opencloud-eu/web/pull/1659)]
 - [stable-4.2] fix: catching errors in sse events [[#1658](https://github.com/opencloud-eu/web/pull/1658)]
 - [stable-4.2] fix: embed actions z-index [[#1626](https://github.com/opencloud-eu/web/pull/1626)]
