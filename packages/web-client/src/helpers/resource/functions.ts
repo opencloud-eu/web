@@ -197,7 +197,8 @@ export function buildResource(
     canEditTags: function () {
       return (
         this.permissions.indexOf(DavPermission.Updateable) >= 0 ||
-        this.permissions.indexOf(DavPermission.FileUpdateable) >= 0
+        this.permissions.indexOf(DavPermission.FileUpdateable) >= 0 ||
+        this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
       )
     },
     isMounted: function () {
