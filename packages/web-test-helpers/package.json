@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-test-helpers",
-  "version": "4.2.1-alpha.1",
+  "version": "4.2.1-rc.1",
   "description": "OpenCloud web test helpers",
   "license": "AGPL-3.0",
   "private": false,
