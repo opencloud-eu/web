@@ -196,12 +196,19 @@ export class ResourceTransfer extends ConflictDialog {
       return false
     }
 
-    if (targetFolder.path === unref(this.currentFolder)?.path) {
+    const currentFolderPath = unref(this.currentFolder)?.path
+    if (!currentFolderPath || targetFolder.path === currentFolderPath) {
       return false
     }
 
     const folderName = basename(resource.path)
     const newPath = join(targetFolder.path, folderName)
+
+    if (currentFolderPath.split('/').length < newPath.split('/').length) {
+      // this edge case is only possible when moving folders upwards in the hierarchy
+      return false
+    }
+
     return targetFolderResources.some((resource) => resource.path === newPath)
   }
 }
