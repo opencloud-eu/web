@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @tammi-23
 
+### 🔒 Security
+
+- chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
+
 ### 🐛 Bug Fixes
 
 - fix: missing versions when closing and re-opening sidebar [[#1602](https://github.com/opencloud-eu/web/pull/1602)]
