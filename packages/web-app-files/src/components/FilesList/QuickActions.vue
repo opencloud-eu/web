@@ -46,7 +46,9 @@ export default defineComponent({
     })
 
     const getIconFromAction = (action: Action) => {
-      return typeof action.icon === 'function' ? action.icon({ space: props.space, resources: [props.item] }) : action.icon
+      return typeof action.icon === 'function'
+        ? action.icon({ space: props.space, resources: [props.item] })
+        : action.icon
     }
 
     return {

@@ -7,7 +7,7 @@ import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
-export interface Action<T extends ActionOptions = ActionOptions> {
+export interface Action<T = ActionOptions> {
   name: string
   category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
   icon: string | ((options?: ActionOptions) => string)
