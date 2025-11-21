@@ -19,16 +19,21 @@ import {
   routeToContextQuery,
   useActiveLocation,
   useAuthStore,
+  useCapabilityStore,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg/src'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 const { $gettext } = useGettext()
 const extensionRegistry = useExtensionRegistry()
 const route = useRoute()
 const authStore = useAuthStore()
+const capabilityStore = useCapabilityStore()
+
+const { supportRadicale } = storeToRefs(capabilityStore)
 
 const navBarClosed = ref<boolean>(false)
 
@@ -73,12 +78,16 @@ const navItems = computed(() => {
       icon: 'brush-2',
       active: unref(isAccountExtensionsActive)
     },
-    {
-      name: $gettext('Calendar'),
-      route: { name: 'account-calendar' },
-      icon: 'calendar',
-      active: unref(isAccountCalendarActive)
-    },
+    ...(unref(supportRadicale)
+      ? [
+          {
+            name: $gettext('Calendar'),
+            route: { name: 'account-calendar' },
+            icon: 'calendar',
+            active: unref(isAccountCalendarActive)
+          }
+        ]
+      : []),
     {
       name: $gettext('GDPR'),
       route: { name: 'account-gdpr' },
