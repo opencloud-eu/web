@@ -2,7 +2,7 @@
   <div id="tiles-view" class="px-4 pt-2">
     <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
-        v-if="isSelectable"
+        v-if="isSelectable && !isFilePicker"
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
         class="ml-2"
@@ -68,13 +68,16 @@
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
           @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click.stop="(e: MouseEvent) => handleClickWithModifier(e, resource)"
+          @file-name-clicked.stop="(e: MouseEvent) => fileNameClicked({ resource, event: e })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
           @drop="fileDropped(resource, $event)"
           @dragover="$event.preventDefault()"
           @item-visible="$emit('itemVisible', resource)"
+          @tile-clicked="
+            fileContainerClicked({ resource, event: $event[1], selectedIds: unref(selectedIds) })
+          "
         >
           <template #selection>
             <oc-checkbox
@@ -87,7 +90,7 @@
               :model-value="isResourceSelected(resource)"
               :data-test-selection-resource-name="resource.name"
               :data-test-selection-resource-path="resource.path"
-              @click.stop.prevent="toggleTile([resource, $event])"
+              @click.stop.prevent="fileCheckboxClicked({ resource, event: $event })"
             />
           </template>
           <template #imageField>
@@ -165,7 +168,6 @@ import {
   CreateTargetRouteOptions,
   displayPositionedDropdown
 } from '../../helpers'
-import { eventBus } from '../../services'
 import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
@@ -180,12 +182,10 @@ import {
   useCanBeOpenedWithSecureView,
   useFileActions,
   useGetMatchingSpace,
-  embedModeFilePickMessageData,
-  routeToContextQuery,
-  useRouter,
   useSideBar,
   useFolderLink,
-  FileActionOptions
+  FileActionOptions,
+  useResourceViewHelpers
 } from '../../composables'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
@@ -243,25 +243,25 @@ defineSlots<{
 }>()
 
 const { $gettext } = useGettext()
-const router = useRouter()
 const resourcesStore = useResourcesStore()
 const { getDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { interceptModifierClick } = useInterceptModifierClick()
 const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
 const { isMobile } = useIsMobile()
-const {
-  isEnabled: isEmbedModeEnabled,
-  fileTypes: embedModeFileTypes,
-  isLocationPicker,
-  isFilePicker,
-  postMessage
-} = useEmbedMode()
+const { isLocationPicker, isFilePicker } = useEmbedMode()
 const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
   return Math.min(unref(viewSizeMax), viewSize)
 })
 const { isSideBarOpen } = useSideBar()
+const {
+  fileContainerClicked,
+  fileNameClicked,
+  fileCheckboxClicked,
+  isResourceDisabled,
+  isResourceInDeleteQueue
+} = useResourceViewHelpers({ emit })
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
@@ -302,25 +302,6 @@ const getRoute = (resource: Resource) => {
   }
 
   return action.route({ space: s, resources: [resource] })
-}
-
-const emitTileClick = (resource: Resource, event?: MouseEvent) => {
-  if (event && interceptModifierClick(event as MouseEvent, resource)) {
-    return
-  }
-
-  if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
-    return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
-      resource: JSON.parse(JSON.stringify(resource)),
-      locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
-    })
-  }
-
-  if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-    toggleSelection(resource)
-  }
-
-  emit('fileClick', { space: getMatchingSpace(resource), resources: [resource] })
 }
 
 const showContextMenuOnBtnClick = (
@@ -366,27 +347,7 @@ const isResourceClickable = (resource: Resource) => {
     return false
   }
 
-  if (unref(isEmbedModeEnabled) && !unref(isFilePicker)) {
-    return false
-  }
-
   return true
-}
-
-const isResourceDisabled = (resource: Resource) => {
-  if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {
-    return (
-      !unref(embedModeFileTypes).includes(resource.extension) &&
-      !unref(embedModeFileTypes).includes(resource.mimeType) &&
-      !resource.isFolder
-    )
-  }
-
-  if (isResourceInDeleteQueue(resource.id)) {
-    return true
-  }
-
-  return resource.processing === true
 }
 
 const isSpaceResourceDisabled = (resource: Resource) => {
@@ -454,38 +415,6 @@ const showContextMenu = (
   }
 
   displayPositionedDropdown(drop._tippy, event, reference)
-}
-
-const handleClickWithModifier = (event: MouseEvent, item: Resource) => {
-  if (interceptModifierClick(event, item)) {
-    toggleSelection(item)
-    return
-  }
-
-  emitTileClick(item, event)
-}
-
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
-  const resource = data[0]
-  const eventData = data[1]
-
-  if (event && interceptModifierClick(event as MouseEvent, resource)) {
-    return
-  }
-
-  if (eventData && eventData.metaKey) {
-    return eventBus.publish('app.files.list.clicked.meta', resource)
-  }
-  if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
-    eventBus.publish('app.files.shiftAnchor.reset')
-  }
-  if (eventData && eventData.shiftKey) {
-    return eventBus.publish('app.files.list.clicked.shift', {
-      resource,
-      skipTargetSelection: false
-    })
-  }
-  toggleSelection(resource)
 }
 
 const toggleSelection = (resource: Resource) => {
@@ -632,10 +561,6 @@ const areAllResourcesSelected = computed(() => {
   return !allResourcesDisabled && allSelected
 })
 
-const isResourceInDeleteQueue = (id: string): boolean => {
-  return resourcesStore.deleteQueue.includes(id)
-}
-
 watch(
   tileSizePixels,
   (px: number | undefined) => {
@@ -655,12 +580,6 @@ watch(isSideBarOpen, () => {
 onMounted(() => {
   window.addEventListener('resize', updateViewWidth)
   updateViewWidth()
-})
-
-eventBus.subscribe('app.files.list.clicked.default', (resource) => {
-  if (isResourceClickable(resource as Resource)) {
-    emitSelect([(resource as Resource).id])
-  }
 })
 
 onBeforeUnmount(() => {
