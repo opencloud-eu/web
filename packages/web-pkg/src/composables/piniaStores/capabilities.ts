@@ -77,6 +77,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   /** @deprecated the server always supports this */
   const supportUrlSigning = computed(() => unref(capabilities).core['support-url-signing'])
   const supportSSE = computed(() => unref(capabilities).core['support-sse'])
+  const supportRadicale = computed(() => unref(capabilities).core['support-radicale'])
   const personalDataExport = computed(() => unref(capabilities).graph['personal-data-export'])
   const status = computed(() => unref(capabilities).core.status)
 
@@ -151,6 +152,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     status,
     supportUrlSigning,
     supportSSE,
+    supportRadicale,
     personalDataExport,
     davReports,
     davTrashbin,
