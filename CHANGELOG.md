@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-21
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- [stable-4.2] fix: hide calendar when env var FRONTEND_DISABLE_RADICALE is set to true (#1660) [[#1671](https://github.com/opencloud-eu/web/pull/1671)]
 - [stable-4.2] fix: move folder replace [[#1662](https://github.com/opencloud-eu/web/pull/1662)]
 - [stable-4.2] fix: editing and loading tags for received shares [[#1659](https://github.com/opencloud-eu/web/pull/1659)]
 - [stable-4.2] fix: catching errors in sse events [[#1658](https://github.com/opencloud-eu/web/pull/1658)]
