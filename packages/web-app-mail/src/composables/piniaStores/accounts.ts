@@ -1,0 +1,64 @@
+import { defineStore } from 'pinia'
+import { ref, unref } from 'vue'
+import { MailAccount } from '../../types'
+
+export const useAccountsStore = defineStore('accounts', () => {
+  const accounts = ref<MailAccount[]>([])
+  const currentAccount = ref<MailAccount>()
+
+  const setAccounts = (data: MailAccount[]) => {
+    accounts.value = data
+  }
+
+  const upsertAccount = (data: MailAccount) => {
+    const existing = unref(accounts).find(({ accountId }) => accountId === data.accountId)
+    if (existing) {
+      Object.assign(existing, data)
+      return
+    }
+    unref(accounts).push(data)
+  }
+
+  const removeAccounts = (values: MailAccount[]) => {
+    accounts.value = unref(accounts).filter(
+      (account) => !values.find(({ accountId }) => accountId === account.accountId)
+    )
+  }
+
+  const setCurrentAccount = (data: MailAccount) => {
+    currentAccount.value = data
+  }
+
+  const updateAccountField = <T extends MailAccount>({
+    id,
+    field,
+    value
+  }: {
+    id: T['accountId']
+    field: keyof T
+    value: T[keyof T]
+  }) => {
+    const account = unref(accounts).find((account) => id === account.accountId) as T
+    if (account) {
+      account[field] = value
+    }
+  }
+
+  const reset = () => {
+    accounts.value = []
+    currentAccount.value = null
+  }
+
+  return {
+    accounts,
+    currentAccount,
+    updateAccountField,
+    setAccounts,
+    upsertAccount,
+    removeAccounts,
+    setCurrentAccount,
+    reset
+  }
+})
+
+export type AccountsStore = ReturnType<typeof useAccountsStore>
