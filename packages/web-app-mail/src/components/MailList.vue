@@ -70,17 +70,16 @@ import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import { Mail, Mailbox } from '../types'
 import { useRoute } from 'vue-router'
+import { useLoadMails } from '../composables/useLoadMails'
 
 const {
   mails = null,
   mailbox = null,
-  selectedMail = null,
-  isLoading = false
+  selectedMail = null
 } = defineProps<{
   mails?: Mail[]
   mailbox?: Mailbox
   selectedMail?: Mail
-  isLoading?: boolean
 }>()
 
 const route = useRoute()
@@ -89,4 +88,6 @@ defineEmits<{
   (e: 'select-mail', mail: Mail): void
   (e: 'back'): void
 }>()
+
+const { isLoading } = useLoadMails()
 </script>

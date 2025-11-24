@@ -1,5 +1,5 @@
 x-opencloud-server: &opencloud-service
-  image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+  image: ${OC_IMAGE:-opencloudeu/opencloud:dev}
   entrypoint: /bin/sh
   command: ['-c', 'opencloud init || true && opencloud server']
   environment: &opencloud-environment
@@ -149,7 +149,7 @@ services:
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
 
   collaboration:
-    image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+    image: ${OC_IMAGE:-opencloudeu/opencloud:dev}
     depends_on:
       opencloud:
         condition: service_started

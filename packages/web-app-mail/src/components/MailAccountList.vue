@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import type { MailAccount } from '../types'
+import { useLoadAccounts } from '../composables/useLoadAccounts'
 
 defineEmits<{
   (e: 'select', payload: MailAccount): void
@@ -32,11 +33,11 @@ defineEmits<{
 
 const {
   accounts = [],
-  selectedAccount = null,
-  isLoading = false
+  selectedAccount = null
 } = defineProps<{
   accounts?: MailAccount[]
   selectedAccount?: MailAccount
-  isLoading?: boolean
 }>()
+
+const { isLoading } = useLoadAccounts()
 </script>

@@ -45,20 +45,21 @@
 <script setup lang="ts">
 import type { MailAccount, Mailbox } from '../types'
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
+import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 
 const {
   account,
   mailboxes = null,
-  isLoading = false,
   selectedMailbox = null
 } = defineProps<{
   account: MailAccount
   mailboxes?: Mailbox[]
   selectedMailbox?: Mailbox
-  isLoading?: boolean
 }>()
 
 defineEmits<{
   (e: 'select', payload: Mailbox): void
 }>()
+
+const { isLoading } = useLoadMailboxes()
 </script>

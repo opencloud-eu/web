@@ -12,7 +12,6 @@
           <MailAccountList
             :accounts="accounts"
             :selected-account="account"
-            :is-loading="isAccountsLoading"
             @select="onSelectAccount"
           />
         </div>
@@ -21,7 +20,6 @@
           <MailboxTree
             :account="account"
             :mailboxes="mailboxes"
-            :is-loading="isMailboxesLoading"
             :selected-mailbox="mailbox"
             @select="onSelectMailbox"
           />
@@ -37,7 +35,6 @@
           :mails="mails"
           :mailbox="mailbox"
           :selected-mail="mailDetails"
-          :is-loading="isMailsLoading"
           @select-mail="onSelectMail"
           @back="onNavigateBackMailbox"
         />
@@ -51,7 +48,6 @@
         <MailDetails
           :account="account"
           :mail="mailDetails"
-          :is-loading="isMailLoading"
           @back="onNavigateBackMail"
         />
       </div>
@@ -63,7 +59,7 @@
 import { z } from 'zod'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { ref, computed, unref, onMounted, watch } from 'vue'
+import { ref, unref, onMounted, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
@@ -87,13 +83,6 @@ const isLoading = ref<boolean>(true)
 const selectedMailIdQuery = useRouteQuery('mailId')
 const selectedAccountIdQuery = useRouteQuery('accountId')
 const selectedMailboxIdQuery = useRouteQuery('mailboxId')
-
-const isAccountsLoading = computed(() => loadAccountsTask.isRunning || !loadAccountsTask.last)
-const isMailboxesLoading = computed(() => loadMailboxesTask.isRunning || !loadMailboxesTask.last)
-
-const isMailsLoading = computed(() => loadMailSummaryTask.isRunning || !loadMailSummaryTask.last)
-
-const isMailLoading = computed(() => loadMailTask.isRunning)
 
 const onSelectMailbox = async (selectedMailbox: Mailbox) => {
   mailbox.value = selectedMailbox

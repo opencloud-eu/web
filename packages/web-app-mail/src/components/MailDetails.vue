@@ -60,20 +60,21 @@ import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import MailAppointmentList from './MailAppointmentList.vue'
+import { useLoadMail } from '../composables/useLoadMail'
 
 const {
   account,
-  mail = null,
-  isLoading = false
+  mail = null
 } = defineProps<{
   account: MailAccount
   mail?: Mail
-  isLoading?: boolean
 }>()
 
 defineEmits<{
   (e: 'back'): void
 }>()
+
+const { isLoading } = useLoadMail()
 
 const { current: currentLanguage } = useGettext()
 
