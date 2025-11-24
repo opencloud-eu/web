@@ -17,6 +17,7 @@ export const useLoadMail = () => {
       )
       const mail = MailSchema.parse(data)
       mailsStore.setCurrentMail(mail)
+      console.info('Loaded mail:', mail)
       return mail
     } catch (e) {
       console.error('Failed to load mail:', e)

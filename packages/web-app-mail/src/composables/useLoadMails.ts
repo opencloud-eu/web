@@ -18,6 +18,7 @@ export const useLoadMails = () => {
       )
       const mails = z.array(MailSchema).parse(data.emails || [])
       mailsStore.setMails(mails)
+      console.info('Loaded mails:', mails)
       return mails
     } catch (e) {
       console.error('Failed to load mails:', e)

@@ -18,6 +18,7 @@ export const useLoadMailboxes = () => {
       )
       const mailboxes = z.array(MailboxSchema).parse(data)
       mailboxesStore.setMailboxes(mailboxes)
+      console.info('Loaded mailboxes:', mailboxes)
       return mailboxes
     } catch (e) {
       console.error('Failed to load mailboxes:', e)

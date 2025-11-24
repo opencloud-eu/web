@@ -18,6 +18,7 @@ export const useLoadAccounts = () => {
       )
       const accounts = z.array(MailAccountSchema).parse(data)
       accountsStore.setAccounts(accounts)
+      console.info('Loaded accounts:', accounts)
       return accounts
     } catch (e) {
       console.error('Failed to load accounts:', e)
