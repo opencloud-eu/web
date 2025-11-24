@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: hide calendar when env var FRONTEND_DISABLE_RADICALE is set to true [[#1660](https://github.com/opencloud-eu/web/pull/1660)]
 - fix: move folder replace [[#1627](https://github.com/opencloud-eu/web/pull/1627)]
 - fix: editing and loading tags for received shares [[#1650](https://github.com/opencloud-eu/web/pull/1650)]
 - fix: catching errors in sse events [[#1654](https://github.com/opencloud-eu/web/pull/1654)]
