@@ -1,15 +1,21 @@
-import { computed, markRaw } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { preferencesPanelExtensionPoint, progressBarExtensionPoint } from './extensionPoints'
 import AppTokens from './components/Account/AppTokens.vue'
 import {
   AccountExtension,
   AppMenuItemExtension,
   CustomComponentExtension,
-  LoadingIndicator
+  LoadingIndicator,
+  useCapabilityStore
 } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+
 const $gettext = (str: string) => str
 
 export const extensions = () => {
+  const capabilityStore = useCapabilityStore()
+  const { supportRadicale } = storeToRefs(capabilityStore)
+
   return computed(() => [
     {
       id: 'com.github.opencloud-eu.web.runtime.preferences-panels.app-tokens',
@@ -28,13 +34,17 @@ export const extensions = () => {
         optionLabel: $gettext('Default progress bar')
       }
     } as CustomComponentExtension,
-    {
-      id: 'com.github.opencloud-eu.web.runtime.app-menu-item.Calendar',
-      type: 'appMenuItem',
-      label: () => $gettext('Calendar'),
-      color: '#0478d4',
-      icon: 'calendar',
-      path: '/account/calendar'
-    } as AppMenuItemExtension
+    ...(unref(supportRadicale)
+      ? [
+          {
+            id: 'com.github.opencloud-eu.web.runtime.app-menu-item.Calendar',
+            type: 'appMenuItem',
+            label: () => $gettext('Calendar'),
+            color: '#0478d4',
+            icon: 'calendar',
+            path: '/account/calendar'
+          } as AppMenuItemExtension
+        ]
+      : [])
   ])
 }
