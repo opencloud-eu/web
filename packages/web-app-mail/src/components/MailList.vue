@@ -55,7 +55,7 @@
             appearance="raw"
             gap-size="none"
             no-hover
-            @click="$emit('select-mail', mail)"
+            @click="onSelectMail(mail)"
           >
             <MailListItem :mail="mail" />
           </oc-button>
@@ -74,18 +74,25 @@ import { useLoadMails } from '../composables/useLoadMails'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
+import { useLoadMail } from '../composables/useLoadMail'
+import { unref } from 'vue'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
 
 const route = useRoute()
-
+const accountsStore = useAccountsStore()
+const { currentAccount } = storeToRefs(accountsStore)
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const { currentMail, mails } = storeToRefs(mailsStore)
+const { setCurrentMail, updateMailField } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
-
-defineEmits<{
-  (e: 'select-mail', mail: Mail): void
-  (e: 'back'): void
-}>()
+const { loadMail } = useLoadMail()
 
 const { isLoading } = useLoadMails()
+
+const onSelectMail = async (mail: Mail) => {
+  const loadedMail = await loadMail(unref(currentAccount).accountId, mail.id)
+  setCurrentMail(loadedMail)
+  updateMailField({ id: unref(currentMail).id, field: 'keywords', value: { seen: true } })
+}
 </script>

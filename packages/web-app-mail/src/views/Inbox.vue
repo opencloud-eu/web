@@ -71,34 +71,34 @@ const { loadMail } = useLoadMail()
 
 const isLoading = ref<boolean>(true)
 
-const selectedMailIdQuery = useRouteQuery('mailId')
-const selectedAccountIdQuery = useRouteQuery('accountId')
-const selectedMailboxIdQuery = useRouteQuery('mailboxId')
+const currentAccountIdQuery = useRouteQuery('accountId')
+const currentMailboxIdQuery = useRouteQuery('mailboxId')
+const currentMailIdQuery = useRouteQuery('mailId')
 
 onMounted(async () => {
   await loadAccounts()
-  if (unref(selectedAccountIdQuery)) {
+  if (unref(currentAccountIdQuery)) {
     setCurrentAccount(
-      unref(accounts).find((account) => account.accountId === unref(selectedAccountIdQuery))
+      unref(accounts).find((account) => account.accountId === unref(currentAccountIdQuery))
     )
   } else {
     setCurrentAccount(unref(accounts)?.[0])
   }
 
   await loadMailboxes(unref(currentAccount).accountId)
-  if (unref(selectedMailboxIdQuery)) {
+  if (unref(currentMailboxIdQuery)) {
     setCurrentMailbox(
-      unref(mailboxes).find((mailbox) => mailbox.id === unref(selectedMailboxIdQuery))
+      unref(mailboxes).find((mailbox) => mailbox.id === unref(currentMailboxIdQuery))
     )
   } else {
     setCurrentMailbox(unref(mailboxes)?.[0])
   }
 
   await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
-  if (unref(selectedMailIdQuery)) {
+  if (unref(currentMailIdQuery)) {
     const mail = await loadMail(
       unref(currentAccount).accountId,
-      queryItemAsString(unref(selectedMailIdQuery))
+      queryItemAsString(unref(currentMailIdQuery))
     )
     setCurrentMail(mail)
   }

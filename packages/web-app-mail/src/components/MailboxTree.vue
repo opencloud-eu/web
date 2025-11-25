@@ -18,7 +18,7 @@
               justify-content="left"
               appearance="raw"
               size="small"
-              @click="$emit('select', mailbox)"
+              @click="onSelectMailbox(mailbox)"
             >
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center truncate">
@@ -49,15 +49,22 @@ import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useMailsStore } from '../composables/piniaStores/mails'
+import { useLoadMails } from '../composables/useLoadMails'
+import { unref } from 'vue'
 
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useAccountsStore()
 const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
+const { setCurrentMailbox } = mailboxesStore
 const { currentAccount } = storeToRefs(accountsStore)
-
-defineEmits<{
-  (e: 'select', payload: Mailbox): void
-}>()
-
+const { setCurrentMail } = useMailsStore()
+const { loadMails } = useLoadMails()
 const { isLoading } = useLoadMailboxes()
+
+const onSelectMailbox = async (mailbox: Mailbox) => {
+  setCurrentMailbox(mailbox)
+  setCurrentMail(null)
+  await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
+}
 </script>

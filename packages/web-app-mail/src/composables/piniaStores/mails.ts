@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, unref } from 'vue'
 import { Mail } from '../../types'
+import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
 
 export const useMailsStore = defineStore('mails', () => {
+  const currentMailIdQuery = useRouteQuery('mailId')
+
   const mails = ref<Mail[]>([])
   const currentMail = ref<Mail>()
 
@@ -25,6 +28,7 @@ export const useMailsStore = defineStore('mails', () => {
 
   const setCurrentMail = (data: Mail) => {
     currentMail.value = data
+    currentMailIdQuery.value = data?.id
   }
 
   const updateMailField = <T extends Mail>({

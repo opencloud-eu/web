@@ -16,7 +16,6 @@ export const useLoadMail = () => {
         urlJoin(configStore.groupwareUrl, `accounts/${accountId}/emails/${mailId}?markAsSeen=true`)
       )
       const mail = MailSchema.parse(data)
-      mailsStore.setCurrentMail(mail)
       console.info('Loaded mail:', mail)
       return mail
     } catch (e) {
