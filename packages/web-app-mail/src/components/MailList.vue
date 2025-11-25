@@ -93,6 +93,10 @@ const { isLoading } = useLoadMails()
 const onSelectMail = async (mail: Mail) => {
   const loadedMail = await loadMail(unref(currentAccount).accountId, mail.id)
   setCurrentMail(loadedMail)
-  updateMailField({ id: unref(currentMail).id, field: 'keywords', value: { seen: true } })
+  updateMailField({
+    id: unref(currentMail).id,
+    field: 'keywords',
+    value: { ...unref(currentMail).keywords, ...{ $seen: true } }
+  })
 }
 </script>
