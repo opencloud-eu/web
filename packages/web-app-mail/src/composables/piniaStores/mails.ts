@@ -20,9 +20,7 @@ export const useMailsStore = defineStore('mails', () => {
   }
 
   const removeMails = (values: Mail[]) => {
-    mails.value = unref(mails).filter(
-      (mail) => !values.find(({ id }) => id === mail.id)
-    )
+    mails.value = unref(mails).filter((mail) => !values.find(({ id }) => id === mail.id))
   }
 
   const setCurrentMail = (data: Mail) => {
