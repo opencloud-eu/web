@@ -9,7 +9,7 @@ import { z } from 'zod'
 export const useLoadAccounts = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
-  const accountsStore = useAccountsStore()
+  const { setAccounts } = useAccountsStore()
 
   const loadAccountsTask = useTask(function* (signal) {
     try {
@@ -17,7 +17,7 @@ export const useLoadAccounts = () => {
         urlJoin(configStore.groupwareUrl, `accounts`)
       )
       const accounts = z.array(MailAccountSchema).parse(data)
-      accountsStore.setAccounts(accounts)
+      setAccounts(accounts)
       console.info('Loaded accounts:', accounts)
       return accounts
     } catch (e) {

@@ -62,7 +62,6 @@ const { setCurrentAccount } = accountsStore
 const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
 const { currentMail } = storeToRefs(mailsStore)
-const { setCurrentMail } = mailsStore
 
 const { loadAccounts } = useLoadAccounts()
 const { loadMailboxes } = useLoadMailboxes()
@@ -95,12 +94,9 @@ onMounted(async () => {
   }
 
   await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
+
   if (unref(currentMailIdQuery)) {
-    const mail = await loadMail(
-      unref(currentAccount).accountId,
-      queryItemAsString(unref(currentMailIdQuery))
-    )
-    setCurrentMail(mail)
+    await loadMail(unref(currentAccount).accountId, queryItemAsString(unref(currentMailIdQuery)))
   }
 
   isLoading.value = false

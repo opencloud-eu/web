@@ -13,7 +13,7 @@
           appearance="raw"
           no-hover
           :aria-label="$gettext('Navigate back')"
-          @click="$emit('back')"
+          @click="onNavigateBack"
         >
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
@@ -84,15 +84,20 @@ const { currentAccount } = storeToRefs(accountsStore)
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const { currentMail, mails } = storeToRefs(mailsStore)
-const { setCurrentMail, updateMailField } = mailsStore
+const { updateMailField, setCurrentMail } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
+const { setCurrentMailbox } = mailboxesStore
 const { loadMail } = useLoadMail()
-
 const { isLoading } = useLoadMails()
 
+const onNavigateBack = () => {
+  setCurrentMailbox(null)
+  setCurrentMail(null)
+}
+
 const onSelectMail = async (mail: Mail) => {
-  const loadedMail = await loadMail(unref(currentAccount).accountId, mail.id)
-  setCurrentMail(loadedMail)
+  await loadMail(unref(currentAccount).accountId, mail.id)
+
   updateMailField({
     id: unref(currentMail).id,
     field: 'keywords',

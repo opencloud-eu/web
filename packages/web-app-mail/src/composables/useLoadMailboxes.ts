@@ -9,7 +9,7 @@ import { z } from 'zod'
 export const useLoadMailboxes = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
-  const mailboxesStore = useMailboxesStore()
+  const { setMailboxes } = useMailboxesStore()
 
   const loadMailboxesTask = useTask(function* (signal, accountId: string) {
     try {
@@ -17,7 +17,7 @@ export const useLoadMailboxes = () => {
         urlJoin(configStore.groupwareUrl, `accounts/${accountId}/mailboxes`)
       )
       const mailboxes = z.array(MailboxSchema).parse(data)
-      mailboxesStore.setMailboxes(mailboxes)
+      setMailboxes(mailboxes)
       console.info('Loaded mailboxes:', mailboxes)
       return mailboxes
     } catch (e) {

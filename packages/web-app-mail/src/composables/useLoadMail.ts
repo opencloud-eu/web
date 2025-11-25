@@ -8,7 +8,7 @@ import { urlJoin } from '@opencloud-eu/web-client'
 export const useLoadMail = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
-  const mailsStore = useMailsStore()
+  const { setCurrentMail } = useMailsStore()
 
   const loadMailTask = useTask(function* (signal, accountId: string, mailId: string) {
     try {
@@ -16,6 +16,7 @@ export const useLoadMail = () => {
         urlJoin(configStore.groupwareUrl, `accounts/${accountId}/emails/${mailId}?markAsSeen=true`)
       )
       const mail = MailSchema.parse(data)
+      setCurrentMail(mail)
       console.info('Loaded mail:', mail)
       return mail
     } catch (e) {

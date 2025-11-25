@@ -12,7 +12,7 @@
         appearance="raw"
         no-hover
         :aria-label="$gettext('Navigate back')"
-        @click="$emit('back')"
+        @click="onNavigateBack"
       >
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
@@ -64,17 +64,13 @@ import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { storeToRefs } from 'pinia'
 
-defineEmits<{
-  (e: 'back'): void
-}>()
-
 const { isLoading } = useLoadMail()
-
 const { current: currentLanguage } = useGettext()
 const accountsStore = useAccountsStore()
 const mailsStore = useMailsStore()
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail } = storeToRefs(mailsStore)
+const { setCurrentMail } = mailsStore
 
 const fromEmail = computed(() => {
   return unref(currentMail)?.from[0]?.email || unref(currentMail)?.sender[0]?.email
@@ -102,4 +98,8 @@ const receivedAtRelativeDate = computed(() => {
 const appointments = computed(() => {
   return unref(currentMail).attachments?.filter((attachment) => attachment.type === 'text/calendar')
 })
+
+const onNavigateBack = () => {
+  setCurrentMail(null)
+}
 </script>
