@@ -30,7 +30,7 @@
           'hidden md:block': !currentMail
         }"
       >
-        <MailDetails />
+        <MailDetails :key="currentMail?.id" />
       </div>
     </div>
   </template>
