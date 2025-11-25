@@ -30,7 +30,7 @@ export const useMailboxesStore = defineStore('mailboxes', () => {
 
   const setCurrentMailbox = (data: Mailbox) => {
     currentMailbox.value = data
-    currentMailboxIdQuery.value = data?.id
+    currentMailboxIdQuery.value = data.id
   }
 
   const updateMailboxField = <T extends Mailbox>({
