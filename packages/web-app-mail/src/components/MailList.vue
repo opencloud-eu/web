@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!mailbox" icon="folder" icon-fill-type="line">
+    <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
       </template>
@@ -17,7 +17,7 @@
         >
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
-        <h2 class="text-lg ml-4" v-text="mailbox.name"></h2>
+        <h2 class="text-lg ml-4" v-text="currentMailbox.name"></h2>
         <div class="paceholder" />
       </div>
       <div class="py-2 px-4">
@@ -47,7 +47,7 @@
           v-for="mail in mails"
           :key="mail.id"
           class="border-b-2"
-          :class="{ 'bg-role-secondary-container': selectedMail?.id === mail.id }"
+          :class="{ 'bg-role-secondary-container': currentMail?.id === mail.id }"
         >
           <oc-button
             class="px-4 py-4 text-left w-full"
@@ -68,21 +68,19 @@
 <script setup lang="ts">
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
-import { Mail, Mailbox } from '../types'
+import { Mail } from '../types'
 import { useRoute } from 'vue-router'
 import { useLoadMails } from '../composables/useLoadMails'
-
-const {
-  mails = null,
-  mailbox = null,
-  selectedMail = null
-} = defineProps<{
-  mails?: Mail[]
-  mailbox?: Mailbox
-  selectedMail?: Mail
-}>()
+import { useMailsStore } from '../composables/piniaStores/mails'
+import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
+import { storeToRefs } from 'pinia'
 
 const route = useRoute()
+
+const mailsStore = useMailsStore()
+const mailboxesStore = useMailboxesStore()
+const { currentMail, mails } = storeToRefs(mailsStore)
+const { currentMailbox } = storeToRefs(mailboxesStore)
 
 defineEmits<{
   (e: 'select-mail', mail: Mail): void

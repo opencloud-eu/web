@@ -12,7 +12,7 @@
         >
           <oc-avatar
             :class="{
-              'border-2 border-role-secondary': selectedAccount?.accountId === account.accountId
+              'border-2 border-role-secondary': currentAccount?.accountId === account.accountId
             }"
             :user-name="account.name"
           />
@@ -26,18 +26,15 @@
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import type { MailAccount } from '../types'
 import { useLoadAccounts } from '../composables/useLoadAccounts'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { storeToRefs } from 'pinia'
 
 defineEmits<{
   (e: 'select', payload: MailAccount): void
 }>()
 
-const {
-  accounts = [],
-  selectedAccount = null
-} = defineProps<{
-  accounts?: MailAccount[]
-  selectedAccount?: MailAccount
-}>()
+const accountsStore = useAccountsStore()
+const { accounts, currentAccount } = storeToRefs(accountsStore)
 
 const { isLoading } = useLoadAccounts()
 </script>
