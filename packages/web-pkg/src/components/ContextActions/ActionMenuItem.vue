@@ -25,14 +25,14 @@
       <oc-image
         v-else-if="hasExternalImageIcon"
         data-testid="action-img"
-        :src="action.icon"
+        :src="actionIcon"
         alt=""
         class="oc-icon oc-icon-m"
       />
       <oc-icon
-        v-else-if="action.icon"
+        v-else-if="actionIcon"
         data-testid="action-icon"
-        :name="action.icon"
+        :name="actionIcon"
         :fill-type="action.iconFillType || 'line'"
         :size="size"
       />
@@ -137,14 +137,21 @@ export default defineComponent({
       }
     })
 
+    const actionIcon = computed(() => {
+      return typeof props.action.icon === 'function'
+        ? props.action.icon(props.actionOptions)
+        : props.action.icon
+    })
+
     return {
       componentType,
-      componentProps
+      componentProps,
+      actionIcon
     }
   },
   computed: {
     hasExternalImageIcon() {
-      return this.action.icon && /^https?:\/\//i.test(this.action.icon)
+      return this.actionIcon && /^https?:\/\//i.test(this.actionIcon)
     },
     componentListeners() {
       if (typeof this.action.handler !== 'function') {

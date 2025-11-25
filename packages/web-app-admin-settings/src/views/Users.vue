@@ -24,7 +24,7 @@
             appearance="filled"
             @click="createUserAction.handler()"
           >
-            <oc-icon :name="createUserAction.icon" />
+            <oc-icon :name="createUserActionIcon" />
             <span v-if="!limitedScreenSpace" v-text="createUserAction.label()" />
           </oc-button>
         </div>
@@ -210,6 +210,10 @@ export default defineComponent({
 
     const { actions: createUserActions } = useUserActionsCreateUser()
     const createUserAction = computed(() => unref(createUserActions)[0])
+    const createUserActionIcon = computed(() => {
+      const action = unref(createUserAction)
+      return typeof action.icon === 'function' ? action.icon() : action.icon
+    })
 
     const { actions: deleteActions } = useUserActionsDelete()
     const { actions: removeFromGroupsActions } = useUserActionsRemoveFromGroups({
@@ -501,6 +505,7 @@ export default defineComponent({
       sideBarPanelContext,
       sideBarAvailablePanels,
       createUserAction,
+      createUserActionIcon,
       userSettingsStore
     }
   },
