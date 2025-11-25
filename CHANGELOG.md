@@ -10,6 +10,12 @@
 
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
 
+### 📈 Enhancement
+
+- feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
+- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
+
 ### 🐛 Bug Fixes
 
 - fix: hide calendar when env var FRONTEND_DISABLE_RADICALE is set to true [[#1660](https://github.com/opencloud-eu/web/pull/1660)]
@@ -38,11 +44,6 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
-
-### 📈 Enhancement
-
-- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
-- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### ✅ Tests
 
