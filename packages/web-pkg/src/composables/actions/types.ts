@@ -10,7 +10,7 @@ export type ActionOptions = Record<string, unknown | unknown[]>
 export interface Action<T = ActionOptions> {
   name: string
   category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
-  icon: string
+  icon: string | ((options?: ActionOptions) => string)
   iconFillType?: IconFillType
   appearance?: AppearanceType
   id?: string
