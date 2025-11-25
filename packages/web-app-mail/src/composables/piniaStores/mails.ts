@@ -28,7 +28,7 @@ export const useMailsStore = defineStore('mails', () => {
 
   const setCurrentMail = (data: Mail) => {
     currentMail.value = data
-    currentMailIdQuery.value = data?.id
+    currentMailIdQuery.value = data.id
   }
 
   const updateMailField = <T extends Mail>({
