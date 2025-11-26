@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, unref } from 'vue'
 import { Mail } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg/src'
 
 export const useMailsStore = defineStore('mails', () => {
   const currentMailIdQuery = useRouteQuery('mailId')
@@ -24,6 +24,10 @@ export const useMailsStore = defineStore('mails', () => {
 
   const removeMails = (values: Mail[]) => {
     mails.value = unref(mails).filter((mail) => !values.find(({ id }) => id === mail.id))
+
+    if (values.some((v) => v.accountId === queryItemAsString(unref(currentMailIdQuery)))) {
+      currentMailIdQuery.value = null
+    }
   }
 
   const setCurrentMail = (data: Mail) => {
