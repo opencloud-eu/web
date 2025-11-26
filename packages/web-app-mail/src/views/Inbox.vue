@@ -84,6 +84,8 @@ onMounted(async () => {
     setCurrentAccount(unref(accounts)?.[0])
   }
 
+  console.log(unref(currentAccount))
+
   await loadMailboxes(unref(currentAccount).accountId)
   if (unref(currentMailboxIdQuery)) {
     setCurrentMailbox(

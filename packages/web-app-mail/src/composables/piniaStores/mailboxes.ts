@@ -1,13 +1,17 @@
 import { defineStore } from 'pinia'
-import { ref, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { Mailbox } from '../../types'
-import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
 
 export const useMailboxesStore = defineStore('mailboxes', () => {
   const currentMailboxIdQuery = useRouteQuery('mailboxId')
 
   const mailboxes = ref<Mailbox[]>([])
-  const currentMailbox = ref<Mailbox>()
+  const currentMailboxId = ref<string>()
+
+  const currentMailbox = computed(() =>
+    unref(mailboxes).find((mailbox) => mailbox.id === unref(currentMailboxId))
+  )
 
   const setMailboxes = (data: Mailbox[]) => {
     mailboxes.value = data
@@ -27,14 +31,15 @@ export const useMailboxesStore = defineStore('mailboxes', () => {
       (mailbox) => !values.find(({ id }) => id === mailbox.id)
     )
 
-    if (values.some((v) => v.id === queryItemAsString(unref(currentMailboxIdQuery)))) {
+    if (values.some((v) => v.id === unref(currentMailboxId))) {
+      currentMailboxId.value = null
       currentMailboxIdQuery.value = null
     }
   }
 
   const setCurrentMailbox = (data: Mailbox) => {
-    currentMailbox.value = data
-    currentMailboxIdQuery.value = data.id
+    currentMailboxId.value = data?.id
+    currentMailboxIdQuery.value = data?.id
   }
 
   const updateMailboxField = <T extends Mailbox>({
@@ -54,7 +59,7 @@ export const useMailboxesStore = defineStore('mailboxes', () => {
 
   const reset = () => {
     mailboxes.value = []
-    currentMailbox.value = null
+    currentMailboxId.value = null
     currentMailboxIdQuery.value = null
   }
 

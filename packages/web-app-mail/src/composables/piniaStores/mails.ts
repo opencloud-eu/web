@@ -1,13 +1,15 @@
 import { defineStore } from 'pinia'
-import { ref, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { Mail } from '../../types'
-import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
 
 export const useMailsStore = defineStore('mails', () => {
   const currentMailIdQuery = useRouteQuery('mailId')
 
   const mails = ref<Mail[]>([])
-  const currentMail = ref<Mail>()
+  const currentMailId = ref<string>()
+
+  const currentMail = computed(() => unref(mails).find((mail) => mail.id === unref(currentMailId)))
 
   const setMails = (data: Mail[]) => {
     mails.value = data
@@ -25,14 +27,15 @@ export const useMailsStore = defineStore('mails', () => {
   const removeMails = (values: Mail[]) => {
     mails.value = unref(mails).filter((mail) => !values.find(({ id }) => id === mail.id))
 
-    if (values.some((v) => v.accountId === queryItemAsString(unref(currentMailIdQuery)))) {
+    if (values.some((v) => v.accountId === unref(currentMailId))) {
+      currentMailId.value = null
       currentMailIdQuery.value = null
     }
   }
 
   const setCurrentMail = (data: Mail) => {
-    currentMail.value = data
-    currentMailIdQuery.value = data.id
+    currentMailId.value = data?.id
+    currentMailIdQuery.value = data?.id
   }
 
   const updateMailField = <T extends Mail>({
@@ -52,7 +55,7 @@ export const useMailsStore = defineStore('mails', () => {
 
   const reset = () => {
     mails.value = []
-    currentMail.value = null
+    currentMailId.value = null
     currentMailIdQuery.value = null
   }
 
