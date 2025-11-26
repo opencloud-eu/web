@@ -51,6 +51,7 @@ export const useAccountsStore = defineStore('accounts', () => {
   const reset = () => {
     accounts.value = []
     currentAccount.value = null
+    currentAccountIdQuery.value = null
   }
 
   return {

@@ -49,6 +49,7 @@ export const useMailsStore = defineStore('mails', () => {
   const reset = () => {
     mails.value = []
     currentMail.value = null
+    currentMailIdQuery.value = null
   }
 
   return {

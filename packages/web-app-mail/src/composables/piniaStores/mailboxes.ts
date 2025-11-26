@@ -51,6 +51,7 @@ export const useMailboxesStore = defineStore('mailboxes', () => {
   const reset = () => {
     mailboxes.value = []
     currentMailbox.value = null
+    currentMailboxIdQuery.value = null
   }
 
   return {
