@@ -23,7 +23,7 @@
     <oc-list>
       <li v-for="account in accounts" :key="account.accountId" class="oc-list">
         <oc-button
-          class="p2"
+          class="p-2"
           :appearance="account.accountId === currentAccount.accountId ? 'filled' : 'raw-inverse'"
           :color-role="
             account.accountId === currentAccount.accountId ? 'secondaryContainer' : 'surface'
