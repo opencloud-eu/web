@@ -13,7 +13,10 @@
         <oc-avatar :user-name="currentAccount.name" />
         <div class="flex flex-col items-start ml-5 truncate">
           <span class="font-bold" v-text="currentAccount.name" />
-          <span v-text="currentAccount.identities[0].email" />
+          <span
+            v-if="currentAccount.identities?.[0]?.email"
+            v-text="currentAccount.identities[0].email"
+          />
         </div>
       </div>
       <oc-icon class="ml-2" name="more-2" />
@@ -35,10 +38,14 @@
               <oc-avatar :user-name="account.name" />
               <div class="flex flex-col items-start ml-5 truncate">
                 <span class="font-bold" v-text="account.name" />
-                <span v-text="account.identities[0].email" />
+                <span v-if="account.identities?.[0]?.email" v-text="account.identities[0].email" />
               </div>
             </div>
-            <oc-icon v-if="account.accountId === currentAccount.accountId" class="ml-2" name="check" />
+            <oc-icon
+              v-if="account.accountId === currentAccount.accountId"
+              class="ml-2"
+              name="check"
+            />
           </div>
         </oc-button>
       </li>
