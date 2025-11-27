@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!mailbox" icon="folder" icon-fill-type="line">
+    <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
       </template>
@@ -13,11 +13,11 @@
           appearance="raw"
           no-hover
           :aria-label="$gettext('Navigate back')"
-          @click="$emit('back')"
+          @click="onNavigateBack"
         >
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
-        <h2 class="text-lg ml-4" v-text="mailbox.name"></h2>
+        <h2 class="text-lg ml-4" v-text="currentMailbox.name"></h2>
         <div class="paceholder" />
       </div>
       <div class="py-2 px-4">
@@ -47,7 +47,7 @@
           v-for="mail in mails"
           :key="mail.id"
           class="border-b-2"
-          :class="{ 'bg-role-secondary-container': selectedMail?.id === mail.id }"
+          :class="{ 'bg-role-secondary-container': currentMail?.id === mail.id }"
         >
           <oc-button
             class="px-4 py-4 text-left w-full"
@@ -55,7 +55,7 @@
             appearance="raw"
             gap-size="none"
             no-hover
-            @click="$emit('select-mail', mail)"
+            @click="onSelectMail(mail)"
           >
             <MailListItem :mail="mail" />
           </oc-button>
@@ -68,25 +68,40 @@
 <script setup lang="ts">
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
-import { Mail, Mailbox } from '../types'
+import { Mail } from '../types'
 import { useRoute } from 'vue-router'
-
-const {
-  mails = null,
-  mailbox = null,
-  selectedMail = null,
-  isLoading = false
-} = defineProps<{
-  mails?: Mail[]
-  mailbox?: Mailbox
-  selectedMail?: Mail
-  isLoading?: boolean
-}>()
+import { useLoadMails } from '../composables/useLoadMails'
+import { useMailsStore } from '../composables/piniaStores/mails'
+import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
+import { storeToRefs } from 'pinia'
+import { useLoadMail } from '../composables/useLoadMail'
+import { unref } from 'vue'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
 
 const route = useRoute()
+const accountsStore = useAccountsStore()
+const { currentAccount } = storeToRefs(accountsStore)
+const mailsStore = useMailsStore()
+const mailboxesStore = useMailboxesStore()
+const { currentMail, mails } = storeToRefs(mailsStore)
+const { updateMailField, setCurrentMail } = mailsStore
+const { currentMailbox } = storeToRefs(mailboxesStore)
+const { setCurrentMailbox } = mailboxesStore
+const { loadMail } = useLoadMail()
+const { isLoading } = useLoadMails()
 
-defineEmits<{
-  (e: 'select-mail', mail: Mail): void
-  (e: 'back'): void
-}>()
+const onNavigateBack = () => {
+  setCurrentMailbox(null)
+  setCurrentMail(null)
+}
+
+const onSelectMail = async (mail: Mail) => {
+  await loadMail(unref(currentAccount).accountId, mail.id)
+
+  updateMailField({
+    id: unref(currentMail).id,
+    field: 'keywords',
+    value: { ...unref(currentMail).keywords, ...{ $seen: true } }
+  })
+}
 </script>
