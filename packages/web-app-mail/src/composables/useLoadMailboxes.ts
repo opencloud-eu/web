@@ -31,7 +31,7 @@ export const useLoadMailboxes = () => {
     }).restartable()
   }
 
-  const loadMailboxes = async (accountId: string) => {
+  const loadMailboxes = (accountId: string) => {
     return loadMailboxesTask!.perform(accountId)
   }
 
