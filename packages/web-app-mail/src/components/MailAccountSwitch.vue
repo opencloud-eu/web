@@ -1,25 +1,48 @@
 <template>
-  <div class="flex justify-center">
+  <oc-button
+    id="account-list-toggle"
+    class="w-full"
+    appearance="filled"
+    color-role="surface"
+    no-hover
+  >
     <app-loading-spinner v-if="isLoading" />
-    <oc-list v-else>
-      <li v-for="account in accounts" :key="account.accountId">
+    <div v-else class="flex justify-between items-center w-full">
+      <div class="flex items-center">
+        <oc-avatar :user-name="currentAccount.name" />
+        <div class="flex flex-col items-start ml-5">
+          <span class="font-bold" v-text="currentAccount.name" />
+          <span v-text="currentAccount.identities[0].email" />
+        </div>
+      </div>
+      <oc-icon name="more-2" />
+    </div>
+  </oc-button>
+  <oc-drop :title="$gettext('Accounts')" class="w-md" toggle="#account-list-toggle" close-on-click>
+    <oc-list>
+      <li v-for="account in accounts" :key="account.accountId" class="oc-list">
         <oc-button
-          v-oc-tooltip="account.name"
-          class="account-list-item mt-4"
-          no-hover
-          appearance="raw"
+          class="p2"
+          :appearance="account.accountId === currentAccount.accountId ? 'filled' : 'raw-inverse'"
+          :color-role="
+            account.accountId === currentAccount.accountId ? 'secondaryContainer' : 'surface'
+          "
           @click="onSelectAccount(account)"
         >
-          <oc-avatar
-            :class="{
-              'border-2 border-role-secondary': currentAccount?.accountId === account.accountId
-            }"
-            :user-name="account.name"
-          />
+          <div class="flex justify-between items-center w-full">
+            <div class="flex items-center">
+              <oc-avatar :user-name="account.name" />
+              <div class="flex flex-col items-start ml-5">
+                <span class="font-bold" v-text="account.name" />
+                <span v-text="account.identities[0].email" />
+              </div>
+            </div>
+            <oc-icon name="check" />
+          </div>
         </oc-button>
       </li>
     </oc-list>
-  </div>
+  </oc-drop>
 </template>
 
 <script setup lang="ts">
