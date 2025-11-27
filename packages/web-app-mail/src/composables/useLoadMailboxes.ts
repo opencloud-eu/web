@@ -6,31 +6,34 @@ import { MailboxSchema } from '../types'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { z } from 'zod'
 
+let loadMailboxesTask: ReturnType<typeof useTask> | null = null
+const isLoading = computed(() => loadMailboxesTask?.isRunning ?? false)
+
 export const useLoadMailboxes = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
   const { setMailboxes } = useMailboxesStore()
 
-  const loadMailboxesTask = useTask(function* (signal, accountId: string) {
-    try {
-      const { data } = yield clientService.httpAuthenticated.get(
-        urlJoin(configStore.groupwareUrl, `accounts/${accountId}/mailboxes`)
-      )
-      const mailboxes = z.array(MailboxSchema).parse(data)
-      setMailboxes(mailboxes)
-      console.info('Loaded mailboxes:', mailboxes)
-      return mailboxes
-    } catch (e) {
-      console.error('Failed to load mailboxes:', e)
-      throw e
-    }
-  }).restartable()
-
-  const loadMailboxes = async (accountId: string) => {
-    return loadMailboxesTask.perform(accountId)
+  if (!loadMailboxesTask) {
+    loadMailboxesTask = useTask(function* (signal, accountId: string) {
+      try {
+        const { data } = yield clientService.httpAuthenticated.get(
+          urlJoin(configStore.groupwareUrl, `accounts/${accountId}/mailboxes`)
+        )
+        const mailboxes = z.array(MailboxSchema).parse(data)
+        setMailboxes(mailboxes)
+        console.info('Loaded mailboxes:', mailboxes)
+        return mailboxes
+      } catch (e) {
+        console.error('Failed to load mailboxes:', e)
+        throw e
+      }
+    }).restartable()
   }
 
-  const isLoading = computed(() => loadMailboxesTask.isRunning)
+  const loadMailboxes = async (accountId: string) => {
+    return loadMailboxesTask!.perform(accountId)
+  }
 
   return {
     loadMailboxes,
