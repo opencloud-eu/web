@@ -4,18 +4,19 @@
     class="w-full"
     appearance="filled"
     color-role="surface"
+    justify-content="space-between"
     no-hover
   >
     <app-loading-spinner v-if="isLoading" />
     <div v-else class="flex justify-between items-center w-full">
-      <div class="flex items-center">
+      <div class="flex items-center truncate">
         <oc-avatar :user-name="currentAccount.name" />
-        <div class="flex flex-col items-start ml-5">
+        <div class="flex flex-col items-start ml-5 truncate">
           <span class="font-bold" v-text="currentAccount.name" />
           <span v-text="currentAccount.identities[0].email" />
         </div>
       </div>
-      <oc-icon name="more-2" />
+      <oc-icon class="ml-2" name="more-2" />
     </div>
   </oc-button>
   <oc-drop :title="$gettext('Accounts')" class="w-md" toggle="#account-list-toggle" close-on-click>
@@ -30,14 +31,14 @@
           @click="onSelectAccount(account)"
         >
           <div class="flex justify-between items-center w-full">
-            <div class="flex items-center">
+            <div class="flex items-center truncate">
               <oc-avatar :user-name="account.name" />
-              <div class="flex flex-col items-start ml-5">
+              <div class="flex flex-col items-start ml-5 truncate">
                 <span class="font-bold" v-text="account.name" />
                 <span v-text="account.identities[0].email" />
               </div>
             </div>
-            <oc-icon name="check" />
+            <oc-icon class="ml-2" name="check" />
           </div>
         </oc-button>
       </li>
