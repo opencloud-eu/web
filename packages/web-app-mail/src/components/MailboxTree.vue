@@ -41,7 +41,7 @@
         </div>
       </template>
     </div>
-    <div class="w-full self-end mt-auto px-2 mb-4">
+    <div class="w-full self-end mt-auto px-2 py-4">
       <MailAccountSwitch />
     </div>
   </div>
