@@ -38,7 +38,7 @@
                 <span v-text="account.identities[0].email" />
               </div>
             </div>
-            <oc-icon class="ml-2" name="check" />
+            <oc-icon v-if="account.accountId === currentAccount.accountId" class="ml-2" name="check" />
           </div>
         </oc-button>
       </li>
