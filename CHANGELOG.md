@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
 - feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
 - feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
 - Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
