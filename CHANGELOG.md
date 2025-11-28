@@ -54,6 +54,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.48.0 [[#1673](https://github.com/opencloud-eu/web/pull/1673)]
+- chore(deps): update dependency password-sheriff to v1.3.1 [[#1672](https://github.com/opencloud-eu/web/pull/1672)]
 - chore(deps): update ghcr.io/stalwartlabs/stalwart docker tag to v0.14.1 [[#1541](https://github.com/opencloud-eu/web/pull/1541)]
 - chore(deps): update dependency eslint-plugin-vue to v10.6.2 [[#1664](https://github.com/opencloud-eu/web/pull/1664)]
 - fix(deps): update dependency @sentry/vue to v10.27.0 [[#1674](https://github.com/opencloud-eu/web/pull/1674)]
