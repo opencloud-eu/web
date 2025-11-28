@@ -31,7 +31,7 @@ export const useLoadMails = () => {
     }).restartable()
   }
 
-  const loadMails = async (accountId: string, mailboxId: string) => {
+  const loadMails = (accountId: string, mailboxId: string) => {
     return loadMailsTask!.perform(accountId, mailboxId)
   }
 
