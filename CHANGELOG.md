@@ -54,6 +54,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update ghcr.io/stalwartlabs/stalwart docker tag to v0.14.1 [[#1541](https://github.com/opencloud-eu/web/pull/1541)]
+- chore(deps): update dependency eslint-plugin-vue to v10.6.2 [[#1664](https://github.com/opencloud-eu/web/pull/1664)]
+- fix(deps): update dependency @sentry/vue to v10.27.0 [[#1674](https://github.com/opencloud-eu/web/pull/1674)]
+- chore(deps): update dependency @vueuse/core to v14.1.0 [[#1676](https://github.com/opencloud-eu/web/pull/1676)]
 - fix(deps): update vue monorepo to v3.5.25 [[#1669](https://github.com/opencloud-eu/web/pull/1669)]
 - fix(deps): update dependency zod to v4.1.13 [[#1667](https://github.com/opencloud-eu/web/pull/1667)]
 - chore(deps): update pnpm to v10.24.0 [[#1656](https://github.com/opencloud-eu/web/pull/1656)]
