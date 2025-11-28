@@ -54,6 +54,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update vue monorepo to v3.5.25 [[#1669](https://github.com/opencloud-eu/web/pull/1669)]
 - fix(deps): update dependency zod to v4.1.13 [[#1667](https://github.com/opencloud-eu/web/pull/1667)]
 - chore(deps): update pnpm to v10.24.0 [[#1656](https://github.com/opencloud-eu/web/pull/1656)]
 - chore(deps): update dependency md-editor-v3 to v6.2.0 [[#1648](https://github.com/opencloud-eu/web/pull/1648)]
