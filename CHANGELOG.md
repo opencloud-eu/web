@@ -1,5 +1,47 @@
 # Changelog
 
+## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-28
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @Copilot, @JammingBen, @kulmann, @tammi-23
+
+### 🔒 Security
+
+- [stable-4.2] chore: bump sub-dependencies that cause vulnerability alerts [[#1657](https://github.com/opencloud-eu/web/pull/1657)]
+
+### 🐛 Bug Fixes
+
+- [stable-4.2] fix: hide calendar when env var FRONTEND_DISABLE_RADICALE is set to true (#1660) [[#1671](https://github.com/opencloud-eu/web/pull/1671)]
+- [stable-4.2] fix: move folder replace [[#1662](https://github.com/opencloud-eu/web/pull/1662)]
+- [stable-4.2] fix: editing and loading tags for received shares [[#1659](https://github.com/opencloud-eu/web/pull/1659)]
+- [stable-4.2] fix: catching errors in sse events [[#1658](https://github.com/opencloud-eu/web/pull/1658)]
+- [stable-4.2] fix: embed actions z-index [[#1626](https://github.com/opencloud-eu/web/pull/1626)]
+- [stable-4.2] fix: missing versions when closing and re-opening sidebar [[#1629](https://github.com/opencloud-eu/web/pull/1629)]
+- [stable-4.2] fix: version downloads and remove downloadUrl dav property default [[#1624](https://github.com/opencloud-eu/web/pull/1624)]
+- [stable-4.2] fix: endless propfind requests when opening public links authenticated [[#1576](https://github.com/opencloud-eu/web/pull/1576)]
+- [stable-4.2] fix: copying created links in Safari [[#1611](https://github.com/opencloud-eu/web/pull/1611)]
+- [stable-4.2] fix: initial default favicon [[#1585](https://github.com/opencloud-eu/web/pull/1585)]
+- [stable-4.2] fix: prevent undo delete multiple times for same file [[#1590](https://github.com/opencloud-eu/web/pull/1590)]
+- [stable-4.2] fix: add missing file list update after undo delete in space [[#1582](https://github.com/opencloud-eu/web/pull/1582)]
+- [stable-4.2] fix: lazy loading indicator in condensed resource table [[#1583](https://github.com/opencloud-eu/web/pull/1583)]
+- [stable-4.2] bug: hide addtional calendar data, if radicale is not set up [[#1577](https://github.com/opencloud-eu/web/pull/1577)]
+- [stable-4.2] fix: archive download on password protected links [[#1575](https://github.com/opencloud-eu/web/pull/1575)]
+- [stable-4.2] bug: allow clipboard access to collabora (#1569) [[#1571](https://github.com/opencloud-eu/web/pull/1571)]
+- [stable-4.2] fix: only render drop content when opened [[#1526](https://github.com/opencloud-eu/web/pull/1526)]
+- [stable-4.2] fix: remove horizontal scrollbar when opening upload menu [[#1563](https://github.com/opencloud-eu/web/pull/1563)]
+- [stable-4.2] fix: space batch actions not loading in spaces table [[#1520](https://github.com/opencloud-eu/web/pull/1520)]
+- [stable-4.2] fix: account perefences page, left sidebar won't be translated on language change (#1554) [[#1556](https://github.com/opencloud-eu/web/pull/1556)]
+- [stable-4.2] fix: avoid flicker on CalDAV check (#1538) [[#1550](https://github.com/opencloud-eu/web/pull/1550)]
+- [stable-4.2] fix: private link doesn't reliably open default app [[#1530](https://github.com/opencloud-eu/web/pull/1530)]
+- [stable-4.2] fix: bottom drawer 'New'-menus appearance [[#1519](https://github.com/opencloud-eu/web/pull/1519)]
+- Cherry-pick font revert from PR #1507 to stable-4.2 [[#1509](https://github.com/opencloud-eu/web/pull/1509)]
+- [stable-4.2] fix: adjust headline sizes across the webui (#1504) [[#1506](https://github.com/opencloud-eu/web/pull/1506)]
+
+### ✅ Tests
+
+- [stable-4.2] check user avatar in the admin settings->users (#1510) [[#1511](https://github.com/opencloud-eu/web/pull/1511)]
+
 ## [4.2.0](https://github.com/opencloud-eu/web/releases/tag/v4.2.0) - 2025-11-03
 
 ### ❤️ Thanks to all contributors! ❤️
