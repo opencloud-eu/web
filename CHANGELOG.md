@@ -54,6 +54,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.24.0 [[#1656](https://github.com/opencloud-eu/web/pull/1656)]
 - chore(deps): update dependency md-editor-v3 to v6.2.0 [[#1648](https://github.com/opencloud-eu/web/pull/1648)]
 - fix(deps): update dependency @sentry/vue to v10.26.0 [[#1649](https://github.com/opencloud-eu/web/pull/1649)]
 - chore(deps): update dependency glob to v13 [[#1651](https://github.com/opencloud-eu/web/pull/1651)]
