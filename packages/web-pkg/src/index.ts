@@ -11,6 +11,3 @@ export * from './services'
 export * from './types'
 export * from './ui'
 export * from './utils'
-
-// FIXME: do we really want this?
-export * from './cern'
