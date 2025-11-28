@@ -54,6 +54,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1652](https://github.com/opencloud-eu/web/pull/1652)]
 - chore(deps): update typescript-eslint monorepo to v8.48.0 [[#1673](https://github.com/opencloud-eu/web/pull/1673)]
 - chore(deps): update dependency password-sheriff to v1.3.1 [[#1672](https://github.com/opencloud-eu/web/pull/1672)]
 - chore(deps): update ghcr.io/stalwartlabs/stalwart docker tag to v0.14.1 [[#1541](https://github.com/opencloud-eu/web/pull/1541)]
