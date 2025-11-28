@@ -1,1 +1,0 @@
-import{r as s,M as a,z as c,Y as p,w as r}from"./framework.TQY4xrJh.js";import"./theme.CF8jBTl9.js";const f=s({__name:"default",setup(l){const e=a([10,20,50][0]),t=o=>{e.value=o};return(o,i)=>{const n=p("oc-page-size");return r(),c(n,{label:"Items per page",options:[10,20,50],selected:e.value,onChange:t},null,8,["selected"])}}});export{f as default};
