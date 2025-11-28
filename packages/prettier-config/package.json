@@ -1,7 +1,7 @@
 {
   "name": "@opencloud-eu/prettier-config",
   "private": false,
-  "version": "4.2.1-rc.1",
+  "version": "4.2.1",
   "main": "index.js",
   "license": "AGPL-3.0",
   "author": "OpenCloud GmbH <info@opencloud.eu>",
