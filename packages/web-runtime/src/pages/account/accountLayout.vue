@@ -74,7 +74,7 @@ const navItems = computed(() => {
     {
       name: $gettext('Extensions'),
       route: { name: 'account-extensions' },
-      icon: 'brush-2',
+      icon: 'puzzle-2',
       active: unref(isAccountExtensionsActive)
     },
     ...(unref(supportRadicale)
@@ -90,7 +90,7 @@ const navItems = computed(() => {
     {
       name: $gettext('GDPR'),
       route: { name: 'account-gdpr' },
-      icon: 'git-repository',
+      icon: 'shield-user',
       active: unref(isAccountGdprActive)
     }
   ]

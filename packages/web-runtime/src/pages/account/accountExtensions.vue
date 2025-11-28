@@ -4,7 +4,7 @@
     <no-content-message
       v-if="!extensionPointsWithUserPreferences.length"
       id="account-extensions-empty"
-      icon="brush-2"
+      icon="puzzle-2"
     >
       <template #message>
         <span v-text="$gettext('No extensions available')" />
