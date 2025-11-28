@@ -49,7 +49,6 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
-          :grouping-settings="groupingSettings"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
@@ -100,7 +99,6 @@ import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 
 import { useResourcesViewDefaults } from '../../composables'
 import { defineComponent, computed, unref } from 'vue'
-import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
@@ -136,14 +134,8 @@ export default defineComponent({
     const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
       folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
     })
-    const {
-      sortBy,
-      sortDir,
-      loadResourcesTask,
-      selectedResourcesIds,
-      paginatedResources,
-      viewMode
-    } = resourcesViewDefaults
+    const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
+      resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
 
     const shareTypes = computed(() => {
@@ -205,10 +197,7 @@ export default defineComponent({
       filteredItems,
       shareTypes,
       getMatchingSpace,
-      loadPreview,
-
-      // CERN
-      ...useGroupingSettings({ sortBy, sortDir })
+      loadPreview
     }
   },
 

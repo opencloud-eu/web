@@ -25,7 +25,6 @@
       :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
-      :grouping-settings="groupingSettings"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
       @sort="sortHandler"
@@ -171,15 +170,6 @@ export default defineComponent({
     sortFields: {
       type: Object as PropType<SortField[]>,
       required: true
-    },
-
-    /**
-     * This is only relevant for CERN and can be ignored in any other cases.
-     */
-    groupingSettings: {
-      type: Object,
-      required: false,
-      default: null
     }
   },
   setup(props) {
