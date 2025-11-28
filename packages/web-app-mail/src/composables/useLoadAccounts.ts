@@ -31,7 +31,7 @@ export const useLoadAccounts = () => {
     }).restartable()
   }
 
-  const loadAccounts = async () => {
+  const loadAccounts = () => {
     return loadAccountsTask!.perform()
   }
 

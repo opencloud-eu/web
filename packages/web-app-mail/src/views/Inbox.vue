@@ -8,10 +8,6 @@
           'hidden md:flex': currentMailbox
         }"
       >
-        <div class="border-r-2 overflow-y-auto bg-role-surface-container w-[100px]">
-          <MailAccountList />
-        </div>
-
         <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
           <MailboxTree />
         </div>
@@ -41,7 +37,6 @@ import { ref, unref, onMounted } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
-import MailAccountList from '../components/MailAccountList.vue'
 import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
