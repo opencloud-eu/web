@@ -25,7 +25,6 @@
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :lazy="lazy"
-    :grouping-settings="groupingSettings"
     padding-x="medium"
     @highlight="fileClicked"
     @row-mounted="rowMounted"
@@ -349,8 +348,7 @@ const {
   sortDir = undefined,
   space = undefined,
   resourceType = 'file',
-  lazy = true,
-  groupingSettings = undefined
+  lazy = true
 } = defineProps<{
   resources: Resource[]
   resourceDomSelector?: (resource: Resource) => string
@@ -374,7 +372,6 @@ const {
   space?: SpaceResource
   resourceType?: 'file' | 'space'
   lazy?: boolean
-  groupingSettings?: Record<string, unknown>
 }>()
 
 const emit = defineEmits<{
