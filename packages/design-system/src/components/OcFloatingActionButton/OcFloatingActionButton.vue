@@ -36,6 +36,7 @@ import { useGettext } from 'vue3-gettext'
 export interface Props {
   /**
    * @docs The aria label of the primary action button.
+   * @default 'Open actions menu'
    */
   ariaLabel?: string
   /**
