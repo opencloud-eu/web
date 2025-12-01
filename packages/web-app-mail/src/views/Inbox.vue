@@ -1,10 +1,4 @@
 <template>
-  <oc-floating-action-button
-    :items="[
-      { icon: 'add', label: 'test', handler: () => console.log('hello') },
-      { icon: 'add', label: 'test2', to: createLocationSpaces('files-spaces-projects') }
-    ]"
-  />
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <div class="flex h-full">
@@ -43,7 +37,7 @@ import { ref, unref, onMounted } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
-import { AppLoadingSpinner, createLocationSpaces, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { useAccountsStore } from '../composables/piniaStores/accounts'

@@ -1,6 +1,12 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
+    <oc-floating-action-button
+      class="md:hidden"
+      mode="action"
+      :aria-label="$gettext('Write new Email')"
+      :items="[{ to: { name: 'mail-create', query: { ...route.query, draftId: 'new' } } }]"
+    />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
@@ -19,18 +25,6 @@
         </oc-button>
         <h2 class="text-lg ml-4" v-text="currentMailbox.name"></h2>
         <div class="paceholder" />
-      </div>
-      <div class="py-2 px-4">
-        <oc-button
-          id="new-email-menu-btn"
-          type="router-link"
-          :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
-          class="w-full"
-          appearance="filled"
-        >
-          <oc-icon name="edit-box" fill-type="line" />
-          <span v-text="$gettext('Write new Email')" />
-        </oc-button>
       </div>
       <no-content-message
         v-if="!mails || !mails.length"

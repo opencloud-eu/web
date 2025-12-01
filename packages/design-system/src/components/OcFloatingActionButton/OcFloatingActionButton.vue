@@ -19,6 +19,7 @@
       class="rounded-full h-10 w-10"
       appearance="filled"
       color-role="primary"
+      :aria-label="ariaLabel"
       :type="mode === 'action' && items[0]?.to ? 'router-link' : 'button'"
       :to="items[0]?.to"
       @click="onPrimaryButtonClicked"
@@ -38,6 +39,10 @@ export interface Props {
    */
   icon?: string
   /**
+   * @docs The aria label of the button.
+   */
+  ariaLabel: string
+  /**
    * @docs The mode of the floating action button element.
    * @default menu
    */
@@ -46,8 +51,8 @@ export interface Props {
    * @docs The items of the floating action button element.
    */
   items: {
-    icon: string
-    label: string
+    icon?: string
+    label?: string
     handler?: () => void
     to?: RouteLocationNamedRaw
   }[]

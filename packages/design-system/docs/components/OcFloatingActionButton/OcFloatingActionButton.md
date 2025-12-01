@@ -20,10 +20,10 @@ The default use case displays a menu of stacked buttons.
 ::: livecode
 
 ```html
-
 <oc-floating-action-button
-        class="!static"
-        :items="[
+  aria-label="Floating action button"
+  class="!static"
+  :items="[
 		{ label: 'File', icon: 'file', to: { path: 'root' } },
 		{ label: 'Folder', icon: 'folder', to: { path: 'folder' } },
 		{ label: 'Public link', icon: 'link', to : { path: 'subfolder' } }
@@ -40,11 +40,11 @@ While setting `mode` to `action`, only the primary Floating Action Button will b
 ::: livecode
 
 ```html
-
 <oc-floating-action-button
-        mode="action"
-        class="!static"
-        :items="[
+  aria-label="Floating action button"
+  mode="action"
+  class="!static"
+  :items="[
 		{ label: 'File', icon: 'file', to: { path: 'root' } },
 	]"
 />
