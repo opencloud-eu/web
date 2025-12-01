@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
 - feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
 - feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
 - feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
