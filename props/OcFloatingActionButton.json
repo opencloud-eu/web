@@ -1,0 +1,37 @@
+[
+  {
+    "name": "ariaLabel",
+    "required": false,
+    "description": "The aria label of the primary action button.",
+    "default": "'Open actions menu'",
+    "type": "string"
+  },
+  {
+    "name": "mode",
+    "required": false,
+    "description": "The mode of the floating action button.",
+    "default": "menu",
+    "type": "'action' | 'menu'"
+  },
+  {
+    "name": "to",
+    "required": false,
+    "description": "The route location of the primary action button when the `mode` is set to `action`.",
+    "default": "",
+    "type": "RouteLocationRaw"
+  },
+  {
+    "name": "handler",
+    "required": false,
+    "description": "The handler of the primary action button when the `mode` is set to `action`.",
+    "default": "",
+    "type": "() => void"
+  },
+  {
+    "name": "items",
+    "required": false,
+    "description": "The menu items of the floating action button element.",
+    "default": "",
+    "type": "{\n    icon: string\n    label: string\n    handler?: () => void\n    to?: RouteLocationRaw\n  }[]"
+  }
+]
