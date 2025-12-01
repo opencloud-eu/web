@@ -1,7 +1,18 @@
 <template>
   <div class="mailbox-tree h-full px-1 flex flex-col">
     <div>
-      <h1 v-if="currentAccount" class="text-lg ml-4 truncate" v-text="currentAccount.name" />
+      <div class="px-2 py-4">
+        <oc-button
+          id="new-email-menu-btn"
+          type="router-link"
+          :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
+          class="w-full hidden md:flex"
+          appearance="filled"
+        >
+          <oc-icon name="edit-box" fill-type="line" />
+          <span v-text="$gettext('Write new Email')" />
+        </oc-button>
+      </div>
       <app-loading-spinner v-if="isLoading" />
       <template v-else>
         <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
@@ -49,7 +60,7 @@
 
 <script setup lang="ts">
 import type { Mailbox } from '../types'
-import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, NoContentMessage, useRoute } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
@@ -67,6 +78,7 @@ const { currentAccount } = storeToRefs(accountsStore)
 const { setCurrentMail } = useMailsStore()
 const { loadMails } = useLoadMails()
 const { isLoading } = useLoadMailboxes()
+const route = useRoute()
 
 const onSelectMailbox = async (mailbox: Mailbox) => {
   setCurrentMailbox(mailbox)

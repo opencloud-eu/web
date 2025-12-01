@@ -181,6 +181,10 @@ export default defineConfig({
               link: '/OcErrorLog'
             },
             {
+              text: 'OcFloatingActionButton',
+              link: '/OcFloatingActionButton'
+            },
+            {
               text: 'OcFileInput',
               link: '/OcFileInput'
             },
