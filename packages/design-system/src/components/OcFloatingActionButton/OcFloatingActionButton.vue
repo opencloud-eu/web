@@ -19,7 +19,7 @@
       class="rounded-full h-10 w-10"
       appearance="filled"
       color-role="primary"
-      :aria-label="ariaLabel"
+      :aria-label="computedAriaLabel"
       :type="mode === 'action' && items[0]?.to ? 'router-link' : 'button'"
       :to="items[0]?.to"
       @click="onPrimaryButtonClicked"
@@ -29,11 +29,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-
-const { $gettext } = useGettext()
 
 export interface Props {
   /**
@@ -61,14 +59,15 @@ export interface Props {
   }[]
 }
 
-const {
-  icon = 'add',
-  mode = 'menu',
-  ariaLabel = $gettext('Action menu'),
-  items
-} = defineProps<Props>()
+const { icon = 'add', mode = 'menu', ariaLabel = '', items } = defineProps<Props>()
+
+const { $gettext } = useGettext()
 
 const expanded = ref(false)
+
+const computedAriaLabel = computed(() => {
+  return ariaLabel ? ariaLabel : $gettext('Open actions menu')
+})
 
 const onPrimaryButtonClicked = () => {
   if (mode === 'action') {
