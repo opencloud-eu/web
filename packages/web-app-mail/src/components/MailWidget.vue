@@ -1,11 +1,14 @@
 <template>
   <div v-if="isOpen && !isExpanded" :class="overlayClasses">
     <div
-      class="pointer-events-auto absolute bg-role-surface border border-role-outline-variant flex flex-col md:rounded-xl"
+      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border border-role-outline-variant flex flex-col md:rounded-xl"
       :class="widgetPositionClasses"
     >
       <div class="flex items-center justify-between px-4 py-2">
-        <h2 class="text-lg font-bold" v-text="$gettext('New message')" />
+        <h2
+          class="oc-mail-compose-widget-headline text-lg font-bold"
+          v-text="$gettext('New message')"
+        />
         <div class="flex items-center gap-1">
           <oc-button
             class="hidden md:inline-flex"
