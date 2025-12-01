@@ -5,7 +5,7 @@
       class="md:hidden"
       mode="action"
       :aria-label="$gettext('Write new Email')"
-      :items="[{ to: { name: 'mail-create', query: { ...route.query, draftId: 'new' } } }]"
+      :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
     />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>

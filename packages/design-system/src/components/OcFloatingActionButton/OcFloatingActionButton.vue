@@ -16,50 +16,59 @@
       </oc-button>
     </template>
     <oc-button
-      class="rounded-full h-10 w-10"
+      class="rounded-full size-14"
       appearance="filled"
       color-role="primary"
       :aria-label="computedAriaLabel"
-      :type="mode === 'action' && items[0]?.to ? 'router-link' : 'button'"
-      :to="items[0]?.to"
+      :type="mode === 'action' && to ? 'router-link' : 'button'"
+      :to="to"
       @click="onPrimaryButtonClicked"
     >
-      <oc-icon :name="expanded ? 'close' : icon" fill-type="line" />
+      <oc-icon :name="expanded ? 'close' : 'add'" fill-type="line" />
     </oc-button>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
-import { RouteLocationNamedRaw } from 'vue-router'
+import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
   /**
-   * @docs The icon of the floating action button element.
-   * @default add
-   */
-  icon?: string
-  /**
-   * @docs The aria label of the button.
+   * @docs The aria label of the primary action button.
    */
   ariaLabel?: string
   /**
-   * @docs The mode of the floating action button element.
+   * @docs The mode of the floating action button.
    * @default menu
    */
   mode?: 'action' | 'menu'
   /**
-   * @docs The items of the floating action button element.
+   * @docs The route location of the primary action button when the `mode` is set to `action`.
    */
-  items: {
-    icon?: string
-    label?: string
+  to?: RouteLocationRaw
+  /**
+   * @docs The handler of the primary action button when the `mode` is set to `action`.
+   */
+  handler?: () => void
+  /**
+   * @docs The menu items of the floating action button element.
+   */
+  items?: {
+    icon: string
+    label: string
     handler?: () => void
-    to?: RouteLocationNamedRaw
+    to?: RouteLocationRaw
   }[]
 }
 
-const { icon = 'add', mode = 'menu', ariaLabel = '', items } = defineProps<Props>()
+const {
+  mode = 'menu',
+  ariaLabel = '',
+  items = [],
+  handler = null,
+  to = null
+} = defineProps<Props>()
 
 const { $gettext } = useGettext()
 
@@ -71,7 +80,7 @@ const computedAriaLabel = computed(() => {
 
 const onPrimaryButtonClicked = () => {
   if (mode === 'action') {
-    items[0]?.handler?.()
+    handler?.()
     return
   }
 

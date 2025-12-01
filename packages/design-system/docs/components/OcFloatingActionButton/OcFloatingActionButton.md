@@ -24,9 +24,9 @@ The default use case displays a menu of stacked buttons.
   aria-label="Floating action button"
   class="!static"
   :items="[
-		{ label: 'File', icon: 'file', to: { path: 'root' } },
-		{ label: 'Folder', icon: 'folder', to: { path: 'folder' } },
-		{ label: 'Public link', icon: 'link', to : { path: 'subfolder' } }
+		{ label: 'File', icon: 'file', to: { path: '/' } },
+		{ label: 'Folder', icon: 'folder', to: { path: '/' } },
+		{ label: 'Public link', icon: 'link', to : { path: '/' } }
 	]"
 />
 ```
@@ -44,10 +44,10 @@ While setting `mode` to `action`, only the primary Floating Action Button will b
   aria-label="Floating action button"
   mode="action"
   class="!static"
-  :items="[
-		{ label: 'File', icon: 'file', to: { path: 'root' } },
-	]"
+  :to="{ path: '/' }"
 />
 ```
 
 :::
+
+::: component-api
