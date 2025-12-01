@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @pascalwengerter, @tammi-23
 
 ### 🔒 Security
 
@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
 - feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
 - feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
 - feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
