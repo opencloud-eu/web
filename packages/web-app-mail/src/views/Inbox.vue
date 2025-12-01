@@ -2,7 +2,7 @@
   <oc-floating-action-button
     :items="[
       { icon: 'add', label: 'test', handler: () => console.log('hello') },
-      { icon: 'add', label: 'test2', routerLink: createLocationSpaces('files-spaces-projects') }
+      { icon: 'add', label: 'test2', to: createLocationSpaces('files-spaces-projects') }
     ]"
   />
   <app-loading-spinner v-if="isLoading" />

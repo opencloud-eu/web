@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute flex flex-col items-end bottom-[20px] right-[20px]">
+  <div class="fixed flex flex-col items-end bottom-[20px] right-[20px]">
     <template v-if="expanded">
       <oc-button
         v-for="item in items"
@@ -7,8 +7,8 @@
         class="mb-2 rounded-full"
         appearance="filled"
         color-role="primary"
-        :type="item.routerLink ? 'router-link' : 'button'"
-        :to="item.routerLink"
+        :type="item.to ? 'router-link' : 'button'"
+        :to="item.to"
         @click="onChildButtonClicked(item)"
       >
         <oc-icon :name="item.icon" />
@@ -19,8 +19,8 @@
       class="rounded-full h-10 w-10"
       appearance="filled"
       color-role="primary"
-      :type="mode === 'action' && items[0]?.routerLink ? 'router-link' : 'button'"
-      :to="items[0]?.routerLink"
+      :type="mode === 'action' && items[0]?.to ? 'router-link' : 'button'"
+      :to="items[0]?.to"
       @click="onPrimaryButtonClicked"
     >
       <oc-icon :name="expanded ? 'close' : icon" fill-type="line" />
@@ -29,7 +29,7 @@
 </template>
 <script setup lang="ts">
 import { ref, unref } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
+import { RouteLocationNamedRaw } from 'vue-router'
 
 export interface Props {
   /**
@@ -45,7 +45,12 @@ export interface Props {
   /**
    * @docs The items of the floating action button element.
    */
-  items: [{ icon: string; label: string; handler?: () => void; routerLink?: RouteLocationRaw }]
+  items: {
+    icon: string
+    label: string
+    handler?: () => void
+    to?: RouteLocationNamedRaw
+  }[]
 }
 
 const { icon = 'add', mode = 'menu', items } = defineProps<Props>()
