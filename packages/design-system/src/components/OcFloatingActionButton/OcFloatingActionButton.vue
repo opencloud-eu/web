@@ -31,6 +31,9 @@
 <script setup lang="ts">
 import { ref, unref } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
+import { useGettext } from 'vue3-gettext'
+
+const { $gettext } = useGettext()
 
 export interface Props {
   /**
@@ -41,7 +44,7 @@ export interface Props {
   /**
    * @docs The aria label of the button.
    */
-  ariaLabel: string
+  ariaLabel?: string
   /**
    * @docs The mode of the floating action button element.
    * @default menu
@@ -58,7 +61,12 @@ export interface Props {
   }[]
 }
 
-const { icon = 'add', mode = 'menu', items } = defineProps<Props>()
+const {
+  icon = 'add',
+  mode = 'menu',
+  ariaLabel = $gettext('Action menu'),
+  items
+} = defineProps<Props>()
 
 const expanded = ref(false)
 
