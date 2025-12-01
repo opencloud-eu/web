@@ -54,6 +54,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vite to v7.2.6 [[#1689](https://github.com/opencloud-eu/web/pull/1689)]
 - chore(deps): update devdependencies (non-major) [[#1686](https://github.com/opencloud-eu/web/pull/1686)]
 - chore(deps): update devdependencies (non-major) [[#1652](https://github.com/opencloud-eu/web/pull/1652)]
 - chore(deps): update typescript-eslint monorepo to v8.48.0 [[#1673](https://github.com/opencloud-eu/web/pull/1673)]
