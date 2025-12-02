@@ -14,9 +14,8 @@
   >
     <sidebar-stacked-overview
       class="bg-role-surface-container w-1/4"
-      :items="sidebarItems"
+      :items="Object.values(cachedFiles)"
       :active-index="activeIndex"
-      :is-busy="isFolderLoading"
       @select="onSelectSidebarItem"
     />
     <div
@@ -249,7 +248,7 @@ export default defineComponent({
       const cachedFile: CachedFile = {
         id: file.id,
         name: file.name,
-        url: undefined,
+        url: ref(undefined),
         ext: file.extension,
         mimeType: file.mimeType,
         isVideo: isFileTypeVideo(file),
@@ -262,7 +261,7 @@ export default defineComponent({
 
       try {
         if (cachedFile.isImage) {
-          cachedFile.url = await previewService.loadPreview(
+          cachedFile.url.value = await previewService.loadPreview(
             {
               space: unref(space),
               resource: file,
@@ -274,7 +273,7 @@ export default defineComponent({
           )
           return
         }
-        cachedFile.url = await props.getUrlForResource(unref(space), file)
+        cachedFile.url.value = await props.getUrlForResource(unref(space), file)
       } catch (e) {
         console.error(e)
         cachedFile.isError.value = true
