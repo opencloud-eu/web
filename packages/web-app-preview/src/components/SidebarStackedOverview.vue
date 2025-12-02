@@ -1,14 +1,14 @@
 <template>
-  <nav class="preview-sidebar flex flex-col p-4 overflow-y-auto" aria-label="Media items">
+  <nav class="preview-sidebar flex flex-col p-4">
     <div
       v-for="(item, idx) in items"
       :key="item.id"
       class="flex flex-col items-center p-4 mb-1"
       :class="{ 'bg-role-surface rounded-md': idx === activeIndex }"
     >
-      <button
-        class="flex items-center justify-center overflow-hidden aspect-video"
-        type="button"
+      <oc-button
+        appearance="raw"
+        class="flex flex-col"
         :aria-label="item.name"
         :aria-current="idx === activeIndex ? 'true' : 'false'"
         @click="$emit('select', idx)"
@@ -16,16 +16,13 @@
         <img
           v-if="item && item.isImage && item.url && !item.isError"
           :src="item.url"
-          class="object-cover w-full h-full rounded-md"
+          class="object-cover w-full h-full rounded-md aspect-video"
           :alt="item.name"
           referrerpolicy="no-referrer"
         />
-
-        <resource-icon v-else :resource="getIconResource(item)" size="large" />
-      </button>
-      <div class="flex items-center justify-center truncate w-full">
-        <span class="truncate" v-text="item.name" />
-      </div>
+        <resource-icon v-else class="aspect-video" :resource="getIconResource(item)" size="large" />
+        <span class="line-clamp-1" v-text="item.name" />
+      </oc-button>
     </div>
   </nav>
 </template>
