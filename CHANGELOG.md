@@ -10,17 +10,9 @@
 
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
 
-### 📈 Enhancement
-
-- feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
-- feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
-- feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
-- feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
-- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
-- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
-
 ### 🐛 Bug Fixes
 
+- fix: embed mode click behavior [[#1641](https://github.com/opencloud-eu/web/pull/1641)]
 - fix: hide calendar when env var FRONTEND_DISABLE_RADICALE is set to true [[#1660](https://github.com/opencloud-eu/web/pull/1660)]
 - fix: move folder replace [[#1627](https://github.com/opencloud-eu/web/pull/1627)]
 - fix: editing and loading tags for received shares [[#1650](https://github.com/opencloud-eu/web/pull/1650)]
@@ -47,6 +39,15 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
+### 📈 Enhancement
+
+- feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
+- feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
+- feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
+- feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
+- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### ✅ Tests
 
