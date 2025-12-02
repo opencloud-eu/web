@@ -13,7 +13,7 @@
     @keydown.right="goToNext"
   >
     <sidebar-stacked-overview
-      class="bg-role-surface-container w-1/4"
+      class="bg-role-surface-container w-1/5"
       :items="Object.values(cachedFiles)"
       :active-index="activeIndex"
       @select="onSelectSidebarItem"
