@@ -1,5 +1,5 @@
 <template>
-  <nav class="preview-sidebar flex flex-col p-4">
+  <nav class="preview-sidebar flex flex-col p-4 overflow-y-auto">
     <div
       v-for="(item, idx) in items"
       :key="item.id"
@@ -8,20 +8,25 @@
     >
       <oc-button
         appearance="raw"
-        class="flex flex-col"
+        class="flex flex-col w-full"
         :aria-label="item.name"
+        no-hover
         :aria-current="idx === activeIndex ? 'true' : 'false'"
         @click="$emit('select', idx)"
       >
         <img
           v-if="item && item.isImage && item.url && !item.isError"
           :src="item.url"
-          class="object-cover w-full h-full rounded-md aspect-video"
+          class="object-cover h-25 rounded-md aspect-video"
           :alt="item.name"
           referrerpolicy="no-referrer"
         />
-        <resource-icon v-else class="aspect-video" :resource="getIconResource(item)" size="large" />
-        <span class="line-clamp-1" v-text="item.name" />
+        <div v-else class="aspect-video h-25 flex items-center justify-center">
+          <resource-icon class="aspect-video" :resource="getIconResource(item)" size="xlarge" />
+        </div>
+        <span class="w-full">
+          <span class="line-clamp-1 wrap-break-word text-sm" v-text="item.name" />
+        </span>
       </oc-button>
     </div>
   </nav>
