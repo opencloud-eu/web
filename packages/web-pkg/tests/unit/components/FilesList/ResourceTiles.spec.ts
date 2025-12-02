@@ -123,9 +123,8 @@ describe('ResourceTiles component', () => {
 
       const resourcesStore = useResourcesStore()
       resourcesStore.selectedIds = [resources[0].id]
-      await resourceTile.vm.$emit('click', mockMouseEvent)
-      expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
-      expect(wrapper.emitted('update:selectedIds')[0][0]).toEqual([resources[0].id])
+      await resourceTile.vm.$emit('fileNameClicked', mockMouseEvent)
+      expect(wrapper.emitted('fileClick')).toBeTruthy()
     })
 
     it('does not emit fileClick event upon click on tile when embed mode is enabled', async () => {
