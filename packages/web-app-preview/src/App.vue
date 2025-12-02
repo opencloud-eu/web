@@ -12,6 +12,13 @@
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
+    <sidebar-stacked-overview
+      class="bg-role-surface-container w-1/4"
+      :items="sidebarItems"
+      :active-index="activeIndex"
+      :is-busy="isFolderLoading"
+      @select="onSelectSidebarItem"
+    />
     <div
       class="stage size-full flex flex-col text-center"
       :class="{ lightbox: isFullScreenModeActivated }"
@@ -109,6 +116,7 @@ import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
+import SidebarStackedOverview from './components/SidebarStackedOverview.vue'
 import { CachedFile } from './helpers/types'
 import {
   useFileTypes,
@@ -128,7 +136,8 @@ export default defineComponent({
     MediaControls,
     MediaAudio,
     MediaImage,
-    MediaVideo
+    MediaVideo,
+    SidebarStackedOverview
   },
   props: {
     activeFiles: { type: Object as PropType<Resource[]>, required: true },
@@ -377,6 +386,18 @@ export default defineComponent({
       { immediate: true }
     )
 
+    const sidebarItems = computed(() => {
+      return unref(filteredFiles).map((resource) => ({
+        resource,
+        cached: unref(cachedFiles)[resource.id]
+      }))
+    })
+
+    const onSelectSidebarItem = (index: number) => {
+      activeIndex.value = index
+      updateLocalHistory()
+    }
+
     return {
       ...useImageControls(),
       ...useFullScreenMode(),
@@ -386,6 +407,8 @@ export default defineComponent({
       activeMediaFileCached,
       cachedFiles,
       filteredFiles,
+      sidebarItems,
+      onSelectSidebarItem,
       updateLocalHistory,
       isAutoPlayEnabled,
       preview,
