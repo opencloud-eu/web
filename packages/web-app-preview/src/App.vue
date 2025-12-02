@@ -248,7 +248,7 @@ export default defineComponent({
       const cachedFile: CachedFile = {
         id: file.id,
         name: file.name,
-        url: ref(undefined),
+        url: ref<string | undefined>(undefined),
         ext: file.extension,
         mimeType: file.mimeType,
         isVideo: isFileTypeVideo(file),
@@ -385,13 +385,6 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const sidebarItems = computed(() => {
-      return unref(filteredFiles).map((resource) => ({
-        resource,
-        cached: unref(cachedFiles)[resource.id]
-      }))
-    })
-
     const onSelectSidebarItem = (index: number) => {
       activeIndex.value = index
       updateLocalHistory()
@@ -406,7 +399,6 @@ export default defineComponent({
       activeMediaFileCached,
       cachedFiles,
       filteredFiles,
-      sidebarItems,
       onSelectSidebarItem,
       updateLocalHistory,
       isAutoPlayEnabled,
@@ -462,7 +454,7 @@ export default defineComponent({
     })
 
     Object.values(this.cachedFiles).forEach((cachedFile) => {
-      this.revokeUrl(cachedFile.url)
+      this.revokeUrl(unref(cachedFile.url))
     })
   },
 

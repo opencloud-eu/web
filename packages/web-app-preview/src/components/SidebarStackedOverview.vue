@@ -21,7 +21,7 @@
           referrerpolicy="no-referrer"
         />
 
-        <resource-icon v-else :resource="item" size="large" />
+        <resource-icon v-else :resource="getIconResource(item)" size="large" />
       </button>
       <div class="flex items-center justify-center truncate w-full">
         <span class="truncate" v-text="item.name" />
@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { Resource } from '@opencloud-eu/web-client'
 import { CachedFile } from '../helpers/types'
 import { ResourceIcon } from '@opencloud-eu/web-pkg'
 
@@ -39,6 +40,18 @@ const { activeIndex, items } = defineProps<{
   items: CachedFile[]
 }>()
 defineEmits<{
-  (e: 'select'): void
+  (e: 'select', index: number): void
 }>()
+
+const getIconResource = (item: CachedFile) => {
+  return {
+    id: item.id,
+    path: '',
+    extension: item.ext,
+    mimeType: item.mimeType,
+    isFolder: false,
+    isFile: true,
+    type: 'file'
+  } as Resource
+}
 </script>
