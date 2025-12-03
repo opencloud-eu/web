@@ -14,7 +14,7 @@
   >
     <sidebar-stacked-overview
       class="bg-role-surface-container w-1/5"
-      :items="Object.values(cachedFiles)"
+      :items="sidebarFiles"
       :active-index="activeIndex"
       @select="onSelectSidebarItem"
     />
@@ -127,7 +127,6 @@ import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 
 export const appId = 'preview'
-const PRELOAD_COUNT = 5
 
 export default defineComponent({
   name: 'Preview',
@@ -189,6 +188,17 @@ export default defineComponent({
       return unref(deleteFileActions)[0]?.isVisible({
         space: unref(space),
         resources: [unref(activeFilteredFile)]
+      })
+    })
+
+    const sidebarFiles = computed(() => {
+      const files = Object.values(unref(cachedFiles))
+      const filteredIds = unref(filteredFiles).map((f) => f.id)
+
+      return files.sort((a, b) => {
+        const indexA = filteredIds.indexOf(a.id)
+        const indexB = filteredIds.indexOf(b.id)
+        return indexA - indexB
       })
     })
 
@@ -326,6 +336,12 @@ export default defineComponent({
       } as RouteLocationRaw)
     }
 
+    const preloadImages = () => {
+      for (const file of unref(filteredFiles)) {
+        loadFileIntoCache(file)
+      }
+    }
+
     const instance = getCurrentInstance()
 
     watch(
@@ -412,7 +428,9 @@ export default defineComponent({
       keyBindings,
       bindKeyAction,
       removeKeyAction,
-      isDeleteButtonVisible
+      isDeleteButtonVisible,
+      sidebarFiles,
+      preloadImages
     }
   },
 
@@ -474,32 +492,8 @@ export default defineComponent({
         this.activeIndex = 0
       }
     },
-    // react to PopStateEvent ()
     handleLocalHistoryEvent() {
       this.setActiveFile()
-    },
-    preloadImages() {
-      const preloadFile = (preloadFileIndex: number) => {
-        const cycleIndex =
-          (((this.activeIndex + preloadFileIndex) % this.filteredFiles.length) +
-            this.filteredFiles.length) %
-          this.filteredFiles.length
-
-        const file = this.filteredFiles[cycleIndex]
-        this.loadFileIntoCache(file)
-      }
-
-      for (let followingFileIndex = 1; followingFileIndex <= PRELOAD_COUNT; followingFileIndex++) {
-        preloadFile(followingFileIndex)
-      }
-
-      for (
-        let previousFileIndex = -1;
-        previousFileIndex >= PRELOAD_COUNT * -1;
-        previousFileIndex--
-      ) {
-        preloadFile(previousFileIndex)
-      }
     }
   }
 })
