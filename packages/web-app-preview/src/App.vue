@@ -14,9 +14,9 @@
   >
     <photo-roll
       class="bg-role-surface-container w-1/5 hidden md:block"
-      :items="sidebarFiles"
+      :items="photoRollFiles"
       :active-index="activeIndex"
-      @select="onSelectSidebarItem"
+      @select="onSelectPhotoRollItem"
     />
     <div
       class="stage size-full flex flex-col text-center"
@@ -191,7 +191,7 @@ export default defineComponent({
       })
     })
 
-    const sidebarFiles = computed(() => {
+    const photoRollFiles = computed(() => {
       const files = Object.values(unref(cachedFiles))
       const filteredIds = unref(filteredFiles).map((f) => f.id)
 
@@ -401,7 +401,7 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const onSelectSidebarItem = (index: number) => {
+    const onSelectPhotoRollItem = (index: number) => {
       activeIndex.value = index
       updateLocalHistory()
     }
@@ -415,7 +415,7 @@ export default defineComponent({
       activeMediaFileCached,
       cachedFiles,
       filteredFiles,
-      onSelectSidebarItem,
+      onSelectPhotoRollItem,
       updateLocalHistory,
       isAutoPlayEnabled,
       preview,
@@ -429,7 +429,7 @@ export default defineComponent({
       bindKeyAction,
       removeKeyAction,
       isDeleteButtonVisible,
-      sidebarFiles,
+      photoRollFiles,
       preloadImages
     }
   },
