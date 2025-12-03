@@ -58,6 +58,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency password-sheriff to v2 [[#1701](https://github.com/opencloud-eu/web/pull/1701)]
 - chore(deps): update collabora/code docker tag to v25.04.7.3.1 [[#1684](https://github.com/opencloud-eu/web/pull/1684)]
 - chore(deps): update dependency vite to v7.2.6 [[#1689](https://github.com/opencloud-eu/web/pull/1689)]
 - chore(deps): update devdependencies (non-major) [[#1686](https://github.com/opencloud-eu/web/pull/1686)]
