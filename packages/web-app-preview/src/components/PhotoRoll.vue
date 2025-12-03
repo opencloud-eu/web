@@ -1,9 +1,9 @@
 <template>
-  <nav class="preview-sidebar flex flex-col p-4 overflow-y-auto">
+  <nav class="photo-roll flex flex-col p-4 overflow-y-auto">
     <div
       v-for="(item, idx) in items"
       :key="item.id"
-      class="flex flex-col items-center p-4 mb-1 preview-sidebar-item"
+      class="flex flex-col items-center p-4 mb-1 photo-roll-item"
       :class="{ 'bg-role-surface rounded-md': idx === activeIndex }"
     >
       <oc-button
@@ -48,7 +48,7 @@ defineEmits<{
 
 const scrollToActiveElement = async () => {
   await nextTick()
-  const element = document.querySelectorAll('.preview-sidebar-item')?.[activeIndex]
+  const element = document.querySelectorAll('.photo-roll-item')?.[activeIndex]
   if (!element) {
     return
   }
