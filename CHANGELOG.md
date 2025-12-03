@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- chore(deps): bump mdast-util-to-hast to 13.2.1 (security) [[#1692](https://github.com/opencloud-eu/web/pull/1692)]
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
 
 ### 🐛 Bug Fixes
