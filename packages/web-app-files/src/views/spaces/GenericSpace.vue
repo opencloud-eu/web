@@ -52,6 +52,12 @@
             </template>
           </no-content-message>
           <template v-else>
+            <list-header
+              v-if="readmeFile && !hasSpaceHeader"
+              :space="space"
+              :readme-file="readmeFile"
+              class="mx-4 my-2"
+            />
             <resource-details
               v-if="displayResourceAsSingleResource"
               :single-resource="paginatedResources[0]"
@@ -182,6 +188,7 @@ import {
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
+import ListHeader from '../../components/FilesList/ListHeader.vue'
 
 export default defineComponent({
   name: 'GenericSpace',
@@ -202,7 +209,8 @@ export default defineComponent({
     ResourceTable,
     ResourceTiles,
     SpaceHeader,
-    WhitespaceContextMenu
+    WhitespaceContextMenu,
+    ListHeader
   },
   props: {
     space: {
@@ -460,6 +468,12 @@ export default defineComponent({
       }
     }
 
+    const readmeFile = computed(() => {
+      return unref(resourcesViewDefaults.storeItems).find(
+        (item) => item.name.toLowerCase() === 'readme.md'
+      )
+    })
+
     onMounted(() => {
       performLoaderTask(false)
       loadResourcesEventToken = eventBus.subscribe(
@@ -570,7 +584,8 @@ export default defineComponent({
       totalResourcesCount,
       areHiddenFilesShown,
       fileDropped,
-      loadPreview
+      loadPreview,
+      readmeFile
     }
   },
 
