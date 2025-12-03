@@ -3,7 +3,7 @@
     <div
       v-for="(item, idx) in items"
       :key="item.id"
-      class="flex flex-col items-center p-4 mb-1"
+      class="flex flex-col items-center p-4 mb-1 preview-sidebar-item"
       :class="{ 'bg-role-surface rounded-md': idx === activeIndex }"
     >
       <oc-button
@@ -36,6 +36,7 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { CachedFile } from '../helpers/types'
 import { ResourceIcon } from '@opencloud-eu/web-pkg'
+import { nextTick, watch } from 'vue'
 
 const { activeIndex, items } = defineProps<{
   activeIndex: number
@@ -44,6 +45,24 @@ const { activeIndex, items } = defineProps<{
 defineEmits<{
   (e: 'select', index: number): void
 }>()
+
+const scrollToActiveElement = async () => {
+  await nextTick()
+  const element = document.querySelectorAll('.preview-sidebar-item')?.[activeIndex]
+  if (!element) {
+    return
+  }
+
+  element.scrollIntoView({ block: 'center', inline: 'nearest' })
+}
+
+watch(
+  () => activeIndex,
+  () => {
+    scrollToActiveElement()
+  },
+  { immediate: true }
+)
 
 const getIconResource = (item: CachedFile) => {
   return {
