@@ -1122,3 +1122,25 @@ When(
     await resourceObject.openResourcePanel(panel as PanelType, resource)
   }
 )
+
+When(
+  '{string} deletes and immediately undoes the following resource(s) using {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    method: 'keyboard' | 'undo button',
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resources = stepTable.hashes().map((row) => ({
+      name: row.resource
+    }))
+
+    await resourceObject.deleteAndUndoResource({
+      method,
+      resourcesWithInfo: resources,
+      via: 'BATCH_ACTION'
+    })
+  }
+)
