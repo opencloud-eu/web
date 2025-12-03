@@ -194,10 +194,11 @@ export default defineComponent({
     const photoRollFiles = computed(() => {
       const files = Object.values(unref(cachedFiles))
       const filteredIds = unref(filteredFiles).map((f) => f.id)
+      const idToIndex = new Map(filteredIds.map((id, idx) => [id, idx]))
 
       return files.sort((a, b) => {
-        const indexA = filteredIds.indexOf(a.id)
-        const indexB = filteredIds.indexOf(b.id)
+        const indexA = idToIndex.get(a.id) ?? -1
+        const indexB = idToIndex.get(b.id) ?? -1
         return indexA - indexB
       })
     })
