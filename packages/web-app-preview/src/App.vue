@@ -12,8 +12,8 @@
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
-    <sidebar-stacked-overview
-      class="bg-role-surface-container w-1/5"
+    <photo-roll
+      class="bg-role-surface-container w-1/5 hidden md:block"
       :items="sidebarFiles"
       :active-index="activeIndex"
       @select="onSelectSidebarItem"
@@ -115,7 +115,7 @@ import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
-import SidebarStackedOverview from './components/SidebarStackedOverview.vue'
+import PhotoRoll from './components/PhotoRoll.vue'
 import { CachedFile } from './helpers/types'
 import {
   useFileTypes,
@@ -135,7 +135,7 @@ export default defineComponent({
     MediaAudio,
     MediaImage,
     MediaVideo,
-    SidebarStackedOverview
+    PhotoRoll
   },
   props: {
     activeFiles: { type: Object as PropType<Resource[]>, required: true },
