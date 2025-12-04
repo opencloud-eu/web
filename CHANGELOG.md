@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: add inlineLabel and hasBorder props to OcTextInput and OCSelect [[#1707](https://github.com/opencloud-eu/web/pull/1707)]
 - feat(preview): add support for mov video files [[#1705](https://github.com/opencloud-eu/web/pull/1705)]
 - feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
 - feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
