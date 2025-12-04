@@ -4,7 +4,6 @@
   "prConcurrentLimit": 15,
   "postUpdateOptions": ["pnpmDedupe"],
   "labels": ["Type:Dependencies"],
-  "ignoreDeps": ["@playwright/test"],
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
