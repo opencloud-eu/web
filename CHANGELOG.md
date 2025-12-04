@@ -59,6 +59,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @panzoom/panzoom to v4.6.1 [[#1698](https://github.com/opencloud-eu/web/pull/1698)]
+- chore(deps): update typescript-eslint monorepo to v8.48.1 [[#1693](https://github.com/opencloud-eu/web/pull/1693)]
+- fix(deps): update uppy monorepo [[#1695](https://github.com/opencloud-eu/web/pull/1695)]
 - chore(deps): update devdependencies (non-major) [[#1690](https://github.com/opencloud-eu/web/pull/1690)]
 - update-playwright-1.57 [[#1709](https://github.com/opencloud-eu/web/pull/1709)]
 - fix(deps): update dependency password-sheriff to v2 [[#1701](https://github.com/opencloud-eu/web/pull/1701)]
