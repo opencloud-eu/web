@@ -1,12 +1,16 @@
 <template>
-  <div :class="$attrs.class">
+  <div :class="[{ 'flex items-center': inlineLabel }, $attrs.class]">
     <slot name="label">
-      <label class="inline-block mb-0.5" :for="id">
+      <label
+        class="inline-block"
+        :class="{ 'mr-1': inlineLabel, 'mb-0.5': !inlineLabel }"
+        :for="id"
+      >
         {{ label }}
         <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
       </label>
     </slot>
-    <div class="relative">
+    <div class="relative" :class="{ 'grow-1': inlineLabel }">
       <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 absolute" />
       <component
         :is="inputComponent"
@@ -18,7 +22,8 @@
         :class="{
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
-          'pr-6': showClearButton
+          'pr-6': showClearButton,
+          '!border-none !outline-none': !hasBorder
         }"
         :type="type"
         :value="modelValue"
@@ -131,6 +136,11 @@ export interface Props {
    */
   label: string
   /**
+   * @docs Determines if the label will be displayed next to the input field.
+   * @default false
+   * */
+  inlineLabel?: boolean
+  /**
    * @docs The error message to be displayed below the input.
    */
   errorMessage?: string
@@ -166,6 +176,12 @@ export interface Props {
    * @docs The method to generate a password if the `type` is set to `password`.
    */
   generatePasswordMethod?: (...args: unknown[]) => string
+
+  hasBorder?: boolean
+  /**
+   * @docs Determines if the input field has a surrounding border.
+   * @default true
+   */
 }
 
 export interface Emits {
@@ -212,12 +228,14 @@ const {
   defaultValue,
   disabled = false,
   label,
+  inlineLabel = false,
   errorMessage,
   errorMessageDebouncedTime = 500,
   fixMessageLine = false,
   descriptionMessage,
   readOnly = false,
   requiredMark = false,
+  hasBorder = true,
   passwordPolicy = {},
   generatePasswordMethod
 } = defineProps<Props>()
@@ -350,12 +368,15 @@ watch(
   .oc-input {
     @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline outline-0 overflow-visible appearance-none;
   }
+
   .oc-input:focus {
     @apply border border-role-surface outline-2 outline-role-outline;
   }
+
   .oc-input:disabled {
     @apply bg-role-surface-container cursor-not-allowed;
   }
+
   .oc-input::placeholder {
     @apply text-role-on-surface opacity-100;
   }
