@@ -10,7 +10,7 @@ exports[`OcModal > displays input 1`] = `
       <div class="oc-modal-body px-4 pt-4">
         <!--v-if-->
         <!--v-if-->
-        <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" class="oc-modal-body-input -mb-5 pb-4"></oc-text-input-stub>
+        <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" inlinelabel="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" hasborder="true" class="oc-modal-body-input -mb-5 pb-4"></oc-text-input-stub>
       </div>
       <div class="oc-modal-body-actions flex justify-end p-4 text-right">
         <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">

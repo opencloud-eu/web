@@ -17,10 +17,12 @@
       </oc-button>
     </div>
     <div class="px-4">
-      <div class="py-3">
+      <div class="py-2 mb-2 border-b border-role-outline-variant">
         <oc-select
           v-model="from"
           :label="`${$gettext('From')}:`"
+          :inline-label="true"
+          :has-border="false"
           :options="fromOptions"
           option-label="label"
           option-value="value"
@@ -31,25 +33,33 @@
       <oc-text-input
         v-model="toMail"
         type="email"
-        class="mail-new-message-to-input mb-2"
+        class="mail-new-message-to-input mb-2 pb-2 border-b border-role-outline-variant"
         :label="`${$gettext('To')}:`"
+        :inline-label="true"
+        :has-border="false"
       />
       <oc-text-input
         v-model="ccMail"
         type="email"
-        class="mail-new-message-cc-input mb-2"
+        class="mail-new-message-cc-input mb-2 pb-2 border-b border-role-outline-variant"
         :label="`${$gettext('CC')}:`"
+        :inline-label="true"
+        :has-border="false"
       />
       <oc-text-input
         v-model="bccMail"
         type="email"
-        class="mail-new-message-bcc-input mb-2"
+        class="mail-new-message-bcc-input mb-2 pb-2 border-b border-role-outline-variant"
         :label="`${$gettext('BCC')}:`"
+        :inline-label="true"
+        :has-border="false"
       />
       <oc-text-input
         v-model="subject"
-        class="mail-new-message-to-input"
-        :label="$gettext('Subject')"
+        class="mail-new-message-to-input pb-2 border-b border-role-outline-variant"
+        :label="`${$gettext('Subject')}:`"
+        :inline-label="true"
+        :has-border="false"
       />
       <div class="py-4">
         <oc-textarea v-model="mailBody" :label="$gettext('Write email')" />
