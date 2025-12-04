@@ -31,6 +31,16 @@ The default and most simple use case involves a `v-model` and a `label`.
 <<< @/components/OcTextInput/default.vue
 :::
 
+### Inline Label
+
+::: livecode
+
+```vue
+<oc-text-input label="Your name" :inline-label="true" />
+```
+
+:::
+
 ### Disabled
 
 ::: livecode
@@ -67,6 +77,14 @@ The following input types ares supported.
 
 ::: livecode {path=/components/OcTextInput/messages.vue}
 <<< @/components/OcTextInput/messages.vue
+:::
+
+### Customization
+
+`OcTextInput` is highly customizable
+
+::: livecode {path=/components/OcTextInput/customization.vue}
+<<< @/components/OcTextInput/customization.vue
 :::
 
 ::: component-api
