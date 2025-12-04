@@ -286,7 +286,7 @@ const {
   readOnly = false,
   positionFixed = false,
   requiredMark = false,
-  hasBorder = false
+  hasBorder = true
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
