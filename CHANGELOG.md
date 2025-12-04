@@ -59,6 +59,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.28.0 [[#1697](https://github.com/opencloud-eu/web/pull/1697)]
 - chore(deps): update dependency @panzoom/panzoom to v4.6.1 [[#1698](https://github.com/opencloud-eu/web/pull/1698)]
 - chore(deps): update typescript-eslint monorepo to v8.48.1 [[#1693](https://github.com/opencloud-eu/web/pull/1693)]
 - fix(deps): update uppy monorepo [[#1695](https://github.com/opencloud-eu/web/pull/1695)]
