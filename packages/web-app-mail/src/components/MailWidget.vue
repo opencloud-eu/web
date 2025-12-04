@@ -1,7 +1,7 @@
 <template>
   <div v-if="isOpen && !isExpanded" :class="overlayClasses">
     <div
-      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border border-role-outline-variant flex flex-col md:rounded-xl"
+      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl"
       :class="widgetPositionClasses"
     >
       <div class="flex items-center justify-between px-4 py-2">
