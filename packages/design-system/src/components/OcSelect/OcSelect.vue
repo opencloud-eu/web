@@ -5,7 +5,7 @@
       :aria-hidden="true"
       :for="id"
       class="inline-block"
-      :class="{ 'mr-1': inlineLabel, 'mb-0.5': !inlineLabel }"
+      :class="{ 'mr-2': inlineLabel, 'mb-0.5': !inlineLabel }"
     >
       {{ label }}
       <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
@@ -510,6 +510,7 @@ export default { components: { VueSelect } }
     .vs__dropdown-toggle {
       border: none !important;
       outline: none !important;
+      background-color: transparent !important;
     }
   }
 

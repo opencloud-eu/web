@@ -3,7 +3,7 @@
     <slot name="label">
       <label
         class="inline-block"
-        :class="{ 'mr-1': inlineLabel, 'mb-0.5': !inlineLabel }"
+        :class="{ 'mr-2': inlineLabel, 'mb-0.5': !inlineLabel }"
         :for="id"
       >
         {{ label }}
@@ -23,7 +23,7 @@
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
           'pr-6': showClearButton,
-          'border-none outline-none': !hasBorder
+          'border-none outline-none bg-transparent': !hasBorder
         }"
         :type="type"
         :value="modelValue"

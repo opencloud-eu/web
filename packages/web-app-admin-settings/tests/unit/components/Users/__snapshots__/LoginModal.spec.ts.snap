@@ -2,6 +2,6 @@
 
 exports[`LoginModal > renders the input including two options 1`] = `
 "<div>
-  <oc-select-stub label="Login" descriptionmessage="" id="oc-select-1" filter="[Function]" disabled="false" inlinelabel="true" labelhidden="false" optionlabel="label" searchable="true" clearable="false" loading="false" fixmessageline="false" multiple="false" readonly="false" positionfixed="true" requiredmark="true" hasborder="false" options="[object Object],[object Object]" placeholder="Select..."></oc-select-stub>
+  <oc-select-stub label="Login" descriptionmessage="" id="oc-select-1" filter="[Function]" disabled="false" inlinelabel="false" labelhidden="false" optionlabel="label" searchable="true" clearable="false" loading="false" fixmessageline="false" multiple="false" readonly="false" positionfixed="true" requiredmark="true" hasborder="true" options="[object Object],[object Object]" placeholder="Select..."></oc-select-stub>
 </div>"
 `;
