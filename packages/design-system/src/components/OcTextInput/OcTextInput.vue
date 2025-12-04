@@ -23,7 +23,7 @@
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
           'pr-6': showClearButton,
-          '!border-none !outline-none': !hasBorder
+          'border-none outline-none': !hasBorder
         }"
         :type="type"
         :value="modelValue"
@@ -176,12 +176,11 @@ export interface Props {
    * @docs The method to generate a password if the `type` is set to `password`.
    */
   generatePasswordMethod?: (...args: unknown[]) => string
-
-  hasBorder?: boolean
   /**
    * @docs Determines if the input field has a surrounding border.
    * @default true
    */
+  hasBorder?: boolean
 }
 
 export interface Emits {

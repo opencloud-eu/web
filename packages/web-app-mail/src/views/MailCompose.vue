@@ -17,10 +17,12 @@
       </oc-button>
     </div>
     <div class="px-4">
-      <div class="py-3">
+      <div class="py-2 mb-2 border-b border-role-outline-variant">
         <oc-select
           v-model="from"
           :label="`${$gettext('From')}:`"
+          :inline-label="true"
+          :has-border="false"
           :options="fromOptions"
           option-label="label"
           option-value="value"

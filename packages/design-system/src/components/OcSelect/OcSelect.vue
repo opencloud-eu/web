@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <label v-if="!labelHidden" :aria-hidden="true" :for="id" class="inline-block mb-0.5">
+  <div :class="{ 'flex items-center': inlineLabel }">
+    <label
+      v-if="!labelHidden"
+      :aria-hidden="true"
+      :for="id"
+      class="inline-block"
+      :class="{ 'mr-1': inlineLabel, 'mb-0.5': !inlineLabel }"
+    >
       {{ label }}
       <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
     </label>
@@ -19,7 +25,8 @@
       :multiple="multiple"
       class="oc-select bg-transparent"
       :class="{
-        'oc-select-position-fixed': positionFixed
+        'oc-select-position-fixed': positionFixed,
+        'oc-select-no-border': !hasBorder
       }"
       :dropdown-should-open="selectDropdownShouldOpen"
       :map-keydown="selectMapKeydown"
@@ -135,6 +142,11 @@ export interface Props {
    */
   label: string
   /**
+   * @docs Determines if the label will be displayed next to the select input field.
+   * @default false
+   * */
+  inlineLabel?: boolean
+  /**
    * @docs Determines if the label is visually hidden. Note that it will still be read by screen readers.
    * @default false
    */
@@ -201,6 +213,11 @@ export interface Props {
    * @default false
    */
   requiredMark?: boolean
+  /**
+   * @docs Determines if the select input field has a surrounding border.
+   * @default true
+   */
+  hasBorder?: boolean
 }
 
 export interface Emits {
@@ -208,6 +225,7 @@ export interface Emits {
    * @docs Emitted when the user has typed.
    */
   (e: 'search:input', search: string): void
+
   /**
    * @docs Emitted when the user has selected an option.
    */
@@ -219,6 +237,7 @@ export interface Slots {
    * @docs Slot for when an option is selected.
    */
   'selected-option'?: () => unknown
+
   /**
    * @docs This component inherits all slots from `vue-select`. See https://vue-select.org/api/slots for more information.
    */
@@ -252,6 +271,7 @@ const {
   },
   disabled = false,
   label,
+  inlineLabel = true,
   labelHidden = false,
   contextualHelper,
   optionLabel = 'label',
@@ -265,7 +285,8 @@ const {
   multiple = false,
   readOnly = false,
   positionFixed = false,
-  requiredMark = false
+  requiredMark = false,
+  hasBorder = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -485,6 +506,13 @@ export default { components: { VueSelect } }
 }
 
 .oc-select {
+  &-no-border {
+    .vs__dropdown-toggle {
+      border: none !important;
+      outline: none !important;
+    }
+  }
+
   &-position-fixed {
     .vs__dropdown-menu {
       position: fixed;
