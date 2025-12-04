@@ -36,7 +36,6 @@ The default and most simple use case involves a `v-model` and a `label`.
 ::: livecode
 
 ```vue
-
 <oc-text-input label="Your name" :inline-label="true"/>
 ```
 
@@ -59,7 +58,6 @@ The following input types ares supported.
 ::: livecode
 
 ```vue
-
 <oc-text-input class="mb-2" label="Text"/>
 <oc-text-input class="mb-2" read-only="true" label="Read only" value="I am read only"/>
 <oc-text-input class="mb-2" type="number" label="Number"/>
