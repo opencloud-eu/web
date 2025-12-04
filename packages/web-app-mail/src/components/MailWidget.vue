@@ -129,23 +129,17 @@ const close = () => {
 }
 </script>
 
-<style scoped>
-:deep(.mail-compose-modal) {
+<style>
+.mail-compose-modal {
   width: 90vw;
   max-width: 90vw;
   height: 90vh;
-  max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
 
-:deep(.mail-compose-modal .oc-modal-body) {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-:deep(.mail-compose-modal .oc-modal-body-message) {
+.mail-compose-modal .oc-modal-body,
+.mail-compose-modal .oc-modal-body-message {
   flex: 1;
   display: flex;
   flex-direction: column;
