@@ -78,7 +78,6 @@
           :empty-message="
             areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
           "
-          :grouping-settings="groupingSettings"
           :view-mode="viewMode"
           :view-size="viewSize"
           :sort-fields="sortFields"
@@ -112,7 +111,6 @@ import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue
 import { computed, defineComponent, onMounted, ref, unref, watch } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
-import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
 import { useOpenWithDefaultApp, defaultFuseOptions } from '@opencloud-eu/web-pkg'
@@ -312,10 +310,7 @@ export default defineComponent({
       viewSize,
       viewModes,
       folderView,
-      sortFields,
-
-      // CERN
-      ...useGroupingSettings({ sortBy: sortBy, sortDir: sortDir })
+      sortFields
     }
   }
 })
