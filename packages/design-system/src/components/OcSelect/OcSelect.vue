@@ -271,7 +271,7 @@ const {
   },
   disabled = false,
   label,
-  inlineLabel = true,
+  inlineLabel = false,
   labelHidden = false,
   contextualHelper,
   optionLabel = 'label',
