@@ -47,8 +47,7 @@ The default and most simple use case involves a `v-model` and a `label`.
 ::: livecode
 
 ```vue
-
-<oc-text-input disabled label="Address" model-value="I am disabled"/>
+<oc-text-input disabled label="Disabled" model-value="I am disabled" />
 ```
 
 :::
@@ -76,7 +75,6 @@ The following input types ares supported.
 ::: livecode
 
 ```vue
-
 <div class="border-b mb-2">
   <oc-text-input class="mb-2" label="Your name" :inline-label="true" :has-border="false"/>
 </div>
