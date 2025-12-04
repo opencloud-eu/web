@@ -13,5 +13,6 @@ export const mimeTypes = [
   'image/webp',
   'image/x-ms-bmp',
   'video/mp4',
+  'video/quicktime',
   'video/webm'
 ]
