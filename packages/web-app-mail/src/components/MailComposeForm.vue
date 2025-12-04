@@ -1,10 +1,12 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <div v-else class="px-4">
-    <div class="py-3">
+    <div class="py-2 mb-2 border-b border-role-outline-variant">
       <oc-select
         :model-value="modelValue.from"
         :label="`${$gettext('From')}:`"
+        :inline-label="true"
+        :has-border="false"
         :options="fromOptions"
         option-label="label"
         option-value="value"
@@ -17,31 +19,39 @@
     <oc-text-input
       :model-value="modelValue.to"
       type="email"
-      class="mail-new-message-to-input mb-2"
+      class="mail-new-message-to-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('To')}:`"
+      :inline-label="true"
+      :has-border="false"
       @update:model-value="(value: string) => updateField('to', value)"
     />
 
     <oc-text-input
       :model-value="modelValue.cc"
       type="email"
-      class="mail-new-message-cc-input mb-2"
+      class="mail-new-message-cc-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('CC')}:`"
+      :inline-label="true"
+      :has-border="false"
       @update:model-value="(value: string) => updateField('cc', value)"
     />
 
     <oc-text-input
       :model-value="modelValue.bcc"
       type="email"
-      class="mail-new-message-bcc-input mb-2"
+      class="mail-new-message-bcc-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('BCC')}:`"
+      :inline-label="true"
+      :has-border="false"
       @update:model-value="(value: string) => updateField('bcc', value)"
     />
 
     <oc-text-input
       :model-value="modelValue.subject"
-      class="mail-new-message-to-input"
-      :label="$gettext('Subject')"
+      class="mail-new-message-to-input pb-2 border-b border-role-outline-variant"
+      :label="`${$gettext('Subject')}:`"
+      :inline-label="true"
+      :has-border="false"
       @update:model-value="(value: string) => updateField('subject', value)"
     />
 

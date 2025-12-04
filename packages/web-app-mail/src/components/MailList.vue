@@ -25,7 +25,7 @@
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
         <h2 class="text-lg ml-4" v-text="currentMailbox.name" />
-        <div class="paceholder" />
+        <div class="placeholder" />
       </div>
 
       <no-content-message
