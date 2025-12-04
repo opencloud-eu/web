@@ -63,6 +63,13 @@
     "type": "string"
   },
   {
+    "name": "inlineLabel",
+    "required": false,
+    "description": "Determines if the label will be displayed next to the input field.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
     "name": "errorMessage",
     "required": false,
     "description": "The error message to be displayed below the input.",
@@ -117,5 +124,12 @@
     "description": "The method to generate a password if the `type` is set to `password`.",
     "default": "",
     "type": "(...args: unknown[]) => string"
+  },
+  {
+    "name": "hasBorder",
+    "required": false,
+    "description": "Determines if the input field has a surrounding border.",
+    "default": "true",
+    "type": "boolean"
   }
 ]

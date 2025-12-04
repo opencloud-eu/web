@@ -28,6 +28,13 @@
     "type": "string"
   },
   {
+    "name": "inlineLabel",
+    "required": false,
+    "description": "Determines if the label will be displayed next to the select input field.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
     "name": "labelHidden",
     "required": false,
     "description": "Determines if the label is visually hidden. Note that it will still be read by screen readers.",
@@ -123,6 +130,13 @@
     "required": false,
     "description": "Determines if a required mark (*) should be displayed next to the label.",
     "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hasBorder",
+    "required": false,
+    "description": "Determines if the select input field has a surrounding border.",
+    "default": "true",
     "type": "boolean"
   }
 ]
