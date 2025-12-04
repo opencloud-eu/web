@@ -67,22 +67,6 @@ The following input types ares supported.
 
 :::
 
-### Customization
-`OcTextInput` is highly customizable
-
-::: livecode
-
-```vue
-<div class="border-b mb-2">
-  <oc-text-input class="mb-2" label="Your name" :inline-label="true" :has-border="false"/>
-</div>
-<div class="border-b">
-  <oc-text-input class="mb-2" label="Full address" :inline-label="true" :has-border="false"/>
-</div>
-```
-
-:::
-
 ### Interactions
 
 ::: livecode {path=/components/OcTextInput/interactions.vue}
@@ -93,6 +77,13 @@ The following input types ares supported.
 
 ::: livecode {path=/components/OcTextInput/messages.vue}
 <<< @/components/OcTextInput/messages.vue
+:::
+
+### Customization
+`OcTextInput` is highly customizable
+
+::: livecode {path=/components/OcTextInput/customization.vue}
+<<< @/components/OcTextInput/customization.vue
 :::
 
 ::: component-api
