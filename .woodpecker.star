@@ -244,9 +244,15 @@ def main(ctx):
 
     before = beforePipelines(ctx)
 
-    stages = pipelinesDependsOn(stagePipelines(ctx), before)
+    build_title = ctx.build.title.lower() if ctx.build.title else ""
+    is_release_pr = ("🎉 release" in build_title)
 
-    if not stages:
+    if is_release_pr:
+        stages = []
+    else:
+        stages = pipelinesDependsOn(stagePipelines(ctx), before)
+
+    if not stages and not is_release_pr:
         print("Errors detected. Review messages above.")
         return []
 
