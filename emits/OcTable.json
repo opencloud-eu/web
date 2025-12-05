@@ -2,12 +2,12 @@
   {
     "name": "itemDropped",
     "description": "Emitted when an item has been dropped onto a row.",
-    "type": "(e: 'itemDropped', selector: string, event: DragEvent): void"
+    "type": "(e: 'itemDropped', args: [Item, DragEvent]): void"
   },
   {
     "name": "itemDragged",
     "description": "Emitted when an item has been dragged onto a row.",
-    "type": "(e: 'itemDragged', item: Item, event: DragEvent): void"
+    "type": "(e: 'itemDragged', args: [Item, DragEvent]): void"
   },
   {
     "name": "theadClicked",
@@ -37,7 +37,7 @@
   {
     "name": "dropRowStyling",
     "description": "Emitted when an element has entered a drop zone inside the table.",
-    "type": "(e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void"
+    "type": "(e: 'dropRowStyling', item: Item, leaving: boolean, event: DragEvent): void"
   },
   {
     "name": "itemVisible",
