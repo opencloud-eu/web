@@ -78,10 +78,9 @@
           )
         "
         @dragstart="dragStart(item, $event)"
-        @drop="dropRowEvent(domSelector(item), $event)"
-        @dragenter.prevent="dropRowStyling(domSelector(item), false, $event)"
-        @dragleave.prevent="dropRowStyling(domSelector(item), true, $event)"
-        @mouseleave="dropRowStyling(domSelector(item), true, $event)"
+        @drop="dropRowEvent(item, $event)"
+        @dragenter.prevent="dropRowStyling(item, false, $event)"
+        @dragleave.prevent="dropRowStyling(item, true, $event)"
         @dragover="dragOver($event)"
         @item-visible="$emit('itemVisible', item)"
       >
@@ -213,12 +212,12 @@ export interface Emits {
   /**
    * @docs Emitted when an item has been dropped onto a row.
    */
-  (e: 'itemDropped', selector: string, event: DragEvent): void
+  (e: 'itemDropped', args: [Item, DragEvent]): void
 
   /**
    * @docs Emitted when an item has been dragged onto a row.
    */
-  (e: 'itemDragged', item: Item, event: DragEvent): void
+  (e: 'itemDragged', args: [Item, DragEvent]): void
 
   /**
    * @docs Emitted when a table header has been clicked.
@@ -253,7 +252,7 @@ export interface Emits {
   /**
    * @docs Emitted when an element has entered a drop zone inside the table.
    */
-  (e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void
+  (e: 'dropRowStyling', item: Item, leaving: boolean, event: DragEvent): void
 
   /**
    * @docs Emitted when an item has been scrolled into the view.
@@ -332,15 +331,15 @@ const dragOver = (event: DragEvent) => {
 }
 
 const dragStart = (item: Item, event: DragEvent) => {
-  emit(EVENT_ITEM_DRAGGED, item, event)
+  emit(EVENT_ITEM_DRAGGED, [item, event])
 }
 
-const dropRowEvent = (selector: string, event: DragEvent) => {
-  emit(EVENT_ITEM_DROPPED, selector, event)
+const dropRowEvent = (item: Item, event: DragEvent) => {
+  emit(EVENT_ITEM_DROPPED, [item, event])
 }
 
-const dropRowStyling = (selector: string, leaving: boolean, event: DragEvent) => {
-  emit('dropRowStyling', selector, leaving, event)
+const dropRowStyling = (item: Item, leaving: boolean, event: DragEvent) => {
+  emit('dropRowStyling', item, leaving, event)
 }
 
 const isFieldTypeSlot = (field: FieldType) => {

@@ -26,19 +26,13 @@
     :sort-dir="sortDir"
     :lazy="lazy"
     padding-x="medium"
-    @highlight="
-      fileContainerClicked({
-        resource: $event[0],
-        event: $event[1],
-        selectedIds: unref(selectedIds)
-      })
-    "
+    @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
     @row-mounted="$emit('rowMounted', $event[0], $event[1], ImageDimension.Thumbnail)"
     @contextmenu-clicked="showContextMenu"
-    @item-dropped="fileDropped"
-    @item-dragged="fileDragged"
-    @drop-row-styling="dropRowStyling"
-    @sort="sort"
+    @item-dropped="fileDropped($event[0], $event[1])"
+    @item-dragged="dragStart($event[0], $event[1])"
+    @drop-row-styling="setDropStyling"
+    @sort="$emit('sort', $event)"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template v-if="!isLocationPicker && !isFilePicker" #selectHeader>
@@ -266,7 +260,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef } from 'vue'
+import { ComponentPublicInstance, computed, ref, unref, useTemplateRef } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
   extractDomSelector,
@@ -422,12 +416,24 @@ const { isMobile } = useIsMobile()
 const { isLocationPicker, isFilePicker } = useEmbedMode()
 const { getDefaultAction } = useFileActions()
 const {
+  selectedResources,
+  isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,
   isResourceDisabled,
-  isResourceInDeleteQueue
-} = useResourceViewHelpers({ emit })
+  isResourceInDeleteQueue,
+  ghostElement,
+  dragItem,
+  dragSelection,
+  dragStart,
+  fileDropped,
+  setDropStyling
+} = useResourceViewHelpers({
+  resources: computed(() => resources),
+  selectedIds: computed(() => selectedIds),
+  emit
+})
 
 const clipboardStore = useClipboardStore()
 const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
@@ -438,9 +444,6 @@ const { userContextReady } = storeToRefs(authStore)
 const resourcesStore = useResourcesStore()
 const { areFileExtensionsShown, latestSelectedId } = storeToRefs(resourcesStore)
 
-const dragItem = ref<Resource>()
-const ghostElement =
-  useTemplateRef<ComponentPublicInstance<typeof ResourceGhostElement>>('ghostElement')
 const contextMenuButton =
   useTemplateRef<ComponentPublicInstance<typeof OcButton>>('contextMenuButton')
 
@@ -481,11 +484,6 @@ const isResourceClickable = (resource: Resource) => {
 const emitSelect = (selectedIds: string[]) => {
   eventBus.publish('app.files.list.clicked')
   emit('update:selectedIds', selectedIds)
-}
-
-const toggleSelection = (resourceId: string) => {
-  resourcesStore.toggleSelection(resourceId)
-  emitSelect([...resourcesStore.selectedIds])
 }
 
 const getResourceLink = (resource: Resource) => {
@@ -720,21 +718,6 @@ const areAllResourcesSelected = computed(() => {
 const selectAllCheckboxLabel = computed(() => {
   return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
 })
-const selectedResources = computed(() => {
-  return resources.filter((resource) => unref(selectedIds).includes(resource.id))
-})
-const dragSelection = computed(() => {
-  const selection = [...unref(selectedResources)]
-  selection.splice(
-    selection.findIndex((i) => i.id === unref(dragItem).id),
-    1
-  )
-  return selection
-})
-
-const isResourceSelected = (item: Resource) => {
-  return unref(selectedIds).includes(item.id)
-}
 const isResourceCut = (resource: Resource) => {
   if (unref(clipboardAction) !== ClipboardActions.Cut) {
     return false
@@ -787,61 +770,6 @@ const openTagsSidebar = () => {
   eventBus.publish(SideBarEventTopics.open)
 }
 
-const fileDragged = async (file: Resource, event: DragEvent) => {
-  if (!dragDrop) {
-    return
-  }
-
-  await setDragItem(file, event)
-  addSelectedResource(file)
-}
-const fileDropped = (selector: string, event: DragEvent) => {
-  if (!dragDrop) {
-    return
-  }
-  const hasFilePayload = (event.dataTransfer.types || []).some((e) => e === 'Files')
-  if (hasFilePayload) {
-    return
-  }
-  dragItem.value = null
-  const dropTarget = event.target as HTMLElement
-  const dropTargetTr = dropTarget.closest('tr')
-  const dropItemId = dropTargetTr.dataset.itemId
-  dropRowStyling(selector, true, event)
-
-  emit('fileDropped', dropItemId)
-}
-const setDragItem = async (item: Resource, event: DragEvent) => {
-  dragItem.value = item
-  await nextTick()
-  ghostElement.value.$el.ariaHidden = 'true'
-  ghostElement.value.$el.style.left = '-99999px'
-  ghostElement.value.$el.style.top = '-99999px'
-  event.dataTransfer.setDragImage(unref(ghostElement).$el, 0, 0)
-  event.dataTransfer.dropEffect = 'move'
-  event.dataTransfer.effectAllowed = 'move'
-}
-const dropRowStyling = (selector: string, leaving: boolean, event: DragEvent) => {
-  const hasFilePayload = (event.dataTransfer?.types || []).some((e) => e === 'Files')
-  if (hasFilePayload) {
-    return
-  }
-  if ((event.currentTarget as HTMLElement)?.contains(event.relatedTarget as HTMLElement)) {
-    return
-  }
-
-  const classList = document.getElementsByClassName(`oc-tbody-tr-${selector}`)[0].classList
-  const className = 'highlightedDropTarget'
-  leaving ? classList.remove(className) : classList.add(className)
-}
-const sort = (opts: { sortBy: string; sortDir: SortDir }) => {
-  emit('sort', opts)
-}
-const addSelectedResource = (file: Resource) => {
-  if (!isResourceSelected(file)) {
-    toggleSelection(file.id)
-  }
-}
 const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, item: Resource) => {
   const { dropdown, event } = data
 
