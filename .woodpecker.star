@@ -8,7 +8,7 @@ KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
-OC_CI_GOLANG = "scharfvi/golang-ci-2:1.25"
+OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "owncloudci/nodejs:22"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
@@ -618,7 +618,6 @@ def e2eTests(ctx):
 
             if browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-                command = "pnpm exec playwright install webkit --with-deps && cd tests/e2e && bash run-e2e.sh "
             else:
                 command = "cd tests/e2e && bash run-e2e.sh "
 
@@ -634,7 +633,6 @@ def e2eTests(ctx):
                 return []
 
             if "mobile-view" in suite:
-                command = "pnpm exec playwright install webkit --with-deps && pnpm test:e2e:mobile-parallel"
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
@@ -739,7 +737,7 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install chromium firefox --with-deps",
+            "pnpm exec playwright install --with-deps",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
