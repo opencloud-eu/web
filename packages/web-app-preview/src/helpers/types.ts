@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 export type CachedFile = {
   id: string
   name: string
-  url: string
+  url?: Ref<string>
   ext: string
   mimeType: string
   isVideo: boolean

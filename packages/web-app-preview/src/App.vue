@@ -7,11 +7,17 @@
   <div
     v-else
     ref="preview"
-    class="flex size-full"
+    class="!flex size-full"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
   >
+    <photo-roll
+      class="bg-role-surface-container w-1/5 hidden md:block"
+      :items="photoRollFiles"
+      :active-index="activeIndex"
+      @select="onSelectPhotoRollItem"
+    />
     <div
       class="stage size-full flex flex-col text-center"
       :class="{ lightbox: isFullScreenModeActivated }"
@@ -109,6 +115,7 @@ import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
+import PhotoRoll from './components/PhotoRoll.vue'
 import { CachedFile } from './helpers/types'
 import {
   useFileTypes,
@@ -120,7 +127,6 @@ import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 
 export const appId = 'preview'
-const PRELOAD_COUNT = 5
 
 export default defineComponent({
   name: 'Preview',
@@ -128,7 +134,8 @@ export default defineComponent({
     MediaControls,
     MediaAudio,
     MediaImage,
-    MediaVideo
+    MediaVideo,
+    PhotoRoll
   },
   props: {
     activeFiles: { type: Object as PropType<Resource[]>, required: true },
@@ -181,6 +188,18 @@ export default defineComponent({
       return unref(deleteFileActions)[0]?.isVisible({
         space: unref(space),
         resources: [unref(activeFilteredFile)]
+      })
+    })
+
+    const photoRollFiles = computed(() => {
+      const files = Object.values(unref(cachedFiles))
+      const filteredIds = unref(filteredFiles).map((f) => f.id)
+      const idToIndex = new Map(filteredIds.map((id, idx) => [id, idx]))
+
+      return files.sort((a, b) => {
+        const indexA = idToIndex.get(a.id) ?? -1
+        const indexB = idToIndex.get(b.id) ?? -1
+        return indexA - indexB
       })
     })
 
@@ -240,7 +259,7 @@ export default defineComponent({
       const cachedFile: CachedFile = {
         id: file.id,
         name: file.name,
-        url: undefined,
+        url: ref<string | undefined>(undefined),
         ext: file.extension,
         mimeType: file.mimeType,
         isVideo: isFileTypeVideo(file),
@@ -253,7 +272,7 @@ export default defineComponent({
 
       try {
         if (cachedFile.isImage) {
-          cachedFile.url = await previewService.loadPreview(
+          cachedFile.url.value = await previewService.loadPreview(
             {
               space: unref(space),
               resource: file,
@@ -265,7 +284,7 @@ export default defineComponent({
           )
           return
         }
-        cachedFile.url = await props.getUrlForResource(unref(space), file)
+        cachedFile.url.value = await props.getUrlForResource(unref(space), file)
       } catch (e) {
         console.error(e)
         cachedFile.isError.value = true
@@ -316,6 +335,12 @@ export default defineComponent({
         params: { ...unref(route).params, ...params },
         query: { ...unref(route).query, ...query }
       } as RouteLocationRaw)
+    }
+
+    const preloadImages = () => {
+      for (const file of unref(filteredFiles)) {
+        loadFileIntoCache(file)
+      }
     }
 
     const instance = getCurrentInstance()
@@ -377,6 +402,11 @@ export default defineComponent({
       { immediate: true }
     )
 
+    const onSelectPhotoRollItem = (index: number) => {
+      activeIndex.value = index
+      updateLocalHistory()
+    }
+
     return {
       ...useImageControls(),
       ...useFullScreenMode(),
@@ -386,6 +416,7 @@ export default defineComponent({
       activeMediaFileCached,
       cachedFiles,
       filteredFiles,
+      onSelectPhotoRollItem,
       updateLocalHistory,
       isAutoPlayEnabled,
       preview,
@@ -398,7 +429,9 @@ export default defineComponent({
       keyBindings,
       bindKeyAction,
       removeKeyAction,
-      isDeleteButtonVisible
+      isDeleteButtonVisible,
+      photoRollFiles,
+      preloadImages
     }
   },
 
@@ -440,7 +473,7 @@ export default defineComponent({
     })
 
     Object.values(this.cachedFiles).forEach((cachedFile) => {
-      this.revokeUrl(cachedFile.url)
+      this.revokeUrl(unref(cachedFile.url))
     })
   },
 
@@ -460,32 +493,8 @@ export default defineComponent({
         this.activeIndex = 0
       }
     },
-    // react to PopStateEvent ()
     handleLocalHistoryEvent() {
       this.setActiveFile()
-    },
-    preloadImages() {
-      const preloadFile = (preloadFileIndex: number) => {
-        const cycleIndex =
-          (((this.activeIndex + preloadFileIndex) % this.filteredFiles.length) +
-            this.filteredFiles.length) %
-          this.filteredFiles.length
-
-        const file = this.filteredFiles[cycleIndex]
-        this.loadFileIntoCache(file)
-      }
-
-      for (let followingFileIndex = 1; followingFileIndex <= PRELOAD_COUNT; followingFileIndex++) {
-        preloadFile(followingFileIndex)
-      }
-
-      for (
-        let previousFileIndex = -1;
-        previousFileIndex >= PRELOAD_COUNT * -1;
-        previousFileIndex--
-      ) {
-        preloadFile(previousFileIndex)
-      }
     }
   }
 })
