@@ -81,7 +81,7 @@ describe('GenericSpace view', () => {
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
     it('shows the files table when files are available', () => {
-      const { wrapper } = getMountedWrapper({ files: [mock<Resource>()] })
+      const { wrapper } = getMountedWrapper({ files: [mock<Resource>({ name: 'file.txt' })] })
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
@@ -175,7 +175,7 @@ describe('GenericSpace view', () => {
       it('renders the ResourceDetails component if no currentFolder id is present', () => {
         const { wrapper } = getMountedWrapper({
           currentFolder: mock<Resource>({ fileId: '' }),
-          files: [mock<Resource>({ isFolder: false })],
+          files: [mock<Resource>({ name: 'file.txt', isFolder: false })],
           runningOnEos: true
         })
         expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
@@ -187,7 +187,7 @@ describe('GenericSpace view', () => {
             ...mock<Resource>(),
             path
           },
-          files: [{ ...mock<Resource>(), path }],
+          files: [{ ...mock<Resource>({ name: 'file.txt' }), path }],
           runningOnEos: true
         })
         expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
@@ -199,7 +199,7 @@ describe('GenericSpace view', () => {
           currentFolder: {
             ...mock<Resource>()
           },
-          files: [{ ...mock<Resource>(), isFolder: false }],
+          files: [{ ...mock<Resource>({ name: 'file.txt' }), isFolder: false }],
           space: mock<SpaceResource>({
             id: '1',
             getDriveAliasAndItem: vi.fn(),
@@ -228,6 +228,23 @@ describe('GenericSpace view', () => {
       })
 
       expect(wrapper.find(selectors.actionsCreateAndUpload).exists()).toBe(true)
+    })
+  })
+  describe('list header', () => {
+    it('renders when a readme file is present', () => {
+      const { wrapper } = getMountedWrapper({ files: [mock<Resource>({ name: 'readme.md' })] })
+      expect(wrapper.find('list-header-stub').exists()).toBeTruthy()
+    })
+    it('does not render when a readme file is not present', () => {
+      const { wrapper } = getMountedWrapper({ files: [mock<Resource>({ name: 'file.txt' })] })
+      expect(wrapper.find('list-header-stub').exists()).toBeFalsy()
+    })
+    it('does not render on the frontpage of a space', () => {
+      const { wrapper } = getMountedWrapper({
+        files: [mock<Resource>({ name: 'readme.md' })],
+        space: mock<SpaceResource>({ driveType: 'project' })
+      })
+      expect(wrapper.find('list-header-stub').exists()).toBeFalsy()
     })
   })
 })
@@ -269,7 +286,8 @@ function getMountedWrapper({
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
     paginatedResources: ref(files),
-    areResourcesLoading: ref(loading)
+    areResourcesLoading: ref(loading),
+    storeItems: ref(files)
   })
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => resourcesViewDetailsMock)
   vi.mocked(useBreadcrumbsFromPath).mockImplementation(() =>
@@ -296,7 +314,13 @@ function getMountedWrapper({
         plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
-        stubs: { ...defaultStubs, 'resource-details': true, portal: true, ...stubs }
+        stubs: {
+          ...defaultStubs,
+          'resource-details': true,
+          portal: true,
+          ...stubs,
+          ListHeader: true
+        }
       }
     })
   }
