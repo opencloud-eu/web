@@ -6,13 +6,11 @@ APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:25.04.7.3.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
-OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
-OC_CI_GOLANG = "registry.heinlein.group/opencloud/golang-ci:1.25"
+OC_CI_GOLANG = "scharfvi/golang-ci-2:1.25"
 OC_CI_NODEJS = "owncloudci/nodejs:22"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
-OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
@@ -906,7 +904,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
         wait_for_service = [
             {
                 "name": "wait-for-%s" % container_name,
-                "image": OC_CI_ALPINE,
+                "image": OC_CI_GOLANG,
                 "commands": [
                     "timeout 300 bash -c 'while [ $(curl -sk -uadmin:admin " +
                     "%s/graph/v1.0/users/admin " % environment["OC_URL"] +
@@ -1642,7 +1640,7 @@ def getOpenCloudlatestCommitId(ctx):
     return [
         {
             "name": "get-opencloud-latest-commit-id",
-            "image": OC_CI_ALPINE,
+            "image": OC_CI_GOLANG,
             "commands": [
                 "curl -o .woodpecker.env %s/.woodpecker.env" % web_repo_path,
                 "curl -o script.sh %s/tests/woodpecker/script.sh" % web_repo_path,
@@ -1695,7 +1693,7 @@ def restoreBrowsersCache():
         },
         {
             "name": "unzip-browsers-cache",
-            "image": OC_UBUNTU,
+            "image": OC_CI_GOLANG,
             "commands": [
                 "tar -xvf %s -C ." % dir["playwrightBrowsersArchive"],
             ],
