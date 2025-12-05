@@ -190,7 +190,7 @@ The philosophy of Tailwind is to use utility classes as much as possible. Howeve
 
 ```html
 <style>
-  @reference '@opencloud-eu/design-system/dist/tailwind.css';
+  @reference '@opencloud-eu/design-system/tailwind';
 
   @layer components {
     .element {

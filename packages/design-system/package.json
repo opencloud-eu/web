@@ -71,7 +71,7 @@
       "./dist/translations.json": {
         "default": "./dist/translations.json"
       },
-      "./dist/tailwind.css": {
+      "./tailwind": {
         "default": "./dist/tailwind.css"
       },
       "./types": {
