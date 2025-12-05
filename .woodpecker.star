@@ -266,6 +266,14 @@ def beforePipelines(ctx):
            pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
 
 def stagePipelines(ctx):
+    #     build_title = ctx.build.title.lower() if ctx.build.title else ""
+
+    #     build_branch = ctx.build.branch.lower() if ctx.build.branch else ""
+    #     if ("🎉 release" in build_title or "next-release" in build_branch):
+#     if "release" in ctx.build.title.lower():
+#         return []
+    if "next-release" in ctx.build.branch.lower() or "release" in ctx.build.title.lower():
+        return []
     unit_test_pipelines = unitTests(ctx)
 
     # run only unit tests when publishing a standalone package
