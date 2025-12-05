@@ -3,21 +3,22 @@
     id="text-editor-container"
     class="h-full [&_.md-editor-preview]:!font-(family-name:--oc-font-family)"
   >
-    <md-preview
-      v-if="isReadOnly"
-      id="text-editor-preview-component"
-      :model-value="currentContent"
-      no-katex
-      no-mermaid
-      no-prettier
-      no-upload-img
-      no-highlight
-      no-echarts
-      :language="languages[language.current] || 'en-US'"
-      :theme="theme"
-      auto-focus
-      read-only
-    />
+    <article v-if="isReadOnly">
+      <md-preview
+        id="text-editor-preview-component"
+        :model-value="currentContent"
+        no-katex
+        no-mermaid
+        no-prettier
+        no-upload-img
+        no-highlight
+        no-echarts
+        :language="languages[language.current] || 'en-US'"
+        :theme="theme"
+        auto-focus
+        read-only
+      />
+    </article>
     <md-editor
       v-else
       id="text-editor-component"
@@ -43,7 +44,7 @@
           @on-click="showLineNumbers = !showLineNumbers"
         >
           <oc-icon
-            class="!flex items-center justify-center w-[24px] h-[24px]"
+            class="!flex items-center justify-center size-6"
             size="small"
             name="hashtag"
             fill-type="none"
@@ -262,6 +263,11 @@ export default defineComponent({
 
 #text-editor-preview-component {
   background-color: transparent;
+}
+
+#text-editor-component-preview > :first-child,
+#text-editor-preview-component-preview > :first-child {
+  margin-top: 0 !important;
 }
 
 // overwrite md-editor styles
