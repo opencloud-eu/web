@@ -11,6 +11,18 @@
 - chore(deps): bump mdast-util-to-hast to 13.2.1 (security) [[#1692](https://github.com/opencloud-eu/web/pull/1692)]
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
 
+### 📈 Enhancement
+
+- feat: render readme.md file at the top of folder [[#1708](https://github.com/opencloud-eu/web/pull/1708)]
+- feat: add inlineLabel and hasBorder props to OcTextInput and OCSelect [[#1707](https://github.com/opencloud-eu/web/pull/1707)]
+- feat(preview): add support for mov video files [[#1705](https://github.com/opencloud-eu/web/pull/1705)]
+- feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
+- feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
+- feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
+- feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
+- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
+- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
+
 ### 🐛 Bug Fixes
 
 - fix: add missing drag styling in tiles view [[#1645](https://github.com/opencloud-eu/web/pull/1645)]
@@ -41,17 +53,6 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
-
-### 📈 Enhancement
-
-- feat: add inlineLabel and hasBorder props to OcTextInput and OCSelect [[#1707](https://github.com/opencloud-eu/web/pull/1707)]
-- feat(preview): add support for mov video files [[#1705](https://github.com/opencloud-eu/web/pull/1705)]
-- feat: add floating action button [[#1688](https://github.com/opencloud-eu/web/pull/1688)]
-- feat: replace extension and gdpr icon in preference menu [[#1683](https://github.com/opencloud-eu/web/pull/1683)]
-- feat: implement mail account switcher [[#1677](https://github.com/opencloud-eu/web/pull/1677)]
-- feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
-- feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
-- Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
 
 ### ✅ Tests
 
