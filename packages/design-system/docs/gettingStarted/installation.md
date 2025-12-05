@@ -33,10 +33,12 @@ $ yarn add @opencloud-eu/design-system
 
 ### Add styles
 
-The design-system uses [Tailwind](https://tailwindcss.com/) for styling. However, it does not ship Tailwind, meaning it must be provided by your application. Additionally, you need to import the design-system's styles at the very beginning of your main CSS file. It's important that this file is imported before any other styles to ensure the styles and Tailwind are working correctly.
+The design-system uses [Tailwind](https://tailwindcss.com/) for styling. However, it does not ship Tailwind, meaning it must be provided by your application. Additionally, you need to import the design-system's styles at the very beginning of your main CSS file and tell Tailwind where to look for class names. It's important that this file is imported before any other styles to ensure the styles and Tailwind are working correctly.
 
-```ts
-import '@opencloud-eu/design-system/dist/tailwind.css'
+```css
+@import './node_modules/@opencloud-eu/design-system/dist/tailwind.css';
+@source './node_modules/@opencloud-eu/design-system';
+@import './node_modules/@opencloud-eu/design-system/dist/design-system.css';
 ```
 
 ### Register components

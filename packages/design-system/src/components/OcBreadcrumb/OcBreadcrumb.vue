@@ -353,7 +353,7 @@ const dropItemStyling = (
 
 @layer components {
   .oc-breadcrumb-item-dragover {
-    @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100 ring-4 ring-role-secondary-container;
+    @apply bg-role-secondary-container rounded-xs transition-[background] transition-[border] duration-100 ring-4 ring-role-secondary-container;
   }
 }
 </style>
