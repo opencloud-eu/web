@@ -62,6 +62,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.6.4 [[#1716](https://github.com/opencloud-eu/web/pull/1716)]
+- chore(deps): update devdependencies (non-major) [[#1717](https://github.com/opencloud-eu/web/pull/1717)]
 - fix(deps): update dependency @sentry/vue to v10.29.0 [[#1712](https://github.com/opencloud-eu/web/pull/1712)]
 - fix(deps): update dependency @sentry/vue to v10.28.0 [[#1697](https://github.com/opencloud-eu/web/pull/1697)]
 - chore(deps): update dependency @panzoom/panzoom to v4.6.1 [[#1698](https://github.com/opencloud-eu/web/pull/1698)]
