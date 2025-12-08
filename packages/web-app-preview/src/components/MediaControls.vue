@@ -107,6 +107,15 @@
       >
         <oc-icon fill-type="line" name="delete-bin" />
       </oc-button>
+      <oc-button
+        v-oc-tooltip="togglePhotoRollDescription"
+        class="raw-hover-surface p-1 hidden md:flex"
+        appearance="raw"
+        :aria-label="togglePhotoRollDescription"
+        @click="$emit('togglePhotoRoll')"
+      >
+        <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
+      </oc-button>
     </div>
   </div>
 </template>
@@ -146,6 +155,10 @@ export default defineComponent({
     currentImageRotation: {
       type: Number,
       default: 0
+    },
+    photoRollEnabled: {
+      type: Boolean,
+      default: true
     }
   },
   emits: [
@@ -157,7 +170,8 @@ export default defineComponent({
     'toggleNext',
     'togglePrevious',
     'resetImage',
-    'deleteResource'
+    'deleteResource',
+    'togglePhotoRoll'
   ],
   setup(props) {
     const { $gettext } = useGettext()
@@ -181,10 +195,18 @@ export default defineComponent({
       })
     })
 
+    const togglePhotoRollDescription = computed(() => {
+      if (props.photoRollEnabled) {
+        return $gettext('Hide photo roll')
+      }
+      return $gettext('Show photo roll')
+    })
+
     return {
       screenreaderFileCount,
       ariaHiddenFileCount,
       resourceDeleteDescription,
+      togglePhotoRollDescription,
       enterFullScreenDescription: $gettext('Enter full screen mode'),
       exitFullScreenDescription: $gettext('Exit full screen mode'),
       imageShrinkDescription: $gettext('Shrink the image (⇧ + Mouse wheel)'),

@@ -13,6 +13,7 @@
     @keydown.right="goToNext"
   >
     <photo-roll
+      v-if="photoRollEnabled"
       class="bg-role-surface-container w-1/5 hidden md:block"
       :items="photoRollFiles"
       :active-index="activeIndex"
@@ -63,6 +64,7 @@
         :show-image-controls="activeMediaFileCached?.isImage && !activeMediaFileCached?.isError"
         :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
+        :photo-roll-enabled="photoRollEnabled"
         @set-rotation-right="imageRotateRight"
         @set-rotation-left="imageRotateLeft"
         @set-zoom="imageZoom"
@@ -72,6 +74,7 @@
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
         @delete-resource="$emit('delete:resource')"
+        @toggle-photo-roll="photoRollEnabled = !photoRollEnabled"
       />
     </div>
   </div>
@@ -172,6 +175,7 @@ export default defineComponent({
     const cachedFiles = ref<Record<string, CachedFile>>({})
     const folderLoaded = ref(false)
     const isAutoPlayEnabled = ref(true)
+    const photoRollEnabled = ref(true)
     const preview = ref<HTMLElement>()
     const keyBindings: string[] = []
 
@@ -460,6 +464,7 @@ export default defineComponent({
       activeMediaFileCached,
       cachedFiles,
       filteredFiles,
+      photoRollEnabled,
       onSelectPhotoRollItem,
       isAutoPlayEnabled,
       preview,
