@@ -11,6 +11,8 @@
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
+    @keydown.down="goToNext"
+    @keydown.up="goToPrev"
   >
     <photo-roll
       v-if="photoRollEnabled"
@@ -440,8 +442,6 @@ export default defineComponent({
           emit('delete:resource', unref(activeFilteredFile))
         )
       )
-      keyBindings.push(bindKeyAction({ primary: Key.ArrowDown }, () => goToNext()))
-      keyBindings.push(bindKeyAction({ primary: Key.ArrowUp }, () => goToPrev()))
     })
 
     onBeforeUnmount(() => {

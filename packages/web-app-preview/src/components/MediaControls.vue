@@ -26,6 +26,16 @@
       >
         <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
+      <oc-button
+        v-oc-tooltip="togglePhotoRollDescription"
+        class="raw-hover-surface p-1 hidden md:flex"
+        data-testid="toggle-photo-roll"
+        appearance="raw"
+        :aria-label="togglePhotoRollDescription"
+        @click="$emit('togglePhotoRoll')"
+      >
+        <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
+      </oc-button>
       <div class="flex">
         <oc-button
           v-oc-tooltip="
@@ -106,16 +116,6 @@
         @click="$emit('deleteResource')"
       >
         <oc-icon fill-type="line" name="delete-bin" />
-      </oc-button>
-      <oc-button
-        v-oc-tooltip="togglePhotoRollDescription"
-        class="raw-hover-surface p-1 hidden md:flex"
-        data-testid="toggle-photo-roll"
-        appearance="raw"
-        :aria-label="togglePhotoRollDescription"
-        @click="$emit('togglePhotoRoll')"
-      >
-        <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
       </oc-button>
     </div>
   </div>
