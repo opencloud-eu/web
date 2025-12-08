@@ -1,5 +1,5 @@
 <template>
-  <nav class="photo-roll flex flex-col p-4 overflow-y-auto">
+  <nav class="photo-roll flex flex-col p-4 overflow-y-auto max-w-xs">
     <div
       v-for="(item, idx) in items"
       :key="item.id"
