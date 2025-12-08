@@ -268,7 +268,7 @@ export interface Slots {
   /**
    * @docs Each field can have it's own slot.
    */
-  [dynamicSlot: string]: () => unknown
+  [dynamicSlot: string]: any
 }
 
 const {
