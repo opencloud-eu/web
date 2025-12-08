@@ -241,7 +241,7 @@ export interface Slots {
   /**
    * @docs This component inherits all slots from `vue-select`. See https://vue-select.org/api/slots for more information.
    */
-  [dynamicSlot: string]: () => unknown
+  [dynamicSlot: string]: any
 }
 
 // the keycode property is deprecated in the JS event API, vue-select still works with it though
