@@ -1,6 +1,6 @@
 import { Resource } from '@opencloud-eu/web-client'
 import MediaControls from '../../../src/components/MediaControls.vue'
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 
 const selectors = {
@@ -11,7 +11,8 @@ const selectors = {
   controlsImageZoom: '.preview-controls-image-zoom',
   controlsRotateLeft: '.preview-controls-rotate-left',
   controlsRotateRight: '.preview-controls-rotate-right',
-  controlsImageReset: '.preview-controls-image-reset'
+  controlsImageReset: '.preview-controls-image-reset',
+  togglePhotoRoll: '[data-testid="toggle-photo-roll"]'
 }
 
 describe('MediaControls component', () => {
@@ -109,9 +110,20 @@ describe('MediaControls component', () => {
       })
     })
   })
+  describe('photo roll toggle', () => {
+    it('exists', () => {
+      const { wrapper } = getWrapper({ showImageControls: true })
+      expect(wrapper.find(selectors.togglePhotoRoll).exists()).toBeTruthy()
+    })
+    it('emits "togglePhotoRoll"-event on click', async () => {
+      const { wrapper } = getWrapper({ showImageControls: true })
+      await wrapper.find(selectors.togglePhotoRoll).trigger('click')
+      expect(wrapper.emitted('togglePhotoRoll').length).toBeDefined()
+    })
+  })
 })
 
-function getWrapper(props = {}) {
+function getWrapper(props: PartialComponentProps<typeof MediaControls> = {}) {
   return {
     wrapper: shallowMount(MediaControls, {
       props: {
