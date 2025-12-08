@@ -110,6 +110,7 @@
       <oc-button
         v-oc-tooltip="togglePhotoRollDescription"
         class="raw-hover-surface p-1 hidden md:flex"
+        data-testid="toggle-photo-roll"
         appearance="raw"
         :aria-label="togglePhotoRollDescription"
         @click="$emit('togglePhotoRoll')"
