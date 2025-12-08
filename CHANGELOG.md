@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: add photo roll to preview app  [[#1699](https://github.com/opencloud-eu/web/pull/1699)]
 - feat: render readme.md file at the top of folder [[#1708](https://github.com/opencloud-eu/web/pull/1708)]
 - feat: add inlineLabel and hasBorder props to OcTextInput and OCSelect [[#1707](https://github.com/opencloud-eu/web/pull/1707)]
 - feat(preview): add support for mov video files [[#1705](https://github.com/opencloud-eu/web/pull/1705)]
