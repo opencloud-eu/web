@@ -84,9 +84,10 @@ import {
   unref,
   PropType,
   nextTick,
-  getCurrentInstance,
   watch,
-  Ref
+  Ref,
+  onBeforeUnmount,
+  onMounted
 } from 'vue'
 import omit from 'lodash-es/omit'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
@@ -343,7 +344,21 @@ export default defineComponent({
       }
     }
 
-    const instance = getCurrentInstance()
+    const setActiveFile = () => {
+      for (let i = 0; i < unref(filteredFiles).length; i++) {
+        const filterAttr = isLocationSharesActive(router, 'files-shares-with-me')
+          ? 'remoteItemId'
+          : 'fileId'
+
+        // match the given file id with the filtered files to get the current index
+        if (unref(filteredFiles)[i][filterAttr] === unref(fileId)) {
+          activeIndex.value = i
+          return
+        }
+
+        activeIndex.value = 0
+      }
+    }
 
     watch(
       () => props.currentFileContext,
@@ -357,7 +372,7 @@ export default defineComponent({
           folderLoaded.value = true
         }
 
-        ;(instance.proxy as any).setActiveFile()
+        setActiveFile()
       },
       { immediate: true }
     )
@@ -407,6 +422,35 @@ export default defineComponent({
       updateLocalHistory()
     }
 
+    onMounted(() => {
+      // keep a local history for this component
+      window.addEventListener('popstate', setActiveFile)
+      emit('register:onDeleteResourceCallback', onDeleteResourceCallback)
+      keyBindings.push(
+        bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
+          emit('delete:resource', unref(activeFilteredFile))
+        )
+      )
+      keyBindings.push(
+        bindKeyAction({ primary: Key.Delete }, () =>
+          emit('delete:resource', unref(activeFilteredFile))
+        )
+      )
+      keyBindings.push(bindKeyAction({ primary: Key.ArrowDown }, () => goToNext()))
+      keyBindings.push(bindKeyAction({ primary: Key.ArrowUp }, () => goToPrev()))
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('popstate', setActiveFile)
+      keyBindings.forEach((keyBindingId) => {
+        removeKeyAction(keyBindingId)
+      })
+
+      Object.values(unref(cachedFiles)).forEach((cachedFile) => {
+        props.revokeUrl(unref(cachedFile.url))
+      })
+    })
+
     return {
       ...useImageControls(),
       ...useFullScreenMode(),
@@ -417,7 +461,6 @@ export default defineComponent({
       cachedFiles,
       filteredFiles,
       onSelectPhotoRollItem,
-      updateLocalHistory,
       isAutoPlayEnabled,
       preview,
       isFileTypeImage,
@@ -426,9 +469,6 @@ export default defineComponent({
       onDeleteResourceCallback,
       goToNext,
       goToPrev,
-      keyBindings,
-      bindKeyAction,
-      removeKeyAction,
       isDeleteButtonVisible,
       photoRollFiles,
       preloadImages
@@ -447,54 +487,6 @@ export default defineComponent({
       }
 
       this.currentImageRotation = 0
-    }
-  },
-
-  mounted() {
-    // keep a local history for this component
-    window.addEventListener('popstate', this.handleLocalHistoryEvent)
-    this.$emit('register:onDeleteResourceCallback', this.onDeleteResourceCallback)
-    this.keyBindings.push(
-      this.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
-        this.$emit('delete:resource', this.activeFilteredFile)
-      )
-    )
-    this.keyBindings.push(
-      this.bindKeyAction({ primary: Key.Delete }, () =>
-        this.$emit('delete:resource', this.activeFilteredFile)
-      )
-    )
-  },
-
-  beforeUnmount() {
-    window.removeEventListener('popstate', this.handleLocalHistoryEvent)
-    this.keyBindings.forEach((keyBindingId) => {
-      this.removeKeyAction(keyBindingId)
-    })
-
-    Object.values(this.cachedFiles).forEach((cachedFile) => {
-      this.revokeUrl(unref(cachedFile.url))
-    })
-  },
-
-  methods: {
-    setActiveFile() {
-      for (let i = 0; i < this.filteredFiles.length; i++) {
-        const filterAttr = isLocationSharesActive(this.$router, 'files-shares-with-me')
-          ? 'remoteItemId'
-          : 'fileId'
-
-        // match the given file id with the filtered files to get the current index
-        if (this.filteredFiles[i][filterAttr] === this.fileId) {
-          this.activeIndex = i
-          return
-        }
-
-        this.activeIndex = 0
-      }
-    },
-    handleLocalHistoryEvent() {
-      this.setActiveFile()
     }
   }
 })
