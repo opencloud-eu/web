@@ -63,6 +63,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.39.1 [[#1730](https://github.com/opencloud-eu/web/pull/1730)]
 - chore(deps): update dependency dompurify to v3.3.1 [[#1721](https://github.com/opencloud-eu/web/pull/1721)]
 - chore(deps): update typescript-eslint monorepo to v8.49.0 [[#1724](https://github.com/opencloud-eu/web/pull/1724)]
 - chore(deps): update dependency md-editor-v3 to v6.2.1 [[#1726](https://github.com/opencloud-eu/web/pull/1726)]
