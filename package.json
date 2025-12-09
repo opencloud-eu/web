@@ -96,13 +96,13 @@
     "vitest-mock-extended": "3.1.0",
     "vue": "^3.5.23",
     "vue-demi": "0.14.10",
-    "vue-tsc": "3.1.7",
+    "vue-tsc": "3.1.8",
     "vue3-gettext": "2.4.0"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.25.0",
   "volta": {
     "node": "24.11.1"
   },
