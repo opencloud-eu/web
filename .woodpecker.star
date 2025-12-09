@@ -245,7 +245,10 @@ def main(ctx):
     before = beforePipelines(ctx)
 
     build_title = ctx.build.title.lower() if ctx.build.title else ""
-    is_release_pr = ("🎉 release" in build_title)
+
+    #     build_branch = ctx.build.ref.startswith("refs/pull/next-release")
+    #     source_branch = ctx.environ["CI_COMMIT_SOURCE_BRANCH"]
+    is_release_pr = ("next-release/" in ctx.build.branch)
 
     if is_release_pr:
         stages = []
@@ -264,6 +267,7 @@ def main(ctx):
 
 def beforePipelines(ctx):
     return checkStarlark() + \
+           check_pr_branch() + \
            licenseCheck() + \
            pnpmCache(ctx) + \
            cacheOpenCloudPipeline(ctx) + \
@@ -285,6 +289,27 @@ def stagePipelines(ctx):
 
 def afterPipelines(ctx):
     return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrix(), stagePipelines(ctx))
+
+def check_pr_branch():
+    return [{
+        "name": "check-pr-branch",
+        "steps": [
+            {
+                "name": "check-release-pr",
+                "image": "alpine",
+                "commands": [
+                    'echo "PR source branch: $CI_COMMIT_SOURCE_BRANCH"',
+                    'echo "PR ref: $CI_COMMIT_REF"',
+                    'echo "Prev source branch: $CI_PREV_COMMIT_SOURCE_BRANCH"',
+                    'echo "Prev refspec: $CI_PREV_COMMIT_REFSPEC"',
+                    'echo "Checking if this is a release PR..."',
+                ],
+            },
+        ],
+        "when": [
+            event["pull_request"],
+        ],
+    }]
 
 def translation_sync(ctx):
     return [{
@@ -461,16 +486,29 @@ def buildCacheWeb(ctx):
         "workspace": web_workspace,
         "steps": restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") +
                  installPnpm() +
-                 [{
-                     "name": "build-web",
-                     "image": OC_CI_NODEJS,
-                     "environment": {
-                         "NO_INSTALL": True,
+                 [
+                     {
+                         "name": "print-branch",
+                         "image": "alpine",
+                         "commands": [
+                             "echo CI_REPO_BRANCH=" + ctx.repo.branch,
+                             "echo CI_BUILD_BRANCH=" + ctx.build.branch,
+                             "echo CI_BUILD_COMMIT=" + ctx.build.commit,
+                             "echo CI_BUILD_REF=" + ctx.build.ref,
+                             "echo CI_BUILD_SENDER=" + ctx.build.sender,
+                         ],
                      },
-                     "commands": [
-                         "make dist",
-                     ],
-                 }] +
+                     {
+                         "name": "build-web",
+                         "image": OC_CI_NODEJS,
+                         "environment": {
+                             "NO_INSTALL": True,
+                         },
+                         "commands": [
+                             "make dist",
+                         ],
+                     },
+                 ] +
                  rebuildBuildArtifactCache(ctx, "web-dist", "dist"),
         "when": [
             event["base"],
