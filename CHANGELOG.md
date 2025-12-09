@@ -63,6 +63,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.39.1 [[#1725](https://github.com/opencloud-eu/web/pull/1725)]
+- chore(deps): update devdependencies (non-major) [[#1722](https://github.com/opencloud-eu/web/pull/1722)]
+- fix(deps): update uppy monorepo [[#1729](https://github.com/opencloud-eu/web/pull/1729)]
+- chore(deps): update pnpm to v10.25.0 [[#1723](https://github.com/opencloud-eu/web/pull/1723)]
 - chore(deps): update traefik docker tag to v3.6.4 [[#1716](https://github.com/opencloud-eu/web/pull/1716)]
 - chore(deps): update devdependencies (non-major) [[#1717](https://github.com/opencloud-eu/web/pull/1717)]
 - fix(deps): update dependency @sentry/vue to v10.29.0 [[#1712](https://github.com/opencloud-eu/web/pull/1712)]
