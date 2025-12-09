@@ -199,7 +199,9 @@ services:
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
-      - MKNOD
+      - SYS_ADMIN
+    security_opt:
+      - seccomp=unconfined
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     healthcheck:
@@ -243,6 +245,9 @@ services:
       - '--entrypoints.opencloud.address=:9200'
       - '--entrypoints.opencloud-federated.address=:10200'
       - '--entrypoints.collabora.address=:9980'
+      - '--entrypoints.collabora.http.encodedCharacters.allowEncodedSlash=true'
+      - '--entrypoints.collabora.http.encodedCharacters.allowEncodedQuestionMark=true'
+      - '--entrypoints.collabora.http.encodedCharacters.allowEncodedPercent=true'
       - '--entrypoints.wopi.address=:8880'
       - '--entrypoints.collaboration.address=:9300'
       - '--entrypoints.collaboration-oo.address=:9302'
