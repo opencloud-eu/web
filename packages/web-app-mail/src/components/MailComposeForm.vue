@@ -1,6 +1,5 @@
 <template>
-  <app-loading-spinner v-if="isLoading" />
-  <div v-else class="px-4">
+  <div class="px-4">
     <div class="py-2 mb-2 border-b border-role-outline-variant">
       <oc-select
         :model-value="modelValue.from"
@@ -11,7 +10,6 @@
         option-label="label"
         option-value="value"
         class="w-full"
-        :loading="isLoading"
         @update:model-value="(value: FromOption) => updateField('from', value)"
       />
     </div>
@@ -66,13 +64,11 @@
 </template>
 
 <script setup lang="ts">
-import { z } from 'zod'
-import { ref, computed, onMounted, unref, watch } from 'vue'
-import { MailAccount, MailAccountSchema } from '../types'
+import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useConfigStore, useClientService, useRouteQuery } from '@opencloud-eu/web-pkg'
-import { useTask } from 'vue-concurrency'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
 
 type FromOption = {
   value: string
@@ -92,33 +88,19 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
-const configStore = useConfigStore()
-const clientService = useClientService()
+const accountsStore = useAccountsStore()
+const { accounts } = storeToRefs(accountsStore)
 
 const selectedAccountIdQuery = useRouteQuery('accountId')
 
-const accounts = ref<MailAccount[]>()
-
 export type ComposeFormState = {
-  from: FromOption | undefined
+  from?: FromOption
   to: string
   cc: string
   bcc: string
   subject: string
   body: string
 }
-
-const loadAccountsTask = useTask(function* (signal) {
-  const url = urlJoin(configStore.groupwareUrl, `accounts`)
-  try {
-    const { data } = yield clientService.httpAuthenticated.get(url, { signal })
-    accounts.value = z.array(MailAccountSchema).parse(data)
-  } catch (e) {
-    console.error(e)
-  }
-})
-
-const isLoading = computed(() => loadAccountsTask.isRunning || !loadAccountsTask.last)
 
 const fromOptions = computed<FromOption[]>(() => {
   return (
@@ -155,13 +137,4 @@ watch(
   },
   { immediate: true }
 )
-
-onMounted(() => {
-  loadAccountsTask.perform()
-})
-
-defineExpose({
-  fromOptions,
-  isLoading
-})
 </script>
