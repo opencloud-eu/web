@@ -9,7 +9,7 @@
         }"
       >
         <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
-          <MailboxTree @compose-mail="onComposeMail" />
+          <MailboxTree @composeMail="onComposeMail" />
         </div>
       </div>
       <div
