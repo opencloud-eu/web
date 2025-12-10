@@ -112,18 +112,6 @@ const isOpen = computed({
   }
 })
 
-const overlayClasses = computed(() => [
-  'z-50 transition',
-  'absolute inset-0 md:fixed md:inset-0',
-  'pointer-events-auto md:pointer-events-none bg-transparent'
-])
-
-const widgetPositionClasses = computed(
-  () =>
-    'top-0 left-0 right-0 bottom-0 ' +
-    'md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]'
-)
-
 const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
 }
