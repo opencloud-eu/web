@@ -9,7 +9,7 @@
         }"
       >
         <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
-          <MailboxTree @compose-mail="onComposeMail" />
+          <MailboxTree @composeMail="onComposeMail" />
         </div>
       </div>
       <div
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, onMounted } from 'vue'
+import { ref, unref, onMounted, ComponentPublicInstance, useTemplateRef } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
@@ -64,7 +64,7 @@ const { loadMails } = useLoadMails()
 const { loadMail } = useLoadMail()
 
 const isLoading = ref<boolean>(true)
-const mailListRef = ref<InstanceType<typeof MailList> | null>(null)
+const mailListRef = useTemplateRef<ComponentPublicInstance<typeof MailList>>('mailListRef')
 
 const currentAccountIdQuery = useRouteQuery('accountId')
 const currentMailboxIdQuery = useRouteQuery('mailboxId')

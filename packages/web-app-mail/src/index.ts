@@ -2,7 +2,6 @@ import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
 import Inbox from './views/Inbox.vue'
-import MailCompose from './views/MailCompose.vue'
 import LayoutContainer from './LayoutContainer.vue'
 import EmptyLayoutContainer from './EmptyLayoutContainer.vue'
 
@@ -40,15 +39,6 @@ export default defineWebApplication({
           {
             path: '',
             redirect: { name: 'mail-all-inbox' }
-          },
-          {
-            path: 'create',
-            name: 'mail-create',
-            component: MailCompose,
-            meta: {
-              authContext: 'user',
-              title: $gettext('Create new email')
-            }
           },
           {
             path: 'all',

@@ -6,7 +6,7 @@
           id="new-email-menu-btn"
           class="w-full hidden md:flex"
           appearance="filled"
-          @click="$emit('compose-mail')"
+          @click="$emit('composeMail')"
         >
           <oc-icon name="edit-box" fill-type="line" />
           <span v-text="$gettext('Write new Email')" />
@@ -70,7 +70,7 @@ import { unref } from 'vue'
 import MailAccountSwitch from './MailAccountSwitch.vue'
 
 const emit = defineEmits<{
-  (e: 'compose-mail'): void
+  (e: 'composeMail'): void
 }>()
 
 const mailboxesStore = useMailboxesStore()
