@@ -199,9 +199,7 @@ services:
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
-      - SYS_ADMIN
-    security_opt:
-      - seccomp=unconfined
+      - MKNOD
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     healthcheck:
