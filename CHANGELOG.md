@@ -6,7 +6,9 @@
 
 @ScharfViktor
 
+### ✅ Tests
 
+- [stable-4.2] e2e-tests. undo deleted resources (#1580) [[#1704](https://github.com/opencloud-eu/web/pull/1704)]
 
 ## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-28
 
