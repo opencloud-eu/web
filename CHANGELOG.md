@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor
+@ScharfViktor, @prashant-gurung899
 
 ### ✅ Tests
 
+- [stable-4.2] Port #1714, #1736 and #1700 [[#1738](https://github.com/opencloud-eu/web/pull/1738)]
 - [stable-4.2] e2e-tests. undo deleted resources (#1580) [[#1704](https://github.com/opencloud-eu/web/pull/1704)]
 
 ## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-28
