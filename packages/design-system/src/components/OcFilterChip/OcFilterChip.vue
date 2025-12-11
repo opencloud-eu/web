@@ -5,8 +5,12 @@
   >
     <oc-button
       :id="id"
-      class="oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90"
-      :class="{ 'oc-filter-chip-button-selected rounded-l-full rounded-r-none': filterActive }"
+      :gap-size="filterActive ? 'small' : 'none'"
+      class="oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap]"
+      :class="{
+        'oc-filter-chip-button-selected rounded-l-full rounded-r-none pr-2 pl-3': filterActive,
+        'px-3': !filterActive
+      }"
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
       :no-hover="filterActive || !hasActiveState"
@@ -26,7 +30,13 @@
         v-text="!!selectedItemNames.length ? selectedItemNames[0] : filterLabel"
       />
       <span v-if="selectedItemNames.length > 1" v-text="` +${selectedItemNames.length - 1}`" />
-      <oc-icon v-if="!filterActive && !isToggle" name="arrow-down-s" size="small" />
+      <oc-icon
+        v-if="!filterActive && !isToggle"
+        name="arrow-down-s"
+        size="small"
+        fill-type="line"
+        class="ml-1"
+      />
     </oc-button>
     <oc-drop
       v-if="!isToggle"
