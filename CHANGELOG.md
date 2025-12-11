@@ -4,12 +4,19 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @pascalwengerter, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @pascalwengerter, @prashant-gurung899, @tammi-23
 
 ### 🔒 Security
 
 - chore(deps): bump mdast-util-to-hast to 13.2.1 (security) [[#1692](https://github.com/opencloud-eu/web/pull/1692)]
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
+
+### ✅ Tests
+
+- [tests-only] skip unit and e2e test pipelines on ready-release-go prs [[#1714](https://github.com/opencloud-eu/web/pull/1714)]
+- e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
+- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
+- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
 
 ### 🐛 Bug Fixes
 
@@ -55,12 +62,6 @@
 - feat: show empty trash bin icon at quick action if trash is empty [[#1647](https://github.com/opencloud-eu/web/pull/1647)]
 - feat: share links and passwords in embed mode [[#1613](https://github.com/opencloud-eu/web/pull/1613)]
 - Introduce mail app [[#1382](https://github.com/opencloud-eu/web/pull/1382)]
-
-### ✅ Tests
-
-- e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
-- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
-- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
 
 ### 📦️ Dependencies
 
