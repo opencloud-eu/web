@@ -78,6 +78,15 @@ type FromOption = {
   identityId: string
 }
 
+export type ComposeFormState = {
+  from?: FromOption
+  to: string
+  cc: string
+  bcc: string
+  subject: string
+  body: string
+}
+
 const props = defineProps<{
   modelValue: ComposeFormState
 }>()
@@ -92,15 +101,6 @@ const accountsStore = useAccountsStore()
 const { accounts } = storeToRefs(accountsStore)
 
 const selectedAccountIdQuery = useRouteQuery('accountId')
-
-export type ComposeFormState = {
-  from?: FromOption
-  to: string
-  cc: string
-  bcc: string
-  subject: string
-  body: string
-}
 
 const fromOptions = computed<FromOption[]>(() => {
   return (
