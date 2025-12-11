@@ -2,7 +2,7 @@
 
 exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
-  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90" id="oc-filter-chip-4">
+  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-4">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -13,7 +13,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -119,7 +119,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 
 exports[`DateFilter > renders all items 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
-  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90" id="oc-filter-chip-1">
+  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-1">
       <!--v-if-->
       <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -130,7 +130,7 @@ exports[`DateFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
