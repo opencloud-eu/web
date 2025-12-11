@@ -625,8 +625,6 @@ def e2eTests(ctx):
             else:
                 command = "cd tests/e2e && bash run-e2e.sh "
 
-            command = "cd tests/e2e && bash run-e2e.sh "
-
             if "suites" in matrix:
                 command += "--suites %s" % ",".join(params["suites"])
             elif "features" in matrix:
