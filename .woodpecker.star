@@ -239,6 +239,9 @@ event = {
 def main(ctx):
     if ctx.build.event == "cron" and ctx.build.sender == "translation-sync":
         return translation_sync(ctx)
+    is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
+    if is_release_pr:
+        return licenseCheck()
 
     release = readyReleaseGo()
 
@@ -695,7 +698,9 @@ def notifyMatrix():
                     },
                     "QA_REPO": "https://github.com/opencloud-eu/qa.git",
                     "QA_REPO_BRANCH": "main",
-                    "CI_WOODPECKER_URL": "https://ci.opencloud.eu/",
+                    "CI_WOODPECKER_URL": {
+                        "from_secret": "oc_ci_url",
+                    },
                     "CI_REPO_ID": "6",
                     "CI_WOODPECKER_TOKEN": "no-auth-needed-on-this-repo",
                 },
