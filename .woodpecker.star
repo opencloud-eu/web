@@ -6,13 +6,11 @@ APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:25.04.7.3.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
-OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
-OC_CI_GOLANG = "registry.heinlein.group/opencloud/golang-ci:1.25"
+OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "owncloudci/nodejs:22"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
-OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
@@ -621,14 +619,14 @@ def e2eTests(ctx):
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
                          openCloudService(params["extraServerEnvironment"])
 
-            if browser_name == "webkit":
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-                command = "pnpm exec playwright install webkit --with-deps && cd tests/e2e && bash run-e2e.sh "
-            else:
-                command = "cd tests/e2e && bash run-e2e.sh "
-
             if browser_name == "firefox":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
+
+            if browser_name == "webkit":
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
+                command = "pnpm playwright install-deps webkit && cd tests/e2e && bash run-e2e.sh "
+            else:
+                command = "cd tests/e2e && bash run-e2e.sh "
 
             if "suites" in matrix:
                 command += "--suites %s" % ",".join(params["suites"])
@@ -639,7 +637,7 @@ def e2eTests(ctx):
                 return []
 
             if "mobile-view" in suite:
-                command = "pnpm exec playwright install webkit --with-deps && pnpm test:e2e:mobile-parallel"
+                command = "pnpm playwright install-deps webkit && pnpm test:e2e:mobile-parallel"
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
@@ -744,7 +742,7 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install chromium firefox --with-deps",
+            "pnpm exec playwright install --with-deps",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
@@ -909,7 +907,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
         wait_for_service = [
             {
                 "name": "wait-for-%s" % container_name,
-                "image": OC_CI_ALPINE,
+                "image": OC_CI_GOLANG,
                 "commands": [
                     "timeout 300 bash -c 'while [ $(curl -sk -uadmin:admin " +
                     "%s/graph/v1.0/users/admin " % environment["OC_URL"] +
@@ -1645,7 +1643,7 @@ def getOpenCloudlatestCommitId(ctx):
     return [
         {
             "name": "get-opencloud-latest-commit-id",
-            "image": OC_CI_ALPINE,
+            "image": OC_CI_GOLANG,
             "commands": [
                 "curl -o .woodpecker.env %s/.woodpecker.env" % web_repo_path,
                 "curl -o script.sh %s/tests/woodpecker/script.sh" % web_repo_path,
@@ -1698,7 +1696,7 @@ def restoreBrowsersCache():
         },
         {
             "name": "unzip-browsers-cache",
-            "image": OC_UBUNTU,
+            "image": OC_CI_GOLANG,
             "commands": [
                 "tar -xvf %s -C ." % dir["playwrightBrowsersArchive"],
             ],
