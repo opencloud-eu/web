@@ -66,7 +66,6 @@ export class Resource {
     const startUrl = this.#page.url()
     const downloads = await po.downloadResources({ ...args, page: this.#page })
     await this.#page.goto(startUrl)
-
     return downloads
   }
 
@@ -416,5 +415,20 @@ export class Resource {
 
   async openResourcePanel(panel: PanelType, resource: string): Promise<void> {
     await po.openResourcePanel({ page: this.#page, resource, panel })
+  }
+
+  async deleteAndUndoResource(args: {
+    method: 'keyboard' | 'undo button'
+    resourcesWithInfo: po.resourceArgs[]
+    via: po.ActionViaType
+    folder?: string
+  }): Promise<void> {
+    await po.deleteAndUndo({
+      page: this.#page,
+      method: args.method,
+      resourcesWithInfo: args.resourcesWithInfo,
+      via: args.via,
+      folder: args.folder
+    })
   }
 }
