@@ -13,6 +13,7 @@
 
 ### ✅ Tests
 
+- [tests-only] correct release PR condition to use build.sender [[#1736](https://github.com/opencloud-eu/web/pull/1736)]
 - [tests-only] skip unit and e2e test pipelines on ready-release-go prs [[#1714](https://github.com/opencloud-eu/web/pull/1714)]
 - e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
 - e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
