@@ -4,10 +4,9 @@
       <div class="px-2 py-4">
         <oc-button
           id="new-email-menu-btn"
-          type="router-link"
-          :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
           class="w-full hidden md:flex"
           appearance="filled"
+          @click="$emit('composeMail')"
         >
           <oc-icon name="edit-box" fill-type="line" />
           <span v-text="$gettext('Write new Email')" />
@@ -60,7 +59,7 @@
 
 <script setup lang="ts">
 import type { Mailbox } from '../types'
-import { AppLoadingSpinner, NoContentMessage, useRoute } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
@@ -70,6 +69,10 @@ import { useLoadMails } from '../composables/useLoadMails'
 import { unref } from 'vue'
 import MailAccountSwitch from './MailAccountSwitch.vue'
 
+const emit = defineEmits<{
+  (e: 'composeMail'): void
+}>()
+
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useAccountsStore()
 const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
@@ -78,7 +81,6 @@ const { currentAccount } = storeToRefs(accountsStore)
 const { setCurrentMail } = useMailsStore()
 const { loadMails } = useLoadMails()
 const { isLoading } = useLoadMailboxes()
-const route = useRoute()
 
 const onSelectMailbox = async (mailbox: Mailbox) => {
   setCurrentMailbox(mailbox)

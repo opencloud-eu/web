@@ -9,7 +9,7 @@
         }"
       >
         <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
-          <MailboxTree />
+          <MailboxTree @composeMail="onComposeMail" />
         </div>
       </div>
       <div
@@ -18,7 +18,7 @@
           'hidden md:block': currentMail || !currentMailbox
         }"
       >
-        <MailList />
+        <MailList ref="mailListRef" />
       </div>
       <div
         class="overflow-y-auto min-w-0 w-full md:w-2/4 px-4 pt-4 md:pt-0"
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, onMounted } from 'vue'
+import { ref, unref, onMounted, ComponentPublicInstance, useTemplateRef } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
@@ -64,10 +64,15 @@ const { loadMails } = useLoadMails()
 const { loadMail } = useLoadMail()
 
 const isLoading = ref<boolean>(true)
+const mailListRef = useTemplateRef<ComponentPublicInstance<typeof MailList>>('mailListRef')
 
 const currentAccountIdQuery = useRouteQuery('accountId')
 const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
+
+const onComposeMail = () => {
+  mailListRef.value?.openCompose()
+}
 
 onMounted(async () => {
   await loadAccounts()
