@@ -66,6 +66,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.12.0 [[#1734](https://github.com/opencloud-eu/web/pull/1734)]
+- chore(deps): update devdependencies (non-major) [[#1742](https://github.com/opencloud-eu/web/pull/1742)]
 - chore(deps): update dependency @codemirror/view to v6.39.1 [[#1730](https://github.com/opencloud-eu/web/pull/1730)]
 - chore(deps): update dependency dompurify to v3.3.1 [[#1721](https://github.com/opencloud-eu/web/pull/1721)]
 - chore(deps): update typescript-eslint monorepo to v8.49.0 [[#1724](https://github.com/opencloud-eu/web/pull/1724)]
