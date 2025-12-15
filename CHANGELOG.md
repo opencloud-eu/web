@@ -66,6 +66,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.30.0 [[#1737](https://github.com/opencloud-eu/web/pull/1737)]
 - chore(deps): update node.js to v24.12.0 [[#1734](https://github.com/opencloud-eu/web/pull/1734)]
 - chore(deps): update devdependencies (non-major) [[#1742](https://github.com/opencloud-eu/web/pull/1742)]
 - chore(deps): update dependency @codemirror/view to v6.39.1 [[#1730](https://github.com/opencloud-eu/web/pull/1730)]
