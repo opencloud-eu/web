@@ -11,16 +11,9 @@
 - chore(deps): bump mdast-util-to-hast to 13.2.1 (security) [[#1692](https://github.com/opencloud-eu/web/pull/1692)]
 - chore: bump sub-dependencies that cause vulnerability alerts [[#1653](https://github.com/opencloud-eu/web/pull/1653)]
 
-### ✅ Tests
-
-- [tests-only] correct release PR condition to use build.sender [[#1736](https://github.com/opencloud-eu/web/pull/1736)]
-- [tests-only] skip unit and e2e test pipelines on ready-release-go prs [[#1714](https://github.com/opencloud-eu/web/pull/1714)]
-- e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
-- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
-- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
-
 ### 🐛 Bug Fixes
 
+- fix(design-system): filter chip margins [[#1739](https://github.com/opencloud-eu/web/pull/1739)]
 - fix(design-system): remove tailwind reference in bundled css [[#1728](https://github.com/opencloud-eu/web/pull/1728)]
 - fix: add missing drag styling in tiles view [[#1645](https://github.com/opencloud-eu/web/pull/1645)]
 - fix: embed mode click behavior [[#1641](https://github.com/opencloud-eu/web/pull/1641)]
@@ -50,6 +43,14 @@
 - fix: bottom drawer 'New'-menus appearance [[#1494](https://github.com/opencloud-eu/web/pull/1494)]
 - revert: "Update Font Metadata2 (#1488)" [[#1507](https://github.com/opencloud-eu/web/pull/1507)]
 - fix: adjust headline sizes across the webui [[#1504](https://github.com/opencloud-eu/web/pull/1504)]
+
+### ✅ Tests
+
+- [tests-only] correct release PR condition to use build.sender [[#1736](https://github.com/opencloud-eu/web/pull/1736)]
+- [tests-only] skip unit and e2e test pipelines on ready-release-go prs [[#1714](https://github.com/opencloud-eu/web/pull/1714)]
+- e2e-tests. undo deleted resources [[#1580](https://github.com/opencloud-eu/web/pull/1580)]
+- e2e-test. download folder on public link [[#1531](https://github.com/opencloud-eu/web/pull/1531)]
+- check user avatar in the admin settings->users [[#1510](https://github.com/opencloud-eu/web/pull/1510)]
 
 ### 📈 Enhancement
 
