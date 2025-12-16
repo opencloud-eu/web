@@ -1116,6 +1116,8 @@ def designSystemDocs(ctx):
                     "corepack enable pnpm",
                     "pnpm --filter 'design-system' docs:build",
                     "cp -R packages/design-system/docs/.vitepress/dist docs",
+                    # add empty woodpecker config to not run CI on push to the docs branch
+                    "touch docs/.woodpecker.star",
                 ],
             },
             {
