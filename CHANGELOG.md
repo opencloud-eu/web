@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.3.1](https://github.com/opencloud-eu/web/releases/tag/v4.3.1) - 2025-12-16
+
+### ❤️ Thanks to all contributors! ❤️
+
+@ScharfViktor
+
+### 📦️ Dependencies
+
+- [full-ci] bump-opencloud-4.1.0. run all tests [[#1754](https://github.com/opencloud-eu/web/pull/1754)]
+
 ## [4.3.0](https://github.com/opencloud-eu/web/releases/tag/v4.3.0) - 2025-12-15
 
 ### ❤️ Thanks to all contributors! ❤️
