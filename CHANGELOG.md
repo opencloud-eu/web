@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @saw-jan
+@JammingBen, @ScharfViktor, @saw-jan
 
 ### 📦️ Dependencies
 
