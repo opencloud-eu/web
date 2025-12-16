@@ -51,7 +51,8 @@ export default defineConfig({
         ),
         '**/tests',
         '**/*.spec.ts',
-        'vue'
+        'vue',
+        'pinia'
       ],
       output: {
         globals: {
