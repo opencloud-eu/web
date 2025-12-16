@@ -8,6 +8,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.26.0 [[#1753](https://github.com/opencloud-eu/web/pull/1753)]
 - chore(deps): update typescript-eslint monorepo to v8.50.0 [[#1755](https://github.com/opencloud-eu/web/pull/1755)]
 - fix(deps): update dependency zod to v4.2.1 [[#1750](https://github.com/opencloud-eu/web/pull/1750)]
 - [full-ci] bump-opencloud-4.1.0. run all tests [[#1754](https://github.com/opencloud-eu/web/pull/1754)]
