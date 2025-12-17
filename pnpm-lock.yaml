@@ -225,7 +225,7 @@ importers:
         version: 7.1.0
       lodash-es:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.22
       luxon:
         specifier: ^3.5.0
         version: 3.7.2
@@ -412,8 +412,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       mark.js:
         specifier: ^8.11.1
         version: 8.11.1
@@ -452,8 +452,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       mark.js:
         specifier: ^8.11.1
         version: 8.11.1
@@ -505,8 +505,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
@@ -560,8 +560,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       luxon:
         specifier: 3.7.2
         version: 3.7.2
@@ -621,8 +621,8 @@ importers:
         specifier: ^2.2.1
         version: 2.2.1
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       luxon:
         specifier: ^3.5.0
         version: 3.7.2
@@ -670,8 +670,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -714,7 +714,7 @@ importers:
         version: 14.1.0(vue@3.5.25(typescript@5.9.3))
       lodash-es:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.22
       vue-router:
         specifier: 4.6.4
         version: 4.6.4(vue@3.5.25(typescript@5.9.3))
@@ -739,7 +739,7 @@ importers:
         version: link:../web-pkg
       lodash-es:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.22
       mark.js:
         specifier: ^8.11.1
         version: 8.11.1
@@ -814,7 +814,7 @@ importers:
         version: 4.5.3
       lodash-es:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.22
       luxon:
         specifier: ^3.5.0
         version: 3.7.2
@@ -915,7 +915,7 @@ importers:
         version: 7.1.0
       lodash-es:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.22
       luxon:
         specifier: ^3.5.0
         version: 3.7.2
@@ -1048,8 +1048,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       lodash-es:
-        specifier: 4.17.21
-        version: 4.17.21
+        specifier: 4.17.22
+        version: 4.17.22
       luxon:
         specifier: 3.7.2
         version: 3.7.2
@@ -4945,6 +4945,9 @@ packages:
 
   lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+
+  lodash-es@4.17.22:
+    resolution: {integrity: sha512-XEawp1t0gxSi9x01glktRZ5HDy0HXqrM0x5pXQM98EaI0NxO6jVM7omDOxsuEo5UIASAnm2bRp1Jt/e0a2XU8Q==}
 
   lodash._baseiteratee@4.7.0:
     resolution: {integrity: sha512-nqB9M+wITz0BX/Q2xg6fQ8mLkyfF7MU7eE+MNBNjTHFKeKaZAPEzEg+E8LWxKWf1DQVflNEn9N49yAuqKh2mWQ==}
@@ -10967,6 +10970,8 @@ snapshots:
       p-locate: 5.0.0
 
   lodash-es@4.17.21: {}
+
+  lodash-es@4.17.22: {}
 
   lodash._baseiteratee@4.7.0:
     dependencies:
