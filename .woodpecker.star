@@ -1116,8 +1116,10 @@ def designSystemDocs(ctx):
                     "corepack enable pnpm",
                     "pnpm --filter 'design-system' docs:build",
                     "cp -R packages/design-system/docs/.vitepress/dist docs",
-                    # add empty woodpecker config to not run CI on push to the docs branch
-                    "touch docs/.woodpecker.star",
+                    # add dummy woodpecker config to disable CI on push to the docs branch
+                    "printf 'def main(ctx):\n    return [{\n        \"name\":\"dummy-pipeline\",\n" +
+                    "        \"steps\":[{\"name\":\"dummy-step\",\"image\":\"alpine:latest\"}],\n" +
+                    "        \"when\":[{\"branch\":[\"main\"]}],\n    }]\n' > docs/.woodpecker.star",
                 ],
             },
             {
