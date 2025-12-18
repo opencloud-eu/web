@@ -280,7 +280,7 @@ function getMountedWrapper({
   const plugins = defaultPlugins({
     piniaOptions: {
       configState: { options: { runningOnEos } },
-      resourcesStore: { currentFolder }
+      resourcesStore: { currentFolder, resources: files }
     }
   })
 
