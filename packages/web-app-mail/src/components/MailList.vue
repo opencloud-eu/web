@@ -5,13 +5,14 @@
       class="md:hidden"
       mode="action"
       :aria-label="$gettext('Write new Email')"
-      :to="{ name: 'mail-create', query: { ...route.query, draftId: 'new' } }"
+      @click="showCompose = true"
     />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
       </template>
     </no-content-message>
+
     <template v-else>
       <div class="flex w-full items-center justify-between md:justify-normal">
         <oc-button
@@ -23,9 +24,10 @@
         >
           <oc-icon name="arrow-left" fill-type="line" />
         </oc-button>
-        <h2 class="text-lg ml-4" v-text="currentMailbox.name"></h2>
-        <div class="paceholder" />
+        <h2 class="text-lg ml-4" v-text="currentMailbox.name" />
+        <div class="placeholder" />
       </div>
+
       <no-content-message
         v-if="!mails || !mails.length"
         class="mail-list-empty"
@@ -36,6 +38,7 @@
           <span v-text="$gettext('No mails in this mailbox')" />
         </template>
       </no-content-message>
+
       <oc-list v-else class="mail-list">
         <li
           v-for="mail in mails"
@@ -55,6 +58,7 @@
           </oc-button>
         </li>
       </oc-list>
+      <MailWidget v-model="showCompose" />
     </template>
   </template>
 </template>
@@ -62,19 +66,19 @@
 <script setup lang="ts">
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
-import { Mail } from '../types'
-import { useRoute } from 'vue-router'
+import MailWidget from './MailWidget.vue'
+import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
-import { unref } from 'vue'
+import { ref, unref } from 'vue'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
 
-const route = useRoute()
 const accountsStore = useAccountsStore()
 const { currentAccount } = storeToRefs(accountsStore)
+
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const { currentMail, mails } = storeToRefs(mailsStore)
@@ -83,6 +87,16 @@ const { currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
+
+const showCompose = ref(false)
+
+const openCompose = () => {
+  showCompose.value = true
+}
+
+defineExpose({
+  openCompose
+})
 
 const onNavigateBack = () => {
   setCurrentMailbox(null)
