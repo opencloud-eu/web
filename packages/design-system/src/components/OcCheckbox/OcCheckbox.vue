@@ -1,5 +1,5 @@
 <template>
-  <span @click="$emit('click', $event)">
+  <span class="inline-flex items-center" @click="$emit('click', $event)">
     <input
       :id="id"
       v-model="model"
