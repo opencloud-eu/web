@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @saw-jan
+@JammingBen, @ScharfViktor, @saw-jan, @tammi-23
 
 ### 📈 Enhancement
 
+- Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
 - feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
 
 ### 📦️ Dependencies
