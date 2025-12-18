@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/design-system",
-  "version": "4.3.0",
+  "version": "4.3.1-alpha.1",
   "description": "OpenCloud Design System is used to design OpenCloud UI components",
   "keywords": [
     "vue design system",
