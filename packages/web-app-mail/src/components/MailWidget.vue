@@ -4,7 +4,7 @@
     class="z-50 transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
-      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]"
+      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px] md:max-h-[80vh]"
     >
       <div class="flex items-center justify-between px-4 py-2">
         <h2
@@ -30,7 +30,7 @@
           </oc-button>
         </div>
       </div>
-      <div class="flex-1 overflow-auto">
+      <div class="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         <MailComposeForm v-model="composeState" />
       </div>
       <div class="px-4 py-3 border-t border-role-outline-variant flex items-center justify-between">
@@ -47,7 +47,7 @@
     :hide-actions="true"
     element-class="mail-compose-modal"
   >
-    <template #modal-slot-header-actions>
+    <template #headerActions>
       <oc-button
         class="hidden md:inline-flex"
         appearance="raw"
@@ -61,8 +61,8 @@
       </oc-button>
     </template>
     <template #content>
-      <div class="flex flex-col flex-1">
-        <div class="flex-1 overflow-auto">
+      <div class="flex flex-col flex-1 min-h-0">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden">
           <MailComposeForm v-model="composeState" />
         </div>
         <div
@@ -136,5 +136,6 @@ const close = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 </style>
