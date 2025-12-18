@@ -47,9 +47,6 @@ export const extractNameWithoutExtension = (resource?: Resource): string => {
 
 export const extractExtensionFromFile = (resource: Resource): string => {
   const name = resource.name
-  if (resource.type === 'directory' || resource.isFolder) {
-    return ''
-  }
 
   const parts = name.split('.')
   if (parts.length > 2) {
@@ -142,7 +139,7 @@ export function buildResource(
     parentFolderId: resource.props[DavProperty.FileParent],
     mimeType: resource.props[DavProperty.MimeType],
     name,
-    extension: isFolder ? '' : extension,
+    extension,
     path: resourcePath,
     webDavPath: resource.filename,
     type: isFolder ? 'folder' : resource.type,

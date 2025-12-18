@@ -40,7 +40,7 @@ export const useFileActionsNavigate = () => {
     {
       name: 'navigate',
       icon: 'folder-open',
-      label: () => $gettext('Open'),
+      label: () => $gettext('Navigate'),
       isVisible: ({ resources }) => {
         if (isLocationTrashActive(router, 'files-trash-generic')) {
           return false

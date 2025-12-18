@@ -155,11 +155,7 @@ import {
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
-import {
-  ContextMenuBtnClickEventData,
-  CreateTargetRouteOptions,
-  displayPositionedDropdown
-} from '../../helpers'
+import { ContextMenuBtnClickEventData, displayPositionedDropdown } from '../../helpers'
 import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
@@ -175,11 +171,10 @@ import {
   useFileActions,
   useGetMatchingSpace,
   useSideBar,
-  useFolderLink,
   FileActionOptions,
-  useResourceViewHelpers
+  useResourceViewHelpers,
+  useInterceptModifierClick
 } from '../../composables'
-import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -191,7 +186,6 @@ const {
   resources = [],
   selectedIds = [],
   isSelectable = true,
-  targetRouteCallback,
   space,
   sortFields = [],
   sortBy,
@@ -205,7 +199,6 @@ const {
   resources?: Resource[]
   selectedIds?: string[]
   isSelectable?: boolean
-  targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   space?: SpaceResource
   sortFields?: SortField[]
   sortBy?: string
@@ -281,16 +274,7 @@ const tileRefs = ref({
   dropBtns: {} as Record<string, ContextMenuQuickActionRef>
 })
 
-const { getFolderLink } = useFolderLink({
-  space: ref(space),
-  targetRouteCallback: computed(() => targetRouteCallback)
-})
-
 const getRoute = (resource: Resource) => {
-  if (resource.isFolder) {
-    return getFolderLink(resource)
-  }
-
   let s = space
   if (!s) {
     s = getMatchingSpace(resource)

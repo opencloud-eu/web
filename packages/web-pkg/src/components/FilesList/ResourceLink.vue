@@ -78,7 +78,7 @@ export default {
       if (!this.resource) {
         return false
       }
-      return (this.resource.isFolder || this.link) && !this.resource.disabled
+      return this.link && !this.resource.disabled
     },
     isClickable() {
       return this.isResourceClickable && !this.resource?.disabled

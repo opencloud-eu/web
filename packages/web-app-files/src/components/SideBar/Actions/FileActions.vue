@@ -19,9 +19,9 @@ const space = inject<Ref<SpaceResource>>('space')
 const resources = computed(() => {
   return [unref(resource)]
 })
-const { getAllAvailableActions } = useFileActions()
+const { getAllOpenWithActions } = useFileActions()
 const actions = computed(() => {
-  return getAllAvailableActions({
+  return getAllOpenWithActions({
     space: unref(space),
     resources: unref(resources)
   })

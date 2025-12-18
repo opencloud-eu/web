@@ -5,7 +5,6 @@ import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
 import { useRouter } from '../../router'
-import { useGettext } from 'vue3-gettext'
 import {
   Action,
   FileAction,
@@ -55,7 +54,6 @@ export interface FileActionOptionsWithEvent extends FileActionOptions<Resource> 
 export const useFileActions = () => {
   const appsStore = useAppsStore()
   const router = useRouter()
-  const { $gettext } = useGettext()
   const isSearchActive = useIsSearchActive()
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
   const { requestExtensions } = useExtensionRegistry()
@@ -80,8 +78,7 @@ export const useFileActions = () => {
   const { actions: restoreActions } = useFileActionsRestore()
   const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
 
-  const systemActions = computed((): Action[] => [
-    ...unref(navigateActions),
+  const systemActions = computed<FileAction<any>[]>(() => [
     ...unref(downloadArchiveActions),
     ...unref(downloadFileActions),
     ...unref(deleteActions),
@@ -96,7 +93,7 @@ export const useFileActions = () => {
     ...unref(favoriteActions)
   ])
 
-  const defaultActions = computed<FileAction[]>(() => {
+  const defaultExtensionActions = computed<FileAction[]>(() => {
     const contextActionExtensions = requestExtensions<ActionExtension>({
       id: 'global.files.default-actions',
       extensionType: 'action'
@@ -110,33 +107,6 @@ export const useFileActions = () => {
       extensionType: 'action'
     }).map((e) => e.action)
   })
-
-  const defaultEditorActions = computed((): FileAction[] => [
-    {
-      name: 'open',
-      icon: 'eye',
-      label: () => {
-        return $gettext('Open')
-      },
-      handler: ({ space, resources }) => {
-        const defaultEditorAction = getDefaultAction({ space, resources, omitSystemActions: true })
-        if (!defaultEditorAction) {
-          return
-        }
-
-        defaultEditorAction.handler({ space, resources })
-      },
-      isVisible: (options) => {
-        const defaultEditorAction = getDefaultAction({ ...options, omitSystemActions: true })
-        if (!defaultEditorAction) {
-          return false
-        }
-
-        return defaultEditorAction.isVisible(options)
-      },
-      class: 'oc-files-actions-default-editor-trigger'
-    }
-  ])
 
   const editorActions = computed(() => {
     if (unref(isEmbedModeEnabled)) {
@@ -273,23 +243,27 @@ export const useFileActions = () => {
   // TODO: Make user-configurable what is a defaultAction for a filetype/mimetype
   // returns the _first_ action from actions array which we now construct from
   // available mime-types coming from the app-provider and existing actions
-  const triggerDefaultAction = (options: FileActionOptions) => {
+  const triggerDefaultAction = (options: GetFileActionsOptions) => {
     const action = getDefaultAction(options)
     action.handler({ ...options })
   }
 
   const getDefaultAction = (options: GetFileActionsOptions): Action | undefined => {
-    const allActions = getAllAvailableActions(options)
-    if (allActions.length) {
-      return allActions[0]
+    const actions = getAllOpenWithActions(options)
+    if (actions.length) {
+      return actions[0]
     }
     return undefined
   }
 
-  const getAllAvailableActions = (options: GetFileActionsOptions) => {
+  const getAllOpenWithActions = (options: GetFileActionsOptions) => {
     const filterCallback = (action: FileAction) => action.isVisible(options)
 
-    const primaryActions = [...unref(defaultActions), ...unref(editorActions)]
+    const primaryActions = [
+      ...unref(defaultExtensionActions),
+      ...unref(editorActions),
+      ...unref(navigateActions)
+    ]
       .filter(filterCallback)
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))
 
@@ -309,11 +283,8 @@ export const useFileActions = () => {
   }
 
   return {
-    editorActions,
-    defaultEditorActions,
-    systemActions,
     getDefaultAction,
-    getAllAvailableActions,
+    getAllOpenWithActions,
     getEditorRouteOpts,
     openEditor,
     triggerDefaultAction

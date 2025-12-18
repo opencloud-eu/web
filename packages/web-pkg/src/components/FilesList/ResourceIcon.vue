@@ -82,9 +82,9 @@ export default defineComponent({
     const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 
     const isFolder = computed(() => {
-      // fallback is necessary since
-      // sometimes resources without a type
-      // but with `isFolder` are being passed
+      if (!!props.resource.extension) {
+        return false
+      }
       return props.resource.type === 'folder' || props.resource.isFolder
     })
 

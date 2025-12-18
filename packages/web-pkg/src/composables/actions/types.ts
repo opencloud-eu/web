@@ -31,7 +31,7 @@ export interface Action<T = ActionOptions> {
   handler?(options?: T): Promise<void> | void
 
   // componentType: router-link
-  route?(options?: T): RouteLocationRaw
+  route?(options?: T): RouteLocationRaw | undefined
 
   // componentType: a
   href?(options?: T): string

@@ -403,8 +403,7 @@ const {
   getParentFolderLink,
   getParentFolderLinkIconAdditionalAttributes,
   getParentFolderName,
-  getPathPrefix,
-  getFolderLink
+  getPathPrefix
 } = useFolderLink({
   space: ref(space),
   targetRouteCallback: computed(() => targetRouteCallback)
@@ -486,10 +485,6 @@ const emitSelect = (selectedIds: string[]) => {
 }
 
 const getResourceLink = (resource: Resource) => {
-  if (resource.isFolder) {
-    return getFolderLink(resource)
-  }
-
   let matchingSpace = space
   if (!matchingSpace) {
     matchingSpace = getMatchingSpace(resource)
