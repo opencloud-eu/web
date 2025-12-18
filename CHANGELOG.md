@@ -1,10 +1,14 @@
 # Changelog
 
-## [4.3.1](https://github.com/opencloud-eu/web/releases/tag/v4.3.1) - 2025-12-18
+## [4.4.0](https://github.com/opencloud-eu/web/releases/tag/v4.4.0) - 2025-12-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @JammingBen, @ScharfViktor, @saw-jan
+
+### 📈 Enhancement
+
+- feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
 
 ### 📦️ Dependencies
 
