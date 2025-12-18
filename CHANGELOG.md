@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.3.1](https://github.com/opencloud-eu/web/releases/tag/v4.3.1) - 2025-12-17
+## [4.3.1](https://github.com/opencloud-eu/web/releases/tag/v4.3.1) - 2025-12-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
