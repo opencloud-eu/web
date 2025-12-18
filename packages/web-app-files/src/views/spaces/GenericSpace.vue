@@ -469,8 +469,8 @@ export default defineComponent({
     }
 
     const readmeFile = computed(() => {
-      return unref(resourcesViewDefaults.storeItems).find(
-        (item) => item.name.toLowerCase() === 'readme.md'
+      return resourcesStore.resources.find((item) =>
+        ['readme.md', '.readme.md'].includes(item.name.toLowerCase())
       )
     })
 
