@@ -6,6 +6,10 @@
 
 @JammingBen, @ScharfViktor, @saw-jan, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix(design-system): checkbox label vertical alignment [[#1773](https://github.com/opencloud-eu/web/pull/1773)]
+
 ### 📈 Enhancement
 
 - Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
