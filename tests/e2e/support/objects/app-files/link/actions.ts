@@ -50,6 +50,7 @@ export type changeRoleArgs = {
   linkName: string
   role: string
   space?: boolean
+  requirePassword?: boolean
 }
 
 export type deleteLinkArgs = {
@@ -102,6 +103,8 @@ const copyLinkButton =
   '//span[contains(@class, "files-links-name") and text()="%s"]//ancestor::li//button[contains(@class, "oc-files-public-link-copy-url")]'
 const linkRoleDropdown = '.link-role-dropdown'
 const createLinkModal = '.oc-modal-body'
+const removePublicLinkPasswordButton =
+  '//div[contains(@id,"edit-public-link-dropdown")]//button/span[text()="Remove password"]'
 
 const getRecentLinkUrl = async (page: Page, name: string): Promise<string> => {
   const linkElement = page.locator(util.format(copyLinkButton, name))
@@ -173,7 +176,7 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
 }
 
 export const changeRole = async (args: changeRoleArgs): Promise<string> => {
-  const { page, resource, linkName, role, space } = args
+  const { page, resource, linkName, role, space, requirePassword = false } = args
 
   // clear all popups
   await clearAllPopups(page)
@@ -199,7 +202,14 @@ export const changeRole = async (args: changeRoleArgs): Promise<string> => {
         res.request().method() === 'PATCH' &&
         res.status() === 200
     ),
-    page.locator(util.format(publicLinkSetRoleButton, role)).click()
+    (async () => {
+      await page.locator(util.format(publicLinkSetRoleButton, role)).click()
+
+      if (requirePassword) {
+        await generatePassword(page)
+        await setPassword(page)
+      }
+    })()
   ])
 
   const message = await page.locator(linkUpdateDialog).textContent()
@@ -373,4 +383,24 @@ export const copyLinkToClipboard = async (args: copyLinkArgs): Promise<string> =
 
   await page.getByLabel('Copy link to clipboard').click()
   return await page.evaluate('navigator.clipboard.readText()')
+}
+
+export const deletePassword = async (args: createLinkArgs): Promise<void> => {
+  const { page, resource, name } = args
+
+  // clear all popups
+  await clearAllPopups(page)
+
+  const resourcePaths = resource.split('/')
+  const resourceName = resourcePaths.pop()
+  if (resourcePaths.length) {
+    await clickResource({ page: page, path: resourcePaths.join('/') })
+  }
+  await sidebar.open({ page: page, resource: resourceName })
+  await sidebar.openPanel({ page: page, name: 'sharing' })
+  await page.locator(util.format(editPublicLinkButton, name)).click()
+
+  const passwordIndication = page.locator('.oc-files-file-link-has-password')
+  await page.locator(removePublicLinkPasswordButton).click()
+  await expect(passwordIndication).not.toBeVisible()
 }
