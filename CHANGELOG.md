@@ -17,6 +17,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1775](https://github.com/opencloud-eu/web/pull/1775)]
 - chore(deps): update pnpm to v10.26.1 [[#1778](https://github.com/opencloud-eu/web/pull/1778)]
 - fix(deps): update dependency lodash-es to v4.17.22 [[#1764](https://github.com/opencloud-eu/web/pull/1764)]
 - fix(deps): update dependency @sentry/vue to v10.31.0 [[#1766](https://github.com/opencloud-eu/web/pull/1766)]
