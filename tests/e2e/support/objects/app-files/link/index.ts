@@ -96,4 +96,8 @@ export class Link {
   copyLinkToClipboard(args: Omit<po.copyLinkArgs, 'page'>): Promise<string> {
     return po.copyLinkToClipboard({ ...args, page: this.#page })
   }
+
+  async deletePassword(args: Omit<po.createLinkArgs, 'page'>): Promise<void> {
+    await po.deletePassword({ page: this.#page, ...args })
+  }
 }

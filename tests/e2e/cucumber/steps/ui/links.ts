@@ -203,6 +203,27 @@ When(
 )
 
 When(
+  '{string} edits the public link named {string} of resource {string} changing role to {string} and setting a password',
+  async function (
+    this: World,
+    stepUser: string,
+    linkName: any,
+    resource: string,
+    role: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const linkObject = new objects.applicationFiles.Link({ page })
+    const roleText = await linkObject.changeRole({
+      linkName,
+      resource,
+      role,
+      requirePassword: true
+    })
+    expect(roleText.toLowerCase()).toBe(role.toLowerCase())
+  }
+)
+
+When(
   '{string} copies the link {string} of resource {string}',
   async function (
     this: World,
@@ -214,5 +235,14 @@ When(
     const linkObject = new objects.applicationFiles.Link({ page })
     const clipboard = await linkObject.copyLinkToClipboard({ resource: resource, name: linkName })
     expect(clipboard).toBe(this.linksEnvironment.getLink({ name: linkName }).url)
+  }
+)
+
+When(
+  '{string} deletes a password of the public link named {string} of resource {string}',
+  async function (this: World, stepUser: string, name: string, resource: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const linkObject = new objects.applicationFiles.Link({ page })
+    await linkObject.deletePassword({ resource, name })
   }
 )
