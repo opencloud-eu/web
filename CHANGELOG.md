@@ -6,6 +6,10 @@
 
 @JammingBen, @ScharfViktor, @saw-jan, @tammi-23
 
+### ✅ Tests
+
+- enforce password for writable public links [[#1779](https://github.com/opencloud-eu/web/pull/1779)]
+
 ### 🐛 Bug Fixes
 
 - fix(design-system): checkbox label vertical alignment [[#1773](https://github.com/opencloud-eu/web/pull/1773)]
