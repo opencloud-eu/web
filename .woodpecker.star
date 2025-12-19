@@ -9,7 +9,8 @@ MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
-OC_CI_NODEJS = "owncloudci/nodejs:22"
+OC_CI_NODEJS = "scharfvi/nodeci:24"
+OC_CI_NODEJS_ALPINE = "scharfvi/nodeci-alpine:24"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
@@ -501,7 +502,7 @@ def unitTests(ctx):
                  [
                      {
                          "name": "unit-tests",
-                         "image": OC_CI_NODEJS,
+                         "image": OC_CI_NODEJS_ALPINE,
                          "commands": [
                              "pnpm test:unit --coverage",
                          ],
@@ -591,7 +592,7 @@ def e2eTests(ctx):
 
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
-                    restoreBrowsersCache() + \
+                    restoreBrowsersCache(browser_name) + \
                     restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
                     restoreOpenCloudCache()
 
@@ -619,14 +620,10 @@ def e2eTests(ctx):
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
                          openCloudService(params["extraServerEnvironment"])
 
-            if browser_name == "firefox":
+            if browser_name == "firefox" or browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
 
-            if browser_name == "webkit":
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-                command = "pnpm playwright install-deps webkit && cd tests/e2e && bash run-e2e.sh "
-            else:
-                command = "cd tests/e2e && bash run-e2e.sh "
+            command = "cd tests/e2e && bash run-e2e.sh "
 
             if "suites" in matrix:
                 command += "--suites %s" % ",".join(params["suites"])
@@ -637,7 +634,7 @@ def e2eTests(ctx):
                 return []
 
             if "mobile-view" in suite:
-                command = "pnpm playwright install-deps webkit && pnpm test:e2e:mobile-parallel"
+                command = "pnpm test:e2e:mobile-parallel"
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
@@ -742,7 +739,7 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install --with-deps",
+            "pnpm exec playwright install",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
@@ -751,7 +748,7 @@ def installBrowsers():
 def lint():
     return [{
         "name": "lint",
-        "image": OC_CI_NODEJS,
+        "image": OC_CI_NODEJS_ALPINE,
         "commands": [
             "pnpm lint",
         ],
@@ -761,14 +758,14 @@ def formatCheck():
     return [
         {
             "name": "format-check",
-            "image": OC_CI_NODEJS,
+            "image": OC_CI_NODEJS_ALPINE,
             "commands": [
                 "pnpm format:check",
             ],
         },
         {
             "name": "show-diff",
-            "image": OC_CI_NODEJS,
+            "image": OC_CI_NODEJS_ALPINE,
             "commands": [
                 "pnpm format:write",
                 "git diff",
@@ -1563,7 +1560,7 @@ def keycloakService():
 def e2eTestsOnKeycloak(ctx):
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
-            restoreBrowsersCache() + \
+            restoreBrowsersCache("chromium") + \
             ldapService() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
@@ -1686,7 +1683,7 @@ def checkBrowsersCache():
         ],
     }]
 
-def restoreBrowsersCache():
+def restoreBrowsersCache(browser):
     return [
         {
             "name": "restore-browsers-cache",
