@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "vue-demi-fix && pnpm vite build",
-    "build:w": "pnpm build --watch",
+    "build:w": "VITE_OC_WEB_LOG_LEVEL=debug pnpm build --watch",
     "lint": "eslint vite.config.ts '{packages,tests}/**/*.{js,ts,vue}' --color",
     "format:check": "prettier . --config packages/prettier-config/index.js --check",
     "format:write": "prettier . --config packages/prettier-config/index.js --write",
