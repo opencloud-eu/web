@@ -216,10 +216,10 @@ importers:
         version: 5.6.0
       focus-trap:
         specifier: ^7.6.0
-        version: 7.6.6
+        version: 7.7.0
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.1.0(focus-trap@7.6.6)(vue@3.5.26(typescript@5.9.3))
+        version: 4.1.0(focus-trap@7.7.0)(vue@3.5.26(typescript@5.9.3))
       fuse.js:
         specifier: ^7.0.0
         version: 7.1.0
@@ -1039,11 +1039,11 @@ importers:
         specifier: 2.0.4
         version: 2.0.4
       focus-trap:
-        specifier: 7.6.6
-        version: 7.6.6
+        specifier: 7.7.0
+        version: 7.7.0
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.1.0(focus-trap@7.6.6)(vue@3.5.26(typescript@5.9.3))
+        version: 4.1.0(focus-trap@7.7.0)(vue@3.5.26(typescript@5.9.3))
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -4337,8 +4337,8 @@ packages:
       focus-trap: ^7.0.0
       vue: ^3.0.0
 
-  focus-trap@7.6.6:
-    resolution: {integrity: sha512-v/Z8bvMCajtx4mEXmOo7QEsIzlIOqRXTIwgUfsFOF9gEsespdbD0AkPIka1bSXZ8Y8oZ+2IVDQZePkTfEHZl7Q==}
+  focus-trap@7.7.0:
+    resolution: {integrity: sha512-DJJDHpEgoSbP8ZE1MNeU2IzCpfFyFdNZZRilqmfH2XiQsPK6PtD8AfJqWzEBudUQB2yHwZc5iq54rjTaGQ+ljw==}
 
   follow-redirects@1.15.11:
     resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
@@ -9257,7 +9257,7 @@ snapshots:
       '@unhead/vue': 1.11.20(vue@3.5.26(typescript@5.9.3))
       vue: 3.5.26(typescript@5.9.3)
 
-  '@vueuse/integrations@12.8.2(axios@1.13.2)(change-case@5.4.4)(focus-trap@7.6.6)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.3)':
+  '@vueuse/integrations@12.8.2(axios@1.13.2)(change-case@5.4.4)(focus-trap@7.7.0)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.3)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@5.9.3)
       '@vueuse/shared': 12.8.2(typescript@5.9.3)
@@ -9265,7 +9265,7 @@ snapshots:
     optionalDependencies:
       axios: 1.13.2
       change-case: 5.4.4
-      focus-trap: 7.6.6
+      focus-trap: 7.7.0
       fuse.js: 7.1.0
       jwt-decode: 4.0.0
     transitivePeerDependencies:
@@ -10376,12 +10376,12 @@ snapshots:
 
   flush-promises@1.0.2: {}
 
-  focus-trap-vue@4.1.0(focus-trap@7.6.6)(vue@3.5.26(typescript@5.9.3)):
+  focus-trap-vue@4.1.0(focus-trap@7.7.0)(vue@3.5.26(typescript@5.9.3)):
     dependencies:
-      focus-trap: 7.6.6
+      focus-trap: 7.7.0
       vue: 3.5.26(typescript@5.9.3)
 
-  focus-trap@7.6.6:
+  focus-trap@7.7.0:
     dependencies:
       tabbable: 6.3.0
 
@@ -12508,8 +12508,8 @@ snapshots:
       '@vue/devtools-api': 7.7.7
       '@vue/shared': 3.5.26
       '@vueuse/core': 12.8.2(typescript@5.9.3)
-      '@vueuse/integrations': 12.8.2(axios@1.13.2)(change-case@5.4.4)(focus-trap@7.6.6)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.3)
-      focus-trap: 7.6.6
+      '@vueuse/integrations': 12.8.2(axios@1.13.2)(change-case@5.4.4)(focus-trap@7.7.0)(fuse.js@7.1.0)(jwt-decode@4.0.0)(typescript@5.9.3)
+      focus-trap: 7.7.0
       mark.js: 8.11.1
       minisearch: 7.1.2
       shiki: 2.5.0
