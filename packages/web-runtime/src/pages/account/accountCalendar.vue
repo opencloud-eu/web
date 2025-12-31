@@ -18,8 +18,9 @@
           no-hover
           class="ml-1"
           appearance="raw"
-          type="router-link"
+          type="a"
           href="https://docs.opencloud.eu/docs/admin/configuration/radicale-integration/"
+          target="_blank"
         >
           <span v-text="$gettext('here')" />
         </oc-button>
