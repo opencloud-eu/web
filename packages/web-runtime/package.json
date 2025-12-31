@@ -5,7 +5,7 @@
   "description": "OpenCloud web runtime",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@casl/ability": "6.7.3",
+    "@casl/ability": "6.7.5",
     "@casl/vue": "^2.2.2",
     "@microsoft/fetch-event-source": "2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
