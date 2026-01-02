@@ -88,4 +88,20 @@ A click handler can be registered via the `@click` property.
 <<< @/components/OcButton/handler.vue
 :::
 
+### Links
+
+Use `type="a"` for external links, `type="router-link"` for internal navigation.
+
+::: livecode
+
+```html
+<!-- External link -->
+<oc-button type="a" href="https://docs.opencloud.eu" target="_blank">Documentation</oc-button>
+
+<!-- Internal navigation -->
+<oc-button type="router-link" :to="{ name: 'files-spaces-projects' }">Projects</oc-button>
+```
+
+:::
+
 ::: component-api
