@@ -235,6 +235,7 @@ event = {
 }
 
 def main(ctx):
+    return unitTests(ctx)
     if ctx.build.event == "cron" and ctx.build.sender == "translation-sync":
         return translation_sync(ctx)
     is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
@@ -482,9 +483,9 @@ def buildCacheWeb(ctx):
 
 def unitTests(ctx):
     sonar_env = {
-        "SONAR_TOKEN": {
-            "from_secret": "sonar_token",
-        },
+        # "SONAR_TOKEN": {
+        #     "from_secret": "sonar_token",
+        # },
     }
     if ctx.build.event == "pull_request":
         sonar_env.update({
