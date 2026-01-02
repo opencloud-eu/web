@@ -481,18 +481,6 @@ def buildCacheWeb(ctx):
     }]
 
 def unitTests(ctx):
-    # sonar_env = {
-    #     "SONAR_TOKEN": {
-    #         "from_secret": "sonar_token",
-    #     },
-    # }
-    # if ctx.build.event == "pull_request":
-    #     sonar_env.update({
-    #         "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.target),
-    #         "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.build.source),
-    #         "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
-    #     })
-
     return [{
         "name": "unit-tests",
         "workspace": web_workspace,
@@ -506,11 +494,6 @@ def unitTests(ctx):
                              "pnpm test:unit --coverage",
                          ],
                      },
-                     # {
-                     #     "name": "sonarcloud",
-                     #     "image": SONARSOURCE_SONAR_SCANNER_CLI,
-                     #     "environment": sonar_env,
-                     # },
                  ],
         "when": [
             event["base"],
