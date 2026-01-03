@@ -1,5 +1,38 @@
 # Changelog
 
+## [4.4.0](https://github.com/opencloud-eu/web/releases/tag/v4.4.0) - 2026-01-03
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen, @ScharfViktor, @saw-jan, @tammi-23
+
+### ✅ Tests
+
+- enforce password for writable public links [[#1779](https://github.com/opencloud-eu/web/pull/1779)]
+
+### 🐛 Bug Fixes
+
+- fix(design-system): checkbox label vertical alignment [[#1773](https://github.com/opencloud-eu/web/pull/1773)]
+
+### 📈 Enhancement
+
+- Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
+- feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.32.1 [[#1777](https://github.com/opencloud-eu/web/pull/1777)]
+- chore(deps): update devdependencies (non-major) [[#1775](https://github.com/opencloud-eu/web/pull/1775)]
+- chore(deps): update pnpm to v10.26.1 [[#1778](https://github.com/opencloud-eu/web/pull/1778)]
+- fix(deps): update dependency lodash-es to v4.17.22 [[#1764](https://github.com/opencloud-eu/web/pull/1764)]
+- fix(deps): update dependency @sentry/vue to v10.31.0 [[#1766](https://github.com/opencloud-eu/web/pull/1766)]
+- chore(deps): update devdependencies (non-major) to v4.0.16 - autoclosed [[#1762](https://github.com/opencloud-eu/web/pull/1762)]
+- chore(deps): update traefik docker tag to v3.6.5 [[#1763](https://github.com/opencloud-eu/web/pull/1763)]
+- chore(deps): update pnpm to v10.26.0 [[#1753](https://github.com/opencloud-eu/web/pull/1753)]
+- chore(deps): update typescript-eslint monorepo to v8.50.0 [[#1755](https://github.com/opencloud-eu/web/pull/1755)]
+- fix(deps): update dependency zod to v4.2.1 [[#1750](https://github.com/opencloud-eu/web/pull/1750)]
+- [full-ci] bump-opencloud-4.1.0. run all tests [[#1754](https://github.com/opencloud-eu/web/pull/1754)]
+
 ## [4.3.0](https://github.com/opencloud-eu/web/releases/tag/v4.3.0) - 2025-12-15
 
 ### ❤️ Thanks to all contributors! ❤️
