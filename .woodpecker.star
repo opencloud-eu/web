@@ -21,7 +21,7 @@ PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
 OPENLDAP = "bitnamilegacy/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
-
+SONARSOURCE_SONAR_SCANNER_CLI = "sonarsource/sonar-scanner-cli:12.0"
 WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
@@ -235,6 +235,7 @@ event = {
 }
 
 def main(ctx):
+    return unitTests(ctx)
     if ctx.build.event == "cron" and ctx.build.sender == "translation-sync":
         return translation_sync(ctx)
     is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
@@ -481,17 +482,17 @@ def buildCacheWeb(ctx):
     }]
 
 def unitTests(ctx):
-    # sonar_env = {
-    #     "SONAR_TOKEN": {
-    #         "from_secret": "sonar_token",
-    #     },
-    # }
-    # if ctx.build.event == "pull_request":
-    #     sonar_env.update({
-    #         "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.target),
-    #         "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.build.source),
-    #         "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
-    #     })
+    sonar_env = {
+        # "SONAR_TOKEN": {
+        #     "from_secret": "sonar_token",
+        # },
+    }
+    if ctx.build.event == "pull_request":
+        sonar_env.update({
+            "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.branch),
+            "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.repo.branch),
+            "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
+        })
 
     return [{
         "name": "unit-tests",
@@ -503,14 +504,20 @@ def unitTests(ctx):
                          "name": "unit-tests",
                          "image": OC_CI_NODEJS,
                          "commands": [
+                             "echo '%s'" % ctx.build.branch,
+                             "echo '%s'" % ctx.repo.branch,
+                             "echo '%s'" % ctx.build.ref,
                              "pnpm test:unit --coverage",
                          ],
                      },
-                     # {
-                     #     "name": "sonarcloud",
-                     #     "image": SONARSOURCE_SONAR_SCANNER_CLI,
-                     #     "environment": sonar_env,
-                     # },
+                     {
+                         "name": "sonarcloud",
+                         "image": SONARSOURCE_SONAR_SCANNER_CLI,
+                         "environment": sonar_env,
+                         "when": {
+                             "event": "pull_request",
+                         },
+                     },
                  ],
         "when": [
             event["base"],
