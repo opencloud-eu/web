@@ -1,1 +1,0 @@
-import{r as a,M as s,O as p,z as r,Y as u,w as c}from"./framework.i6tb_cJ7.js";import"./theme.D1-GnpXP.js";const _=a({__name:"default",setup(m){const e=s();return p(e,o=>{console.log(o)}),(o,l)=>{const t=u("oc-file-input");return c(),r(t,{modelValue:e.value,"onUpdate:modelValue":l[0]||(l[0]=n=>e.value=n),label:"Select file"},null,8,["modelValue"])}}});export{_ as default};
