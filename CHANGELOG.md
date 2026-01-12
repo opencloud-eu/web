@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- Update dependency @casl/vue to v2.2.5 [[#1807](https://github.com/opencloud-eu/web/pull/1807)]
 - Update dependency focus-trap to v7.8.0 [[#1784](https://github.com/opencloud-eu/web/pull/1784)]
 - Update pnpm to v10.28.0 [[#1790](https://github.com/opencloud-eu/web/pull/1790)]
 - Update dependency qs to v6.14.1 [SECURITY] [[#1803](https://github.com/opencloud-eu/web/pull/1803)]
