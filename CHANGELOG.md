@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- Update dependency focus-trap to v7.8.0 [[#1784](https://github.com/opencloud-eu/web/pull/1784)]
 - Update pnpm to v10.28.0 [[#1790](https://github.com/opencloud-eu/web/pull/1790)]
 - Update dependency qs to v6.14.1 [SECURITY] [[#1803](https://github.com/opencloud-eu/web/pull/1803)]
 - fix(deps): update dependency @sentry/vue to v10.32.1 [[#1777](https://github.com/opencloud-eu/web/pull/1777)]
