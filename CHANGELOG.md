@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v25.04.8.1.1 [[#1761](https://github.com/opencloud-eu/web/pull/1761)]
 - fix(deps): update dependency globals to v17 [[#1811](https://github.com/opencloud-eu/web/pull/1811)]
 - chore(deps): update dependency md-editor-v3 to v6.3.1 [[#1794](https://github.com/opencloud-eu/web/pull/1794)]
 - chore(deps): update typescript-eslint monorepo to v8.52.0 [[#1786](https://github.com/opencloud-eu/web/pull/1786)]
