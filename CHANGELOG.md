@@ -22,6 +22,12 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.52.0 [[#1786](https://github.com/opencloud-eu/web/pull/1786)]
+- fix(deps): update dependency @casl/ability to v6.7.5 [[#1782](https://github.com/opencloud-eu/web/pull/1782)]
+- chore(deps): update traefik docker tag to v3.6.6 [[#1798](https://github.com/opencloud-eu/web/pull/1798)]
+- fix(deps): update dependency p-queue to v9.1.0 [[#1809](https://github.com/opencloud-eu/web/pull/1809)]
+- fix(deps): update dependency zod to v4.3.5 [[#1810](https://github.com/opencloud-eu/web/pull/1810)]
+- chore(deps): update dependency @codemirror/view to v6.39.9 [[#1785](https://github.com/opencloud-eu/web/pull/1785)]
 - Update dependency @casl/vue to v2.2.5 [[#1807](https://github.com/opencloud-eu/web/pull/1807)]
 - Update dependency focus-trap to v7.8.0 [[#1784](https://github.com/opencloud-eu/web/pull/1784)]
 - Update pnpm to v10.28.0 [[#1790](https://github.com/opencloud-eu/web/pull/1790)]
