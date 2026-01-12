@@ -132,7 +132,6 @@ import {
   Pagination,
   queryItemAsString,
   SideBarEventTopics,
-  SortDir,
   useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
@@ -151,7 +150,7 @@ import {
 import { findIndex } from 'lodash-es'
 import Mark from 'mark.js'
 import { OcTable } from '@opencloud-eu/design-system/components'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
@@ -232,7 +231,7 @@ export default defineComponent({
       eventBus.publish(SideBarEventTopics.openWithPanel, 'UserAssignmentsPanel')
     }
 
-    const rowClicked = (data: [User, MouseEvent]) => {
+    const rowClicked = (data: [User, MouseEvent | KeyboardEvent]) => {
       const resource = data[0]
       const eventData = data[1]
       const isCheckboxClicked =

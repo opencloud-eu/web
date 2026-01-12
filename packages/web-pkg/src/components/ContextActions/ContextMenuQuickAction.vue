@@ -45,7 +45,7 @@ const {
 }>()
 
 defineEmits<{
-  (e: 'quickActionClicked', payload: { event: MouseEvent; dropdown: unknown }): void
+  (e: 'quickActionClicked', payload: { event: MouseEvent; dropdown: any }): void
 }>()
 
 const { $gettext } = useGettext()

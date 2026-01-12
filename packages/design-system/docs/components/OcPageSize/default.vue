@@ -9,11 +9,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PageSizeOption } from '../../../src/helpers'
 
 const options: number[] = [10, 20, 50]
 const currentSelection = ref(options[0])
 
-const setItemsPerPage = (value: number) => {
-  currentSelection.value = value
+const setItemsPerPage = (value: PageSizeOption) => {
+  currentSelection.value = value as number
 }
 </script>

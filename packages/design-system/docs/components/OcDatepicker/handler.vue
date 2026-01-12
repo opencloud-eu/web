@@ -13,9 +13,9 @@ import { ref } from 'vue'
 import { DateTime } from 'luxon'
 
 const selectedDate = ref<DateTime>()
-const inputError = ref<Error>()
+const inputError = ref<boolean>()
 
-const onExpiryDateChanged = ({ date, error }: { date: DateTime; error: Error }) => {
+const onExpiryDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
   selectedDate.value = date
   inputError.value = error
 }

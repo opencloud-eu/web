@@ -168,6 +168,7 @@ import {
 import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
 import { isLocationSpacesActive, isLocationTrashActive } from '../router'
+import { PageSizeOption } from '@opencloud-eu/design-system/helpers'
 
 const {
   perPageStoragePrefix,
@@ -238,11 +239,11 @@ const viewSizeQuery = useRouteQueryPersisted({
   defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
 })
 
-const setItemsPerPage = (itemsPerPage: string) => {
+const setItemsPerPage = (itemsPerPage: PageSizeOption) => {
   return router.replace({
     query: {
       ...unref(currentRoute).query,
-      [perPageQueryName]: itemsPerPage,
+      [perPageQueryName]: itemsPerPage.toString(),
       ...(unref(currentPage) > 1 && { page: '1' })
     }
   })

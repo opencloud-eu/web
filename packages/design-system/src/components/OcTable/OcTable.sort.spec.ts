@@ -1,5 +1,6 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import Table from './OcTable.vue'
+import { SortDir } from '../../helpers'
 
 const ASC = 'ascending'
 const DESC = 'descending'
@@ -111,7 +112,7 @@ describe('OcTable.sort', () => {
       async (name, { sortBy, sortDir, ariaSort }) => {
         await wrapper.setProps({
           sortBy,
-          sortDir: sortDir as 'asc' | 'desc'
+          sortDir: sortDir as SortDir
         })
         expect(headers.at(1).attributes()['aria-sort']).toBe(ariaSort)
       }
@@ -124,7 +125,7 @@ describe('OcTable.sort', () => {
         props: {
           fields: tableFields,
           sortBy: tableFieldId.name,
-          sortDir: tableFieldId.sortDir as 'asc' | 'desc',
+          sortDir: tableFieldId.sortDir as SortDir,
           data
         },
         global: {
@@ -171,7 +172,7 @@ describe('OcTable.sort', () => {
             fields: tableFields,
             data,
             sortBy: sortByOld,
-            sortDir: sortDirOld as 'asc' | 'desc'
+            sortDir: sortDirOld as SortDir
           },
           global: {
             plugins: [...defaultPlugins()],

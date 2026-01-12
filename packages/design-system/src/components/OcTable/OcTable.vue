@@ -121,7 +121,7 @@ import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { Item as BaseItem, FieldType, SizeType } from '../../helpers'
+import { Item as BaseItem, FieldType, SizeType, SortDir } from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -132,8 +132,8 @@ import {
 } from '../../helpers/constants'
 import { useGettext } from 'vue3-gettext'
 
-const SORT_DIRECTION_ASC = 'asc' as const
-const SORT_DIRECTION_DESC = 'desc' as const
+const SORT_DIRECTION_ASC = 'asc' as SortDir.Desc
+const SORT_DIRECTION_DESC = 'desc' as SortDir.Asc
 
 type Item = BaseItem & any
 
@@ -200,7 +200,7 @@ export interface Props {
   /**
    * @docs The default sort direction.
    */
-  sortDir?: 'asc' | 'desc'
+  sortDir?: SortDir
   /**
    * @docs Determines if the table header should be sticky. This is helpful when it should still be visible when scrolling.
    * @default false
@@ -247,7 +247,7 @@ export interface Emits {
   /**
    * @docs Emitted when a column has been sorted.
    */
-  (e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void
+  (e: 'sort', sort: { sortBy: string; sortDir: SortDir }): void
 
   /**
    * @docs Emitted when an element has entered a drop zone inside the table.
@@ -523,7 +523,7 @@ const handleSort = (field: FieldType) => {
   }
   // set default sortDir of the field when sortDir not set or sortBy changed
   if (sortBy !== field.name || sortDir === undefined) {
-    sortDirection = (field.sortDir || SORT_DIRECTION_DESC) as 'asc' | 'desc'
+    sortDirection = (field.sortDir || SORT_DIRECTION_DESC) as SortDir
   }
 
   /**

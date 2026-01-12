@@ -86,3 +86,10 @@ export type JustifyContentType =
   | 'space-around'
   | 'space-between'
   | 'space-evenly'
+
+export enum SortDir {
+  Desc = 'desc',
+  Asc = 'asc'
+}
+
+export type PageSizeOption = string | number | boolean
