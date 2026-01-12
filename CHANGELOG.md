@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency md-editor-v3 to v6.3.1 [[#1794](https://github.com/opencloud-eu/web/pull/1794)]
 - chore(deps): update typescript-eslint monorepo to v8.52.0 [[#1786](https://github.com/opencloud-eu/web/pull/1786)]
 - fix(deps): update dependency @casl/ability to v6.7.5 [[#1782](https://github.com/opencloud-eu/web/pull/1782)]
 - chore(deps): update traefik docker tag to v3.6.6 [[#1798](https://github.com/opencloud-eu/web/pull/1798)]
