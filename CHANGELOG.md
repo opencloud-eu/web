@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.4.0](https://github.com/opencloud-eu/web/releases/tag/v4.4.0) - 2026-01-09
+## [4.4.0](https://github.com/opencloud-eu/web/releases/tag/v4.4.0) - 2026-01-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- Update dependency qs to v6.14.1 [SECURITY] [[#1803](https://github.com/opencloud-eu/web/pull/1803)]
 - fix(deps): update dependency @sentry/vue to v10.32.1 [[#1777](https://github.com/opencloud-eu/web/pull/1777)]
 - chore(deps): update devdependencies (non-major) [[#1775](https://github.com/opencloud-eu/web/pull/1775)]
 - chore(deps): update pnpm to v10.26.1 [[#1778](https://github.com/opencloud-eu/web/pull/1778)]
