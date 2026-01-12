@@ -570,7 +570,7 @@ importers:
         version: 8.11.1
       p-queue:
         specifier: ^9.0.0
-        version: 9.0.1
+        version: 9.1.0
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3))
@@ -930,7 +930,7 @@ importers:
         version: 3.4.1
       p-queue:
         specifier: ^9.0.0
-        version: 9.0.1
+        version: 9.1.0
       password-sheriff:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1060,8 +1060,8 @@ importers:
         specifier: ^3.0.0
         version: 3.4.1
       p-queue:
-        specifier: 9.0.1
-        version: 9.0.1
+        specifier: 9.1.0
+        version: 9.1.0
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3))
@@ -5363,8 +5363,8 @@ packages:
     resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
     engines: {node: '>=18'}
 
-  p-queue@9.0.1:
-    resolution: {integrity: sha512-RhBdVhSwJb7Ocn3e8ULk4NMwBEuOxe+1zcgphUy9c2e5aR/xbEsdVXxHJ3lynw6Qiqu7OINEyHlZkiblEpaq7w==}
+  p-queue@9.1.0:
+    resolution: {integrity: sha512-O/ZPaXuQV29uSLbxWBGGZO1mCQXV2BLIwUr59JUU9SoH76mnYvtms7aafH/isNSNGwuEfP6W/4xD0/TJXxrizw==}
     engines: {node: '>=20'}
 
   p-retry@6.2.1:
@@ -11431,7 +11431,7 @@ snapshots:
 
   p-map@7.0.3: {}
 
-  p-queue@9.0.1:
+  p-queue@9.1.0:
     dependencies:
       eventemitter3: 5.0.1
       p-timeout: 7.0.0
