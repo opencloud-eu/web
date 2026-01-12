@@ -5,7 +5,7 @@
   "description": "OpenCloud web runtime",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@casl/ability": "6.7.3",
+    "@casl/ability": "6.7.5",
     "@casl/vue": "^2.2.2",
     "@microsoft/fetch-event-source": "2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
@@ -28,7 +28,7 @@
     "luxon": "3.7.2",
     "mark.js": "8.11.1",
     "oidc-client-ts": "^3.0.0",
-    "p-queue": "9.0.1",
+    "p-queue": "9.1.0",
     "pinia": "3.0.4",
     "portal-vue": "^3.0.0",
     "promise": "^8.1.0",
@@ -41,7 +41,7 @@
     "vue3-gettext": "2.4.0",
     "webdav": "5.8.0",
     "xml-js": "^1.6.11",
-    "zod": "4.2.1"
+    "zod": "4.3.5"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
