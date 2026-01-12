@@ -6,11 +6,11 @@ APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:25.04.7.3.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
-OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
-OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
+OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
-OC_CI_NODEJS = "owncloudci/nodejs:22"
-OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
+OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
+OC_CI_NODEJS_ALPINE = "quay.io/opencloudeu/nodejs-alpine-ci:24"
+OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
@@ -501,7 +501,7 @@ def unitTests(ctx):
                  [
                      {
                          "name": "unit-tests",
-                         "image": OC_CI_NODEJS,
+                         "image": OC_CI_NODEJS_ALPINE,
                          "commands": [
                              "pnpm test:unit --coverage",
                          ],
@@ -591,25 +591,25 @@ def e2eTests(ctx):
 
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
-                    restoreBrowsersCache() + \
+                    restoreBrowsersCache(browser_name) + \
                     restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
                     restoreOpenCloudCache()
 
             if "app-provider-onlyOffice" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
                 steps += onlyofficeService() + \
-                         waitForServices("onlyOffice", ["onlyoffice:443"]) + \
+                         waitForService("onlyoffice", "443") + \
                          openCloudService(params["extraServerEnvironment"]) + \
                          wopiCollaborationService("onlyoffice") + \
-                         waitForServices("wopi", ["wopi-onlyoffice:9300"])
+                         waitForService("wopi-onlyoffice", "9300")
 
             elif "app-provider" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
                 steps += collaboraService() + \
-                         waitForServices("collabora", ["collabora:9980"]) + \
+                         waitForService("collabora", "9980") + \
                          openCloudService(params["extraServerEnvironment"]) + \
                          wopiCollaborationService("collabora") + \
-                         waitForServices("wopi", ["wopi-collabora:9300"])
+                         waitForService("wopi-collabora", "9300")
 
             elif "ocm" in suite:
                 steps += openCloudService(params["extraServerEnvironment"]) + \
@@ -619,14 +619,10 @@ def e2eTests(ctx):
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
                          openCloudService(params["extraServerEnvironment"])
 
-            if browser_name == "firefox":
+            if browser_name == "firefox" or browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
 
-            if browser_name == "webkit":
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-                command = "pnpm playwright install-deps webkit && cd tests/e2e && bash run-e2e.sh "
-            else:
-                command = "cd tests/e2e && bash run-e2e.sh "
+            command = "cd tests/e2e && bash run-e2e.sh "
 
             if "suites" in matrix:
                 command += "--suites %s" % ",".join(params["suites"])
@@ -637,7 +633,7 @@ def e2eTests(ctx):
                 return []
 
             if "mobile-view" in suite:
-                command = "pnpm playwright install-deps webkit && pnpm test:e2e:mobile-parallel"
+                command = "pnpm test:e2e:mobile-parallel"
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
@@ -742,7 +738,7 @@ def installBrowsers():
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install --with-deps",
+            "pnpm exec playwright install",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
         ],
@@ -751,7 +747,7 @@ def installBrowsers():
 def lint():
     return [{
         "name": "lint",
-        "image": OC_CI_NODEJS,
+        "image": OC_CI_NODEJS_ALPINE,
         "commands": [
             "pnpm lint",
         ],
@@ -761,14 +757,14 @@ def formatCheck():
     return [
         {
             "name": "format-check",
-            "image": OC_CI_NODEJS,
+            "image": OC_CI_NODEJS_ALPINE,
             "commands": [
                 "pnpm format:check",
             ],
         },
         {
             "name": "show-diff",
-            "image": OC_CI_NODEJS,
+            "image": OC_CI_NODEJS_ALPINE,
             "commands": [
                 "pnpm format:write",
                 "git diff",
@@ -902,7 +898,7 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
     for config in extra_env_config:
         environment[config] = extra_env_config[config]
 
-    wait_for_service = waitForServices("opencloud", ["opencloud:9200"])
+    wait_for_service = waitForService("opencloud", "9200")
     if "OC_EXCLUDE_RUN_SERVICES" not in environment or "idp" not in environment["OC_EXCLUDE_RUN_SERVICES"]:
         wait_for_service = [
             {
@@ -1381,13 +1377,12 @@ def uploadTracingResult(ctx):
         },
     }]
 
-def waitForServices(name, services = []):
-    services = ",".join(services)
+def waitForService(host, port):
     return [{
-        "name": "wait-for-%s" % name,
+        "name": "wait-for-%s" % host,
         "image": OC_CI_WAIT_FOR,
         "commands": [
-            "wait-for -it %s -t 300" % services,
+            "wait-for -host %s -port %s -timeout 300" % (host, port),
         ],
     }]
 
@@ -1396,7 +1391,7 @@ def tikaService():
         "name": "tika",
         "image": APACHE_TIKA,
         "detach": True,
-    }] + waitForServices("tika", ["tika:9998"])
+    }] + waitForService("tika", "9998")
 
 def collaboraService():
     return [
@@ -1519,7 +1514,7 @@ def ldapService():
                 },
             },
         },
-    ] + waitForServices("ldap", ["ldap-server:1636", "ldap-server:1389"])
+    ] + waitForService("ldap-server", "1636") + waitForService("ldap-server", "1389")
 
 def keycloakService():
     return [{
@@ -1530,7 +1525,7 @@ def keycloakService():
                    "openssl req -x509 -newkey rsa:2048 -keyout keycloak-certs/keycloakkey.pem -out keycloak-certs/keycloakcrt.pem -nodes -days 365 -subj '/CN=keycloak'",
                    "chmod -R 755 keycloak-certs",
                ],
-           }] + waitForServices("postgres", ["postgres:5432"]) + \
+           }] + waitForService("postgres", "5432") + \
            [{
                "name": "keycloak",
                "image": KEYCLOAK,
@@ -1558,12 +1553,12 @@ def keycloakService():
                    "cp tests/woodpecker/opencloud_keycloak/opencloud-ci-realm.dist.json /opt/keycloak/data/import/opencloud-realm.json",
                    "/opt/keycloak/bin/kc.sh start-dev --proxy-headers xforwarded --spi-connections-http-client-default-disable-trust-manager=true --import-realm --health-enabled=true",
                ],
-           }] + waitForServices("keycloak", ["keycloak:8443"])
+           }] + waitForService("keycloak", "8443")
 
 def e2eTestsOnKeycloak(ctx):
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
-            restoreBrowsersCache() + \
+            restoreBrowsersCache("chromium") + \
             ldapService() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
@@ -1686,7 +1681,7 @@ def checkBrowsersCache():
         ],
     }]
 
-def restoreBrowsersCache():
+def restoreBrowsersCache(browser):
     return [
         {
             "name": "restore-browsers-cache",
