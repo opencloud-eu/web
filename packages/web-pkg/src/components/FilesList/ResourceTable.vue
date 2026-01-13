@@ -28,14 +28,7 @@
     padding-x="medium"
     @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
     @row-mounted="$emit('rowMounted', $event[0], $event[1], ImageDimension.Thumbnail)"
-    @contextmenu-clicked="
-      (...args) =>
-        showContextMenuOnRightClick(
-          ...args,
-          contextMenuButton,
-          'resource-table-btn-action-dropdown'
-        )
-    "
+    @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
     @item-dropped="fileDropped($event[0], $event[1])"
     @item-dragged="dragStart($event[0], $event[1])"
     @drop-row-styling="setDropStyling"
@@ -247,12 +240,11 @@
       >
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
-          ref="contextMenuButton"
           :title="item.name"
           :item="item"
           :resource-dom-selector="resourceDomSelector"
           class="resource-table-btn-action-dropdown"
-          @quick-action-clicked="showContextMenuOnBtnClick($event, item, contextMenuButton)"
+          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
         >
           <template #contextMenu>
             <slot name="contextMenu" :resource="item" />
@@ -270,7 +262,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, ref, unref, useTemplateRef } from 'vue'
+import { ComponentPublicInstance, computed, ref, unref } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
   extractDomSelector,
@@ -302,10 +294,7 @@ import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
 import { ImageDimension } from '../../constants'
 import { eventBus } from '../../services'
-import {
-  formatDateFromJSDate,
-  formatRelativeDateFromJSDate
-} from '../../helpers'
+import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
 import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
@@ -446,9 +435,6 @@ const { userContextReady } = storeToRefs(authStore)
 
 const resourcesStore = useResourcesStore()
 const { areFileExtensionsShown, latestSelectedId } = storeToRefs(resourcesStore)
-
-const contextMenuButton =
-  useTemplateRef<ComponentPublicInstance<typeof OcButton>>('contextMenuButton')
 
 const { width } = useWindowSize()
 const hasTags = computed(

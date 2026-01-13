@@ -13,13 +13,17 @@ const isKeyboardEvent = (event: Event): event is KeyboardEvent => {
 export const displayPositionedDropdown = (
   dropdown: ComponentPublicInstance<typeof OcDrop>,
   event: MouseEvent | KeyboardEvent,
-  contextMenuButton: ComponentPublicInstance<unknown>
+  contextMenuButton: HTMLElement | ComponentPublicInstance<unknown>
 ) => {
   if (!dropdown) {
     return
   }
 
-  const contextMenuButtonPos = contextMenuButton.$el.getBoundingClientRect()
+  let contextMenuButtonEl = contextMenuButton
+  if ((contextMenuButtonEl as ComponentPublicInstance<unknown>).$el) {
+    contextMenuButtonEl = (contextMenuButton as ComponentPublicInstance<unknown>).$el
+  }
+  const contextMenuButtonPos = (contextMenuButtonEl as HTMLElement).getBoundingClientRect()
 
   const yValue = isKeyboardEvent(event)
     ? (event.target as HTMLElement)?.getBoundingClientRect().top || 0

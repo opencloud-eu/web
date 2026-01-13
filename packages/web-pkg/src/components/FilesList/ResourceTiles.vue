@@ -51,7 +51,7 @@
         class="oc-tiles-item has-item-context-menu"
       >
         <resource-tile
-          :ref="(el) => (tileRefs.tiles[resource.id] = el as ResourceTileRef)"
+          :ref="(el) => (tileRefs[resource.id] = el as ResourceTileRef)"
           :resource="resource"
           :space="space"
           :resource-route="getResourceLink(resource)"
@@ -64,18 +64,8 @@
           :draggable="dragDrop"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
-          @vue:mounted="
-            $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
-          "
-          @contextmenu="
-            showContextMenuOnRightClick(
-              unref(tileRefs).tiles[resource.id],
-              $event,
-              resource,
-              tileRefs.tiles[resource.id],
-              'resource-tiles-btn-action-dropdown'
-            )
-          "
+          @vue:mounted="$emit('rowMounted', resource, tileRefs[resource.id], ImageDimension.Tile)"
+          @contextmenu="showContextMenuOnRightClick($event, resource)"
           @file-name-clicked.stop="(e: MouseEvent) => fileNameClicked({ resource, event: e })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
@@ -117,13 +107,10 @@
           <template #contextMenu>
             <context-menu-quick-action
               v-if="shouldShowContextDrop(resource)"
-              :ref="(el) => (tileRefs.dropBtns[resource.id] = el as ContextMenuQuickActionRef)"
               :item="resource"
               :title="resource.name"
               class="resource-tiles-btn-action-dropdown"
-              @quick-action-clicked="
-                showContextMenuOnBtnClick($event, resource, unref(tileRefs).dropBtns[resource.id])
-              "
+              @quick-action-clicked="showContextMenuOnBtnClick($event, resource)"
             >
               <template #contextMenu>
                 <slot name="contextMenu" :resource="resource" />
@@ -185,7 +172,6 @@ import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { storeToRefs } from 'pinia'
 
 type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
-type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
 
 const {
   resources = [],
@@ -273,10 +259,7 @@ const {
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
 
-const tileRefs = ref({
-  tiles: {} as Record<string, ResourceTileRef>,
-  dropBtns: {} as Record<string, ContextMenuQuickActionRef>
-})
+const tileRefs = ref<Record<string, ResourceTileRef>>({})
 
 const currentSortField = computed(() => {
   return sortFields.find((o) => o.name === sortBy && o.sortDir === sortDir) || sortFields[0]
@@ -298,10 +281,7 @@ const resourceIconSize = computed<SizeType>(() => {
   return (sizeMap[size] ?? 'xxlarge') as SizeType
 })
 onBeforeUpdate(() => {
-  tileRefs.value = {
-    tiles: {},
-    dropBtns: {}
-  }
+  tileRefs.value = {}
 })
 
 const viewWidth = ref(0)

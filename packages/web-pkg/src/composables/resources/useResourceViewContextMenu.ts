@@ -1,4 +1,4 @@
-import { ComponentPublicInstance, unref } from 'vue'
+import { unref } from 'vue'
 import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { ContextMenuBtnClickEventData, displayPositionedDropdown } from '../../helpers'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -35,11 +35,11 @@ export const useResourceViewContextMenu = ({
     return !isResourceDisabled(item)
   }
 
-  const showContextMenuOnBtnClick = (
-    data: ContextMenuBtnClickEventData,
-    item: Resource,
-    el: any
-  ) => {
+  const getContextMenuButtonEl = (item: Resource) => {
+    return document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
+  }
+
+  const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, item: Resource) => {
     const { dropdown, event } = data
 
     if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
@@ -53,19 +53,17 @@ export const useResourceViewContextMenu = ({
     if (dropdown?.tippy === undefined) {
       return
     }
+    const contextButtonEl = getContextMenuButtonEl(item)
+    if (contextButtonEl === undefined) {
+      return
+    }
     if (!isResourceSelected(item)) {
       emitSelect([item.id])
     }
-    displayPositionedDropdown(dropdown.tippy, event, el)
+    displayPositionedDropdown(dropdown.tippy, event, contextButtonEl)
   }
 
-  const showContextMenuOnRightClick = (
-    row: ComponentPublicInstance<unknown>,
-    event: MouseEvent,
-    item: Resource,
-    el: any,
-    className: string
-  ) => {
+  const showContextMenuOnRightClick = (event: MouseEvent | KeyboardEvent, item: Resource) => {
     if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
       return
     }
@@ -74,8 +72,8 @@ export const useResourceViewContextMenu = ({
       return false
     }
 
-    const instance = row.$el.getElementsByClassName(className)[0]
-    if (instance === undefined) {
+    const contextButtonEl = getContextMenuButtonEl(item)
+    if (contextButtonEl === undefined) {
       return
     }
     if (!isResourceSelected(item)) {
@@ -85,12 +83,11 @@ export const useResourceViewContextMenu = ({
     if (unref(isMobile)) {
       // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
       // this can be triggered by clicking the context menu button of the current row.
-      const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
-      el?.click()
+      contextButtonEl.click()
       return
     }
 
-    displayPositionedDropdown(instance._tippy, event, unref(el))
+    displayPositionedDropdown((contextButtonEl as any)._tippy, event, contextButtonEl)
   }
 
   return {
