@@ -54,7 +54,7 @@ export const useResourceViewContextMenu = ({
       return
     }
     const contextButtonEl = getContextMenuButtonEl(item)
-    if (contextButtonEl === undefined) {
+    if (!contextButtonEl) {
       return
     }
     if (!isResourceSelected(item)) {
@@ -73,7 +73,7 @@ export const useResourceViewContextMenu = ({
     }
 
     const contextButtonEl = getContextMenuButtonEl(item)
-    if (contextButtonEl === undefined) {
+    if (!contextButtonEl) {
       return
     }
     if (!isResourceSelected(item)) {

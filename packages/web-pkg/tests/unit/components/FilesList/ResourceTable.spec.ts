@@ -359,14 +359,15 @@ describe('ResourceTable', () => {
     describe('all rows already selected', () => {
       it('de-selects all resources via the select-all checkbox', async () => {
         const { wrapper } = getMountedWrapper({
+          deleteQueue: [],
           props: {
             selectedIds: resourcesWithAllFields.map((resource) => resource.id),
-            resources: resourcesWithAllFields.slice(0, -1)
+            resources: resourcesWithAllFields
           }
         })
 
         await wrapper.find('.resource-table-select-all .oc-checkbox').trigger('click')
-        expect(wrapper.emitted<string>('update:selectedIds')[0][0].length).toBe(4)
+        expect(wrapper.emitted<string>('update:selectedIds')[0][0].length).toBe(0)
       })
     })
 
@@ -520,6 +521,7 @@ describe('ResourceTable', () => {
     it('emits select event on contextmenu click', async () => {
       const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getMountedWrapper()
+      vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
       await wrapper.find('.oc-tbody-tr').trigger('contextmenu')
       expect(wrapper.emitted('update:selectedIds').length).toBe(1)
       expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
@@ -676,7 +678,8 @@ function getMountedWrapper({
   addProcessingResources = false,
   canBeOpenedWithSecureView = true,
   hasRenameAction = true,
-  resources = resourcesWithAllFields
+  resources = resourcesWithAllFields,
+  deleteQueue = ['in-delete-queue==']
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
@@ -684,6 +687,7 @@ function getMountedWrapper({
   canBeOpenedWithSecureView?: boolean
   hasRenameAction?: boolean
   resources?: Resource[]
+  deleteQueue?: string[]
 } = {}) {
   const capabilities = {
     files: { tags: true }
@@ -721,7 +725,7 @@ function getMountedWrapper({
             piniaOptions: {
               authState: { userContextReady },
               capabilityState: { capabilities },
-              resourcesStore: { deleteQueue: ['in-delete-queue=='] }
+              resourcesStore: { deleteQueue }
             }
           })
         ],
