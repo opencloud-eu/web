@@ -289,13 +289,6 @@ def translation_sync(ctx):
                 "name": "translation-update",
                 "image": OC_CI_NODEJS,
                 "commands": [
-                    # FIXME: remove node install as soon as we have our own node 22 image
-                    "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash",
-                    'export NVM_DIR="$HOME/.nvm"',
-                    "[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"",
-                    "nvm install 22",
-                    "nvm use 22",
-                    "corepack enable pnpm",
                     "make l10n-read",
                     "curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash",
                     ". ~/.profile",
@@ -481,18 +474,6 @@ def buildCacheWeb(ctx):
     }]
 
 def unitTests(ctx):
-    # sonar_env = {
-    #     "SONAR_TOKEN": {
-    #         "from_secret": "sonar_token",
-    #     },
-    # }
-    # if ctx.build.event == "pull_request":
-    #     sonar_env.update({
-    #         "SONAR_PULL_REQUEST_BASE": "%s" % (ctx.build.target),
-    #         "SONAR_PULL_REQUEST_BRANCH": "%s" % (ctx.build.source),
-    #         "SONAR_PULL_REQUEST_KEY": "%s" % (ctx.build.ref.replace("refs/pull/", "").split("/")[0]),
-    #     })
-
     return [{
         "name": "unit-tests",
         "workspace": web_workspace,
@@ -506,11 +487,6 @@ def unitTests(ctx):
                              "pnpm test:unit --coverage",
                          ],
                      },
-                     # {
-                     #     "name": "sonarcloud",
-                     #     "image": SONARSOURCE_SONAR_SCANNER_CLI,
-                     #     "environment": sonar_env,
-                     # },
                  ],
         "when": [
             event["base"],
@@ -1103,13 +1079,6 @@ def designSystemDocs(ctx):
                 "name": "build",
                 "image": OC_CI_NODEJS,
                 "commands": [
-                    # FIXME: remove node install as soon as we have our own node 22 image
-                    "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash",
-                    'export NVM_DIR="$HOME/.nvm"',
-                    "[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"",
-                    "nvm install 22",
-                    "nvm use 22",
-                    "corepack enable pnpm",
                     "pnpm --filter 'design-system' docs:build",
                     "cp -R packages/design-system/docs/.vitepress/dist docs",
                     # add dummy woodpecker config to disable CI on push to the docs branch
