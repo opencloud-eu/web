@@ -165,7 +165,6 @@ import {
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
-import { ContextMenuBtnClickEventData } from '../../helpers'
 import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
@@ -179,8 +178,7 @@ import {
   useEmbedMode,
   useSideBar,
   FileActionOptions,
-  useResourceViewHelpers,
-  useInterceptModifierClick
+  useResourceViewHelpers
 } from '../../composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'

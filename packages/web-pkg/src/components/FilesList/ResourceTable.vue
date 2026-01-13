@@ -303,7 +303,6 @@ import ResourceSize from './ResourceSize.vue'
 import { ImageDimension } from '../../constants'
 import { eventBus } from '../../services'
 import {
-  CreateTargetRouteOptions,
   formatDateFromJSDate,
   formatRelativeDateFromJSDate
 } from '../../helpers'
@@ -331,7 +330,6 @@ const {
   selectedIds = [],
   hasActions = true,
   showRenameQuickAction = true,
-  targetRouteCallback = undefined,
   areResourcesClickable = true,
   headerPosition = 0,
   isSelectable = true,
@@ -352,7 +350,6 @@ const {
   selectedIds?: string[]
   hasActions?: boolean
   showRenameQuickAction?: boolean
-  targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   areResourcesClickable?: boolean
   headerPosition?: number
   isSelectable?: boolean
@@ -407,10 +404,7 @@ const {
   getParentFolderLinkIconAdditionalAttributes,
   getParentFolderName,
   getPathPrefix
-} = useFolderLink({
-  space: ref(space),
-  targetRouteCallback: computed(() => targetRouteCallback)
-})
+} = useFolderLink({ space: ref(space) })
 const { isSticky } = useIsTopBarSticky()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { isLocationPicker, isFilePicker } = useEmbedMode()
@@ -441,7 +435,6 @@ const {
   space: computed(() => space),
   resources: computed(() => resources),
   selectedIds: computed(() => selectedIds),
-  targetRouteCallback,
   emit
 })
 

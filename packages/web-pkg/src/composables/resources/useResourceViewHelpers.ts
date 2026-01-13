@@ -16,7 +16,6 @@ import { useResourceViewDrag } from './useResourceViewDrag'
 import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
 import { useFileActions } from '../actions'
 import { useFolderLink } from '../folderLink'
-import { CreateTargetRouteOptions } from '../../helpers'
 import { useResourceViewContextMenu } from './useResourceViewContextMenu'
 import { useResourceViewSelection } from './useResourceViewSelection'
 
@@ -27,13 +26,11 @@ export const useResourceViewHelpers = ({
   space,
   resources,
   selectedIds,
-  targetRouteCallback,
   emit
 }: {
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
   selectedIds: Ref<string[]>
-  targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   emit: (...args: any[]) => void
 }) => {
   const resourcesStore = useResourcesStore()
@@ -50,10 +47,7 @@ export const useResourceViewHelpers = ({
     postMessage
   } = useEmbedMode()
 
-  const { getFolderLink } = useFolderLink({
-    space,
-    targetRouteCallback: computed(() => targetRouteCallback)
-  })
+  const { getFolderLink } = useFolderLink({ space })
 
   const selectedResources = computed(() => {
     return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))

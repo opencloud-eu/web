@@ -69,7 +69,6 @@
               v-model:selected-ids="selectedResourcesIds"
               :resources="paginatedResources"
               :view-mode="viewMode"
-              :target-route-callback="resourceTargetRouteCallback"
               :space="space"
               :drag-drop="true"
               :sort-by="sortBy"
@@ -125,7 +124,6 @@ import {
   unref,
   ref
 } from 'vue'
-import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -154,7 +152,6 @@ import {
   NoContentMessage,
   Pagination,
   ResourceTable,
-  CreateTargetRouteOptions,
   createFileRouteOptions,
   createLocationPublic,
   createLocationSpaces,
@@ -257,17 +254,6 @@ export default defineComponent({
     const canUpload = computed(() => {
       return unref(currentFolder)?.canUpload({ user: userStore.user })
     })
-
-    const resourceTargetRouteCallback = ({
-      path,
-      fileId
-    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
-      const { params, query } = createFileRouteOptions(unref(space), { path, fileId })
-      if (isPublicSpaceResource(unref(space))) {
-        return createLocationPublic('files-public-link', { params, query })
-      }
-      return createLocationSpaces('files-spaces-generic', { params, query })
-    }
 
     const hasSpaceHeader = computed(() => {
       // for now the space header is only available in the root of a project space.
@@ -573,7 +559,6 @@ export default defineComponent({
       folderNotFound,
       hasSpaceHeader,
       isCurrentFolderEmpty,
-      resourceTargetRouteCallback,
       performLoaderTask,
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')

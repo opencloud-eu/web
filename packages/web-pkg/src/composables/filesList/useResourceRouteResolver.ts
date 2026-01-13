@@ -2,14 +2,13 @@ import { unref, Ref } from 'vue'
 
 import { useGetMatchingSpace } from '../spaces'
 import { createFileRouteOptions } from '../../helpers/router'
-import { createLocationSpaces } from '../../router'
-import { CreateTargetRouteOptions } from '../../helpers/folderLink/types'
+import { createLocationSpaces, createLocationTrash, isLocationTrashActive } from '../../router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ConfigStore } from '../piniaStores'
+import { useRouter } from '../router'
 
 export type ResourceRouteResolverOptions = {
   configStore?: ConfigStore
-  targetRouteCallback?: Ref<(arg: CreateTargetRouteOptions) => unknown>
   space?: Ref<SpaceResource>
 }
 
@@ -18,19 +17,22 @@ export const useResourceRouteResolver = (
   /** @deprecated */
   context?: any
 ) => {
-  const targetRouteCallback = options.targetRouteCallback
+  const router = useRouter()
   const { getMatchingSpace } = useGetMatchingSpace(options)
 
-  const createFolderLink = (createTargetRouteOptions: CreateTargetRouteOptions) => {
-    if (unref(targetRouteCallback)) {
-      return unref(targetRouteCallback)(createTargetRouteOptions)
-    }
-
+  const createFolderLink = (createTargetRouteOptions: {
+    path: string
+    resource: Resource | SpaceResource
+    fileId?: string
+  }) => {
     const { path, fileId, resource } = createTargetRouteOptions
 
     const space = unref(options.space) || getMatchingSpace(resource)
     if (!space) {
       return {}
+    }
+    if (isLocationTrashActive(router, 'files-trash-overview')) {
+      return createLocationTrash('files-trash-generic', createFileRouteOptions(space))
     }
     return createLocationSpaces(
       'files-spaces-generic',
