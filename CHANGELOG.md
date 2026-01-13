@@ -1,10 +1,14 @@
 # Changelog
 
-## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2025-12-12
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-01-13
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @prashant-gurung899
+@JammingBen, @ScharfViktor, @prashant-gurung899
+
+### 🔒 Security
+
+- chore(deps): bump qs to v6.14.1 [security] [[#1813](https://github.com/opencloud-eu/web/pull/1813)]
 
 ### ✅ Tests
 
