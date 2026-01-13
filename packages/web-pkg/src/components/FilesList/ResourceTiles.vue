@@ -9,7 +9,7 @@
         size="large"
         :label="selectAllCheckboxLabel"
         :label-hidden="true"
-        :disabled="resources.length === disabledResourceIds.length"
+        :disabled="resources.length === disabledResources.length"
         :model-value="areAllResourcesSelected"
         @click.stop="toggleSelectionAll"
       />
@@ -54,10 +54,10 @@
           :ref="(el) => (tileRefs.tiles[resource.id] = el as ResourceTileRef)"
           :resource="resource"
           :space="space"
-          :resource-route="getRoute(resource)"
+          :resource-route="getResourceLink(resource)"
           :is-resource-selected="isResourceSelected(resource)"
-          :is-resource-clickable="isResourceClickable(resource)"
-          :is-resource-disabled="isResourceDisabled(resource) || isSpaceResourceDisabled(resource)"
+          :is-resource-clickable="isResourceClickable(resource, areResourcesClickable)"
+          :is-resource-disabled="isResourceDisabled(resource)"
           :is-extension-displayed="areFileExtensionsShown"
           :is-path-displayed="arePathsDisplayed"
           :resource-icon-size="resourceIconSize"
@@ -67,8 +67,16 @@
           @vue:mounted="
             $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
           "
-          @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @file-name-clicked.stop="(event) => fileNameClicked({ resource, event })"
+          @contextmenu="
+            showContextMenuOnRightClick(
+              unref(tileRefs).tiles[resource.id],
+              $event,
+              resource,
+              tileRefs.tiles[resource.id],
+              'resource-tiles-btn-action-dropdown'
+            )
+          "
+          @file-name-clicked.stop="(e: MouseEvent) => fileNameClicked({ resource, event: e })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
@@ -108,12 +116,14 @@
           </template>
           <template #contextMenu>
             <context-menu-quick-action
-              v-if="isSpaceResource(resource) || !isResourceDisabled(resource)"
+              v-if="shouldShowContextDrop(resource)"
               :ref="(el) => (tileRefs.dropBtns[resource.id] = el as ContextMenuQuickActionRef)"
               :item="resource"
               :title="resource.name"
               class="resource-tiles-btn-action-dropdown"
-              @quick-action-clicked="showContextMenuOnBtnClick($event, resource, resource.id)"
+              @quick-action-clicked="
+                showContextMenuOnBtnClick($event, resource, unref(tileRefs).dropBtns[resource.id])
+              "
             >
               <template #contextMenu>
                 <slot name="contextMenu" :resource="resource" />
@@ -153,9 +163,9 @@ import {
   watch
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
-import { ContextMenuBtnClickEventData, displayPositionedDropdown } from '../../helpers'
+import { ContextMenuBtnClickEventData } from '../../helpers'
 import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
@@ -167,9 +177,6 @@ import {
   useResourcesStore,
   useViewSizeMax,
   useEmbedMode,
-  useCanBeOpenedWithSecureView,
-  useFileActions,
-  useGetMatchingSpace,
   useSideBar,
   FileActionOptions,
   useResourceViewHelpers,
@@ -177,7 +184,7 @@ import {
 } from '../../composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
+import { storeToRefs } from 'pinia'
 
 type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
 type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
@@ -229,11 +236,7 @@ defineSlots<{
 
 const { $gettext } = useGettext()
 const resourcesStore = useResourcesStore()
-const { getDefaultAction } = useFileActions()
-const { getMatchingSpace } = useGetMatchingSpace()
-const { interceptModifierClick } = useInterceptModifierClick()
-const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
-const { isMobile } = useIsMobile()
+const { areFileExtensionsShown } = storeToRefs(resourcesStore)
 const { isLocationPicker, isFilePicker } = useEmbedMode()
 const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
@@ -241,20 +244,29 @@ const viewSizeCurrent = computed(() => {
 })
 const { isSideBarOpen } = useSideBar()
 const {
-  selectedResources,
+  disabledResources,
   isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,
   isResourceDisabled,
   isResourceInDeleteQueue,
-  ghostElement,
+  isResourceClickable,
+  getResourceLink,
   dragItem,
   dragSelection,
   dragStart,
   fileDropped,
-  setDropStyling
+  setDropStyling,
+  shouldShowContextDrop,
+  showContextMenuOnRightClick,
+  showContextMenuOnBtnClick,
+  selectAllCheckboxLabel,
+  getResourceCheckboxLabel,
+  toggleSelectionAll,
+  areAllResourcesSelected
 } = useResourceViewHelpers({
+  space: computed(() => space),
   resources: computed(() => resources),
   selectedIds: computed(() => selectedIds),
   emit
@@ -263,146 +275,10 @@ const {
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
 
-const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
-
-const selectAllCheckboxLabel = computed(() => {
-  return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
-})
-
 const tileRefs = ref({
   tiles: {} as Record<string, ResourceTileRef>,
   dropBtns: {} as Record<string, ContextMenuQuickActionRef>
 })
-
-const getRoute = (resource: Resource) => {
-  let s = space
-  if (!s) {
-    s = getMatchingSpace(resource)
-  }
-
-  const action = getDefaultAction({ resources: [resource], space: s })
-  if (!action?.route) {
-    return null
-  }
-
-  return action.route({ space: s, resources: [resource] })
-}
-
-const showContextMenuOnBtnClick = (
-  data: ContextMenuBtnClickEventData,
-  item: Resource,
-  index: string
-) => {
-  const { dropdown, event } = data
-
-  if (event && interceptModifierClick(event as MouseEvent, item)) {
-    return
-  }
-
-  if (dropdown?.tippy === undefined) {
-    return
-  }
-  resourcesStore.setSelection([item.id])
-  displayPositionedDropdown(dropdown.tippy, event, unref(tileRefs).dropBtns[index])
-}
-
-const isResourceClickable = (resource: Resource) => {
-  if (!areResourcesClickable) {
-    return false
-  }
-
-  if (isResourceDisabled(resource) || isSpaceResourceDisabled(resource)) {
-    return false
-  }
-
-  if (resource.isFolder) {
-    return true
-  }
-
-  if (!resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
-    return false
-  }
-
-  return true
-}
-
-const isSpaceResourceDisabled = (resource: Resource) => {
-  // a disabled space behaves a bit different than a disabled resource because
-  // it still allows certain actions, hence we need to handle them separately.
-  if (isResourceDisabled(resource)) {
-    return true
-  }
-
-  return isSpaceResource(resource) && resource.disabled
-}
-
-const disabledResourceIds = computed(() => {
-  return (
-    resources
-      ?.filter((resource) => isResourceDisabled(resource) === true)
-      ?.map((resource) => resource.id) || []
-  )
-})
-
-const emitSelect = (selectedIds: string[]) => {
-  emit('update:selectedIds', selectedIds)
-}
-
-const toggleSelectionAll = () => {
-  if (unref(areAllResourcesSelected)) {
-    return emit('update:selectedIds', [])
-  }
-
-  emit(
-    'update:selectedIds',
-    resources
-      .filter((resource) => !unref(disabledResourceIds).includes(resource.id))
-      .map((resource) => resource.id)
-  )
-}
-
-const showContextMenu = (
-  event: MouseEvent | KeyboardEvent,
-  item: Resource,
-  reference: ComponentPublicInstance<unknown>
-) => {
-  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
-    return
-  }
-
-  event.preventDefault()
-  const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
-    'resource-tiles-btn-action-dropdown'
-  )[0]
-
-  if (drop === undefined) {
-    return
-  }
-  if (!isResourceSelected(item)) {
-    emitSelect([item.id])
-  }
-
-  if (unref(isMobile)) {
-    // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
-    // this can be triggered by clicking the context menu button of the current row.
-    const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
-    el?.click()
-    return
-  }
-
-  displayPositionedDropdown(drop._tippy, event, reference)
-}
-
-const getResourceCheckboxLabel = (resource: Resource) => {
-  switch (resource.type) {
-    case 'folder':
-      return $gettext('Select folder')
-    case 'space':
-      return $gettext('Select space')
-    default:
-      return $gettext('Select file')
-  }
-}
 
 const currentSortField = computed(() => {
   return sortFields.find((o) => o.name === sortBy && o.sortDir === sortDir) || sortFields[0]
@@ -469,14 +345,6 @@ const ghostTilesCount = computed(() => {
 
 const tileSizePixels = computed(() => {
   return unref(viewWidth) / unref(maxTilesCurrent) - unref(gapSizePixels)
-})
-
-const areAllResourcesSelected = computed(() => {
-  const allResourcesDisabled = unref(disabledResourceIds).length === resources.length
-  const allSelected =
-    unref(selectedResources).length === resources.length - unref(disabledResourceIds).length
-
-  return !allResourcesDisabled && allSelected
 })
 
 watch(

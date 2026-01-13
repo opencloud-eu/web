@@ -28,7 +28,14 @@
     padding-x="medium"
     @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
     @row-mounted="$emit('rowMounted', $event[0], $event[1], ImageDimension.Thumbnail)"
-    @contextmenu-clicked="showContextMenu"
+    @contextmenu-clicked="
+      (...args) =>
+        showContextMenuOnRightClick(
+          ...args,
+          contextMenuButton,
+          'resource-table-btn-action-dropdown'
+        )
+    "
     @item-dropped="fileDropped($event[0], $event[1])"
     @item-dragged="dragStart($event[0], $event[1])"
     @drop-row-styling="setDropStyling"
@@ -85,7 +92,7 @@
           :parent-folder-name="getParentFolderName(item)"
           :is-icon-displayed="!$slots['image']"
           :is-extension-displayed="areFileExtensionsShown"
-          :is-resource-clickable="isResourceClickable(item)"
+          :is-resource-clickable="isResourceClickable(item, areResourcesClickable)"
           :link="getResourceLink(item)"
           :parent-folder-link="getParentFolderLink(item)"
           :parent-folder-link-icon-additional-attributes="
@@ -234,7 +241,10 @@
       </oc-avatars>
     </template>
     <template #actions="{ item }">
-      <div v-if="showContextDrop(item)" class="flex items-center justify-end flex-row flex-nowrap">
+      <div
+        v-if="shouldShowContextDrop(item)"
+        class="flex items-center justify-end flex-row flex-nowrap"
+      >
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
           ref="contextMenuButton"
@@ -242,7 +252,7 @@
           :item="item"
           :resource-dom-selector="resourceDomSelector"
           class="resource-table-btn-action-dropdown"
-          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
+          @quick-action-clicked="showContextMenuOnBtnClick($event, item, contextMenuButton)"
         >
           <template #contextMenu>
             <slot name="contextMenu" :resource="item" />
@@ -275,13 +285,10 @@ import {
 
 import {
   FolderViewModeConstants,
-  useActiveLocation,
   useAuthStore,
-  useCanBeOpenedWithSecureView,
   useCapabilityStore,
   useClipboardStore,
   useEmbedMode,
-  useFileActions,
   useFolderLink,
   useGetMatchingSpace,
   useIsTopBarSticky,
@@ -296,9 +303,7 @@ import ResourceSize from './ResourceSize.vue'
 import { ImageDimension } from '../../constants'
 import { eventBus } from '../../services'
 import {
-  ContextMenuBtnClickEventData,
   CreateTargetRouteOptions,
-  displayPositionedDropdown,
   formatDateFromJSDate,
   formatRelativeDateFromJSDate
 } from '../../helpers'
@@ -308,7 +313,7 @@ import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { ClipboardActions } from '../../helpers/clipboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
 import { FileActionOptions, useFileActionsRename } from '../../composables/actions'
-import { createLocationCommon, isLocationTrashActive } from '../../router'
+import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
 import { OcButton, OcSpinner, OcTable, OcTableTr } from '@opencloud-eu/design-system/components'
@@ -316,7 +321,6 @@ import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAvatar } from '../Avatars'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
@@ -397,7 +401,6 @@ defineSlots<{
 const router = useRouter()
 const capabilityStore = useCapabilityStore()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
 const { interceptModifierClick } = useInterceptModifierClick()
 const {
   getParentFolderLink,
@@ -410,26 +413,35 @@ const {
 })
 const { isSticky } = useIsTopBarSticky()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
-const { isMobile } = useIsMobile()
 const { isLocationPicker, isFilePicker } = useEmbedMode()
-const { getDefaultAction } = useFileActions()
 const {
   selectedResources,
+  disabledResources,
   isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,
   isResourceDisabled,
   isResourceInDeleteQueue,
-  ghostElement,
+  isResourceClickable,
+  getResourceLink,
   dragItem,
   dragSelection,
   dragStart,
   fileDropped,
-  setDropStyling
+  setDropStyling,
+  shouldShowContextDrop,
+  showContextMenuOnRightClick,
+  showContextMenuOnBtnClick,
+  selectAllCheckboxLabel,
+  getResourceCheckboxLabel,
+  toggleSelectionAll,
+  areAllResourcesSelected
 } = useResourceViewHelpers({
+  space: computed(() => space),
   resources: computed(() => resources),
   selectedIds: computed(() => selectedIds),
+  targetRouteCallback,
   emit
 })
 
@@ -450,62 +462,12 @@ const hasTags = computed(
   () => capabilityStore.filesTags && width.value >= TAGS_MINIMUM_SCREEN_WIDTH
 )
 
-const isTrashOverviewRoute = useActiveLocation(isLocationTrashActive, 'files-trash-overview')
-
 const { actions: renameActions } = useFileActionsRename()
 const { actions: renameActionsSpace } = useSpaceActionsRename()
 const renameHandler = computed(() => unref(renameActions)[0].handler)
 const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0].handler)
 
 const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
-
-const disabledResources = computed(() => {
-  return resources?.filter(isResourceDisabled)?.map((resource) => resource.id) || []
-})
-
-const isResourceClickable = (resource: Resource) => {
-  if (!areResourcesClickable) {
-    return false
-  }
-
-  if (isProjectSpaceResource(resource) && resource.disabled) {
-    return false
-  }
-
-  if (!resource.isFolder && !resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
-    return false
-  }
-
-  return !unref(disabledResources).includes(resource.id)
-}
-
-const emitSelect = (selectedIds: string[]) => {
-  eventBus.publish('app.files.list.clicked')
-  emit('update:selectedIds', selectedIds)
-}
-
-const getResourceLink = (resource: Resource) => {
-  let matchingSpace = space
-  if (!matchingSpace) {
-    matchingSpace = getMatchingSpace(resource)
-  }
-
-  const action = getDefaultAction({ resources: [resource], space: matchingSpace })
-
-  if (!action?.route) {
-    return
-  }
-
-  return action.route({ space: matchingSpace, resources: [resource] })
-}
-
-const showContextDrop = (item: Resource | SpaceResource) => {
-  if (unref(isTrashOverviewRoute) && isProjectSpaceResource(item) && item.disabled) {
-    return false
-  }
-
-  return !isResourceDisabled(item)
-}
 
 const fields = computed(() => {
   if (resources.length === 0) {
@@ -702,16 +664,7 @@ const fields = computed(() => {
 
   return fields
 })
-const areAllResourcesSelected = computed(() => {
-  const allResourcesDisabled = unref(disabledResources).length === resources.length
-  const allSelected =
-    unref(selectedResources).length === resources.length - unref(disabledResources).length
 
-  return !allResourcesDisabled && allSelected
-})
-const selectAllCheckboxLabel = computed(() => {
-  return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
-})
 const isResourceCut = (resource: Resource) => {
   if (unref(clipboardAction) !== ClipboardActions.Cut) {
     return false
@@ -764,78 +717,13 @@ const openTagsSidebar = () => {
   eventBus.publish(SideBarEventTopics.open)
 }
 
-const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, item: Resource) => {
-  const { dropdown, event } = data
-
-  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
-    return
-  }
-
-  if (isResourceDisabled(item)) {
-    return false
-  }
-
-  if (dropdown?.tippy === undefined) {
-    return
-  }
-  if (!isResourceSelected(item)) {
-    emitSelect([item.id])
-  }
-  displayPositionedDropdown(dropdown.tippy, event, unref(contextMenuButton))
-}
-const showContextMenu = (
-  row: ComponentPublicInstance<unknown>,
-  event: MouseEvent,
-  item: Resource
-) => {
-  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
-    return
-  }
-  event.preventDefault()
-  if (isResourceDisabled(item)) {
-    return false
-  }
-
-  const instance = row.$el.getElementsByClassName('resource-table-btn-action-dropdown')[0]
-  if (instance === undefined) {
-    return
-  }
-  if (!isResourceSelected(item)) {
-    emitSelect([item.id])
-  }
-
-  if (unref(isMobile)) {
-    // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
-    // this can be triggered by clicking the context menu button of the current row.
-    const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
-    el?.click()
-    return
-  }
-
-  displayPositionedDropdown(instance._tippy, event, unref(contextMenuButton))
-}
 const formatDate = (date: string) => {
   return formatDateFromJSDate(new Date(date), currentLanguage)
 }
 const formatDateRelative = (date: string) => {
   return formatRelativeDateFromJSDate(new Date(date), currentLanguage)
 }
-const toggleSelectionAll = () => {
-  if (unref(areAllResourcesSelected)) {
-    return emitSelect([])
-  }
-  emitSelect(
-    resources
-      .filter((resource) => !unref(disabledResources).includes(resource.id))
-      .map((resource) => resource.id)
-  )
-}
-const getResourceCheckboxLabel = (resource: Resource) => {
-  if (resource.type === 'folder') {
-    return $gettext('Select folder')
-  }
-  return $gettext('Select file')
-}
+
 const getSharedWithAvatarDescription = (resource: Resource) => {
   if (!isShareResource(resource)) {
     return

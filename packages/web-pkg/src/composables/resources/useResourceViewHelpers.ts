@@ -4,21 +4,36 @@ import { useRouter } from '../router'
 import { useEventBus } from '../eventBus'
 import { useInterceptModifierClick } from '../keyboardActions'
 import { embedModeFilePickMessageData, useEmbedMode } from '../embedMode'
-import { Resource } from '@opencloud-eu/web-client'
+import {
+  isProjectSpaceResource,
+  isSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../appDefaults'
 import { useGetMatchingSpace } from '../spaces'
 import { useResourceViewDrag } from './useResourceViewDrag'
+import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
+import { useFileActions } from '../actions'
+import { useFolderLink } from '../folderLink'
+import { CreateTargetRouteOptions } from '../../helpers'
+import { useResourceViewContextMenu } from './useResourceViewContextMenu'
+import { useResourceViewSelection } from './useResourceViewSelection'
 
 /**
  * Shared helpers for resource view components (like ResourceTable and ResourceTiles).
  */
 export const useResourceViewHelpers = ({
+  space,
   resources,
   selectedIds,
+  targetRouteCallback,
   emit
 }: {
+  space: Ref<SpaceResource>
   resources: Ref<Resource[]>
   selectedIds: Ref<string[]>
+  targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   emit: (...args: any[]) => void
 }) => {
   const resourcesStore = useResourcesStore()
@@ -26,12 +41,19 @@ export const useResourceViewHelpers = ({
   const eventBus = useEventBus()
   const { interceptModifierClick } = useInterceptModifierClick()
   const { getMatchingSpace } = useGetMatchingSpace()
+  const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
+  const { getDefaultAction } = useFileActions()
   const {
     isEnabled: isEmbedModeEnabled,
     fileTypes: embedModeFileTypes,
     isFilePicker,
     postMessage
   } = useEmbedMode()
+
+  const { getFolderLink } = useFolderLink({
+    space,
+    targetRouteCallback: computed(() => targetRouteCallback)
+  })
 
   const selectedResources = computed(() => {
     return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))
@@ -58,7 +80,35 @@ export const useResourceViewHelpers = ({
       return true
     }
 
+    if (isSpaceResource(resource)) {
+      return resource.disabled
+    }
+
     return resource.processing === true
+  }
+
+  const disabledResources = computed(() => {
+    return (
+      unref(resources)
+        ?.filter(isResourceDisabled)
+        ?.map((resource) => resource.id) || []
+    )
+  })
+
+  const isResourceClickable = (resource: Resource, areResourcesClickable: boolean) => {
+    if (!areResourcesClickable) {
+      return false
+    }
+
+    if (isProjectSpaceResource(resource) && resource.disabled) {
+      return false
+    }
+
+    if (!resource.isFolder && !resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
+      return false
+    }
+
+    return !isResourceDisabled(resource)
   }
 
   // tr or tile containing the file clicked
@@ -158,14 +208,38 @@ export const useResourceViewHelpers = ({
     emit('update:selectedIds', [...resourcesStore.selectedIds])
   }
 
+  const getResourceLink = (resource: Resource) => {
+    if (resource.isFolder) {
+      return getFolderLink(resource)
+    }
+
+    let matchingSpace = unref(space)
+    if (!matchingSpace) {
+      matchingSpace = getMatchingSpace(resource)
+    }
+
+    const action = getDefaultAction({ resources: [resource], space: matchingSpace })
+
+    if (!action?.route) {
+      return
+    }
+
+    return action.route({ space: matchingSpace, resources: [resource] })
+  }
+
   return {
     selectedResources,
+    disabledResources,
     isResourceSelected,
     isResourceInDeleteQueue,
     isResourceDisabled,
+    isResourceClickable,
     fileContainerClicked,
     fileNameClicked,
     fileCheckboxClicked,
-    ...useResourceViewDrag({ selectedIds, selectedResources, emit })
+    getResourceLink,
+    ...useResourceViewDrag({ selectedIds, selectedResources, emit }),
+    ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
+    ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
   }
 }

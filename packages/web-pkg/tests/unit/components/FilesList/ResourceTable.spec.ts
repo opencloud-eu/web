@@ -366,7 +366,7 @@ describe('ResourceTable', () => {
         })
 
         await wrapper.find('.resource-table-select-all .oc-checkbox').trigger('click')
-        expect(wrapper.emitted<string>('update:selectedIds')[0][0].length).toBe(0)
+        expect(wrapper.emitted<string>('update:selectedIds')[0][0].length).toBe(4)
       })
     })
 
