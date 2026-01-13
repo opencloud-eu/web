@@ -1,5 +1,8 @@
+/** @deprecated use from design-system instead */
 export const EVENT_TROW_MOUNTED = 'rowMounted'
+/** @deprecated use from design-system instead */
 export const EVENT_FILE_DROPPED = 'fileDropped'
+/** @deprecated use from design-system instead */
 export const EVENT_TROW_CONTEXTMENU = 'contextmenuClicked'
 
 export abstract class ImageDimension {

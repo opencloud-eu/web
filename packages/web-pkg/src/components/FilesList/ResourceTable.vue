@@ -27,7 +27,6 @@
     :lazy="lazy"
     padding-x="medium"
     @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
-    @row-mounted="$emit('rowMounted', $event[0], $event[1], ImageDimension.Thumbnail)"
     @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
     @item-dropped="fileDropped($event[0], $event[1])"
     @item-dragged="dragStart($event[0], $event[1])"
@@ -262,7 +261,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, ref, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
   extractDomSelector,
@@ -292,7 +291,6 @@ import {
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
-import { ImageDimension } from '../../constants'
 import { eventBus } from '../../services'
 import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
 import { SideBarEventTopics } from '../../composables/sideBar'
@@ -304,7 +302,7 @@ import { FileActionOptions, useFileActionsRename } from '../../composables/actio
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
-import { OcButton, OcSpinner, OcTable, OcTableTr } from '@opencloud-eu/design-system/components'
+import { OcButton, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
@@ -359,12 +357,6 @@ const {
 const emit = defineEmits<{
   (e: 'fileClick', options: FileActionOptions): void
   (e: 'sort', options: { sortBy: string; sortDir: SortDir }): void
-  (
-    e: 'rowMounted',
-    item: Resource,
-    rowElement: ComponentPublicInstance<typeof OcTableTr>,
-    dimension: ImageDimension
-  ): void
   (e: 'fileDropped', id: string): void
   (e: 'update:selectedIds', selectedIds: string[]): void
   (e: 'update:modelValue', value: Resource[]): void

@@ -51,7 +51,6 @@
         class="oc-tiles-item has-item-context-menu"
       >
         <resource-tile
-          :ref="(el) => (tileRefs[resource.id] = el as ResourceTileRef)"
           :resource="resource"
           :space="space"
           :resource-route="getResourceLink(resource)"
@@ -64,7 +63,6 @@
           :draggable="dragDrop"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
-          @vue:mounted="$emit('rowMounted', resource, tileRefs[resource.id], ImageDimension.Tile)"
           @contextmenu="showContextMenuOnRightClick($event, resource)"
           @file-name-clicked.stop="(e: MouseEvent) => fileNameClicked({ resource, event: e })"
           @dragstart="dragStart(resource, $event)"
@@ -139,20 +137,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ComponentPublicInstance,
-  onBeforeUnmount,
-  onBeforeUpdate,
-  onMounted,
-  ref,
-  unref,
-  watch
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
-import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import {
@@ -170,8 +158,6 @@ import {
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { storeToRefs } from 'pinia'
-
-type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
 
 const {
   resources = [],
@@ -204,7 +190,6 @@ const {
 const emit = defineEmits<{
   (e: 'fileClick', options: FileActionOptions): void
   (e: 'fileDropped', id: string): void
-  (e: 'rowMounted', resource: Resource, compnent: ResourceTileRef, dimension: ImageDimension): void
   (e: 'sort', value: { sortBy: string; sortDir: SortDir }): void
   (e: 'itemVisible', resource: Resource): void
   (e: 'update:selectedIds', ids: string[]): void
@@ -259,8 +244,6 @@ const {
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
 
-const tileRefs = ref<Record<string, ResourceTileRef>>({})
-
 const currentSortField = computed(() => {
   return sortFields.find((o) => o.name === sortBy && o.sortDir === sortDir) || sortFields[0]
 })
@@ -279,9 +262,6 @@ const resourceIconSize = computed<SizeType>(() => {
   }
   const size = unref(viewSizeCurrent)
   return (sizeMap[size] ?? 'xxlarge') as SizeType
-})
-onBeforeUpdate(() => {
-  tileRefs.value = {}
 })
 
 const viewWidth = ref(0)
