@@ -32,7 +32,7 @@
   {
     "name": "sort",
     "description": "Emitted when a column has been sorted.",
-    "type": "(e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void"
+    "type": "(e: 'sort', sort: { sortBy: string; sortDir: SortDir }): void"
   },
   {
     "name": "dropRowStyling",
