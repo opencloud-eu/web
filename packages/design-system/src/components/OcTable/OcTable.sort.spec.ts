@@ -10,13 +10,13 @@ const tableFieldId = {
   name: 'id',
   title: 'Id',
   sortable: true,
-  sortDir: 'desc'
+  sortDir: SortDir.Desc
 }
 const tableFieldResource = {
   name: 'resource',
   title: 'Resource',
   sortable: true,
-  sortDir: 'asc'
+  sortDir: SortDir.Asc
 }
 const tableFields: {
   name: string
@@ -87,7 +87,7 @@ describe('OcTable.sort', () => {
         ASC,
         {
           sortBy: tableFieldId.name,
-          sortDir: 'asc',
+          sortDir: SortDir.Asc,
           ariaSort: ASC
         }
       ],
@@ -95,7 +95,7 @@ describe('OcTable.sort', () => {
         DESC,
         {
           sortBy: tableFieldId.name,
-          sortDir: 'desc',
+          sortDir: SortDir.Desc,
           ariaSort: DESC
         }
       ],
@@ -103,7 +103,7 @@ describe('OcTable.sort', () => {
         NONE,
         {
           sortBy: tableFieldResource.name,
-          sortDir: 'asc',
+          sortDir: SortDir.Asc,
           ariaSort: NONE
         }
       ]
@@ -112,7 +112,7 @@ describe('OcTable.sort', () => {
       async (name, { sortBy, sortDir, ariaSort }) => {
         await wrapper.setProps({
           sortBy,
-          sortDir: sortDir as SortDir
+          sortDir: sortDir
         })
         expect(headers.at(1).attributes()['aria-sort']).toBe(ariaSort)
       }
