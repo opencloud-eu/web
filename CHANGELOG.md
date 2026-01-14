@@ -26,6 +26,12 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.33.0 [[#1812](https://github.com/opencloud-eu/web/pull/1812)]
+- chore(deps): update typescript-eslint monorepo to v8.53.0 [[#1816](https://github.com/opencloud-eu/web/pull/1816)]
+- chore(deps): update dependency @codemirror/view to v6.39.11 [[#1820](https://github.com/opencloud-eu/web/pull/1820)]
+- chore(deps): update node.js to v24.13.0 [[#1821](https://github.com/opencloud-eu/web/pull/1821)]
+- chore(deps): update dependency eslint-plugin-n to v17.23.2 [[#1822](https://github.com/opencloud-eu/web/pull/1822)]
+- chore(deps): update devdependencies (non-major) to v7.28.6 [[#1823](https://github.com/opencloud-eu/web/pull/1823)]
 - chore(deps): update devdependencies (non-major) [[#1783](https://github.com/opencloud-eu/web/pull/1783)]
 - chore(deps): update collabora/code docker tag to v25.04.8.1.1 [[#1761](https://github.com/opencloud-eu/web/pull/1761)]
 - fix(deps): update dependency globals to v17 [[#1811](https://github.com/opencloud-eu/web/pull/1811)]
