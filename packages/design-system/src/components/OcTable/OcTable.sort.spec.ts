@@ -1,5 +1,6 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import Table from './OcTable.vue'
+import { SortDir } from '../../helpers'
 
 const ASC = 'ascending'
 const DESC = 'descending'
@@ -9,13 +10,13 @@ const tableFieldId = {
   name: 'id',
   title: 'Id',
   sortable: true,
-  sortDir: 'desc'
+  sortDir: SortDir.Desc
 }
 const tableFieldResource = {
   name: 'resource',
   title: 'Resource',
   sortable: true,
-  sortDir: 'asc'
+  sortDir: SortDir.Asc
 }
 const tableFields: {
   name: string
@@ -86,7 +87,7 @@ describe('OcTable.sort', () => {
         ASC,
         {
           sortBy: tableFieldId.name,
-          sortDir: 'asc',
+          sortDir: SortDir.Asc,
           ariaSort: ASC
         }
       ],
@@ -94,7 +95,7 @@ describe('OcTable.sort', () => {
         DESC,
         {
           sortBy: tableFieldId.name,
-          sortDir: 'desc',
+          sortDir: SortDir.Desc,
           ariaSort: DESC
         }
       ],
@@ -102,7 +103,7 @@ describe('OcTable.sort', () => {
         NONE,
         {
           sortBy: tableFieldResource.name,
-          sortDir: 'asc',
+          sortDir: SortDir.Asc,
           ariaSort: NONE
         }
       ]
@@ -111,7 +112,7 @@ describe('OcTable.sort', () => {
       async (name, { sortBy, sortDir, ariaSort }) => {
         await wrapper.setProps({
           sortBy,
-          sortDir: sortDir as 'asc' | 'desc'
+          sortDir: sortDir
         })
         expect(headers.at(1).attributes()['aria-sort']).toBe(ariaSort)
       }
@@ -124,7 +125,7 @@ describe('OcTable.sort', () => {
         props: {
           fields: tableFields,
           sortBy: tableFieldId.name,
-          sortDir: tableFieldId.sortDir as 'asc' | 'desc',
+          sortDir: tableFieldId.sortDir as SortDir,
           data
         },
         global: {
@@ -171,7 +172,7 @@ describe('OcTable.sort', () => {
             fields: tableFields,
             data,
             sortBy: sortByOld,
-            sortDir: sortDirOld as 'asc' | 'desc'
+            sortDir: sortDirOld as SortDir
           },
           global: {
             plugins: [...defaultPlugins()],

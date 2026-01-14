@@ -8,6 +8,7 @@ export interface SortableItem {
   type?: string
 }
 
+/** @deprecated use SortDir from design-system instead */
 export enum SortDir {
   Desc = 'desc',
   Asc = 'asc'

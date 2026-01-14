@@ -229,14 +229,14 @@ export interface Emits {
   /**
    * @docs Emitted when the user has selected an option.
    */
-  (e: 'update:modelValue', value: unknown): void
+  (e: 'update:modelValue', value: any): void
 }
 
 export interface Slots {
   /**
    * @docs Slot for when an option is selected.
    */
-  'selected-option'?: () => unknown
+  'selected-option'?: (option: any) => any
 
   /**
    * @docs This component inherits all slots from `vue-select`. See https://vue-select.org/api/slots for more information.

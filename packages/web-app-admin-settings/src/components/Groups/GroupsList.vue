@@ -138,7 +138,6 @@ import {
   eventBus,
   Pagination,
   SideBarEventTopics,
-  SortDir,
   useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
@@ -156,7 +155,7 @@ import {
 import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'GroupsList',
@@ -211,7 +210,7 @@ export default defineComponent({
       }
       eventBus.publish(SideBarEventTopics.open)
     }
-    const rowClicked = (data: [Group, MouseEvent]) => {
+    const rowClicked = (data: [Group, MouseEvent | KeyboardEvent]) => {
       const resource = data[0]
       const eventData = data[1]
       const isCheckboxClicked =
@@ -430,8 +429,8 @@ export default defineComponent({
     }
   },
   methods: {
-    handleSort(event: { sortBy: keyof Group; sortDir: SortDir }) {
-      this.sortBy = event.sortBy
+    handleSort(event: { sortBy: string; sortDir: SortDir }) {
+      this.sortBy = event.sortBy as keyof Group
       this.sortDir = event.sortDir
     },
     getSelectGroupLabel(group: Group) {
