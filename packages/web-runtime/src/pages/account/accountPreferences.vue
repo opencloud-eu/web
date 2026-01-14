@@ -1,5 +1,5 @@
 <template>
-  <div id="account-preferences">
+  <div id="account-preferences" class="lg:max-w-5xl lg:mx-auto">
     <h1 class="text-lg mt-1" v-text="$gettext('Preferences')" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
