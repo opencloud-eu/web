@@ -6,6 +6,10 @@
 
 @JammingBen, @ScharfViktor, @michaelstingl, @saw-jan, @tammi-23
 
+### 🔒 Security
+
+- chore(deps): bump preact to v10.28.2 [security] [[#1814](https://github.com/opencloud-eu/web/pull/1814)]
+
 ### 🐛 Bug Fixes
 
 - fix(calendar): use type="a" for external documentation link [[#1801](https://github.com/opencloud-eu/web/pull/1801)]
