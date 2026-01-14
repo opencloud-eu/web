@@ -22,7 +22,10 @@ export const useFileActionsOpenWithDefault = () => {
       },
       route: (options) => {
         const defaultAction = getDefaultAction({ ...options, omitSystemActions: true })
-        return defaultAction!.route(options)
+        if (!defaultAction || !Object.hasOwn(defaultAction, 'route')) {
+          return
+        }
+        return defaultAction.route(options)
       },
       isVisible: (options) => {
         const defaultAction = getDefaultAction({ ...options, omitSystemActions: true })

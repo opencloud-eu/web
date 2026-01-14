@@ -247,7 +247,9 @@ export const useFileActions = () => {
   // available mime-types coming from the app-provider and existing actions
   const triggerDefaultAction = (options: GetFileActionsOptions) => {
     const action = getDefaultAction(options)
-    action.handler({ ...options })
+    if (action) {
+      action.handler({ ...options })
+    }
   }
 
   const getDefaultAction = (options: GetFileActionsOptions): Action | undefined => {
