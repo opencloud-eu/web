@@ -64,7 +64,7 @@
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
           @contextmenu="showContextMenuOnRightClick($event, resource)"
-          @file-name-clicked.stop="(e: MouseEvent) => fileNameClicked({ resource, event: e })"
+          @file-name-clicked.stop="(event) => fileNameClicked({ resource, event })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
