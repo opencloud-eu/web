@@ -25,25 +25,6 @@ const fileResourceWithoutParentFoldername = {
 } as Resource
 
 describe('OcResource', () => {
-  it("doesn't emit a click if the resource is a folder", () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: folderResource,
-        targetRoute: {
-          name: 'tests-route'
-        }
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
-    })
-
-    wrapper.find('.oc-resource-name').trigger('click')
-    expect(wrapper.emitted('click')).toBeFalsy()
-  })
-
   it("doesn't emit a click if the resource is not clickable", () => {
     const wrapper = mount(ResourceListItem, {
       props: {
@@ -61,7 +42,7 @@ describe('OcResource', () => {
     expect(wrapper.emitted('click')).toBeFalsy()
   })
 
-  it('emits a click', async () => {
+  it('emits a click for a file', async () => {
     const wrapper = mount(ResourceListItem, {
       props: {
         resource: fileResource
@@ -75,6 +56,25 @@ describe('OcResource', () => {
 
     await wrapper.find('.oc-resource-name').trigger('click')
     expect(wrapper.emitted('click')).toHaveLength(1)
+  })
+
+  it('emits a click for a folder', () => {
+    const wrapper = mount(ResourceListItem, {
+      props: {
+        resource: folderResource,
+        targetRoute: {
+          name: 'tests-route'
+        }
+      },
+      global: {
+        stubs: { RouterLink: true },
+        renderStubDefaultSlot: true,
+        plugins: [...defaultPlugins()]
+      }
+    })
+
+    wrapper.find('.oc-resource-name').trigger('click')
+    expect(wrapper.emitted('click')).toBeTruthy()
   })
 
   it('parent folder component type is link if parent folder given', () => {

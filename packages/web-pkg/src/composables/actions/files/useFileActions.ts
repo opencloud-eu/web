@@ -98,14 +98,16 @@ export const useFileActions = () => {
       id: 'global.files.default-actions',
       extensionType: 'action'
     })
-    return contextActionExtensions.map((extension) => extension.action)
+    return (contextActionExtensions || []).map((extension) => extension.action)
   })
 
   const extensionActions = computed(() => {
-    return requestExtensions<ActionExtension>({
-      id: 'global.files.context-actions',
-      extensionType: 'action'
-    }).map((e) => e.action)
+    return (
+      requestExtensions<ActionExtension>({
+        id: 'global.files.context-actions',
+        extensionType: 'action'
+      }) || []
+    ).map((e) => e.action)
   })
 
   const editorActions = computed(() => {

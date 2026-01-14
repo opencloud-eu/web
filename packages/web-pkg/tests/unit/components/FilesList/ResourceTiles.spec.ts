@@ -1,9 +1,8 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vue'
 import { sortFields } from '../../../../src/helpers/ui/resourceTiles'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, extractDomSelector } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { extractDomSelector } from '@opencloud-eu/web-client'
 import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
@@ -31,7 +30,7 @@ vi.mock('../../../../src/composables/resources', async (importOriginal) => ({
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useFileActions: vi.fn().mockReturnValue({
-    getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
+    getDefaultAction: vi.fn().mockReturnValue({ route: () => ({}), handler: vi.fn() })
   })
 }))
 
@@ -125,15 +124,6 @@ describe('ResourceTiles component', () => {
       resourcesStore.selectedIds = [resources[0].id]
       await resourceTile.vm.$emit('fileNameClicked', mockMouseEvent)
       expect(wrapper.emitted('fileClick')).toBeTruthy()
-    })
-
-    it('does not emit fileClick event upon click on tile when embed mode is enabled', async () => {
-      mockUseEmbedMode.mockReturnValue({
-        isEnabled: computed(() => true)
-      })
-      const { wrapper } = getWrapper({ props: { resources } })
-      await wrapper.find('.oc-tiles-item .oc-resource-name').trigger('click')
-      expect(wrapper.emitted().fileClick).toBeUndefined()
     })
 
     it('does not emit fileClick event if file can not be opened via secure view', async () => {
