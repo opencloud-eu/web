@@ -26,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @babel/eslint-parser to v7.28.6 [[#1815](https://github.com/opencloud-eu/web/pull/1815)]
 - fix(deps): update dependency @sentry/vue to v10.33.0 [[#1812](https://github.com/opencloud-eu/web/pull/1812)]
 - chore(deps): update typescript-eslint monorepo to v8.53.0 [[#1816](https://github.com/opencloud-eu/web/pull/1816)]
 - chore(deps): update dependency @codemirror/view to v6.39.11 [[#1820](https://github.com/opencloud-eu/web/pull/1820)]
