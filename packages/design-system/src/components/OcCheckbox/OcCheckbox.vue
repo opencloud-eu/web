@@ -80,7 +80,7 @@ const {
 
 const emit = defineEmits<Emits>()
 
-const model = defineModel<boolean | unknown[]>()
+const model = defineModel<boolean>()
 
 const isChecked = computed(() => {
   const val = unref(model)

@@ -78,7 +78,7 @@ const {
 }>()
 
 const emit = defineEmits<{
-  (e: 'removePublicLink', linkShare: LinkShare): void
+  (e: 'removePublicLink', linkShare: { link: LinkShare }): void
   (e: 'updateLink', payload: { linkShare: LinkShare; options: { type: SharingLinkType } }): void
 }>()
 

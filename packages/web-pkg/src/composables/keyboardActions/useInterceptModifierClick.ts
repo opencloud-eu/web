@@ -2,7 +2,10 @@ import { eventBus } from '../../services'
 import type { Resource } from '@opencloud-eu/web-client'
 
 export function useInterceptModifierClick() {
-  const interceptModifierClick = (event: MouseEvent | undefined, resource: Resource): boolean => {
+  const interceptModifierClick = (
+    event: MouseEvent | KeyboardEvent | undefined,
+    resource: Resource
+  ): boolean => {
     if (!event || !resource) {
       return false
     }

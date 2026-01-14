@@ -62,7 +62,13 @@ export const useResourceViewHelpers = ({
   }
 
   // tr or tile containing the file clicked
-  const fileContainerClicked = ({ resource, event }: { resource: Resource; event: MouseEvent }) => {
+  const fileContainerClicked = ({
+    resource,
+    event
+  }: {
+    resource: Resource
+    event: MouseEvent | KeyboardEvent
+  }) => {
     if (isResourceDisabled(resource)) {
       return
     }
@@ -107,7 +113,13 @@ export const useResourceViewHelpers = ({
   }
 
   // file name link clicked
-  const fileNameClicked = ({ resource, event }: { resource: Resource; event: MouseEvent }) => {
+  const fileNameClicked = ({
+    resource,
+    event
+  }: {
+    resource: Resource
+    event: MouseEvent | KeyboardEvent
+  }) => {
     if (interceptModifierClick(event, resource)) {
       return
     }
@@ -131,7 +143,13 @@ export const useResourceViewHelpers = ({
   }
 
   // checkbox for a single file clicked
-  const fileCheckboxClicked = ({ resource, event }: { resource: Resource; event: MouseEvent }) => {
+  const fileCheckboxClicked = ({
+    resource,
+    event
+  }: {
+    resource: Resource
+    event: MouseEvent | KeyboardEvent
+  }) => {
     if (interceptModifierClick(event, resource)) {
       return
     }

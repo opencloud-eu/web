@@ -59,7 +59,7 @@
               class="w-full"
               justify-content="left"
               :class="['new-file-btn-' + fileAction.ext]"
-              @click="fileAction.handler"
+              @click="() => fileAction.handler()"
             >
               <resource-icon
                 :resource="getIconResource(fileAction)"
@@ -154,7 +154,7 @@
             appearance="raw"
             justify-content="left"
             :disabled="isActionDisabled(action)"
-            @click="action.handler"
+            @click="() => action.handler()"
           >
             <oc-icon :name="getActionIcon(action)" fill-type="line" />
             <span v-text="action.label()"
@@ -271,10 +271,14 @@ const pasteFileAction = () => {
 }
 
 const { actions: createNewFolder } = useFileActionsCreateNewFolder({ space: computedSpace })
-const createNewFolderAction = computed(() => unref(createNewFolder)[0].handler)
+const createNewFolderAction = () => {
+  return unref(createNewFolder)[0].handler()
+}
 
 const { actions: createNewShortcut } = useFileActionsCreateNewShortcut({ space: computedSpace })
-const createNewShortcutAction = computed(() => unref(createNewShortcut)[0].handler)
+const createNewShortcutAction = () => {
+  return unref(createNewShortcut)[0].handler()
+}
 
 const { actions: createNewFileActions } = useFileActionsCreateNewFile({ space: computedSpace })
 

@@ -4,12 +4,11 @@
 </template>
 
 <script setup lang="ts">
-import { Emoji } from 'emoji-mart'
 import { ref } from 'vue'
 
-const selectedEmoji = ref<Emoji>()
+const selectedEmoji = ref<string>()
 
-const updateSelectedEmoji = (emoji: Emoji) => {
+const updateSelectedEmoji = (emoji: string) => {
   selectedEmoji.value = emoji
 }
 </script>

@@ -275,7 +275,6 @@ import {
 
 import {
   FolderViewModeConstants,
-  SortDir,
   useActiveLocation,
   useAuthStore,
   useCanBeOpenedWithSecureView,
@@ -313,7 +312,7 @@ import { createLocationCommon, isLocationTrashActive } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
 import { OcButton, OcSpinner, OcTable, OcTableTr } from '@opencloud-eu/design-system/components'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAvatar } from '../Avatars'
