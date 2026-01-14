@@ -39,7 +39,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
     <li class="context-menu"><button type="button" aria-label="Download" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
-        <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Download</span></span>
+        <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-left">Download</span></span>
         <!--v-if-->
       </button></li>
     <li class="context-menu px-2"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full flex justify-between" id="oc-files-context-actions-actions-toggle-4" aria-expanded="false">
@@ -95,7 +95,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
     <li class="context-menu"><button type="button" aria-label="Details" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
         <!--v-if-->
         <!-- @slot Content of the button -->
-        <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span>Details</span></span>
+        <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-left">Details</span></span>
         <!--v-if-->
       </button></li>
   </ul>
