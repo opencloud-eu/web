@@ -121,7 +121,7 @@ export const useActionExtensionCreateFromTemplate = (
   }
   return {
     id: 'com.github.opencloud-eu.web.external.action.create-from-template',
-    extensionPointIds: ['global.files.context-actions', 'global.files.default-actions'],
+    extensionPointIds: ['global.files.default-actions'],
     type: 'action',
     action
   }
