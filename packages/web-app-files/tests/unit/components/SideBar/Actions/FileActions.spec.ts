@@ -50,7 +50,7 @@ describe('FileActions', () => {
       it('renders action handlers as clickable elements', async () => {
         vi.mocked(useFileActions).mockImplementation(() =>
           mock<ReturnType<typeof useFileActions>>({
-            getAllAvailableActions: () => Object.values(fileActions)
+            getAllOpenWithActions: () => Object.values(fileActions)
           })
         )
 

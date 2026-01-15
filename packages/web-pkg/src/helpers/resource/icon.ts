@@ -216,6 +216,10 @@ const fileIcon = {
   board: {
     icon: { name: 'resource-type-board' },
     extensions: ['ggs']
+  },
+  notes: {
+    icon: { name: 'resource-type-sticky-note', color: 'var(--oc-color-icon-notes)' },
+    extensions: ['ocnb']
   }
 }
 
