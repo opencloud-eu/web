@@ -90,7 +90,6 @@ export interface Capabilities {
       'check-for-updates'?: boolean
       'support-sse'?: boolean
       'support-radicale'?: boolean
-      'support-url-signing'?: boolean
       'webdav-root'?: string
     }
     dav: {
