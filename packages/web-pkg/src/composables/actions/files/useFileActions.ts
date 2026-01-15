@@ -40,9 +40,6 @@ import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
 import { RouteRecordName } from 'vue-router'
 
-export const EDITOR_MODE_EDIT = 'edit'
-export const EDITOR_MODE_CREATE = 'create'
-
 export interface GetFileActionsOptions extends FileActionOptions {
   omitSystemActions?: boolean
 }
@@ -93,21 +90,18 @@ export const useFileActions = () => {
     ...unref(favoriteActions)
   ])
 
-  const defaultExtensionActions = computed<FileAction[]>(() => {
-    const contextActionExtensions = requestExtensions<ActionExtension>({
-      id: 'global.files.default-actions',
-      extensionType: 'action'
-    })
-    return (contextActionExtensions || []).map((extension) => extension.action)
-  })
-
-  const extensionActions = computed(() => {
+  const extensionsContextActions = computed(() => {
     return (
       requestExtensions<ActionExtension>({
         id: 'global.files.context-actions',
         extensionType: 'action'
       }) || []
-    ).map((e) => e.action)
+    )
+      .map((e) => e.action)
+      .filter(
+        (action) =>
+          isNil(action.category) || action.category === 'context' || action.category === 'actions'
+      )
   })
 
   const editorActions = computed(() => {
@@ -264,7 +258,7 @@ export const useFileActions = () => {
     const filterCallback = (action: FileAction) => action.isVisible(options)
 
     const primaryActions = [
-      ...unref(defaultExtensionActions),
+      ...unref(extensionsContextActions),
       ...unref(editorActions),
       ...unref(navigateActions)
     ]
@@ -275,15 +269,7 @@ export const useFileActions = () => {
       ? []
       : unref(systemActions).filter(filterCallback)
 
-    return [
-      ...primaryActions,
-      ...secondaryActions,
-      ...unref(extensionActions).filter(
-        (a) =>
-          a.isVisible(options as FileActionOptions) &&
-          (a.category === 'actions' || isNil(a.category))
-      )
-    ]
+    return [...primaryActions, ...secondaryActions]
   }
 
   return {

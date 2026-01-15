@@ -115,10 +115,7 @@ export default defineComponent({
     })
 
     const menuItemsContextDrop = computed(() => {
-      return [
-        ...getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true }),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'context')
-      ]
+      return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
