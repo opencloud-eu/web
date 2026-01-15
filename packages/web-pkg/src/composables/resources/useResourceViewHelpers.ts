@@ -15,7 +15,6 @@ import { useGetMatchingSpace } from '../spaces'
 import { useResourceViewDrag } from './useResourceViewDrag'
 import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
 import { useFileActions } from '../actions'
-import { useFolderLink } from '../folderLink'
 import { useResourceViewContextMenu } from './useResourceViewContextMenu'
 import { useResourceViewSelection } from './useResourceViewSelection'
 
@@ -46,8 +45,6 @@ export const useResourceViewHelpers = ({
     isFilePicker,
     postMessage
   } = useEmbedMode()
-
-  const { getFolderLink } = useFolderLink({ space })
 
   const selectedResources = computed(() => {
     return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))
@@ -203,10 +200,6 @@ export const useResourceViewHelpers = ({
   }
 
   const getResourceLink = (resource: Resource) => {
-    if (resource.isFolder) {
-      return getFolderLink(resource)
-    }
-
     let matchingSpace = unref(space)
     if (!matchingSpace) {
       matchingSpace = getMatchingSpace(resource)
