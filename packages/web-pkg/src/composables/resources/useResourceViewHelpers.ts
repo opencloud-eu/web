@@ -30,7 +30,7 @@ export const useResourceViewHelpers = ({
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
   selectedIds: Ref<string[]>
-  emit: (...args: any[]) => void
+  emit: ReturnType<typeof defineEmits>
 }) => {
   const resourcesStore = useResourcesStore()
   const router = useRouter()

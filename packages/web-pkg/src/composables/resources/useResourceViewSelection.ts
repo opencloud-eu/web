@@ -12,7 +12,7 @@ export const useResourceViewSelection = ({
   resources: Ref<Resource[]>
   disabledResources: Ref<string[]>
   selectedIds: Ref<string[]>
-  emit: (...args: any[]) => void
+  emit: ReturnType<typeof defineEmits>
 }) => {
   const eventBus = useEventBus()
   const { $gettext } = useGettext()

@@ -14,7 +14,7 @@ export const useResourceViewContextMenu = ({
 }: {
   isResourceSelected: (resource: Resource) => boolean
   isResourceDisabled: (resource: Resource) => boolean
-  emit: (...args: any[]) => void
+  emit: ReturnType<typeof defineEmits>
 }) => {
   const eventBus = useEventBus()
   const { isMobile } = useIsMobile()
