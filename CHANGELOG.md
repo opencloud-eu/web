@@ -30,7 +30,9 @@
 
 ### 📦️ Dependencies
 
-- fix(deps): update dependency @sentry/vue to v10.34.0 [[#1827](https://github.com/opencloud-eu/web/pull/1827)]
+- chore(deps): update dependency ejs to v4 [[#1828](https://github.com/opencloud-eu/web/pull/1828)]
+- chore(deps): update traefik docker tag to v3.6.7 [[#1825](https://github.com/opencloud-eu/web/pull/1825)]
+- fix(deps): update dependency @sentry/vue to v10.34.0 - autoclosed [[#1827](https://github.com/opencloud-eu/web/pull/1827)]
 - chore(deps): update devdependencies (non-major) [[#1826](https://github.com/opencloud-eu/web/pull/1826)]
 - chore(deps): update dependency @babel/eslint-parser to v7.28.6 [[#1815](https://github.com/opencloud-eu/web/pull/1815)]
 - fix(deps): update dependency @sentry/vue to v10.33.0 [[#1812](https://github.com/opencloud-eu/web/pull/1812)]
