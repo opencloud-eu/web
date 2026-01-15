@@ -6,6 +6,7 @@ import get from 'lodash-es/get'
 
 export interface SortableItem {
   type?: string
+  extension?: string
 }
 
 /** @deprecated use SortDir from design-system instead */
@@ -142,10 +143,11 @@ export const sortHelper = <T extends SortableItem>(
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'base', numeric: true })
 
   if (sortBy === 'name') {
-    const folders = [...items.filter((i) => i.type === 'folder')].sort((a, b) =>
+    const isFolder = (item: T) => item.type === 'folder' && !item.extension
+    const folders = [...items.filter((i) => isFolder(i))].sort((a, b) =>
       compare(a, b, collator, sortBy, sortDir, sortable)
     )
-    const files = [...items.filter((i) => i.type !== 'folder')].sort((a, b) =>
+    const files = [...items.filter((i) => !isFolder(i))].sort((a, b) =>
       compare(a, b, collator, sortBy, sortDir, sortable)
     )
     if (sortDir === SortDir.Asc) {

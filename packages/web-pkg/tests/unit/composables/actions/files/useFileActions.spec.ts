@@ -1,11 +1,11 @@
 import { mock } from 'vitest-mock-extended'
-import { useFileActions } from '../../../../../src/composables/actions'
+import { GetFileActionsOptions, useFileActions } from '../../../../../src/composables/actions'
 import {
   defaultComponentMocks,
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { describe } from 'vitest'
 import { Resource } from '@opencloud-eu/web-client'
 
@@ -14,12 +14,27 @@ vi.mock('../../../../../src/composables/embedMode', () => ({
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode())
 }))
 
+const actionOptions: GetFileActionsOptions = {
+  resources: [
+    mock<Resource>({
+      id: '1',
+      canDownload: () => true,
+      mimeType: 'text/plain',
+      extension: 'txt'
+    })
+  ],
+  space: null,
+  omitSystemActions: true
+}
+
 describe('fileActions', () => {
-  describe('computed property "editorActions"', () => {
+  describe('getAllOpenWithActions', () => {
     it('should provide a list of editors', () => {
       getWrapper({
-        setup: ({ editorActions }) => {
-          expect(unref(editorActions).length).toEqual(2)
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
+          expect(editorActions.length).toEqual(2)
         }
       })
     })
@@ -28,31 +43,33 @@ describe('fileActions', () => {
         isEnabled: computed(() => true)
       })
       getWrapper({
-        setup: ({ editorActions }) => {
-          expect(unref(editorActions).length).toBeFalsy()
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
+          expect(editorActions.length).toBeFalsy()
         }
       })
     })
   })
   describe('secure view context', () => {
-    describe('computed property "editorActions"', () => {
+    describe('getAllOpenWithActions', () => {
       it('only displays editors that support secure view', () => {
         getWrapper({
-          setup: ({ editorActions }) => {
-            const secureViewResource = mock<Resource>({
-              id: '1',
-              canDownload: () => false,
-              mimeType: 'text/txt',
-              extension: 'txt'
+          setup: ({ getAllOpenWithActions }) => {
+            const actions = getAllOpenWithActions({
+              ...actionOptions,
+              resources: [
+                mock<Resource>({
+                  id: '1',
+                  canDownload: () => false,
+                  mimeType: 'text/plain',
+                  extension: 'txt'
+                })
+              ]
             })
-            const actions = unref(editorActions)
-            expect(actions.length).toEqual(2)
-            expect(
-              actions[0].isVisible({ resources: [secureViewResource], space: null })
-            ).toBeFalsy()
-            expect(
-              actions[1].isVisible({ resources: [secureViewResource], space: null })
-            ).toBeTruthy()
+            const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
+            expect(editorActions.length).toEqual(1)
+            expect(editorActions[0].name).toEqual('editor-external')
           }
         })
       })
@@ -108,7 +125,7 @@ function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useFileActi
                 {
                   app: 'external',
                   label: 'Open in Collabora',
-                  mimeType: 'text/txt',
+                  mimeType: 'text/plain',
                   routeName: 'external-apps',
                   icon: 'https://host.docker.internal:9980/favicon.ico',
                   name: 'Collabora',

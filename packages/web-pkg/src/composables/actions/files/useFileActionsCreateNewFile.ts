@@ -85,6 +85,9 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
               space: unref(space),
               currentFolder: unref(currentFolder)
             })
+          } else if (appFileExtension.type === 'folder') {
+            const path = join(unref(currentFolder).path, fileName)
+            resource = await (clientService.webdav as WebDAV).createFolder(unref(space), { path })
           } else {
             const path = join(unref(currentFolder).path, fileName)
             resource = await (clientService.webdav as WebDAV).putFileContents(unref(space), {

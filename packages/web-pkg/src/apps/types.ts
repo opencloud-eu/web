@@ -57,6 +57,7 @@ export type AppConfigObject = Record<string, any>
 export interface ApplicationFileExtension {
   app?: string
   extension?: string
+  type?: 'file' | 'folder'
   createFileHandler?: (arg: {
     fileName: string
     space: SpaceResource

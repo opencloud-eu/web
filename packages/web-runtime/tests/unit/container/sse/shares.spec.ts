@@ -213,6 +213,7 @@ describe('shares events', () => {
     it('calls "upsertResource" when resource has been shared and current route equals "files-shares-with-me"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
+        name: 'trololo',
         remoteItem: {
           id: 'sharedResource',
           permissions: []
@@ -240,6 +241,7 @@ describe('shares events', () => {
     it('calls "upsertResource" when resource has been shared and current route equals "files-shares-with-others"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
+        name: 'wololo',
         permissions: []
       })
       const mocks = getMocks({
@@ -311,6 +313,7 @@ describe('shares events', () => {
     it('calls "upsertResource" when share has been updated and current route equals "files-shares-with-me"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
+        name: 'humpa',
         remoteItem: {
           id: 'sharedResource',
           permissions: []
@@ -517,6 +520,7 @@ describe('shares events', () => {
     it('calls "upsertResource" when resource has been shared via link and current route equals "files-shares-via-link"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
+        name: 'lumpa',
         permissions: []
       })
       const mocks = getMocks({

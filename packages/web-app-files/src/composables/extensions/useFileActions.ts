@@ -4,11 +4,7 @@ import {
   useFileActionsOpenShortcut,
   useFileActionsShowShares
 } from '@opencloud-eu/web-pkg'
-import {
-  contextActionsExtensionPoint,
-  defaultActionsExtensionPoint,
-  quickActionsExtensionPoint
-} from '../../extensionPoints'
+import { contextActionsExtensionPoint, quickActionsExtensionPoint } from '../../extensionPoints'
 import { unref } from 'vue'
 
 export const useFileActions = (): ActionExtension[] => {
@@ -19,7 +15,7 @@ export const useFileActions = (): ActionExtension[] => {
   return [
     {
       id: 'com.github.opencloud-eu.web.files.context-action.open-shortcut',
-      extensionPointIds: [contextActionsExtensionPoint.id, defaultActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: unref(openShortcutActions)[0]
     },

@@ -20,14 +20,14 @@
         data-testid="action-img"
         :src="action.img"
         alt=""
-        class="oc-icon oc-icon-m"
+        class="oc-icon oc-icon-m w-[22px]"
       />
       <oc-image
         v-else-if="hasExternalImageIcon"
         data-testid="action-img"
         :src="actionIcon"
         alt=""
-        class="oc-icon oc-icon-m"
+        class="oc-icon oc-icon-m w-[22px]"
       />
       <oc-icon
         v-else-if="actionIcon"
@@ -41,7 +41,7 @@
         class="oc-files-context-action-label flex flex-col"
         data-testid="action-label"
       >
-        <span v-text="action.label(actionOptions)" />
+        <span class="text-left" v-text="action.label(actionOptions)" />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"

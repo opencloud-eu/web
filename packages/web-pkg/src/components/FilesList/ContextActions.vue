@@ -20,7 +20,7 @@ import {
   useFileActionsEnableSync,
   useFileActionsFavorite,
   useFileActionsMove,
-  useFileActionsNavigate,
+  useFileActionsOpenWithDefault,
   useFileActionsPaste,
   useFileActionsRename,
   useFileActionsRestore,
@@ -43,9 +43,10 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { editorActions, defaultEditorActions } = useFileActions()
+    const { getAllOpenWithActions } = useFileActions()
     const { $gettext } = useGettext()
 
+    const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
     const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
@@ -56,7 +57,6 @@ export default defineComponent({
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: moveActions } = useFileActionsMove()
-    const { actions: navigateActions } = useFileActionsNavigate()
     const { actions: pasteActions } = useFileActionsPaste()
     const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
@@ -109,16 +109,13 @@ export default defineComponent({
     )
 
     const menuItemsContext = computed(() => {
-      return [...unref(navigateActions), ...unref(defaultEditorActions)]
+      return unref(openWithDefaultActions)
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
     const menuItemsContextDrop = computed(() => {
-      return [
-        ...unref(editorActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'context')
-      ]
+      return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })

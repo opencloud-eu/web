@@ -2,7 +2,7 @@ import { useFileActions } from './files'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 export function useOpenWithDefaultApp() {
-  const { getDefaultAction } = useFileActions()
+  const { triggerDefaultAction } = useFileActions()
 
   const openWithDefaultApp = ({
     space,
@@ -19,10 +19,7 @@ export function useOpenWithDefaultApp() {
       resources: [resource],
       space: space
     }
-    const defaultEditorAction = getDefaultAction({ ...fileActionsOptions, omitSystemActions: true })
-    if (defaultEditorAction) {
-      defaultEditorAction.handler(fileActionsOptions)
-    }
+    triggerDefaultAction({ ...fileActionsOptions, omitSystemActions: true })
   }
 
   return { openWithDefaultApp }
