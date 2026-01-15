@@ -1,5 +1,4 @@
 export * from './cache'
-export * from './folderLink'
 export * from './resource'
 export * from './router'
 export * from './share'

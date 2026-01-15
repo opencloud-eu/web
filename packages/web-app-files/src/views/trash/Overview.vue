@@ -43,7 +43,6 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
-            :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           >
@@ -86,7 +85,6 @@ import {
   AppLoadingSpinner,
   createFileRouteOptions,
   createLocationTrash,
-  CreateTargetRouteOptions,
   defaultFuseOptions,
   FileSideBar,
   NoContentMessage,
@@ -106,7 +104,6 @@ import {
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
 import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
@@ -262,10 +259,6 @@ const getTrashLink = (space: SpaceResource) =>
   createLocationTrash('files-trash-generic', {
     ...createFileRouteOptions(space)
   })
-
-const resourceTargetRouteCallback = ({
-  resource
-}: CreateTargetRouteOptions): RouteLocationNamedRaw => getTrashLink(resource as SpaceResource)
 
 let markInstance: Mark | undefined
 onMounted(async () => {

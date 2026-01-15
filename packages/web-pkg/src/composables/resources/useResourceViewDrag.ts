@@ -10,7 +10,7 @@ export const useResourceViewDrag = ({
 }: {
   selectedIds: Ref<string[]>
   selectedResources: Ref<Resource[]>
-  emit: (...args: any[]) => void
+  emit: ReturnType<typeof defineEmits>
 }) => {
   const resourcesStore = useResourcesStore()
 
