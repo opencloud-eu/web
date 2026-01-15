@@ -11,8 +11,8 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceTable, SortDir } from '@opencloud-eu/web-pkg'
-
+import { ResourceTable } from '@opencloud-eu/web-pkg'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/composables')
