@@ -144,7 +144,6 @@ const applyLink = () => {
     chain.insertContent(`<a href="${url}">${url}</a>`).run()
   }
 
-  console.log(editor.value.getHTML())
   showLinkModal.value = false
   linkSelection.value = null
 }
