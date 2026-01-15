@@ -1,10 +1,14 @@
 # Changelog
 
-## [4.4.0](https://github.com/opencloud-eu/web/releases/tag/v4.4.0) - 2026-01-15
+## [5.0.0](https://github.com/opencloud-eu/web/releases/tag/v5.0.0) - 2026-01-15
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @michaelstingl, @saw-jan, @tammi-23
+@JammingBen, @ScharfViktor, @kulmann, @michaelstingl, @saw-jan, @tammi-23
+
+### 💥 Breaking changes
+
+- feat: folder editor apps [[#1817](https://github.com/opencloud-eu/web/pull/1817)]
 
 ### 🔒 Security
 
@@ -26,6 +30,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.34.0 [[#1827](https://github.com/opencloud-eu/web/pull/1827)]
+- chore(deps): update devdependencies (non-major) [[#1826](https://github.com/opencloud-eu/web/pull/1826)]
 - chore(deps): update dependency @babel/eslint-parser to v7.28.6 [[#1815](https://github.com/opencloud-eu/web/pull/1815)]
 - fix(deps): update dependency @sentry/vue to v10.33.0 [[#1812](https://github.com/opencloud-eu/web/pull/1812)]
 - chore(deps): update typescript-eslint monorepo to v8.53.0 [[#1816](https://github.com/opencloud-eu/web/pull/1816)]
