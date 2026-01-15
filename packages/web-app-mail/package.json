@@ -25,9 +25,10 @@
     "luxon": "^3.5.0"
   },
   "dependencies": {
-    "@tiptap/extension-image": "^3.10.7",
-    "@tiptap/extension-link": "^3.10.7",
-    "@tiptap/starter-kit": "^3.10.7",
+    "@tiptap/extension-image": "^3.15.1",
+    "@tiptap/extension-link": "^3.15.1",
+    "@tiptap/extension-underline": "^3.15.3",
+    "@tiptap/starter-kit": "^3.15.1",
     "@tiptap/vue-3": "^3.10.7",
     "ical.js": "^2.2.1"
   }
