@@ -1,6 +1,7 @@
 import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
 import {
+  logger,
   AuthStore,
   ClientService,
   UserStore,
@@ -20,6 +21,7 @@ import {
 import { unref } from 'vue'
 import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
+import { sha256 } from '@noble/hashes/sha2.js'
 import { PublicLinkType } from '@opencloud-eu/web-client'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
 import { isSilentRedirectRoute } from '../../helpers/silentRedirect'
@@ -67,7 +69,6 @@ export class AuthService implements AuthServiceInterface {
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
   }
-
   /**
    * Initialize publicLinkContext and userContext (whichever is available, respectively).
    *
@@ -142,7 +143,7 @@ export class AuthService implements AuthServiceInterface {
       if (!this.userManager.areEventHandlersRegistered) {
         this.userManager.events.addAccessTokenExpired((...args): void => {
           const handleExpirationError = () => {
-            console.error('AccessToken Expired：', ...args)
+            logger.error('AccessToken Expired：', ...args)
             this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
           }
 
@@ -151,7 +152,7 @@ export class AuthService implements AuthServiceInterface {
         })
 
         this.userManager.events.addAccessTokenExpiring((...args) => {
-          console.debug('AccessToken Expiring：', ...args)
+          logger.debug('AccessToken Expiring：', ...args)
         })
 
         this.userManager.events.addUserLoaded(async (user) => {
@@ -160,19 +161,25 @@ export class AuthService implements AuthServiceInterface {
             expiryThreshold: this.accessTokenExpiryThreshold
           })
 
-          console.debug(
-            `New User Loaded. access_token： ${user.access_token}, refresh_token: ${user.refresh_token}`
-          )
+          logger.debug(`User Loaded`, {
+            ...(user.access_token && {
+              'access_token (sha256)': sha256(Buffer.from(user.access_token)).slice(0, 8)
+            }),
+            ...(user.refresh_token && {
+              'refresh_token (sha256)': sha256(Buffer.from(user.refresh_token)).slice(0, 8)
+            })
+          })
+
           try {
             await this.userManager.updateContext(user.access_token, fetchUserData)
           } catch (e) {
-            console.error(e)
+            logger.error(e)
             await this.handleAuthError(unref(this.router.currentRoute))
           }
         })
 
         this.userManager.events.addUserUnloaded(() => {
-          console.log('user unloaded…')
+          logger.info('user unloaded…')
           this.tokenTimerWorker?.resetTokenTimer()
           this.resetStateAfterUserLogout()
 
@@ -193,7 +200,7 @@ export class AuthService implements AuthServiceInterface {
           }
         })
         this.userManager.events.addSilentRenewError(async (error) => {
-          console.error('Silent Renew Error：', error)
+          logger.error('Silent Renew Error：', error)
           await this.handleAuthError(unref(this.router.currentRoute))
         })
 
@@ -213,7 +220,7 @@ export class AuthService implements AuthServiceInterface {
       // no userLoaded event and no signInCallback gets triggered
       const accessToken = await this.userManager.getAccessToken()
       if (accessToken) {
-        console.debug('[authService:initializeContext] - updating context with saved access_token')
+        logger.debug('[authService:initializeContext] - updating context with saved access_token')
 
         try {
           await this.userManager.updateContext(accessToken, fetchUserData)
@@ -228,7 +235,7 @@ export class AuthService implements AuthServiceInterface {
             this.tokenTimerInitialized = true
           }
         } catch (e) {
-          console.error(e)
+          logger.error(e)
           await this.handleAuthError(unref(this.router.currentRoute))
         }
       }
@@ -254,11 +261,11 @@ export class AuthService implements AuthServiceInterface {
         this.configStore.options.embed.delegateAuthentication &&
         accessToken
       ) {
-        console.debug('[authService:signInCallback] - setting access_token and fetching user')
+        logger.debug('[authService:signInCallback] - setting access_token and fetching user')
         await this.userManager.updateContext(accessToken, true)
 
         // Setup a listener to handle token refresh
-        console.debug('[authService:signInCallback] - adding listener to update-token event')
+        logger.debug('[authService:signInCallback] - adding listener to update-token event')
         window.addEventListener('message', this.handleDelegatedTokenUpdate)
       } else {
         await this.userManager.signinRedirectCallback(this.buildSignInCallbackUrl())
@@ -270,7 +277,7 @@ export class AuthService implements AuthServiceInterface {
         ...(redirectRoute.query && { query: redirectRoute.query })
       })
     } catch (e) {
-      console.warn('error during authentication:', e)
+      logger.warn('error during authentication:', e)
       return this.handleAuthError(unref(this.router.currentRoute))
     }
   }
@@ -382,7 +389,7 @@ export class AuthService implements AuthServiceInterface {
       return
     }
 
-    console.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
+    logger.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
     return this.userManager.updateContext(event.data, false)
   }
 }
