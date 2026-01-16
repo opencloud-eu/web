@@ -97,7 +97,6 @@
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
-          :resource-dom-selector="resourceDomSelector"
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
@@ -192,7 +191,6 @@ import {
   useKeyboardFileMouseActions,
   useKeyboardFileActions
 } from '../../composables/keyboardActions'
-import { extractDomSelector } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
 
@@ -393,14 +391,6 @@ const breadcrumbs = computed(() => {
     }
   ]
 })
-
-const resourceDomSelector = ({ id, remoteItemId }: Resource) => {
-  let selectorStr = id.toString()
-  if (remoteItemId) {
-    selectorStr += remoteItemId
-  }
-  return extractDomSelector(selectorStr)
-}
 
 const itemCount = computed(() => {
   return unref(totalResourcesCount).files + unref(totalResourcesCount).folders
