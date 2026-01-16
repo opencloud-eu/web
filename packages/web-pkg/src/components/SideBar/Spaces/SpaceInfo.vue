@@ -11,7 +11,7 @@
       <div>
         <h3
           data-testid="space-info-name"
-          class="font-semibold m-0 text-base"
+          class="font-semibold m-0 text-base break-all"
           v-text="resource.name"
         />
         <span data-testid="space-info-subtitle" v-text="resource.description" />
