@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v20.3.1 [[#1834](https://github.com/opencloud-eu/web/pull/1834)]
 - chore(deps): update dependency ejs to v4 [[#1828](https://github.com/opencloud-eu/web/pull/1828)]
 - chore(deps): update traefik docker tag to v3.6.7 [[#1825](https://github.com/opencloud-eu/web/pull/1825)]
 - fix(deps): update dependency @sentry/vue to v10.34.0 - autoclosed [[#1827](https://github.com/opencloud-eu/web/pull/1827)]
