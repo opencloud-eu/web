@@ -166,6 +166,7 @@ export function buildIncomingShareResource({
     isMounted: () => false,
     isReceivedShare: () => true,
     canShare: () => false,
+    isShareRoot: () => true,
     getDomSelector: () => extractDomSelector(driveItem.id)
   }
 
@@ -225,6 +226,7 @@ export function buildOutgoingShareResource({
     canBeDeleted: () => true,
     canEditTags: () => true,
     isMounted: () => false,
+    isShareRoot: () => false,
     isReceivedShare: () => true,
     canShare: () => true,
     getDomSelector: () => extractDomSelector(driveItem.id)

@@ -254,6 +254,7 @@ export function buildDeletedResource(resource: WebDavResponseResource): TrashRes
     isMounted: () => false,
     isReceivedShare: () => false,
     hasPreview: () => false,
+    isShareRoot: () => false,
     getDomSelector: () => extractDomSelector(id)
   }
 }
