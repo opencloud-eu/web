@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4">
+  <div class="px-4 flex flex-col min-h-full">
     <div class="py-2 mb-2 border-b border-role-outline-variant">
       <oc-select
         :model-value="modelValue.from"
@@ -10,7 +10,7 @@
         option-label="label"
         option-value="value"
         class="w-full"
-        @update:model-value="(value: FromOption) => updateField('from', value)"
+        @update:model-value="(value) => updateField('from', value as FromOption)"
       />
     </div>
 
@@ -53,10 +53,11 @@
       @update:model-value="(value: string) => updateField('subject', value)"
     />
 
-    <div class="py-4">
-      <oc-textarea
+    <div class="flex-1 flex flex-col">
+      <MailBodyEditor
+        class="flex-1"
         :model-value="modelValue.body"
-        :label="$gettext('Write email')"
+        :show-toolbar="props.showFormattingToolbar"
         @update:model-value="(value: string) => updateField('body', value)"
       />
     </div>
@@ -69,6 +70,7 @@ import { useGettext } from 'vue3-gettext'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
+import MailBodyEditor from './MailBodyEditor.vue'
 
 type FromOption = {
   value: string
@@ -89,6 +91,7 @@ export type ComposeFormState = {
 
 const props = defineProps<{
   modelValue: ComposeFormState
+  showFormattingToolbar?: boolean
 }>()
 
 const emit = defineEmits<{
