@@ -211,6 +211,8 @@ describe('ResourceTiles component', () => {
     it('triggers the positioned dropdown on click', async () => {
       const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getWrapper({ props: { resources } })
+      vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
+
       const btn = wrapper.find('.resource-tiles-btn-action-dropdown')
       await btn.trigger('click')
       expect(spyDisplayPositionedDropdown).toHaveBeenCalled()

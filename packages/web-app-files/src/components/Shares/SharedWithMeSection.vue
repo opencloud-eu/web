@@ -18,7 +18,6 @@
       :fields-displayed="displayedFields"
       :resources="resourceItems"
       :are-resources-clickable="resourceClickable"
-      :target-route-callback="resourceTargetRouteCallback"
       :header-position="fileListHeaderY"
       :sort-by="sortBy"
       :sort-dir="sortDir"
@@ -84,15 +83,11 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { SortDir, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
-import { createLocationSpaces } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useSelectedResources } from '@opencloud-eu/web-pkg'
-import { RouteLocationNamedRaw } from 'vue-router'
-import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
-import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   components: {
@@ -189,23 +184,11 @@ export default defineComponent({
       return resource.shareTypes.includes(ShareTypes.remote.value)
     }
 
-    const resourceTargetRouteCallback = ({
-      path,
-      fileId,
-      resource
-    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
-      return createLocationSpaces(
-        'files-spaces-generic',
-        createFileRouteOptions(getMatchingSpace(resource), { path, fileId })
-      )
-    }
-
     return {
       capabilityStore,
       configStore,
       triggerDefaultAction,
       hideShareAction,
-      resourceTargetRouteCallback,
       ...useSelectedResources(),
       getMatchingSpace,
       updateResourceField,
