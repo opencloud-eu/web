@@ -3,17 +3,13 @@ import { ReadOnlyRef } from '../../utils'
 import { useRouteName, useRouter, useRouteQueryPersisted, QueryValue } from '../router'
 import { SortConstants } from './constants'
 import get from 'lodash-es/get'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export interface SortableItem {
   type?: string
   extension?: string
 }
 
-/** @deprecated use SortDir from design-system instead */
-export enum SortDir {
-  Desc = 'desc',
-  Asc = 'asc'
-}
 export interface SortField {
   name: string
   prop?: string

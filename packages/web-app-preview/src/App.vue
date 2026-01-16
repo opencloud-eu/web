@@ -101,7 +101,6 @@ import {
   AppFolderHandlingResult,
   FileContext,
   ProcessorType,
-  SortDir,
   createFileRouteOptions,
   queryItemAsString,
   sortHelper,
@@ -131,6 +130,7 @@ import {
 } from './composables'
 import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export const appId = 'preview'
 

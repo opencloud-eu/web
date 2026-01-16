@@ -19,21 +19,12 @@ export const GetFileUrlFactory = (
       resource: Resource,
       {
         disposition = 'attachment',
-        isUrlSigningEnabled = true,
-        signUrlTimeout = 86400,
         version = null,
-        doHeadRequest = false,
         username = '',
         ...opts
       }: {
         disposition?: 'inline' | 'attachment'
-        /** @deprecated no need to specify, the server always supports this */
-        isUrlSigningEnabled?: boolean
-        /** @deprecated this has no effect */
-        signUrlTimeout?: number
         version?: string
-        /** @deprecated */
-        doHeadRequest?: boolean
         username?: string
       } & DAVRequestOptions
     ): Promise<string> {

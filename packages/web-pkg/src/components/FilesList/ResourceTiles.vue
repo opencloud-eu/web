@@ -145,7 +145,6 @@ import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import {
   FolderViewModeConstants,
-  SortDir,
   SortField,
   useTileSize,
   useResourcesStore,
@@ -155,7 +154,7 @@ import {
   FileActionOptions,
   useResourceViewHelpers
 } from '../../composables'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { SizeType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { storeToRefs } from 'pinia'
 

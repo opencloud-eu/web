@@ -3,7 +3,6 @@ import { fileList } from '../../helpers/ui'
 import {
   usePagination,
   useSort,
-  SortDir,
   SortField,
   useResourcesStore,
   folderService,
@@ -29,7 +28,7 @@ import {
   useViewSize,
   FolderViewModeConstants
 } from '@opencloud-eu/web-pkg'
-
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
