@@ -17,6 +17,7 @@
             :is-extension-displayed="areFileExtensionsShown"
             :is-path-displayed="false"
             :truncate-name="false"
+            class="[&_span]:break-all"
           />
         </h3>
       </div>
