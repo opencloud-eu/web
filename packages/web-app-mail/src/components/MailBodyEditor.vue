@@ -42,6 +42,7 @@ import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Underline from '@tiptap/extension-underline'
 import MailComposeFormattingToolbar from './MailComposeFormattingToolbar.vue'
+import DOMPurify from 'dompurify'
 
 const { $gettext } = useGettext()
 
@@ -118,11 +119,33 @@ const cancelLink = () => {
   linkSelection.value = null
 }
 
+const sanitizeHref = (raw: string): string | null => {
+  const cleaned = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim()
+  if (!cleaned) return null
+
+  let href = cleaned
+
+  if (!/^[a-zA-Z][\w+.-]*:/.test(href)) {
+    href = `https://${href}`
+  }
+
+  try {
+    const url = new URL(href)
+    if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) {
+      return null
+    }
+    return url.href
+  } catch {
+    return null
+  }
+}
+
 const applyLink = () => {
   if (!editor.value) return
 
-  const url = linkInput.value.trim()
+  const safeHref = sanitizeHref(linkInput.value)
   const selection = linkSelection.value
+
   let chain = editor.value.chain()
 
   if (selection) {
@@ -131,7 +154,7 @@ const applyLink = () => {
     chain = chain.focus()
   }
 
-  if (!url) {
+  if (!safeHref) {
     chain.extendMarkRange('link').unsetLink().run()
     showLinkModal.value = false
     linkSelection.value = null
@@ -139,9 +162,9 @@ const applyLink = () => {
   }
 
   if (selection && selection.from !== selection.to) {
-    chain.extendMarkRange('link').setLink({ href: url }).run()
+    chain.extendMarkRange('link').setLink({ href: safeHref }).run()
   } else {
-    chain.insertContent(`<a href="${url}">${url}</a>`).run()
+    chain.insertContent(`<a href="${safeHref}">${safeHref}</a>`).run()
   }
 
   showLinkModal.value = false
