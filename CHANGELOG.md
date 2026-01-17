@@ -1,5 +1,74 @@
 # Changelog
 
+## [5.0.0](https://github.com/opencloud-eu/web/releases/tag/v5.0.0) - 2026-01-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen, @ScharfViktor, @kulmann, @michaelstingl, @saw-jan, @tammi-23
+
+### 💥 Breaking changes
+
+- feat: folder editor apps [[#1817](https://github.com/opencloud-eu/web/pull/1817)]
+
+### 🔒 Security
+
+- chore(deps): bump preact to v10.28.2 [security] [[#1814](https://github.com/opencloud-eu/web/pull/1814)]
+
+### 🐛 Bug Fixes
+
+- fix: resource delete action visibility [[#1832](https://github.com/opencloud-eu/web/pull/1832)]
+- fix(calendar): use type="a" for external documentation link [[#1801](https://github.com/opencloud-eu/web/pull/1801)]
+- fix(design-system): checkbox label vertical alignment [[#1773](https://github.com/opencloud-eu/web/pull/1773)]
+
+### ✅ Tests
+
+- enforce password for writable public links [[#1779](https://github.com/opencloud-eu/web/pull/1779)]
+
+### 📈 Enhancement
+
+- Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
+- feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency happy-dom to v20.3.1 [[#1834](https://github.com/opencloud-eu/web/pull/1834)]
+- chore(deps): update dependency ejs to v4 [[#1828](https://github.com/opencloud-eu/web/pull/1828)]
+- chore(deps): update traefik docker tag to v3.6.7 [[#1825](https://github.com/opencloud-eu/web/pull/1825)]
+- fix(deps): update dependency @sentry/vue to v10.34.0 - autoclosed [[#1827](https://github.com/opencloud-eu/web/pull/1827)]
+- chore(deps): update devdependencies (non-major) [[#1826](https://github.com/opencloud-eu/web/pull/1826)]
+- chore(deps): update dependency @babel/eslint-parser to v7.28.6 [[#1815](https://github.com/opencloud-eu/web/pull/1815)]
+- fix(deps): update dependency @sentry/vue to v10.33.0 [[#1812](https://github.com/opencloud-eu/web/pull/1812)]
+- chore(deps): update typescript-eslint monorepo to v8.53.0 [[#1816](https://github.com/opencloud-eu/web/pull/1816)]
+- chore(deps): update dependency @codemirror/view to v6.39.11 [[#1820](https://github.com/opencloud-eu/web/pull/1820)]
+- chore(deps): update node.js to v24.13.0 [[#1821](https://github.com/opencloud-eu/web/pull/1821)]
+- chore(deps): update dependency eslint-plugin-n to v17.23.2 [[#1822](https://github.com/opencloud-eu/web/pull/1822)]
+- chore(deps): update devdependencies (non-major) to v7.28.6 [[#1823](https://github.com/opencloud-eu/web/pull/1823)]
+- chore(deps): update devdependencies (non-major) [[#1783](https://github.com/opencloud-eu/web/pull/1783)]
+- chore(deps): update collabora/code docker tag to v25.04.8.1.1 [[#1761](https://github.com/opencloud-eu/web/pull/1761)]
+- fix(deps): update dependency globals to v17 [[#1811](https://github.com/opencloud-eu/web/pull/1811)]
+- chore(deps): update dependency md-editor-v3 to v6.3.1 [[#1794](https://github.com/opencloud-eu/web/pull/1794)]
+- chore(deps): update typescript-eslint monorepo to v8.52.0 [[#1786](https://github.com/opencloud-eu/web/pull/1786)]
+- fix(deps): update dependency @casl/ability to v6.7.5 [[#1782](https://github.com/opencloud-eu/web/pull/1782)]
+- chore(deps): update traefik docker tag to v3.6.6 [[#1798](https://github.com/opencloud-eu/web/pull/1798)]
+- fix(deps): update dependency p-queue to v9.1.0 [[#1809](https://github.com/opencloud-eu/web/pull/1809)]
+- fix(deps): update dependency zod to v4.3.5 [[#1810](https://github.com/opencloud-eu/web/pull/1810)]
+- chore(deps): update dependency @codemirror/view to v6.39.9 [[#1785](https://github.com/opencloud-eu/web/pull/1785)]
+- Update dependency @casl/vue to v2.2.5 [[#1807](https://github.com/opencloud-eu/web/pull/1807)]
+- Update dependency focus-trap to v7.8.0 [[#1784](https://github.com/opencloud-eu/web/pull/1784)]
+- Update pnpm to v10.28.0 [[#1790](https://github.com/opencloud-eu/web/pull/1790)]
+- Update dependency qs to v6.14.1 [SECURITY] [[#1803](https://github.com/opencloud-eu/web/pull/1803)]
+- fix(deps): update dependency @sentry/vue to v10.32.1 [[#1777](https://github.com/opencloud-eu/web/pull/1777)]
+- chore(deps): update devdependencies (non-major) [[#1775](https://github.com/opencloud-eu/web/pull/1775)]
+- chore(deps): update pnpm to v10.26.1 [[#1778](https://github.com/opencloud-eu/web/pull/1778)]
+- fix(deps): update dependency lodash-es to v4.17.22 [[#1764](https://github.com/opencloud-eu/web/pull/1764)]
+- fix(deps): update dependency @sentry/vue to v10.31.0 [[#1766](https://github.com/opencloud-eu/web/pull/1766)]
+- chore(deps): update devdependencies (non-major) to v4.0.16 - autoclosed [[#1762](https://github.com/opencloud-eu/web/pull/1762)]
+- chore(deps): update traefik docker tag to v3.6.5 [[#1763](https://github.com/opencloud-eu/web/pull/1763)]
+- chore(deps): update pnpm to v10.26.0 [[#1753](https://github.com/opencloud-eu/web/pull/1753)]
+- chore(deps): update typescript-eslint monorepo to v8.50.0 [[#1755](https://github.com/opencloud-eu/web/pull/1755)]
+- fix(deps): update dependency zod to v4.2.1 [[#1750](https://github.com/opencloud-eu/web/pull/1750)]
+- [full-ci] bump-opencloud-4.1.0. run all tests [[#1754](https://github.com/opencloud-eu/web/pull/1754)]
+
 ## [4.3.0](https://github.com/opencloud-eu/web/releases/tag/v4.3.0) - 2025-12-15
 
 ### ❤️ Thanks to all contributors! ❤️
