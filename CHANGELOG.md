@@ -35,6 +35,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.35.0 [[#1845](https://github.com/opencloud-eu/web/pull/1845)]
 - fix(deps): update vue monorepo to v3.5.27 [[#1843](https://github.com/opencloud-eu/web/pull/1843)]
 - fix(deps): update dependency @casl/ability to v6.8.0 [[#1840](https://github.com/opencloud-eu/web/pull/1840)]
 - chore(deps): update dependency @casl/vue to v2.2.6 [[#1839](https://github.com/opencloud-eu/web/pull/1839)]
