@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- feat!: remove deprecations [[#1829](https://github.com/opencloud-eu/web/pull/1829)]
 - feat: folder editor apps [[#1817](https://github.com/opencloud-eu/web/pull/1817)]
 
 ### 🔒 Security
@@ -16,6 +17,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: break long resource names in right sidebar [[#1836](https://github.com/opencloud-eu/web/pull/1836)]
 - fix: context menu for shares on search result page [[#1835](https://github.com/opencloud-eu/web/pull/1835)]
 - fix: text editor app entry for light users [[#1837](https://github.com/opencloud-eu/web/pull/1837)]
 - fix: resource delete action visibility [[#1832](https://github.com/opencloud-eu/web/pull/1832)]
