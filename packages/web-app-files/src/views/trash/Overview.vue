@@ -88,7 +88,6 @@ import {
   defaultFuseOptions,
   FileSideBar,
   NoContentMessage,
-  SortDir,
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
@@ -109,6 +108,7 @@ import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
 import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
 import { useResourcesViewDefaults } from '../../composables'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
