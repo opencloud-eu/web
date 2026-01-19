@@ -35,6 +35,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.28.1 [[#1844](https://github.com/opencloud-eu/web/pull/1844)]
+- chore(deps): update devdependencies (non-major) [[#1842](https://github.com/opencloud-eu/web/pull/1842)]
 - fix(deps): update dependency @sentry/vue to v10.35.0 [[#1845](https://github.com/opencloud-eu/web/pull/1845)]
 - fix(deps): update vue monorepo to v3.5.27 [[#1843](https://github.com/opencloud-eu/web/pull/1843)]
 - fix(deps): update dependency @casl/ability to v6.8.0 [[#1840](https://github.com/opencloud-eu/web/pull/1840)]
