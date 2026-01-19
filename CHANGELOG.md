@@ -16,6 +16,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: text editor app entry for light users [[#1837](https://github.com/opencloud-eu/web/pull/1837)]
 - fix: resource delete action visibility [[#1832](https://github.com/opencloud-eu/web/pull/1832)]
 - fix(calendar): use type="a" for external documentation link [[#1801](https://github.com/opencloud-eu/web/pull/1801)]
 - fix(design-system): checkbox label vertical alignment [[#1773](https://github.com/opencloud-eu/web/pull/1773)]
