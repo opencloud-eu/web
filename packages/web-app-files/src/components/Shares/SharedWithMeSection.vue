@@ -82,12 +82,13 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, PropType, unref } from 'vue'
-import { SortDir, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useSelectedResources } from '@opencloud-eu/web-pkg'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   components: {
