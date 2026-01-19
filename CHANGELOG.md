@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v6.8.0 [[#1840](https://github.com/opencloud-eu/web/pull/1840)]
 - chore(deps): update dependency @casl/vue to v2.2.6 [[#1839](https://github.com/opencloud-eu/web/pull/1839)]
 - chore(deps): update dependency happy-dom to v20.3.3 [[#1841](https://github.com/opencloud-eu/web/pull/1841)]
 - chore(deps): update dependency eslint-plugin-vue to v10.7.0 [[#1838](https://github.com/opencloud-eu/web/pull/1838)]
