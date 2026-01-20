@@ -39,7 +39,7 @@
           :disabled="isChooseButtonDisabled"
           @click="emitSelect"
         >
-          {{ $gettext('Choose') }}
+          {{ chooseFileName ? $gettext('Save') : $gettext('Choose') }}
         </oc-button>
         <oc-button
           v-else
@@ -67,7 +67,7 @@ import {
   useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { extractNameWithoutExtension, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
@@ -109,8 +109,16 @@ const isChooseButtonDisabled = computed<boolean>(() => {
   )
 })
 
-const fileNameInputSelectionRange = computed(() => {
-  return [0, unref(fileName).split('.')[0].length] as [number, number]
+const fileNameInputSelectionRange = computed<[number, number] | null>(() => {
+  if (!unref(chooseFileName)) {
+    return null
+  }
+  const nameWithoutExtension = extractNameWithoutExtension({
+    name: unref(chooseFileNameSuggestion),
+    extension: unref(chooseFileNameSuggestion).split('.').pop()
+  } as Resource)
+
+  return [0, nameWithoutExtension.length]
 })
 
 const emitSelect = (): void => {
