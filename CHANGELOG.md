@@ -35,6 +35,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.53.1 [[#1846](https://github.com/opencloud-eu/web/pull/1846)]
+- chore(deps): update dependency happy-dom to v20.3.4 [[#1847](https://github.com/opencloud-eu/web/pull/1847)]
 - chore(deps): update pnpm to v10.28.1 [[#1844](https://github.com/opencloud-eu/web/pull/1844)]
 - chore(deps): update devdependencies (non-major) [[#1842](https://github.com/opencloud-eu/web/pull/1842)]
 - fix(deps): update dependency @sentry/vue to v10.35.0 [[#1845](https://github.com/opencloud-eu/web/pull/1845)]
