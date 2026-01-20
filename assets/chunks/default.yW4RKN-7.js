@@ -1,1 +1,0 @@
-import{r as s,z as a,M as c,Y as p,w as r}from"./framework.B0dvQtGI.js";import"./theme.Ctd8r_R2.js";const f=s({__name:"default",setup(l){const e=c([10,20,50][0]),t=o=>{e.value=o};return(o,i)=>{const n=p("oc-page-size");return r(),a(n,{label:"Items per page",options:[10,20,50],selected:e.value,onChange:t},null,8,["selected"])}}});export{f as default};

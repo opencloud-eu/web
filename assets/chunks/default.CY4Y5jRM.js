@@ -1,1 +1,0 @@
-import{r as c,s as n,a0 as s,I as r,y as l,M as m,W as p,w as i,Y as _}from"./framework.B0dvQtGI.js";import"./theme.Ctd8r_R2.js";const k=c({__name:"default",setup(u){const e=m(),t=o=>{e.value=o};return(o,d)=>{const a=_("oc-emoji-picker");return i(),n(p,null,[s(a,{onEmojiSelect:t}),r("p",null,"Selected emoji: "+l(e.value),1)],64)}}});export{k as default};
