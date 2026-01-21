@@ -17,6 +17,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: add missing low opacity for cut resources in tiles view [[#1852](https://github.com/opencloud-eu/web/pull/1852)]
 - fix: delete action showing without any selected file in trash bin [[#1853](https://github.com/opencloud-eu/web/pull/1853)]
 - fix: embed actions filename input and confirm button name [[#1849](https://github.com/opencloud-eu/web/pull/1849)]
 - fix: prevent sort options in trash overview from disappearing [[#1851](https://github.com/opencloud-eu/web/pull/1851)]
