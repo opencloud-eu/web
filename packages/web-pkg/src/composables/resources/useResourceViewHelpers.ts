@@ -1,5 +1,5 @@
 import { computed, Ref, unref } from 'vue'
-import { useResourcesStore } from '../piniaStores'
+import { useClipboardStore, useResourcesStore } from '../piniaStores'
 import { useRouter } from '../router'
 import { useEventBus } from '../eventBus'
 import { useInterceptModifierClick } from '../keyboardActions'
@@ -17,6 +17,8 @@ import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
 import { useFileActions } from '../actions'
 import { useResourceViewContextMenu } from './useResourceViewContextMenu'
 import { useResourceViewSelection } from './useResourceViewSelection'
+import { ClipboardActions } from '../../helpers'
+import { storeToRefs } from 'pinia'
 
 /**
  * Shared helpers for resource view components (like ResourceTable and ResourceTiles).
@@ -45,6 +47,9 @@ export const useResourceViewHelpers = ({
     isFilePicker,
     postMessage
   } = useEmbedMode()
+
+  const clipboardStore = useClipboardStore()
+  const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
 
   const selectedResources = computed(() => {
     return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))
@@ -100,6 +105,13 @@ export const useResourceViewHelpers = ({
     }
 
     return !isResourceDisabled(resource)
+  }
+
+  const isResourceCut = (resource: Resource) => {
+    if (unref(clipboardAction) !== ClipboardActions.Cut) {
+      return false
+    }
+    return unref(clipboardResources).some((r) => r.id === resource.id)
   }
 
   // tr or tile containing the file clicked
@@ -221,6 +233,7 @@ export const useResourceViewHelpers = ({
     isResourceInDeleteQueue,
     isResourceDisabled,
     isResourceClickable,
+    isResourceCut,
     fileContainerClicked,
     fileNameClicked,
     fileCheckboxClicked,
