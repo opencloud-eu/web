@@ -420,7 +420,7 @@ const saveFileTask = useTask(function* () {
         errorPopup(
           new HttpError(
             $gettext(
-              'This file was updated outside this window. Please copy your changes or save the file under a new name (“Save As…”).'
+              'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
             ),
             e.response
           )
