@@ -17,6 +17,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix: delete action showing without any selected file in trash bin [[#1853](https://github.com/opencloud-eu/web/pull/1853)]
+- fix: embed actions filename input and confirm button name [[#1849](https://github.com/opencloud-eu/web/pull/1849)]
+- fix: prevent sort options in trash overview from disappearing [[#1851](https://github.com/opencloud-eu/web/pull/1851)]
 - fix: break long resource names in right sidebar [[#1836](https://github.com/opencloud-eu/web/pull/1836)]
 - fix: context menu for shares on search result page [[#1835](https://github.com/opencloud-eu/web/pull/1835)]
 - fix: text editor app entry for light users [[#1837](https://github.com/opencloud-eu/web/pull/1837)]
