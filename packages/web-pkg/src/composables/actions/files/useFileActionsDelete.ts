@@ -26,6 +26,9 @@ export const useFileActionsDelete = () => {
         filesList_delete(resources)
       },
       isVisible: ({ resources }) => {
+        if (!resources.length) {
+          return false
+        }
         return resources.every(
           (r) =>
             r.canBeDeleted() &&
@@ -50,6 +53,10 @@ export const useFileActionsDelete = () => {
         displayDialog(space, resources)
       },
       isVisible: ({ space, resources }) => {
+        if (!resources.length) {
+          return false
+        }
+
         if (!capabilityStore.filesPermanentDeletion) {
           return false
         }
