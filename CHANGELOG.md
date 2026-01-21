@@ -15,6 +15,12 @@
 
 - chore(deps): bump preact to v10.28.2 [security] [[#1814](https://github.com/opencloud-eu/web/pull/1814)]
 
+### 📈 Enhancement
+
+- feat: clarify error text on 412 error in editor [[#1850](https://github.com/opencloud-eu/web/pull/1850)]
+- Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
+- feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
+
 ### 🐛 Bug Fixes
 
 - fix: add missing low opacity for cut resources in tiles view [[#1852](https://github.com/opencloud-eu/web/pull/1852)]
@@ -31,11 +37,6 @@
 ### ✅ Tests
 
 - enforce password for writable public links [[#1779](https://github.com/opencloud-eu/web/pull/1779)]
-
-### 📈 Enhancement
-
-- Mail: Mail compose as Widget #1609 [[#1687](https://github.com/opencloud-eu/web/pull/1687)]
-- feat: allow .readme.md filename for top level readme [[#1769](https://github.com/opencloud-eu/web/pull/1769)]
 
 ### 📦️ Dependencies
 
