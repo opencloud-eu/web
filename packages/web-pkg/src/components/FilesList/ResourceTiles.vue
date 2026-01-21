@@ -63,7 +63,7 @@
           :draggable="dragDrop"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
-          :class="{ 'opacity-70': isResourceCut(resource) }"
+          :class="{ 'opacity-60': isResourceCut(resource) }"
           @contextmenu="showContextMenuOnRightClick($event, resource)"
           @file-name-clicked.stop="(event) => fileNameClicked({ resource, event })"
           @dragstart="dragStart(resource, $event)"

@@ -90,7 +90,7 @@
           :parent-folder-link-icon-additional-attributes="
             getParentFolderLinkIconAdditionalAttributes(item)
           "
-          :class="{ 'opacity-70': isResourceCut(item) }"
+          :class="{ 'opacity-60': isResourceCut(item) }"
           @click.stop="fileNameClicked({ resource: item, event: $event })"
         />
         <oc-button
