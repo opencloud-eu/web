@@ -1,6 +1,6 @@
 <template>
-  <div class="mail-body-editor flex flex-col gap-2 h-full">
-    <div class="mail-body-editor-editor-wrapper flex-1" @click="onWrapperClick">
+  <div class="mail-body-editor flex flex-col gap-2 h-full min-h-0">
+    <div class="mail-body-editor-editor-wrapper flex-1 min-h-0" @click="onWrapperClick">
       <EditorContent v-if="editor" :editor="editor" class="mail-body-editor-editor" />
     </div>
 
@@ -9,32 +9,11 @@
       :editor="editor"
       @open-link-modal="openLinkModal"
     />
-
-    <oc-modal
-      v-if="showLinkModal"
-      :title="$gettext('Add link')"
-      :hide-actions="true"
-      element-class="mail-body-editor-link-modal"
-    >
-      <template #content>
-        <div class="p-4 flex flex-col gap-4">
-          <oc-text-input v-model="linkInput" :label="$gettext('URL')" type="text" class="w-full" />
-          <div class="flex justify-end gap-2">
-            <oc-button appearance="raw" @click="cancelLink">
-              <span v-text="$gettext('Cancel')" />
-            </oc-button>
-            <oc-button appearance="filled" @click="applyLink">
-              <span v-text="$gettext('Apply')" />
-            </oc-button>
-          </div>
-        </div>
-      </template>
-    </oc-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeUnmount, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -43,8 +22,12 @@ import Image from '@tiptap/extension-image'
 import Underline from '@tiptap/extension-underline'
 import MailComposeFormattingToolbar from './MailComposeFormattingToolbar.vue'
 import DOMPurify from 'dompurify'
+import { useModals } from '@opencloud-eu/web-pkg'
+
+type SelectionRange = { from: number; to: number }
 
 const { $gettext } = useGettext()
+const { dispatchModal } = useModals()
 
 const props = defineProps<{
   modelValue: string
@@ -55,10 +38,6 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
 
-const showLinkModal = ref(false)
-const linkInput = ref('')
-const linkSelection = ref<{ from: number; to: number } | null>(null)
-
 const editor = useEditor({
   extensions: [
     StarterKit.configure({
@@ -66,9 +45,13 @@ const editor = useEditor({
     }),
     Underline,
     Link.configure({
-      openOnClick: false,
+      openOnClick: true,
       autolink: true,
-      linkOnPaste: true
+      linkOnPaste: true,
+      HTMLAttributes: {
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      }
     }),
     Image.configure({
       inline: false
@@ -102,23 +85,6 @@ const onWrapperClick = (event: MouseEvent) => {
   editor.value.commands.focus('end')
 }
 
-const openLinkModal = () => {
-  if (!editor.value) return
-
-  const previousUrl = editor.value.getAttributes('link').href as string | undefined
-  linkInput.value = previousUrl ?? ''
-
-  const { from, to } = editor.value.state.selection
-  linkSelection.value = { from, to }
-
-  showLinkModal.value = true
-}
-
-const cancelLink = () => {
-  showLinkModal.value = false
-  linkSelection.value = null
-}
-
 const sanitizeHref = (raw: string): string | null => {
   const cleaned = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim()
   if (!cleaned) return null
@@ -140,35 +106,48 @@ const sanitizeHref = (raw: string): string | null => {
   }
 }
 
-const applyLink = () => {
+const applyLink = (rawInput: string, selection: SelectionRange) => {
   if (!editor.value) return
 
-  const safeHref = sanitizeHref(linkInput.value)
-  const selection = linkSelection.value
+  const safeHref = sanitizeHref(rawInput)
 
-  let chain = editor.value.chain()
-
-  if (selection) {
-    chain = chain.setTextSelection(selection).focus()
-  } else {
-    chain = chain.focus()
-  }
+  let chain = editor.value.chain().focus().setTextSelection(selection)
 
   if (!safeHref) {
     chain.extendMarkRange('link').unsetLink().run()
-    showLinkModal.value = false
-    linkSelection.value = null
     return
   }
 
-  if (selection && selection.from !== selection.to) {
+  if (selection.from !== selection.to) {
     chain.extendMarkRange('link').setLink({ href: safeHref }).run()
   } else {
     chain.insertContent(`<a href="${safeHref}">${safeHref}</a>`).run()
   }
+}
 
-  showLinkModal.value = false
-  linkSelection.value = null
+const openLinkModal = () => {
+  if (!editor.value) return
+
+  editor.value.commands.focus()
+
+  const previousUrl = editor.value.getAttributes('link').href as string | undefined
+  const { from, to } = editor.value.state.selection
+  const selection: SelectionRange = { from, to }
+
+  dispatchModal({
+    title: $gettext('Add link'),
+    elementClass: 'mail-body-editor-link-modal',
+    cancelText: $gettext('Cancel'),
+    confirmText: $gettext('Apply'),
+    hasInput: true,
+    inputType: 'text',
+    inputLabel: $gettext('URL'),
+    inputValue: previousUrl ?? '',
+    onConfirm: (value: any) => {
+      const raw = typeof value === 'string' ? value : (value ?? '').toString()
+      applyLink(raw, selection)
+    }
+  })
 }
 
 onBeforeUnmount(() => {
@@ -182,16 +161,19 @@ onBeforeUnmount(() => {
   flex-direction: column !important;
   gap: 8px !important;
   height: 100% !important;
+  min-height: 0 !important;
   position: relative !important;
 }
 
 .mail-body-editor-editor-wrapper {
   border-radius: 8px !important;
   border: none !important;
-  background-color: var(--oc-color-role-surface, #ffffff) !important;
-  padding: 12px 14px !important;
+  background-color: var(--oc-color-role-surface-container) !important;
+  padding: 12px 0 !important;
+  padding-bottom: 72px !important;
   cursor: text !important;
   flex: 1 1 auto !important;
+  min-height: 0 !important;
   display: flex !important;
   overflow-y: auto !important;
 }
@@ -289,17 +271,17 @@ onBeforeUnmount(() => {
 }
 
 .mail-body-editor-toolbar-shell {
-  margin-top: 0px !important;
   display: flex !important;
   justify-content: center !important;
-  position: absolute !important;
-  bottom: 2px !important;
-  transform: translateX(-50%) !important;
-  left: 50% !important;
+  position: sticky !important;
+  bottom: 12px !important;
   z-index: 10 !important;
+  margin-top: -60px !important;
+  pointer-events: none !important;
 }
 
 .mail-body-editor-toolbar {
+  pointer-events: auto !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 12px !important;

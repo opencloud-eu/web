@@ -18,8 +18,8 @@
           class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-sm"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
-          <div v-if="$slots['modal-slot-header-actions']" class="flex items-center gap-1">
-            <slot name="modal-slot-header-actions" />
+          <div v-if="$slots['headerActions']" class="flex items-center gap-1">
+            <slot name="headerActions" />
           </div>
         </div>
         <div class="oc-modal-body px-4 pt-4">

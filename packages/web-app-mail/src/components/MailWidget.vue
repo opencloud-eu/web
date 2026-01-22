@@ -65,7 +65,7 @@
     :hide-actions="true"
     element-class="mail-compose-modal"
   >
-    <template #modal-slot-header-actions>
+    <template #headerActions>
       <oc-button
         class="hidden md:inline-flex"
         appearance="raw"
