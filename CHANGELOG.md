@@ -13,6 +13,7 @@
 
 ### 🔒 Security
 
+- fix(deps): update dependency lodash-es to v4.17.23 [security] #2 [[#1859](https://github.com/opencloud-eu/web/pull/1859)]
 - chore(deps): bump preact to v10.28.2 [security] [[#1814](https://github.com/opencloud-eu/web/pull/1814)]
 
 ### 📈 Enhancement
