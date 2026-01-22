@@ -40,6 +40,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency lodash-es to v4.17.23 [security] [[#1857](https://github.com/opencloud-eu/web/pull/1857)]
 - chore(deps): update typescript-eslint monorepo to v8.53.1 [[#1846](https://github.com/opencloud-eu/web/pull/1846)]
 - chore(deps): update dependency happy-dom to v20.3.4 [[#1847](https://github.com/opencloud-eu/web/pull/1847)]
 - chore(deps): update pnpm to v10.28.1 [[#1844](https://github.com/opencloud-eu/web/pull/1844)]
