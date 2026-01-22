@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-01-19
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-01-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- fix(deps): update dependency lodash-es to v4.17.23 [security] [[#1858](https://github.com/opencloud-eu/web/pull/1858)]
 - chore(deps): bump preact to v10.28.2 [security] [[#1824](https://github.com/opencloud-eu/web/pull/1824)]
 - chore(deps): bump qs to v6.14.1 [security] [[#1813](https://github.com/opencloud-eu/web/pull/1813)]
 
