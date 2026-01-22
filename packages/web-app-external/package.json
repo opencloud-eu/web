@@ -10,7 +10,7 @@
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.23",
     "pinia": "3.0.3",
     "qs": "^6.13.0",
     "uuid": "13.0.0",
