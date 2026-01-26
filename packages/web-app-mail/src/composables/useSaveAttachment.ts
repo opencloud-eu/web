@@ -22,9 +22,7 @@ export const useSaveAttachment = () => {
   const isLoading = computed(() => saveAttachmentTask.isRunning)
 
   const saveAttachment = (accountId: string, file: File) => {
-    return (saveAttachmentTask.perform(accountId, file) as any).then(
-      (value: AttachmentBlobUploadResponse) => value
-    ) as Promise<AttachmentBlobUploadResponse>
+    return saveAttachmentTask.perform(accountId, file) as Promise<AttachmentBlobUploadResponse>
   }
 
   return {
