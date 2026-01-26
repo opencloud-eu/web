@@ -80,11 +80,11 @@ const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInje
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
 const mimeType = computed(() => {
-  return (attachment as any).type || (attachment as any).mimeType || ''
+  return attachment.type ?? ''
 })
 
 const readableFileSize = computed(() => {
-  return formatFileSize((attachment as any).size, currentLanguage)
+  return formatFileSize(attachment.size ?? 0, currentLanguage)
 })
 
 const icon = computed(() => {
@@ -96,23 +96,34 @@ const icon = computed(() => {
   )
 })
 
-const isMailBodyPart = (value: Attachment): value is MailBodyPart => {
-  return 'blobId' in value
+const hasBlobId = (value: Attachment): value is Attachment & { blobId: string } => {
+  return typeof value.blobId === 'string' && value.blobId.length > 0
 }
 
 const canDownload = computed(() => {
-  return mode === 'download' && !!accountId && isMailBodyPart(attachment)
+  if (mode !== 'download') {
+    return false
+  }
+  if (!accountId) {
+    return false
+  }
+  if (!hasBlobId(attachment)) {
+    return false
+  }
+  return true
 })
 
 const download = async () => {
-  if (!canDownload.value || !isMailBodyPart(attachment)) {
+  if (!canDownload.value) {
+    return
+  }
+  if (!hasBlobId(attachment)) {
     return
   }
 
-  const attachmentFile = attachment
   const url = urlJoin(
     configStore.groupwareUrl,
-    `/accounts/${accountId}/blobs/${attachmentFile.blobId}/${encodeURIComponent(attachmentFile.name)}`
+    `/accounts/${accountId}/blobs/${attachment.blobId}/${encodeURIComponent(attachment.name)}`
   )
 
   try {
@@ -121,21 +132,25 @@ const download = async () => {
     })
 
     const objectUrl = URL.createObjectURL(data)
-    triggerDownloadWithFilename(objectUrl, attachmentFile.name)
+    triggerDownloadWithFilename(objectUrl, attachment.name)
   } catch (e) {
     console.error(e)
     showErrorMessage({
-      title: $gettext('Failed to download %{name}', { name: attachmentFile.name }),
+      title: $gettext('Failed to download %{name}', { name: attachment.name }),
       errors: [e]
     })
   }
 }
 
 const remove = () => {
-  const id = (attachment as any).id ?? (attachment as any).blobId
-  if (!id) {
+  if ('id' in attachment && typeof attachment.id === 'string') {
+    emit('remove', attachment.id)
     return
   }
-  emit('remove', String(id))
+
+  if (hasBlobId(attachment)) {
+    emit('remove', attachment.blobId)
+    return
+  }
 }
 </script>
