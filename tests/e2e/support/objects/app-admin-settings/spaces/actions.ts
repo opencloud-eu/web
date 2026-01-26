@@ -241,9 +241,7 @@ export const openSpaceAdminActionSidebarPanel = async (args: {
     await locatorUtils.waitForEvent(currentPanel, 'transitionend')
   }
   const panelSelector = page.locator(util.format(sideBarActionButtons, action))
-  const nextPanel = page.locator(util.format(siderBarActionPanel, action))
   await panelSelector.click()
-  await locatorUtils.waitForEvent(nextPanel, 'transitionend')
 }
 
 export const listSpaceMembers = async (args: {
