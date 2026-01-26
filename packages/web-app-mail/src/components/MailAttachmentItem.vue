@@ -96,16 +96,20 @@ const icon = computed(() => {
   )
 })
 
+const isMailBodyPart = (value: Attachment): value is MailBodyPart => {
+  return 'blobId' in value
+}
+
 const canDownload = computed(() => {
-  return mode === 'download' && !!accountId && 'blobId' in (attachment as any)
+  return mode === 'download' && !!accountId && isMailBodyPart(attachment)
 })
 
 const download = async () => {
-  if (!canDownload.value) {
+  if (!canDownload.value || !isMailBodyPart(attachment)) {
     return
   }
 
-  const attachmentFile = attachment as MailBodyPart
+  const attachmentFile = attachment
   const url = urlJoin(
     configStore.groupwareUrl,
     `/accounts/${accountId}/blobs/${attachmentFile.blobId}/${encodeURIComponent(attachmentFile.name)}`
