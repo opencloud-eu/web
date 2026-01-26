@@ -12,11 +12,7 @@ export type ResourceRouteResolverOptions = {
   space?: Ref<SpaceResource>
 }
 
-export const useResourceRouteResolver = (
-  options: ResourceRouteResolverOptions = {},
-  /** @deprecated */
-  context?: any
-) => {
+export const useResourceRouteResolver = (options: ResourceRouteResolverOptions = {}) => {
   const router = useRouter()
   const { getMatchingSpace } = useGetMatchingSpace(options)
 
@@ -40,18 +36,7 @@ export const useResourceRouteResolver = (
     )
   }
 
-  /** @deprecated */
-  const createFileAction = (resource: Resource) => {
-    const space = unref(options.space) || getMatchingSpace(resource)
-    /**
-     * Triggered when a default action is triggered on a file
-     * @property {object} resource resource for which the event is triggered
-     */
-    context.emit('fileClick', { space, resources: [resource] })
-  }
-
   return {
-    createFileAction,
     createFolderLink
   }
 }

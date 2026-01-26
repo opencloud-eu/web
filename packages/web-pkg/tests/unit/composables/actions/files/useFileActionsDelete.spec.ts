@@ -1,15 +1,16 @@
-import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import {
   useFileActionsDeleteResources,
   useFileActionsDelete
 } from '../../../../../src/composables/actions'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  defaultComponentMocks,
-  RouteLocation,
-  getComposableWrapper
-} from '@opencloud-eu/web-test-helpers'
+  IncomingShareResource,
+  ProjectSpaceResource,
+  Resource,
+  SpaceResource,
+  TrashResource
+} from '@opencloud-eu/web-client'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore } from '../../../../../src/composables/piniaStores'
 
 vi.mock('../../../../../src/composables/actions/helpers/useFileActionsDeleteResources')
@@ -19,49 +20,63 @@ describe('delete', () => {
     describe('delete isVisible property of returned element', () => {
       it.each([
         {
-          resources: [{ canBeDeleted: () => true }] as Resource[],
-          invalidLocation: false,
-          expectedStatus: true
+          resources: [{ canBeDeleted: () => true, isShareRoot: () => false }] as Resource[],
+          isVisible: true
         },
         {
-          resources: [{ canBeDeleted: () => true }] as Resource[],
-          invalidLocation: true,
-          expectedStatus: false
+          resources: [{ canBeDeleted: () => false, isShareRoot: () => false }] as Resource[],
+          isVisible: false
         },
         {
-          resources: [{ canBeDeleted: () => false }] as Resource[],
-          invalidLocation: false,
-          expectedStatus: false
+          resources: [
+            { canBeDeleted: () => true, isShareRoot: () => false, type: 'space' }
+          ] as SpaceResource[],
+          isVisible: false
+        },
+        {
+          resources: [
+            { canBeDeleted: () => true, isShareRoot: () => false, sharedWith: {} }
+          ] as IncomingShareResource[],
+          isVisible: false
+        },
+        {
+          resources: [
+            { canBeDeleted: () => true, isShareRoot: () => false, ddate: 'date' }
+          ] as TrashResource[],
+          isVisible: false
+        },
+        {
+          resources: [{ canBeDeleted: () => true, isShareRoot: () => true }] as Resource[],
+          isVisible: false
         }
-      ])('should be set correctly', ({ resources, expectedStatus, invalidLocation }) => {
+      ])('should be set correctly', ({ resources, isVisible }) => {
         getWrapper({
-          invalidLocation,
           setup: () => {
             const { actions } = useFileActionsDelete()
-            expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(expectedStatus)
+            expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(isVisible)
           }
         })
       })
     })
     describe('delete isDisabled property of returned element', () => {
-      it.each<{ resources: Resource[]; expectedStatus: boolean }>([
+      it.each<{ resources: Resource[]; isDisabled: boolean }>([
         {
           resources: [{ locked: true } as Resource],
-          expectedStatus: true
+          isDisabled: true
         },
         {
           resources: [{ locked: false } as Resource],
-          expectedStatus: false
+          isDisabled: false
         },
         {
           resources: [{ locked: true }, { locked: false }] as Resource[],
-          expectedStatus: false
+          isDisabled: false
         }
-      ])('should be set correctly', ({ resources, expectedStatus }) => {
+      ])('should be set correctly', ({ resources, isDisabled }) => {
         getWrapper({
           setup: () => {
             const { actions } = useFileActionsDelete()
-            expect(unref(actions)[0].isDisabled({ space: null, resources })).toBe(expectedStatus)
+            expect(unref(actions)[0].isDisabled({ space: null, resources })).toBe(isDisabled)
           }
         })
       })
@@ -69,77 +84,72 @@ describe('delete', () => {
     describe('delete-permanent isVisible property of returned element', () => {
       it.each([
         {
-          resources: [{}] as Resource[],
+          space: {} as ProjectSpaceResource,
+          resources: [{ ddate: 'date' }] as TrashResource[],
           deletePermanent: true,
-          invalidLocation: false,
-          expectedStatus: true
+          isVisible: true
         },
         {
+          space: {} as ProjectSpaceResource,
           resources: [{}] as Resource[],
           deletePermanent: true,
-          invalidLocation: true,
-          expectedStatus: false
+          isVisible: false
         },
         {
-          resources: [] as Resource[],
+          space: {
+            driveType: 'project',
+            canDeleteFromTrashBin: () => false
+          } as ProjectSpaceResource,
+          resources: [{ ddate: 'date' }] as TrashResource[],
           deletePermanent: true,
-          invalidLocation: false,
-          expectedStatus: false
+          isVisible: false
+        },
+        {
+          space: {} as ProjectSpaceResource,
+          resources: [{ ddate: 'date' }] as TrashResource[],
+          deletePermanent: false,
+          isVisible: false
         }
-      ])('should be set correctly', (inputData) => {
+      ])('should be set correctly', ({ space, resources, deletePermanent, isVisible }) => {
         getWrapper({
-          deletePermanent: true,
-          invalidLocation: inputData.invalidLocation,
+          deletePermanent,
           setup: () => {
             const { actions } = useFileActionsDelete()
-
-            const resources = inputData.resources
-            expect(unref(actions)[1].isVisible({ space: mock<SpaceResource>(), resources })).toBe(
-              inputData.expectedStatus
-            )
+            expect(unref(actions)[1].isVisible({ space, resources })).toBe(isVisible)
           }
         })
       })
     })
   })
-  describe('search context', () => {
-    describe('computed property "actions"', () => {
-      describe('handler', () => {
-        it.each([
-          {
-            resources: [
-              { id: '1', canBeDeleted: () => true, isShareRoot: () => false },
-              { id: '2', canBeDeleted: () => true, isShareRoot: () => false }
-            ] as Resource[],
-            deletableResourceIds: ['1', '2']
-          },
-          {
-            resources: [
-              { id: '1', canBeDeleted: () => true, isShareRoot: () => false },
-              { id: '2', canBeDeleted: () => true, isShareRoot: () => false },
-              { id: '3', canBeDeleted: () => true, isShareRoot: () => false },
-              { id: '4', canBeDeleted: () => false, isShareRoot: () => false },
-              { id: '5', canBeDeleted: () => true, isShareRoot: () => true },
-              { id: '6', canBeDeleted: () => true, isShareRoot: () => false, driveType: 'project' }
-            ] as Resource[],
-            deletableResourceIds: ['1', '2', '3']
+  describe('computed property "actions"', () => {
+    describe('handler', () => {
+      it('calls filesListDelete for the file list delete action', () => {
+        const filesListDeleteMock = vi.fn()
+
+        getWrapper({
+          filesListDeleteMock,
+          setup: () => {
+            const resources = [{}, {}] as Resource[]
+            const { actions } = useFileActionsDelete()
+            unref(actions)[0].handler({ space: null, resources })
+
+            expect(filesListDeleteMock).toHaveBeenCalledWith(resources)
           }
-        ])('should filter non deletable resources', ({ resources, deletableResourceIds }) => {
-          const filesListDeleteMock = vi.fn()
+        })
+      })
+      it('calls displayDialog for the permanent delete action', () => {
+        const displayDialogMock = vi.fn()
 
-          getWrapper({
-            searchLocation: true,
-            filesListDeleteMock,
-            setup: () => {
-              const { actions } = useFileActionsDelete()
+        getWrapper({
+          displayDialogMock,
+          setup: () => {
+            const resources = [{}, {}] as Resource[]
+            const space = {} as ProjectSpaceResource
+            const { actions } = useFileActionsDelete()
+            unref(actions)[1].handler({ space, resources })
 
-              unref(actions)[0].handler({ space: null, resources })
-
-              expect(filesListDeleteMock).toHaveBeenCalledWith(
-                resources.filter((r) => deletableResourceIds.includes(r.id as string))
-              )
-            }
-          })
+            expect(displayDialogMock).toHaveBeenCalledWith(space, resources)
+          }
         })
       })
     })
@@ -148,36 +158,23 @@ describe('delete', () => {
 
 function getWrapper({
   deletePermanent = false,
-  invalidLocation = false,
-  searchLocation = false,
   filesListDeleteMock = vi.fn(),
+  displayDialogMock = vi.fn(),
   setup = () => undefined
 }: {
   deletePermanent?: boolean
-  invalidLocation?: boolean
-  searchLocation?: boolean
   filesListDeleteMock?: (resources: Resource[]) => void[]
+  displayDialogMock?: (...args: unknown[]) => unknown
   setup?: () => unknown
 } = {}) {
-  const routeName = invalidLocation
-    ? 'files-shares-via-link'
-    : deletePermanent
-      ? 'files-trash-generic'
-      : searchLocation
-        ? 'files-common-search'
-        : 'files-spaces-generic'
   vi.mocked(useFileActionsDeleteResources).mockImplementation(() => ({
     filesList_delete: filesListDeleteMock,
-    displayDialog: vi.fn()
+    displayDialog: displayDialogMock
   }))
-  const mocks = {
-    ...defaultComponentMocks({ currentRoute: mock<RouteLocation>({ name: routeName }) }),
-    space: {
-      driveType: 'personal'
-    } as unknown as SpaceResource
-  }
+  const mocks = defaultComponentMocks()
   const capabilities = {
-    spaces: { enabled: true }
+    spaces: { enabled: true },
+    files: { permanent_deletion: deletePermanent }
   } satisfies Partial<CapabilityStore['capabilities']>
 
   return {

@@ -90,7 +90,7 @@
           :parent-folder-link-icon-additional-attributes="
             getParentFolderLinkIconAdditionalAttributes(item)
           "
-          :class="{ 'opacity-70': isResourceCut(item) }"
+          :class="{ 'opacity-60': isResourceCut(item) }"
           @click.stop="fileNameClicked({ resource: item, event: $event })"
         />
         <oc-button
@@ -278,7 +278,6 @@ import {
   FolderViewModeConstants,
   useAuthStore,
   useCapabilityStore,
-  useClipboardStore,
   useEmbedMode,
   useFolderLink,
   useGetMatchingSpace,
@@ -296,7 +295,6 @@ import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helper
 import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
-import { ClipboardActions } from '../../helpers/clipboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
 import { FileActionOptions, useFileActionsRename } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
@@ -399,6 +397,7 @@ const {
   isResourceDisabled,
   isResourceInDeleteQueue,
   isResourceClickable,
+  isResourceCut,
   getResourceLink,
   dragItem,
   dragSelection,
@@ -418,9 +417,6 @@ const {
   selectedIds: computed(() => selectedIds),
   emit
 })
-
-const clipboardStore = useClipboardStore()
-const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
 
 const authStore = useAuthStore()
 const { userContextReady } = storeToRefs(authStore)
@@ -636,12 +632,6 @@ const fields = computed(() => {
   return fields
 })
 
-const isResourceCut = (resource: Resource) => {
-  if (unref(clipboardAction) !== ClipboardActions.Cut) {
-    return false
-  }
-  return unref(clipboardResources).some((r) => r.id === resource.id)
-}
 const getTagLink = (tag: string) => {
   const currentTerm = unref(router.currentRoute).query?.term
   return createLocationCommon('files-common-search', {

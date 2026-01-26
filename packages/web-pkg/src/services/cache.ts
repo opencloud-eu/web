@@ -9,20 +9,7 @@ const filePreviewCache = new Cache<
   }
 >({ ttl: 10 * 1000, capacity: 250 })
 
-const avatarUrlCache = new Cache<
-  string,
-  {
-    size?: number
-    src?: string
-  }
->({ ttl: 10 * 1000, capacity: 250 })
-
 class CacheService {
-  /** @deprecated */
-  public get avatarUrl() {
-    return avatarUrlCache
-  }
-
   public get filePreview() {
     return filePreviewCache
   }
