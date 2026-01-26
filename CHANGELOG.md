@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-01-26
+
+### ❤️ Thanks to all contributors! ❤️
+
+@tammi-23
+
+### 📈 Enhancement
+
+- Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
+
 ## [5.0.0](https://github.com/opencloud-eu/web/releases/tag/v5.0.0) - 2026-01-26
 
 ### ❤️ Thanks to all contributors! ❤️
