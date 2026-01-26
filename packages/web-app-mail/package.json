@@ -11,7 +11,7 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "axios": "1.13.2",
+    "axios": "1.13.3",
     "dompurify": "^3.2.3",
     "fuse.js": "7.1.0",
     "lodash-es": "4.17.23",
