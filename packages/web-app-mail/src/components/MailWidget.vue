@@ -44,6 +44,10 @@
             <oc-button appearance="filled" class="min-w-[120px]">
               <span v-text="$gettext('Send')" />
             </oc-button>
+            <MailComposeAttachmentButton
+              v-model="composeState.attachments"
+              :account-id="composeState.from?.accountId"
+            />
             <oc-button
               type="button"
               class="flex h-9 w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
@@ -93,7 +97,10 @@
             <oc-button appearance="filled" class="min-w-[120px]">
               <span v-text="$gettext('Send')" />
             </oc-button>
-
+            <MailComposeAttachmentButton
+              v-model="composeState.attachments"
+              :account-id="composeState.from?.accountId"
+            />
             <oc-button
               type="button"
               appearance="raw"
@@ -116,6 +123,7 @@
 import { ref, computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import MailComposeForm, { ComposeFormState } from './MailComposeForm.vue'
+import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 
 const { $gettext } = useGettext()
 
@@ -136,7 +144,8 @@ const composeState = ref<ComposeFormState>({
   cc: '',
   bcc: '',
   subject: '',
-  body: ''
+  body: '',
+  attachments: []
 })
 
 const showFormattingToolbar = ref(false)
