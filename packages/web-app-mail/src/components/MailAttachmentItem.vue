@@ -90,7 +90,7 @@ const readableFileSize = computed(() => {
 const icon = computed(() => {
   const extension = attachment.name.split('.').pop()
   return (
-    (extension && (defaultFileIconMapping as any)[extension]) ||
+    (extension && defaultFileIconMapping[extension as keyof typeof defaultFileIconMapping]) ||
     (mimeType.value && iconMappingInjection?.mimeType?.[mimeType.value]) ||
     (extension && iconMappingInjection?.extension?.[extension])
   )
