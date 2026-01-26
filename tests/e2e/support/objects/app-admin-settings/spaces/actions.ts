@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test'
 import util from 'util'
 import { locatorUtils } from '../../../utils'
+import { config } from '../../../../config'
 
 const spaceTrSelector = '.settings-spaces-table tbody > tr'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
@@ -238,10 +239,16 @@ export const openSpaceAdminActionSidebarPanel = async (args: {
   const backButton = currentPanel.locator(sideBarBackButton)
   if (await backButton.count()) {
     await backButton.click()
-    await locatorUtils.waitForEvent(currentPanel, 'transitionend')
+    if (!config.slowMo) {
+      await locatorUtils.waitForEvent(currentPanel, 'transitionend')
+    }
   }
   const panelSelector = page.locator(util.format(sideBarActionButtons, action))
+  const nextPanel = page.locator(util.format(siderBarActionPanel, action))
   await panelSelector.click()
+  if (!config.slowMo) {
+    await locatorUtils.waitForEvent(nextPanel, 'transitionend')
+  }
 }
 
 export const listSpaceMembers = async (args: {
