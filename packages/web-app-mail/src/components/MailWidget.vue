@@ -4,7 +4,7 @@
     class="z-50 transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
-      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px] md:max-h-[80vh]"
+      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]"
     >
       <div class="flex items-center justify-between px-4 py-2">
         <h2
@@ -30,17 +30,35 @@
           </oc-button>
         </div>
       </div>
-      <div class="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
-        <MailComposeForm v-model="composeState" />
-      </div>
-      <div class="px-4 py-3 border-t border-role-outline-variant flex items-center justify-between">
-        <oc-button appearance="filled" class="min-w-[120px]">
-          <span v-text="$gettext('Send')" />
-        </oc-button>
-        <div class="flex items-center gap-1" />
+
+      <div class="flex flex-col flex-1 min-h-0">
+        <div class="flex-1 min-h-0 overflow-auto">
+          <MailComposeForm
+            v-model="composeState"
+            :show-formatting-toolbar="showFormattingToolbar"
+          />
+        </div>
+
+        <div class="px-4 pt-3 pb-2">
+          <div class="flex items-center justify-start gap-3">
+            <oc-button appearance="filled" class="min-w-[120px]">
+              <span v-text="$gettext('Send')" />
+            </oc-button>
+            <oc-button
+              type="button"
+              class="flex h-9 w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
+              :aria-pressed="showFormattingToolbar ? 'true' : 'false'"
+              :title="$gettext('Toggle text formatting toolbar')"
+              @click="showFormattingToolbar = !showFormattingToolbar"
+            >
+              <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
+            </oc-button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
   <oc-modal
     v-if="isOpen && isExpanded"
     :title="$gettext('New message')"
@@ -60,17 +78,34 @@
         <oc-icon name="close" fill-type="line" />
       </oc-button>
     </template>
+
     <template #content>
       <div class="flex flex-col flex-1 min-h-0">
-        <div class="flex-1 overflow-y-auto overflow-x-hidden">
-          <MailComposeForm v-model="composeState" />
+        <div class="flex-1 min-h-0 overflow-auto">
+          <MailComposeForm
+            v-model="composeState"
+            :show-formatting-toolbar="showFormattingToolbar"
+          />
         </div>
-        <div
-          class="px-4 pt-3 border-t border-role-outline-variant flex items-center justify-between mt-4"
-        >
-          <oc-button appearance="filled" class="min-w-[120px]">
-            <span v-text="$gettext('Send')" />
-          </oc-button>
+
+        <div class="px-4 pt-3">
+          <div class="flex items-center justify-start gap-3">
+            <oc-button appearance="filled" class="min-w-[120px]">
+              <span v-text="$gettext('Send')" />
+            </oc-button>
+
+            <oc-button
+              type="button"
+              appearance="raw"
+              class="flex !h-9 !w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
+              :class="{ 'bg-role-surface-variant': showFormattingToolbar }"
+              :aria-pressed="showFormattingToolbar ? 'true' : 'false'"
+              :title="$gettext('Toggle text formatting toolbar')"
+              @click="showFormattingToolbar = !showFormattingToolbar"
+            >
+              <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
+            </oc-button>
+          </div>
         </div>
       </div>
     </template>
@@ -104,6 +139,8 @@ const composeState = ref<ComposeFormState>({
   body: ''
 })
 
+const showFormattingToolbar = ref(false)
+
 const isOpen = computed({
   get: () => props.modelValue ?? true,
   set: (value: boolean) => {
@@ -136,6 +173,6 @@ const close = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  overflow: hidden;
 }
 </style>
