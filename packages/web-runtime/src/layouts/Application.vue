@@ -37,6 +37,7 @@
       </div>
 
       <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
+      <div id="mobile-right-sidebar" />
       <portal-target name="app.runtime.footer" />
     </div>
     <div

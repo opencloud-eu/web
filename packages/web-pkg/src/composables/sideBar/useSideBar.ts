@@ -1,14 +1,9 @@
-import { computed, nextTick, onBeforeUnmount, readonly, ref, Ref, unref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, readonly, ref, unref } from 'vue'
 import { EventBus, eventBus as defaultEventBus } from '../../services/eventBus'
 import { SideBarEventTopics } from './eventTopics'
 import { useLocalStorage } from '../localStorage'
 import { useEmbedMode } from '../embedMode'
-
-interface SideBarResult {
-  isSideBarOpen: Ref<boolean>
-  sideBarActivePanel: Ref<string>
-  onPanelActive: (name: string, callback: (string: any) => void) => void
-}
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 interface SideBarOptions {
   bus?: EventBus
@@ -16,8 +11,9 @@ interface SideBarOptions {
 
 // FIXME: this should be global store to avoid registering multiple event listeners on the same topics
 // https://github.com/opencloud-eu/web/issues/1397
-export const useSideBar = (options?: SideBarOptions): SideBarResult => {
+export const useSideBar = (options?: SideBarOptions) => {
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
+  const { isMobile } = useIsMobile()
   const eventBus = options?.bus || defaultEventBus
   const isSideBarOpenLocalStorage = useLocalStorage(`oc_sideBarOpen`, false)
   const isSideBarOpenIsolated = ref(false)
@@ -100,9 +96,18 @@ export const useSideBar = (options?: SideBarOptions): SideBarResult => {
     })
   }
 
+  const onInitialLoad = () => {
+    if (unref(isMobile)) {
+      // close sidebar on mobile devices on initial load because it's a bottom drawer
+      isSideBarOpen.value = false
+    }
+  }
+
   return {
     isSideBarOpen: readonly(isSideBarOpen),
     sideBarActivePanel: readonly(sideBarActivePanel),
-    onPanelActive
+    onPanelActive,
+    onInitialLoad,
+    focusSidebar
   }
 }

@@ -17,7 +17,7 @@
     <div v-else class="flex size-full">
       <slot
         class="app-wrapper-content size-full"
-        :class="{ 'w-[calc(100%-440px)] hidden xs:block': isSideBarOpen }"
+        :class="{ 'w-[calc(100%-440px)]': isSideBarOpen && !isMobile }"
         v-bind="slotAttrs"
       />
       <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
@@ -87,6 +87,7 @@ import { useFileActionsOpenWithApp } from '../../composables/actions/files/useFi
 import { UnsavedChangesModal } from '../Modals'
 import { formatFileSize, getSharedDriveItem } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const {
   applicationId,
@@ -119,6 +120,7 @@ const configStore = useConfigStore()
 const resourcesStore = useResourcesStore()
 const sharesStore = useSharesStore()
 const eventBus = useEventBus()
+const { isMobile } = useIsMobile()
 const { isSideBarOpen, sideBarActivePanel } = useSideBar()
 
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({

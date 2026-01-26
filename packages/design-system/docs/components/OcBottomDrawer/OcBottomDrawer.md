@@ -10,30 +10,16 @@ prev: false
 
 The `OcBottomDrawer` component can be used to display content in a bottom drawer that slides up from the bottom of the screen. It is especially useful on mobile devices instead of showing dropdown menus to the user.
 
+Note however that this component mainly takes care of the visual representation of the bottom drawer. You will need to handle the opening and closing logic yourself (see example below).
+
 ## Examples
 
-### Default
+The component just requires an `id` to be set. But you usually also want to define a callback on the `clicked` event.
 
-The default use case gets an ID and the selector of the toggle button as props.
+Per default, the component traps your focus within the drawer when opened. This however requires at least one tabbable element (like a button or link) to be present within the drawer. Alternatively, you can disable this behavior by setting the `isFocusTrapActive` prop to `false`.
 
 ::: livecode {path=/components/OcBottomDrawer/default.vue}
 <<< @/components/OcBottomDrawer/default.vue
-:::
-
-### Nesting
-
-The bottom drawer can also be nested, for example to categorize items.
-
-::: livecode {path=/components/OcBottomDrawer/nesting.vue}
-<<< @/components/OcBottomDrawer/nesting.vue
-:::
-
-### Portal
-
-You can also provide a `portal-target` via `portal-vue` if you want to render the bottom drawer outside of the current DOM hierarchy.
-
-::: livecode {path=/components/OcBottomDrawer/portal.vue}
-<<< @/components/OcBottomDrawer/portal.vue
 :::
 
 ::: component-api
