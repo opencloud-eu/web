@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { z } from 'zod'
 import { AttachmentBlobUploadResponse, AttachmentBlobUploadResponseSchema } from '../types'
 
 let saveAttachmentTask: ReturnType<typeof useTask> | null = null
