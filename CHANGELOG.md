@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@tammi-23
+@ScharfViktor, @tammi-23
+
+### ✅ Tests
+
+- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
 
 ### 📈 Enhancement
 
