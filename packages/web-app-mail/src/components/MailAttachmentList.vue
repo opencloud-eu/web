@@ -79,7 +79,24 @@ watch(
   }
 )
 
+type AttachmentWithBlobId = { blobId: string }
+type AttachmentWithId = { id: string }
+
+const hasBlobId = (a: Attachment): a is Attachment & AttachmentWithBlobId => {
+  return typeof (a as AttachmentWithBlobId).blobId === 'string'
+}
+
+const hasId = (a: Attachment): a is Attachment & AttachmentWithId => {
+  return typeof (a as AttachmentWithId).id === 'string'
+}
+
 const getKey = (a: Attachment) => {
-  return (a as any).blobId ?? (a as any).id ?? a.name
+  if (hasBlobId(a)) {
+    return a.blobId
+  }
+  if (hasId(a)) {
+    return a.id
+  }
+  return a.name
 }
 </script>
