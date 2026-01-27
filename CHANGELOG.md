@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@ScharfViktor, @tammi-23
+@AlexAndBear, @ScharfViktor, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
 
 ### ✅ Tests
 
