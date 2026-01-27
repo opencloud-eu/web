@@ -4,8 +4,7 @@
     <oc-button
       :id="mobileToggleId"
       type="button"
-      appearance="raw"
-      class="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
+      class="md:hidden h-9 w-9 rounded-full p-0"
       :aria-label="$gettext('Add attachment')"
       :title="$gettext('Add attachment')"
     >
@@ -13,8 +12,7 @@
     </oc-button>
     <oc-button
       type="button"
-      appearance="raw"
-      class="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
+      class="hidden md:inline-flex h-9 w-9 rounded-full p-0"
       :aria-label="$gettext('Add attachment')"
       :title="$gettext('Add attachment')"
       @click="openPicker"
@@ -28,7 +26,7 @@
     >
       <ul class="flex flex-col">
         <li>
-          <oc-button appearance="raw" class="w-full justify-start" @click="openPicker">
+          <oc-button appearance="raw" class="w-full" @click="openPicker">
             <span v-text="$gettext('Attach file')" />
           </oc-button>
         </li>
@@ -38,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
+import { useId, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useMessages } from '@opencloud-eu/web-pkg'
 import type { MailComposeAttachment } from './MailComposeForm.vue'

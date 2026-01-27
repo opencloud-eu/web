@@ -54,6 +54,7 @@ import {
   triggerDownloadWithFilename
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
 
 type Attachment = MailBodyPart | MailComposeAttachment
 
@@ -96,34 +97,22 @@ const icon = computed(() => {
   )
 })
 
-const hasBlobId = (value: Attachment): value is Attachment & { blobId: string } => {
-  return typeof value.blobId === 'string' && value.blobId.length > 0
-}
+const attachmentBlobId = computed(() => {
+  return hasBlobId(attachment) ? attachment.blobId : undefined
+})
 
 const canDownload = computed(() => {
-  if (mode !== 'download') {
-    return false
-  }
-  if (!accountId) {
-    return false
-  }
-  if (!hasBlobId(attachment)) {
-    return false
-  }
-  return true
+  return mode === 'download' && !!accountId && !!attachmentBlobId.value
 })
 
 const download = async () => {
-  if (!canDownload.value) {
-    return
-  }
-  if (!hasBlobId(attachment)) {
+  if (!canDownload.value || !attachmentBlobId.value) {
     return
   }
 
   const url = urlJoin(
     configStore.groupwareUrl,
-    `/accounts/${accountId}/blobs/${attachment.blobId}/${encodeURIComponent(attachment.name)}`
+    `/accounts/${accountId}/blobs/${attachmentBlobId.value}/${encodeURIComponent(attachment.name)}`
   )
 
   try {
@@ -143,7 +132,7 @@ const download = async () => {
 }
 
 const remove = () => {
-  if ('id' in attachment && typeof attachment.id === 'string') {
+  if (hasId(attachment)) {
     emit('remove', attachment.id)
     return
   }

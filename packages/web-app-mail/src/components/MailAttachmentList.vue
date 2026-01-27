@@ -54,10 +54,15 @@ import { useGettext } from 'vue3-gettext'
 import type { MailBodyPart } from '../types'
 import type { MailComposeAttachment } from './MailComposeForm.vue'
 import MailAttachmentItem from './MailAttachmentItem.vue'
+import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
 
 type Attachment = MailBodyPart | MailComposeAttachment
 
-const props = defineProps<{
+const {
+  attachments,
+  accountId,
+  mode = 'download'
+} = defineProps<{
   attachments: Attachment[]
   accountId?: string
   mode?: 'download' | 'compose'
@@ -69,26 +74,14 @@ defineEmits<{
 
 const { $gettext, $ngettext } = useGettext()
 
-const mode = props.mode ?? 'download'
-const collapsed = ref(mode === 'download' ? props.attachments.length > 3 : false)
+const collapsed = ref(mode === 'download' ? attachments.length > 3 : false)
 
 watch(
-  () => props.attachments.length,
+  () => attachments.length,
   (len) => {
     if (mode === 'download') collapsed.value = len > 3
   }
 )
-
-type AttachmentWithBlobId = { blobId: string }
-type AttachmentWithId = { id: string }
-
-const hasBlobId = (a: Attachment): a is Attachment & AttachmentWithBlobId => {
-  return typeof (a as AttachmentWithBlobId).blobId === 'string'
-}
-
-const hasId = (a: Attachment): a is Attachment & AttachmentWithId => {
-  return typeof (a as AttachmentWithId).id === 'string'
-}
 
 const getKey = (a: Attachment) => {
   if (hasBlobId(a)) {

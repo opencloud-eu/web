@@ -52,7 +52,7 @@
       <MailBodyEditor
         class="flex-1"
         :model-value="modelValue.body"
-        :show-toolbar="showFormattingToolbarValue"
+        :show-toolbar="showFormattingToolbar"
         @update:model-value="(value: string) => updateField('body', value)"
       />
       <MailAttachmentList
@@ -100,7 +100,7 @@ export type ComposeFormState = {
   attachments?: MailComposeAttachment[]
 }
 
-const props = defineProps<{
+const { modelValue, showFormattingToolbar = false } = defineProps<{
   modelValue: ComposeFormState
   showFormattingToolbar?: boolean
 }>()
@@ -115,8 +115,6 @@ const accountsStore = useAccountsStore()
 const { accounts } = storeToRefs(accountsStore)
 
 const selectedAccountIdQuery = useRouteQuery('accountId')
-
-const showFormattingToolbarValue = computed(() => props.showFormattingToolbar ?? false)
 
 const fromOptions = computed<FromOption[]>(() => {
   return (
@@ -133,11 +131,11 @@ const fromOptions = computed<FromOption[]>(() => {
 })
 
 const updateField = <K extends keyof ComposeFormState>(key: K, value: ComposeFormState[K]) => {
-  emit('update:modelValue', { ...props.modelValue, [key]: value })
+  emit('update:modelValue', { ...modelValue, [key]: value })
 }
 
 const removeAttachment = (id: string) => {
-  const next = (props.modelValue.attachments ?? []).filter((a) => a.id !== id)
+  const next = (modelValue.attachments ?? []).filter((a) => a.id !== id)
   updateField('attachments', next)
 }
 
@@ -152,7 +150,7 @@ watch(
       ? (options.find((o) => o.accountId === selectedAccountId) ?? options[0])
       : options[0]
 
-    if (!props.modelValue.from && defaultFrom) {
+    if (!modelValue.from && defaultFrom) {
       updateField('from', defaultFrom)
     }
   },
