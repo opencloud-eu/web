@@ -329,7 +329,7 @@ importers:
         version: 2.4.1(eslint@9.39.2(jiti@2.6.1))
       globals:
         specifier: ^17.0.0
-        version: 17.1.0
+        version: 17.2.0
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
@@ -4638,8 +4638,8 @@ packages:
     resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
     engines: {node: '>=18'}
 
-  globals@17.1.0:
-    resolution: {integrity: sha512-8HoIcWI5fCvG5NADj4bDav+er9B9JMj2vyL2pI8D0eismKyUvPLTSs+Ln3wqhwcp306i73iyVnEKx3F6T47TGw==}
+  globals@17.2.0:
+    resolution: {integrity: sha512-tovnCz/fEq+Ripoq+p/gN1u7l6A7wwkoBT9pRCzTHzsD/LvADIzXZdjmRymh5Ztf0DYC3Rwg5cZRYjxzBmzbWg==}
     engines: {node: '>=18'}
 
   globrex@0.1.2:
@@ -10911,7 +10911,7 @@ snapshots:
 
   globals@15.15.0: {}
 
-  globals@17.1.0: {}
+  globals@17.2.0: {}
 
   globrex@0.1.2: {}
 
