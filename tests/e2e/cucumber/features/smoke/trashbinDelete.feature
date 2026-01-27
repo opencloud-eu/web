@@ -127,8 +127,8 @@ Feature: Trashbin delete
       | hr       |
     And "Brian" should see the text "3 trash bins in total (including 2 empty)" at the footer of the trashbin page
     When "Brian" empties the trashbin for space "sales" using quick action
+    And "Brian" should see the text "3 trash bins in total (including 3 empty)" at the footer of the trashbin page
     Then following resources should not be displayed in the trashbin for user "Brian"
       | resource |
       | sales    |    
     And "Brian" logs out
-    
