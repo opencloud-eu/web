@@ -719,6 +719,9 @@ export const announceUpdates = async ({
     const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
       'https://update.opencloud.eu/server.json',
       {
+        headers: {
+          'Cache-Control': 'no-cache'
+        },
         params: {
           server: bytesToHex(sha256ServerUrl),
           edition: capabilityStore.status.edition || 'rolling',
