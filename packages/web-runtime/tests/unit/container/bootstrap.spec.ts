@@ -259,6 +259,9 @@ describe('announceUpdates', () => {
     expect(clientService.httpUnAuthenticated.get).toHaveBeenCalledWith(
       'https://update.opencloud.eu/server.json',
       {
+        headers: {
+          'Cache-Control': 'no-cache'
+        },
         params: {
           edition: 'rolling',
           server: 'feb937bb3019600cd682a7fc66d17a37540d9b3060ffa415373f2ad81f9f3b3a',
