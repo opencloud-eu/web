@@ -20,6 +20,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.17.1 [[#1871](https://github.com/opencloud-eu/web/pull/1871)]
+- fix(deps): update dependency @sentry/vue to v10.37.0 [[#1881](https://github.com/opencloud-eu/web/pull/1881)]
 - fix(deps): update dependency @sentry/vue to v10.36.0 [[#1854](https://github.com/opencloud-eu/web/pull/1854)]
 - fix(deps): update dependency zod to v4.3.6 [[#1863](https://github.com/opencloud-eu/web/pull/1863)]
 - chore(deps): update dependency globals to v17.1.0 [[#1864](https://github.com/opencloud-eu/web/pull/1864)]
