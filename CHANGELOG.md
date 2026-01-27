@@ -4,15 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor, @tammi-23
+@AlexAndBear, @ScharfViktor, @saw-jan, @tammi-23
+
+### ✅ Tests
+
+- test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
+- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
 
 ### 🐛 Bug Fixes
 
 - fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
-
-### ✅ Tests
-
-- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
 
 ### 📈 Enhancement
 
