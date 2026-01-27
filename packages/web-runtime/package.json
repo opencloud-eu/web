@@ -11,14 +11,14 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "@sentry/vue": "10.35.0",
+    "@sentry/vue": "10.36.0",
     "@uppy/core": "5.2.0",
     "@uppy/tus": "5.1.0",
     "@uppy/utils": "7.1.5",
     "@uppy/xhr-upload": "5.1.1",
     "@vueuse/core": "^14.0.0",
     "@vueuse/head": "2.0.0",
-    "axios": "1.13.2",
+    "axios": "1.13.3",
     "deepmerge": "4.3.1",
     "email-validator": "2.0.4",
     "focus-trap-vue": "^4.0.1",
@@ -41,7 +41,7 @@
     "vue3-gettext": "2.4.0",
     "webdav": "5.8.0",
     "xml-js": "^1.6.11",
-    "zod": "4.3.5"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
