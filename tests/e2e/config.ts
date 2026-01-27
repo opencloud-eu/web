@@ -26,6 +26,7 @@ interface Config {
 
   slowMo: number
   timeout: number
+  readonly largeUploadTimeout: number
   minTimeout: number
   tokenTimeout: number
   headless: boolean
