@@ -14,6 +14,14 @@
 
 - Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
 
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.36.0 [[#1854](https://github.com/opencloud-eu/web/pull/1854)]
+- fix(deps): update dependency zod to v4.3.6 [[#1863](https://github.com/opencloud-eu/web/pull/1863)]
+- chore(deps): update dependency globals to v17.1.0 [[#1864](https://github.com/opencloud-eu/web/pull/1864)]
+- fix(deps): update dependency axios to v1.13.3 [[#1867](https://github.com/opencloud-eu/web/pull/1867)]
+- chore(deps): update typescript-eslint monorepo to v8.54.0 [[#1877](https://github.com/opencloud-eu/web/pull/1877)]
+
 ## [5.0.0](https://github.com/opencloud-eu/web/releases/tag/v5.0.0) - 2026-01-26
 
 ### ❤️ Thanks to all contributors! ❤️
