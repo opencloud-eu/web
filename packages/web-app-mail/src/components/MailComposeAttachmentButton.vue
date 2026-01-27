@@ -57,7 +57,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: MailComposeAttachment[]): void
 }>()
 
-const fileInput = ref<HTMLInputElement | null>(null)
+const fileInput = useTemplateRef('fileInput')
 const mobileToggleId = `mail-compose-attach-toggle-${useId()}`
 
 const openPicker = () => {
