@@ -6,6 +6,11 @@
 
 @AlexAndBear, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### 📈 Enhancement
+
+- Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
+- Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
+
 ### 🐛 Bug Fixes
 
 - fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
@@ -15,10 +20,6 @@
 
 - test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
 - delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
-
-### 📈 Enhancement
-
-- Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
 
 ### 📦️ Dependencies
 
