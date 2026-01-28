@@ -52,7 +52,7 @@ const defaultSpaceIconDisabled: IconType = {
   color: 'var(--oc-role-secondary)'
 }
 
-const defaultFallbackIcon: IconType = {
+const defaultFileIcon: IconType = {
   name: 'resource-type-file',
   color: 'var(--oc-role-on-surface)'
 }
@@ -67,10 +67,7 @@ const { resource, size = 'large' } = defineProps<{
 const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 
 const hasFolderIcon = computed(() => {
-  if (!!resource.extension) {
-    return false
-  }
-  return resource.type === 'folder' || resource.isFolder
+  return unref(icon)?.name === defaultFolderIcon.name
 })
 
 const hasSpaceIcon = computed(() => {
@@ -79,6 +76,13 @@ const hasSpaceIcon = computed(() => {
 
 const hasDisabledSpaceIcon = computed(() => {
   return isProjectSpaceResource(resource) && resource.disabled === true
+})
+
+const fallbackIcon = computed(() => {
+  if (resource.type === 'folder' || resource.isFolder) {
+    return defaultFolderIcon
+  }
+  return defaultFileIcon
 })
 
 const hasPersonalSpaceIcon = computed(() => {
@@ -101,18 +105,15 @@ const icon = computed((): IconType => {
   if (unref(hasSpaceIcon)) {
     return defaultSpaceIcon
   }
-  if (unref(hasFolderIcon)) {
-    return defaultFolderIcon
-  }
 
-  const icon =
+  const typeIconOrUndefined =
     defaultFileIconMapping[unref(extension)] ||
     iconMappingInjection?.mimeType[unref(mimeType)] ||
     iconMappingInjection?.extension[unref(extension)]
 
   return {
-    ...defaultFallbackIcon,
-    ...icon
+    ...unref(fallbackIcon),
+    ...typeIconOrUndefined
   }
 })
 </script>
