@@ -574,7 +574,7 @@ def e2eTests(ctx):
             if "app-provider-onlyOffice" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
                 steps += onlyofficeService() + \
-                         waitForService("onlyoffice", "443") + \
+                         waitForWebOffice("https://onlyoffice") + \
                          openCloudService(params["extraServerEnvironment"]) + \
                          wopiCollaborationService("onlyoffice") + \
                          waitForService("wopi-onlyoffice", "9300")
@@ -582,7 +582,7 @@ def e2eTests(ctx):
             elif "app-provider" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
                 steps += collaboraService() + \
-                         waitForService("collabora", "9980") + \
+                         waitForWebOffice("https://collabora:9980") + \
                          openCloudService(params["extraServerEnvironment"]) + \
                          wopiCollaborationService("collabora") + \
                          waitForService("wopi-collabora", "9300")
@@ -1670,3 +1670,15 @@ def restoreBrowsersCache(browser):
             ],
         },
     ]
+
+def waitForWebOffice(office_url = ""):
+    if office_url == "":
+        return []
+    office_url += "/hosting/discovery"
+    return [{
+        "name": "wait-for-weboffice",
+        "image": OC_CI_NODEJS,
+        "commands": [
+            "timeout 300 bash -c 'while [ $(curl -sk -o /dev/null -w \"%{http_code}\" %s) != 200 ]; do echo \"Waiting...\" && sleep 1; done'" % office_url,
+        ],
+    }]
