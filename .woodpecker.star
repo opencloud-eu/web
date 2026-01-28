@@ -1679,6 +1679,9 @@ def waitForWebOffice(office_url = ""):
         "name": "wait-for-weboffice",
         "image": OC_CI_NODEJS,
         "commands": [
-            "timeout 300 bash -c 'while [ $(curl -sk -o /dev/null -w \"%{http_code}\" %s) != 200 ]; do echo \"Waiting...\" && sleep 1; done'" % office_url,
+            "timeout 300 bash -c " +
+            "'while [ `curl %s" % office_url +
+            " -w \"%{http_code}\" -o /dev/null -sk` != \"200\" ]; do " +
+            "echo \"Waiting...\" && sleep 2; done'",
         ],
     }]
