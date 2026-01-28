@@ -1,9 +1,9 @@
 <template>
-  <div class="mail-attachment-list">
+  <div class="mail-attachment-list" v-if="attachments.length">
     <oc-card
       title="mail-attachments"
       header-class="items-start pl-0"
-      :body-class="['bg-role-surface-container', 'rounded-xl', 'mt-2', collapsed ? 'hidden' : '']"
+      :body-class="['bg-role-surface', 'rounded-xl', 'mt-2', collapsed ? 'hidden' : '']"
       appearance="outlined"
     >
       <template #header>
@@ -27,13 +27,21 @@
           </oc-button>
         </div>
       </template>
-      <oc-list class="mail-attachment-itemslist [&>li:not(:first-child)]:mt-4">
+
+      <oc-list
+        class="mail-attachment-itemslist -mx-4 grid grid-cols-1 gap-4 sm:[grid-template-columns:repeat(auto-fit,minmax(min(335px,100%),335px))]"
+      >
         <li
           v-for="attachment in attachments"
-          :key="attachment.blobId"
-          class="mail-attachment-item rounded-xl bg-role-surface-container-lowest pl-2 pr-4 py-2"
+          :key="getKey(attachment)"
+          class="mail-attachment-item w-full rounded-xl bg-role-surface-container pl-2 pr-4 py-2"
         >
-          <MailAttachmentItem :attachment="attachment" :account-id="accountId" />
+          <MailAttachmentItem
+            :attachment="attachment"
+            :account-id="accountId"
+            :mode="mode"
+            @remove="(id) => $emit('remove', id)"
+          />
         </li>
       </oc-list>
     </oc-card>
@@ -41,13 +49,47 @@
 </template>
 
 <script setup lang="ts">
-import { MailBodyPart } from '../types'
+import { ref, watch } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import type { MailBodyPart } from '../types'
+import type { MailComposeAttachment } from './MailComposeForm.vue'
 import MailAttachmentItem from './MailAttachmentItem.vue'
-import { ref } from 'vue'
+import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
 
-const { attachments } = defineProps<{
-  attachments: MailBodyPart[]
-  accountId: string
+type Attachment = MailBodyPart | MailComposeAttachment
+
+const {
+  attachments,
+  accountId,
+  mode = 'download'
+} = defineProps<{
+  attachments: Attachment[]
+  accountId?: string
+  mode?: 'download' | 'compose'
 }>()
-const collapsed = ref(attachments.length > 3)
+
+defineEmits<{
+  (e: 'remove', id: string): void
+}>()
+
+const { $gettext, $ngettext } = useGettext()
+
+const collapsed = ref(mode === 'download' ? attachments.length > 3 : false)
+
+watch(
+  () => attachments.length,
+  (len) => {
+    if (mode === 'download') collapsed.value = len > 3
+  }
+)
+
+const getKey = (a: Attachment) => {
+  if (hasBlobId(a)) {
+    return a.blobId
+  }
+  if (hasId(a)) {
+    return a.id
+  }
+  return a.name
+}
 </script>

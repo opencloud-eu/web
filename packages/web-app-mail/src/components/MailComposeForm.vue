@@ -13,7 +13,6 @@
         @update:model-value="(value) => updateField('from', value as FromOption)"
       />
     </div>
-
     <oc-text-input
       :model-value="modelValue.to"
       type="email"
@@ -23,7 +22,6 @@
       :has-border="false"
       @update:model-value="(value: string) => updateField('to', value)"
     />
-
     <oc-text-input
       :model-value="modelValue.cc"
       type="email"
@@ -33,7 +31,6 @@
       :has-border="false"
       @update:model-value="(value: string) => updateField('cc', value)"
     />
-
     <oc-text-input
       :model-value="modelValue.bcc"
       type="email"
@@ -43,7 +40,6 @@
       :has-border="false"
       @update:model-value="(value: string) => updateField('bcc', value)"
     />
-
     <oc-text-input
       :model-value="modelValue.subject"
       class="mail-new-message-to-input pb-2 border-b border-role-outline-variant"
@@ -52,13 +48,17 @@
       :has-border="false"
       @update:model-value="(value: string) => updateField('subject', value)"
     />
-
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col min-h-0">
       <MailBodyEditor
         class="flex-1"
         :model-value="modelValue.body"
-        :show-toolbar="props.showFormattingToolbar"
+        :show-toolbar="showFormattingToolbar"
         @update:model-value="(value: string) => updateField('body', value)"
+      />
+      <MailAttachmentList
+        :attachments="modelValue.attachments ?? []"
+        mode="compose"
+        @remove="removeAttachment"
       />
     </div>
   </div>
@@ -71,6 +71,7 @@ import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
 import MailBodyEditor from './MailBodyEditor.vue'
+import MailAttachmentList from './MailAttachmentList.vue'
 
 type FromOption = {
   value: string
@@ -80,6 +81,15 @@ type FromOption = {
   identityId: string
 }
 
+export type MailComposeAttachment = {
+  id: string
+  blobId: string
+  name: string
+  type: string
+  disposition: 'attachment'
+  size: number
+}
+
 export type ComposeFormState = {
   from?: FromOption
   to: string
@@ -87,9 +97,10 @@ export type ComposeFormState = {
   bcc: string
   subject: string
   body: string
+  attachments?: MailComposeAttachment[]
 }
 
-const props = defineProps<{
+const { modelValue, showFormattingToolbar = false } = defineProps<{
   modelValue: ComposeFormState
   showFormattingToolbar?: boolean
 }>()
@@ -120,7 +131,12 @@ const fromOptions = computed<FromOption[]>(() => {
 })
 
 const updateField = <K extends keyof ComposeFormState>(key: K, value: ComposeFormState[K]) => {
-  emit('update:modelValue', { ...props.modelValue, [key]: value })
+  emit('update:modelValue', { ...modelValue, [key]: value })
+}
+
+const removeAttachment = (id: string) => {
+  const next = (modelValue.attachments ?? []).filter((a) => a.id !== id)
+  updateField('attachments', next)
 }
 
 watch(
@@ -134,7 +150,7 @@ watch(
       ? (options.find((o) => o.accountId === selectedAccountId) ?? options[0])
       : options[0]
 
-    if (!props.modelValue.from && defaultFrom) {
+    if (!modelValue.from && defaultFrom) {
       updateField('from', defaultFrom)
     }
   },

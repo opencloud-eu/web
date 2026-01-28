@@ -127,6 +127,12 @@ export const MailAccountSchema = z.object({
   identities: z.array(IdentitySchema).optional().default([])
 })
 
+export const AttachmentBlobUploadResponseSchema = z.object({
+  blobId: z.string(),
+  size: z.number().optional(),
+  type: z.string().optional()
+})
+
 export type MailAccount = z.infer<typeof MailAccountSchema>
 export type Mail = z.infer<typeof MailSchema>
 export type MailAddress = z.infer<typeof MailAddressSchema>
@@ -135,3 +141,4 @@ export type Keywords = z.infer<typeof KeywordsSchema>
 export type MailHeader = z.infer<typeof MailHeaderSchema>
 export type MailBodyValue = z.infer<typeof MailBodyValueSchema>
 export type Mailbox = z.infer<typeof MailboxSchema>
+export type AttachmentBlobUploadResponse = z.infer<typeof AttachmentBlobUploadResponseSchema>
