@@ -1,17 +1,16 @@
 <template>
-  <oc-bottom-drawer
+  <oc-mobile-drop
     v-if="useBottomDrawer"
     ref="bottomDrawerRef"
     :drawer-id="dropId"
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
-    use-portal
     @show="emit('showDrop')"
     @hide="emit('hideDrop')"
   >
     <slot />
-  </oc-bottom-drawer>
+  </oc-mobile-drop>
   <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
     <oc-card v-if="isOpen && $slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
       <slot />
@@ -27,7 +26,7 @@ import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
-import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
+import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
 
 export interface Props {
@@ -143,7 +142,7 @@ const { isMobile } = useIsMobile()
 const isOpen = ref(false)
 
 const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
-const bottomDrawerRef = useTemplateRef<typeof OcBottomDrawer>('bottomDrawerRef')
+const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
 
 const drop = useTemplateRef('drop')
 const tippyInstance = ref<Instance | null>(null)
@@ -312,24 +311,24 @@ watch(
     @apply w-xs max-w-full;
   }
 
-  .oc-bottom-drawer li a,
-  .oc-bottom-drawer li button,
+  .oc-mobile-drop li a,
+  .oc-mobile-drop li button,
   .oc-drop li a,
   .oc-drop li button {
     @apply p-2 w-full;
   }
 
-  .oc-bottom-drawer li,
+  .oc-mobile-drop li,
   .oc-drop li {
     @apply mb-1;
   }
 
-  .oc-bottom-drawer li:first-child,
+  .oc-mobile-drop li:first-child,
   .oc-drop li:first-child {
     @apply mt-0;
   }
 
-  .oc-bottom-drawer li:last-child,
+  .oc-mobile-drop li:last-child,
   .oc-drop li:last-child {
     @apply mb-0;
   }

@@ -19,7 +19,7 @@ const dom = ({
       components: { 'oc-drop': Drop }
     },
     {
-      global: { plugins: defaultPlugins(), stubs: { OcBottomDrawer: true } },
+      global: { plugins: defaultPlugins(), stubs: { OcMobileDrop: true } },
       attachTo: document.body,
       data: () => ({ position, mode, paddingSize, enforceDropOnMobile })
     }
@@ -112,7 +112,7 @@ describe('OcDrop', () => {
     })
   })
 
-  describe('Component "OcBottomDrawer"', () => {
+  describe('Component "OcMobileDrop"', () => {
     it('renders on mobile device', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
         isMobile: computed(() => true)
@@ -120,7 +120,7 @@ describe('OcDrop', () => {
 
       const { wrapper } = dom()
       await nextTick()
-      expect(wrapper.find('oc-bottom-drawer-stub').exists()).toBeTruthy()
+      expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeTruthy()
     })
     it('does not render on mobile device when "enforceDropOnMobile" is true', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
@@ -129,7 +129,7 @@ describe('OcDrop', () => {
 
       const { wrapper } = dom({ enforceDropOnMobile: true })
       await nextTick()
-      expect(wrapper.find('oc-bottom-drawer-stub').exists()).toBeFalsy()
+      expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeFalsy()
     })
   })
 })
