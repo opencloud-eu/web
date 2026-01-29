@@ -164,7 +164,7 @@ Feature: server sent events
     And "Brian" logs out
     And "Alice" logs out
 
-  @webkit-skip
+
   Scenario: sse events on file operations
     Given "Admin" assigns following roles to the users using API
       | id    | role        |
