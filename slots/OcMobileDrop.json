@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Bottom drawer content.",
+    "type": "() => unknown"
+  }
+]

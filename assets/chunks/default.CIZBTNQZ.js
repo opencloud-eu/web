@@ -1,1 +1,0 @@
-import{r as a,O as s,z as p,M as r,Y as u,w as c}from"./framework.C_OWe8js.js";import"./theme.ClLHdbUM.js";const _=a({__name:"default",setup(m){const e=r();return s(e,o=>{console.log(o)}),(o,l)=>{const t=u("oc-file-input");return c(),p(t,{modelValue:e.value,"onUpdate:modelValue":l[0]||(l[0]=n=>e.value=n),label:"Select file"},null,8,["modelValue"])}}});export{_ as default};
