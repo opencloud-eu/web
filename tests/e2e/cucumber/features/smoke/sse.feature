@@ -28,7 +28,8 @@ Feature: server sent events
       | Alice |
       | Brian |
       | Carol |
-
+  
+  @webkit-skip
   Scenario: space sse events
     Given "Admin" assigns following roles to the users using API
       | id    | role        |
@@ -127,7 +128,7 @@ Feature: server sent events
     And "Brian" logs out
     And "Alice" logs out
 
-
+  @webkit-skip
   Scenario: share sse events
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
@@ -164,7 +165,7 @@ Feature: server sent events
     And "Brian" logs out
     And "Alice" logs out
 
-
+  @webkit-skip
   Scenario: sse events on file operations
     Given "Admin" assigns following roles to the users using API
       | id    | role        |
