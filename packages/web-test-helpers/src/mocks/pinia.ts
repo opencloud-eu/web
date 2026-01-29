@@ -72,6 +72,7 @@ export type PiniaMockOptions = {
     userAvatar?: string
     avatarMap?: Record<string, string>
   }
+  sideBarStore?: { sideBarActivePanel?: string | null }
   sharesState?: {
     collaboratorShares?: CollaboratorShare[]
     linkShares?: LinkShare[]
@@ -105,6 +106,7 @@ export function createMockStore({
   userSettingsStore = {},
   groupSettingsStore = {},
   spaceSettingsStore = {},
+  sideBarStore = {},
   sharesState = {},
   spacesState = {},
   userState = {},
@@ -159,6 +161,7 @@ export function createMockStore({
       avatars: {
         ...avatarsStore
       },
+      sideBar: { ...sideBarStore },
       shares: { collaboratorShares: [], linkShares: [], ...sharesState },
       spaces: { spaces: [], ...spacesState },
       userSettings: { users: [], selectedUsers: [], ...userSettingsStore },

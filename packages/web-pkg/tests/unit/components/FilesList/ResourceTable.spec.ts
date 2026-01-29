@@ -9,10 +9,9 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, SideBarEventTopics } from '../../../../src/composables/piniaStores'
+import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
 import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
-import { eventBus } from '../../../../src/services/eventBus'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
@@ -626,12 +625,13 @@ describe('ResourceTable', () => {
         expect(resourceRow.find('.resource-table-tag-more').exists()).toBe(renderButton)
       })
       it('opens sidebar on click', async () => {
-        const spyBus = vi.spyOn(eventBus, 'publish')
         const resource = mock<Resource>({ id: '1', tags: ['1', '2', '3'] })
         const { wrapper } = getMountedWrapper({ props: { resources: [resource] } })
         const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
+
+        const { openSideBar } = useSideBar()
         await resourceRow.find('.resource-table-tag-more').trigger('click')
-        expect(spyBus).toHaveBeenCalledWith(SideBarEventTopics.open)
+        expect(openSideBar).toHaveBeenCalled()
       })
     })
   })

@@ -1,4 +1,4 @@
-import { SideBarEventTopics, eventBus, useFileActionsShowDetails } from '../../../../../src'
+import { useFileActionsShowDetails, useSideBar } from '../../../../../src'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
@@ -11,10 +11,10 @@ describe('showDetails', () => {
         () => {
           const { actions } = useFileActionsShowDetails()
 
-          const busStub = vi.spyOn(eventBus, 'publish')
+          const { openSideBar } = useSideBar()
           const resources = [{ id: '1', path: '/folder' }] as Resource[]
           unref(actions)[0].handler({ space: null, resources })
-          expect(busStub).toHaveBeenCalledWith(SideBarEventTopics.open)
+          expect(openSideBar).toHaveBeenCalled()
         },
         { mocks, provide: mocks }
       )
