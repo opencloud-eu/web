@@ -24,6 +24,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency globals to v17.2.0 [[#1883](https://github.com/opencloud-eu/web/pull/1883)]
+- fix(deps): update dependency axios to v1.13.4 [[#1885](https://github.com/opencloud-eu/web/pull/1885)]
 - chore(deps): update devdependencies (non-major) [[#1865](https://github.com/opencloud-eu/web/pull/1865)]
 - chore(deps): update tiptap monorepo to v3.17.1 [[#1871](https://github.com/opencloud-eu/web/pull/1871)]
 - fix(deps): update dependency @sentry/vue to v10.37.0 [[#1881](https://github.com/opencloud-eu/web/pull/1881)]
