@@ -1,10 +1,19 @@
 <template>
-  <oc-button id="toggle-bottom-drawer">Open bottom drawer</oc-button>
+  <oc-button @click="drawerActive = true">Open bottom drawer</oc-button>
   <oc-bottom-drawer
-    drawer-id="example-bottom-drawer"
-    toggle="#toggle-bottom-drawer"
-    title="Example Bottom Drawer"
+    v-if="drawerActive"
+    id="example-bottom-drawer"
+    :is-focus-trap-active="false"
+    @clicked="drawerActive = false"
   >
-    Some content in the bottom drawer.
+    <div class="p-4 bg-role-surface-container">
+      <h3>Bottom drawer content</h3>
+      <p>Some content in the bottom drawer.</p>
+    </div>
   </oc-bottom-drawer>
 </template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const drawerActive = ref(false)
+</script>
