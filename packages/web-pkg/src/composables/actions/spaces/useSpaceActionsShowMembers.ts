@@ -1,17 +1,16 @@
-import { eventBus } from '../../../services/eventBus'
-import { SideBarEventTopics } from '../../sideBar'
 import { computed } from 'vue'
 import { SpaceAction, SpaceActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
-import { useResourcesStore } from '../../piniaStores'
+import { useResourcesStore, useSideBar } from '../../piniaStores'
 
 export const useSpaceActionsShowMembers = () => {
   const { $gettext } = useGettext()
   const resourcesStore = useResourcesStore()
+  const { openSideBarPanel } = useSideBar()
 
   const handler = ({ resources }: SpaceActionOptions) => {
     resourcesStore.setSelection(resources.map(({ id }) => id))
-    eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
+    openSideBarPanel('space-share')
   }
 
   const actions = computed((): SpaceAction[] => [

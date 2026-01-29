@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-attachment-list" v-if="attachments.length">
+  <div v-if="attachments.length" class="mail-attachment-list">
     <oc-card
       title="mail-attachments"
       header-class="items-start pl-0"

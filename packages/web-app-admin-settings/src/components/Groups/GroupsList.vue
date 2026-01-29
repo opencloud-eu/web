@@ -137,13 +137,13 @@ import {
   displayPositionedDropdown,
   eventBus,
   Pagination,
-  SideBarEventTopics,
   useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
   usePagination,
   useRoute,
-  useRouter
+  useRouter,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { useGettext } from 'vue3-gettext'
@@ -171,6 +171,7 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
     const { isSticky } = useIsTopBarSticky()
+    const { openSideBar, openSideBarPanel } = useSideBar()
 
     const lastSelectedGroupIndex = ref(0)
     const lastSelectedGroupId = ref<string>()
@@ -208,7 +209,7 @@ export default defineComponent({
       if (!isGroupSelected(group)) {
         selectGroup(group)
       }
-      eventBus.publish(SideBarEventTopics.open)
+      openSideBar()
     }
     const rowClicked = (data: [Group, MouseEvent | KeyboardEvent]) => {
       const resource = data[0]
@@ -268,7 +269,7 @@ export default defineComponent({
       if (!isGroupSelected(group)) {
         selectGroup(group)
       }
-      eventBus.publish(SideBarEventTopics.openWithPanel, 'EditPanel')
+      openSideBarPanel('EditPanel')
     }
 
     const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))

@@ -1,5 +1,6 @@
 import { EventBus } from '../../../../src/services/eventBus'
-import { SideBarEventTopics, useSideBar } from '../../../../src/composables/sideBar'
+import { useSideBar } from '../../../../src/composables/sideBar'
+import { SideBarEventTopics } from '../../../../src/composables/piniaStores'
 import { unref, ref } from 'vue'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import * as localStorage from '../../../../src/composables/localStorage'

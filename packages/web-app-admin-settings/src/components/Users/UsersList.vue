@@ -131,13 +131,13 @@ import {
   eventBus,
   Pagination,
   queryItemAsString,
-  SideBarEventTopics,
   useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
   usePagination,
   useRouteQuery,
-  UserAvatar
+  UserAvatar,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
@@ -169,6 +169,7 @@ export default defineComponent({
   setup(props) {
     const { $gettext } = useGettext()
     const { isSticky } = useIsTopBarSticky()
+    const { openSideBar, openSideBarPanel } = useSideBar()
 
     const tableRef = useTemplateRef<ComponentPublicInstance<typeof OcTable>>('tableRef')
     const contextMenuButtonRef =
@@ -214,21 +215,21 @@ export default defineComponent({
       if (!isUserSelected(user)) {
         selectUser(user)
       }
-      eventBus.publish(SideBarEventTopics.open)
+      openSideBar()
     }
 
     const showEditPanel = (user: User) => {
       if (!isUserSelected(user)) {
         selectUser(user)
       }
-      eventBus.publish(SideBarEventTopics.openWithPanel, 'EditPanel')
+      openSideBarPanel('EditPanel')
     }
 
     const showUserAssigmentPanel = (user: User) => {
       if (!isUserSelected(user)) {
         selectUser(user)
       }
-      eventBus.publish(SideBarEventTopics.openWithPanel, 'UserAssignmentsPanel')
+      openSideBarPanel('UserAssignmentsPanel')
     }
 
     const rowClicked = (data: [User, MouseEvent | KeyboardEvent]) => {

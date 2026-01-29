@@ -12,7 +12,7 @@
         :panel-context="panelContext"
         :active-panel="activePanel"
         @select-panel="setSidebarPanel"
-        @close="emit('close')"
+        @close="closeSideBar"
         @close-panel="focusSidebar"
       >
         <template #body>
@@ -34,19 +34,13 @@ import { computed, onUnmounted, unref, useAttrs } from 'vue'
 import { SideBarPanel, SideBarPanelContext } from './types'
 import SideBarPanels from './SideBarPanels.vue'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import { SideBarEventTopics, useEventBus, useSideBar } from '../../composables'
+import { useSideBar } from '../../composables'
+import { storeToRefs } from 'pinia'
 
-const {
-  loading,
-  availablePanels,
-  panelContext,
-  activePanel = ''
-} = defineProps<{
-  isOpen: boolean
+const { loading, availablePanels, panelContext } = defineProps<{
   loading: boolean
   availablePanels: SideBarPanel<unknown, unknown, unknown>[]
   panelContext: SideBarPanelContext<unknown, unknown, unknown>
-  activePanel?: string
 }>()
 
 const emit = defineEmits<{
@@ -64,8 +58,9 @@ defineOptions({ inheritAttrs: false })
 const attrs = useAttrs()
 
 const { isMobile } = useIsMobile()
-const eventBus = useEventBus()
-const { focusSidebar } = useSideBar()
+const sidebarStore = useSideBar()
+const { focusSidebar } = sidebarStore
+const { sideBarActivePanel: activePanel } = storeToRefs(sidebarStore)
 
 const sidebarProps = computed(() => {
   if (unref(isMobile)) {
@@ -111,21 +106,22 @@ const onBottomDrawerClicked = (event: MouseEvent) => {
   const actionPanelItemClicked = (event.target as HTMLElement).closest('ul.sidebar-actions-panel')
   if (bottomDrawerOutsideClicked || linkClicked || actionPanelItemClicked) {
     // in some scenarios we want to close the bottom drawer, e.g. when clicking outside or on a file action
-    closeSidebar()
+    closeSideBar()
   }
 }
-const closeSidebar = () => {
-  eventBus.publish(SideBarEventTopics.close)
+const closeSideBar = () => {
+  sidebarStore.closeSideBar()
   emit('close')
 }
 const setSidebarPanel = (panel: string) => {
+  sidebarStore.openSideBarPanel(panel)
   emit('selectPanel', panel)
 }
 
 onUnmounted(() => {
   if (unref(isMobile)) {
     // in mobile, when the sidebar is unmounted, we assume a route change > close bottom drawer
-    closeSidebar()
+    closeSideBar()
   }
 })
 </script>

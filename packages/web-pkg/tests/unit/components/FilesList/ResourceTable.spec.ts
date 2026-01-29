@@ -9,11 +9,10 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore } from '../../../../src/composables/piniaStores'
+import { CapabilityStore, SideBarEventTopics } from '../../../../src/composables/piniaStores'
 import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { eventBus } from '../../../../src/services/eventBus'
-import { SideBarEventTopics } from '../../../../src/composables/sideBar'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'

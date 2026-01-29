@@ -3,15 +3,11 @@
     v-if="isOpen"
     ref="sidebar"
     class="files-side-bar z-30"
-    :is-open="isOpen"
-    :active-panel="activePanel"
     :available-panels="availablePanels"
     :panel-context="panelContext"
     :loading="isLoading"
     v-bind="$attrs"
     data-custom-key-bindings-disabled="true"
-    @select-panel="setActiveSideBarPanel"
-    @close="closeSideBar"
   >
     <template #rootHeader>
       <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="false" />
@@ -38,9 +34,7 @@ import {
 } from '../../router'
 import {
   SidebarPanelExtension,
-  SideBarEventTopics,
   useClientService,
-  useEventBus,
   useRouter,
   useActiveLocation,
   useExtensionRegistry,
@@ -51,7 +45,8 @@ import {
   useConfigStore,
   useAppsStore,
   useCanListShares,
-  useCanListVersions
+  useCanListVersions,
+  useSideBar
 } from '../../composables'
 import {
   isProjectSpaceResource,
@@ -70,20 +65,13 @@ import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
 import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 
-const {
-  isOpen,
-  activePanel = undefined,
-  space = undefined
-} = defineProps<{
-  isOpen: boolean
-  activePanel?: string
+const { space = undefined } = defineProps<{
   space?: SpaceResource
 }>()
 
 const router = useRouter()
 const clientService = useClientService()
 const extensionRegistry = useExtensionRegistry()
-const eventBus = useEventBus()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const configStore = useConfigStore()
@@ -93,6 +81,9 @@ const { canListVersions } = useCanListVersions()
 
 const resourcesStore = useResourcesStore()
 const { currentFolder } = storeToRefs(resourcesStore)
+
+const sidebarStore = useSideBar()
+const { isSideBarOpen: isOpen, sideBarActivePanel: activePanel } = storeToRefs(sidebarStore)
 
 const loadedResource = ref<Resource>()
 const versions = ref<Resource[]>([])
@@ -133,12 +124,6 @@ const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects
 const isFavoritesLocation = useActiveLocation(isLocationCommonActive, 'files-common-favorites')
 const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
 
-const closeSideBar = () => {
-  eventBus.publish(SideBarEventTopics.close)
-}
-const setActiveSideBarPanel = (panelName: string) => {
-  eventBus.publish(SideBarEventTopics.setActivePanel, panelName)
-}
 const isFileHeaderVisible = computed(() => {
   return (
     unref(panelContext).items?.length === 1 && !isProjectSpaceResource(unref(panelContext).items[0])
@@ -319,7 +304,7 @@ watch(
       return
     }
 
-    if (!isOpen) {
+    if (!unref(isOpen)) {
       currentResourceMtime.value = undefined
       versions.value = []
       return
@@ -357,7 +342,7 @@ const panelItemIds = computed(() => unref(panelContext).items.map((item) => item
 watch(
   () => [panelItemIds, isOpen],
   async () => {
-    if (!isOpen || !unref(panelContext).items?.length) {
+    if (!unref(isOpen) || !unref(panelContext).items?.length) {
       sharesStore.pruneShares()
       loadedResource.value = null
       return
@@ -426,14 +411,12 @@ provide(
   'space',
   computed(() => space)
 )
-provide(
-  'activePanel',
-  computed(() => activePanel)
-)
 provide('availableInternalShareRoles', readonly(availableInternalShareRoles))
 provide('availableExternalShareRoles', readonly(availableExternalShareRoles))
 provide(
   'versionsLoading',
   computed(() => loadVersionsTask.isRunning)
 )
+/** @deprecated use from useSideBar instead */
+provide('activePanel', activePanel)
 </script>

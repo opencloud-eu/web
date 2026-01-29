@@ -8,7 +8,6 @@
         :has-bulk-actions="displayFullAppBar"
         :show-actions-on-selection="displayFullAppBar"
         :has-view-options="displayFullAppBar"
-        :is-side-bar-open="isSideBarOpen"
         :space="space"
         :view-modes="viewModes"
         @item-dropped="fileDropped"
@@ -32,12 +31,7 @@
           :class="{ 'h-[55vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header
-            v-if="hasSpaceHeader"
-            :space="space"
-            :is-side-bar-open="isSideBarOpen"
-            class="px-4 mt-2"
-          />
+          <space-header v-if="hasSpaceHeader" :space="space" class="px-4 mt-2" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -73,7 +67,6 @@
               :drag-drop="true"
               :sort-by="sortBy"
               :sort-dir="sortDir"
-              :is-side-bar-open="isSideBarOpen"
               :header-position="fileListHeaderY /* table */"
               :sort-fields="sortFields /* tiles */"
               :view-size="viewSize /* tiles */"
@@ -107,7 +100,7 @@
         </template>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+    <file-side-bar :space="space" />
   </div>
 </template>
 

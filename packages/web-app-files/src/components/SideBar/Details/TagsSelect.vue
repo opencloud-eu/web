@@ -26,7 +26,7 @@
           :is="type"
           v-bind="getAdditionalAttributes(option.label)"
           class="flex items-center max-w-50"
-          @click="onTagClicked"
+          @click="closeSideBar()"
         >
           <oc-icon name="price-tag-3" class="mr-1" size="small" />
           <span class="truncate">{{ option.label }}</span>
@@ -83,12 +83,12 @@ import {
 import {
   createLocationCommon,
   eventBus,
-  SideBarEventTopics,
   useAuthStore,
   useClientService,
   useMessages,
   useResourcesStore,
-  useRouter
+  useRouter,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useTask } from 'vue-concurrency'
@@ -124,6 +124,7 @@ export default defineComponent({
     const clientService = useClientService()
     const router = useRouter()
     const { updateResourceField } = useResourcesStore()
+    const { closeSideBar } = useSideBar()
 
     const authStore = useAuthStore()
     const { publicLinkContextReady } = storeToRefs(authStore)
@@ -147,10 +148,6 @@ export default defineComponent({
     const currentTags = computed<TagOption[]>(() => {
       return [...unref(resource).tags.map((t) => ({ label: t }))]
     })
-
-    const onTagClicked = () => {
-      eventBus.publish(SideBarEventTopics.close)
-    }
 
     const loadAvailableTagsTask = useTask(function* (signal) {
       const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
@@ -303,7 +300,7 @@ export default defineComponent({
       keydownMethods,
       readonly,
       getAdditionalAttributes,
-      onTagClicked,
+      closeSideBar,
       getTagToolTip,
       type
     }

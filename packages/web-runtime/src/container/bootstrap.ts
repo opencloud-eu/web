@@ -49,7 +49,8 @@ import {
   Updates,
   useGroupwareConfigStore,
   GroupwareConfigStore,
-  RawGroupwareConfigSchema
+  RawGroupwareConfigSchema,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -396,6 +397,7 @@ export const announcePiniaStores = () => {
   const webWorkersStore = useWebWorkersStore()
   const updatesStore = useUpdatesStore()
   const groupwareConfigStore = useGroupwareConfigStore()
+  const sidebarStore = useSideBar()
 
   return {
     appsStore,
@@ -411,7 +413,8 @@ export const announcePiniaStores = () => {
     userStore,
     webWorkersStore,
     updatesStore,
-    groupwareConfigStore
+    groupwareConfigStore,
+    sidebarStore
   }
 }
 
