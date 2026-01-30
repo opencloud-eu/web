@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -39,7 +39,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :fields-displayed="['name', 'sharedWith', 'sdate']"
           :are-paths-displayed="true"
           :resources="filteredItems"
@@ -66,11 +65,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedResourceSpace"
-    />
+    <file-side-bar :space="selectedResourceSpace" />
   </div>
 </template>
 

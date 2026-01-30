@@ -6,6 +6,7 @@ import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-
 import { mock } from 'vitest-mock-extended'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { flushPromises } from '@vue/test-utils'
+import { useSideBar } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -120,16 +121,20 @@ function getWrapper({
     count: memberCount
   })
 
+  const plugins = [
+    ...defaultPlugins({ piniaOptions: { spacesState: { imagesLoading, readmesLoading } } })
+  ]
+
+  const sideBarStore = useSideBar()
+  sideBarStore.isSideBarOpen = isSideBarOpen
+
   return mount(SpaceHeader, {
     props: {
-      space,
-      isSideBarOpen
+      space
     },
     global: {
       mocks,
-      plugins: [
-        ...defaultPlugins({ piniaOptions: { spacesState: { imagesLoading, readmesLoading } } })
-      ],
+      plugins,
       provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
       stubs: {
         'space-context-actions': true,

@@ -70,6 +70,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref, wa
 import { RouteLocationAsRelativeTyped, useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { progressBarExtensionPoint } from '../extensionPoints'
+import { storeToRefs } from 'pinia'
 
 const MOBILE_BREAKPOINT = 640
 
@@ -79,7 +80,8 @@ const { $gettext } = useGettext()
 const authStore = useAuthStore()
 const activeApp = useActiveApp()
 const extensionRegistry = useExtensionRegistry()
-const { isSideBarOpen } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const extensionNavItems = computed(() =>
   getExtensionNavItems({ extensionRegistry, appId: unref(activeApp) })

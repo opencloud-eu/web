@@ -1,12 +1,12 @@
 import { mock } from 'vitest-mock-extended'
 import { useScrollTo } from '../../../../src/composables/scrollTo'
 import { Resource } from '@opencloud-eu/web-client'
-import { eventBus } from '../../../../src/services'
 import {
   getComposableWrapper,
   RouteLocation,
   defaultComponentMocks
 } from '@opencloud-eu/web-test-helpers'
+import { useSideBar } from '../../../../src'
 
 const mockResourceId = 'fakeResourceId'
 const mockFilesTopBar = {
@@ -168,11 +168,11 @@ describe('useScrollTo', () => {
 
       getComposableWrapper(
         () => {
-          const busStub = vi.spyOn(eventBus, 'publish')
           const resource = mock<Resource>({ id: resourceId })
           const { scrollToResourceFromRoute } = useScrollTo()
           scrollToResourceFromRoute([resource], 'files-app-bar')
-          expect(busStub).toHaveBeenCalled()
+          const { openSideBarPanel } = useSideBar()
+          expect(openSideBarPanel).toHaveBeenCalled()
         },
         {
           mocks,

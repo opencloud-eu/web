@@ -13,7 +13,8 @@ import {
   useAppsStore,
   useExtensionRegistry,
   useResourcesStore,
-  useSharesStore
+  useSharesStore,
+  useSideBar
 } from '../../../../src/composables/piniaStores'
 import { AncestorMetaDataValue } from '../../../../src'
 
@@ -272,6 +273,9 @@ function createWrapper({
   const { requestExtensions } = useExtensionRegistry()
   vi.mocked(requestExtensions).mockReturnValue([])
 
+  const sideBarStore = useSideBar()
+  sideBarStore.isSideBarOpen = isOpen
+
   const useSelectedResourcesMock = mock<ReturnType<typeof useSelectedResources>>()
   useSelectedResourcesMock.selectedResources = item ? ref([item]) : ref([])
   vi.mocked(useSelectedResources).mockReturnValue(useSelectedResourcesMock)
@@ -283,7 +287,6 @@ function createWrapper({
     mocks,
     wrapper: shallowMount(FileSideBar, {
       props: {
-        isOpen,
         space
       },
       global: {

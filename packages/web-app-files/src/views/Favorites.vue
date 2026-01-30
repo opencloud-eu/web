@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" :is-side-bar-open="isSideBarOpen" />
+      <app-bar :view-modes="viewModes" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
@@ -13,7 +13,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :are-paths-displayed="true"
           :resources="paginatedResources"
           :header-position="fileListHeaderY"
@@ -40,11 +39,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedResourceSpace"
-    />
+    <file-side-bar :space="selectedResourceSpace" />
   </div>
 </template>
 

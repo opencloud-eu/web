@@ -195,7 +195,8 @@ const {
 const router = useRouter()
 const currentRoute = useRoute()
 const { $gettext } = useGettext()
-const { isSideBarOpen } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const resourcesStore = useResourcesStore()
 const {

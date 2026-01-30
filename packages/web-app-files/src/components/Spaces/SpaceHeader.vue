@@ -116,15 +116,14 @@ import {
 } from 'vue'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  eventBus,
   ImageDimension,
   ProcessorType,
-  SideBarEventTopics,
   TextEditor,
   useClientService,
   useLoadPreview,
   useResourcesStore,
   useSharesStore,
+  useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from './SpaceContextActions.vue'
@@ -134,9 +133,8 @@ import { storeToRefs } from 'pinia'
 
 const markdownContainerCollapsedClass = 'collapsed'
 
-const { space, isSideBarOpen = false } = defineProps<{
+const { space } = defineProps<{
   space: SpaceResource
-  isSideBarOpen?: boolean
 }>()
 
 const language = useGettext()
@@ -148,6 +146,9 @@ const { loadPreview } = useLoadPreview()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
+
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
 
@@ -298,6 +299,6 @@ const memberCountString = computed(() => {
 
 const openSideBarSharePanel = () => {
   resourcesStore.setSelection([])
-  eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
+  sidebarStore.openSideBarPanel('space-share')
 }
 </script>

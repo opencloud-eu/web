@@ -14,7 +14,6 @@
       :is="folderView.component"
       v-else
       v-model:selected-ids="selectedResourcesIds"
-      :is-side-bar-open="isSideBarOpen"
       :fields-displayed="displayedFields"
       :resources="resourceItems"
       :are-resources-clickable="resourceClickable"
@@ -146,10 +145,6 @@ export default defineComponent({
     resourceClickable: {
       type: Boolean,
       default: true
-    },
-    isSideBarOpen: {
-      type: Boolean,
-      default: false
     },
     fileListHeaderY: {
       type: Number,

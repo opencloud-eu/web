@@ -3,8 +3,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import { queryItemAsString } from '../appDefaults/useAppNavigation'
 import { eventBus } from '../../services'
 import { useRouteQuery } from '../router'
-import { SideBarEventTopics } from '../sideBar'
-import { useResourcesStore } from '../piniaStores'
+import { useResourcesStore, useSideBar } from '../piniaStores'
 import { isIncomingShareResource } from '@opencloud-eu/web-client'
 
 export interface ScrollToResult {
@@ -19,6 +18,7 @@ export const useScrollTo = (): ScrollToResult => {
   const scrollToQuery = useRouteQuery('scrollTo')
   const detailsQuery = useRouteQuery('details')
   const resourcesStore = useResourcesStore()
+  const { openSideBarPanel } = useSideBar()
 
   const scrollTo = computed(() => {
     return queryItemAsString(unref(scrollToQuery))
@@ -87,7 +87,7 @@ export const useScrollTo = (): ScrollToResult => {
       scrollToResource(resource.id, { forceScroll: true, topbarElement })
 
       if (unref(details)) {
-        eventBus.publish(SideBarEventTopics.openWithPanel, unref(details))
+        openSideBarPanel(unref(details))
       }
     }
   }

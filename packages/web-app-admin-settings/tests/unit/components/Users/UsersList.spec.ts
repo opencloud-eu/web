@@ -5,8 +5,7 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { displayPositionedDropdown, eventBus, queryItemAsString } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
+import { displayPositionedDropdown, queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
@@ -110,17 +109,19 @@ describe('UsersList', () => {
   })
   it('should show the user details on details button click', async () => {
     const users = getUserMocks()
-    const eventBusSpy = vi.spyOn(eventBus, 'publish')
     const { wrapper } = getWrapper({ mountType: mount, users })
+
+    const { openSideBar } = useSideBar()
     await wrapper.find('.users-table-btn-details').trigger('click')
-    expect(eventBusSpy).toHaveBeenCalledWith(SideBarEventTopics.open)
+    expect(openSideBar).toHaveBeenCalled()
   })
   it('should show the user edit panel on edit button click', async () => {
     const users = getUserMocks()
-    const eventBusSpy = vi.spyOn(eventBus, 'publish')
     const { wrapper } = getWrapper({ mountType: mount, users })
+
+    const { openSideBarPanel } = useSideBar()
     await wrapper.find('.users-table-btn-edit').trigger('click')
-    expect(eventBusSpy).toHaveBeenCalledWith(SideBarEventTopics.openWithPanel, 'EditPanel')
+    expect(openSideBarPanel).toHaveBeenCalledWith('EditPanel')
   })
   describe('toggle selection', () => {
     describe('selectUsers method', () => {

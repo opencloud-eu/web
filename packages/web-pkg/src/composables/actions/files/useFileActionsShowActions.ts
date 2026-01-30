@@ -1,6 +1,5 @@
 import { isLocationTrashActive } from '../../../router'
-import { eventBus } from '../../../services/eventBus'
-import { SideBarEventTopics } from '../../sideBar'
+import { useSideBar } from '../../piniaStores'
 import { computed, unref } from 'vue'
 import { useIsFilesAppActive } from '../helpers'
 import { useRouter } from '../../router'
@@ -11,6 +10,7 @@ export const useFileActionsShowActions = () => {
   const router = useRouter()
   const { $gettext } = useGettext()
   const isFilesAppActive = useIsFilesAppActive()
+  const { openSideBarPanel } = useSideBar()
 
   const handler = () => {
     // we don't have details in the trashbin, yet. the actions panel is the default
@@ -18,7 +18,7 @@ export const useFileActionsShowActions = () => {
     // unconditionally return hardcoded `actions` once we have a dedicated
     // details panel in trashbins.
     const panelName = isLocationTrashActive(router, 'files-trash-generic') ? null : 'actions'
-    eventBus.publish(SideBarEventTopics.openWithPanel, panelName)
+    openSideBarPanel(panelName)
   }
 
   const actions = computed((): FileAction[] => [

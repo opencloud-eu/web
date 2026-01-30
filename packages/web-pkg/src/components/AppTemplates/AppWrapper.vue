@@ -20,7 +20,7 @@
         :class="{ 'w-[calc(100%-440px)]': isSideBarOpen && !isMobile }"
         v-bind="slotAttrs"
       />
-      <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+      <file-side-bar :space="space" />
     </div>
   </main>
 </template>
@@ -88,6 +88,7 @@ import { UnsavedChangesModal } from '../Modals'
 import { formatFileSize, getSharedDriveItem } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
+import { storeToRefs } from 'pinia'
 
 const {
   applicationId,
@@ -121,7 +122,8 @@ const resourcesStore = useResourcesStore()
 const sharesStore = useSharesStore()
 const eventBus = useEventBus()
 const { isMobile } = useIsMobile()
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId

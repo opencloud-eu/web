@@ -142,7 +142,7 @@
         v-if="item.tags.length > 2"
         size="small"
         class="resource-table-tag-more align-text-bottom cursor-pointer"
-        @click="openTagsSidebar()"
+        @click="sidebarStore.openSideBar()"
       >
         + {{ item.tags.length - 2 }}
       </oc-tag>
@@ -285,14 +285,13 @@ import {
   useResourcesStore,
   useResourceViewHelpers,
   useRouter,
-  useSpaceActionsRename
+  useSpaceActionsRename,
+  useSideBar
 } from '../../composables'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
-import { eventBus } from '../../services'
 import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
-import { SideBarEventTopics } from '../../composables/sideBar'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
@@ -318,7 +317,6 @@ const {
   areResourcesClickable = true,
   headerPosition = 0,
   isSelectable = true,
-  isSideBarOpen = false,
   dragDrop = false,
   viewMode = FolderViewModeConstants.defaultModeName,
   hover = true,
@@ -338,7 +336,6 @@ const {
   areResourcesClickable?: boolean
   headerPosition?: number
   isSelectable?: boolean
-  isSideBarOpen?: boolean
   dragDrop?: boolean
   viewMode?:
     | typeof FolderViewModeConstants.name.condensedTable
@@ -417,6 +414,9 @@ const {
   selectedIds: computed(() => selectedIds),
   emit
 })
+
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const authStore = useAuthStore()
 const { userContextReady } = storeToRefs(authStore)
@@ -673,9 +673,6 @@ const openRenameDialog = (item: Resource) => {
     space: getMatchingSpace(item),
     resources: [item]
   })
-}
-const openTagsSidebar = () => {
-  eventBus.publish(SideBarEventTopics.open)
 }
 
 const formatDate = (date: string) => {

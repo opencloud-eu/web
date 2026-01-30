@@ -35,7 +35,6 @@
             :sort-by="sortBy"
             :sort-dir="sortDir"
             :sort-fields="sortFields.filter((field) => field.name === 'name')"
-            :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
@@ -70,7 +69,7 @@
         </template>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" />
+    <file-side-bar />
   </div>
 </template>
 
@@ -122,16 +121,8 @@ const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>(
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint
 })
 
-const {
-  isSideBarOpen,
-  fileListHeaderY,
-  sideBarActivePanel,
-  viewMode,
-  viewModes,
-  viewSize,
-  sortFields,
-  folderView
-} = resourcesViewDefaults
+const { fileListHeaderY, viewMode, viewModes, viewSize, sortFields, folderView } =
+  resourcesViewDefaults
 
 const { loadPreview } = useLoadPreview(viewMode)
 

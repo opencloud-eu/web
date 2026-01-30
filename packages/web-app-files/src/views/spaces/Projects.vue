@@ -9,7 +9,6 @@
         :has-file-extensions="false"
         :has-pagination="false"
         :batch-actions-loading="batchActionsLoading"
-        :is-side-bar-open="isSideBarOpen"
         :view-modes="viewModes"
         :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
@@ -53,7 +52,6 @@
             :sort-by="sortBy"
             :sort-dir="sortDir"
             :header-position="fileListHeaderY"
-            :is-side-bar-open="isSideBarOpen"
             :view-size="viewSize"
             :view-mode="viewMode"
             v-bind="folderView.componentAttrs?.()"
@@ -130,11 +128,7 @@
         </div>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedSpace"
-    />
+    <file-side-bar :space="selectedSpace" />
   </div>
 </template>
 
@@ -160,7 +154,8 @@ import {
   useRoute,
   Pagination,
   FileSideBar,
-  NoContentMessage
+  NoContentMessage,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import SpaceContextActions from '../../components/Spaces/SpaceContextActions.vue'
 import {
@@ -170,7 +165,6 @@ import {
 } from '@opencloud-eu/web-client'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics, useSideBar } from '@opencloud-eu/web-pkg'
 import { sortFields as availableSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
 import { defaultFuseOptions, formatFileSize, ResourceIcon } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -195,7 +189,7 @@ const { $gettext, $ngettext } = language
 const filterTerm = ref('')
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
+const { openSideBarPanel } = useSideBar()
 
 const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
 const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
@@ -439,6 +433,6 @@ const showSpaceMemberLabel = computed(() => {
 
 const openSidebarSharePanel = (space: SpaceResource) => {
   setSelection([space.id])
-  eventBus.publish(SideBarEventTopics.openWithPanel, 'space-share')
+  openSideBarPanel('space-share')
 }
 </script>

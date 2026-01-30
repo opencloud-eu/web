@@ -102,6 +102,7 @@ import {
   useResourcesStore,
   useRouteMeta,
   useRouter,
+  useSideBar,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsEditQuota,
@@ -144,7 +145,6 @@ export default defineComponent({
     hasFileExtensions: { type: Boolean, default: true },
     hasPagination: { type: Boolean, default: true },
     showActionsOnSelection: { type: Boolean, default: false },
-    isSideBarOpen: { type: Boolean, default: false },
     batchActionsLoading: { type: Boolean, default: false },
     space: {
       type: Object as PropType<SpaceResource>,
@@ -159,6 +159,9 @@ export default defineComponent({
     const router = useRouter()
     const { requestExtensions } = useExtensionRegistry()
     const { isSticky } = useIsTopBarSticky()
+
+    const sidebarStore = useSideBar()
+    const { isSideBarOpen } = storeToRefs(sidebarStore)
 
     const resourcesStore = useResourcesStore()
     const { selectedResources } = storeToRefs(resourcesStore)
@@ -279,7 +282,8 @@ export default defineComponent({
       fileDroppedBreadcrumb,
       pageTitle,
       selectedResources,
-      isSticky
+      isSticky,
+      isSideBarOpen
     }
   },
   data: function () {

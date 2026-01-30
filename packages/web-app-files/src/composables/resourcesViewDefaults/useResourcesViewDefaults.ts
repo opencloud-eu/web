@@ -11,7 +11,6 @@ import {
   FolderViewExtension,
   FolderView
 } from '@opencloud-eu/web-pkg'
-import { useSideBar } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
   determineResourceTableSortFields,
@@ -57,9 +56,6 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
   isResourceInSelection(resource: Resource): boolean
-
-  isSideBarOpen: Ref<boolean>
-  sideBarActivePanel: Ref<string>
 } & SelectedResourcesResult &
   ScrollToResult
 
@@ -153,7 +149,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     sortBy,
     sortDir,
     ...useSelectedResources(),
-    ...useSideBar(),
     ...useScrollTo()
   }
 }

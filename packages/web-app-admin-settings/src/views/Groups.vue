@@ -4,10 +4,8 @@
       ref="template"
       :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
       :breadcrumbs="breadcrumbs"
-      :side-bar-active-panel="sideBarActivePanel"
       :side-bar-available-panels="sideBarAvailablePanels"
       :side-bar-panel-context="sideBarPanelContext"
-      :is-side-bar-open="isSideBarOpen"
       :show-batch-actions="!!selectedGroups.length"
       :batch-actions="batchActions"
       :batch-action-items="selectedGroups"
@@ -63,8 +61,7 @@ import {
   NoContentMessage,
   SideBarPanel,
   SideBarPanelContext,
-  useClientService,
-  useSideBar
+  useClientService
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import {
@@ -181,7 +178,6 @@ export default defineComponent({
     })
 
     return {
-      ...useSideBar(),
       groups,
       selectedGroups,
       template,
