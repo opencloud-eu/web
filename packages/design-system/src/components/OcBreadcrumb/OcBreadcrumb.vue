@@ -22,9 +22,7 @@
           'oc-breadcrumb-list-item',
           'flex',
           'items-center',
-          {
-            'sr-only': isItemHidden(item, index)
-          }
+          { 'sr-only': isItemHidden(item) }
         ]"
         @dragover.prevent
         @dragenter.prevent="dropItemStyling(item, index, false, $event)"
@@ -227,7 +225,7 @@ const hiddenItems = ref<BreadcrumbItem[]>([])
 const displayItems: Ref<BreadcrumbItem[]> = ref([])
 displayItems.value = items
 
-const isItemHidden = (item: BreadcrumbItem, index: number): boolean => {
+const isItemHidden = (item: BreadcrumbItem): boolean => {
   return (
     hiddenItems.value.indexOf(item) !== -1 ||
     (item.isTruncationPlaceholder && hiddenItems.value.length === 0)
@@ -285,10 +283,6 @@ const reduceBreadcrumb = (offsetIndex: number) => {
   hiddenItems.value.push(removed[0])
   reduceBreadcrumb(offsetIndex)
 }
-
-const lastHiddenItem = computed(() =>
-  hiddenItems.value.length >= 1 ? unref(hiddenItems)[unref(hiddenItems).length - 1] : { to: {} }
-)
 
 const renderBreadcrumb = () => {
   displayItems.value = [...items]

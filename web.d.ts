@@ -1,7 +1,5 @@
 /// <reference types="vite/client" />
 
-import { Route, Router } from 'vue-router'
-
 // This file must have at least one export or import on top-level
 export {}
 
@@ -12,11 +10,6 @@ declare global {
 }
 
 declare module 'vue' {
-  interface ComponentCustomProperties {
-    $router: Router
-    $route: Route
-  }
-
   interface GlobalComponents {
     // https://github.com/LinusBorg/portal-vue/issues/380
     Portal: (typeof import('portal-vue'))['Portal']

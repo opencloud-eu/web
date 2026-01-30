@@ -3,29 +3,15 @@
 exports[`Resource Upload Component > file upload > should render component 1`] = `
 "<div class="relative overflow-hidden"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5 oc-resource-icon inline-flex items-center [&amp;_svg]:h-[70%] [&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-file-fill.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-surface);" class="size-5.5"></svg></span> <span id="files-file-upload-button">Files</span>
+    <!-- @slot Content of the button -->
+    <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-file-upload-button">Files</span>
   </button> <input id="files-file-upload-input" multiple="" class="absolute left-[99999px]" type="file" aria-labelledby="files-file-upload-button" name="folder" tabindex="-1"></div>"
 `;
 
 exports[`Resource Upload Component > folder upload > should render component 1`] = `
 "<div class="relative overflow-hidden"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5 oc-resource-icon inline-flex items-center [&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"><svg data-testid="inline-svg-stub" src="icons/resource-type-folder-fill.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" style="fill: var(--oc-color-icon-folder);" class="size-5.5"></svg></span> <span id="files-folder-upload-button">Folder</span>
+    <!-- @slot Content of the button -->
+    <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-folder-upload-button">Folder</span>
   </button> <input id="files-folder-upload-input" webkitdirectory="true" mozdirectory="true" allowdirs="true" class="absolute left-[99999px]" type="file" aria-labelledby="files-folder-upload-button" name="file" tabindex="-1"></div>"
 `;
