@@ -13,5 +13,5 @@
   },
 
   // include component types of the design-system
-  "include": ["../design-system/types.d.ts", "./web.declarations.d.ts", "./src/**/*"]
+  "include": ["../design-system/types.d.ts", "./web.declarations.d.ts", "./**/*"]
 }
