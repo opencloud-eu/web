@@ -35,7 +35,9 @@ export const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
             'q_titleOnly',
             'q_mediaType',
             'scope',
-            'useScope'
+            'useScope',
+            'sort-by',
+            'sort-dir'
           ]
         }
       }
