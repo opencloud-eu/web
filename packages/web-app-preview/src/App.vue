@@ -114,7 +114,8 @@ import {
   useKeyboardActions,
   Modifier,
   Key,
-  useFileActionsDelete
+  useFileActionsDelete,
+  determineResourceTableSortFields
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -199,15 +200,9 @@ export default defineComponent({
     })
 
     const photoRollFiles = computed(() => {
-      const files = Object.values(unref(cachedFiles))
-      const filteredIds = unref(filteredFiles).map((f) => f.id)
-      const idToIndex = new Map(filteredIds.map((id, idx) => [id, idx]))
-
-      return files.sort((a, b) => {
-        const indexA = idToIndex.get(a.id) ?? -1
-        const indexB = idToIndex.get(b.id) ?? -1
-        return indexA - indexB
-      })
+      return unref(filteredFiles)
+        .map((file) => unref(cachedFiles)[file.fileId])
+        .filter(Boolean)
     })
 
     const sortBy = computed(() => {
@@ -249,7 +244,8 @@ export default defineComponent({
         return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
       })
 
-      return sortHelper(files, [{ name: unref(sortBy) }], unref(sortBy), unref(sortDir))
+      const sortFields = determineResourceTableSortFields(files[0])
+      return sortHelper(files, sortFields, unref(sortBy), unref(sortDir))
     })
     const activeFilteredFile = computed(() => {
       return unref(filteredFiles)[unref(activeIndex)]
