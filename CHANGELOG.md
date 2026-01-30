@@ -24,6 +24,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v32 [[#1856](https://github.com/opencloud-eu/web/pull/1856)]
+- chore(deps): update collabora/code docker tag to v25.04.8.2.1 [[#1894](https://github.com/opencloud-eu/web/pull/1894)]
 - fix(deps): update dependency focus-trap to v8 [[#1895](https://github.com/opencloud-eu/web/pull/1895)]
 - fix(deps): update dependency @sentry/vue to v10.38.0 - autoclosed [[#1898](https://github.com/opencloud-eu/web/pull/1898)]
 - fix(deps): update dependency vue-router to v5 [[#1899](https://github.com/opencloud-eu/web/pull/1899)]
