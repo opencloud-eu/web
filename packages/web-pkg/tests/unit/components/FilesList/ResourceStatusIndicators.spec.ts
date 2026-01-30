@@ -1,13 +1,15 @@
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { ComponentProps, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import ResourceStatusIndicators from '../../../../src/components/FilesList/ResourceStatusIndicators.vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
-import { getIndicators, ResourceIndicator } from '../../../../src/helpers/statusIndicators'
 import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
+import {
+  ResourceIndicator,
+  useResourceIndicators
+} from '../../../../src/composables/resources/useResourceIndicators'
 
-vi.mock('../../../../src/helpers/statusIndicators', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  getIndicators: vi.fn(() => [])
+vi.mock('../../../../src/composables/resources/useResourceIndicators', () => ({
+  useResourceIndicators: vi.fn()
 }))
 
 describe('ResourceStatusIndicators component', () => {
@@ -27,16 +29,12 @@ describe('ResourceStatusIndicators component', () => {
       }
     ] satisfies ResourceIndicator[]
 
-    vi.mocked(getIndicators).mockReturnValue(indicators)
+    vi.mocked(useResourceIndicators).mockReturnValue({ getIndicators: () => indicators })
 
     const wrapper = getWrapper({ space, resource })
     expect(wrapper.findComponent(OcStatusIndicators).props('indicators')).toEqual(indicators)
   })
-  function getWrapper(props: {
-    space: SpaceResource
-    resource: Resource
-    filter?: (resource: ResourceIndicator) => boolean
-  }) {
+  function getWrapper(props: ComponentProps<typeof ResourceStatusIndicators>) {
     return shallowMount(ResourceStatusIndicators, {
       props,
       global: {

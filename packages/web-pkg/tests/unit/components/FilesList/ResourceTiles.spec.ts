@@ -3,10 +3,12 @@ import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vu
 import { sortFields } from '../../../../src/helpers/ui/resourceTiles'
 import { Resource, SpaceResource, extractDomSelector } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
+import {
+  useCanBeOpenedWithSecureView,
+  ResourceIndicator
+} from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
-import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
 import { useResourcesStore } from '../../../../src'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')

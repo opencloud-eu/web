@@ -12,7 +12,6 @@ import { ref } from 'vue'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  getIndicators: vi.fn(() => []),
   useRouteQuery: vi.fn(),
   useOpenWithDefaultApp: vi.fn()
 }))

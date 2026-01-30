@@ -138,8 +138,8 @@ import {
   formatDateFromJSDate,
   useResourceContents,
   useLoadPreview,
-  useInterceptModifierClick,
-  useSideBar
+  useSideBar,
+  useResourceIndicators
 } from '@opencloud-eu/web-pkg'
 import upperFirst from 'lodash-es/upperFirst'
 import {
@@ -149,7 +149,6 @@ import {
   ShareTypes
 } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
-import { getIndicators } from '@opencloud-eu/web-pkg'
 import { formatFileSize, formatRelativeDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
@@ -172,13 +171,13 @@ const { getMatchingSpace } = useGetMatchingSpace()
 const { resourceContentsText } = useResourceContents({ showSizeInformation: false })
 const { loadPreview, previewsLoading } = useLoadPreview()
 const { openSideBarPanel } = useSideBar()
+const { getIndicators } = useResourceIndicators()
 
 const language = useGettext()
 const { $gettext, current: currentLanguage } = language
 
 const resourcesStore = useResourcesStore()
 const { ancestorMetaData, currentFolder } = storeToRefs(resourcesStore)
-const { interceptModifierClick } = useInterceptModifierClick()
 const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
@@ -234,10 +233,7 @@ const hasDeletionDate = computed(() => {
 const shareIndicators = computed(() => {
   return getIndicators({
     space: unref(space),
-    resource: unref(resource),
-    ancestorMetaData: unref(ancestorMetaData),
-    user: unref(user),
-    interceptModifierClick
+    resource: unref(resource)
   }).filter(({ category }) => category === 'sharing')
 })
 

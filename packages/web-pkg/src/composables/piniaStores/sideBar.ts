@@ -5,7 +5,7 @@ import { useLocalStorage } from '../localStorage'
 import { useEmbedMode } from '../embedMode'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
-/** @deprecated use exposed methods from the useSideBar instead */
+/** @deprecated use exposed methods from useSideBar instead */
 export enum SideBarEventTopics {
   open = 'sidebar.open',
   close = 'sidebar.close',

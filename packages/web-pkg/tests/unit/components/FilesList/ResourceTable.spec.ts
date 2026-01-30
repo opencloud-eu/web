@@ -10,7 +10,10 @@ import {
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
-import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
+import {
+  useCanBeOpenedWithSecureView,
+  ResourceIndicator
+} from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
@@ -18,7 +21,6 @@ import { Identity } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
 import { useFileActionsRename } from '../../../../src/composables/actions/files'
 import { FileAction } from '../../../../src/composables/actions/types'
-import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({
   isLocationPicker: computed(() => false),
