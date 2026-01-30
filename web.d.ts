@@ -8,11 +8,3 @@ declare global {
     WEB_APPS_MAP: Record<string, string>
   }
 }
-
-declare module 'vue' {
-  interface GlobalComponents {
-    // https://github.com/LinusBorg/portal-vue/issues/380
-    Portal: (typeof import('portal-vue'))['Portal']
-    PortalTarget: (typeof import('portal-vue'))['PortalTarget']
-  }
-}
