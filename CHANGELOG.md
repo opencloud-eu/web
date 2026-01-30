@@ -24,6 +24,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.38.0 - autoclosed [[#1898](https://github.com/opencloud-eu/web/pull/1898)]
+- fix(deps): update dependency vue-router to v5 [[#1899](https://github.com/opencloud-eu/web/pull/1899)]
 - chore(deps): update dependency globals to v17.2.0 [[#1883](https://github.com/opencloud-eu/web/pull/1883)]
 - fix(deps): update dependency axios to v1.13.4 [[#1885](https://github.com/opencloud-eu/web/pull/1885)]
 - chore(deps): update devdependencies (non-major) [[#1865](https://github.com/opencloud-eu/web/pull/1865)]
