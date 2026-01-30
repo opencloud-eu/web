@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: apply preview app image sorting from query params [[#1900](https://github.com/opencloud-eu/web/pull/1900)]
 - feat: move right sidebar to bottom drawer on mobile [[#1874](https://github.com/opencloud-eu/web/pull/1874)]
 - Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
 - Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
