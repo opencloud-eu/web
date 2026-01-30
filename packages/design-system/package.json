@@ -129,6 +129,7 @@
     "markdown-it-container": "^4.0.0",
     "postcss": "^8.5.2",
     "process": "^0.11.10",
+    "sass": "^1.97.3",
     "tailwindcss": "^4.1.11",
     "url": "^0.11.3",
     "vite": "^7.0.0",
