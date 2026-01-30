@@ -4,7 +4,7 @@
     <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
       <template v-if="backendEdition">
         <dt v-text="$gettext('Edition')" />
-        <dt v-text="backendEdition" />
+        <dd v-text="backendEdition" />
       </template>
       <dt class="flex items-start" v-text="$gettext('Version')" />
       <dd>
