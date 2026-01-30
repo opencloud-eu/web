@@ -1,11 +1,6 @@
 import { mockDeep } from 'vitest-mock-extended'
 import ResourceUpload from '../../../../../src/components/AppBar/Upload/ResourceUpload.vue'
-import {
-  defaultComponentMocks,
-  defaultPlugins,
-  defaultStubs,
-  mount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { UppyService } from '@opencloud-eu/web-pkg'
 import { OcButton } from '@opencloud-eu/design-system/components'
 
@@ -30,16 +25,15 @@ describe('Resource Upload Component', () => {
     it('should call "triggerUpload"', async () => {
       const { wrapper } = getWrapper()
 
-      const spyTriggerUpload = vi.spyOn(wrapper.vm, 'triggerUpload')
       const uploadButton = wrapper.find('button')
       const fileUploadInput = wrapper.find('#files-file-upload-input')
 
-      ;(fileUploadInput.element as HTMLElement).click = vi.fn()
-      await wrapper.vm.$forceUpdate()
+      const clickMock = vi.fn()
+      ;(fileUploadInput.element as HTMLElement).click = clickMock
 
       await uploadButton.trigger('click')
 
-      expect(spyTriggerUpload).toHaveBeenCalledTimes(1)
+      expect(clickMock).toHaveBeenCalledTimes(1)
       expect((fileUploadInput.element as HTMLElement).click).toHaveBeenCalledTimes(1)
     })
   })
@@ -59,11 +53,11 @@ function getWrapper(props = {}, uppyService = mockDeep<UppyService>()) {
   }
   return {
     mocks,
-    wrapper: mount(ResourceUpload, {
+    wrapper: shallowMount(ResourceUpload, {
       props,
       global: {
         mocks,
-        stubs: defaultStubs,
+        stubs: { OcButton: false },
         provide: mocks,
         plugins: [...defaultPlugins()]
       }
