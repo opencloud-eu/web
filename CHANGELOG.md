@@ -1,5 +1,48 @@
 # Changelog
 
+## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-01-31
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
+
+### 📈 Enhancement
+
+- feat: apply preview app image sorting from query params [[#1900](https://github.com/opencloud-eu/web/pull/1900)]
+- feat: move right sidebar to bottom drawer on mobile [[#1874](https://github.com/opencloud-eu/web/pull/1874)]
+- Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
+- Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
+
+### 🐛 Bug Fixes
+
+- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
+- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
+
+### ✅ Tests
+
+- test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
+- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
+
+### 📦️ Dependencies
+
+- chore(deps): update tiptap monorepo to v3.18.0 [[#1892](https://github.com/opencloud-eu/web/pull/1892)]
+- fix(deps): update dependency vue-router to v5.0.1 [[#1902](https://github.com/opencloud-eu/web/pull/1902)]
+- chore(deps): update dependency @cucumber/messages to v32 [[#1856](https://github.com/opencloud-eu/web/pull/1856)]
+- chore(deps): update collabora/code docker tag to v25.04.8.2.1 [[#1894](https://github.com/opencloud-eu/web/pull/1894)]
+- fix(deps): update dependency focus-trap to v8 [[#1895](https://github.com/opencloud-eu/web/pull/1895)]
+- fix(deps): update dependency @sentry/vue to v10.38.0 - autoclosed [[#1898](https://github.com/opencloud-eu/web/pull/1898)]
+- fix(deps): update dependency vue-router to v5 [[#1899](https://github.com/opencloud-eu/web/pull/1899)]
+- chore(deps): update dependency globals to v17.2.0 [[#1883](https://github.com/opencloud-eu/web/pull/1883)]
+- fix(deps): update dependency axios to v1.13.4 [[#1885](https://github.com/opencloud-eu/web/pull/1885)]
+- chore(deps): update devdependencies (non-major) [[#1865](https://github.com/opencloud-eu/web/pull/1865)]
+- chore(deps): update tiptap monorepo to v3.17.1 [[#1871](https://github.com/opencloud-eu/web/pull/1871)]
+- fix(deps): update dependency @sentry/vue to v10.37.0 [[#1881](https://github.com/opencloud-eu/web/pull/1881)]
+- fix(deps): update dependency @sentry/vue to v10.36.0 [[#1854](https://github.com/opencloud-eu/web/pull/1854)]
+- fix(deps): update dependency zod to v4.3.6 [[#1863](https://github.com/opencloud-eu/web/pull/1863)]
+- chore(deps): update dependency globals to v17.1.0 [[#1864](https://github.com/opencloud-eu/web/pull/1864)]
+- fix(deps): update dependency axios to v1.13.3 [[#1867](https://github.com/opencloud-eu/web/pull/1867)]
+- chore(deps): update typescript-eslint monorepo to v8.54.0 [[#1877](https://github.com/opencloud-eu/web/pull/1877)]
+
 ## [5.0.0](https://github.com/opencloud-eu/web/releases/tag/v5.0.0) - 2026-01-26
 
 ### ❤️ Thanks to all contributors! ❤️
