@@ -123,7 +123,7 @@
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*",
     "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-vue": "6.0.3",
+    "@vitejs/plugin-vue": "6.0.4",
     "clean-publish": "^6.0.0",
     "glob": "^13.0.0",
     "markdown-it-container": "^4.0.0",
