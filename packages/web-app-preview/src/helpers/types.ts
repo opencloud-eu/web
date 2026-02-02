@@ -1,14 +1,15 @@
-import { Ref } from 'vue'
+import { Resource } from '@opencloud-eu/web-client'
 
-export type CachedFile = {
+export type MediaFile = {
   id: string
   name: string
-  url?: Ref<string>
+  url?: string
   ext: string
   mimeType: string
   isVideo: boolean
   isImage: boolean
   isAudio: boolean
-  isLoading: Ref<boolean>
-  isError: Ref<boolean>
+  isLoading: boolean
+  isError: boolean
+  resource: Resource
 }

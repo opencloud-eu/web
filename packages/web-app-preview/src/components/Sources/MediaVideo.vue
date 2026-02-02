@@ -11,10 +11,10 @@
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
-import { CachedFile } from '../../helpers/types'
+import { MediaFile } from '../../helpers/types'
 
 const { file, isAutoPlayEnabled = true } = defineProps<{
-  file: CachedFile
+  file: MediaFile
   isAutoPlayEnabled?: boolean
 }>()
 

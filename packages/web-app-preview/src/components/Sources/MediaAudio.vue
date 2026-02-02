@@ -8,18 +8,13 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { CachedFile } from '../../helpers/types'
-import { Resource } from '@opencloud-eu/web-client'
+import { MediaFile } from '../../helpers/types'
 
 export default defineComponent({
   name: 'MediaAudio',
   props: {
     file: {
-      type: Object as PropType<CachedFile>,
-      required: true
-    },
-    resource: {
-      type: Object as PropType<Resource>,
+      type: Object as PropType<MediaFile>,
       required: true
     },
     isAutoPlayEnabled: {
@@ -29,8 +24,8 @@ export default defineComponent({
   },
   setup(props) {
     const audioText = computed(() => {
-      if (props.resource.audio?.artist && props.resource.audio?.title) {
-        return `${props.resource.audio.artist} - ${props.resource.audio.title}`
+      if (props.file.resource.audio?.artist && props.file.resource.audio?.title) {
+        return `${props.file.resource.audio.artist} - ${props.file.resource.audio.title}`
       }
       return ''
     })

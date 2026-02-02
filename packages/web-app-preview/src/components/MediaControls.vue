@@ -123,14 +123,14 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Resource } from '@opencloud-eu/web-client'
 import { isMacOs } from '@opencloud-eu/web-pkg/src'
+import { MediaFile } from '../helpers/types'
 
 export default defineComponent({
   name: 'MediaControls',
   props: {
     files: {
-      type: Array as PropType<Resource[]>,
+      type: Array as PropType<MediaFile[]>,
       required: true
     },
     activeIndex: {

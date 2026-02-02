@@ -34,13 +34,13 @@
 
 <script setup lang="ts">
 import { Resource } from '@opencloud-eu/web-client'
-import { CachedFile } from '../helpers/types'
+import { MediaFile } from '../helpers/types'
 import { ResourceIcon } from '@opencloud-eu/web-pkg'
 import { nextTick, watch } from 'vue'
 
 const { activeIndex, items } = defineProps<{
   activeIndex: number
-  items: CachedFile[]
+  items: MediaFile[]
 }>()
 defineEmits<{
   (e: 'select', index: number): void
@@ -64,7 +64,7 @@ watch(
   { immediate: true }
 )
 
-const getIconResource = (item: CachedFile) => {
+const getIconResource = (item: MediaFile) => {
   return {
     id: item.id,
     path: '',

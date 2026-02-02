@@ -9,14 +9,14 @@
   />
 </template>
 <script setup lang="ts">
-import { CachedFile } from '../../helpers/types'
+import { MediaFile } from '../../helpers/types'
 import { ref, watch, unref, nextTick, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
 import { useEventBus } from '@opencloud-eu/web-pkg'
 
 const { file, currentImageRotation } = defineProps<{
-  file: CachedFile
+  file: MediaFile
   currentImageRotation: number
 }>()
 
