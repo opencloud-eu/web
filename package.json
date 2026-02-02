@@ -107,6 +107,9 @@
     "node": "24.13.0"
   },
   "pnpm": {
+    "overrides": {
+      "webdav@5>fast-xml-parser": "^5.0.0"
+    },
     "patchedDependencies": {
       "caf@15.0.1": "patches/caf@15.0.1.patch",
       "vue3-gettext@2.4.0": "patches/vue3-gettext@2.4.0.patch",
