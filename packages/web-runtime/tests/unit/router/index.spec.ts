@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
-// @vitest-environment jsdom
 describe('buildUrl', () => {
   it.each`
     location                                                                          | base                         | path            | expected

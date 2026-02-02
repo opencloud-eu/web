@@ -1,7 +1,6 @@
 import OcImage from './OcImage.vue'
 import { mount } from '@opencloud-eu/web-test-helpers'
 
-// @vitest-environment jsdom
 describe('OcImage', () => {
   function getWrapper(props = {}) {
     return mount(OcImage, {

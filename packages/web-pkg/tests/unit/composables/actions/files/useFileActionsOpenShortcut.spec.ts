@@ -24,7 +24,6 @@ Object.defineProperty(window, 'location', {
 Object.defineProperty(window, 'open', { writable: true })
 window.open = vi.fn()
 
-// @vitest-environment jsdom
 describe('openShortcut', () => {
   describe('computed property "actions"', () => {
     describe('method "isVisible"', () => {
