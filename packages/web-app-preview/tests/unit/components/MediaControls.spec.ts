@@ -1,7 +1,7 @@
-import { Resource } from '@opencloud-eu/web-client'
 import MediaControls from '../../../src/components/MediaControls.vue'
 import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
+import { MediaFile } from '../../../src/helpers/types'
 
 const selectors = {
   controlsPrevious: '.preview-controls-previous',
@@ -127,7 +127,7 @@ function getWrapper(props: PartialComponentProps<typeof MediaControls> = {}) {
   return {
     wrapper: shallowMount(MediaControls, {
       props: {
-        files: [mock<Resource>()],
+        files: [mock<MediaFile>()],
         activeIndex: 0,
         ...props
       },

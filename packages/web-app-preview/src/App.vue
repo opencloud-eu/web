@@ -142,7 +142,7 @@ const {
 
 const emit = defineEmits<{
   (e: 'update:resource', resource: Resource): void
-  (e: 'delete:resource', resource: Resource): void
+  (e: 'delete:resource'): void
   (e: 'register:onDeleteResourceCallback', callback: () => Promise<void>): void
 }>()
 
@@ -203,7 +203,7 @@ const sortBy = computed(() => {
 })
 const sortDir = computed<SortDir>(() => {
   if (!unref(contextRouteQuery)) {
-    return SortDir.Desc
+    return SortDir.Asc
   }
   return (unref(contextRouteQuery)['sort-dir'] as SortDir) ?? SortDir.Asc
 })
@@ -211,7 +211,7 @@ const sortDir = computed<SortDir>(() => {
 const fileIdQuery = useRouteQuery('fileId')
 const fileId = computed(() => queryItemAsString(unref(fileIdQuery)))
 
-const buildFiles = () => {
+const buildMediaFiles = () => {
   if (!activeFiles) {
     return
   }
@@ -395,7 +395,7 @@ watch(
   () => activeFiles,
   () => {
     if (activeFiles.length != Object.keys(unref(mediaFiles)).length) {
-      buildFiles()
+      buildMediaFiles()
     }
 
     if (unref(activeIndex) >= unref(mediaFiles).length) {
@@ -438,14 +438,10 @@ onMounted(() => {
   emit('register:onDeleteResourceCallback', onDeleteResourceCallback)
   keyBindings.push(
     bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
-      emit('delete:resource', unref(activeMediaFile).resource)
+      emit('delete:resource')
     )
   )
-  keyBindings.push(
-    bindKeyAction({ primary: Key.Delete }, () =>
-      emit('delete:resource', unref(activeMediaFile).resource)
-    )
-  )
+  keyBindings.push(bindKeyAction({ primary: Key.Delete }, () => emit('delete:resource')))
 })
 
 onBeforeUnmount(() => {
