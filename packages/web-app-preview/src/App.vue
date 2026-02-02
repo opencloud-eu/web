@@ -394,11 +394,9 @@ watch(
 watch(
   () => activeFiles,
   () => {
-    if (activeFiles.length != Object.keys(unref(mediaFiles)).length) {
-      buildMediaFiles()
-    }
+    buildMediaFiles()
 
-    if (unref(activeIndex) >= unref(mediaFiles).length) {
+    if (unref(mediaFiles).length && unref(activeIndex) >= unref(mediaFiles).length) {
       activeIndex.value = 0
       updateLocalHistory()
     }
