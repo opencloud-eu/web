@@ -352,7 +352,7 @@ export default defineComponent({
     }
 
     const abortDistantPreloadImages = () => {
-      const DISTANCE = 5
+      const DISTANCE = 2
       Object.entries(unref(cachedFilesAbortControllers)).forEach(([fileId, controller]) => {
         const fileIndex = unref(filteredFiles).findIndex((f) => f.id === fileId)
 
