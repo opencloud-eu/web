@@ -27,6 +27,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency jsdom to v28 [[#1914](https://github.com/opencloud-eu/web/pull/1914)]
 - fix(deps): update dependency vue-router to v5.0.2 [[#1919](https://github.com/opencloud-eu/web/pull/1919)]
 - chore(deps): update devdependencies (non-major) [[#1909](https://github.com/opencloud-eu/web/pull/1909)]
 - fix(deps): update dependency fast-xml-parser to v5 [security] [[#1910](https://github.com/opencloud-eu/web/pull/1910)]
