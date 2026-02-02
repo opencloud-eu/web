@@ -84,7 +84,7 @@
     "@casl/ability": "^6.7.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "axios": "^1.7.7",
-    "fast-xml-parser": "^4.5.0",
+    "fast-xml-parser": "^5.0.0",
     "lodash-es": "^4.17.21",
     "luxon": "^3.5.0",
     "uuid": "^13.0.0",
@@ -99,5 +99,10 @@
     "vite-plugin-dts": "4.5.4",
     "vite-plugin-node-polyfills": "0.25.0",
     "vite": "^7.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "webdav@5>fast-xml-parser": "^5.0.0"
+    }
   }
 }
