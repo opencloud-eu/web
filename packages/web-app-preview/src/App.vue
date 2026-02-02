@@ -294,7 +294,7 @@ export default defineComponent({
         }
         cachedFile.url.value = await props.getUrlForResource(unref(space), file)
       } catch (e) {
-        if (e.name === 'AbortError') {
+        if (e.name === 'CanceledError') {
           delete unref(cachedFiles)[file.id]
           return
         }
@@ -352,10 +352,11 @@ export default defineComponent({
     }
 
     const abortDistantPreloadImages = () => {
+      const DISTANCE = 5
       Object.entries(unref(cachedFilesAbortControllers)).forEach(([fileId, controller]) => {
         const fileIndex = unref(filteredFiles).findIndex((f) => f.id === fileId)
 
-        if (fileIndex !== -1 && Math.abs(fileIndex - unref(activeIndex)) > 5) {
+        if (fileIndex !== -1 && Math.abs(fileIndex - unref(activeIndex)) > DISTANCE) {
           controller.abort()
           delete unref(cachedFilesAbortControllers)[fileId]
         }
@@ -363,11 +364,15 @@ export default defineComponent({
     }
 
     const preloadImages = () => {
+      const PRELOAD_COUNT = 2
       const prevFiles = unref(filteredFiles).slice(
-        Math.max(0, unref(activeIndex) - 2),
+        Math.max(0, unref(activeIndex) - PRELOAD_COUNT),
         unref(activeIndex)
       )
-      const nextFiles = unref(filteredFiles).slice(unref(activeIndex) + 1, unref(activeIndex) + 3)
+      const nextFiles = unref(filteredFiles).slice(
+        unref(activeIndex) + 1,
+        unref(activeIndex) + 1 + PRELOAD_COUNT
+      )
 
       const files = [...prevFiles, ...nextFiles]
       files.forEach((file) => loadFileIntoCache(file))
