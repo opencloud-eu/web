@@ -15,8 +15,8 @@
         @click="$emit('select', idx)"
       >
         <img
-          v-if="item && item.isImage && item.url && !item.isError"
-          :src="item.url"
+          v-if="item && item.isImage && item.resource.thumbnail"
+          :src="item.resource.thumbnail"
           class="object-cover h-25 rounded-md aspect-video"
           :alt="item.name"
           referrerpolicy="no-referrer"
@@ -35,8 +35,14 @@
 <script setup lang="ts">
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
-import { ResourceIcon } from '@opencloud-eu/web-pkg'
-import { nextTick, watch } from 'vue'
+import {
+  ImageDimension,
+  ProcessorType,
+  ResourceIcon,
+  useGetMatchingSpace,
+  useLoadPreview
+} from '@opencloud-eu/web-pkg'
+import { nextTick, onMounted, watch } from 'vue'
 
 const { activeIndex, items } = defineProps<{
   activeIndex: number
@@ -45,6 +51,9 @@ const { activeIndex, items } = defineProps<{
 defineEmits<{
   (e: 'select', index: number): void
 }>()
+
+const { loadPreview } = useLoadPreview()
+const { getMatchingSpace } = useGetMatchingSpace()
 
 const scrollToActiveElement = async () => {
   await nextTick()
@@ -75,4 +84,15 @@ const getIconResource = (item: MediaFile) => {
     type: 'file'
   } as Resource
 }
+
+onMounted(() => {
+  items.forEach((item: MediaFile) => {
+    loadPreview({
+      resource: item.resource,
+      space: getMatchingSpace(item.resource),
+      processor: ProcessorType.enum.fit,
+      dimensions: ImageDimension.Tile
+    })
+  })
+})
 </script>
