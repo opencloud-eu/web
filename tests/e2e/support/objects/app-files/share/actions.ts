@@ -87,18 +87,12 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
 
   if (expirationDate) {
     await page.locator(showMoreOptionsButton).click()
-    await Promise.all([
-      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
-      page.getByTestId(calendarDatePickerId).click()
-    ])
+    await page.getByTestId(calendarDatePickerId).click()
     await Collaborator.setExpirationDate(page, expirationDate)
   }
   const federatedShare = recipients[0].shareType
   if (federatedShare) {
-    await Promise.all([
-      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
-      page.locator(userTypeFilter).click()
-    ])
+    await page.locator(userTypeFilter).click()
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
   }
   await Collaborator.inviteCollaborators({ page, collaborators: recipients })
