@@ -481,6 +481,10 @@ export default defineComponent({
       Object.values(unref(cachedFiles)).forEach((cachedFile) => {
         props.revokeUrl(unref(cachedFile.url))
       })
+
+      Object.values(unref(cachedFilesAbortControllers)).forEach((abortController) => {
+        abortController.abort()
+      })
     })
 
     return {
