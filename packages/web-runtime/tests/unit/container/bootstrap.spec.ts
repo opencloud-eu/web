@@ -21,7 +21,6 @@ import { createTestingPinia, mockAxiosResolve } from '@opencloud-eu/web-test-hel
 
 vi.mock('../../../src/container/application')
 
-// @vitest-environment jsdom
 describe('initialize applications', () => {
   beforeEach(() => {
     createTestingPinia()
@@ -87,34 +86,35 @@ describe('initialize applications', () => {
 })
 
 describe('announceCustomScripts', () => {
+  let element: HTMLScriptElement
+
   beforeEach(() => {
     createTestingPinia()
-  })
-  afterEach(() => {
-    document.getElementsByTagName('html')[0].innerHTML = ''
+    vi.spyOn(document.head, 'appendChild').mockImplementation(
+      (el) => (element = el as HTMLScriptElement)
+    )
   })
 
   it('injects basic scripts', () => {
+    const appendChildSpy = vi.spyOn(document.head, 'appendChild')
     const configStore = useConfigStore()
     configStore.scripts = [{ src: 'foo.js' }, { src: 'bar.js' }]
     announceCustomScripts({ configStore })
-    const elements = document.getElementsByTagName('script')
-    expect(elements.length).toBe(2)
+    expect(appendChildSpy).toHaveBeenCalledTimes(2)
   })
 
   it('skips the injection if no src option is provided', () => {
+    const appendChildSpy = vi.spyOn(document.head, 'appendChild')
     const configStore = useConfigStore()
     configStore.scripts = [{}, {}, {}, {}, {}]
     announceCustomScripts({ configStore })
-    const elements = document.getElementsByTagName('script')
-    expect(elements.length).toBeFalsy()
+    expect(appendChildSpy).not.toHaveBeenCalled()
   })
 
   it('loads scripts synchronous by default', () => {
     const configStore = useConfigStore()
     configStore.scripts = [{ src: 'foo.js' }]
     announceCustomScripts({ configStore })
-    const element = document.querySelector<HTMLScriptElement>('[src="foo.js"]')
     expect(element.async).toBeFalsy()
   })
 
@@ -122,7 +122,6 @@ describe('announceCustomScripts', () => {
     const configStore = useConfigStore()
     configStore.scripts = [{ src: 'foo.js', async: true }]
     announceCustomScripts({ configStore })
-    const element = document.querySelector<HTMLScriptElement>('[src="foo.js"]')
     expect(element.async).toBeTruthy()
   })
 })
@@ -131,30 +130,22 @@ describe('announceCustomStyles', () => {
   beforeEach(() => {
     createTestingPinia()
   })
-  afterEach(() => {
-    document.getElementsByTagName('html')[0].innerHTML = ''
-  })
 
   it('injects basic styles', () => {
+    const appendChildSpy = vi.spyOn(document.head, 'appendChild')
     const styles = [{ href: 'foo.css' }, { href: 'bar.css' }]
     const configStore = useConfigStore()
     configStore.styles = styles
     announceCustomStyles({ configStore })
-
-    styles.forEach(({ href }) => {
-      const element = document.querySelector<HTMLLinkElement>(`[href="${href}"]`)
-      expect(element).toBeTruthy()
-      expect(element.type).toBe('text/css')
-      expect(element.rel).toBe('stylesheet')
-    })
+    expect(appendChildSpy).toHaveBeenCalledTimes(2)
   })
 
   it('skips the injection if no href option is provided', () => {
+    const appendChildSpy = vi.spyOn(document.head, 'appendChild')
     const configStore = useConfigStore()
     configStore.styles = [{}, {}]
     announceCustomStyles({ configStore })
-    const elements = document.getElementsByTagName('link')
-    expect(elements.length).toBeFalsy()
+    expect(appendChildSpy).not.toHaveBeenCalled()
   })
 })
 

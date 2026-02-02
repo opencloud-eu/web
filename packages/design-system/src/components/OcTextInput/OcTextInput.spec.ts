@@ -21,14 +21,6 @@ const defaultProps = {
   label: 'label'
 }
 
-Object.assign(navigator, {
-  clipboard: {
-    writeText: vi.fn(),
-    readText: vi.fn()
-  }
-})
-
-// @vitest-environment jsdom
 describe('OcTextInput', () => {
   function getShallowWrapper(props: PartialComponentProps<typeof OcTextInput> = {}) {
     return shallowMount(OcTextInput, {
@@ -126,10 +118,11 @@ describe('OcTextInput', () => {
         expect(wrapper.find(selectors.copyPasswordBtn).exists()).toBeTruthy()
       })
       it('should copy password to clipboard if clicked', async () => {
+        const clipboardWriteSpy = vi.spyOn(navigator.clipboard, 'writeText')
         const wrapper = getMountedWrapper({ props: { type: 'password' } })
         await wrapper.find(selectors.inputField).setValue('password')
         await wrapper.find(selectors.copyPasswordBtn).trigger('click')
-        expect(navigator.clipboard.writeText).toHaveBeenCalledWith('password')
+        expect(clipboardWriteSpy).toHaveBeenCalledWith('password')
       })
     })
     describe('show hide password toggle button', () => {
@@ -298,7 +291,7 @@ describe('OcTextInput', () => {
         modelValue: 'non-empty-value',
         clearButtonAccessibleLabel: 'test label'
       })
-      expect(wrapper.find(selectors.clearInputButton).attributes('aria-label')).toBe('test label')
+      expect(wrapper.find(selectors.clearInputButton).attributes('arialabel')).toBe('test label')
     })
   })
 

@@ -23,7 +23,6 @@ const selectors = {
   clearBtn: '.oc-filter-chip-clear'
 }
 
-// @vitest-environment jsdom
 describe('ItemFilter', () => {
   it('renders all items', () => {
     const { wrapper } = getWrapper()
@@ -173,16 +172,12 @@ function getWrapper({
         items: filterItems,
         ...props
       },
-      slots: {
-        item(data) {
-          return props.displayNameAttribute ? data.item[props.displayNameAttribute] : data.item.name
-        }
-      },
+
       global: {
         plugins: [...defaultPlugins()],
         mocks,
         provide: mocks,
-        stubs: { OcCheckbox: true, OcDrop: true },
+        stubs: { OcCheckbox: true, OcDrop: true, OcButton: true },
         renderStubDefaultSlot: true
       }
     })
