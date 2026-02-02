@@ -15,7 +15,7 @@
     @keydown.up="goToPrev"
   >
     <photo-roll
-      v-if="true"
+      v-if="photoRollEnabled"
       class="bg-role-surface-container w-1/5 hidden md:block"
       :items="photoRollFiles"
       :active-index="activeIndex"
