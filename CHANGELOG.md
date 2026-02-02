@@ -27,6 +27,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency fast-xml-parser to v5 [security] [[#1910](https://github.com/opencloud-eu/web/pull/1910)]
 - chore(deps): update dependency @vueuse/core to v14.2.0 [[#1912](https://github.com/opencloud-eu/web/pull/1912)]
 - chore(deps): update tiptap monorepo to v3.18.0 [[#1892](https://github.com/opencloud-eu/web/pull/1892)]
 - fix(deps): update dependency vue-router to v5.0.1 [[#1902](https://github.com/opencloud-eu/web/pull/1902)]
