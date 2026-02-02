@@ -15,7 +15,7 @@
     @keydown.up="goToPrev"
   >
     <photo-roll
-      v-if="photoRollEnabled"
+      v-if="true"
       class="bg-role-surface-container w-1/5 hidden md:block"
       :items="photoRollFiles"
       :active-index="activeIndex"
@@ -176,6 +176,7 @@ export default defineComponent({
 
     const activeIndex = ref<number>()
     const cachedFiles = ref<Record<string, CachedFile>>({})
+    const cachedFilesAbortControllers = ref<Record<string, AbortController>>({})
     const folderLoaded = ref(false)
     const isAutoPlayEnabled = ref(true)
     const photoRollEnabled = ref(true)
@@ -274,6 +275,9 @@ export default defineComponent({
       cachedFiles.value[file.id] = cachedFile
 
       try {
+        const controller = new AbortController()
+        cachedFilesAbortControllers.value[file.id] = controller
+
         if (cachedFile.isImage) {
           cachedFile.url.value = await previewService.loadPreview(
             {
@@ -283,16 +287,23 @@ export default defineComponent({
               processor: ProcessorType.enum.fit
             },
             false,
-            false
+            false,
+            controller.signal
           )
           return
         }
         cachedFile.url.value = await props.getUrlForResource(unref(space), file)
       } catch (e) {
+        if (e.name === 'AbortError') {
+          delete unref(cachedFiles)[file.id]
+          return
+        }
+
         console.error(e)
         cachedFile.isError.value = true
       } finally {
         cachedFile.isLoading.value = false
+        delete unref(cachedFilesAbortControllers)[file.id]
       }
     }
 
@@ -340,10 +351,26 @@ export default defineComponent({
       } as RouteLocationRaw)
     }
 
+    const abortDistantPreloadImages = () => {
+      Object.entries(unref(cachedFilesAbortControllers)).forEach(([fileId, controller]) => {
+        const fileIndex = unref(filteredFiles).findIndex((f) => f.id === fileId)
+
+        if (fileIndex !== -1 && Math.abs(fileIndex - unref(activeIndex)) > 5) {
+          controller.abort()
+          delete unref(cachedFilesAbortControllers)[fileId]
+        }
+      })
+    }
+
     const preloadImages = () => {
-      for (const file of unref(filteredFiles)) {
-        loadFileIntoCache(file)
-      }
+      const prevFiles = unref(filteredFiles).slice(
+        Math.max(0, unref(activeIndex) - 2),
+        unref(activeIndex)
+      )
+      const nextFiles = unref(filteredFiles).slice(unref(activeIndex) + 1, unref(activeIndex) + 3)
+
+      const files = [...prevFiles, ...nextFiles]
+      files.forEach((file) => loadFileIntoCache(file))
     }
 
     const setActiveFile = () => {
@@ -472,7 +499,8 @@ export default defineComponent({
       goToPrev,
       isDeleteButtonVisible,
       photoRollFiles,
-      preloadImages
+      preloadImages,
+      abortDistantPreloadImages
     }
   },
 
@@ -481,6 +509,7 @@ export default defineComponent({
       if (newValue !== oldValue) {
         this.loadFileIntoCache(this.activeFilteredFile)
         this.preloadImages()
+        this.abortDistantPreloadImages()
       }
 
       if (oldValue !== null) {
