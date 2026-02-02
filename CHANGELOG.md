@@ -27,6 +27,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.0.2 [[#1919](https://github.com/opencloud-eu/web/pull/1919)]
 - chore(deps): update devdependencies (non-major) [[#1909](https://github.com/opencloud-eu/web/pull/1909)]
 - fix(deps): update dependency fast-xml-parser to v5 [security] [[#1910](https://github.com/opencloud-eu/web/pull/1910)]
 - chore(deps): update dependency @vueuse/core to v14.2.0 [[#1912](https://github.com/opencloud-eu/web/pull/1912)]
