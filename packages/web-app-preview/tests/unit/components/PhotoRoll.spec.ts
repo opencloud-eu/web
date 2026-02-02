@@ -1,7 +1,19 @@
 import PhotoRoll from '../../../src/components/PhotoRoll.vue'
-import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  PartialComponentProps,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useLoadPreview: vi.fn().mockReturnValue({
+    loadPreview: vi.fn()
+  })
+}))
 
 describe('PhotoRoll component', () => {
   it('renders all photos as buttons', () => {
@@ -21,6 +33,8 @@ describe('PhotoRoll component', () => {
 })
 
 function getWrapper(props: PartialComponentProps<typeof PhotoRoll> = {}) {
+  const defaultMocks = defaultComponentMocks()
+
   return {
     wrapper: shallowMount(PhotoRoll, {
       props: {
@@ -29,7 +43,9 @@ function getWrapper(props: PartialComponentProps<typeof PhotoRoll> = {}) {
         ...props
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        mocks: defaultMocks,
+        provide: defaultMocks
       }
     })
   }
