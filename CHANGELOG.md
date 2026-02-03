@@ -27,6 +27,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v20.5.0 [[#1923](https://github.com/opencloud-eu/web/pull/1923)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v3 [[#1911](https://github.com/opencloud-eu/web/pull/1911)]
 - chore(deps): update dependency jsdom to v28 [[#1914](https://github.com/opencloud-eu/web/pull/1914)]
 - fix(deps): update dependency vue-router to v5.0.2 [[#1919](https://github.com/opencloud-eu/web/pull/1919)]
