@@ -80,11 +80,18 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-export const appId = 'preview'
-</script>
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, Ref, unref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  Ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import omit from 'lodash-es/omit'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
@@ -174,7 +181,7 @@ const mediaFiles = ref<MediaFile[]>([])
 const folderLoaded = ref(false)
 const isAutoPlayEnabled = ref(true)
 const photoRollEnabled = ref(true)
-const preview = ref<HTMLElement>()
+const preview = useTemplateRef<HTMLElement>('preview')
 const keyBindings: string[] = []
 let loadPreviewImageController: AbortController = null
 
