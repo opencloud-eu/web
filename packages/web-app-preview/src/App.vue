@@ -216,7 +216,7 @@ const buildMediaFiles = () => {
     return
   }
 
-  let files = activeFiles.filter((file) => {
+  const filteredFiles = activeFiles.filter((file) => {
     if (
       unref(currentFileContext.routeQuery)?.['q_share-visibility'] === 'hidden' &&
       !(file as IncomingShareResource).hidden
@@ -234,10 +234,10 @@ const buildMediaFiles = () => {
     return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
   })
 
-  const sortFields = determineResourceTableSortFields(files[0])
-  files = sortHelper(files, sortFields, unref(sortBy), unref(sortDir))
+  const sortFields = determineResourceTableSortFields(filteredFiles[0])
+  const sortedFiles = sortHelper(filteredFiles, sortFields, unref(sortBy), unref(sortDir))
 
-  mediaFiles.value = files.map((file) => {
+  mediaFiles.value = sortedFiles.map((file) => {
     return {
       id: file.id,
       name: file.name,
