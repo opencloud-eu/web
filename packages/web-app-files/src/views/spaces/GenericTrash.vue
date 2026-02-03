@@ -4,7 +4,6 @@
       <app-bar
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
-        :is-side-bar-open="isSideBarOpen"
         :space="space"
         :view-modes="viewModes"
       >
@@ -40,7 +39,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :fields-displayed="['name', 'ddate']"
           :are-paths-displayed="true"
           :resources="paginatedResources"
@@ -69,7 +67,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+    <file-side-bar :space="space" />
   </div>
 </template>
 
@@ -117,12 +115,10 @@ const {
   paginationPages,
   paginationPage,
   selectedResourcesIds,
-  isSideBarOpen,
   fileListHeaderY,
   sortBy,
   sortDir,
   handleSort,
-  sideBarActivePanel,
   selectedResources,
   isResourceInSelection,
   viewMode,

@@ -3,10 +3,8 @@
     <app-template
       ref="template"
       :breadcrumbs="breadcrumbs"
-      :side-bar-active-panel="sideBarActivePanel"
       :side-bar-available-panels="sideBarAvailablePanels"
       :side-bar-panel-context="sideBarPanelContext"
-      :is-side-bar-open="isSideBarOpen"
       :side-bar-loading="sideBarLoading"
       :show-batch-actions="!!selectedUsers.length"
       :batch-actions="batchActions"
@@ -200,6 +198,8 @@ export default defineComponent({
     const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const clientService = useClientService()
     const configStore = useConfigStore()
+    const sidebarStore = useSideBar()
+    const { isSideBarOpen } = storeToRefs(sidebarStore)
 
     const userSettingsStore = useUserSettingsStore()
     const { users, selectedUsers } = storeToRefs(userSettingsStore)
@@ -482,7 +482,6 @@ export default defineComponent({
     ] satisfies SideBarPanel<unknown, unknown, User>[]
 
     return {
-      ...useSideBar(),
       maxQuota: capabilityRefs.spacesMaxQuota,
       template,
       selectedUsers,
@@ -506,7 +505,8 @@ export default defineComponent({
       sideBarAvailablePanels,
       createUserAction,
       createUserActionIcon,
-      userSettingsStore
+      userSettingsStore,
+      isSideBarOpen
     }
   },
   computed: {

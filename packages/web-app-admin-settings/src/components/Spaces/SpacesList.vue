@@ -130,7 +130,8 @@ import {
   useKeyboardActions,
   ContextMenuBtnClickEventData,
   useIsTopBarSticky,
-  useSharesStore
+  useSharesStore,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,
@@ -147,7 +148,6 @@ import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
 import {
   useFileListHeaderPosition,
@@ -172,6 +172,7 @@ const language = useGettext()
 const { $gettext } = language
 const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
+const { openSideBar } = useSideBar()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuButtonRef =
@@ -487,7 +488,7 @@ const spaceDetailsLabel = computed(() => {
 })
 const showDetailsForSpace = (space: SpaceResource) => {
   selectSpace(space)
-  eventBus.publish(SideBarEventTopics.open)
+  openSideBar()
 }
 
 const selectSpace = (selectedSpace: SpaceResource) => {

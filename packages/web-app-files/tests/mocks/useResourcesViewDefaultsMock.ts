@@ -37,8 +37,6 @@ export const useResourcesViewDefaultsMock = (
     selectedResourcesIds: ref([]),
     selectedResourceSpace: ref(mock<SpaceResource>()),
     isResourceInSelection: vi.fn(() => false),
-    isSideBarOpen: ref(false),
-    sideBarActivePanel: ref(''),
     scrollToResource: vi.fn(),
     scrollToResourceFromRoute: vi.fn(),
     viewMode: ref('resource-table'),

@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper class="flex-col">
-      <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :has-bulk-actions="true" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -69,7 +69,6 @@
           id="files-shared-with-me-view"
           :file-list-header-y="fileListHeaderY"
           :items="items"
-          :is-side-bar-open="isSideBarOpen"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"
@@ -84,11 +83,7 @@
         />
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedShareSpace"
-    />
+    <file-side-bar :space="selectedShareSpace" />
   </div>
 </template>
 
@@ -150,8 +145,6 @@ export default defineComponent({
       loadResourcesTask,
       selectedResources,
       selectedResourcesIds,
-      sideBarActivePanel,
-      isSideBarOpen,
       paginatedResources,
       scrollToResourceFromRoute
     } = resourcesViewDefaults
@@ -287,8 +280,6 @@ export default defineComponent({
       selectedResources,
       selectedResourcesIds,
       fileListHeaderY,
-      isSideBarOpen,
-      sideBarActivePanel,
       selectedShareSpace,
 
       areHiddenFilesShown,
