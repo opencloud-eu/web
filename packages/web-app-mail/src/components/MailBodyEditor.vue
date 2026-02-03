@@ -111,7 +111,7 @@ const applyLink = (rawInput: string, selection: SelectionRange) => {
 
   const safeHref = sanitizeHref(rawInput)
 
-  let chain = editor.value.chain().focus().setTextSelection(selection)
+  const chain = editor.value.chain().focus().setTextSelection(selection)
 
   if (!safeHref) {
     chain.extendMarkRange('link').unsetLink().run()
