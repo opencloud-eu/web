@@ -72,7 +72,7 @@
     "eslint": "9.39.2",
     "franc-min": "^6.2.0",
     "glob": "13.0.0",
-    "happy-dom": "20.4.0",
+    "happy-dom": "20.5.0",
     "license-checker-rseidelsohn": "4.4.2",
     "node-fetch": "3.3.2",
     "pino": "10.3.0",
