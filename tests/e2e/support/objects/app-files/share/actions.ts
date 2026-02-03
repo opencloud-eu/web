@@ -57,13 +57,11 @@ export const openSharingPanel = async function (
     case 'SIDEBAR_PANEL':
       await sidebar.open({ page, resource: item })
       await sidebar.openPanel({ page, name: 'sharing' })
-      // NOTE: loader re-appears after panel is opened
-      await page.locator(invitePanel).waitFor()
-      await page.locator('div.oc-loader').waitFor({ state: 'detached' })
       break
   }
 
   await page.locator(invitePanel).waitFor()
+  await page.locator('div.oc-loader').waitFor({ state: 'detached' })
 
   // always click on the “Show more” button if it exists
   const showMore = page.locator(showMoreBtn)

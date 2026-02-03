@@ -1,4 +1,5 @@
 import { Download, Locator, Page, expect } from '@playwright/test'
+import { setDefaultTimeout } from '@cucumber/cucumber'
 import util from 'util'
 import path from 'path'
 import { waitForResources } from './utils'
@@ -109,7 +110,7 @@ const filesContextMenuAction = 'div[id^="context-menu-drop"] button.oc-files-act
 const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
-  '//*[@data-test-resource-name="%s"]/ancestor::tr//td//span[@data-test-indicator-type="resource-locked"]'
+  '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-locked"]'
 const sharesNavigationButtonSelector = '.oc-sidebar-nav [data-nav-name="files-shares"]'
 const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
@@ -456,6 +457,8 @@ const createDocumentFile = async (
 
   await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
+  // wait for lock to be removed
+  expect(getLockLocator({ page, resource: name })).not.toBeVisible()
 }
 
 export const fillContentOfDocument = async ({
@@ -731,9 +734,14 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
   await pauseResumeUpload(page)
   await page.locator(pauseUploadButton).waitFor()
 
+  // increase the test timeout for large uploads
+  setDefaultTimeout(config.largeUploadTimeout * 1000)
   await page
     .locator(uploadInfoSuccessLabelSelector)
     .waitFor({ timeout: config.largeUploadTimeout * 1000 })
+  // revert  to the default timeout
+  setDefaultTimeout(config.timeout * 1000)
+
   await page.locator(uploadInfoCloseButton).click()
 }
 
