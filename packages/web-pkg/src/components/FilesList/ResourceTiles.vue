@@ -211,7 +211,8 @@ const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
   return Math.min(unref(viewSizeMax), viewSize)
 })
-const { isSideBarOpen } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 const {
   disabledResources,
   isResourceSelected,

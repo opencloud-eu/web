@@ -5,8 +5,7 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { displayPositionedDropdown, eventBus, queryItemAsString } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
+import { displayPositionedDropdown, queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../../src/composables'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
@@ -80,10 +79,11 @@ describe('GroupsList', () => {
   })
   it('should show the group details on details button click', async () => {
     const groups = getGroupMocks()
-    const eventBusSpy = vi.spyOn(eventBus, 'publish')
     const { wrapper } = getWrapper({ mountType: mount, groups })
+
+    const { openSideBar } = useSideBar()
     await wrapper.find('.groups-table-btn-details').trigger('click')
-    expect(eventBusSpy).toHaveBeenCalledWith(SideBarEventTopics.open)
+    expect(openSideBar).toHaveBeenCalled()
   })
   describe('toggle selection', () => {
     describe('selectGroups method', () => {

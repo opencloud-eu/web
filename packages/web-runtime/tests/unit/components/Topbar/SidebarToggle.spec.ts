@@ -1,5 +1,5 @@
+import { useSideBar } from '@opencloud-eu/web-pkg'
 import SidebarToggle from '../../../../src/components/Topbar/SideBarToggle.vue'
-import { eventBus } from '@opencloud-eu/web-pkg/src/services'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 
 const selectors = {
@@ -17,21 +17,25 @@ describe('SidebarToggle component', () => {
   )
   it('publishes the toggle-event to the sidebar on click', async () => {
     const { wrapper } = getWrapper()
-    const eventSpy = vi.spyOn(eventBus, 'publish')
+    const { toggleSideBar } = useSideBar()
     await wrapper.find(selectors.toggleSidebarBtn).trigger('click')
-    expect(eventSpy).toHaveBeenCalled()
+    expect(toggleSideBar).toHaveBeenCalled()
   })
 })
 
 function getWrapper({ isSideBarOpen = false } = {}) {
   const mocks = defaultComponentMocks()
+
+  const plugins = [...defaultPlugins()]
+  const sideBarStore = useSideBar()
+  sideBarStore.isSideBarOpen = isSideBarOpen
+
   return {
     mocks,
     wrapper: mount(SidebarToggle, {
-      props: { isSideBarOpen },
       global: {
         mocks,
-        plugins: [...defaultPlugins()]
+        plugins
       }
     })
   }

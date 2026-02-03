@@ -1,18 +1,17 @@
-import { eventBus } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
-import { UserAction } from '@opencloud-eu/web-pkg'
+import { UserAction, useSideBar } from '@opencloud-eu/web-pkg'
 
 export const useUserActionsEdit = () => {
   const { $gettext } = useGettext()
+  const { openSideBarPanel } = useSideBar()
 
   const actions = computed((): UserAction[] => [
     {
       name: 'edit',
       icon: 'pencil',
       label: () => $gettext('Edit'),
-      handler: () => eventBus.publish(SideBarEventTopics.openWithPanel, 'EditPanel'),
+      handler: () => openSideBarPanel('EditPanel'),
       isVisible: ({ resources }) => {
         return resources.length === 1
       },

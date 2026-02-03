@@ -1,12 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar
-        :breadcrumbs="breadcrumbs"
-        :has-bulk-actions="true"
-        :is-side-bar-open="isSideBarOpen"
-        :view-modes="viewModes"
-      />
+      <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes" />
       <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
         <div class="mr-4 flex items-center">
           <oc-icon name="filter-2" class="mr-1" />
@@ -88,7 +83,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :header-position="fileListHeaderY"
           :resources="paginatedResources"
           :are-paths-displayed="true"
@@ -131,11 +125,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedResourceSpace"
-    />
+    <file-side-bar :space="selectedResourceSpace" />
   </div>
 </template>
 
@@ -233,14 +223,12 @@ const { triggerDefaultAction } = useFileActions()
 
 const {
   folderView,
-  isSideBarOpen,
   paginatedResources,
   paginationPage,
   paginationPages,
   selectedResources,
   selectedResourcesIds,
   selectedResourceSpace,
-  sideBarActivePanel,
   sortBy,
   sortDir,
   sortFields,

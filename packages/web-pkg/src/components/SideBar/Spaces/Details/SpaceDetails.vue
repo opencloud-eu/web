@@ -19,7 +19,7 @@
         appearance="raw"
         :aria-label="openSharesPanelMembersHint"
         no-hover
-        @click="expandSharesPanel"
+        @click="openSideBarPanel('space-share')"
       >
         <oc-icon name="group" size="small" fill-type="line" />
       </oc-button>
@@ -28,7 +28,7 @@
         appearance="raw"
         :aria-label="openSharesPanelLinkHint"
         no-hover
-        @click="expandSharesPanel"
+        @click="openSideBarPanel('space-share')"
       >
         <oc-icon name="link" size="small" fill-type="line" />
       </oc-button>
@@ -38,7 +38,7 @@
         :aria-label="openSharesPanelHint"
         size="small"
         no-hover
-        @click="expandSharesPanel"
+        @click="openSideBarPanel('space-share')"
       >
         <span class="text-sm" v-text="$gettext('Show')" />
       </oc-button>
@@ -84,19 +84,18 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import {
-  SideBarEventTopics,
   useLoadPreview,
   useResourceContents,
   useResourcesStore,
   useRouter,
   useSharesStore,
+  useSideBar,
   useSpacesStore,
   useUserStore
 } from '../../../../composables'
 import SpaceQuota from '../../../SpaceQuota.vue'
 import WebDavDetails from '../../WebDavDetails.vue'
 import { formatDateFromISO, formatFileSize } from '../../../../helpers'
-import { eventBus } from '../../../../services/eventBus'
 import { ImageDimension } from '../../../../constants'
 import { ProcessorType } from '../../../../services'
 import { isLocationSpacesActive } from '../../../../router'
@@ -112,6 +111,7 @@ const { resourceContentsText } = useResourceContents({ showSizeInformation: fals
 const router = useRouter()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { loadPreview } = useLoadPreview()
+const { openSideBarPanel } = useSideBar()
 const spacesStore = useSpacesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
 
@@ -246,8 +246,4 @@ const linkShareLabel = computed(() => {
     { linkShareCount: unref(linkShareCount).toString() }
   )
 })
-
-const expandSharesPanel = () => {
-  eventBus.publish(SideBarEventTopics.setActivePanel, 'space-share')
-}
 </script>

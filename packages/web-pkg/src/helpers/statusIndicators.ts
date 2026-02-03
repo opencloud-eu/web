@@ -8,11 +8,10 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { eventBus } from '../services'
-import { SideBarEventTopics } from '../composables/sideBar'
 import { AncestorMetaData } from '../types'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { IconFillType } from './resource'
-import { useInterceptModifierClick } from '../composables'
+import { useInterceptModifierClick, SideBarEventTopics } from '../composables'
 
 // dummy to trick gettext string extraction into recognizing strings
 const $gettext = (str: string): string => {
