@@ -292,19 +292,22 @@ const loadPreviewImage = async (cachedFile: MediaFile) => {
         false,
         loadPreviewImageController.signal
       )
+    } else {
+      cachedFile.url = await getUrlForResource(unref(space), cachedFile.resource, {
+        signal: loadPreviewImageController.signal
+      })
+    }
+
+    cachedFile.isLoading = false
+  } catch (e) {
+    if (e.name === 'CanceledError') {
       return
     }
-    cachedFile.url = await getUrlForResource(unref(space), cachedFile.resource, {
-      signal: loadPreviewImageController.signal
-    })
-  } catch (e) {
-    if (e.name !== 'CanceledError') {
-      console.error(e)
-    }
+
     console.error(e)
     cachedFile.isError = true
-  } finally {
     cachedFile.isLoading = false
+  } finally {
     loadPreviewImageController = null
   }
 }
