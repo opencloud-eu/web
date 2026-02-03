@@ -413,7 +413,7 @@ watch(activeMediaFile, (newValue, oldValue) => {
   }
 
   loadPreviewImage(unref(activeMediaFile))
-  resetImage()
+  currentImageRotation.value = 0
 
   if (oldValue !== null) {
     isAutoPlayEnabled.value = false
