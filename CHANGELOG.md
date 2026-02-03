@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @uppy/tus to v5.1.1 [[#1924](https://github.com/opencloud-eu/web/pull/1924)]
 - chore(deps): update dependency happy-dom to v20.5.0 [[#1923](https://github.com/opencloud-eu/web/pull/1923)]
 - chore(deps): update dependency @cucumber/pretty-formatter to v3 [[#1911](https://github.com/opencloud-eu/web/pull/1911)]
 - chore(deps): update dependency jsdom to v28 [[#1914](https://github.com/opencloud-eu/web/pull/1914)]
