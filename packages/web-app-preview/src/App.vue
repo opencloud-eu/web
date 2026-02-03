@@ -268,8 +268,8 @@ const loading = computed(() => {
   return unref(file.isLoading)
 })
 
-const loadPreviewImage = async (cachedFile: MediaFile) => {
-  if (cachedFile.url) {
+const loadPreviewImage = async (mediaFile: MediaFile) => {
+  if (mediaFile.url) {
     return
   }
 
@@ -280,11 +280,11 @@ const loadPreviewImage = async (cachedFile: MediaFile) => {
   loadPreviewImageController = new AbortController()
 
   try {
-    if (cachedFile.isImage) {
-      cachedFile.url = await previewService.loadPreview(
+    if (mediaFile.isImage) {
+      mediaFile.url = await previewService.loadPreview(
         {
           space: unref(space),
-          resource: cachedFile.resource,
+          resource: mediaFile.resource,
           dimensions: unref(dimensions),
           processor: ProcessorType.enum.fit
         },
@@ -293,20 +293,20 @@ const loadPreviewImage = async (cachedFile: MediaFile) => {
         loadPreviewImageController.signal
       )
     } else {
-      cachedFile.url = await getUrlForResource(unref(space), cachedFile.resource, {
+      mediaFile.url = await getUrlForResource(unref(space), mediaFile.resource, {
         signal: loadPreviewImageController.signal
       })
     }
 
-    cachedFile.isLoading = false
+    mediaFile.isLoading = false
   } catch (e) {
     if (e.name === 'CanceledError') {
       return
     }
 
     console.error(e)
-    cachedFile.isError = true
-    cachedFile.isLoading = false
+    mediaFile.isError = true
+    mediaFile.isLoading = false
   } finally {
     loadPreviewImageController = null
   }
