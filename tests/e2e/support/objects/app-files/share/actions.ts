@@ -4,7 +4,7 @@ import Collaborator, { ICollaborator, IAccessDetails } from './collaborator'
 import { sidebar } from '../utils'
 import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
-import { locatorUtils } from '../../../utils'
+// import { locatorUtils } from '../../../utils'
 
 const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
 const quickShareButton =

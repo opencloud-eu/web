@@ -1674,7 +1674,10 @@ def restoreBrowsersCache(browser):
 def waitForWebOffice(office_url = ""):
     if office_url == "":
         return []
-    office_url += "/hosting/discovery"
+    if office_url.endswith("onlyoffice"):
+        office_url = "http://onlyoffice:8000/hosting/discovery"
+    else:
+        office_url += "/hosting/discovery"
     return [{
         "name": "wait-for-weboffice",
         "image": OC_CI_NODEJS,
