@@ -4,7 +4,7 @@ import Collaborator, { ICollaborator, IAccessDetails } from './collaborator'
 import { sidebar } from '../utils'
 import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
-// import { locatorUtils } from '../../../utils'
+import { locatorUtils } from '../../../utils'
 
 const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
 const quickShareButton =
@@ -57,13 +57,11 @@ export const openSharingPanel = async function (
     case 'SIDEBAR_PANEL':
       await sidebar.open({ page, resource: item })
       await sidebar.openPanel({ page, name: 'sharing' })
-      // NOTE: loader re-appears after panel is opened
-      await page.locator(invitePanel).waitFor()
-      await page.locator('div.oc-loader').waitFor({ state: 'detached' })
       break
   }
 
   await page.locator(invitePanel).waitFor()
+  await page.locator('div.oc-loader').waitFor({ state: 'detached' })
 
   // always click on the “Show more” button if it exists
   const showMore = page.locator(showMoreBtn)
@@ -87,12 +85,18 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
 
   if (expirationDate) {
     await page.locator(showMoreOptionsButton).click()
-    await page.getByTestId(calendarDatePickerId).click()
+    await Promise.all([
+      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
+      page.getByTestId(calendarDatePickerId).click()
+    ])
     await Collaborator.setExpirationDate(page, expirationDate)
   }
   const federatedShare = recipients[0].shareType
   if (federatedShare) {
-    await page.locator(userTypeFilter).click()
+    await Promise.all([
+      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
+      page.locator(userTypeFilter).click()
+    ])
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
   }
   await Collaborator.inviteCollaborators({ page, collaborators: recipients })

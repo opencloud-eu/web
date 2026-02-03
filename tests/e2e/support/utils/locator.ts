@@ -5,15 +5,25 @@ import { config } from '../../config'
 export const waitForEvent = (locator: Locator, type: keyof SVGElementEventMap): Promise<void> =>
   locator.evaluate(
     (element, arg) =>
-      new Promise<void>((resolve) => {
+      new Promise<void>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          clearTimeout(timeoutId)
+          reject(
+            new Error(
+              `locator.evaluate: Timeout ${arg.timeout}ms exceeded. Waiting for event: ${arg.type}`
+            )
+          )
+        }, arg.timeout)
+
         const finalizer = () => {
           element.removeEventListener(arg.type, finalizer)
+          clearTimeout(timeoutId)
           resolve()
         }
 
         element.addEventListener(arg.type, finalizer)
       }),
-    { type }
+    { type, timeout: config.timeout * 1000 }
   )
 
 export const buildXpathLiteral = (value: string) => {
