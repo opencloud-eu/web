@@ -6,6 +6,13 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
+- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
+- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
+- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
+
 ### 📈 Enhancement
 
 - feat: adjust preview app loading [[#1921](https://github.com/opencloud-eu/web/pull/1921)]
@@ -20,12 +27,6 @@
 - [full-ci] test(e2e): fix flaky e2e tests [[#1886](https://github.com/opencloud-eu/web/pull/1886)]
 - test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
 - delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
-
-### 🐛 Bug Fixes
-
-- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
-- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
-- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
 
 ### 📦️ Dependencies
 
