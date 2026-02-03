@@ -1833,15 +1833,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       ])
       break
     case 'mediaviewer': {
-      await Promise.all([
-        page.waitForResponse(
-          (resp) =>
-            resp.url().includes('preview') &&
-            resp.status() === 200 &&
-            resp.request().method() === 'GET'
-        ),
-        page.locator(util.format(resourceNameSelector, name)).click()
-      ])
+      await page.locator(util.format(resourceNameSelector, name)).click()
       const extension = name.split('.').pop()
       switch (extension) {
         case 'mp3':
