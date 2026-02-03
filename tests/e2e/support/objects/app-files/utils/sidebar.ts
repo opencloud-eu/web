@@ -81,7 +81,10 @@ export const openPanel = async ({ page, name }: { page: Page; name: string }): P
   }
   const panelSelector = page.locator(`#sidebar-panel-${name}-select`)
   const nextPanel = page.locator(`#sidebar-panel-${name}`)
-  await panelSelector.click()
-  await page.locator('div.oc-loader').waitFor({ state: 'detached' })
+  await Promise.all([
+    page.locator('div.oc-loader').waitFor({ state: 'detached' }),
+    locatorUtils.waitForEvent(nextPanel, 'transitionend'),
+    panelSelector.click()
+  ])
   await nextPanel.waitFor()
 }
