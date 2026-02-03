@@ -457,6 +457,8 @@ const createDocumentFile = async (
 
   await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
+  // wait for lock to be removed
+  expect(getLockLocator({ page, resource: name })).not.toBeVisible()
 }
 
 export const fillContentOfDocument = async ({
