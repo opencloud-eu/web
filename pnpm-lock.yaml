@@ -112,9 +112,6 @@ importers:
       franc-min:
         specifier: ^6.2.0
         version: 6.2.0
-      glob:
-        specifier: 13.0.1
-        version: 13.0.1
       happy-dom:
         specifier: 20.5.0
         version: 20.5.0
@@ -263,9 +260,6 @@ importers:
       clean-publish:
         specifier: ^6.0.0
         version: 6.0.1
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.1
       markdown-it-container:
         specifier: ^4.0.0
         version: 4.0.0
