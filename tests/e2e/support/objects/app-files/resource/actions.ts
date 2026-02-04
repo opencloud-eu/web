@@ -41,9 +41,7 @@ const createNewOfficeDocumentFileBUtton = '//div[@id="new-file-menu-drop"]//span
 const createNewShortcutButton = '#new-shortcut-btn'
 const shortcutResorceInput = '#create-shortcut-modal-url-input'
 const saveTextFileInEditorButton = '#app-save-action:visible'
-const textEditor = '#text-editor #text-editor-container'
 const textEditorPlainTextInput = '#text-editor #text-editor-container .cm-content'
-const textEditorMarkdownInput = '#text-editor #text-editor-container .cm-content'
 const resourceNameInput = '.oc-modal input'
 const resourceUploadButton = '#upload-menu-btn'
 const fileUploadInput = '#files-file-upload-input'
@@ -127,6 +125,10 @@ const recipientAvatarSelector =
 const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 const mobileViewmodeSwitchBtn = '#mobile-viewmode-switch-toggle'
 const mobileViewmodeSwitchDropdown = '#mobile-viewmode-switch-drop'
+
+// file viewer
+const pdfViewerContainer = '#pdf-viewer object.pdf-viewer'
+const textEditorContainer = '#text-editor-container div.md-editor-content'
 
 // online office locators
 // Collabora
@@ -569,11 +571,7 @@ export const editTextDocument = async ({
   name: string
   content: string
 }): Promise<void> => {
-  const isMarkdownMode = await page.locator(textEditor).getAttribute('data-markdown-mode')
-  const inputLocator =
-    isMarkdownMode === 'true' ? textEditorMarkdownInput : textEditorPlainTextInput
-
-  await page.locator(inputLocator).fill(content)
+  await page.locator(textEditorPlainTextInput).fill(content)
   await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
     page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
@@ -1850,7 +1848,16 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       }
       break
     }
-    case 'pdfviewer':
+    case 'pdfviewer': {
+      await Promise.all([
+        page.waitForResponse(
+          (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+        ),
+        page.locator(util.format(resourceNameSelector, name)).click()
+      ])
+      await page.locator(pdfViewerContainer).waitFor()
+      break
+    }
     case 'texteditor': {
       await Promise.all([
         page.waitForResponse(
@@ -1858,6 +1865,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
         ),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
+      await page.locator(textEditorContainer).waitFor()
       break
     }
   }
