@@ -1,5 +1,5 @@
 import SearchBar from '../../../src/portals/SearchBar.vue'
-import flushPromises from 'flush-promises'
+import { flushPromises } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
 import { markRaw, nextTick, ref } from 'vue'
 import { defineComponent } from 'vue'

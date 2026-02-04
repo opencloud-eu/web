@@ -5,7 +5,6 @@
   "description": "OpenCloud web search",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "flush-promises": "1.0.2",
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {

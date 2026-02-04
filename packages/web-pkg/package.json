@@ -63,7 +63,6 @@
     "password-sheriff": "^2.0.0",
     "pinia": "^3.0.0",
     "portal-vue": "^3.0.0",
-    "prismjs": "^1.29.0",
     "qs": "^6.13.0",
     "screenfull": "^6.0.2",
     "uuid": "^13.0.0",
