@@ -3,32 +3,58 @@ import {
   defaultComponentMocks,
   defaultPlugins,
   PartialComponentProps,
-  shallowMount
+  mount
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
+import PhotoRollItem from '../../../src/components/PhotoRollItem.vue'
+import { useLoadPreview } from '@opencloud-eu/web-pkg/src'
+
+let mockItemsInViewPort = Infinity
+let observerCount = 0
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn()
+  }),
+  VisibilityObserver: vi.fn().mockImplementation(function (this: any) {
+    this.observe = vi.fn((element, { onEnter }) => {
+      observerCount++
+      if (onEnter && observerCount <= mockItemsInViewPort) {
+        onEnter({ unobserve: vi.fn() })
+      }
+    })
+    this.disconnect = vi.fn()
   })
 }))
 
 describe('PhotoRoll component', () => {
-  it('renders all photos as buttons', () => {
+  beforeEach(() => {
+    mockItemsInViewPort = Infinity
+    observerCount = 0
+    vi.clearAllMocks()
+  })
+
+  it('renders photos as photo-roll–items', () => {
     const photos = [mock<MediaFile>(), mock<MediaFile>()]
     const { wrapper } = getWrapper({ items: photos })
-    expect(wrapper.findAll('oc-button-stub').length).toBe(photos.length)
+    expect(wrapper.findAllComponents(PhotoRollItem).length).toBe(photos.length)
   })
-  it('emits a "select"-event on click and passes the index of the selected photo', async () => {
-    const photos = [mock<MediaFile>(), mock<MediaFile>(), mock<MediaFile>()]
-    const { wrapper } = getWrapper({ items: photos })
-    const buttons = wrapper.findAll('oc-button-stub')
 
-    await buttons[1].trigger('click')
-    expect(wrapper.emitted('select')).toBeDefined()
-    expect(wrapper.emitted('select')[0]).toEqual([1])
+  it('renders previews for photo-roll-items in the view port', () => {
+    const photos = [mock<MediaFile>(), mock<MediaFile>(), mock<MediaFile>()]
+    getWrapper({ items: photos })
+    const { loadPreview } = useLoadPreview()
+    expect(loadPreview).toBeCalledTimes(photos.length)
+  })
+
+  it('does not render previews for photo roll items outside the viewport', () => {
+    const photos = [mock<MediaFile>(), mock<MediaFile>(), mock<MediaFile>(), mock<MediaFile>()]
+    mockItemsInViewPort = photos.length - 1
+    getWrapper({ items: photos })
+    const { loadPreview } = useLoadPreview()
+    expect(loadPreview).toBeCalledTimes(photos.length - 1)
   })
 })
 
@@ -36,7 +62,7 @@ function getWrapper(props: PartialComponentProps<typeof PhotoRoll> = {}) {
   const defaultMocks = defaultComponentMocks()
 
   return {
-    wrapper: shallowMount(PhotoRoll, {
+    wrapper: mount(PhotoRoll, {
       props: {
         items: [mock<MediaFile>()],
         activeIndex: 0,
@@ -45,7 +71,8 @@ function getWrapper(props: PartialComponentProps<typeof PhotoRoll> = {}) {
       global: {
         plugins: [...defaultPlugins()],
         mocks: defaultMocks,
-        provide: defaultMocks
+        provide: defaultMocks,
+        stubs: { 'resource-icon': true }
       }
     })
   }
