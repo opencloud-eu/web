@@ -835,7 +835,7 @@ importers:
         version: 13.0.0
       webdav:
         specifier: ^5.7.1
-        version: 5.8.0
+        version: 5.9.0
       xml-js:
         specifier: ^1.6.11
         version: 1.6.11
@@ -6740,8 +6740,8 @@ packages:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
 
-  webdav@5.8.0:
-    resolution: {integrity: sha512-iuFG7NamJ41Oshg4930iQgfIpRrUiatPWIekeznYgEf2EOraTRcDPTjy7gIOMtkdpKTaqPk1E68NO5PAGtJahA==}
+  webdav@5.9.0:
+    resolution: {integrity: sha512-OMJ6wtK1WvCO++aOLoQgE96S8KT4e5aaClWHmHXfFU369r4eyELN569B7EqT4OOUb99mmO58GkyuiCv/Ag6J0Q==}
     engines: {node: '>=14'}
 
   webidl-conversions@3.0.1:
@@ -13022,7 +13022,7 @@ snapshots:
 
   web-streams-polyfill@3.3.3: {}
 
-  webdav@5.8.0:
+  webdav@5.9.0:
     dependencies:
       '@buttercup/fetch': 0.2.1
       base-64: 1.0.0
