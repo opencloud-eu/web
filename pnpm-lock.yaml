@@ -777,9 +777,6 @@ importers:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
         version: link:../web-test-helpers
-      flush-promises:
-        specifier: 1.0.2
-        version: 1.0.2
 
   packages/web-app-text-editor:
     dependencies:
@@ -4482,9 +4479,6 @@ packages:
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
-
-  flush-promises@1.0.2:
-    resolution: {integrity: sha512-G0sYfLQERwKz4+4iOZYQEZVpOt9zQrlItIxQAAYAWpfby3gbHrx0osCHz5RLl/XoXevXk0xoN4hDFky/VV9TrA==}
 
   focus-trap-vue@4.1.0:
     resolution: {integrity: sha512-RvK28mED+4fqoqnJQyadfoiKZU2G/QEez+EnJtdsg83DjiuKetimvDGas9ot4p5bn1J09rDmKLtKFMBkwQc+JA==}
@@ -10693,8 +10687,6 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.3: {}
-
-  flush-promises@1.0.2: {}
 
   focus-trap-vue@4.1.0(focus-trap@8.0.0)(vue@3.5.27(typescript@5.9.3)):
     dependencies:
