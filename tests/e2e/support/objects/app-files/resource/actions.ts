@@ -684,7 +684,7 @@ export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> =
   const { page, resources } = args
 
   // waiting to files view
-  await page.locator(addNewResourceButton).waitFor()
+  await expect(page.locator(addNewResourceButton)).not.toHaveAttribute('disabled')
   await utils.dragDropFiles(page, resources, filesView)
 
   await page.locator(uploadInfoCloseButton).click()
