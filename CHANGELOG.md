@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.19.0 [[#1926](https://github.com/opencloud-eu/web/pull/1926)]
 - chore(deps): update devdependencies (non-major) [[#1925](https://github.com/opencloud-eu/web/pull/1925)]
 - fix(deps): update dependency @uppy/tus to v5.1.1 [[#1924](https://github.com/opencloud-eu/web/pull/1924)]
 - chore(deps): update dependency happy-dom to v20.5.0 [[#1923](https://github.com/opencloud-eu/web/pull/1923)]
