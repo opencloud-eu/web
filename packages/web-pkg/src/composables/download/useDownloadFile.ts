@@ -4,6 +4,7 @@ import { useGettext } from 'vue3-gettext'
 import { ClientService } from '../../services'
 import { useMessages, useUserStore } from '../piniaStores'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useGetMatchingSpace } from '../spaces'
 
 export interface DownloadFileOptions {
   clientService?: ClientService
@@ -11,12 +12,20 @@ export interface DownloadFileOptions {
 
 export const useDownloadFile = (options?: DownloadFileOptions) => {
   const { showErrorMessage } = useMessages()
+  const { getMatchingSpace } = useGetMatchingSpace()
   const clientService = options?.clientService || useClientService()
   const { $gettext } = useGettext()
   const userStore = useUserStore()
 
-  const downloadFile = async (space: SpaceResource, file: Resource, version: string = null) => {
+  const downloadFile = async (
+    space: SpaceResource = null,
+    file: Resource,
+    version: string = null
+  ) => {
     try {
+      if (!space) {
+        space = getMatchingSpace(file)
+      }
       const url = await clientService.webdav.getFileUrl(space, file, {
         version,
         username: userStore.user?.onPremisesSamAccountName
