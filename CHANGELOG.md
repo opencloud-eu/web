@@ -6,6 +6,14 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix: download via batch actions when single file is selected in searc… [[#1934](https://github.com/opencloud-eu/web/pull/1934)]
+- fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
+- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
+- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
+- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
+
 ### 📈 Enhancement
 
 - feat: only request photo roll thumbnails, when item is in viewport [[#1927](https://github.com/opencloud-eu/web/pull/1927)]
@@ -15,13 +23,6 @@
 - feat: move right sidebar to bottom drawer on mobile [[#1874](https://github.com/opencloud-eu/web/pull/1874)]
 - Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
 - Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
-
-### 🐛 Bug Fixes
-
-- fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
-- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
-- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
-- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
 
 ### ✅ Tests
 
