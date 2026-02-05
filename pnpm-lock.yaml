@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  webdav@5>fast-xml-parser: ^5.0.0
-
 patchedDependencies:
   caf@15.0.1:
     hash: b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14
