@@ -9,6 +9,7 @@ import {
   Action,
   FileAction,
   FileActionOptions,
+  useFileActionFallbackToDownload,
   useIsFilesAppActive,
   useIsSearchActive,
   useWindowOpen
@@ -20,7 +21,6 @@ import {
   useFileActionsDelete,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
-  useFileActionsDownloadFile,
   useFileActionsEnableSync,
   useFileActionsFavorite,
   useFileActionsMove,
@@ -67,7 +67,7 @@ export const useFileActions = () => {
   const { actions: deleteActions } = useFileActionsDelete()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
-  const { actions: downloadFileActions } = useFileActionsDownloadFile()
+  const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
   const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
@@ -77,7 +77,7 @@ export const useFileActions = () => {
 
   const systemActions = computed<FileAction<any>[]>(() => [
     ...unref(downloadArchiveActions),
-    ...unref(downloadFileActions),
+    ...unref(fallbackToDownloadAction),
     ...unref(deleteActions),
     ...unref(moveActions),
     ...unref(copyActions),
