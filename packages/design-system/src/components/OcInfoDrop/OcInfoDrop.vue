@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { FocusTrap } from 'focus-trap-vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcDrop, { Props as OcDropProps } from '../OcDrop/OcDrop.vue'
@@ -109,13 +110,4 @@ const dropOpen = ref(false)
 const listItems = computed(() => {
   return (list || []).filter((item) => !!item.text)
 })
-</script>
-
-<script lang="ts">
-// this needs to be non-script-setup so we can use FocusTrap in unit tests
-import { FocusTrap } from 'focus-trap-vue'
-
-export default {
-  components: { FocusTrap }
-}
 </script>

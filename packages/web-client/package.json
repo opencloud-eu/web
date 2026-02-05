@@ -89,7 +89,6 @@
     "luxon": "^3.5.0",
     "uuid": "^13.0.0",
     "webdav": "^5.7.1",
-    "xml-js": "^1.6.11",
     "zod": "^4.0.0"
   },
   "devDependencies": {

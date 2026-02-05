@@ -1,8 +1,8 @@
 import { checkResponseStatus, request } from '../http'
 import { User } from '../../types'
 import join from 'join-path'
+import { XMLParser } from 'fast-xml-parser'
 import { getSpaceIdBySpaceName } from '../graph'
-import convert from 'xml-js'
 import _ from 'lodash-es/object'
 import { createTagsForResource } from '../graph/utils'
 
@@ -201,7 +201,8 @@ export const getDataOfFileInsideSpace = async ({
     user: user
   })
   checkResponseStatus(response, `Failed while getting information of file ${pathToFileName}`)
-  const fileData = JSON.parse(convert.xml2json(await response.text(), { compact: true }))
+  const xmlParser = new XMLParser()
+  const fileData = xmlParser.parse(await response.text())
   return _.get(fileData, '[d:multistatus][d:response]')
 }
 
@@ -226,13 +227,13 @@ export const getIdOfFileInsideSpace = async ({
   // [ [Object], [Object] ], so handel this case
   if (fileDataResponse.constructor.name === 'Array') {
     for (const key in fileDataResponse) {
-      if (fileDataResponse[key]['d:propstat'][0]['d:prop']['oc:name']._text === pathToFileName) {
-        return _.get(fileDataResponse[key], '[d:propstat][0][d:prop][oc:fileid]')._text
+      if (fileDataResponse[key]['d:propstat'][0]['d:prop']['oc:name'] === pathToFileName) {
+        return _.get(fileDataResponse[key], '[d:propstat][0][d:prop][oc:fileid]')
       }
     }
   } else {
     // extract file id form the response
-    return _.get(fileDataResponse, '[d:propstat][0][d:prop][oc:fileid]')._text
+    return _.get(fileDataResponse, '[d:propstat][0][d:prop][oc:fileid]')
   }
 }
 
