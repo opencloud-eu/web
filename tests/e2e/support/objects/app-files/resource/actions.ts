@@ -9,6 +9,7 @@ import { config } from '../../../../config'
 import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
 
+const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
 const downloadFileButtonSingleShareView = '.oc-files-actions-download-file-trigger'
 const downloadFolderButtonSingleShareView = '.oc-files-actions-download-archive-trigger'
@@ -75,6 +76,7 @@ const searchList =
   '//div[@id="files-global-search-options"]//li[contains(@class,"preview")]//span[contains(@class,"oc-resource-name")]'
 const globalSearchOptions = '#files-global-search-options'
 const loadingSpinner = '#files-global-search-options .loading'
+const searchListItem = '#files-global-search span[data-test-resource-name="%s"]'
 const filesViewOptionButton = '#files-view-options-btn'
 const hiddenFilesToggleButton = '//*[@data-testid="files-switch-hidden-files"]//button'
 const previewImage = '//main[@id="preview"]//div[contains(@class,"stage_media")]//img'
@@ -163,6 +165,16 @@ export const getResourceLocator = ({
   resource: string
 }): Locator => {
   return page.locator(util.format(resourceNameSelector, resource))
+}
+
+export const getResourceSearchItemLocator = ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Locator => {
+  return page.locator(util.format(searchListItem, resource))
 }
 
 export const clickResource = async ({
@@ -1570,6 +1582,7 @@ export const searchResourceGlobalSearch = async (
   }
 
   await page.locator(globalSearchBarFilter).click()
+  await page.locator(appLoadingSpinner).waitFor({ state: 'detached' })
 
   if (!keyword) {
     await page.locator(globalSearchInput).click()

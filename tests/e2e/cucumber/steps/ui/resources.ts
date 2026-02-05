@@ -365,11 +365,10 @@ When(
 )
 
 Then(
-  /^following resources (should|should not) be displayed in the (search list|files list|Shares|trashbin) for user "([^"]*)"$/,
+  /^following resources (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
   async function (
     this: World,
     actionType: string,
-    listType: string,
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
@@ -384,6 +383,26 @@ Then(
         return
       }
       await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
+    }
+  }
+)
+
+Then(
+  /^following resources (should|should not) be displayed in the search list for user "([^"]*)"$/,
+  async function (
+    this: World,
+    actionType: string,
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    for (const info of stepTable.hashes()) {
+      if (actionType === 'should') {
+        await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible()
+        return
+      }
+      await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
     }
   }
 )
