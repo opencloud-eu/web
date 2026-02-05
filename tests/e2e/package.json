@@ -2,10 +2,10 @@
   "type": "module",
   "devDependencies": {
     "@ai-zen/node-fetch-event-source": "^2.1.4",
+    "fast-xml-parser": "^5.0.0",
     "join-path": "1.1.1",
     "lodash-es": "4.17.23",
     "luxon": "^3.5.0",
-    "xml-js": "^1.6.11",
     "uuid": "^11.0.0"
   }
 }

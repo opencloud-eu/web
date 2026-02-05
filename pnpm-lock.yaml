@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  webdav@5>fast-xml-parser: ^5.0.0
-
 patchedDependencies:
   caf@15.0.1:
     hash: b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14
@@ -212,11 +209,11 @@ importers:
         specifier: ^5.6.0
         version: 5.6.0
       focus-trap:
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^7.8.0
+        version: 7.8.0
       focus-trap-vue:
         specifier: ^4.0.1
-        version: 4.1.0(focus-trap@8.0.0)(vue@3.5.27(typescript@5.9.3))
+        version: 4.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@5.9.3))
       fuse.js:
         specifier: ^7.0.0
         version: 7.1.0
@@ -835,10 +832,7 @@ importers:
         version: 13.0.0
       webdav:
         specifier: ^5.7.1
-        version: 5.8.0
-      xml-js:
-        specifier: ^1.6.11
-        version: 1.6.11
+        version: 5.9.0
       zod:
         specifier: ^4.0.0
         version: 4.3.6
@@ -1047,12 +1041,6 @@ importers:
       email-validator:
         specifier: 2.0.4
         version: 2.0.4
-      focus-trap:
-        specifier: 8.0.0
-        version: 8.0.0
-      focus-trap-vue:
-        specifier: ^4.0.1
-        version: 4.1.0(focus-trap@8.0.0)(vue@3.5.27(typescript@5.9.3))
       fuse.js:
         specifier: 7.1.0
         version: 7.1.0
@@ -1095,9 +1083,6 @@ importers:
       vue3-gettext:
         specifier: 2.4.0
         version: 2.4.0(patch_hash=6f231bbef273efbc788b5657c47fc744b52bc838f972357a764c144fde6065f2)(@vue/compiler-sfc@3.5.27)(vue@3.5.27(typescript@5.9.3))
-      xml-js:
-        specifier: ^1.6.11
-        version: 1.6.11
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -1167,6 +1152,9 @@ importers:
       '@ai-zen/node-fetch-event-source':
         specifier: ^2.1.4
         version: 2.1.4
+      fast-xml-parser:
+        specifier: ^5.0.0
+        version: 5.3.4
       join-path:
         specifier: 1.1.1
         version: 1.1.1
@@ -1179,9 +1167,6 @@ importers:
       uuid:
         specifier: ^11.0.0
         version: 11.1.0
-      xml-js:
-        specifier: ^1.6.11
-        version: 1.6.11
 
 packages:
 
@@ -4483,9 +4468,6 @@ packages:
   focus-trap@7.8.0:
     resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
 
-  focus-trap@8.0.0:
-    resolution: {integrity: sha512-Aa84FOGHs99vVwufDMdq2qgOwXPC2e9U66GcqBhn1/jEHPDhJaP8PYhkIbqG9lhfL5Kddk/567lj46LLHYCRUw==}
-
   follow-redirects@1.15.11:
     resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
     engines: {node: '>=4.0'}
@@ -5985,10 +5967,6 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
-  sax@1.4.4:
-    resolution: {integrity: sha512-1n3r/tGXO6b6VXMdFT54SHzT9ytu9yr7TaELowdYpMqY/Ao7EnlQGmAQ1+RatX7Tkkdm6hONI2owqNx2aZj5Sw==}
-    engines: {node: '>=11.0.0'}
-
   screenfull@6.0.2:
     resolution: {integrity: sha512-AQdy8s4WhNvUZ6P8F6PB21tSPIYKniic+Ogx0AacBMjKP1GUHN2E9URxQHtCusiwxudnCKkdy4GrHXPPJSkCCw==}
     engines: {node: ^14.13.1 || >=16.0.0}
@@ -6740,8 +6718,8 @@ packages:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
 
-  webdav@5.8.0:
-    resolution: {integrity: sha512-iuFG7NamJ41Oshg4930iQgfIpRrUiatPWIekeznYgEf2EOraTRcDPTjy7gIOMtkdpKTaqPk1E68NO5PAGtJahA==}
+  webdav@5.9.0:
+    resolution: {integrity: sha512-OMJ6wtK1WvCO++aOLoQgE96S8KT4e5aaClWHmHXfFU369r4eyELN569B7EqT4OOUb99mmO58GkyuiCv/Ag6J0Q==}
     engines: {node: '>=14'}
 
   webidl-conversions@3.0.1:
@@ -6800,10 +6778,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-
-  xml-js@1.6.11:
-    resolution: {integrity: sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==}
-    hasBin: true
 
   xml-name-validator@4.0.0:
     resolution: {integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==}
@@ -10682,16 +10656,12 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  focus-trap-vue@4.1.0(focus-trap@8.0.0)(vue@3.5.27(typescript@5.9.3)):
+  focus-trap-vue@4.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@5.9.3)):
     dependencies:
-      focus-trap: 8.0.0
+      focus-trap: 7.8.0
       vue: 3.5.27(typescript@5.9.3)
 
   focus-trap@7.8.0:
-    dependencies:
-      tabbable: 6.4.0
-
-  focus-trap@8.0.0:
     dependencies:
       tabbable: 6.4.0
 
@@ -12252,8 +12222,6 @@ snapshots:
     optionalDependencies:
       '@parcel/watcher': 2.5.6
 
-  sax@1.4.4: {}
-
   screenfull@6.0.2: {}
 
   scule@1.3.0: {}
@@ -13022,7 +12990,7 @@ snapshots:
 
   web-streams-polyfill@3.3.3: {}
 
-  webdav@5.8.0:
+  webdav@5.9.0:
     dependencies:
       '@buttercup/fetch': 0.2.1
       base-64: 1.0.0
@@ -13088,10 +13056,6 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@8.19.0: {}
-
-  xml-js@1.6.11:
-    dependencies:
-      sax: 1.4.4
 
   xml-name-validator@4.0.0: {}
 

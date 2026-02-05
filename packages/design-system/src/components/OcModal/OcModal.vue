@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
@@ -328,14 +329,5 @@ const confirm = () => {
 
 const inputOnInput = (value: string) => {
   emit('input', value)
-}
-</script>
-
-<script lang="ts">
-// this needs to be non-script-setup so we can use FocusTrap in unit tests
-import { FocusTrap } from 'focus-trap-vue'
-
-export default {
-  components: { FocusTrap }
 }
 </script>
