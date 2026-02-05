@@ -6,7 +6,6 @@ import { expect } from '@playwright/test'
 import { config } from '../../../config'
 import {
   createResourceTypes,
-  displayedResourceType,
   shortcutType,
   ActionViaType,
   PanelType
@@ -16,6 +15,7 @@ import { Resource } from '../../../support/objects/app-files'
 import * as runtimeFs from '../../../support/utils/runtimeFs'
 import { searchFilter } from '../../../support/objects/app-files/resource/actions'
 import { File } from '../../../support/types'
+import { waitProcessingToFinish } from '../../../support/objects/app-files/fileEvents'
 
 When(
   '{string} creates the following resource(s)',
@@ -375,11 +375,15 @@ Then(
   ): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
-    const actualList = await resourceObject.getDisplayedResources({
-      keyword: listType as displayedResourceType
-    })
     for (const info of stepTable.hashes()) {
-      expect(actualList.includes(info.resource)).toBe(actionType === 'should')
+      if (actionType === 'should') {
+        await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
+          timeout: config.timeout * 1000
+        })
+        await waitProcessingToFinish(page, info.resource)
+        return
+      }
+      await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
     }
   }
 )

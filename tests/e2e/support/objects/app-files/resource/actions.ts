@@ -7,6 +7,7 @@ import { editor, sidebar } from '../utils'
 import { environment, utils } from '../../../../support'
 import { config } from '../../../../config'
 import { File, Space } from '../../../types'
+import { waitProcessingToFinish } from '../fileEvents'
 
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
 const downloadFileButtonSingleShareView = '.oc-files-actions-download-file-trigger'
@@ -153,6 +154,16 @@ const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
+
+export const getResourceLocator = ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Locator => {
+  return page.locator(util.format(resourceNameSelector, resource))
+}
 
 export const clickResource = async ({
   page,
@@ -1786,6 +1797,8 @@ export interface openFileInViewerArgs {
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {
   const { page, name, actionType } = args
+  await waitProcessingToFinish(page, name)
+
   switch (actionType) {
     case 'OnlyOffice':
       await Promise.all([
