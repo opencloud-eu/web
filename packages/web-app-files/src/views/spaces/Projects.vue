@@ -321,7 +321,7 @@ const hasCreatePermission = computed(() => can('create-all', 'Drive'))
 const { loadPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, runtimeSpaces, viewMode)
+useKeyboardFileNavigation(keyActions, items, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 
