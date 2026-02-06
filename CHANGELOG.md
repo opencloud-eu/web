@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: preview thumbnail in the right sidebar doesn't refresh after fil… [[#1941](https://github.com/opencloud-eu/web/pull/1941)]
 - fix: error message on 425 error when creating space from resource [[#1940](https://github.com/opencloud-eu/web/pull/1940)]
 - fix: disabled space selection and space keyboard navigation [[#1939](https://github.com/opencloud-eu/web/pull/1939)]
 - fix: download via batch actions when single file is selected in searc… [[#1934](https://github.com/opencloud-eu/web/pull/1934)]
