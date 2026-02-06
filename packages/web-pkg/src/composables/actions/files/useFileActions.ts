@@ -9,6 +9,7 @@ import {
   Action,
   FileAction,
   FileActionOptions,
+  useFileActionFallbackToDownload,
   useIsFilesAppActive,
   useIsSearchActive,
   useWindowOpen
@@ -68,6 +69,7 @@ export const useFileActions = () => {
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
+  const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
   const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
@@ -248,8 +250,11 @@ export const useFileActions = () => {
 
   const getDefaultAction = (options: GetFileActionsOptions): Action | undefined => {
     const actions = getAllOpenWithActions(options)
+
     if (actions.length) {
-      return actions[0]
+      return actions[0].name === unref(downloadFileActions)[0].name
+        ? unref(fallbackToDownloadAction)[0]
+        : actions[0]
     }
     return undefined
   }
