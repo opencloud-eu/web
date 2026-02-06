@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: disabled space selection and space keyboard navigation [[#1939](https://github.com/opencloud-eu/web/pull/1939)]
 - fix: download via batch actions when single file is selected in searc… [[#1934](https://github.com/opencloud-eu/web/pull/1934)]
 - fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
 - fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
