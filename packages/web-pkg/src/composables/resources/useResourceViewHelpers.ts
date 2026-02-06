@@ -4,12 +4,7 @@ import { useRouter } from '../router'
 import { useEventBus } from '../eventBus'
 import { useInterceptModifierClick } from '../keyboardActions'
 import { embedModeFilePickMessageData, useEmbedMode } from '../embedMode'
-import {
-  isProjectSpaceResource,
-  isSpaceResource,
-  Resource,
-  SpaceResource
-} from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../appDefaults'
 import { useGetMatchingSpace } from '../spaces'
 import { useResourceViewDrag } from './useResourceViewDrag'
@@ -74,10 +69,6 @@ export const useResourceViewHelpers = ({
 
     if (isResourceInDeleteQueue(resource.id)) {
       return true
-    }
-
-    if (isSpaceResource(resource)) {
-      return resource.disabled
     }
 
     return resource.processing === true
