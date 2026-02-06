@@ -142,16 +142,12 @@ export class AuthService implements AuthServiceInterface {
       if (!this.userManager.areEventHandlersRegistered) {
         this.userManager.events.addAccessTokenExpired((...args): void => {
           const handleExpirationError = () => {
-            console.error('AccessToken Expired：', ...args)
+            console.error('AccessToken Expired')
             this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
           }
 
           // retry silent signin once, force logout if it fails
           this.userManager.signinSilent().catch(handleExpirationError)
-        })
-
-        this.userManager.events.addAccessTokenExpiring((...args) => {
-          console.debug('AccessToken Expiring：', ...args)
         })
 
         this.userManager.events.addUserLoaded(async (user) => {
