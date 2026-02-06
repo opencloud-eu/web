@@ -474,13 +474,11 @@ const createDocumentFile = async (
         "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
       )
   }
-  const respPromise = Promise.all([
-    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND')
+  await Promise.all([
+    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
+    editor.close(page)
   ])
-  await editor.close(page)
-  await respPromise
 
-  await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
   // wait for lock to be removed
   expect(getLockLocator({ page, resource: name })).not.toBeVisible()
