@@ -156,9 +156,6 @@ export class AuthService implements AuthServiceInterface {
             expiryThreshold: this.accessTokenExpiryThreshold
           })
 
-          console.debug(
-            `New User Loaded. access_token： ${user.access_token}, refresh_token: ${user.refresh_token}`
-          )
           try {
             await this.userManager.updateContext(user.access_token, fetchUserData)
           } catch (e) {
