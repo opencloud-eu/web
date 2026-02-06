@@ -316,7 +316,7 @@ const capitalizedTimestamp = computed(() => {
 })
 
 watch(
-  () => unref(resource).id,
+  () => unref(resource).mdate,
   async () => {
     if (unref(resource)) {
       preview.value = await loadPreview({
