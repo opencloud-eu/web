@@ -66,10 +66,11 @@ export const useFileActionsCreateSpaceFromResource = () => {
       showMessage({ title: $gettext('Space was created successfully') })
     } catch (error) {
       console.error(error)
-      showErrorMessage({
-        title: $gettext('Creating space failed…'),
-        errors: [error]
-      })
+      const title =
+        error.statusCode === 425
+          ? $gettext('Some files could not be copied')
+          : $gettext('Creating space failed…')
+      showErrorMessage({ title, errors: [error] })
     }
   }
   const handler = ({ resources, space }: FileActionOptions) => {
