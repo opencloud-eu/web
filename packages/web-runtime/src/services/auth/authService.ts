@@ -140,7 +140,7 @@ export class AuthService implements AuthServiceInterface {
       const fetchUserData = !isIdpContextRequired(this.router, to)
 
       if (!this.userManager.areEventHandlersRegistered) {
-        this.userManager.events.addAccessTokenExpired((...args): void => {
+        this.userManager.events.addAccessTokenExpired((): void => {
           const handleExpirationError = () => {
             console.error('AccessToken Expired')
             this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
@@ -150,12 +150,17 @@ export class AuthService implements AuthServiceInterface {
           this.userManager.signinSilent().catch(handleExpirationError)
         })
 
+        this.userManager.events.addAccessTokenExpiring(() => {
+          console.debug('AccessToken Expiring')
+        })
+
         this.userManager.events.addUserLoaded(async (user) => {
           this.tokenTimerWorker?.setTokenTimer({
             expiry: user.expires_in,
             expiryThreshold: this.accessTokenExpiryThreshold
           })
 
+          console.debug(`New User Loaded`)
           try {
             await this.userManager.updateContext(user.access_token, fetchUserData)
           } catch (e) {
@@ -165,7 +170,7 @@ export class AuthService implements AuthServiceInterface {
         })
 
         this.userManager.events.addUserUnloaded(() => {
-          console.log('user unloaded…')
+          console.log('User Unloaded')
           this.tokenTimerWorker?.resetTokenTimer()
           this.resetStateAfterUserLogout()
 
