@@ -21,7 +21,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.2
-        version: 4.11.1(playwright-core@1.58.1)
+        version: 4.11.1(playwright-core@1.58.2)
       '@babel/core':
         specifier: 7.29.0
         version: 7.29.0
@@ -59,8 +59,8 @@ importers:
         specifier: workspace:*
         version: link:packages/tsconfig
       '@playwright/test':
-        specifier: 1.58.1
-        version: 1.58.1
+        specifier: 1.58.2
+        version: 1.58.2
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.18(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
@@ -78,10 +78,10 @@ importers:
         version: 6.0.4(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
       '@vitest/coverage-v8':
         specifier: ^4.0.0
-        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
+        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       '@vitest/web-worker':
         specifier: ^4.0.0
-        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
+        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       '@vue/compiler-dom':
         specifier: ^3.5.23
         version: 3.5.27
@@ -110,8 +110,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       happy-dom:
-        specifier: 20.5.0
-        version: 20.5.0
+        specifier: 20.5.3
+        version: 20.5.3
       license-checker-rseidelsohn:
         specifier: 4.4.2
         version: 4.4.2
@@ -168,10 +168,10 @@ importers:
         version: 0.1.4(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       vitest:
         specifier: ^4.0.0
-        version: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
+        version: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
       vitest-mock-extended:
         specifier: 3.1.0
-        version: 3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
+        version: 3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       vue:
         specifier: ^3.5.23
         version: 3.5.27(typescript@5.9.3)
@@ -979,7 +979,7 @@ importers:
         version: 4.17.12
       '@vitest/web-worker':
         specifier: ^4.0.0
-        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
+        version: 4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       clean-publish:
         specifier: 6.0.1
         version: 6.0.1
@@ -1122,7 +1122,7 @@ importers:
         version: 3.0.4(typescript@5.9.3)(vue@3.5.27(typescript@5.9.3))
       vitest-mock-extended:
         specifier: ^3.0.0
-        version: 3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
+        version: 3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
       vue:
         specifier: ^3.5.10
         version: 3.5.27(typescript@5.9.3)
@@ -2563,8 +2563,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@playwright/test@1.58.1':
-    resolution: {integrity: sha512-6LdVIUERWxQMmUSSQi0I53GgCBYgM2RpGngCPY7hSeju+VrKjq3lvs7HpJoPbDiY5QM5EYRtRX5fvrinnMAz3w==}
+  '@playwright/test@1.58.2':
+    resolution: {integrity: sha512-akea+6bHYBBfA9uQqSYmlJXn61cTa+jbO87xVLCWbTqbWadRVmhxlXATaOjOgcBaWU4ePo0wB41KMFv3o35IXA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4594,8 +4594,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  happy-dom@20.5.0:
-    resolution: {integrity: sha512-VQe+Q5CYiGOgcCERXhcfNsbnrN92FDEKciMH/x6LppU9dd0j4aTjCTlqONFOIMcAm/5JxS3+utowbXV1OoFr+g==}
+  happy-dom@20.5.3:
+    resolution: {integrity: sha512-xqAxGnkRU0KNhheHpxb3uScqg/aehqUiVto/a9ApWMyNvnH9CAqHYq9dEPAovM6bOGbLstmTfGIln5ZIezEU0g==}
     engines: {node: '>=20.0.0'}
 
   has-ansi@4.0.1:
@@ -5618,13 +5618,13 @@ packages:
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
-  playwright-core@1.58.1:
-    resolution: {integrity: sha512-bcWzOaTxcW+VOOGBCQgnaKToLJ65d6AqfLVKEWvexyS3AS6rbXl+xdpYRMGSRBClPvyj44njOWoxjNdL/H9UNg==}
+  playwright-core@1.58.2:
+    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.58.1:
-    resolution: {integrity: sha512-+2uTZHxSCcxjvGc5C891LrS1/NlxglGxzrC4seZiVjcYVQfUa87wBL6rTDqzGjuoWNjnBzRqKmF6zRYGMvQUaQ==}
+  playwright@1.58.2:
+    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -6963,10 +6963,10 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.47.0
 
-  '@axe-core/playwright@4.11.1(playwright-core@1.58.1)':
+  '@axe-core/playwright@4.11.1(playwright-core@1.58.2)':
     dependencies:
       axe-core: 4.11.1
-      playwright-core: 1.58.1
+      playwright-core: 1.58.2
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -8563,9 +8563,9 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@playwright/test@1.58.1':
+  '@playwright/test@1.58.2':
     dependencies:
-      playwright: 1.58.1
+      playwright: 1.58.2
 
   '@popperjs/core@2.11.8': {}
 
@@ -9324,7 +9324,7 @@ snapshots:
       vite: 7.3.1(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
       vue: 3.5.27(typescript@5.9.3)
 
-  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))':
+  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.0.18
@@ -9336,7 +9336,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
 
   '@vitest/expect@4.0.18':
     dependencies:
@@ -9377,10 +9377,10 @@ snapshots:
       '@vitest/pretty-format': 4.0.18
       tinyrainbow: 3.0.3
 
-  '@vitest/web-worker@4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))':
+  '@vitest/web-worker@4.0.18(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))':
     dependencies:
       obug: 2.1.1
-      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
 
   '@volar/language-core@2.4.27':
     dependencies:
@@ -10796,12 +10796,12 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  happy-dom@20.5.0:
+  happy-dom@20.5.3:
     dependencies:
       '@types/node': 25.2.0
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
-      entities: 4.5.0
+      entities: 6.0.1
       whatwg-mimetype: 3.0.0
       ws: 8.19.0
     transitivePeerDependencies:
@@ -11824,11 +11824,11 @@ snapshots:
       exsolve: 1.0.8
       pathe: 2.0.3
 
-  playwright-core@1.58.1: {}
+  playwright-core@1.58.2: {}
 
-  playwright@1.58.1:
+  playwright@1.58.2:
     dependencies:
-      playwright-core: 1.58.1
+      playwright-core: 1.58.2
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -12847,13 +12847,13 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest-mock-extended@3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)):
+  vitest-mock-extended@3.1.0(typescript@5.9.3)(vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)):
     dependencies:
       ts-essentials: 10.1.1(typescript@5.9.3)
       typescript: 5.9.3
-      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2)
 
-  vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2):
+  vitest@4.0.18(@types/node@25.2.0)(happy-dom@20.5.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.3)(yaml@2.8.2))
@@ -12877,7 +12877,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.2.0
-      happy-dom: 20.5.0
+      happy-dom: 20.5.3
     transitivePeerDependencies:
       - jiti
       - less
