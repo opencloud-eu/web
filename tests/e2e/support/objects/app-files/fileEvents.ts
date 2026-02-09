@@ -45,7 +45,7 @@ const waitNotToBeVisible = async (
   message: string,
   fn?: () => Promise<void>
 ) => {
-  const timeout = (config.timeout / 2) * 1000
+  const timeout = config.timeout * 1000
   const startTime = Date.now()
   let elapsedTime = 0
 

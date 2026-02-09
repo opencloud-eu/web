@@ -6,7 +6,7 @@ import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
 import { locatorUtils } from '../../../utils'
 
-const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
+const invitePanel = '#oc-files-sharing-sidebar'
 const quickShareButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
 const actionMenuDropdownButton = `

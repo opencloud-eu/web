@@ -759,7 +759,7 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
     .locator(uploadInfoSuccessLabelSelector)
     .waitFor({ timeout: config.largeUploadTimeout * 1000 })
   // revert  to the default timeout
-  setDefaultTimeout(config.timeout * 1000)
+  setDefaultTimeout(config.testTimeout * 1000)
 
   await page.locator(uploadInfoCloseButton).click()
 }

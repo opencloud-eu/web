@@ -32,7 +32,7 @@ const logger = pino({
   }
 })
 
-setDefaultTimeout(config.debug ? -1 : config.timeout * 1000)
+setDefaultTimeout(config.debug ? -1 : config.testTimeout * 1000)
 setWorldConstructor(World)
 
 Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
