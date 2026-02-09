@@ -36,6 +36,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.39.13 [[#1907](https://github.com/opencloud-eu/web/pull/1907)]
+- fix(deps): update dependency axios to v1.13.5 [[#1948](https://github.com/opencloud-eu/web/pull/1948)]
+- chore(deps): update dependency fast-xml-parser to v5.3.5 [[#1947](https://github.com/opencloud-eu/web/pull/1947)]
+- chore(deps): update devdependencies (non-major) [[#1943](https://github.com/opencloud-eu/web/pull/1943)]
 - chore(deps): update dependency webdav to v5.9.0 [[#1933](https://github.com/opencloud-eu/web/pull/1933)]
 - chore(deps): update tiptap monorepo to v3.19.0 [[#1926](https://github.com/opencloud-eu/web/pull/1926)]
 - chore(deps): update devdependencies (non-major) [[#1925](https://github.com/opencloud-eu/web/pull/1925)]
