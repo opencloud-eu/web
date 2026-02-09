@@ -6,6 +6,18 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### 🐛 Bug Fixes
+
+- fix: align preview app media controls for mobile screens [[#1949](https://github.com/opencloud-eu/web/pull/1949)]
+- fix: preview thumbnail in the right sidebar doesn't refresh after fil… [[#1941](https://github.com/opencloud-eu/web/pull/1941)]
+- fix: error message on 425 error when creating space from resource [[#1940](https://github.com/opencloud-eu/web/pull/1940)]
+- fix: disabled space selection and space keyboard navigation [[#1939](https://github.com/opencloud-eu/web/pull/1939)]
+- fix: download via batch actions when single file is selected in searc… [[#1934](https://github.com/opencloud-eu/web/pull/1934)]
+- fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
+- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
+- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
+- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
+
 ### 📈 Enhancement
 
 - feat: only download file when there is no app is available, when user… [[#1938](https://github.com/opencloud-eu/web/pull/1938)]
@@ -17,17 +29,6 @@
 - Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
 - Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
 
-### 🐛 Bug Fixes
-
-- fix: preview thumbnail in the right sidebar doesn't refresh after fil… [[#1941](https://github.com/opencloud-eu/web/pull/1941)]
-- fix: error message on 425 error when creating space from resource [[#1940](https://github.com/opencloud-eu/web/pull/1940)]
-- fix: disabled space selection and space keyboard navigation [[#1939](https://github.com/opencloud-eu/web/pull/1939)]
-- fix: download via batch actions when single file is selected in searc… [[#1934](https://github.com/opencloud-eu/web/pull/1934)]
-- fix: don't show parent folder doesn't exist error, on 412 server error [[#1915](https://github.com/opencloud-eu/web/pull/1915)]
-- fix: admin settings edition visual representation [[#1903](https://github.com/opencloud-eu/web/pull/1903)]
-- fix: fallback icon for folders with extension [[#1889](https://github.com/opencloud-eu/web/pull/1889)]
-- fix: update server request might be cached [[#1880](https://github.com/opencloud-eu/web/pull/1880)]
-
 ### ✅ Tests
 
 - [full-ci] test(e2e): fix flaky e2e tests [[#1886](https://github.com/opencloud-eu/web/pull/1886)]
@@ -36,6 +37,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @vue/compiler-dom to v3.5.28 [[#1950](https://github.com/opencloud-eu/web/pull/1950)]
 - chore(deps): update dependency @codemirror/view to v6.39.13 [[#1907](https://github.com/opencloud-eu/web/pull/1907)]
 - fix(deps): update dependency axios to v1.13.5 [[#1948](https://github.com/opencloud-eu/web/pull/1948)]
 - chore(deps): update dependency fast-xml-parser to v5.3.5 [[#1947](https://github.com/opencloud-eu/web/pull/1947)]
