@@ -1,6 +1,6 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import Inbox from './views/Inbox.vue'
 import LayoutContainer from './LayoutContainer.vue'
 import EmptyLayoutContainer from './EmptyLayoutContainer.vue'
@@ -9,16 +9,20 @@ import {
   AppMenuItemExtension,
   defineWebApplication,
   Extension,
-  useCapabilityStore
+  useCapabilityStore,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { APPID } from './appid'
 import { RouteRecordRaw } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
     const capabilityStore = useCapabilityStore()
+    const userStore = useUserStore()
+    const { user } = storeToRefs(userStore)
 
     const appInfo = {
       name: $gettext('Mail'),
@@ -76,7 +80,7 @@ export default defineWebApplication({
     const extensions = computed(() => {
       const result: Extension[] = []
 
-      if (capabilityStore.capabilities.groupware?.enabled) {
+      if (unref(user) && capabilityStore.capabilities.groupware?.enabled) {
         result.push(menuItemExtension)
       }
 
