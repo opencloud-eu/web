@@ -43,7 +43,6 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@babel/core": "7.29.0",
-    "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.29.0",
     "@babel/register": "7.28.6",
     "@cucumber/cucumber": "12.6.0",
