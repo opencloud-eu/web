@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't show non applicable items in the app drawer if the user is not logged in [[#1952](https://github.com/opencloud-eu/web/pull/1952)]
 - fix: align preview app media controls for mobile screens [[#1949](https://github.com/opencloud-eu/web/pull/1949)]
 - fix: preview thumbnail in the right sidebar doesn't refresh after fil… [[#1941](https://github.com/opencloud-eu/web/pull/1941)]
 - fix: error message on 425 error when creating space from resource [[#1940](https://github.com/opencloud-eu/web/pull/1940)]
