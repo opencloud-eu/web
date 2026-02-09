@@ -6,7 +6,8 @@ import {
   AppMenuItemExtension,
   CustomComponentExtension,
   LoadingIndicator,
-  useCapabilityStore
+  useCapabilityStore,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 
@@ -14,7 +15,11 @@ const $gettext = (str: string) => str
 
 export const extensions = () => {
   const capabilityStore = useCapabilityStore()
+  const userStore = useUserStore()
   const { supportRadicale } = storeToRefs(capabilityStore)
+  const { user } = storeToRefs(userStore)
+
+  const showCalender = computed(() => unref(user) && unref(supportRadicale))
 
   return computed(() => [
     {
@@ -34,7 +39,7 @@ export const extensions = () => {
         optionLabel: $gettext('Default progress bar')
       }
     } as CustomComponentExtension,
-    ...(unref(supportRadicale)
+    ...(unref(showCalender)
       ? [
           {
             id: 'com.github.opencloud-eu.web.runtime.app-menu-item.Calendar',

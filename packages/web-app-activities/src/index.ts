@@ -1,14 +1,22 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
-import { computed } from 'vue'
-import { AppMenuItemExtension, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
+import { computed, unref } from 'vue'
+import {
+  AppMenuItemExtension,
+  defineWebApplication,
+  Extension,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { RouteRecordRaw } from 'vue-router'
 import { APPID } from './appid'
+import { storeToRefs } from 'pinia'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
+    const userStore = useUserStore()
+    const { user } = storeToRefs(userStore)
 
     const appInfo = {
       name: $gettext('Activities'),
@@ -52,7 +60,9 @@ export default defineWebApplication({
     const extensions = computed(() => {
       const result: Extension[] = []
 
-      result.push(menuItemExtension)
+      if (unref(user)) {
+        result.push(menuItemExtension)
+      }
 
       return result
     })
