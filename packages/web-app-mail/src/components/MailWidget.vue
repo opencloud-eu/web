@@ -25,7 +25,7 @@
               fill-type="line"
             />
           </oc-button>
-          <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
+          <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
             <oc-icon name="close" fill-type="line" />
           </oc-button>
         </div>
@@ -46,7 +46,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="composeState.from?.accountId"
+              :account-id="accountId"
             />
             <oc-button
               type="button"
@@ -57,6 +57,15 @@
             >
               <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
             </oc-button>
+            <div class="ml-auto flex items-center min-w-0">
+              <div
+                v-if="showSavedHint"
+                class="flex items-center gap-1 text-role-on-surface-variant"
+              >
+                <oc-icon name="check" fill-type="line" />
+                <span class="text-sm" v-text="$gettext('Saved')" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -78,7 +87,7 @@
       >
         <oc-icon name="collapse-diagonal" fill-type="line" />
       </oc-button>
-      <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
+      <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
         <oc-icon name="close" fill-type="line" />
       </oc-button>
     </template>
@@ -99,7 +108,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="composeState.from?.accountId"
+              :account-id="accountId"
             />
             <oc-button
               type="button"
@@ -112,7 +121,56 @@
             >
               <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
             </oc-button>
+            <div class="ml-auto flex items-center min-w-0">
+              <div
+                v-if="showSavedHint"
+                class="flex items-center gap-1 text-role-on-surface-variant"
+              >
+                <oc-icon name="check" fill-type="line" />
+                <span class="text-sm" v-text="$gettext('Saved')" />
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+    </template>
+  </oc-modal>
+  <oc-modal v-if="leaveModalOpen" :title="$gettext('Leave this screen?')" :hide-actions="true">
+    <template #content>
+      <p
+        class="oc-mb-m"
+        v-text="
+          $gettext(
+            'Your email isn’t finished yet. You can save it as a draft or exit without saving.'
+          )
+        "
+      />
+      <div class="oc-modal-body-actions flex justify-end p-4 text-right -mr-4 -mb-4 -ml-4">
+        <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr gap-2">
+          <oc-button
+            class="oc-modal-body-actions-confirm"
+            appearance="filled"
+            :disabled="isSaving || !canSaveDraft"
+            @click="onSaveDraftAndClose"
+          >
+            {{ $gettext('Save as draft') }}
+          </oc-button>
+          <oc-button
+            class="oc-modal-body-actions-secondary"
+            appearance="outline"
+            :disabled="isSaving"
+            @click="onDiscardAndClose"
+          >
+            {{ $gettext('Discard') }}
+          </oc-button>
+          <oc-button
+            class="oc-modal-body-actions-cancel"
+            appearance="outline"
+            :disabled="isSaving"
+            @click="leaveModalOpen = false"
+          >
+            {{ $gettext('Cancel') }}
+          </oc-button>
         </div>
       </div>
     </template>
@@ -120,25 +178,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, unref, onBeforeUnmount } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
+import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
+import DOMPurify from 'dompurify'
 import MailComposeForm, { ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
+import { useSaveAsDraft } from '../composables/useSaveAsDraft'
+import { createMailDraftConnector } from '../helpers/mailDraftConnector'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 
 const { $gettext } = useGettext()
 
-const props = defineProps<{
-  modelValue?: boolean
-}>()
+// Configuration constants
+const SAVED_HINT_DURATION_MS = 2000 // 2 seconds
+const AUTO_SAVE_INTERVAL_MS = 120_000 // 2 minutes
 
+const props = defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
 }>()
 
 const isExpanded = ref(false)
+const leaveModalOpen = ref(false)
+const showFormattingToolbar = ref(false)
+const showSavedHint = ref(false)
 
-const composeState = ref<ComposeFormState>({
+let savedHintTimeout: ReturnType<typeof setTimeout> | undefined
+
+const flashSavedHint = () => {
+  showSavedHint.value = true
+  if (savedHintTimeout) {
+    clearTimeout(savedHintTimeout)
+  }
+  savedHintTimeout = setTimeout(() => {
+    showSavedHint.value = false
+  }, SAVED_HINT_DURATION_MS)
+}
+
+const createEmptyComposeState = (): ComposeFormState => ({
   from: undefined,
   to: '',
   cc: '',
@@ -148,13 +229,15 @@ const composeState = ref<ComposeFormState>({
   attachments: []
 })
 
-const showFormattingToolbar = ref(false)
+const composeState = ref<ComposeFormState>(createEmptyComposeState())
 
 const isOpen = computed({
   get: () => props.modelValue ?? true,
   set: (value: boolean) => {
     emit('update:modelValue', value)
-    if (!value) emit('close')
+    if (!value) {
+      emit('close')
+    }
   }
 })
 
@@ -162,10 +245,192 @@ const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const close = () => {
+const clientService = useClientService()
+const configStore = useConfigStore()
+
+const accountsStore = useAccountsStore()
+const mailboxesStore = useMailboxesStore()
+const { currentAccount } = storeToRefs(accountsStore)
+const { draftsMailboxId } = storeToRefs(mailboxesStore)
+
+const accountId = computed(() => unref(currentAccount)?.accountId ?? '')
+const draftMailboxId = computed(() => unref(draftsMailboxId) ?? '')
+
+const connector = createMailDraftConnector(
+  clientService.httpAuthenticated as any,
+  configStore.groupwareUrl
+)
+
+const canSaveDraft = computed(() => !!accountId.value && !!draftMailboxId.value)
+
+const parseRecipients = (value: string) => {
+  return value
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((email) => ({ email }))
+}
+
+const htmlToText = (html: string) => {
+  const stripped = DOMPurify.sanitize(html ?? '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  return stripped.replace(/\s+/g, ' ').trim()
+}
+
+const hasMeaningfulChanges = computed(() => {
+  const to = (composeState.value.to ?? '').trim()
+  const cc = (composeState.value.cc ?? '').trim()
+  const bcc = (composeState.value.bcc ?? '').trim()
+  const subject = (composeState.value.subject ?? '').trim()
+  const bodyText = htmlToText(composeState.value.body ?? '')
+  const attachments = composeState.value.attachments ?? []
+  return !!to || !!cc || !!bcc || !!subject || !!bodyText || attachments.length > 0
+})
+
+const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = useSaveAsDraft({
+  accountId,
+  draftMailboxId,
+  api: connector,
+  getDraftPayload: () => {
+    const bodyHtml = composeState.value.body ?? ''
+    const bodyPlain = htmlToText(bodyHtml)
+
+    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
+    const hasText = bodyPlain.length > 0
+
+    return {
+      from: composeState.value.from
+        ? [{ email: composeState.value.from.email, name: composeState.value.from.name }]
+        : [],
+
+      to: parseRecipients(composeState.value.to),
+      cc: parseRecipients(composeState.value.cc),
+      bcc: parseRecipients(composeState.value.bcc),
+      subject: composeState.value.subject ?? '',
+
+      textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
+      htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
+
+      bodyValues: {
+        ...(hasText ? { t: { value: bodyPlain } } : {}),
+        ...(hasHtml ? { h: { value: bodyHtml } } : {})
+      },
+
+      attachments: (composeState.value.attachments ?? []).map((a: any) => ({
+        blobId: a.blobId,
+        name: a.name,
+        type: a.type,
+        disposition: a.disposition ?? 'attachment'
+      }))
+    }
+  }
+})
+
+watch(
+  composeState,
+  () => {
+    markDirty()
+  },
+  { deep: true }
+)
+
+const resetCompose = () => {
+  composeState.value = createEmptyComposeState()
+  showFormattingToolbar.value = false
+  leaveModalOpen.value = false
+  resetDraft(null)
+}
+
+const doClose = () => {
   isExpanded.value = false
   isOpen.value = false
+  resetCompose()
 }
+
+const requestClose = () => {
+  if (!hasMeaningfulChanges.value) {
+    doClose()
+    return
+  }
+
+  if (!isDirty.value) {
+    doClose()
+    return
+  }
+
+  leaveModalOpen.value = true
+}
+
+const onSaveDraftAndClose = async () => {
+  if (!canSaveDraft.value) {
+    return
+  }
+  await saveAsDraft()
+  flashSavedHint()
+  doClose()
+}
+
+const onDiscardAndClose = async () => {
+  await discardDraft()
+  doClose()
+}
+
+let autoSaveInterval: ReturnType<typeof setInterval> | undefined
+
+const stopAutoSave = () => {
+  if (!autoSaveInterval) {
+    return
+  }
+  clearInterval(autoSaveInterval)
+  autoSaveInterval = undefined
+}
+
+const canAutoSaveNow = computed(() => {
+  return (
+    isOpen.value &&
+    !leaveModalOpen.value &&
+    canSaveDraft.value &&
+    hasMeaningfulChanges.value &&
+    isDirty.value &&
+    !isSaving.value
+  )
+})
+
+const startAutoSave = () => {
+  stopAutoSave()
+  autoSaveInterval = setInterval(async () => {
+    if (!canAutoSaveNow.value) {
+      return
+    }
+
+    try {
+      const res = await saveAsDraft()
+      if (res) {
+        flashSavedHint()
+      }
+    } catch (error) {
+      console.error('Failed to auto-save draft:', error)
+    }
+  }, AUTO_SAVE_INTERVAL_MS)
+}
+
+watch(
+  () => isOpen.value,
+  (open) => {
+    if (open) {
+      startAutoSave()
+    } else {
+      stopAutoSave()
+    }
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  stopAutoSave()
+  if (savedHintTimeout) {
+    clearTimeout(savedHintTimeout)
+  }
+})
 </script>
 
 <style>
