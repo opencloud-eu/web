@@ -820,7 +820,7 @@ importers:
         version: 1.13.4
       fast-xml-parser:
         specifier: ^5.0.0
-        version: 5.3.4
+        version: 5.3.5
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.23
@@ -1154,7 +1154,7 @@ importers:
         version: 2.1.4
       fast-xml-parser:
         specifier: ^5.0.0
-        version: 5.3.4
+        version: 5.3.5
       join-path:
         specifier: 1.1.1
         version: 1.1.1
@@ -4396,8 +4396,8 @@ packages:
   fast-safe-stringify@2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
 
-  fast-xml-parser@5.3.4:
-    resolution: {integrity: sha512-EFd6afGmXlCx8H8WTZHhAoDaWaGyuIBoZJ2mknrNxug+aZKjkp0a0dlars9Izl+jF+7Gu1/5f/2h68cQpe0IiA==}
+  fast-xml-parser@5.3.5:
+    resolution: {integrity: sha512-JeaA2Vm9ffQKp9VjvfzObuMCjUYAp5WDYhRYL5LrBPY/jUDlUtOvDfot0vKSkB9tuX885BDHjtw4fZadD95wnA==}
     hasBin: true
 
   fdir@6.5.0:
@@ -10597,7 +10597,7 @@ snapshots:
 
   fast-safe-stringify@2.1.1: {}
 
-  fast-xml-parser@5.3.4:
+  fast-xml-parser@5.3.5:
     dependencies:
       strnum: 2.1.2
 
@@ -12996,7 +12996,7 @@ snapshots:
       base-64: 1.0.0
       byte-length: 1.0.2
       entities: 6.0.1
-      fast-xml-parser: 5.3.4
+      fast-xml-parser: 5.3.5
       hot-patcher: 2.0.1
       layerr: 3.0.0
       md5: 2.3.0
