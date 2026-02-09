@@ -58,7 +58,7 @@
           </oc-button>
         </li>
       </oc-list>
-      <MailWidget v-model="showCompose" />
+      <MailWidget v-if="showCompose" v-model="showCompose" />
     </template>
   </template>
 </template>
@@ -107,9 +107,9 @@ const onSelectMail = async (mail: Mail) => {
   await loadMail(unref(currentAccount).accountId, mail.id)
 
   updateMailField({
-    id: unref(currentMail).id,
+    id: mail.id,
     field: 'keywords',
-    value: { ...unref(currentMail).keywords, ...{ $seen: true } }
+    value: { ...mail.keywords, ...{ $seen: true } }
   })
 }
 </script>

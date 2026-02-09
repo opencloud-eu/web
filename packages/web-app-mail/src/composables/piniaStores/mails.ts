@@ -1,74 +1,59 @@
 import { defineStore } from 'pinia'
-import { computed, ref, unref } from 'vue'
-import { Mail } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { computed, ref } from 'vue'
+import type { Mail } from '../../types'
+import { useRouteQueryId } from './helpers'
 
-export const useMailsStore = defineStore('mails', () => {
-  const currentMailIdQuery = useRouteQuery('mailId')
-
+export const useMailsStore = defineStore('mail-mails', () => {
   const mails = ref<Mail[]>([])
-  const currentMailId = ref<string>()
 
-  const currentMail = computed(() => unref(mails).find((mail) => mail.id === unref(currentMailId)))
+  const currentMailId = useRouteQueryId('mailId')
 
-  const setMails = (data: Mail[]) => {
-    mails.value = data
+  const currentMail = computed(() => {
+    const id = currentMailId.value
+    return mails.value.find((m) => m.id === id)
+  })
+
+  const setMails = (list: Mail[]) => {
+    mails.value = list ?? []
+
+    if (currentMailId.value && !currentMail.value) {
+      currentMailId.value = ''
+    }
   }
 
-  const upsertMail = (data: Mail) => {
-    const existing = unref(mails).find(({ id }) => id === data.id)
-    if (existing) {
-      Object.assign(existing, data)
+  const upsertMail = (mail: Mail) => {
+    const idx = mails.value.findIndex((m) => m.id === mail.id)
+    if (idx === -1) {
+      mails.value.unshift(mail)
+    } else {
+      mails.value[idx] = { ...mails.value[idx], ...mail }
+    }
+  }
+
+  const setCurrentMail = (mail: Mail | null) => {
+    if (!mail) {
+      currentMailId.value = ''
       return
     }
-    unref(mails).push(data)
+    upsertMail(mail)
+    currentMailId.value = mail.id
   }
 
-  const removeMails = (values: Mail[]) => {
-    mails.value = unref(mails).filter((mail) => !values.find(({ id }) => id === mail.id))
-
-    if (values.some((v) => v.accountId === unref(currentMailId))) {
-      currentMailId.value = null
-      currentMailIdQuery.value = null
+  const updateMailField = (opts: { id: string; field: keyof Mail; value: any }) => {
+    const idx = mails.value.findIndex((m) => m.id === opts.id)
+    if (idx === -1) {
+      return
     }
-  }
-
-  const setCurrentMail = (data: Mail) => {
-    currentMailId.value = data?.id
-    currentMailIdQuery.value = data?.id
-  }
-
-  const updateMailField = <T extends Mail>({
-    id,
-    field,
-    value
-  }: {
-    id: T['id']
-    field: keyof T
-    value: T[keyof T]
-  }) => {
-    const mail = unref(mails).find((mail) => id === mail.id) as T
-    if (mail) {
-      mail[field] = value
-    }
-  }
-
-  const reset = () => {
-    mails.value = []
-    currentMailId.value = null
-    currentMailIdQuery.value = null
+    mails.value[idx] = { ...mails.value[idx], [opts.field]: opts.value }
   }
 
   return {
     mails,
+    currentMailId,
     currentMail,
-    updateMailField,
     setMails,
     upsertMail,
-    removeMails,
     setCurrentMail,
-    reset
+    updateMailField
   }
 })
-
-export type MailsStore = ReturnType<typeof useMailsStore>
