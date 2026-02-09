@@ -1011,6 +1011,8 @@ Then(
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     if (actionType === 'should') {
+      await resourceObject.getResourceLocator(resource).waitFor()
+      await waitProcessingToFinish(page, resource)
       action === 'thumbnail and preview' &&
         (await expect(resourceObject.getFileThumbnailLocator(resource)).toBeVisible())
       await resourceObject.shouldSeeFilePreview({ resource })
