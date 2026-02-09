@@ -73,7 +73,6 @@
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
-    "@types/dompurify": "3.2.0",
     "@types/lodash-es": "4.17.12",
     "@vitest/web-worker": "^4.0.0",
     "clean-publish": "6.0.1",
