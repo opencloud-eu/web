@@ -14,7 +14,7 @@ export const useMailboxesStore = defineStore('mail-mailboxes', () => {
   })
 
   const draftsMailboxId = computed(() => {
-    const byRole = mailboxes.value.find((m: any) => m.role === 'drafts')?.id
+    const byRole = mailboxes.value.find((m: Mailbox & { role?: string }) => m.role === 'drafts')?.id
     if (byRole) {
       return byRole
     }
@@ -28,6 +28,8 @@ export const useMailboxesStore = defineStore('mail-mailboxes', () => {
 
     if (!currentMailboxId.value && mailboxes.value.length) {
       currentMailboxId.value = mailboxes.value[0].id
+    } else if (currentMailboxId.value && !currentMailbox.value) {
+      currentMailboxId.value = mailboxes.value[0]?.id ?? ''
     }
   }
 
