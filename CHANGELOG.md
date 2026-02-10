@@ -38,6 +38,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-unused-imports to v4.4.1 [[#1953](https://github.com/opencloud-eu/web/pull/1953)]
+- chore(deps): update dependency @vueuse/core to v14.2.1 [[#1958](https://github.com/opencloud-eu/web/pull/1958)]
 - chore(deps): update devdependencies (non-major) [[#1957](https://github.com/opencloud-eu/web/pull/1957)]
 - chore(deps): update dependency @vue/compiler-dom to v3.5.28 [[#1950](https://github.com/opencloud-eu/web/pull/1950)]
 - chore(deps): update dependency @codemirror/view to v6.39.13 [[#1907](https://github.com/opencloud-eu/web/pull/1907)]
