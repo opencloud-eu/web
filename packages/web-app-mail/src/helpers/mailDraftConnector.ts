@@ -17,18 +17,23 @@ const unwrapData = <T>(res: any): T => {
   return res as T
 }
 
+const buildPath = (...segments: string[]): string => {
+  return segments.map((segment) => encodeURIComponent(segment)).join('/')
+}
+
 export function createMailDraftConnector(http: HttpLike, groupwareUrl: string): MailDraftApi {
   const base = (groupwareUrl ?? '').replace(/\/+$/, '')
-  const emailsUrl = (accountId: string) => `${base}/accounts/${accountId}/emails`
 
   return {
     async createDraft(accountId: string, payload: DraftEmailPayload) {
-      const res = await http.post<DraftEmailResponse>(emailsUrl(accountId), payload)
+      const url = `${base}/accounts/${buildPath(accountId)}/emails`
+      const res = await http.post<DraftEmailResponse>(url, payload)
       return unwrapData<DraftEmailResponse>(res)
     },
 
     async replaceDraft(accountId: string, emailId: string, payload: DraftEmailPayload) {
-      const res = await http.put<DraftEmailResponse>(`${emailsUrl(accountId)}/${emailId}`, payload)
+      const url = `${base}/accounts/${buildPath(accountId)}/emails/${buildPath(emailId)}`
+      const res = await http.put<DraftEmailResponse>(url, payload)
       return unwrapData<DraftEmailResponse>(res)
     },
 
@@ -36,7 +41,8 @@ export function createMailDraftConnector(http: HttpLike, groupwareUrl: string): 
       if (!http.delete) {
         return
       }
-      await http.delete(`${emailsUrl(accountId)}/${emailId}`)
+      const url = `${base}/accounts/${buildPath(accountId)}/emails/${buildPath(emailId)}`
+      await http.delete(url)
     }
   }
 }
