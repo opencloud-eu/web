@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import type { Mail } from '../../types'
 import { useRouteQueryId } from './helpers'
 
-export const useMailsStore = defineStore('mail-mails', () => {
+export const useMailsStore = defineStore('mails', () => {
   const mails = ref<Mail[]>([])
 
   const currentMailId = useRouteQueryId('mailId')
