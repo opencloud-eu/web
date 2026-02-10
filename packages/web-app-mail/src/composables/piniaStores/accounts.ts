@@ -16,8 +16,15 @@ export const useAccountsStore = defineStore('mail-accounts', () => {
   const setAccounts = (list: MailAccount[]) => {
     accounts.value = list ?? []
 
-    if (!currentAccountId.value && accounts.value.length) {
-      currentAccountId.value = accounts.value[0].accountId
+    const hasAccounts = accounts.value.length > 0
+    const hasValidCurrent = !!currentAccount.value
+
+    if (!hasValidCurrent) {
+      if (hasAccounts) {
+        currentAccountId.value = accounts.value[0].accountId
+      } else {
+        currentAccountId.value = ''
+      }
     }
   }
 
