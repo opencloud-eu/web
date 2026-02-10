@@ -38,6 +38,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1957](https://github.com/opencloud-eu/web/pull/1957)]
 - chore(deps): update dependency @vue/compiler-dom to v3.5.28 [[#1950](https://github.com/opencloud-eu/web/pull/1950)]
 - chore(deps): update dependency @codemirror/view to v6.39.13 [[#1907](https://github.com/opencloud-eu/web/pull/1907)]
 - fix(deps): update dependency axios to v1.13.5 [[#1948](https://github.com/opencloud-eu/web/pull/1948)]
