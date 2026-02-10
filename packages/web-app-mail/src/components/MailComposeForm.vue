@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref, watch } from 'vue'
+import { computed, unref, watch, toRefs } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
@@ -101,10 +101,17 @@ export type ComposeFormState = {
   attachments?: MailComposeAttachment[]
 }
 
-const { modelValue, showFormattingToolbar = false } = defineProps<{
-  modelValue: ComposeFormState
-  showFormattingToolbar?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue: ComposeFormState
+    showFormattingToolbar?: boolean
+  }>(),
+  {
+    showFormattingToolbar: false
+  }
+)
+
+const { modelValue, showFormattingToolbar } = toRefs(props)
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: ComposeFormState): void
@@ -133,11 +140,11 @@ const fromOptions = computed<FromOption[]>(() => {
 })
 
 const updateField = <K extends keyof ComposeFormState>(key: K, value: ComposeFormState[K]) => {
-  emit('update:modelValue', { ...modelValue, [key]: value })
+  emit('update:modelValue', { ...modelValue.value, [key]: value })
 }
 
 const removeAttachment = (id: string) => {
-  const next = (modelValue.attachments ?? []).filter((a) => a.id !== id)
+  const next = (modelValue.value.attachments ?? []).filter((a) => a.id !== id)
   updateField('attachments', next)
 }
 
@@ -152,7 +159,7 @@ watch(
       ? (options.find((o) => o.accountId === selectedAccountId) ?? options[0])
       : options[0]
 
-    if (!modelValue.from && defaultFrom) {
+    if (!modelValue.value.from && defaultFrom) {
       updateField('from', defaultFrom)
     }
   },
