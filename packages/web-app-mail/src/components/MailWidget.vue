@@ -46,7 +46,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="accountId"
+              :account-id="composeState.from?.accountId ?? accountId"
             />
             <oc-button
               type="button"
@@ -108,7 +108,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="accountId"
+              :account-id="composeState.from?.accountId ?? accountId"
             />
             <oc-button
               type="button"
@@ -178,23 +178,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, unref, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import DOMPurify from 'dompurify'
-import MailComposeForm, { ComposeFormState } from './MailComposeForm.vue'
+import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 import { useSaveAsDraft } from '../composables/useSaveAsDraft'
 import { createMailDraftConnector } from '../helpers/mailDraftConnector'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
+import { useSavedHint } from '../composables/useSavedHint'
+import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
+import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
+import { plainTextForChangeCheck, plainTextForSave } from '../helpers/mailComposeText'
 
 const { $gettext } = useGettext()
 
-// Configuration constants
-const SAVED_HINT_DURATION_MS = 2000 // 2 seconds
-const AUTO_SAVE_INTERVAL_MS = 120_000 // 2 minutes
+const SAVED_HINT_DURATION_MS = 2000
+const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
 
 const props = defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits<{
@@ -202,22 +204,27 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const clientService = useClientService()
+const configStore = useConfigStore()
+
+const accountsStore = useAccountsStore()
+const mailboxesStore = useMailboxesStore()
+
+const { currentAccount } = storeToRefs(accountsStore)
+const { draftsMailboxId } = storeToRefs(mailboxesStore)
+
 const isExpanded = ref(false)
 const leaveModalOpen = ref(false)
 const showFormattingToolbar = ref(false)
-const showSavedHint = ref(false)
 
-let savedHintTimeout: ReturnType<typeof setTimeout> | undefined
+const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
 
-const flashSavedHint = () => {
-  showSavedHint.value = true
-  if (savedHintTimeout) {
-    clearTimeout(savedHintTimeout)
-  }
-  savedHintTimeout = setTimeout(() => {
-    showSavedHint.value = false
-  }, SAVED_HINT_DURATION_MS)
-}
+const accountId = computed(() => unref(currentAccount)?.accountId ?? '')
+const draftMailboxId = computed(() => unref(draftsMailboxId) ?? '')
+
+const canSaveDraft = computed(() => {
+  return !!accountId.value && !!draftMailboxId.value
+})
 
 const createEmptyComposeState = (): ComposeFormState => ({
   from: undefined,
@@ -245,35 +252,17 @@ const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const clientService = useClientService()
-const configStore = useConfigStore()
-
-const accountsStore = useAccountsStore()
-const mailboxesStore = useMailboxesStore()
-const { currentAccount } = storeToRefs(accountsStore)
-const { draftsMailboxId } = storeToRefs(mailboxesStore)
-
-const accountId = computed(() => unref(currentAccount)?.accountId ?? '')
-const draftMailboxId = computed(() => unref(draftsMailboxId) ?? '')
-
 const connector = createMailDraftConnector(
   clientService.httpAuthenticated as any,
   configStore.groupwareUrl
 )
 
-const canSaveDraft = computed(() => !!accountId.value && !!draftMailboxId.value)
-
 const parseRecipients = (value: string) => {
-  return value
+  return (value ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean)
     .map((email) => ({ email }))
-}
-
-const htmlToText = (html: string) => {
-  const stripped = DOMPurify.sanitize(html ?? '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
-  return stripped.replace(/\s+/g, ' ').trim()
 }
 
 const hasMeaningfulChanges = computed(() => {
@@ -281,7 +270,7 @@ const hasMeaningfulChanges = computed(() => {
   const cc = (composeState.value.cc ?? '').trim()
   const bcc = (composeState.value.bcc ?? '').trim()
   const subject = (composeState.value.subject ?? '').trim()
-  const bodyText = htmlToText(composeState.value.body ?? '')
+  const bodyText = plainTextForChangeCheck(composeState.value.body ?? '')
   const attachments = composeState.value.attachments ?? []
   return !!to || !!cc || !!bcc || !!subject || !!bodyText || attachments.length > 0
 })
@@ -292,10 +281,10 @@ const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = 
   api: connector,
   getDraftPayload: () => {
     const bodyHtml = composeState.value.body ?? ''
-    const bodyPlain = htmlToText(bodyHtml)
+    const bodyPlain = plainTextForSave(bodyHtml)
 
-    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
     const hasText = bodyPlain.length > 0
+    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
 
     return {
       from: composeState.value.from
@@ -325,25 +314,24 @@ const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = 
   }
 })
 
-watch(
-  composeState,
-  () => {
-    markDirty()
-  },
-  { deep: true }
-)
+const { runWithResetGuard } = useComposeDirtyTracking(composeState, () => {
+  markDirty()
+})
 
-const resetCompose = () => {
-  composeState.value = createEmptyComposeState()
-  showFormattingToolbar.value = false
-  leaveModalOpen.value = false
-  resetDraft(null)
+const resetCompose = async () => {
+  await runWithResetGuard(() => {
+    composeState.value = createEmptyComposeState()
+    showFormattingToolbar.value = false
+    leaveModalOpen.value = false
+    clearSavedHint()
+    resetDraft(null)
+  })
 }
 
-const doClose = () => {
+const doClose = async () => {
   isExpanded.value = false
   isOpen.value = false
-  resetCompose()
+  await resetCompose()
 }
 
 const requestClose = () => {
@@ -365,23 +353,12 @@ const onSaveDraftAndClose = async () => {
     return
   }
   await saveAsDraft()
-  flashSavedHint()
   doClose()
 }
 
 const onDiscardAndClose = async () => {
   await discardDraft()
   doClose()
-}
-
-let autoSaveInterval: ReturnType<typeof setInterval> | undefined
-
-const stopAutoSave = () => {
-  if (!autoSaveInterval) {
-    return
-  }
-  clearInterval(autoSaveInterval)
-  autoSaveInterval = undefined
 }
 
 const canAutoSaveNow = computed(() => {
@@ -395,42 +372,27 @@ const canAutoSaveNow = computed(() => {
   )
 })
 
-const startAutoSave = () => {
-  stopAutoSave()
-  autoSaveInterval = setInterval(async () => {
-    if (!canAutoSaveNow.value) {
-      return
-    }
-
-    try {
-      const res = await saveAsDraft()
-      if (res) {
-        flashSavedHint()
-      }
-    } catch (error) {
-      console.error('Failed to auto-save draft:', error)
-    }
-  }, AUTO_SAVE_INTERVAL_MS)
-}
+useAutoSaveDraft({
+  isOpen,
+  canAutoSaveNow,
+  intervalMs: AUTO_SAVE_INTERVAL_MS,
+  save: saveAsDraft,
+  onSaved: () => {
+    flashSavedHint()
+  },
+  onError: (error) => {
+    console.error('Failed to auto-save draft:', error)
+  }
+})
 
 watch(
   () => isOpen.value,
-  (open) => {
-    if (open) {
-      startAutoSave()
-    } else {
-      stopAutoSave()
+  async (open) => {
+    if (!open) {
+      await resetCompose()
     }
-  },
-  { immediate: true }
-)
-
-onBeforeUnmount(() => {
-  stopAutoSave()
-  if (savedHintTimeout) {
-    clearTimeout(savedHintTimeout)
   }
-})
+)
 </script>
 
 <style>

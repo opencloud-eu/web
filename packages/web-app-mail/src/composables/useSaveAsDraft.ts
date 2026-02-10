@@ -77,13 +77,15 @@ export const useSaveAsDraft = (opts: {
     isDirty.value = false
   }).restartable()
 
-  const isSaving = computed(() => saveDraftTask.isRunning)
+  const isSaving = computed(() => {
+    return saveDraftTask.isRunning
+  })
 
   const markDirty = () => {
     isDirty.value = true
   }
 
-  const resetDraft = (nextDraftId: string | null = null) => {
+  const resetDraft = (nextDraftId: string | null) => {
     draftId.value = nextDraftId
     isDirty.value = false
   }
