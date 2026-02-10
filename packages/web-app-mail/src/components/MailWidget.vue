@@ -328,10 +328,9 @@ const resetCompose = async () => {
   })
 }
 
-const doClose = async () => {
+const doClose = () => {
   isExpanded.value = false
   isOpen.value = false
-  await resetCompose()
 }
 
 const requestClose = () => {

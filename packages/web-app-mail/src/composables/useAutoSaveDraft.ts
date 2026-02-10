@@ -8,21 +8,29 @@ export const useAutoSaveDraft = <T>(opts: {
   onSaved?: (result: T) => void
   onError?: (error: unknown) => void
 }) => {
-  let interval: ReturnType<typeof setInterval> | undefined
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  let isRunning = false
 
   const stop = () => {
-    if (!interval) {
-      return
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = undefined
     }
-    clearInterval(interval)
-    interval = undefined
+    isRunning = false
   }
 
-  const start = () => {
-    stop()
+  const scheduleNext = () => {
+    if (!isRunning) {
+      return
+    }
 
-    interval = setInterval(async () => {
+    timeoutId = setTimeout(async () => {
+      if (!isRunning) {
+        return
+      }
+
       if (!toValue(opts.canAutoSaveNow)) {
+        scheduleNext()
         return
       }
 
@@ -33,8 +41,18 @@ export const useAutoSaveDraft = <T>(opts: {
         }
       } catch (error) {
         opts.onError?.(error)
+      } finally {
+        scheduleNext()
       }
     }, opts.intervalMs)
+  }
+
+  const start = () => {
+    if (isRunning) {
+      return
+    }
+    isRunning = true
+    scheduleNext()
   }
 
   watch(

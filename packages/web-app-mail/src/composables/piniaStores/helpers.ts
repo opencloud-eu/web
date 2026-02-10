@@ -14,7 +14,7 @@ export const useRouteQueryId = (queryParamName: string) => {
   return computed<string>({
     get: () => toSingleString(query.value),
     set: (value: string) => {
-      query.value = value || undefined
+      query.value = value || null
     }
   })
 }
