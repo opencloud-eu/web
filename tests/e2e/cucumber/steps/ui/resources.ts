@@ -6,7 +6,6 @@ import { expect } from '@playwright/test'
 import { config } from '../../../config'
 import {
   createResourceTypes,
-  displayedResourceType,
   shortcutType,
   ActionViaType,
   PanelType
@@ -16,6 +15,7 @@ import { Resource } from '../../../support/objects/app-files'
 import * as runtimeFs from '../../../support/utils/runtimeFs'
 import { searchFilter } from '../../../support/objects/app-files/resource/actions'
 import { File } from '../../../support/types'
+import { waitProcessingToFinish } from '../../../support/objects/app-files/fileEvents'
 
 When(
   '{string} creates the following resource(s)',
@@ -365,21 +365,44 @@ When(
 )
 
 Then(
-  /^following resources (should|should not) be displayed in the (search list|files list|Shares|trashbin) for user "([^"]*)"$/,
+  /^following resources (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
   async function (
     this: World,
     actionType: string,
-    listType: string,
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
-    const actualList = await resourceObject.getDisplayedResources({
-      keyword: listType as displayedResourceType
-    })
     for (const info of stepTable.hashes()) {
-      expect(actualList.includes(info.resource)).toBe(actionType === 'should')
+      if (actionType === 'should') {
+        await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
+          timeout: config.timeout * 1000
+        })
+        await waitProcessingToFinish(page, info.resource)
+        return
+      }
+      await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
+    }
+  }
+)
+
+Then(
+  /^following resources (should|should not) be displayed in the search list for user "([^"]*)"$/,
+  async function (
+    this: World,
+    actionType: string,
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    for (const info of stepTable.hashes()) {
+      if (actionType === 'should') {
+        await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible()
+        return
+      }
+      await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
     }
   }
 )
@@ -988,6 +1011,8 @@ Then(
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     if (actionType === 'should') {
+      await resourceObject.getResourceLocator(resource).waitFor()
+      await waitProcessingToFinish(page, resource)
       action === 'thumbnail and preview' &&
         (await expect(resourceObject.getFileThumbnailLocator(resource)).toBeVisible())
       await resourceObject.shouldSeeFilePreview({ resource })

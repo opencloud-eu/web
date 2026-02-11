@@ -187,6 +187,14 @@ export class Resource {
     await po.searchResourceGlobalSearch({ ...args, page: this.#page })
   }
 
+  getResourceLocator(resource: string) {
+    return po.getResourceLocator({ page: this.#page, resource })
+  }
+
+  getResourceSearchItemLocator(resource: string) {
+    return po.getResourceSearchItemLocator({ page: this.#page, resource })
+  }
+
   getDisplayedResources(args: Omit<po.getDisplayedResourcesArgs, 'page'>): Promise<string[]> {
     switch (args.keyword) {
       case 'files list':

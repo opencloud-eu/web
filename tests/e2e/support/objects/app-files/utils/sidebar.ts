@@ -1,6 +1,7 @@
 import { Page, expect } from '@playwright/test'
 import util from 'util'
 import { locatorUtils } from '../../../utils'
+import { waitProcessingToFinish } from '../fileEvents'
 
 const contextMenuSelector = `
 //button[
@@ -52,6 +53,9 @@ export const open = async ({
   page: Page
   resource?: string
 }): Promise<void> => {
+  if (resource) {
+    await waitProcessingToFinish(page, resource)
+  }
   if (await page.locator('#app-sidebar').count()) {
     await Promise.all([
       page.locator('#app-sidebar').waitFor({ state: 'detached' }),

@@ -47,17 +47,24 @@ Feature: Trashbin delete
     Given "Alice" creates the following folders in personal space using API
       | name          |
       | folderToShare |
-      | empty-folder   |
+      | empty-folder  |
     And "Alice" creates the following files into personal space using API
       | pathToFile              | content     |
       | folderToShare/lorem.txt | lorem ipsum |
       | sample.txt              | sample      |
+    And "Alice" opens the "files" app
+    And following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | sample.txt |
     And "Alice" shares the following resource using the sidebar panel
       | resource      | recipient | type | role     | resourceType |
       | folderToShare | Brian     | user | Can edit | folder       |
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "folderToShare"
+    And following resources should be displayed in the files list for user "Brian"
+      | resource  |
+      | lorem.txt |
     When "Brian" deletes the following resources using the sidebar panel
       | resource  |
       | lorem.txt |
