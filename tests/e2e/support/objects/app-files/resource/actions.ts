@@ -1181,7 +1181,10 @@ export const renameResource = async (args: renameResourceArgs): Promise<void> =>
 
   await page.locator(util.format(resourceNameSelector, resourceBase)).click({ button: 'right' })
   await page.locator(util.format(filesContextMenuAction, 'rename')).click()
-  await page.locator(fileRenameInput).fill(newName)
+  const resourceInput = page.locator(fileRenameInput)
+  // Clear the field and fill in the name
+  await resourceInput.clear()
+  await resourceInput.fill(newName)
   await Promise.all([
     page.waitForResponse(
       (resp) =>
