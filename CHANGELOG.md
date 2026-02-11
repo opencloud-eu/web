@@ -6,6 +6,13 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### ✅ Tests
+
+- [full-ci]test: harden flaky web e2e tests [[#1937](https://github.com/opencloud-eu/web/pull/1937)]
+- [full-ci] test(e2e): fix flaky e2e tests [[#1886](https://github.com/opencloud-eu/web/pull/1886)]
+- test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
+- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
+
 ### 🐛 Bug Fixes
 
 - fix: don't show non applicable items in the app drawer if the user is not logged in [[#1952](https://github.com/opencloud-eu/web/pull/1952)]
@@ -29,12 +36,6 @@
 - feat: move right sidebar to bottom drawer on mobile [[#1874](https://github.com/opencloud-eu/web/pull/1874)]
 - Feat/1479 Add attachments when writing emails [[#1873](https://github.com/opencloud-eu/web/pull/1873)]
 - Issues/1478 integrate tiptap for writing emails [[#1831](https://github.com/opencloud-eu/web/pull/1831)]
-
-### ✅ Tests
-
-- [full-ci] test(e2e): fix flaky e2e tests [[#1886](https://github.com/opencloud-eu/web/pull/1886)]
-- test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
-- delete transitionend check [[#1872](https://github.com/opencloud-eu/web/pull/1872)]
 
 ### 📦️ Dependencies
 
