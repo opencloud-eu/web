@@ -189,7 +189,7 @@ services:
     restart: unless-stopped
 
   collabora:
-    image: collabora/code:25.04.8.2.1
+    image: collabora/code:25.04.7.3.1
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
@@ -289,8 +289,7 @@ services:
     container_name: web_tika_service
     depends_on:
       - tika
-    command:
-      - 'wait-for -it tika:9998 -t 300'
+    command: 'tika:9998'
     networks:
       - traefik
 
@@ -300,6 +299,8 @@ services:
     ports:
       - 9998:9998
     restart: unless-stopped
+    networks:
+      - traefik
 
   radicale:
     image: ${RADICALE_DOCKER_IMAGE:-opencloudeu/radicale}:${RADICALE_DOCKER_TAG:-latest}
