@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-02-10
+## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-02-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -38,7 +38,7 @@
 
 ### 📦️ Dependencies
 
-- chore(deps): update dependency eslint-plugin-unused-imports to v4.4.1 [[#1953](https://github.com/opencloud-eu/web/pull/1953)]
+- chore(deps): update dependency eslint-plugin-unused-imports to v4.4.1 - autoclosed [[#1953](https://github.com/opencloud-eu/web/pull/1953)]
 - chore(deps): update dependency @vueuse/core to v14.2.1 [[#1958](https://github.com/opencloud-eu/web/pull/1958)]
 - chore(deps): update devdependencies (non-major) [[#1957](https://github.com/opencloud-eu/web/pull/1957)]
 - chore(deps): update dependency @vue/compiler-dom to v3.5.28 [[#1950](https://github.com/opencloud-eu/web/pull/1950)]
