@@ -193,7 +193,18 @@ export const useFileActions = () => {
     resource: Resource
   }) => {
     const remoteItemId = isShareSpaceResource(space) ? space.id : undefined
-    const routeName = appFileExtension.routeName || appFileExtension.app
+    let routeName = appFileExtension.routeName
+    if (routeName && !router.hasRoute(routeName)) {
+      console.warn(
+        `App "${appFileExtension.app}" specifies routeName "${routeName}" but no such route exists.`
+      )
+      return null
+    }
+
+    routeName = routeName || appFileExtension.app
+    if (!routeName || !router.hasRoute(routeName)) {
+      return null
+    }
     const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
     return router.resolve(routeOpts)
   }
