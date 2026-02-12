@@ -9,6 +9,6 @@ export const onSSEBackchannelLogoutEvent = ({ router, authStore, sseData }: SSEE
     return
   }
 
-  // Log out all client when no session id is provided according to OIDC spec
+  // Log out all clients according to OIDC spec, when no session id is provided 
   return router.push({ name: 'logout' })
 }
