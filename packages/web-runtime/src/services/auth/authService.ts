@@ -210,8 +210,8 @@ export class AuthService implements AuthServiceInterface {
       // relevant for page reload: token is already in userStore
       // no userLoaded event and no signInCallback gets triggered
       const user = await this.userManager.getUser()
-      const accessToken = user.access_token
-      const sessionId = user.profile.sid
+      const accessToken = user?.access_token
+      const sessionId = user?.profile?.sid
 
       if (accessToken) {
         console.debug('[authService:initializeContext] - updating context with saved access_token')
