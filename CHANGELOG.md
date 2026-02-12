@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- [full-ci] test: enable lock assertion test steps [[#1966](https://github.com/opencloud-eu/web/pull/1966)]
 - [full-ci]test: harden flaky web e2e tests [[#1937](https://github.com/opencloud-eu/web/pull/1937)]
 - [full-ci] test(e2e): fix flaky e2e tests [[#1886](https://github.com/opencloud-eu/web/pull/1886)]
 - test(e2e): fix flaky upload and sharing tests [[#1879](https://github.com/opencloud-eu/web/pull/1879)]
