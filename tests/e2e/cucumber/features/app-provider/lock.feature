@@ -26,8 +26,8 @@ Feature: lock
     Then "Brian" should see the content "some content" in editor "Collabora"
 
     # file-locked
-    # And "Alice" should get "file-locked" SSE event
-    # And for "Alice" file "test.odt" should be locked
+    And "Alice" should get "file-locked" SSE event
+    And for "Alice" file "test.odt" should be locked
 
     # checking that user cannot 'move', 'rename', 'delete' locked file
     And "Alice" should not be able to edit file "test.odt"
@@ -45,8 +45,8 @@ Feature: lock
 
     # file-unlocked
     When "Brian" closes the file viewer
-    # Then "Alice" should get "file-unlocked" SSE event
-    # And for "Alice" file "test.odt" should not be locked
+    Then "Alice" should get "file-unlocked" SSE event
+    And for "Alice" file "test.odt" should not be locked
     And "Alice" should be able to manage share of a file "test.odt" for user "Brian"
 
     And "Brian" logs out
