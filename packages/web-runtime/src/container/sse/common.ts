@@ -1,14 +1,12 @@
 import { SSEEventOptions } from './types'
 
 export const onSSEBackchannelLogoutEvent = ({ router, authStore, sseData }: SSEEventOptions) => {
-  if (sseData.sessionid) {
-    if (authStore.sessionId === sseData.sessionid) {
-      return router.push({ name: 'logout' })
-    }
-
-    return
+  if (!sseData.sessionid) {
+    // Log out all client when no session id is provided according to OIDC spec
+    return router.push({ name: 'logout' })
   }
 
-  // Log out all clients according to OIDC spec, when no session id is provided 
-  return router.push({ name: 'logout' })
+  if (authStore.sessionId === sseData.sessionid) {
+    return router.push({ name: 'logout' })
+  }
 }
