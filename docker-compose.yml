@@ -189,7 +189,7 @@ services:
     restart: unless-stopped
 
   collabora:
-    image: collabora/code:25.04.7.3.1
+    image: collabora/code:25.04.8.2.1
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:

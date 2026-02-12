@@ -3,7 +3,7 @@ docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
-COLLABORA_CODE = "collabora/code:25.04.7.3.1"
+COLLABORA_CODE = "collabora/code:25.04.8.2.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:25.0.0"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
