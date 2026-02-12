@@ -137,7 +137,7 @@ const textEditorContainer = '#text-editor-container div.md-editor-content'
 // Collabora
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
 const collaboraDocTextAreaSelector = '#clipboard-area'
-const collaboraCanvasEditorSelector = '.leaflet-layer'
+const collaboraCanvasEditorSelector = '#document-canvas'
 // OnlyOffice
 const onlyOfficeInnerFrameSelector = '[name="frameEditor"]'
 const onlyOfficeSaveButtonSelector = '#slot-btn-dt-save > button'
