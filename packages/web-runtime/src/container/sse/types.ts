@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  AuthStore,
   ClientService,
   ConfigStore,
   MessageStore,
@@ -32,6 +33,7 @@ export interface SSEEventOptions {
   messageStore: MessageStore
   sharesStore: SharesStore
   configStore: ConfigStore
+  authStore: AuthStore
   clientService: ClientService
   previewService: PreviewService
   router: Router
