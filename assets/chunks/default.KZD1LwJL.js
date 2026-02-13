@@ -1,1 +1,0 @@
-import"./theme.o8La-y3i.js";import{v as n,R as s,C as p,Q as u,a0 as c,z as r}from"./framework.Dql3sJX9.js";const _=n({__name:"default",setup(m){const e=u();return s(e,o=>{console.log(o)}),(o,l)=>{const t=c("oc-file-input");return r(),p(t,{modelValue:e.value,"onUpdate:modelValue":l[0]||(l[0]=a=>e.value=a),label:"Select file"},null,8,["modelValue"])}}});export{_ as default};
