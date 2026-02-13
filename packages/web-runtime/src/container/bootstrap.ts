@@ -83,9 +83,18 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
 
+// Snapshot embed query params on first call so they survive Vue Router
+// navigations (the delegated-auth callback redirects to /files/spaces/…,
+// which strips the original query string before the second config load).
+let cachedEmbedConfig: RawConfig['options']['embed'] | undefined
+
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
 ): RawConfig['options']['embed'] => {
+  if (cachedEmbedConfig) {
+    return cachedEmbedConfig
+  }
+
   const config: RawConfig['options']['embed'] = {}
 
   if (!doesEmbedEnabledOptionExists) {
@@ -129,6 +138,7 @@ const getEmbedConfigFromQuery = (
     config.delegateAuthenticationOrigin = delegateAuthenticationOrigin
   }
 
+  cachedEmbedConfig = config
   return config
 }
 
