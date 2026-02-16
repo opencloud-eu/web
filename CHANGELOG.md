@@ -4,6 +4,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.3.6 [[#1979](https://github.com/opencloud-eu/web/pull/1979)]
 - chore(deps): update dependency @codemirror/view to v6.39.14 [[#1970](https://github.com/opencloud-eu/web/pull/1970)]
 - chore(deps): update traefik docker tag to v3.6.8 [[#1967](https://github.com/opencloud-eu/web/pull/1967)]
 - chore(deps): update node.js to v24.13.1 [[#1961](https://github.com/opencloud-eu/web/pull/1961)]
