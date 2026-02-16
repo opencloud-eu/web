@@ -92,6 +92,10 @@ import { bytesToHex } from '@noble/hashes/utils.js'
 // which strips the original query string before the second config load).
 let cachedEmbedConfig: RawConfig['options']['embed'] | undefined
 
+export const _resetEmbedConfigCache = () => {
+  cachedEmbedConfig = undefined
+}
+
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
 ): RawConfig['options']['embed'] => {

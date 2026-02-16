@@ -14,7 +14,8 @@ import {
   announceCustomScripts,
   announceCustomStyles,
   announceConfiguration,
-  announceUpdates
+  announceUpdates,
+  _resetEmbedConfigCache
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
 import { createTestingPinia, mockAxiosResolve } from '@opencloud-eu/web-test-helpers'
@@ -152,6 +153,7 @@ describe('announceCustomStyles', () => {
 describe('announceConfiguration', () => {
   beforeEach(() => {
     createTestingPinia({ stubActions: false })
+    _resetEmbedConfigCache()
   })
 
   it('should not enable embed mode when it is not set', async () => {
