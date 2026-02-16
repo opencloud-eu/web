@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.1.1](https://github.com/opencloud-eu/web/releases/tag/v5.1.1) - 2026-02-16
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency @codemirror/view to v6.39.14 [[#1970](https://github.com/opencloud-eu/web/pull/1970)]
+- chore(deps): update traefik docker tag to v3.6.8 [[#1967](https://github.com/opencloud-eu/web/pull/1967)]
+- chore(deps): update node.js to v24.13.1 [[#1961](https://github.com/opencloud-eu/web/pull/1961)]
+- chore(deps): update dependency eslint-plugin-vue to v10.8.0 [[#1980](https://github.com/opencloud-eu/web/pull/1980)]
+- chore(deps): update dependency eslint-plugin-n to v17.24.0 [[#1982](https://github.com/opencloud-eu/web/pull/1982)]
+
 ## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-02-16
 
 ### ❤️ Thanks to all contributors! ❤️
