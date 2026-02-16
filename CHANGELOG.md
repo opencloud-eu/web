@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @saw-jan, @tammi-23
 
+### 🔒 Security
+
+- chore(deps): bump markdown-it to v4.1.1 [security] [[#1983](https://github.com/opencloud-eu/web/pull/1983)]
+
 ### ✅ Tests
 
 - [full-ci] test: enable lock assertion test steps [[#1966](https://github.com/opencloud-eu/web/pull/1966)]
