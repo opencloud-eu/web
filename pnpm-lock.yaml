@@ -503,7 +503,7 @@ importers:
         version: 3.0.4(typescript@5.9.3)(vue@3.5.28(typescript@5.9.3))
       qs:
         specifier: ^6.13.0
-        version: 6.14.2
+        version: 6.15.0
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -566,8 +566,8 @@ importers:
         specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.28(typescript@5.9.3))
       qs:
-        specifier: 6.14.2
-        version: 6.14.2
+        specifier: 6.15.0
+        version: 6.15.0
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -945,7 +945,7 @@ importers:
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.28(typescript@5.9.3))
       qs:
         specifier: ^6.13.0
-        version: 6.14.2
+        version: 6.15.0
       screenfull:
         specifier: ^6.0.2
         version: 6.0.2
@@ -1060,8 +1060,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(patch_hash=ce486dc8fb49b1e3f9b160bfede1dfeb31a492b7e1ea6dc8d10bbee39174cdcb)(vue@3.5.28(typescript@5.9.3))
       qs:
-        specifier: 6.14.2
-        version: 6.14.2
+        specifier: 6.15.0
+        version: 6.15.0
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -5755,6 +5755,10 @@ packages:
 
   qs@6.14.2:
     resolution: {integrity: sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==}
+    engines: {node: '>=0.6'}
+
+  qs@6.15.0:
+    resolution: {integrity: sha512-mAZTtNCeetKMH+pSjrb76NAM8V9a05I9aBZOHztWy/UqcJdQYNsf59vrRKWnojAT9Y+GbIvoTBC++CPHqpDBhQ==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -11976,6 +11980,10 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
+  qs@6.15.0:
+    dependencies:
+      side-channel: 1.1.0
+
   quansync@0.2.11: {}
 
   querystring-es3@0.2.1: {}
@@ -12656,7 +12664,7 @@ snapshots:
   url@0.11.4:
     dependencies:
       punycode: 1.4.1
-      qs: 6.14.2
+      qs: 6.15.0
 
   util-arity@1.1.0: {}
 
