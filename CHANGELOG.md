@@ -2,6 +2,10 @@
 
 ## [5.1.1](https://github.com/opencloud-eu/web/releases/tag/v5.1.1) - 2026-02-16
 
+### ❤️ Thanks to all contributors! ❤️
+
+@kulmann
+
 ### 📦️ Dependencies
 
 - chore(deps): update dependency fast-xml-parser to v5.3.6 [[#1979](https://github.com/opencloud-eu/web/pull/1979)]
