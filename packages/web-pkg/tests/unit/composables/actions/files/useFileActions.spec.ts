@@ -7,7 +7,8 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { computed } from 'vue'
 import { describe } from 'vitest'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { FileAction } from '../../../../../src'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
 vi.mock('../../../../../src/composables/embedMode', () => ({
@@ -51,6 +52,56 @@ describe('fileActions', () => {
       })
     })
   })
+  describe('getEditorRoute', () => {
+    it('returns null when the route does not exist', () => {
+      let editorAction: FileAction
+      const { mocks } = getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          editorAction = actions.find((a) => a.name === 'editor-external')
+        }
+      })
+      mocks.$router.hasRoute.mockReturnValue(false)
+      const result = editorAction.route({
+        space: mock<SpaceResource>(),
+        resources: actionOptions.resources
+      })
+      expect(result).toBeNull()
+    })
+
+    it('returns null when the app has no routeName and no matching app route', () => {
+      let editorAction: FileAction
+      const { mocks } = getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          editorAction = actions.find((a) => a.name === 'editor-text-editor')
+        }
+      })
+      mocks.$router.hasRoute.mockReturnValue(false)
+      const result = editorAction.route({
+        space: mock<SpaceResource>(),
+        resources: actionOptions.resources
+      })
+      expect(result).toBeNull()
+    })
+
+    it('resolves route when the route exists', () => {
+      let editorAction: FileAction
+      const { mocks } = getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          editorAction = actions.find((a) => a.name === 'editor-external')
+        }
+      })
+      mocks.$router.hasRoute.mockReturnValue(true)
+      const result = editorAction.route({
+        space: mock<SpaceResource>(),
+        resources: actionOptions.resources
+      })
+      expect(result).not.toBeNull()
+    })
+  })
+
   describe('secure view context', () => {
     describe('getAllOpenWithActions', () => {
       it('only displays editors that support secure view', () => {
