@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@kulmann
+@dschmidt, @kulmann
+
+### 🐛 Bug Fixes
+
+- fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
 
 ### 📦️ Dependencies
 
