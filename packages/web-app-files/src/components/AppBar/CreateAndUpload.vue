@@ -1,139 +1,60 @@
 <template>
   <div v-if="showActions" class="create-and-upload-actions inline-flex mr-2 gap-2">
-    <template v-if="createFileActionsAvailable">
-      <div v-oc-tooltip="newButtonTooltip">
-        <oc-button
-          id="new-file-menu-btn"
-          key="new-file-menu-btn-enabled"
-          v-oc-tooltip="limitedScreenSpace ? $gettext('New') : ''"
-          :aria-label="newButtonAriaLabel"
-          appearance="filled"
-          :disabled="!canUpload"
-        >
-          <oc-icon name="add" />
-          <span v-if="!limitedScreenSpace" v-text="$gettext('New')" />
-        </oc-button>
-      </div>
-      <oc-drop
-        :title="$gettext('New file')"
-        drop-id="new-file-menu-drop"
-        toggle="#new-file-menu-btn"
-        class="w-auto min-w-3xs"
-        mode="click"
-        close-on-click
-        padding-size="small"
-      >
-        <oc-list
-          id="create-list"
-          :class="areFileExtensionsShown ? 'sm:min-w-xs' : null"
-          class="py-2 sm:first:pt-0 sm:last:pb-0"
-        >
-          <li>
-            <oc-button
-              id="new-folder-btn"
-              class="w-full"
-              justify-content="left"
-              appearance="raw"
-              @click="createNewFolderAction"
-            >
-              <resource-icon
-                :resource="folderIconResource"
-                size="medium"
-                class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
-              />
-              <span v-text="$gettext('Folder')" />
-            </oc-button>
-          </li>
-        </oc-list>
-        <oc-list
-          v-for="(group, groupIndex) in createFileActionsGroups"
-          :key="`file-creation-group-${groupIndex}`"
-          class="py-2 sm:first:pt-0 sm:last:pb-0 border-t"
-        >
-          <li
-            v-for="(fileAction, fileActionIndex) in group"
-            :key="`file-creation-item-${groupIndex}-${fileActionIndex}`"
-          >
-            <oc-button
-              appearance="raw"
-              class="w-full"
-              justify-content="left"
-              :class="['new-file-btn-' + fileAction.ext]"
-              @click="() => fileAction.handler()"
-            >
-              <resource-icon
-                :resource="getIconResource(fileAction)"
-                size="medium"
-                class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
-              />
-              <span>{{ fileAction.label() }}</span>
-              <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
-                {{ fileAction.ext }}
-              </span>
-            </oc-button>
-          </li>
-        </oc-list>
-        <oc-list class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
-          <li>
-            <oc-button
-              id="new-shortcut-btn"
-              class="w-full"
-              justify-content="left"
-              appearance="raw"
-              @click="createNewShortcutAction"
-            >
-              <oc-icon name="external-link" size="medium" />
-              <span v-text="$gettext('Shortcut')" />
-              <span v-if="areFileExtensionsShown" class="ml-auto text-sm" v-text="'url'" />
-            </oc-button>
-          </li>
-        </oc-list>
-      </oc-drop>
-    </template>
-    <template v-else>
-      <span v-oc-tooltip="newButtonTooltip">
-        <oc-button
-          id="new-folder-btn"
-          v-oc-tooltip="limitedScreenSpace ? $gettext('New Folder') : ''"
-          appearance="filled"
-          :aria-label="newButtonAriaLabel"
-          :disabled="!canUpload"
-          @click="createNewFolderAction"
-        >
-          <oc-icon name="resource-type-folder" />
-          <span v-if="!limitedScreenSpace" v-text="$gettext('New Folder')" />
-        </oc-button>
-      </span>
-    </template>
-    <span v-oc-tooltip="uploadButtonTooltip">
+    <div v-oc-tooltip="newButtonTooltip">
       <oc-button
-        id="upload-menu-btn"
-        key="upload-menu-btn-enabled"
-        v-oc-tooltip="limitedScreenSpace ? $gettext('Upload') : ''"
-        :aria-label="uploadButtonAriaLabel"
+        id="create-or-upload-menu-btn"
+        key="create-or-upload-menu-btn-enabled"
+        v-oc-tooltip="limitedScreenSpace ? $gettext('Create or Upload') : ''"
+        :aria-label="newButtonAriaLabel"
+        appearance="filled"
         :disabled="!canUpload"
-        appearance="outline"
       >
-        <oc-icon name="upload" fill-type="line" />
-        <span v-if="!limitedScreenSpace" v-text="$gettext('Upload')" />
+        <oc-icon name="add" />
+        <span v-if="!limitedScreenSpace" v-text="$gettext('Create or Upload')" />
       </oc-button>
-    </span>
+    </div>
     <oc-drop
-      :title="$gettext('Upload')"
-      drop-id="upload-menu-drop"
-      toggle="#upload-menu-btn"
-      mode="click"
+      :title="$gettext('Create or Upload')"
+      drop-id="create-or-upload-drop"
+      toggle="#create-or-upload-menu-btn"
       class="w-auto min-w-3xs"
+      mode="click"
       close-on-click
       padding-size="small"
       @show-drop="showDrop"
     >
-      <oc-list id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
+      <oc-list
+        id="create-list"
+        :class="areFileExtensionsShown ? 'sm:min-w-xs' : null"
+        class="py-2 sm:first:pt-0 sm:last:pb-0"
+      >
         <li>
-          <resource-upload btn-class="w-full" />
+          <oc-button
+            id="new-folder-btn"
+            class="w-full"
+            justify-content="left"
+            appearance="raw"
+            @click="createNewFolderAction"
+          >
+            <resource-icon
+              :resource="folderIconResource"
+              size="medium"
+              class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
+            />
+            <span v-text="$gettext('Folder')" />
+          </oc-button>
+        </li>
+      </oc-list>
+      <oc-list v-if="canUpload" id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+        <li>
+          <resource-upload btn-class="w-full" :btn-label="$gettext('Files Upload')" />
         </li>
         <li>
-          <resource-upload btn-class="w-full" :is-folder="true" />
+          <resource-upload
+            btn-class="w-full"
+            :btn-label="$gettext('Folder Upload')"
+            :is-folder="true"
+          />
         </li>
       </oc-list>
       <oc-list
@@ -159,6 +80,49 @@
             <oc-icon :name="getActionIcon(action)" fill-type="line" />
             <span v-text="action.label()"
           /></oc-button>
+        </li>
+      </oc-list>
+      <oc-list
+        v-for="(group, groupIndex) in createFileActionsGroups"
+        :key="`file-creation-group-${groupIndex}`"
+        class="py-2 sm:first:pt-0 sm:last:pb-0 border-t"
+      >
+        <li
+          v-for="(fileAction, fileActionIndex) in group"
+          :key="`file-creation-item-${groupIndex}-${fileActionIndex}`"
+        >
+          <oc-button
+            appearance="raw"
+            class="w-full"
+            justify-content="left"
+            :class="['new-file-btn-' + fileAction.ext]"
+            @click="() => fileAction.handler()"
+          >
+            <resource-icon
+              :resource="getIconResource(fileAction)"
+              size="medium"
+              class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
+            />
+            <span>{{ fileAction.label() }}</span>
+            <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
+              {{ fileAction.ext }}
+            </span>
+          </oc-button>
+        </li>
+      </oc-list>
+      <oc-list class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+        <li>
+          <oc-button
+            id="new-shortcut-btn"
+            class="w-full"
+            justify-content="left"
+            appearance="raw"
+            @click="createNewShortcutAction"
+          >
+            <oc-icon name="external-link" size="medium" />
+            <span v-text="$gettext('Shortcut')" />
+            <span v-if="areFileExtensionsShown" class="ml-auto text-sm" v-text="'url'" />
+          </oc-button>
         </li>
       </oc-list>
     </oc-drop>
@@ -205,8 +169,6 @@ import {
   useClientService
 } from '@opencloud-eu/web-pkg'
 
-import ResourceUpload from './Upload/ResourceUpload.vue'
-
 import { computed, onMounted, onBeforeUnmount, unref, watch, ref } from 'vue'
 import { Resource, SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
 import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
@@ -217,6 +179,7 @@ import { Action, ResourceIcon } from '@opencloud-eu/web-pkg'
 import { v4 as uuidV4 } from 'uuid'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../../extensionPoints'
+import ResourceUpload from './Upload/ResourceUpload.vue'
 
 const { space, limitedScreenSpace = false } = defineProps<{
   space: SpaceResource
@@ -294,9 +257,6 @@ const createFileActionsGroups = computed(() => {
   }
   return result
 })
-const createFileActionsAvailable = computed(() => {
-  return unref(createFileActionsGroups).some((group) => group.length > 0)
-})
 
 const extensionRegistry = useExtensionRegistry()
 const extensionActions = computed(() => {
@@ -314,6 +274,7 @@ const showDrop = () => {
   // force actions to be re-rendered when the drop is being opened
   actionKeySuffix.value = uuidV4()
 }
+
 const isActionDisabled = (action: Action) => {
   return action.isDisabled ? action.isDisabled() : false
 }
@@ -447,7 +408,7 @@ const showActions = computed(() => {
 
 const newButtonTooltip = computed(() => {
   if (!unref(canUpload)) {
-    return $gettext('You have no permission to create new files!')
+    return $gettext('You have no permission to create or upload files')
   }
   return null
 })
@@ -455,22 +416,8 @@ const newButtonAriaLabel = computed(() => {
   if (unref(newButtonTooltip)) {
     return unref(newButtonTooltip)
   }
-  if (!unref(createFileActionsAvailable)) {
-    return $gettext('New folder')
-  }
-  return $gettext('Create new files or folders')
-})
-const uploadButtonTooltip = computed(() => {
-  if (!unref(canUpload)) {
-    return $gettext('You have no permission to upload!')
-  }
-  return null
-})
-const uploadButtonAriaLabel = computed(() => {
-  if (unref(uploadButtonTooltip)) {
-    return unref(uploadButtonTooltip)
-  }
-  return $gettext('Upload files or folders')
+
+  return $gettext('Create or upload')
 })
 
 const folderIconResource = computed(() => {
@@ -485,5 +432,5 @@ const folderIconResource = computed(() => {
     /* reset the resource icon height because the ResourceIcon component messes with it */
     @apply h-5.5;
   }
-}
+}x
 </style>

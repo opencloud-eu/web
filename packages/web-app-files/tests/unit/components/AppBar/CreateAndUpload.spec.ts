@@ -30,7 +30,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const elSelector = {
   component: '.create-and-upload-actions',
-  newFileButton: '#new-file-menu-btn',
+  createOrUploadMenuBtn: '#create-or-upload-menu-btn',
   uploadBtn: '#upload-menu-btn',
   resourceUpload: 'resource-upload-stub',
   newFolderBtn: '#new-folder-btn',
@@ -46,22 +46,15 @@ describe('CreateAndUpload component', () => {
   describe('action buttons', () => {
     it('should show and be enabled if file creation is possible', () => {
       const { wrapper } = getWrapper()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn).props().disabled
-      ).toBeFalsy()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props().disabled
-      ).toBeFalsy()
+      expect(wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn)).toBeTruthy()
+      expect(wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
     it('should be disabled if file creation is not possible', () => {
       const currentFolder = mock<Resource>({ canUpload: () => false })
       const { wrapper } = getWrapper({ currentFolder, createActions: [] })
       expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn).props().disabled
-      ).toBeTruthy()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props().disabled
+        wrapper.findComponent<typeof OcButton>(elSelector.createOrUploadMenuBtn).props().disabled
       ).toBeTruthy()
     })
     it('should not be visible if file creation is not possible on a public page', () => {

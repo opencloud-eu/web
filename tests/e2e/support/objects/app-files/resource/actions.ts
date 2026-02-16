@@ -35,17 +35,16 @@ const breadcrumbResourceNameSelector =
   '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
-const addNewResourceButton = `#new-file-menu-btn`
+const addNewResourceButton = `#create-or-upload-menu-btn`
 const createNewFolderButton = '#new-folder-btn'
 const createNewTxtFileButton = '.new-file-btn-txt'
 const createNewMdFileButton = '.new-file-btn-md'
-const createNewOfficeDocumentFileBUtton = '//div[@id="new-file-menu-drop"]//span[text()="%s"]'
+const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const createNewShortcutButton = '#new-shortcut-btn'
 const shortcutResorceInput = '#create-shortcut-modal-url-input'
 const saveTextFileInEditorButton = '#app-save-action:visible'
 const textEditorPlainTextInput = '#text-editor #text-editor-container .cm-content'
 const resourceNameInput = '.oc-modal input'
-const resourceUploadButton = '#upload-menu-btn'
 const fileUploadInput = '#files-file-upload-input'
 const folderUploadInput = '#files-folder-upload-input'
 const uploadInfoCloseButton = '#close-upload-info-btn'
@@ -621,7 +620,7 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to })
   }
 
-  await page.locator(resourceUploadButton).click()
+  await page.locator(addNewResourceButton).click()
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   await page.locator(inputSelector).waitFor({ state: 'visible' })
 
@@ -2305,7 +2304,7 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
   // since direct clipboard access is not available in Playwright tests.
   const buffer = await page.screenshot()
 
-  await page.locator(resourceUploadButton).click()
+  await page.locator(addNewResourceButton).click()
   const fileInput = await page.locator(fileUploadInput)
   await fileInput.setInputFiles({
     name: 'image.png',
