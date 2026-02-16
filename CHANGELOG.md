@@ -40,6 +40,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency qs to v6.14.2 [security] [[#1981](https://github.com/opencloud-eu/web/pull/1981)]
 - chore(deps): update dependency eslint-plugin-unused-imports to v4.4.1 - autoclosed [[#1953](https://github.com/opencloud-eu/web/pull/1953)]
 - chore(deps): update dependency @vueuse/core to v14.2.1 [[#1958](https://github.com/opencloud-eu/web/pull/1958)]
 - chore(deps): update devdependencies (non-major) [[#1957](https://github.com/opencloud-eu/web/pull/1957)]
