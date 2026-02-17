@@ -13,6 +13,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.56.0 [[#1955](https://github.com/opencloud-eu/web/pull/1955)]
+- chore(deps): update devdependencies (non-major) [[#1962](https://github.com/opencloud-eu/web/pull/1962)]
 - fix(deps): update dependency qs to v6.15.0 [[#1968](https://github.com/opencloud-eu/web/pull/1968)]
 - chore(deps): update dependency eslint-plugin-vuejs-accessibility to v2.5.0 [[#1976](https://github.com/opencloud-eu/web/pull/1976)]
 - fix(deps): update dependency @sentry/vue to v10.39.0 [[#1988](https://github.com/opencloud-eu/web/pull/1988)]
