@@ -22,7 +22,6 @@
 <script setup lang="ts">
 import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
-import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
@@ -208,11 +207,11 @@ watch(
 
 onBeforeUnmount(() => {
   unref(drop)?.removeEventListener('focusout', onFocusOut)
-  destroy(unref(tippyInstance))
+  // destroy(unref(tippyInstance))
 })
 
 const initializeTippy = () => {
-  destroy(unref(tippyInstance))
+  // destroy(unref(tippyInstance))
   const to = target
     ? document.querySelector(target)
     : toggle
@@ -229,7 +228,7 @@ const initializeTippy = () => {
     arrow: false,
     hideOnClick: !isNestedElement,
     interactive: true,
-    plugins: [hideOnEsc],
+    // plugins: [hideOnEsc],
     theme: 'none',
     maxWidth: 416,
     offset,
@@ -294,7 +293,7 @@ watch(
     await nextTick()
     if (unref(useBottomDrawer)) {
       if (unref(tippyInstance)) {
-        destroy(unref(tippyInstance))
+        // destroy(unref(tippyInstance))
       }
       return
     }
