@@ -8,10 +8,13 @@
 
 ### 🐛 Bug Fixes
 
+- fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
 - fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-vuejs-accessibility to v2.5.0 [[#1976](https://github.com/opencloud-eu/web/pull/1976)]
+- fix(deps): update dependency @sentry/vue to v10.39.0 [[#1988](https://github.com/opencloud-eu/web/pull/1988)]
 - chore(deps): update dependency fast-xml-parser to v5.3.6 [[#1979](https://github.com/opencloud-eu/web/pull/1979)]
 - chore(deps): update dependency @codemirror/view to v6.39.14 [[#1970](https://github.com/opencloud-eu/web/pull/1970)]
 - chore(deps): update traefik docker tag to v3.6.8 [[#1967](https://github.com/opencloud-eu/web/pull/1967)]
