@@ -20,11 +20,10 @@
       :title="menuSectionDrop.label"
       :drop-id="dropId"
       :toggle="`#${toggleId}`"
-      :is-nested-element="true"
       mode="hover"
       class="w-3xs oc-files-context-action-drop"
       padding-size="small"
-      position="auto-start"
+      position="bottom-start"
       close-on-click
     >
       <template v-if="menuSectionDrop.items.length">

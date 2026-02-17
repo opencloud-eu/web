@@ -14,7 +14,6 @@ import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
 } from '../../../../src/composables/resources'
-import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
@@ -318,7 +317,7 @@ describe('ResourceTable', () => {
       }
     })
     resourcesWithAllFields.slice(0, -1).forEach((resource) => {
-      ;['.oc-tbody-tr', '#resource-table-select', '#context-menu-drop'].forEach((baseSelector) => {
+      ;['.oc-tbody-tr', '#resource-table-select'].forEach((baseSelector) => {
         expect(
           wrapper.find([baseSelector, 'custom', resource.getDomSelector()].join('-')).exists()
         ).toBeTruthy()
@@ -519,30 +518,24 @@ describe('ResourceTable', () => {
 
   describe('context menu', () => {
     it('emits select event on contextmenu click', async () => {
-      const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getMountedWrapper()
       vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
       await wrapper.find('.oc-tbody-tr').trigger('contextmenu')
       expect(wrapper.emitted('update:selectedIds').length).toBe(1)
-      expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
     })
 
     it('does not emit select event on contextmenu click of disabled resource', async () => {
-      const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getMountedWrapper({ addProcessingResources: true })
       await wrapper.find('.oc-tbody-tr-rainforest').trigger('contextmenu')
       expect(wrapper.emitted('update:selectedIds')).toBeUndefined()
-      expect(spyDisplayPositionedDropdown).not.toHaveBeenCalled()
     })
 
     it('emits select event on clicking the three-dot icon in table row', async () => {
-      const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getMountedWrapper()
       await wrapper
         .find('.oc-table-data-cell-actions .resource-table-btn-action-dropdown')
         .trigger('click')
       expect(wrapper.emitted('update:selectedIds').length).toBe(1)
-      expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
     })
 
     it('does not show the three-dot icon in table row of a disabled resource', () => {
