@@ -5,14 +5,13 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { displayPositionedDropdown, queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 const getUserMocks = () => [{ id: '1', displayName: 'jan' }] as User[]
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  displayPositionedDropdown: vi.fn(),
   queryItemAsString: vi.fn()
 }))
 
@@ -92,20 +91,6 @@ describe('UsersList', () => {
         { appRoleAssignments: [{ appRoleId: '1' }] }
       ])
     })
-  })
-  it('should show the context menu on right click', async () => {
-    const users = getUserMocks()
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ mountType: mount, users })
-    await wrapper.find(`[data-item-id="${users[0].id}"]`).trigger('contextmenu')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
-  })
-  it('should show the context menu on context menu button click', async () => {
-    const users = getUserMocks()
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ mountType: mount, users })
-    await wrapper.find('.users-table-btn-action-dropdown').trigger('click')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
   })
   it('should show the user details on details button click', async () => {
     const users = getUserMocks()

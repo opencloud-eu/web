@@ -12,7 +12,6 @@
       <oc-icon name="grid" size="large" class="flex" />
     </oc-button>
     <oc-drop
-      ref="menu"
       :title="$gettext('Applications')"
       drop-id="app-switcher-dropdown"
       toggle="#_appSwitcherButton"
@@ -119,11 +118,6 @@ export default defineComponent({
       getAdditionalEventBindings,
       isMenuItemActive
     }
-  },
-  mounted() {
-    this.menu?.tippy?.setProps({
-      onShown: () => this.menu.$el.querySelector('a:first-of-type').focus()
-    })
   }
 })
 </script>

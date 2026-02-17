@@ -55,8 +55,6 @@ const selectors = {
   providerListItem: '.provider',
   providerDisplayName: '.provider .display-name',
   providerMoreResultsLink: '.provider .more-results',
-  optionsHidden: '.tippy-box[data-state="hidden"]',
-  optionsVisible: '.tippy-box[data-state="visible"]',
   searchFilters: '#files-global-search-filter'
 }
 

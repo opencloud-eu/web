@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full">
-    <whitespace-context-menu ref="whitespaceContextMenu" :space="space" />
+    <whitespace-context-menu :space="space" />
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -107,16 +107,7 @@
 <script lang="ts">
 import { omit, last } from 'lodash-es'
 import { basename } from 'path'
-import {
-  computed,
-  ComponentPublicInstance,
-  defineComponent,
-  PropType,
-  onBeforeUnmount,
-  onMounted,
-  unref,
-  ref
-} from 'vue'
+import { computed, defineComponent, PropType, onBeforeUnmount, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -148,7 +139,6 @@ import {
   createFileRouteOptions,
   createLocationPublic,
   createLocationSpaces,
-  displayPositionedDropdown,
   useBreadcrumbsFromPath,
   useClientService,
   useDocumentTitle,
@@ -461,30 +451,11 @@ export default defineComponent({
           performLoaderTask(true, path, fileId)
         }
       )
-      const filesViewWrapper = document.getElementsByClassName('files-view-wrapper')[0]
-      filesViewWrapper?.addEventListener('contextmenu', (event) => {
-        const { target } = event
-        if ((target as HTMLElement).closest('.has-item-context-menu')) {
-          return
-        }
-        event.preventDefault()
-        const newEvent = new MouseEvent('contextmenu', event)
-        showContextMenu(newEvent)
-      })
     })
 
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
     })
-
-    const whitespaceContextMenu = ref<ComponentPublicInstance<typeof WhitespaceContextMenu>>(null)
-    const showContextMenu = (event: MouseEvent) => {
-      displayPositionedDropdown(
-        unref(whitespaceContextMenu).$el._tippy,
-        event,
-        unref(whitespaceContextMenu)
-      )
-    }
 
     const createNewFolderAction = computed(() => unref(createNewFolder)[0].handler)
 
@@ -556,7 +527,6 @@ export default defineComponent({
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
       ),
-      whitespaceContextMenu,
       createNewFolderAction,
       currentFolder,
       totalResourcesCount,

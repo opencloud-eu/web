@@ -100,8 +100,9 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-  <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-    <!--v-if-->
-  </div>
-</button>"
+</button>
+
+<transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+  <!--v-if-->
+</transition-stub>"
 `;

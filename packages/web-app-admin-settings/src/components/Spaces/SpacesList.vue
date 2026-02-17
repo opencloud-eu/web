@@ -21,7 +21,7 @@
       :hover="true"
       padding-x="medium"
       @sort="handleSort"
-      @contextmenu-clicked="showContextMenuOnRightClick"
+      @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
       @highlight="fileClicked"
     >
       <template #selectHeader>
@@ -97,7 +97,7 @@
             <oc-icon name="information" fill-type="line" />
           </oc-button>
           <context-menu-quick-action
-            ref="contextMenuButtonRef"
+            :ref="(el: any) => (contextMenuDrops[item.id] = el?.drop)"
             :item="item"
             :title="item.name"
             class="spaces-table-btn-action-dropdown"
@@ -124,25 +124,14 @@
 import {
   formatDateFromJSDate,
   formatRelativeDateFromJSDate,
-  displayPositionedDropdown,
   formatFileSize,
   defaultFuseOptions,
   useKeyboardActions,
-  ContextMenuBtnClickEventData,
   useIsTopBarSticky,
   useSharesStore,
   useSideBar
 } from '@opencloud-eu/web-pkg'
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
@@ -165,6 +154,7 @@ import {
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const router = useRouter()
 const route = useRoute()
@@ -175,8 +165,7 @@ const sharesStore = useSharesStore()
 const { openSideBar } = useSideBar()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-const contextMenuButtonRef =
-  useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
+const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 const sortBy = ref('name')
 const sortDir = ref(SortDir.Asc)
 const filterTerm = ref('')
@@ -457,30 +446,15 @@ const fileClicked = (data: [SpaceResource, MouseEvent | KeyboardEvent]) => {
   selectSpace(resource)
 }
 
-const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, space: SpaceResource) => {
-  const { dropdown, event } = data
-  if (dropdown?.tippy === undefined) {
-    return
-  }
-  if (!isSpaceSelected(space)) {
-    spaceSettingsStore.setSelectedSpaces([space])
-  }
-  displayPositionedDropdown(dropdown.tippy, event, unref(contextMenuButtonRef))
+const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, space: SpaceResource) => {
+  unref(contextMenuDrops)[space.id]?.show({ event })
 }
-const showContextMenuOnRightClick = (
-  row: ComponentPublicInstance<unknown>,
-  event: MouseEvent,
-  space: SpaceResource
-) => {
+const showContextMenuOnRightClick = (event: MouseEvent, space: SpaceResource) => {
   event.preventDefault()
-  const dropdown = row.$el.getElementsByClassName('spaces-table-btn-action-dropdown')[0]
-  if (dropdown === undefined) {
-    return
-  }
   if (!isSpaceSelected(space)) {
     spaceSettingsStore.setSelectedSpaces([space])
   }
-  displayPositionedDropdown(dropdown._tippy, event, unref(contextMenuButtonRef))
+  unref(contextMenuDrops)[space.id]?.show({ event, useMouseAnchor: true })
 }
 
 const spaceDetailsLabel = computed(() => {

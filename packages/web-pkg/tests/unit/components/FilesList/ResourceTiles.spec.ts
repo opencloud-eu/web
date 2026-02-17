@@ -7,7 +7,6 @@ import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
 } from '../../../../src/composables/resources'
-import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { useResourcesStore } from '../../../../src'
 
@@ -210,15 +209,6 @@ describe('ResourceTiles component', () => {
     })
   })
   describe('context menu', () => {
-    it('triggers the positioned dropdown on click', async () => {
-      const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-      const { wrapper } = getWrapper({ props: { resources } })
-      vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
-
-      const btn = wrapper.find('.resource-tiles-btn-action-dropdown')
-      await btn.trigger('click')
-      expect(spyDisplayPositionedDropdown).toHaveBeenCalled()
-    })
     it('does not show for disabled resources', () => {
       const { wrapper } = getWrapper({
         props: { resources: [{ ...resources[0], processing: true }] }

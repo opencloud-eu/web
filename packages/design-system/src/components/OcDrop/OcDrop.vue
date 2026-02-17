@@ -11,22 +11,41 @@
   >
     <slot />
   </oc-mobile-drop>
-  <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
-    <oc-card v-if="isOpen && $slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
-      <slot />
-    </oc-card>
-    <slot v-else-if="isOpen" name="special" />
-  </div>
+  <template v-else>
+    <Transition name="oc-drop">
+      <div
+        v-if="isOpen"
+        :id="dropId"
+        ref="drop"
+        class="oc-drop shadow-md/20 rounded-sm bg-role-surface"
+        @click="onClick"
+      >
+        <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
+          <slot />
+        </oc-card>
+        <slot name="special" />
+      </div>
+    </Transition>
+  </template>
 </template>
 
 <script setup lang="ts">
-import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
-import { detectOverflow, Modifier } from '@popperjs/core'
+import { computePosition, offset as offsetFn, flip, Placement, shift, size } from '@floating-ui/dom'
 import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
-import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useIsMobile } from '../../composables'
 import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
+import { useEventListeners } from './useEventListeners'
 
 export interface Props {
   /**
@@ -43,48 +62,25 @@ export interface Props {
    */
   dropId?: string
   /**
-   * @docs Determines if the drop element is nested.
-   * @default false
-   */
-  isNestedElement?: boolean
-  /**
-   * @docs Determines the event that triggers the drop.
+   * @docs Determines the event that triggers the drop. `manual` can be used to control the drop programmatically via the exposed `show` and `hide` methods.
    * @default 'click'
    */
   mode?: 'click' | 'hover' | 'manual'
   /**
-   * @docs The visual offset of the drop.
-   * @default [0, 0]
+   * @docs The vertical offset of the drop.
+   * @default 5
    */
-  offset?: TippyProps['offset']
+  offset?: number
   /**
    * @docs The padding size of the drop.
    * @default 'medium'
    */
   paddingSize?: SizeType | 'remove'
   /**
-   * @docs The popper options of the drop. Please refer to the component source for more information.
-   */
-  popperOptions?: TippyProps['popperOptions']
-  /**
-   * @docs The position of the drop.
+   * @docs The position of the drop. Check the floating-ui document for more details on the type.
    * @default 'bottom-start'
    */
-  position?:
-    | 'top-start'
-    | 'right-start'
-    | 'bottom-start'
-    | 'left-start'
-    | 'auto-start'
-    | 'top-end'
-    | 'right-end'
-    | 'bottom-end'
-    | 'left-end'
-    | 'auto-end'
-  /**
-   * @docs Element selector that can be used as a target of the drop.
-   */
-  target?: string
+  position?: Placement
   /**
    * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used. Note that a toggle is mandatory for the bottom drawer in mobile view.
    */
@@ -122,13 +118,10 @@ export interface Slots {
 const {
   closeOnClick = false,
   dropId = uniqueId('oc-drop-'),
-  isNestedElement = false,
   mode = 'click',
-  offset = [0, 0],
+  offset = 5,
   paddingSize = 'medium',
-  popperOptions = {},
   position = 'bottom-start',
-  target,
   toggle = '',
   title = '',
   enforceDropOnMobile = false
@@ -137,31 +130,40 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
+const { registerEventListener, unregisterEventListeners } = useEventListeners()
 const { isMobile } = useIsMobile()
 const isOpen = ref(false)
 
 const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
-
 const drop = useTemplateRef('drop')
-const tippyInstance = ref<Instance | null>(null)
 
-const show = () => {
+const anchor = computed(() => {
+  if (!toggle) {
+    return null
+  }
+  return document.querySelector(toggle)
+})
+
+const show = ({ event, useMouseAnchor }: { event?: Event; useMouseAnchor?: boolean } = {}) => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).show()
     return
   }
-  unref(tippyInstance)?.show()
+  if (unref(isOpen)) {
+    return
+  }
+  showDrop({ event, useMouseAnchor })
 }
 const hide = () => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).hide()
     return
   }
-  unref(tippyInstance)?.hide()
+  hideDrop()
 }
 
-defineExpose({ show, hide, tippy: tippyInstance })
+defineExpose({ show, hide })
 
 const onClick = (event: Event) => {
   const isNestedDropToggle = (event.target as HTMLElement)
@@ -169,145 +171,223 @@ const onClick = (event: Event) => {
     ?.hasAttribute('aria-expanded')
 
   if (closeOnClick && !isNestedDropToggle) {
-    hide()
+    hideDrop()
   }
 }
 
-const onFocusOut = (event: FocusEvent) => {
-  const tippyBox = drop.value?.closest('.tippy-box')
-  const focusLeft = event.relatedTarget && !tippyBox?.contains(event.relatedTarget as Node)
-  if (focusLeft) {
-    hide()
-  }
-}
-
-const triggerMapping = computed(() => {
-  return (
-    {
-      hover: 'mouseenter focus',
-      click: undefined,
-      manual: undefined
-    }[mode] || mode
-  )
-})
-
-watch(
-  () => position,
-  () => {
-    unref(tippyInstance)?.setProps({ placement: position })
-  }
-)
-
-watch(
-  () => mode,
-  () => {
-    unref(tippyInstance)?.setProps({ trigger: triggerMapping.value })
-  }
-)
-
-onBeforeUnmount(() => {
-  unref(drop)?.removeEventListener('focusout', onFocusOut)
-  // destroy(unref(tippyInstance))
-})
-
-const initializeTippy = () => {
-  // destroy(unref(tippyInstance))
-  const to = target
-    ? document.querySelector(target)
-    : toggle
-      ? document.querySelector(toggle)
-      : drop.value?.previousElementSibling
-  const content = drop.value
-
-  if (!to || !content) {
+const showDrop = async ({
+  event,
+  useMouseAnchor
+}: { event?: Event; useMouseAnchor?: boolean } = {}) => {
+  if (unref(isOpen)) {
+    hideDrop()
     return
   }
-  const config: Partial<TippyProps> = {
-    trigger: triggerMapping.value,
-    placement: position,
-    arrow: false,
-    hideOnClick: !isNestedElement,
-    interactive: true,
-    // plugins: [hideOnEsc],
-    theme: 'none',
-    maxWidth: 416,
-    offset,
-    onShow: (instance) => {
-      isOpen.value = true
-      emit('showDrop')
-      if (!isNestedElement) {
-        hideAll({ exclude: instance })
+
+  let anchorEl = unref(anchor)
+  if (useMouseAnchor) {
+    // use mouse position as anchor element
+    const mouseEvent = event as MouseEvent
+    anchorEl = {
+      getBoundingClientRect() {
+        return {
+          width: 0,
+          height: 0,
+          x: mouseEvent.clientX,
+          y: mouseEvent.clientY,
+          top: mouseEvent.clientY,
+          left: mouseEvent.clientX,
+          right: mouseEvent.clientX,
+          bottom: mouseEvent.clientY
+        }
       }
-    },
-    onHide: () => {
-      isOpen.value = false
-      emit('hideDrop')
-    },
-    popperOptions: {
-      ...popperOptions,
-      modifiers: [
-        ...(popperOptions?.modifiers ? popperOptions.modifiers : []),
-        {
-          name: 'fixVerticalPosition',
-          enabled: true,
-          phase: 'beforeWrite',
-          requiresIfExists: ['offset', 'preventOverflow', 'flip'],
-          fn({ state }) {
-            const overflow = detectOverflow(state)
-            const dropHeight = state.modifiersData.fullHeight || state.elements.popper.offsetHeight
-            const dropYPos = overflow.top * -1 - 10
-            const availableHeight = dropYPos + dropHeight + overflow.bottom * -1
-            const spaceBelow = availableHeight - dropYPos
-            const spaceAbove = availableHeight - spaceBelow
-
-            if (dropHeight > spaceBelow && dropHeight > spaceAbove) {
-              state.styles.popper.top = `-${dropYPos}px`
-              state.modifiersData.fullHeight = dropHeight
-            }
-
-            if (dropHeight > availableHeight) {
-              state.styles.popper.maxHeight = `${availableHeight - 10}px`
-              state.styles.popper.overflowY = `auto`
-              state.styles.popper.overflowX = `hidden`
-            }
-          }
-        } as Modifier<'fixVerticalPosition', unknown>
-      ]
-    },
-    content
+    } as Element
   }
 
-  if (target) {
-    config.triggerTarget = toggle
-      ? document.querySelector(toggle)
-      : drop.value?.previousElementSibling
+  isOpen.value = true
+  await nextTick()
+  if (!anchorEl) {
+    console.warn('OcDrop cannot be opened: anchor element not found')
+    return
   }
 
-  tippyInstance.value = tippy(to, config)
-  drop.value?.addEventListener('focusout', onFocusOut)
+  // fixes a timing issue with the rendering of the drop
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  const { x, y } = await computePosition(anchorEl, unref(drop), {
+    placement: position,
+    middleware: [
+      offsetFn(offset),
+      flip(),
+      shift({ padding: 5 }),
+      size({
+        apply({ availableWidth, availableHeight, elements }) {
+          Object.assign(elements.floating.style, {
+            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxHeight: `${Math.max(0, availableHeight - 10)}px`
+          })
+        }
+      })
+    ]
+  })
+
+  Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
+  unref(anchor)?.setAttribute('aria-expanded', 'true')
+  emit('showDrop')
+
+  registerEventListener(document, 'click', handleDropClickOutside, 'document', {
+    capture: true
+  })
+  registerEventListener(document, 'contextmenu', handleDropClickOutside, 'document', {
+    capture: true
+  })
+  registerEventListener(document, 'keydown', handleDropKeydown, 'document')
+  registerEventListener(unref(drop), 'focusout', handleDropFocusOut, 'drop')
+
+  if (mode === 'hover') {
+    registerEventListener(unref(drop), 'mouseenter', handleDropMouseEnter, 'drop')
+    registerEventListener(unref(drop), 'mouseleave', handleDropMouseLeave, 'drop')
+  }
 }
 
-watch(
-  useBottomDrawer,
-  async () => {
-    await nextTick()
-    if (unref(useBottomDrawer)) {
-      if (unref(tippyInstance)) {
-        // destroy(unref(tippyInstance))
-      }
-      return
+const hideDrop = () => {
+  unregisterEventListeners(['drop', 'document'])
+  isOpen.value = false
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
+  emit('hideDrop')
+}
+
+const isFocusEvent = (event: Event): event is FocusEvent => event instanceof FocusEvent
+const isKeyboardEvent = (event: Event): event is KeyboardEvent => event instanceof KeyboardEvent
+
+const handleDropFocusOut = (event: Event) => {
+  if (!isFocusEvent(event)) {
+    return
+  }
+  const focusLeft = event.relatedTarget && !unref(drop)?.contains(event.relatedTarget as Node)
+  if (focusLeft) {
+    hideDrop()
+  }
+}
+
+const handleDropClickOutside = (event: Event) => {
+  const target = event.target as Node
+  const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
+  if (clickedOutsideDrop) {
+    const anchorElement = unref(anchor)
+    const clickedOnAnchor = anchorElement && anchorElement.contains(target)
+    if (!clickedOnAnchor) {
+      hideDrop()
     }
-    initializeTippy()
-  },
-  { immediate: true }
-)
+  }
+}
+
+const handleDropKeydown = (event: Event) => {
+  if (isKeyboardEvent(event) && event.code === 'Escape') {
+    hideDrop()
+    ;(unref(anchor) as HTMLElement)?.focus()
+  }
+}
+
+let hoverCloseTimeout: ReturnType<typeof setTimeout> | null = null
+
+const clearHoverTimeout = () => {
+  if (hoverCloseTimeout !== null) {
+    clearTimeout(hoverCloseTimeout)
+    hoverCloseTimeout = null
+  }
+}
+
+const handleDropMouseEnter = () => {
+  clearHoverTimeout()
+}
+
+const handleDropMouseLeave = () => {
+  hoverCloseTimeout = setTimeout(hideDrop, 100)
+}
+
+const handleAnchorClick = (event: Event) => {
+  showDrop({ event })
+}
+
+const handleAnchorMouseEnter = (event: Event) => {
+  clearHoverTimeout()
+  if (!unref(isOpen)) {
+    showDrop({ event })
+  }
+}
+
+const handleAnchorMouseLeave = () => {
+  hoverCloseTimeout = setTimeout(hideDrop, 100)
+}
+
+const setupAriaAttributes = () => {
+  const anchorElement = unref(anchor)
+  if (!anchorElement) {
+    return
+  }
+  anchorElement.setAttribute('aria-haspopup', 'true')
+  anchorElement.setAttribute('aria-expanded', 'false')
+}
+
+const setupAnchorEvents = () => {
+  const anchorElement = unref(anchor)
+  if (!anchorElement || unref(useBottomDrawer)) {
+    return
+  }
+
+  switch (mode) {
+    case 'click':
+      registerEventListener(anchorElement, 'click', handleAnchorClick, 'anchor')
+      break
+    case 'hover':
+      registerEventListener(anchorElement, 'mouseenter', handleAnchorMouseEnter, 'anchor')
+      registerEventListener(anchorElement, 'mouseleave', handleAnchorMouseLeave, 'anchor')
+      break
+    case 'manual':
+      break
+  }
+}
+
+watch(useBottomDrawer, () => {
+  setupAriaAttributes()
+  if (unref(useBottomDrawer)) {
+    unregisterEventListeners()
+  } else {
+    setupAnchorEvents()
+  }
+})
+
+onMounted(() => {
+  setupAnchorEvents()
+  setupAriaAttributes()
+})
+
+onBeforeUnmount(() => {
+  clearHoverTimeout()
+  unregisterEventListeners()
+
+  const anchorEl = unref(anchor)
+  anchorEl?.removeAttribute('aria-expanded')
+  anchorEl?.removeAttribute('aria-haspopup')
+})
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
   .oc-drop {
-    @apply w-xs max-w-full;
+    @apply w-xs absolute top-[-9999px] left-[-9999px] overflow-y-auto;
+    z-index: 1000;
+  }
+
+  .oc-drop-enter-active {
+    transition: opacity 250ms ease;
+  }
+
+  .oc-drop-enter-from,
+  .oc-drop-leave-to {
+    opacity: 0;
   }
 
   .oc-mobile-drop li a,
@@ -331,12 +411,5 @@ watch(
   .oc-drop li:last-child {
     @apply mb-0;
   }
-}
-
-.tippy-box[data-theme~='none'] {
-  /* overwrite tippy styles */
-  background-color: transparent;
-  font-size: inherit;
-  line-height: inherit;
 }
 </style>

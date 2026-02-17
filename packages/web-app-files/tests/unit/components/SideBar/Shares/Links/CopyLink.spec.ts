@@ -20,8 +20,6 @@ vi.mock('@vueuse/core', () => ({
 }))
 
 describe('CopyLink', () => {
-  // ignore tippy warning
-  vi.spyOn(console, 'warn').mockImplementation(undefined)
   it('upon clicking it should copy the link to the clipboard, render a success message and change icon for half a second', async () => {
     const copyMock = vi.fn()
     const copiedRef = ref(true)

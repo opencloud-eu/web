@@ -5,7 +5,7 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { displayPositionedDropdown, queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../../src/composables'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
@@ -17,8 +17,7 @@ const getGroupMocks = () =>
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  queryItemAsString: vi.fn(),
-  displayPositionedDropdown: vi.fn()
+  queryItemAsString: vi.fn()
 }))
 
 describe('GroupsList', () => {
@@ -62,20 +61,6 @@ describe('GroupsList', () => {
         wrapper.vm.filter([{ displayName: 'admins' }, { displayName: 'users' }], 'guests')
       ).toEqual([])
     })
-  })
-  it('should show the context menu on right click', async () => {
-    const groups = getGroupMocks()
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ mountType: mount, groups })
-    await wrapper.find(`[data-item-id="${groups[0].id}"]`).trigger('contextmenu')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
-  })
-  it('should show the context menu on context menu button click', async () => {
-    const groups = getGroupMocks()
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ mountType: mount, groups })
-    await wrapper.find('.groups-table-btn-action-dropdown').trigger('click')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
   })
   it('should show the group details on details button click', async () => {
     const groups = getGroupMocks()
@@ -142,9 +127,6 @@ function getWrapper({
 
   return {
     wrapper: mountType(GroupsList, {
-      props: {
-        headerPosition: 0
-      },
       global: {
         plugins: [
           ...defaultPlugins({

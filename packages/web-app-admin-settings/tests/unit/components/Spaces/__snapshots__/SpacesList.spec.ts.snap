@@ -170,10 +170,11 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-              <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-                <!--v-if-->
-              </div>
-            </button></div>
+            </button>
+            <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+          </div>
         </td>
       </tr>
       <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
@@ -228,10 +229,11 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
-              <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
-                <!--v-if-->
-              </div>
-            </button></div>
+            </button>
+            <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+          </div>
         </td>
       </tr>
     </tbody>

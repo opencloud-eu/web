@@ -68,7 +68,6 @@
 </template>
 
 <script lang="ts">
-import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
 import RoleItem from '../Shared/RoleItem.vue'
 import { v4 as uuidV4 } from 'uuid'
@@ -87,6 +86,7 @@ import { useAbility, useUserStore } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { ShareRole } from '@opencloud-eu/web-client'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'RoleDropdown',
@@ -236,7 +236,7 @@ export default defineComponent({
   methods: {
     cycleRoles(event: KeyboardEvent) {
       // events only need to be captured if the roleSelect element is visible
-      if (!get(this.$refs.rolesDrop, 'tippy.state.isShown', false)) {
+      if (!(this.$refs.rolesDrop as ComponentPublicInstance<typeof OcDrop>).$el) {
         return
       }
 
