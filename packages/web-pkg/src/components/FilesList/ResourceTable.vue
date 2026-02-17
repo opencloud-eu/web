@@ -38,7 +38,7 @@
       <div class="resource-table-select-all flex justify-center items-center">
         <oc-checkbox
           id="resource-table-select-all"
-          v-oc-tooltip="{ content: selectAllCheckboxLabel, placement: 'bottom' }"
+          v-oc-tooltip="selectAllCheckboxLabel"
           size="large"
           :label="selectAllCheckboxLabel"
           :disabled="resources.length === disabledResources.length"

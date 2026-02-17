@@ -1,94 +1,135 @@
-import tippy, { Instance } from 'tippy.js'
-import merge from 'deepmerge'
-import __logger from '../utils/logger'
+import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom'
+import { DirectiveBinding } from 'vue'
 
-export const hideOnEsc = {
-  name: 'hideOnEsc',
-  defaultValue: true,
-  fn({ hide }: Instance) {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Escape') {
-        hide()
-      }
-    }
-
-    return {
-      onShow: () => {
-        document.addEventListener('keydown', onKeyDown)
-      },
-      onHide: () => {
-        document.removeEventListener('keydown', onKeyDown)
-      }
-    }
-  }
+interface TooltipData {
+  tooltipEl: HTMLElement | null
+  showHandler: () => void
+  hideHandler: () => void
+  clickHandler: () => void
+  escapeHandler: (e: KeyboardEvent) => void
 }
 
-export const customProps = {
-  name: 'customProps',
-  defaultValue: true,
-  fn(instance: Instance) {
-    return {
-      onCreate() {
-        instance.popper.setAttribute('aria-hidden', 'true')
-        instance.popper.classList.add('oc-tooltip')
-      }
-    }
-  }
-}
+const tooltipMap = new WeakMap<HTMLElement, TooltipData>()
 
-export const destroy = (_tippy: Instance) => {
-  if (!_tippy) {
+const showTooltip = async (el: HTMLElement, content: string) => {
+  const data = tooltipMap.get(el)
+  if (!data || data.tooltipEl) {
     return
   }
 
-  try {
-    _tippy.destroy()
-  } catch (e) {
-    __logger(e)
-  }
-}
+  const tooltipEl = document.createElement('div')
+  tooltipEl.setAttribute('role', 'tooltip')
+  tooltipEl.textContent = content
 
-const initOrUpdate = (
-  el: HTMLElement & { tooltip: Instance },
-  { value = {} }: Record<string, any>
-) => {
-  if (Object.prototype.toString.call(value) !== '[object Object]') {
-    value = { content: value }
-  }
+  const arrowEl = document.createElement('div')
+  arrowEl.classList.add('arrow')
+  tooltipEl.appendChild(arrowEl)
 
-  if ((value.content !== 0 && !value.content) || value.content === '') {
-    destroy(el.tooltip)
-    el.tooltip = null
-    return
-  }
+  document.body.appendChild(tooltipEl)
+  data.tooltipEl = tooltipEl
 
-  const props = merge.all([
-    {
-      ignoreAttributes: true,
-      interactive: false,
-      aria: {
-        content: null,
-        expanded: false
-      }
-    },
-    value
-  ])
+  const { x, y, placement, middlewareData } = await computePosition(el, tooltipEl, {
+    placement: 'top',
+    middleware: [offset(8), flip(), shift({ padding: 5 }), arrow({ element: arrowEl })]
+  })
 
-  if (!el.tooltip) {
-    el.tooltip = tippy(el, {
-      ...props,
-      zIndex: 10000,
-      plugins: [hideOnEsc, customProps]
+  // set tooltip position
+  Object.assign(tooltipEl.style, {
+    left: `${x}px`,
+    top: `${y}px`
+  })
+
+  if (middlewareData.arrow) {
+    // set arrow position
+    const { x: arrowX, y: arrowY } = middlewareData.arrow
+    const side = placement.split('-')[0]
+
+    const staticSide: Record<string, string> = {
+      top: 'bottom',
+      right: 'left',
+      bottom: 'top',
+      left: 'right'
+    }
+
+    Object.assign(arrowEl.style, {
+      left: arrowX != null ? `${arrowX}px` : '',
+      top: arrowY != null ? `${arrowY}px` : '',
+      [staticSide[side]]: '-4px'
     })
+  }
+}
+
+const hideTooltip = (el: HTMLElement) => {
+  const data = tooltipMap.get(el)
+  if (!data || !data.tooltipEl) {
     return
   }
 
-  el.tooltip.setProps(props)
+  data.tooltipEl.remove()
+  data.tooltipEl = null
+}
+
+const destroy = (el: HTMLElement) => {
+  const data = tooltipMap.get(el)
+  if (!data) {
+    return
+  }
+
+  hideTooltip(el)
+
+  el.removeEventListener('mouseenter', data.showHandler)
+  el.removeEventListener('focus', data.showHandler)
+  el.removeEventListener('mouseleave', data.hideHandler)
+  el.removeEventListener('blur', data.hideHandler)
+  el.removeEventListener('click', data.clickHandler)
+  document.removeEventListener('keydown', data.escapeHandler)
+
+  tooltipMap.delete(el)
+}
+
+const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
+  if (!value || value === '') {
+    destroy(el)
+    return
+  }
+
+  const existingTooltip = tooltipMap.get(el)
+  if (existingTooltip && existingTooltip.tooltipEl) {
+    const contentEl = existingTooltip.tooltipEl
+    if (contentEl) {
+      contentEl.textContent = value
+    }
+    return
+  }
+
+  const showHandler = () => showTooltip(el, value)
+  const hideHandler = () => hideTooltip(el)
+  const clickHandler = () => hideTooltip(el)
+  const escapeHandler = (e: KeyboardEvent) => {
+    if (e.code === 'Escape') {
+      hideTooltip(el)
+    }
+  }
+
+  tooltipMap.set(el, {
+    tooltipEl: null,
+    showHandler,
+    hideHandler,
+    clickHandler,
+    escapeHandler
+  })
+
+  el.addEventListener('mouseenter', showHandler)
+  el.addEventListener('mouseleave', hideHandler)
+  el.addEventListener('focus', showHandler)
+  el.addEventListener('blur', hideHandler)
+  el.addEventListener('click', clickHandler)
+  document.addEventListener('keydown', escapeHandler)
 }
 
 export default {
   name: 'OcTooltip',
   beforeMount: initOrUpdate,
   updated: initOrUpdate,
-  unmounted: (el: HTMLElement & { tooltip: any }) => destroy(el.tooltip)
+  unmounted: destroy
 }
