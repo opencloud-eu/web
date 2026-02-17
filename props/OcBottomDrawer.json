@@ -1,37 +1,44 @@
 [
   {
-    "name": "id",
+    "name": "drawerId",
     "required": true,
-    "description": "The DOM ID of the bottom drawer element.",
+    "description": "The ID the drawer element gets.",
     "default": "",
     "type": "string"
   },
   {
-    "name": "isDrawerActive",
-    "required": false,
-    "description": "Determines if the bottom drawer is active and should be displayed.",
-    "default": "true",
-    "type": "boolean"
+    "name": "toggle",
+    "required": true,
+    "description": "The CSS selector for the element that toggles the bottom drawer.",
+    "default": "",
+    "type": "string"
   },
   {
-    "name": "isFocusTrapActive",
+    "name": "closeOnClick",
     "required": false,
-    "description": "Determines if the focus is trapped within the bottom drawer when it's active.",
-    "default": "true",
-    "type": "boolean"
-  },
-  {
-    "name": "hasFullHeight",
-    "required": false,
-    "description": "Determines if the bottom drawer should take the full height of the given viewport.",
+    "description": "Whether the bottom drawer should close when a child element is clicked.",
     "default": "false",
     "type": "boolean"
   },
   {
-    "name": "maxHeight",
+    "name": "title",
     "required": false,
-    "description": "The maximum height of the bottom drawer element, given as a Tailwind CSS class.",
-    "default": "'max-h-[66vh]'",
+    "description": "The title of the bottom drawer.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "usePortal",
+    "required": false,
+    "description": "Whether to use a portal for the bottom drawer. The portal can be used to render the bottom drawer outside of the current DOM hierarchy.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "portalTarget",
+    "required": false,
+    "description": "The target of the portal, when in use.",
+    "default": "app.runtime.bottom.drawer",
     "type": "string"
   }
 ]

@@ -2,6 +2,6 @@
   {
     "name": "'selected-option'",
     "description": "Slot for when an option is selected.",
-    "type": "(option: any) => any"
+    "type": "() => unknown"
   }
 ]

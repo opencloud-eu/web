@@ -3,10 +3,5 @@
     "name": "content",
     "description": "Custom content of the modal.",
     "type": "() => unknown"
-  },
-  {
-    "name": "headerActions",
-    "description": "Custom actions in the modal header.",
-    "type": "() => unknown"
   }
 ]
