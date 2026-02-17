@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@dschmidt, @kulmann
+@AlexAndBear, @dschmidt, @kulmann
 
 ### 🐛 Bug Fixes
 
@@ -13,6 +13,7 @@
 
 ### 📦️ Dependencies
 
+- chore: adjust dev docker app-registry [[#1994](https://github.com/opencloud-eu/web/pull/1994)]
 - chore(deps): update typescript-eslint monorepo to v8.56.0 [[#1955](https://github.com/opencloud-eu/web/pull/1955)]
 - chore(deps): update devdependencies (non-major) [[#1962](https://github.com/opencloud-eu/web/pull/1962)]
 - fix(deps): update dependency qs to v6.15.0 [[#1968](https://github.com/opencloud-eu/web/pull/1968)]
