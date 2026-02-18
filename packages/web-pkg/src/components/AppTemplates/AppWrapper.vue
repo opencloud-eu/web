@@ -17,7 +17,7 @@
     <div v-else class="flex size-full">
       <slot
         class="app-wrapper-content size-full"
-        :class="{ 'w-[calc(100%-440px)]': isSideBarOpen && !isMobile }"
+        :class="{ 'w-[calc(100%-360px)]': isSideBarOpen && !isMobile }"
         v-bind="slotAttrs"
       />
       <file-side-bar :space="space" />
