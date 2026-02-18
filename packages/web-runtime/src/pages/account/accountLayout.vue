@@ -1,9 +1,5 @@
 <template>
-  <SidebarNav
-    :nav-items="navItems"
-    :closed="navBarClosed"
-    @update:nav-bar-closed="setNavBarClosed"
-  />
+  <SidebarNav :nav-items="navItems" />
   <main
     id="account"
     class="flex justify-center p-4 overflow-auto app-content w-full bg-role-surface rounded-l-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
@@ -24,7 +20,7 @@ import {
   useCapabilityStore,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg/src'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -35,8 +31,6 @@ const route = useRoute()
 const authStore = useAuthStore()
 const capabilityStore = useCapabilityStore()
 const { supportRadicale } = storeToRefs(capabilityStore)
-
-const navBarClosed = ref<boolean>(false)
 
 const isAccountInformationActive = useActiveLocation(isLocationAccountActive, 'account-information')
 const isAccountPreferencesActive = useActiveLocation(isLocationAccountActive, 'account-preferences')
@@ -108,28 +102,5 @@ const navItems = computed(() => {
   }))
 
   return [...baseItems, ...extensionItems]
-})
-
-const setNavBarClosed = (closed: boolean) => {
-  navBarClosed.value = closed
-}
-
-const handleLeftSideBarOnResize = () => {
-  const breakpoint = 960
-  if (window.innerWidth < breakpoint) {
-    setNavBarClosed(true)
-    return
-  }
-  setNavBarClosed(false)
-}
-
-onMounted(async () => {
-  await nextTick()
-  window.addEventListener('resize', handleLeftSideBarOnResize)
-  handleLeftSideBarOnResize()
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleLeftSideBarOnResize)
 })
 </script>

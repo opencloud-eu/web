@@ -3,7 +3,7 @@
   <template v-else>
     <p v-if="!activities.length" v-text="$gettext('No activities')" />
     <div v-else class="ml-2">
-      <oc-list class="oc-timeline">
+      <oc-list class="oc-timeline break-all">
         <li v-for="activity in activities" :key="activity.id">
           <div class="flex items-center">
             <oc-avatars

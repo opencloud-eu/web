@@ -18,12 +18,7 @@
       >
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
-          <sidebar-nav
-            v-if="isSidebarVisible"
-            :nav-items="navItems"
-            :closed="navBarClosed"
-            @update:nav-bar-closed="setNavBarClosed"
-          />
+          <sidebar-nav v-if="isSidebarVisible" :nav-items="navItems" />
           <portal to="app.runtime.mobile.nav">
             <mobile-nav v-if="isMobileWidth && navItems.length" :nav-items="navItems" />
           </portal>
@@ -56,7 +51,6 @@ import {
   CustomComponentTarget,
   useAuthStore,
   useExtensionRegistry,
-  useLocalStorage,
   useSideBar
 } from '@opencloud-eu/web-pkg'
 import TopBar from '../components/Topbar/TopBar.vue'
@@ -66,7 +60,7 @@ import UploadInfo from '../components/UploadInfo.vue'
 import MobileNav from '../components/MobileNav.vue'
 import { NavItem, getExtensionNavItems } from '../helpers/navItems'
 import { useActiveApp, useRoute, useRouteMeta, useSpacesLoading } from '@opencloud-eu/web-pkg'
-import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
 import { RouteLocationAsRelativeTyped, useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { progressBarExtensionPoint } from '../extensionPoints'
@@ -99,21 +93,9 @@ const isLoading = computed(() => {
 const isMobileWidth = ref<boolean>(window.innerWidth < MOBILE_BREAKPOINT)
 provide('isMobileWidth', isMobileWidth)
 
-const handleLeftSideBarOnResize = () => {
-  const breakpoint = unref(isSideBarOpen) ? 1200 : 960
-  if (window.innerWidth < breakpoint) {
-    setNavBarClosed(true)
-    return
-  }
-  setNavBarClosed(false)
-}
-
 const onResize = () => {
   isMobileWidth.value = window.innerWidth < MOBILE_BREAKPOINT
-  handleLeftSideBarOnResize()
 }
-
-watch(isSideBarOpen, handleLeftSideBarOnResize)
 
 const navItems = computed<NavItem[]>(() => {
   if (!authStore.userContextReady) {
@@ -152,11 +134,6 @@ const navItems = computed<NavItem[]>(() => {
 const isSidebarVisible = computed(() => {
   return unref(navItems).length && !unref(isMobileWidth)
 })
-
-const navBarClosed = useLocalStorage(`oc_navBarClosed`, false)
-const setNavBarClosed = (value: boolean) => {
-  navBarClosed.value = value
-}
 
 const isIE11 = !!(window as any).MSInputMethodContext && !!(document as any).documentMode
 

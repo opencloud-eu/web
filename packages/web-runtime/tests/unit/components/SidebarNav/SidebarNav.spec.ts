@@ -21,19 +21,6 @@ describe('OcSidebarNav', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
   })
-  it('expands the navbar in open state', () => {
-    const { wrapper } = getWrapper({ closed: false })
-    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('true')
-  })
-  it('collapses the navbar in closed state', () => {
-    const { wrapper } = getWrapper({ closed: true })
-    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('false')
-  })
-  it('emits "update:nav-bar-closed" upon button click', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.find('.toggle-sidebar-button').trigger('click')
-    expect(wrapper.emitted('update:nav-bar-closed').length).toBeGreaterThan(0)
-  })
   it('initially sets the highlighter to the active nav item', async () => {
     const { wrapper } = getWrapper()
     await wrapper.vm.$nextTick()
