@@ -1,0 +1,87 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CreateOrUploadMenu component > action buttons > should show and be enabled if file creation is possible 1`] = `
+"<oc-drop-stub title="New" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="create-or-upload-drop w-auto min-w-3xs">
+  <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Folder</span>
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+  <oc-list-stub raw="false" id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" isfolder="false"></resource-upload-stub>
+    </li>
+    <li>
+      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" isfolder="true"></resource-upload-stub>
+    </li>
+  </oc-list-stub>
+  <!--v-if-->
+  <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-txt">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Plain text file</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-md">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Mark-down file</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+  <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-shortcut-btn" class="w-full">
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" type="span"></oc-icon-stub> <span>Shortcut</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+</oc-drop-stub>"
+`;
+
+exports[`CreateOrUploadMenu component > file handlers > should show entries for all new file handlers 1`] = `
+"<oc-drop-stub title="New" closeonclick="true" dropid="oc-drop-3" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="create-or-upload-drop w-auto min-w-3xs">
+  <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Folder</span>
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+  <oc-list-stub raw="false" id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" isfolder="false"></resource-upload-stub>
+    </li>
+    <li>
+      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" isfolder="true"></resource-upload-stub>
+    </li>
+  </oc-list-stub>
+  <!--v-if-->
+  <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-txt">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Plain text file</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-md">
+        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Mark-down file</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+  <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
+    <li>
+      <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-shortcut-btn" class="w-full">
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" type="span"></oc-icon-stub> <span>Shortcut</span>
+        <!--v-if-->
+      </oc-button-stub>
+    </li>
+  </oc-list-stub>
+</oc-drop-stub>"
+`;

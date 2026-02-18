@@ -35,7 +35,7 @@ const breadcrumbResourceNameSelector =
   '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
-const addNewResourceButton = `#create-or-upload-menu-btn`
+const addNewResourceButton = '.oc-app-floating-action-button'
 const createNewFolderButton = '#new-folder-btn'
 const createNewTxtFileButton = '.new-file-btn-txt'
 const createNewMdFileButton = '.new-file-btn-md'

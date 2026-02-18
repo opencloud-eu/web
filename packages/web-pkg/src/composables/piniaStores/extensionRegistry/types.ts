@@ -15,6 +15,7 @@ export type ExtensionType = StringUnionOrAnyString<
   | 'sidebarNav'
   | 'sidebarPanel'
   | 'accountExtension'
+  | 'floatingActionButton'
 >
 
 export type Extension = {
@@ -65,6 +66,17 @@ export interface AccountExtension extends Extension {
   content: Slot | Component
   label: () => string
   icon: string
+}
+
+export interface FloatingActionButtonExtension extends Extension {
+  type: 'floatingActionButton'
+  label: () => string
+  isVisible: () => boolean
+  isDisabled?: () => boolean
+  color?: string
+  icon?: string
+  handler?: () => Promise<void> | void
+  dropComponent?: Component
 }
 
 export interface AppMenuItemExtension extends Extension {
