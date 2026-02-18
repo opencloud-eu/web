@@ -2,7 +2,7 @@
 
 exports[`ActivitiesPanel > should render a list of activities when data is present 1`] = `
 "<div class="ml-2">
-  <ul class="oc-list oc-timeline">
+  <ul class="oc-list oc-timeline break-all">
     <li>
       <div class="flex items-center"><span class="mr-1 inline-flex"><span role="img" class="oc-avatars inline-flex w-fit flex-nowrap flex-row oc-avatars-stacked [&amp;>*]:not-first:-ml-3 gap-1" aria-label="Marie Curie"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 16.8px; height: 16.8px; line-height: 16.8px; background-color: #8e5c11; font-size: 6px; font-family: Helvetica, Arial, sans-serif; color: white;" width="16.8" aria-hidden="true" focusable="false" data-test-user-name="Marie Curie"><span class="avatar-initials" style="color: white;">MC</span></span>
         <!--v-if-->
