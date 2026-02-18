@@ -1,4 +1,4 @@
-FROM opencloudops/nginx@sha256:8ca0c90c2f537fef6195ba8f5ebe6d6c00fe0a0c545f25ce8acd418a831a19a4
+FROM nginx:1.27-alpine
 
 LABEL maintainer="OpenCloud GmbH <info@opencloud.eu>" \
   org.opencontainers.image.title="OpenCloud Web" \
@@ -10,10 +10,10 @@ LABEL maintainer="OpenCloud GmbH <info@opencloud.eu>" \
   org.opencontainers.image.url="https://hub.docker.com/r/opencloud-eu/web" \
   org.opencontainers.image.source="https://github.com/opencloud-eu/web"
 
-RUN rm -f /var/lib/nginx/html/*
+RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/*
 
 ADD docker/overlay /
-ADD dist/ /var/lib/nginx/html
+ADD dist/ /usr/share/nginx/html
 
 EXPOSE 8080
 
@@ -22,4 +22,4 @@ USER nginx
 STOPSIGNAL SIGTERM
 
 CMD ["nginx", "-g", "daemon off;"]
-WORKDIR /var/lib/nginx/html
+WORKDIR /usr/share/nginx/html
