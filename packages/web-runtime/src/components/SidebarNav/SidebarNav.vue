@@ -1,29 +1,8 @@
 <template>
   <div
     id="web-nav-sidebar"
-    class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
-    :class="{
-      'max-w-[62px] min-w-[62px]': closed,
-      'max-w-[230px] min-w-[230px]': !closed
-    }"
+    class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]"
   >
-    <oc-button
-      appearance="raw"
-      :class="{ 'pr-2': !closed }"
-      class="toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden transition-all duration-200 ease-out"
-      :aria-label="$gettext('Toggle sidebar')"
-      :aria-expanded="!closed"
-      :justify-content="closed ? 'center' : 'right'"
-      no-hover
-      @click="$emit('update:nav-bar-closed', !closed)"
-    >
-      <oc-icon
-        size="large"
-        fill-type="line"
-        class="raw-hover-surface rounded-sm"
-        :name="toggleSidebarButtonIcon"
-      />
-    </oc-button>
     <nav class="oc-sidebar-nav mb-4 mt-2 px-1" :aria-label="$gettext('Sidebar navigation menu')">
       <div
         v-show="isAnyNavItemActive"
@@ -43,7 +22,6 @@
           :icon="link.icon"
           :fill-type="link.fillType"
           :name="link.name"
-          :collapsed="closed"
           :handler="link.handler"
         />
       </oc-list>
@@ -51,7 +29,6 @@
     <!-- @slot bottom content of the sidebar -->
     <slot name="bottom">
       <div
-        v-show="!closed"
         class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"
       >
         <span v-text="backendVersion" />
@@ -90,10 +67,8 @@ export default defineComponent({
     navItems: {
       type: Array as PropType<NavItem[]>,
       required: true
-    },
-    closed: { type: Boolean, default: false }
+    }
   },
-  emits: ['update:nav-bar-closed'],
   setup(props) {
     let resizeObserver: ResizeObserver
     const navItemRefs = ref<Record<string, NavItemRef>>({})
@@ -151,10 +126,6 @@ export default defineComponent({
     return { highlighterAttrs, navItemRefs, backendVersion }
   },
   computed: {
-    toggleSidebarButtonIcon() {
-      return this.closed ? 'arrow-drop-right' : 'arrow-drop-left'
-    },
-
     isAnyNavItemActive() {
       return this.navItems.some((i) => i.active === true)
     }
