@@ -1,10 +1,14 @@
 # Changelog
 
-## [5.1.1](https://github.com/opencloud-eu/web/releases/tag/v5.1.1) - 2026-02-18
+## [5.2.0](https://github.com/opencloud-eu/web/releases/tag/v5.2.0) - 2026-02-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @dschmidt, @kulmann
+
+### 📈 Enhancement
+
+- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
 
 ### 🐛 Bug Fixes
 
