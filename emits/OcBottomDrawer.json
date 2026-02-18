@@ -1,12 +1,7 @@
 [
   {
-    "name": "show",
-    "description": "Emitted when the bottom drawer is opened.",
-    "type": "(e: 'show'): void"
-  },
-  {
-    "name": "hide",
-    "description": "Emitted when the bottom drawer is closed.",
-    "type": "(e: 'hide'): void"
+    "name": "clicked",
+    "description": "Emitted when the bottom drawer or its background is clicked.",
+    "type": "(e: 'clicked', event: MouseEvent): void"
   }
 ]

@@ -95,7 +95,7 @@
     "required": false,
     "description": "The default sort direction.",
     "default": "",
-    "type": "'asc' | 'desc'"
+    "type": "SortDir"
   },
   {
     "name": "sticky",
