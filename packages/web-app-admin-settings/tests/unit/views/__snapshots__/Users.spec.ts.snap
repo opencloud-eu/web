@@ -8,7 +8,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
         <div id="admin-settings-app-bar" class="py-2 px-4 bg-role-surface top-0 z-20 sticky">
           <div class="flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
-            <portal-target name="app.runtime.mobile.nav"></portal-target>
+            <!--v-if-->
             <div class="flex">
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
@@ -68,7 +68,7 @@ exports[`Users view > list view > renders list initially 1`] = `
         <div id="admin-settings-app-bar" class="py-2 px-4 bg-role-surface top-0 z-20 sticky">
           <div class="flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
-            <portal-target name="app.runtime.mobile.nav"></portal-target>
+            <!--v-if-->
             <div class="flex">
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
