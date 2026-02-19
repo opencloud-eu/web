@@ -24,7 +24,7 @@ exports[`Details SideBar Panel > displays the details side panel 1`] = `
     <dt>Size</dt>
     <dd>?, 1 item in total (1 file, 0 folders)</dd>
     <!--v-if-->
-    <portal-target name="app.files.sidebar.space.details.table" slot-props="[object Object]" multiple="true"></portal-target>
+    <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   </dl>
 </div>"
 `;

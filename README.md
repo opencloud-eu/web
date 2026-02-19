@@ -56,7 +56,7 @@ The repository's `packages` also contains the following apps, which can be en-/d
 - **ocm:** Open Cloud Mesh integration to allow for collaboration across OpenCloud instances
 - **pdf-viewer:** An extension for opening PDF files without leaving the UI
 - **preview:** An extension for opening audio, video and image files
-- **search:** An extension for registering search providers, which then get rendered into the layout in the **runtime** using a portal
+- **search:** An extension for registering search providers, which then get rendered into the layout in the **runtime** using an extension point
 - **text-editor:** An extension for creating, opening and editing plain text files, like e.g. `.md` or `.txt`
 - **webfinger:** Redirect app for the OpenCloud webfinger service
 

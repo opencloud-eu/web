@@ -1,17 +1,6 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full" @keydown.esc="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
-    <app-top-bar
-      v-if="!loading && !loadingError && resource"
-      :main-actions="fileActions"
-      :drop-down-menu-sections="dropDownMenuSections"
-      :drop-down-action-options="actionOptions"
-      :has-auto-save="!disableAutoSave"
-      :is-editor="isEditor"
-      :resource="resource"
-      :is-read-only="isReadOnly"
-      @close="closeApp"
-    />
     <loading-screen v-if="loading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div v-else class="flex size-full">
@@ -69,7 +58,9 @@ import {
   Key,
   useAppMeta,
   useGetResourceContext,
-  useKeyboardActions
+  useKeyboardActions,
+  useExtensionRegistry,
+  CustomComponentExtension
 } from '../../composables'
 import {
   Resource,
@@ -150,6 +141,37 @@ const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
+
+const { registerExtensions, unregisterExtensions } = useExtensionRegistry()
+const topBarExtensionId = 'app.app-wrapper.app-top-bar'
+const appBarExtension = computed<CustomComponentExtension[]>(() => {
+  if (unref(loading) || unref(loadingError) || !unref(resource)) {
+    return []
+  }
+  return [
+    {
+      id: topBarExtensionId,
+      type: 'customComponent',
+      extensionPointIds: ['app.runtime.header.left'],
+      content: AppTopBar,
+      componentProps: () => ({
+        resource: unref(resource),
+        isReadOnly: unref(isReadOnly),
+        isEditor: unref(isEditor),
+        hasAutoSave: !disableAutoSave,
+        mainActions: unref(fileActions),
+        dropDownMenuSections: unref(dropDownMenuSections),
+        dropDownActionOptions: unref(actionOptions),
+        onClose: () => {
+          closeApp()
+          unregisterExtensions([topBarExtensionId])
+        }
+      })
+    }
+  ]
+})
+
+registerExtensions(appBarExtension)
 
 const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
@@ -490,6 +512,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
+  unregisterExtensions([topBarExtensionId])
 
   if (!loadingService.isLoading) {
     window.removeEventListener('beforeunload', preventUnload)

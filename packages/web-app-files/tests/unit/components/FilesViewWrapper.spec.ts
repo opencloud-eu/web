@@ -48,7 +48,8 @@ function getWrapper() {
       global: {
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins({})]
+        plugins: [...defaultPlugins({})],
+        stubs: { Teleport: true }
       }
     })
   }

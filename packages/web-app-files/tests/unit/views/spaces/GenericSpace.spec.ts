@@ -317,7 +317,6 @@ function getMountedWrapper({
         stubs: {
           ...defaultStubs,
           'resource-details': true,
-          portal: true,
           ...stubs,
           ListHeader: true
         }

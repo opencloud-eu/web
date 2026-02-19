@@ -13,7 +13,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
   <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
-  <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
+  <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   <ul id="files-collaborators-list" class="oc-list oc-list-divider m-0" aria-label="Share receivers">
     <li>
       <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
@@ -27,7 +27,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
     <li>
       <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
-    <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
+    <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   </ul>
   <div class="flex justify-center"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default toggle-shares-list-btn">
       <!--v-if-->
@@ -50,12 +50,12 @@ exports[`FileShares > current space > loads space members if a space is given an
   <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
-  <portal-target name="app.files.sidebar.sharing.shared-with.top" slot-props="[object Object]" multiple="true"></portal-target>
+  <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   <ul id="files-collaborators-list" class="oc-list oc-list-divider mb-4" aria-label="Share receivers">
     <li>
       <collaborator-list-item-stub share="[object Object]" modifiable="false" removable="false" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
-    <portal-target name="app.files.sidebar.sharing.shared-with.bottom" slot-props="[object Object]" multiple="true"></portal-target>
+    <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   </ul>
   <!--v-if-->
   <div class="flex items-center justify-between mt-2">

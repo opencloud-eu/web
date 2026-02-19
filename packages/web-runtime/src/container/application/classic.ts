@@ -51,12 +51,6 @@ class ClassicApplication extends NextApplication {
   private attachPublicApi(hook: (arg: AppReadyHookArgs) => void, instance?: App) {
     isFunction(hook) &&
       hook({
-        ...(instance && {
-          portal: {
-            open: (...args: unknown[]) =>
-              this.runtimeApi.openPortal.apply<App, any, unknown>(instance, [instance, ...args])
-          }
-        }),
         instance,
         globalProperties: this.app.config.globalProperties as GlobalProperties
       })

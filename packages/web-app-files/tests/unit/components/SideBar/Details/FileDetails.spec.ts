@@ -217,7 +217,7 @@ function createWrapper({
   return {
     wrapper: mount(FileDetails, {
       global: {
-        stubs: { 'router-link': true, 'resource-icon': true },
+        stubs: { 'router-link': true, 'resource-icon': true, CustomComponentTarget: true },
         provide: {
           ...mocks,
           versions,

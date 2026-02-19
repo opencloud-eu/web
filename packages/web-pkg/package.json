@@ -62,7 +62,6 @@
     "p-queue": "^9.0.0",
     "password-sheriff": "^2.0.0",
     "pinia": "^3.0.0",
-    "portal-vue": "^3.0.0",
     "qs": "^6.13.0",
     "screenfull": "^6.0.2",
     "uuid": "^13.0.0",

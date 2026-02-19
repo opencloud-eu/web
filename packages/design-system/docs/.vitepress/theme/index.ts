@@ -1,6 +1,5 @@
 import './tailwind.css'
 import DefaultTheme from 'vitepress/theme-without-fonts'
-import PortalVue from 'portal-vue'
 import './../../../src/styles/layers.css'
 import { createGettext } from 'vue3-gettext'
 import { createPinia } from 'pinia'
@@ -17,7 +16,6 @@ export default {
     const pinia = createPinia()
     app.use(gettext)
     app.use(pinia)
-    app.use(PortalVue)
 
     app.component('LiveCodeBlock', LiveCodeBlock)
     app.component('ComponentApi', ComponentApi)
