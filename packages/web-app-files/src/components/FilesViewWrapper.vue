@@ -7,23 +7,16 @@
     </div>
   </div>
 
-  <portal v-if="isEmbedModeEnabled" to="app.runtime.footer">
+  <teleport v-if="isEmbedModeEnabled" to="#app-runtime-footer">
     <embed-actions />
-  </portal>
+  </teleport>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useEmbedMode } from '@opencloud-eu/web-pkg'
 import EmbedActions from './EmbedActions/EmbedActions.vue'
 
-export default defineComponent({
-  components: { EmbedActions },
-  inheritAttrs: false,
-  setup() {
-    const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
+defineOptions({ inheritAttrs: false })
 
-    return { isEmbedModeEnabled }
-  }
-})
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 </script>

@@ -66,11 +66,7 @@
         <dd>{{ size }}</dd>
       </template>
       <web-dav-details v-if="showWebDavDetails" :space="resource" />
-      <portal-target
-        name="app.files.sidebar.space.details.table"
-        :slot-props="{ space: resource, resource }"
-        :multiple="true"
-      />
+      <custom-component-target :extension-point="fileSideBarSpaceDetailsTableExtensionPoint" />
     </dl>
   </div>
 </template>
@@ -100,6 +96,8 @@ import { ImageDimension } from '../../../../constants'
 import { ProcessorType } from '../../../../services'
 import { isLocationSpacesActive } from '../../../../router'
 import { useGettext } from 'vue3-gettext'
+import CustomComponentTarget from '../../../CustomComponentTarget.vue'
+import { fileSideBarSpaceDetailsTableExtensionPoint } from '../../../../extensionPoints'
 
 const { showShareIndicators = true } = defineProps<{
   showShareIndicators?: boolean
