@@ -91,8 +91,6 @@ const { isLoading } = useLoadMails()
 const showCompose = ref(false)
 
 const openCompose = () => {
-  console.log('!!! openCompose jeöffnet !!!')
-
   showCompose.value = true
 }
 

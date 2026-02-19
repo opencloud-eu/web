@@ -71,7 +71,6 @@ const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
 
 const onComposeMail = () => {
-  console.log('Compose geklickt')
   mailListRef.value?.openCompose()
 }
 
