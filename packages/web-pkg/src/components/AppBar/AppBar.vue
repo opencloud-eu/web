@@ -32,7 +32,7 @@
             />
           </template>
         </oc-breadcrumb>
-        <portal-target v-if="showMobileNav" name="app.runtime.mobile.nav" />
+        <mobile-nav v-if="showMobileNav" />
         <slot v-if="hasSharesNavigation" name="navigation" />
         <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
@@ -113,13 +113,15 @@ import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
+import MobileNav from '../Navigation/MobileNav.vue'
 
 export default defineComponent({
   name: 'AppBar',
   components: {
     BatchActions,
     ContextActions,
-    ViewOptions
+    ViewOptions,
+    MobileNav
   },
   props: {
     viewModeDefault: {

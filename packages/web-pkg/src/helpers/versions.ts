@@ -1,4 +1,4 @@
-import { CapabilityStore } from '@opencloud-eu/web-pkg'
+import { CapabilityStore } from '../composables/piniaStores'
 
 export const getWebVersion = (): string => {
   return `OpenCloud Web UI ${process.env.PACKAGE_VERSION}`

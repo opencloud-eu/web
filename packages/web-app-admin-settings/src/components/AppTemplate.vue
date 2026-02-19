@@ -17,7 +17,7 @@
                 :items="breadcrumbs"
                 :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
               />
-              <portal-target name="app.runtime.mobile.nav" />
+              <mobile-nav />
               <div class="flex">
                 <view-options
                   v-if="showViewOptions"
@@ -70,7 +70,8 @@ import {
   SideBarPanelContext,
   Action,
   useIsTopBarSticky,
-  useSideBar
+  useSideBar,
+  MobileNav
 } from '@opencloud-eu/web-pkg'
 import {
   defineComponent,
@@ -95,7 +96,8 @@ export default defineComponent({
     SideBar,
     AppLoadingSpinner,
     BatchActions,
-    ViewOptions
+    ViewOptions,
+    MobileNav
   },
   props: {
     breadcrumbs: {
