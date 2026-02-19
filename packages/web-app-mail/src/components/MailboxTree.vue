@@ -83,14 +83,8 @@ const { loadMails } = useLoadMails()
 const { isLoading } = useLoadMailboxes()
 
 const onSelectMailbox = async (mailbox: Mailbox) => {
-  const accountId = unref(currentAccount)?.accountId
-  if (!accountId) {
-    return
-  }
-
   setCurrentMailbox(mailbox)
   setCurrentMail(null)
-
-  await loadMails(accountId, mailbox.id)
+  await loadMails(unref(currentAccount).accountId, mailbox.id)
 }
 </script>

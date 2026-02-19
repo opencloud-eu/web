@@ -1,37 +1,19 @@
 import DOMPurify from 'dompurify'
 
-const normalizeWhitespace = (value: string) => {
-  return (value ?? '').replace(/\s+/g, ' ').trim()
+const replaceNbsp = (value: string) => {
+  return (value ?? '').replace(/&nbsp;|&#160;/gi, ' ').replace(/\u00A0/g, ' ')
 }
 
-export const plainTextForChangeCheck = (html: string) => {
-  const raw = html ?? ''
-  if (!raw) {
+const toPlainText = (input: string) => {
+  const value = input ?? ''
+  if (!value) {
     return ''
   }
 
-  if (!raw.includes('<')) {
-    return normalizeWhitespace(raw)
-  }
-
-  const withoutTags = raw
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;|&#160;/gi, ' ')
-    .replace(/\u00A0/g, ' ')
-
-  return normalizeWhitespace(withoutTags)
+  const stripped = DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  return replaceNbsp(stripped)
 }
 
-export const plainTextForSave = (html: string) => {
-  const raw = html ?? ''
-  if (!raw) {
-    return ''
-  }
+export const plainTextForSave = (html: string) => toPlainText(html)
 
-  if (!raw.includes('<')) {
-    return normalizeWhitespace(raw)
-  }
-
-  const stripped = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
-  return normalizeWhitespace(stripped)
-}
+export const plainTextForChangeCheck = (html: string) => toPlainText(html)

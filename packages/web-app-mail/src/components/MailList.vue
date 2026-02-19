@@ -58,7 +58,7 @@
           </oc-button>
         </li>
       </oc-list>
-      <MailWidget v-if="showCompose" v-model="showCompose" />
+      <MailWidget v-if="showCompose" :model-value="true" @close="showCompose = false" />
     </template>
   </template>
 </template>
@@ -91,6 +91,8 @@ const { isLoading } = useLoadMails()
 const showCompose = ref(false)
 
 const openCompose = () => {
+  console.log('!!! openCompose jeöffnet !!!')
+
   showCompose.value = true
 }
 

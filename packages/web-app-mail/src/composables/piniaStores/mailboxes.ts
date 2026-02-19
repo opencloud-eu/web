@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Mailbox } from '../../types'
-import { useRouteQueryId } from './helpers'
+import { useRouteQueryId } from '../useRouterQueryId'
 
 export const useMailboxesStore = defineStore('mail-mailboxes', () => {
   const mailboxes = ref<Mailbox[]>([])
@@ -25,12 +25,6 @@ export const useMailboxesStore = defineStore('mail-mailboxes', () => {
 
   const setMailboxes = (list: Mailbox[]) => {
     mailboxes.value = list ?? []
-
-    if (!currentMailboxId.value && mailboxes.value.length) {
-      currentMailboxId.value = mailboxes.value[0].id
-    } else if (currentMailboxId.value && !currentMailbox.value) {
-      currentMailboxId.value = mailboxes.value[0]?.id ?? ''
-    }
   }
 
   const setCurrentMailbox = (mailbox: Mailbox | null) => {

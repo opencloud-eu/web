@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Mail } from '../../types'
-import { useRouteQueryId } from './helpers'
+import { useRouteQueryId } from '../useRouterQueryId'
 
 export const useMailsStore = defineStore('mails', () => {
   const mails = ref<Mail[]>([])
@@ -15,10 +15,6 @@ export const useMailsStore = defineStore('mails', () => {
 
   const setMails = (list: Mail[]) => {
     mails.value = list ?? []
-
-    if (currentMailId.value && !currentMail.value) {
-      currentMailId.value = ''
-    }
   }
 
   const upsertMail = (mail: Mail) => {

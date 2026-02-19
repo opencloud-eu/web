@@ -71,34 +71,45 @@ const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
 
 const onComposeMail = () => {
+  console.log('Compose geklickt')
   mailListRef.value?.openCompose()
 }
 
 onMounted(async () => {
   await loadAccounts()
-  if (unref(currentAccountIdQuery)) {
-    setCurrentAccount(
-      unref(accounts).find((account) => account.accountId === unref(currentAccountIdQuery))
-    )
-  } else {
-    setCurrentAccount(unref(accounts)?.[0])
+
+  const selectedAccountId = unref(currentAccountIdQuery)
+  const account = selectedAccountId
+    ? (unref(accounts).find((a) => a.accountId === selectedAccountId) ??
+      unref(accounts)?.[0] ??
+      null)
+    : (unref(accounts)?.[0] ?? null)
+
+  if (!account) {
+    isLoading.value = false
+    return
   }
 
-  console.log(unref(currentAccount))
+  setCurrentAccount(account)
 
-  await loadMailboxes(unref(currentAccount).accountId)
-  if (unref(currentMailboxIdQuery)) {
-    setCurrentMailbox(
-      unref(mailboxes).find((mailbox) => mailbox.id === unref(currentMailboxIdQuery))
-    )
-  } else {
-    setCurrentMailbox(unref(mailboxes)?.[0])
+  await loadMailboxes(unref(account).accountId)
+
+  const selectedMailboxId = unref(currentMailboxIdQuery)
+  const mailbox = selectedMailboxId
+    ? (unref(mailboxes).find((m) => m.id === selectedMailboxId) ?? unref(mailboxes)?.[0] ?? null)
+    : (unref(mailboxes)?.[0] ?? null)
+
+  if (!mailbox) {
+    isLoading.value = false
+    return
   }
 
-  await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
+  setCurrentMailbox(mailbox)
+
+  await loadMails(unref(account).accountId, unref(mailbox).id)
 
   if (unref(currentMailIdQuery)) {
-    await loadMail(unref(currentAccount).accountId, queryItemAsString(unref(currentMailIdQuery)))
+    await loadMail(unref(account).accountId, queryItemAsString(unref(currentMailIdQuery)))
   }
 
   isLoading.value = false
