@@ -39,6 +39,7 @@
     </oc-drop>
     <oc-info-drop
       ref="accessDetailsDrop"
+      :toggle="'#' + editShareBtnId"
       class="share-access-details-drop [&_dl]:grid [&_dl]:gap-x-4 [&_dl]:gap-y-1 [&_dl]:grid-cols-[max-content_auto] [&_dt]:col-start-1 [&_dd]:col-start-2"
       v-bind="{
         title: $gettext('Access details'),

@@ -114,29 +114,26 @@
           appearance="raw"
         >
           <oc-icon name="more-2" />
-          <oc-drop
-            ref="showMoreShareOptionsDropRef"
-            :title="$gettext('Share options')"
-            :drop-id="'show-more-share-options-drop'"
-            :toggle="'#show-more-share-options-btn'"
-            close-on-click
-            mode="click"
-            padding-size="small"
-          >
-            <oc-list
-              class="collaborator-edit-dropdown-options-list"
-              :aria-label="'shareEditOptions'"
-            >
-              <li>
-                <expiration-datepicker
-                  v-if="!saving"
-                  :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
-                  @option-change="collaboratorExpiryChanged"
-                />
-              </li>
-            </oc-list>
-          </oc-drop>
         </oc-button>
+        <oc-drop
+          ref="showMoreShareOptionsDropRef"
+          :title="$gettext('Share options')"
+          :drop-id="'show-more-share-options-drop'"
+          :toggle="'#show-more-share-options-btn'"
+          close-on-click
+          mode="click"
+          padding-size="small"
+        >
+          <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="'shareEditOptions'">
+            <li>
+              <expiration-datepicker
+                v-if="!saving"
+                :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
+                @option-change="collaboratorExpiryChanged"
+              />
+            </li>
+          </oc-list>
+        </oc-drop>
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"

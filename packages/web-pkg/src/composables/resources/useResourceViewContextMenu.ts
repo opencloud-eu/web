@@ -1,11 +1,10 @@
-import { unref } from 'vue'
+import { ComponentPublicInstance, unref } from 'vue'
 import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
-import { ContextMenuBtnClickEventData, displayPositionedDropdown } from '../../helpers'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useInterceptModifierClick } from '../keyboardActions'
 import { useEventBus } from '../eventBus'
 import { useActiveLocation } from '../router'
 import { isLocationTrashActive } from '../../router'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export const useResourceViewContextMenu = ({
   isResourceSelected,
@@ -17,7 +16,6 @@ export const useResourceViewContextMenu = ({
   emit: ReturnType<typeof defineEmits>
 }) => {
   const eventBus = useEventBus()
-  const { isMobile } = useIsMobile()
   const { interceptModifierClick } = useInterceptModifierClick()
 
   const emitSelect = (selectedIds: string[]) => {
@@ -35,59 +33,40 @@ export const useResourceViewContextMenu = ({
     return !isResourceDisabled(item)
   }
 
-  const getContextMenuButtonEl = (item: Resource) => {
-    return document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
-  }
-
-  const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, item: Resource) => {
-    const { dropdown, event } = data
-
+  const showContextMenuOnBtnClick = (
+    event: MouseEvent | KeyboardEvent,
+    item: Resource,
+    drop: ComponentPublicInstance<typeof OcDrop>
+  ) => {
     if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
       return
     }
 
     if (isResourceDisabled(item)) {
-      return false
+      return
     }
 
-    if (dropdown?.tippy === undefined) {
-      return
-    }
-    const contextButtonEl = getContextMenuButtonEl(item)
-    if (!contextButtonEl) {
-      return
-    }
-    if (!isResourceSelected(item)) {
-      emitSelect([item.id])
-    }
-    displayPositionedDropdown(dropdown.tippy, event, contextButtonEl)
+    drop?.show({ event })
   }
 
-  const showContextMenuOnRightClick = (event: MouseEvent | KeyboardEvent, item: Resource) => {
+  const showContextMenuOnRightClick = (
+    event: MouseEvent | KeyboardEvent,
+    item: Resource,
+    drop: ComponentPublicInstance<typeof OcDrop>
+  ) => {
     if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
       return
     }
     event.preventDefault()
     if (isResourceDisabled(item)) {
-      return false
-    }
-
-    const contextButtonEl = getContextMenuButtonEl(item)
-    if (!contextButtonEl) {
       return
     }
+
     if (!isResourceSelected(item)) {
       emitSelect([item.id])
     }
 
-    if (unref(isMobile)) {
-      // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
-      // this can be triggered by clicking the context menu button of the current row.
-      contextButtonEl.click()
-      return
-    }
-
-    displayPositionedDropdown((contextButtonEl as any)._tippy, event, contextButtonEl)
+    drop?.show({ event, useMouseAnchor: true })
   }
 
   return {

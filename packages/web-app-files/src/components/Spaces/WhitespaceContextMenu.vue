@@ -1,35 +1,32 @@
 <template>
-  <oc-button
-    id="context-menu-trigger-whitespace"
-    class="size-0 invisible"
-    aria-hidden
-    appearance="raw"
+  <oc-drop
+    ref="drop"
+    drop-id="context-menu-drop-whitespace"
+    mode="manual"
+    close-on-click
+    padding-size="small"
   >
-    <oc-drop
-      drop-id="context-menu-drop-whitespace"
-      toggle="#context-menu-trigger-whitespace"
-      position="bottom-end"
-      mode="click"
-      class="whitespace-context-actions-list"
-      close-on-click
-      padding-size="small"
-    >
-      <oc-list>
-        <action-menu-item
-          v-for="(action, actionIndex) in menuItemsActions"
-          :key="`section-${action.name}-action-${actionIndex}`"
-          :action="action"
-          :action-options="actionOptions"
-          :data-testid="`whitespace-context-menu-item-${action.name}`"
-        />
-      </oc-list>
-    </oc-drop>
-  </oc-button>
+    <oc-list>
+      <action-menu-item
+        v-for="(action, actionIndex) in menuItemsActions"
+        :key="`section-${action.name}-action-${actionIndex}`"
+        :action="action"
+        :action-options="actionOptions"
+        :data-testid="`whitespace-context-menu-item-${action.name}`"
+      />
+    </oc-list>
+  </oc-drop>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
-import { useGettext } from 'vue3-gettext'
+<script setup lang="ts">
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  unref,
+  useTemplateRef
+} from 'vue'
 import {
   useFileActionsPaste,
   useFileActionsShowDetails,
@@ -39,41 +36,47 @@ import { useFileActionsCreateNewFolder } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ActionMenuItem } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
-export default defineComponent({
-  name: 'WhitespaceContextMenu',
-  components: { ActionMenuItem },
-  props: {
-    space: {
-      type: Object as PropType<SpaceResource>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const { $gettext } = useGettext()
-    const resourcesStore = useResourcesStore()
-    const { currentFolder } = storeToRefs(resourcesStore)
+const { space } = defineProps<{ space: SpaceResource }>()
 
-    const space = computed(() => props.space)
-    const contextMenuLabel = computed(() => $gettext('Show context menu'))
-    const actionOptions = computed(() => ({
-      space: unref(space),
-      resources: [currentFolder.value]
-    }))
-    const { actions: createNewFolderAction } = useFileActionsCreateNewFolder({ space })
-    const { actions: showDetailsAction } = useFileActionsShowDetails()
-    const { actions: pasteAction } = useFileActionsPaste()
+const drop = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('drop')
+const resourcesStore = useResourcesStore()
+const { currentFolder } = storeToRefs(resourcesStore)
 
-    const menuItemsActions = computed(() => {
-      return [
-        ...unref(createNewFolderAction),
-        ...unref(pasteAction),
-        ...unref(showDetailsAction)
-      ].filter((item) => item.isVisible(unref(actionOptions)))
-    })
+const actionOptions = computed(() => ({
+  space: unref(space),
+  resources: [currentFolder.value]
+}))
+const { actions: createNewFolderAction } = useFileActionsCreateNewFolder({
+  space: computed(() => space)
+})
+const { actions: showDetailsAction } = useFileActionsShowDetails()
+const { actions: pasteAction } = useFileActionsPaste()
 
-    return { contextMenuLabel, actionOptions, currentFolder, menuItemsActions }
+const menuItemsActions = computed(() => {
+  return [
+    ...unref(createNewFolderAction),
+    ...unref(pasteAction),
+    ...unref(showDetailsAction)
+  ].filter((item) => item.isVisible(unref(actionOptions)))
+})
+
+const hanldeContextMenu = (event: Event) => {
+  const { target } = event
+  if ((target as HTMLElement).closest('.has-item-context-menu')) {
+    return
   }
+  event.preventDefault()
+  unref(drop)?.show({ event, useMouseAnchor: true })
+}
+
+let filesViewWrapper: Element | undefined
+onMounted(() => {
+  filesViewWrapper = document.getElementsByClassName('files-view-wrapper')[0]
+  filesViewWrapper?.addEventListener('contextmenu', hanldeContextMenu)
+})
+onBeforeUnmount(() => {
+  filesViewWrapper?.removeEventListener('contextmenu', hanldeContextMenu)
 })
 </script>

@@ -20,7 +20,7 @@
         :hover="true"
         padding-x="medium"
         @sort="handleSort"
-        @contextmenu-clicked="showContextMenuOnRightClick"
+        @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
         @highlight="rowClicked"
       >
         <template #selectHeader>
@@ -87,7 +87,7 @@
             <oc-icon name="pencil" fill-type="line" />
           </oc-button>
           <context-menu-quick-action
-            ref="contextMenuButtonRef"
+            :ref="(el: any) => (contextMenuDrops[item.id] = el?.drop)"
             :item="item"
             :title="item.displayName"
             class="users-table-btn-action-dropdown"
@@ -125,9 +125,7 @@ import {
 } from 'vue'
 import {
   AppLoadingSpinner,
-  ContextMenuBtnClickEventData,
   ContextMenuQuickAction,
-  displayPositionedDropdown,
   eventBus,
   Pagination,
   queryItemAsString,
@@ -149,7 +147,7 @@ import {
 } from '../../composables/keyboardActions'
 import { findIndex } from 'lodash-es'
 import Mark from 'mark.js'
-import { OcTable } from '@opencloud-eu/design-system/components'
+import { OcDrop, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
@@ -172,8 +170,7 @@ export default defineComponent({
     const { openSideBar, openSideBarPanel } = useSideBar()
 
     const tableRef = useTemplateRef<ComponentPublicInstance<typeof OcTable>>('tableRef')
-    const contextMenuButtonRef =
-      useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
+    const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
     const sortBy = ref('onPremisesSamAccountName')
     const sortDir = ref<SortDir>(SortDir.Asc)
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
@@ -259,30 +256,15 @@ export default defineComponent({
       unselectAllUsers()
       selectUser(resource)
     }
-    const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, user: User) => {
-      const { dropdown, event } = data
-      if (dropdown?.tippy === undefined) {
-        return
-      }
-      if (!isUserSelected(user)) {
-        userSettingsStore.setSelectedUsers([user])
-      }
-      displayPositionedDropdown(dropdown.tippy, event, unref(contextMenuButtonRef))
+    const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, user: User) => {
+      unref(contextMenuDrops)[user.id]?.show({ event })
     }
-    const showContextMenuOnRightClick = (
-      row: ComponentPublicInstance<unknown>,
-      event: MouseEvent,
-      user: User
-    ) => {
+    const showContextMenuOnRightClick = (event: MouseEvent, user: User) => {
       event.preventDefault()
-      const dropdown = row.$el.getElementsByClassName('users-table-btn-action-dropdown')[0]
-      if (dropdown === undefined) {
-        return
-      }
       if (!isUserSelected(user)) {
         userSettingsStore.setSelectedUsers([user])
       }
-      displayPositionedDropdown(dropdown._tippy, event, unref(contextMenuButtonRef))
+      unref(contextMenuDrops)[user.id]?.show({ event, useMouseAnchor: true })
     }
 
     const getRoleDisplayNameByUser = (user: User) => {
@@ -427,7 +409,7 @@ export default defineComponent({
       showUserAssigmentPanel,
       isUserSelected,
       rowClicked,
-      contextMenuButtonRef,
+      contextMenuDrops,
       showContextMenuOnBtnClick,
       showContextMenuOnRightClick,
       fileListHeaderY,

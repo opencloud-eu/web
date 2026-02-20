@@ -21,7 +21,7 @@ exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
   </button>
-  <oc-drop-stub title="Actions" closeonclick="true" dropid="oc-files-context-actions-actions-drop-1" isnestedelement="true" mode="hover" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="auto-start" toggle="#oc-files-context-actions-actions-toggle-2" enforcedroponmobile="false" class="w-3xs oc-files-context-action-drop">
+  <oc-drop-stub title="Actions" closeonclick="true" dropid="oc-files-context-actions-actions-drop-1" mode="hover" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-files-context-actions-actions-toggle-2" enforcedroponmobile="false" class="w-3xs oc-files-context-action-drop">
     <ul class="oc-list">
       <li><button type="button" aria-label="Copy" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
           <!--v-if-->

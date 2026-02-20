@@ -52,6 +52,7 @@
       v-if="showDrop"
       id="files-global-search-options"
       ref="optionsDropRef"
+      toggle="#files-global-search-bar"
       mode="manual"
       target="#files-global-search-bar"
       class="w-[93vw] sm:w-2xs md:w-lg overflow-y-auto"
@@ -189,7 +190,7 @@ export default defineComponent({
         return
       }
 
-      const optionDropVisible = !!document.querySelector('.tippy-box[data-state="visible"]')
+      const optionDropVisible = !!document.querySelector('#files-global-search-options')
 
       if (!unref(isMobileWidth)) {
         searchBarEl.style.visibility = 'visible'

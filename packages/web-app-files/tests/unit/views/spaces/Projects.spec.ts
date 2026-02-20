@@ -24,7 +24,6 @@ import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  displayPositionedDropdown: vi.fn(),
   queryItemAsString: vi.fn(),
   appDefaults: vi.fn(),
   useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),

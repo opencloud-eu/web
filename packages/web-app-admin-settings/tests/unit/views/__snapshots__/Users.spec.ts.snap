@@ -160,6 +160,9 @@ exports[`Users view > list view > renders list initially 1`] = `
                     <oc-button-stub arialabel="Show details" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="ml-1 quick-action-button p-1 users-table-btn-details"></oc-button-stub>
                     <oc-button-stub arialabel="Edit" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="ml-1 quick-action-button p-1 users-table-btn-edit"></oc-button-stub>
                     <oc-button-stub arialabel="Show context menu" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="context-menu-trigger-1" class="quick-action-button ml-1 p-1 users-table-btn-action-dropdown"></oc-button-stub>
+                    <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+                      <!--v-if-->
+                    </transition-stub>
                   </td>
                 </tr>
               </tbody>

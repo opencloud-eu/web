@@ -80,8 +80,17 @@
     @apply p-2 mb-1;
   }
 
-  .oc-tooltip .tippy-content {
-    @apply text-sm break-all;
+  [role="tooltip"] {
+    @apply rounded px-2 py-1 max-w-xs absolute top-0 left-0 break-all z-[10000];
+    background-color: var(--oc-role-inverse-surface);
+    color: var(--oc-role-inverse-on-surface);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  [role="tooltip"] .arrow {
+    @apply absolute size-2 bg-inherit;
+    transform: rotate(45deg);
   }
 }
 

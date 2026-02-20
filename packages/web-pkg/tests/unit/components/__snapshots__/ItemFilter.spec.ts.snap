@@ -22,7 +22,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </oc-button-stub>
-    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-4" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-3" enforcedroponmobile="false" class="oc-filter-chip-drop">
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-4" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-filter-chip-3" enforcedroponmobile="false" class="oc-filter-chip-drop">
       <!--v-if-->
       <div>
         <ul class="oc-list item-filter-list">
@@ -80,7 +80,7 @@ exports[`ItemFilter > renders all items 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </oc-button-stub>
-    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-2" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-1" enforcedroponmobile="false" class="oc-filter-chip-drop">
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-2" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-filter-chip-1" enforcedroponmobile="false" class="oc-filter-chip-drop">
       <!--v-if-->
       <div>
         <ul class="oc-list item-filter-list">

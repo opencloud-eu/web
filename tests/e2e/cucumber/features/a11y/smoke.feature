@@ -89,7 +89,7 @@ Feature: Accessibility checks
 
     # search panel
     And "Brian" opens location search panel
-    And "Brian" checks the accessibility of the DOM selector ".tippy-content" on the "search panel"
+    And "Brian" checks the accessibility of the DOM selector ".oc-drop" on the "search panel"
 
     # notifications
     And "Brian" opens notifications dropdown
@@ -154,8 +154,8 @@ Feature: Accessibility checks
     And "Brian" opens the "files" app
     And "Brian" navigates to the projects space page
     And "Brian" checks the accessibility of the DOM selector "#files-view" on the "project spaces page"
-    
-    
+
+
     ## 7. app-sidebar (right sidebar)
     And "Alice" opens the "files" app
     And "Alice" opens the right sidebar of the resource "lorem.txt"
