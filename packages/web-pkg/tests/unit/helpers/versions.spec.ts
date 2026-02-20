@@ -1,5 +1,5 @@
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
-import { getBackendVersion, getWebVersion } from '../../../src/container/versions'
+import { getBackendVersion, getWebVersion } from '../../../src/helpers'
+import { useCapabilityStore } from '../../../src/composables'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
 

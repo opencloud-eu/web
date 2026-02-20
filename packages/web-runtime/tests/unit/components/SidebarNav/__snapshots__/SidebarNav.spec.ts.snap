@@ -5,9 +5,9 @@ exports[`OcSidebarNav > renders navItems into a list 1`] = `
   <nav class="oc-sidebar-nav mb-4 mt-2 px-1" aria-label="Sidebar navigation menu">
     <div id="nav-highlighter" class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm transition-transform duration-200 ease-[cubic-bezier(0.51, 0.06, 0.56, 1.37)]" aria-hidden="true"></div>
     <ul class="oc-list relative">
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="folder" name="Personal" active="true" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="share-forward" name="Shares" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="folder" name="Personal" active="true" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="share-forward" name="Shares" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
     </ul>
   </nav> <!-- @slot bottom content of the sidebar -->
   <div class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"><span></span>

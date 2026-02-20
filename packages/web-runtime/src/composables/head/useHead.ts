@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useHead as _useHead } from '@vueuse/head'
-import { getBackendVersion, getWebVersion } from '../../container/versions'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
+import { getBackendVersion, getWebVersion, useCapabilityStore } from '@opencloud-eu/web-pkg'
 
 export const useHead = () => {
   const capabilityStore = useCapabilityStore()

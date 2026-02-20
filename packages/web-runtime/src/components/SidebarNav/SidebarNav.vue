@@ -16,7 +16,6 @@
           v-for="(link, index) in navItems"
           :ref="(el) => (navItemRefs[index] = el as NavItemRef)"
           :key="index"
-          :index="getUuid()"
           :target="link.route"
           :active="link.active"
           :icon="link.icon"
@@ -38,102 +37,69 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  computed,
-  defineComponent,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  PropType,
-  ref,
-  unref,
-  watch
-} from 'vue'
-import { v4 as uuidV4 } from 'uuid'
+<script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
-import { NavItem } from '../../helpers/navItems'
-import { getBackendVersion } from '../../container/versions'
-import { useCapabilityStore, VersionCheck } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, VersionCheck, NavItem, getBackendVersion } from '@opencloud-eu/web-pkg'
 
 type NavItemRef = InstanceType<typeof SidebarNavItem>
 
-export default defineComponent({
-  components: {
-    VersionCheck,
-    SidebarNavItem
-  },
-  props: {
-    navItems: {
-      type: Array as PropType<NavItem[]>,
-      required: true
+const { navItems } = defineProps<{ navItems: NavItem[] }>()
+
+let resizeObserver: ResizeObserver
+const navItemRefs = ref<Record<string, NavItemRef>>({})
+const highlighterAttrs = ref<Record<string, unknown>>({})
+const capabilityStore = useCapabilityStore()
+
+const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
+
+onMounted(() => {
+  const navBar = document.getElementById('web-nav-sidebar')
+  const highlighter = document.getElementById('nav-highlighter')
+
+  if (!highlighter || !navBar) {
+    return
+  }
+
+  resizeObserver = new ResizeObserver(() => {
+    const navItem = document.getElementsByClassName('oc-sidebar-nav-item-link')[0]
+    if (!navItem) {
+      return
     }
-  },
-  setup(props) {
-    let resizeObserver: ResizeObserver
-    const navItemRefs = ref<Record<string, NavItemRef>>({})
-    const highlighterAttrs = ref<Record<string, unknown>>({})
-    const capabilityStore = useCapabilityStore()
+    highlighter.style.setProperty('transition-duration', `0.05s`)
+    highlighter.style.setProperty('width', `${navItem.clientWidth}px`)
+    highlighter.style.setProperty('height', `${navItem.clientHeight}px`)
+  })
+  resizeObserver.observe(navBar)
+})
 
-    const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
+onBeforeUnmount(() => {
+  resizeObserver.disconnect()
+})
 
-    onMounted(() => {
-      const navBar = document.getElementById('web-nav-sidebar')
-      const highlighter = document.getElementById('nav-highlighter')
-
-      if (!highlighter || !navBar) {
-        return
+const updateHighlighterPosition = () => {
+  const activeItemIndex = navItems.findIndex((n) => n.active)
+  const activeEl = unref(navItemRefs)[activeItemIndex]
+  if (activeEl) {
+    highlighterAttrs.value = {
+      style: {
+        transform: `translateY(${activeEl.$el.offsetTop}px)`,
+        'transition-duration': '0.2s'
       }
-
-      resizeObserver = new ResizeObserver(() => {
-        const navItem = document.getElementsByClassName('oc-sidebar-nav-item-link')[0]
-        if (!navItem) {
-          return
-        }
-        highlighter.style.setProperty('transition-duration', `0.05s`)
-        highlighter.style.setProperty('width', `${navItem.clientWidth}px`)
-        highlighter.style.setProperty('height', `${navItem.clientHeight}px`)
-      })
-      resizeObserver.observe(navBar)
-    })
-
-    onBeforeUnmount(() => {
-      resizeObserver.disconnect()
-    })
-
-    const updateHighlighterPosition = () => {
-      const activeItemIndex = props.navItems.findIndex((n) => n.active)
-      const activeEl = unref(navItemRefs)[activeItemIndex]
-      if (activeEl) {
-        highlighterAttrs.value = {
-          style: {
-            transform: `translateY(${activeEl.$el.offsetTop}px)`,
-            'transition-duration': '0.2s'
-          }
-        }
-      }
-    }
-
-    watch(
-      () => props.navItems,
-      async () => {
-        await nextTick()
-        updateHighlighterPosition()
-      },
-      { deep: true, immediate: true }
-    )
-
-    return { highlighterAttrs, navItemRefs, backendVersion }
-  },
-  computed: {
-    isAnyNavItemActive() {
-      return this.navItems.some((i) => i.active === true)
-    }
-  },
-  methods: {
-    getUuid() {
-      return uuidV4().replaceAll('-', '')
     }
   }
+}
+
+watch(
+  () => navItems,
+  async () => {
+    await nextTick()
+    updateHighlighterPosition()
+  },
+  { deep: true, immediate: true }
+)
+
+const isAnyNavItemActive = computed(() => {
+  return navItems.some((i) => i.active === true)
 })
 </script>

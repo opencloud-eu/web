@@ -19,9 +19,6 @@
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav v-if="isSidebarVisible" :nav-items="navItems" />
-          <portal to="app.runtime.mobile.nav">
-            <mobile-nav v-if="isMobileWidth && navItems.length" :nav-items="navItems" />
-          </portal>
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
@@ -45,41 +42,20 @@
 </template>
 
 <script setup lang="ts">
-import orderBy from 'lodash-es/orderBy'
-import {
-  AppLoadingSpinner,
-  CustomComponentTarget,
-  useAuthStore,
-  useExtensionRegistry,
-  useSideBar
-} from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, CustomComponentTarget } from '@opencloud-eu/web-pkg'
 import TopBar from '../components/Topbar/TopBar.vue'
 import MessageBar from '../components/MessageBar.vue'
 import SidebarNav from '../components/SidebarNav/SidebarNav.vue'
 import UploadInfo from '../components/UploadInfo.vue'
-import MobileNav from '../components/MobileNav.vue'
-import { NavItem, getExtensionNavItems } from '../helpers/navItems'
-import { useActiveApp, useRoute, useRouteMeta, useSpacesLoading } from '@opencloud-eu/web-pkg'
+import { useRouteMeta, useSpacesLoading, useNavItems } from '@opencloud-eu/web-pkg'
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
-import { RouteLocationAsRelativeTyped, useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { progressBarExtensionPoint } from '../extensionPoints'
-import { storeToRefs } from 'pinia'
 
 const MOBILE_BREAKPOINT = 640
 
-const router = useRouter()
-const route = useRoute()
 const { $gettext } = useGettext()
-const authStore = useAuthStore()
-const activeApp = useActiveApp()
-const extensionRegistry = useExtensionRegistry()
-const sidebarStore = useSideBar()
-const { isSideBarOpen } = storeToRefs(sidebarStore)
-
-const extensionNavItems = computed(() =>
-  getExtensionNavItems({ extensionRegistry, appId: unref(activeApp) })
-)
+const { navItems } = useNavItems()
 
 const requiredAuthContext = useRouteMeta('authContext')
 const { areSpacesLoading } = useSpacesLoading()
@@ -97,42 +73,8 @@ const onResize = () => {
   isMobileWidth.value = window.innerWidth < MOBILE_BREAKPOINT
 }
 
-const navItems = computed<NavItem[]>(() => {
-  if (!authStore.userContextReady) {
-    return []
-  }
-
-  const { href: currentHref } = router.resolve(unref(route))
-  return orderBy(
-    unref(extensionNavItems).map((item) => {
-      let active = typeof item.isActive !== 'function' || item.isActive()
-
-      if (active) {
-        active = [item.route, ...(item.activeFor || [])].filter(Boolean).some((currentItem) => {
-          try {
-            const comparativeHref = router.resolve(currentItem as RouteLocationAsRelativeTyped).href
-            return currentHref.startsWith(comparativeHref)
-          } catch (e) {
-            console.error(e)
-            return false
-          }
-        })
-      }
-
-      const name = typeof item.name === 'function' ? item.name() : item.name
-
-      return {
-        ...item,
-        name: $gettext(name),
-        active
-      }
-    }),
-    ['priority', 'name']
-  )
-})
-
 const isSidebarVisible = computed(() => {
-  return unref(navItems).length && !unref(isMobileWidth)
+  return !unref(isMobileWidth) && unref(navItems).length
 })
 
 const isIE11 = !!(window as any).MSInputMethodContext && !!(document as any).documentMode
