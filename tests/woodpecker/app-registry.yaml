@@ -40,8 +40,8 @@ app_registry:
       name: Microsoft Excel
       description: Microsoft Excel document
       icon: ''
-      default_app: OnlyOffice
-      allow_creation: Collabora
+      default_app: Collabora
+      allow_creation: true
     - mime_type: application/vnd.openxmlformats-officedocument.presentationml.presentation
       extension: pptx
       name: Microsoft PowerPoint
