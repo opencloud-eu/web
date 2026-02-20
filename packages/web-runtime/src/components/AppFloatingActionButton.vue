@@ -3,7 +3,7 @@
     v-for="floatingActionButton in floatingActionButtonExtensions"
     :key="floatingActionButton.id"
   >
-    <template v-if="floatingActionButton.isVisible()">
+    <template v-if="floatingActionButton.isActive()">
       <div v-if="!isMobile" class="py-2 px-2">
         <oc-button
           :id="getButtonId(floatingActionButton.id)"

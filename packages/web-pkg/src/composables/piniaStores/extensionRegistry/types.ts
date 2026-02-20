@@ -71,7 +71,7 @@ export interface AccountExtension extends Extension {
 export interface FloatingActionButtonExtension extends Extension {
   type: 'floatingActionButton'
   label: () => string
-  isVisible: () => boolean
+  isActive: () => boolean
   isDisabled?: () => boolean
   color?: string
   icon?: string

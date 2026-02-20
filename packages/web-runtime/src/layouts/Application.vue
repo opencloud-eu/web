@@ -83,7 +83,7 @@ const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({
     id: 'global.floating-action-button',
     extensionType: 'floatingActionButton'
-  }).filter((extension) => extension.isVisible()).length
+  }).filter((extension) => extension.isActive()).length
 })
 
 const isSidebarVisible = computed(() => {

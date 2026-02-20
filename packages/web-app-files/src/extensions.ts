@@ -53,7 +53,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
       type: 'floatingActionButton',
       icon: 'add',
       label: () => $gettext('New'),
-      isVisible: () => {
+      isActive: () => {
         return unref(isFilesAppActive)
       },
       isDisabled: () => {
