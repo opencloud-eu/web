@@ -1,7 +1,7 @@
-import MobileNav from '../../../src/components/MobileNav.vue'
+import MobileNav from '../../../../src/components/Navigation/MobileNav.vue'
 import { defaultPlugins, defaultComponentMocks, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { NavItem } from '../../../src/helpers/navItems'
+import { NavItem } from '../../../../src/composables/navItems'
 
 const selectors = {
   mobileNavBtn: '#mobile-nav-button',
@@ -12,6 +12,14 @@ const navItems = [
   mock<NavItem>({ name: 'nav1', active: true }),
   mock<NavItem>({ name: 'nav2', active: false })
 ]
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
+  const original = await importOriginal<any>()
+  return { ...original, useIsMobile: () => ({ isMobile: true }) }
+})
+vi.mock('../../../../src/composables/navItems/useNavItems', () => ({
+  useNavItems: () => ({ navItems })
+}))
 
 describe('MobileNav component', () => {
   it('renders the active nav item', () => {
@@ -32,9 +40,6 @@ function getWrapper() {
 
   return {
     wrapper: mount(MobileNav, {
-      props: {
-        navItems
-      },
       global: {
         plugins: [...defaultPlugins()],
         mocks,

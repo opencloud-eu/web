@@ -1,5 +1,5 @@
 <template>
-  <nav id="mobile-nav">
+  <nav v-if="isMobile" id="mobile-nav">
     <oc-button id="mobile-nav-button" class="p-1" appearance="raw" aria-current="page">
       {{ activeNavItem.name }}
       <oc-icon name="arrow-drop-down" />
@@ -46,30 +46,18 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
-import { NavItem } from '../helpers/navItems'
-import { VersionCheck, useCapabilityStore } from '@opencloud-eu/web-pkg'
-import { getBackendVersion } from '../container/versions'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
+import { getBackendVersion } from '../../helpers/versions'
+import { useCapabilityStore, useNavItems } from '../../composables'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
-export default defineComponent({
-  name: 'MobileNav',
-  components: { VersionCheck },
-  props: {
-    navItems: {
-      type: Array as PropType<NavItem[]>,
-      required: true
-    }
-  },
-  setup(props) {
-    const capabilityStore = useCapabilityStore()
+const capabilityStore = useCapabilityStore()
+const { isMobile } = useIsMobile()
+const { navItems } = useNavItems()
 
-    const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
-    const activeNavItem = computed(() => {
-      return unref(props.navItems).find((n) => n.active) || props.navItems[0]
-    })
-
-    return { activeNavItem, backendVersion }
-  }
+const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
+const activeNavItem = computed(() => {
+  return unref(navItems).find((n) => n.active) || unref(navItems)[0]
 })
 </script>

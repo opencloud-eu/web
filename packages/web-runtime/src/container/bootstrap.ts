@@ -4,7 +4,6 @@ import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
 import { loadTheme } from '../helpers/theme'
 import { createGettext, GetTextOptions, Language, Translations } from 'vue3-gettext'
-import { getBackendVersion, getWebVersion } from './versions'
 import {
   useModals,
   useThemeStore,
@@ -50,7 +49,10 @@ import {
   useGroupwareConfigStore,
   GroupwareConfigStore,
   RawGroupwareConfigSchema,
-  useSideBar
+  useSideBar,
+  getExtensionNavItems,
+  getBackendVersion,
+  getWebVersion
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -59,7 +61,6 @@ import { merge } from 'lodash-es'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
-import { getExtensionNavItems } from '../helpers/navItems'
 import {
   onSSEFileLockingEvent,
   onSSEItemRenamedEvent,
