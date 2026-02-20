@@ -24,8 +24,8 @@ Feature: Secure view
       | testavatar.jpeg | shared folder/testavatar.jpeg |
       | lorem.txt       | shared folder/lorem.txt       |
     And "Alice" creates the following resources
-      | resource           | type         | content                 |
-      | secureDocument.odt | OpenDocument | very important document |
+      | resource           | type     | content                 |
+      | secureDocument.odt | Document | very important document |
 
     And "Alice" shares the following resources using the sidebar panel
       | resource           | recipient | type | role              |
@@ -71,8 +71,8 @@ Feature: Secure view
       | testavatar.jpeg | shared folder/securePhoto.jpeg |
       | lorem.txt       | shared folder/secureFile.txt   |
     And "Alice" creates the following resources
-      | resource           | type         | content                 |
-      | secureDocument.odt | OpenDocument | very important document |
+      | resource           | type     | content                 |
+      | secureDocument.odt | Document | very important document |
     And "Alice" shares the following resources using the sidebar panel
       | resource           | recipient | type | role              |
       | secureDocument.odt | Brian     | user | Can view (secure) |
