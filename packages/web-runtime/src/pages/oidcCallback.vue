@@ -57,7 +57,7 @@ const handleRequestedTokenEvent = (event: MessageEvent): void => {
   }
 
   console.debug('[page:oidcCallback:handleRequestedTokenEvent] - received delegated access_token')
-  authService.signInCallback(event.data.data.access_token)
+  authService.signInCallback(event.data.data.access_token, event.data.data.session_id)
 }
 
 onMounted(() => {
