@@ -93,7 +93,7 @@
   },
   {
     "name": "oc-role-background",
-    "value": "#FBFCFE"
+    "value": "#FFFFFF"
   },
   {
     "name": "oc-role-chrome",
@@ -221,7 +221,7 @@
   },
   {
     "name": "oc-role-surface",
-    "value": "#FBFCFE"
+    "value": "#FFFFFF"
   },
   {
     "name": "oc-role-surface-bright",
@@ -229,19 +229,19 @@
   },
   {
     "name": "oc-role-surface-container",
-    "value": "#ECEEF0"
+    "value": "#F6F8FA"
   },
   {
     "name": "oc-role-surface-container-high",
-    "value": "#E7E8EA"
+    "value": "#F2F4F5"
   },
   {
     "name": "oc-role-surface-container-highest",
-    "value": "#E1E3E4"
+    "value": "#ECEEF0"
   },
   {
     "name": "oc-role-surface-container-low",
-    "value": "#F2F4F5"
+    "value": "#FBFCFE"
   },
   {
     "name": "oc-role-surface-container-lowest",
