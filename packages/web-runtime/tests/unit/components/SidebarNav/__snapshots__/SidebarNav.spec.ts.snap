@@ -3,6 +3,7 @@
 exports[`OcSidebarNav > renders navItems into a list 1`] = `
 "<div id="web-nav-sidebar" class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]" closed="false">
   <nav class="oc-sidebar-nav mb-4 mt-2 px-1" aria-label="Sidebar navigation menu">
+    <!--v-if-->
     <div id="nav-highlighter" class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm transition-transform duration-200 ease-[cubic-bezier(0.51, 0.06, 0.56, 1.37)]" aria-hidden="true"></div>
     <ul class="oc-list relative">
       <sidebar-nav-item-stub icon="folder" name="Personal" active="true" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
