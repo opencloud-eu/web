@@ -4,6 +4,7 @@
     class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]"
   >
     <nav class="oc-sidebar-nav mb-4 mt-2 px-1" :aria-label="$gettext('Sidebar navigation menu')">
+      <app-floating-action-button />
       <div
         v-show="isAnyNavItemActive"
         id="nav-highlighter"
@@ -40,6 +41,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
+import AppFloatingActionButton from '../AppFloatingActionButton.vue'
 import { useCapabilityStore, VersionCheck, NavItem, getBackendVersion } from '@opencloud-eu/web-pkg'
 
 type NavItemRef = InstanceType<typeof SidebarNavItem>

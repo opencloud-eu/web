@@ -30,7 +30,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const elSelector = {
   component: '.create-and-upload-actions',
-  createOrUploadMenuBtn: '#create-or-upload-menu-btn',
+  createOrUploadMenuBtn: '#floating-action-button',
   uploadBtn: '#upload-menu-btn',
   resourceUpload: 'resource-upload-stub',
   newFolderBtn: '#new-folder-btn',
@@ -43,34 +43,15 @@ const elSelector = {
 document.body.innerHTML = '<div id="files-view"></div>'
 
 describe('CreateAndUpload component', () => {
-  describe('action buttons', () => {
-    it('should show and be enabled if file creation is possible', () => {
+  describe('component visibility', () => {
+    it('should be visible when file creation is possible', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn)).toBeTruthy()
-      expect(wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props()).toBeTruthy()
-      expect(wrapper.html()).toMatchSnapshot()
-    })
-    it('should be disabled if file creation is not possible', () => {
-      const currentFolder = mock<Resource>({ canUpload: () => false })
-      const { wrapper } = getWrapper({ currentFolder, createActions: [] })
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.createOrUploadMenuBtn).props().disabled
-      ).toBeTruthy()
+      expect(wrapper.find(elSelector.component).exists()).toBeTruthy()
     })
     it('should not be visible if file creation is not possible on a public page', () => {
       const currentFolder = mock<Resource>({ canUpload: () => false })
       const { wrapper } = getWrapper({ currentFolder, currentRouteName: 'files-public-link' })
       expect(wrapper.find(elSelector.component).exists()).toBeFalsy()
-    })
-  })
-  describe('file handlers', () => {
-    it('should always show for uploading files and folders', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll(elSelector.resourceUpload).length).toBe(2)
-    })
-    it('should show entries for all new file handlers', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.html()).toMatchSnapshot()
     })
   })
   describe('clipboard buttons', () => {

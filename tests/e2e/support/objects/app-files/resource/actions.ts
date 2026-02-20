@@ -35,7 +35,7 @@ const breadcrumbResourceNameSelector =
   '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
-const addNewResourceButton = `#create-or-upload-menu-btn`
+const addNewResourceButton = `.oc-app-floating-action-button`
 const createNewFolderButton = '#new-folder-btn'
 const createNewTxtFileButton = '.new-file-btn-txt'
 const createNewMdFileButton = '.new-file-btn-md'
@@ -227,6 +227,7 @@ export type createResourceTypes =
   | 'folder'
   | 'txtFile'
   | 'mdFile'
+  | 'Document'
   | 'OpenDocument'
   | 'Microsoft Word'
 
@@ -424,20 +425,27 @@ const createDocumentFile = async (
   args: createResourceArgs,
   editorToOpen: string
 ): Promise<void> => {
-  const { page, name, type, content } = args
+  const { page, name, content, type } = args
   // for creating office suites documents we need the external app provider services to be ready
   // though the service is ready it takes some time for the list of office suites documents to be visible in the dropdown in the webUI
   // which requires a retry to check if the service is ready and the office suites documents is visible in the dropdown
+  let typeLocator = type
+  switch (type) {
+    case 'OpenDocument': {
+      typeLocator = 'Document'
+    }
+  }
+
   const isAppProviderServiceReadyInWebUI = await isAppProviderServiceForOfficeSuitesReadyInWebUI(
     page,
-    type
+    typeLocator
   )
   if (isAppProviderServiceReadyInWebUI === false) {
     throw new Error(
       `The document of type ${type} did not appear in the webUI for ${editorToOpen}. Possible reason could be the app provider service for ${editorToOpen} was not ready yet.`
     )
   }
-  await page.locator(util.format(createNewOfficeDocumentFileBUtton, type)).click()
+  await page.locator(util.format(createNewOfficeDocumentFileBUtton, typeLocator)).click()
   const resourceInput = page.locator(resourceNameInput)
   await resourceInput.clear()
   await resourceInput.fill(name)

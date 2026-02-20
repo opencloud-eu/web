@@ -9,21 +9,21 @@ app_registry:
       allow_creation: false
     - mime_type: application/vnd.oasis.opendocument.text
       extension: odt
-      name: OpenDocument
+      name: Document
       description: OpenDocument text document
       icon: ''
       default_app: Collabora
       allow_creation: true
     - mime_type: application/vnd.oasis.opendocument.spreadsheet
       extension: ods
-      name: OpenSpreadsheet
+      name: Spreadsheet
       description: OpenDocument spreadsheet document
       icon: ''
       default_app: Collabora
       allow_creation: true
     - mime_type: application/vnd.oasis.opendocument.presentation
       extension: odp
-      name: OpenPresentation
+      name: Presentation
       description: OpenDocument presentation document
       icon: ''
       default_app: Collabora
@@ -33,21 +33,21 @@ app_registry:
       name: Microsoft Word
       description: Microsoft Word document
       icon: ''
-      default_app: OnlyOffice
+      default_app: Collabora
       allow_creation: true
     - mime_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       extension: xlsx
       name: Microsoft Excel
       description: Microsoft Excel document
       icon: ''
-      default_app: OnlyOffice
+      default_app: Collabora
       allow_creation: true
     - mime_type: application/vnd.openxmlformats-officedocument.presentationml.presentation
       extension: pptx
       name: Microsoft PowerPoint
       description: Microsoft PowerPoint document
       icon: ''
-      default_app: OnlyOffice
+      default_app: Collabora
       allow_creation: true
     - mime_type: application/vnd.jupyter
       extension: ipynb

@@ -158,11 +158,11 @@ onMounted(() => {
     return
   }
 
-  document.querySelector(toggle).addEventListener('click', show)
+  document.querySelector(toggle)?.addEventListener('click', show)
 })
 
 onBeforeUnmount(() => {
-  document.querySelector(toggle).removeEventListener('click', show)
+  document.querySelector(toggle)?.removeEventListener('click', show)
   if (unref(drawer)) {
     closeDrawer(unref(drawer).id)
   }

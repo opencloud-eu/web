@@ -10,10 +10,12 @@
     <component :is="layout"></component>
     <modal-wrapper />
   </div>
+  <app-floating-action-button v-if="isMobile" />
 </template>
 <script setup lang="ts">
 import SkipTo from './components/SkipTo.vue'
 import ModalWrapper from './components/ModalWrapper.vue'
+import AppFloatingActionButton from './components/AppFloatingActionButton.vue'
 import { useLayout } from './composables/layout'
 import { computed, onMounted, ref, unref, watch } from 'vue'
 import { additionalTranslations } from './helpers/additionalTranslations' // eslint-disable-line
@@ -29,6 +31,7 @@ import { RouteLocation, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { isEqual } from 'lodash-es'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const resourcesStore = useResourcesStore()
 const themeStore = useThemeStore()
@@ -39,6 +42,7 @@ const router = useRouter()
 const route = useRoute()
 useHead()
 const { layout, layoutType } = useLayout({ router })
+const { isMobile } = useIsMobile()
 
 const { onInitialLoad } = useSideBar()
 onInitialLoad()
