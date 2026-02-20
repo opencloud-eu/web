@@ -1,10 +1,14 @@
 # Changelog
 
-## [5.2.0](https://github.com/opencloud-eu/web/releases/tag/v5.2.0) - 2026-02-20
+## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-02-20
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @dschmidt, @kulmann
+@AlexAndBear, @JammingBen, @dschmidt, @kulmann
+
+### 💥 Breaking changes
+
+- refactor!: mobile nav to web-pkg [[#2007](https://github.com/opencloud-eu/web/pull/2007)]
 
 ### 📈 Enhancement
 
