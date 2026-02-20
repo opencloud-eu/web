@@ -4,7 +4,6 @@ import Collaborator, { ICollaborator, IAccessDetails } from './collaborator'
 import { sidebar } from '../utils'
 import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
-import { locatorUtils } from '../../../utils'
 
 const invitePanel = '#oc-files-sharing-sidebar'
 const quickShareButton =
@@ -88,10 +87,7 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
 
   if (expirationDate) {
     await page.locator(showMoreOptionsButton).click()
-    await Promise.all([
-      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
-      page.getByTestId(calendarDatePickerId).click()
-    ])
+    await page.getByTestId(calendarDatePickerId).click()
     await Collaborator.setExpirationDate(page, expirationDate)
   }
   const federatedShare = recipients[0].shareType
