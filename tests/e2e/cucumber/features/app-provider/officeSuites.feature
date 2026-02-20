@@ -16,8 +16,8 @@ Feature: Integration with Collabora online office
 
   Scenario: create an OpenDocument file with Collabora
     When "Alice" creates the following resources
-      | resource         | type     | content              |
-      | OpenDocument.odt | Document | OpenDocument Content |
+      | resource         | type         | content              |
+      | OpenDocument.odt | OpenDocument | OpenDocument Content |
     And "Alice" creates a public link of following resource using the sidebar panel
       | resource         | role     | password |
       | OpenDocument.odt | Can edit | %public% |
@@ -28,12 +28,12 @@ Feature: Integration with Collabora online office
     And "Anonymous" unlocks the public link with password "%public%"
     Then "Anonymous" should see the content "OpenDocument Content" in editor "Collabora"
     When "Alice" edits the following resource
-      | resource         | type     | content                           |
-      | OpenDocument.odt | Document | Alice Edited OpenDocument Content |
+      | resource         | type         | content                           |
+      | OpenDocument.odt | OpenDocument | Alice Edited OpenDocument Content |
     Then "Anonymous" should see the content "Alice Edited OpenDocument Content" in editor "Collabora"
     When "Anonymous" edits the following resource
-      | resource         | type     | content                     |
-      | OpenDocument.odt | Document | Edited OpenDocument Content |
+      | resource         | type         | content                     |
+      | OpenDocument.odt | OpenDocument | Edited OpenDocument Content |
     Then "Alice" should see the content "Edited OpenDocument Content" in editor "Collabora"
     And "Alice" closes the file viewer
     When "Alice" edits the public link named "Unnamed link" of resource "OpenDocument.odt" changing role to "Can view"
@@ -98,15 +98,15 @@ Feature: Integration with Collabora online office
     When "Anonymous" opens the public link "spaceLink"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" creates the following resources
-      | resource           | type     | content                                                      |
-      | usingSpaceLink.odt | Document | public can create files in the project space using spaceLink |
+      | resource           | type         | content                                                      |
+      | usingSpaceLink.odt | OpenDocument | public can create files in the project space using spaceLink |
 
     # public create .odt file using folderLink
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" creates the following resources
-      | resource            | type     | content              |
-      | usingFolderLink.odt | Document | OpenDocument Content |
+      | resource            | type         | content              |
+      | usingFolderLink.odt | OpenDocument | OpenDocument Content |
 
     When "Alice" navigates to the project space "marketing.1"
     And "Alice" opens the following file in Collabora
@@ -125,16 +125,16 @@ Feature: Integration with Collabora online office
 
   Scenario: create files from office templates
     Given "Alice" uploads the following local file into personal space using API
-      | localFile    | to           |
-      | Template.ott | Template.ott |
+      | localFile     | to            |
+      | Template.ott  | Template.ott  |
 
     When "Alice" creates a file from template file "Template.ott" via "Collabora" using the context menu
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Collabora"
 
     When "Alice" closes the file viewer
     And following resources should be displayed in the files list for user "Alice"
-      | resource     |
-      | Template.odt |
+      | resource      |
+      | Template.odt  |
 
     When "Alice" opens template file "Template.ott" via "Collabora" using the context menu
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Collabora"

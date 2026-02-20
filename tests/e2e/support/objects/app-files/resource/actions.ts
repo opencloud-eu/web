@@ -35,7 +35,7 @@ const breadcrumbResourceNameSelector =
   '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
-const addNewResourceButton = '.oc-app-floating-action-button'
+const addNewResourceButton = `.oc-app-floating-action-button`
 const createNewFolderButton = '#new-folder-btn'
 const createNewTxtFileButton = '.new-file-btn-txt'
 const createNewMdFileButton = '.new-file-btn-md'
@@ -223,7 +223,13 @@ export const clickResourceFromBreadcrumb = async ({
 
 /**/
 
-export type createResourceTypes = 'folder' | 'txtFile' | 'mdFile' | 'Document' | 'Microsoft Word'
+export type createResourceTypes =
+  | 'folder'
+  | 'txtFile'
+  | 'mdFile'
+  | 'Document'
+  | 'OpenDocument'
+  | 'Microsoft Word'
 
 export interface createResourceArgs {
   page: Page
@@ -402,7 +408,7 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       await editTextDocument({ page, content, name })
       break
     }
-    case 'Document': {
+    case 'OpenDocument': {
       // By Default when OpenDocument is created, it is opened with collabora if both app-provider services are running together
       await createDocumentFile(args, 'Collabora')
       break
@@ -419,20 +425,27 @@ const createDocumentFile = async (
   args: createResourceArgs,
   editorToOpen: string
 ): Promise<void> => {
-  const { page, name, type, content } = args
+  const { page, name, content, type } = args
   // for creating office suites documents we need the external app provider services to be ready
   // though the service is ready it takes some time for the list of office suites documents to be visible in the dropdown in the webUI
   // which requires a retry to check if the service is ready and the office suites documents is visible in the dropdown
+  let typeLocator = type
+  switch (type) {
+    case 'OpenDocument': {
+      typeLocator = 'Document'
+    }
+  }
+
   const isAppProviderServiceReadyInWebUI = await isAppProviderServiceForOfficeSuitesReadyInWebUI(
     page,
-    type
+    typeLocator
   )
   if (isAppProviderServiceReadyInWebUI === false) {
     throw new Error(
       `The document of type ${type} did not appear in the webUI for ${editorToOpen}. Possible reason could be the app provider service for ${editorToOpen} was not ready yet.`
     )
   }
-  await page.locator(util.format(createNewOfficeDocumentFileBUtton, type)).click()
+  await page.locator(util.format(createNewOfficeDocumentFileBUtton, typeLocator)).click()
   const resourceInput = page.locator(resourceNameInput)
   await resourceInput.clear()
   await resourceInput.fill(name)
@@ -1730,7 +1743,7 @@ export const editResources = async (args: editResourcesArgs): Promise<void> => {
   }
 
   switch (type) {
-    case 'Document':
+    case 'OpenDocument':
       await fillContentOfDocument({ page, text: content, editorToOpen: 'Collabora' })
       break
     case 'Microsoft Word':
@@ -2110,7 +2123,7 @@ export const canEditContent = async ({
 }): Promise<boolean> => {
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (type) {
-    case 'Document':
+    case 'OpenDocument':
       const collaboraDocPermissionModeLocator = editorMainFrame.locator(
         collaboraDocPermissionModeSelector
       )
