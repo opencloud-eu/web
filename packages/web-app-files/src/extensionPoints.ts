@@ -1,6 +1,7 @@
 import {
   ActionExtension,
   ExtensionPoint,
+  FloatingActionButtonExtension,
   FolderViewExtension,
   SidebarPanelExtension
 } from '@opencloud-eu/web-pkg'
@@ -36,6 +37,12 @@ export const fileSideBarExtensionPoint: ExtensionPoint<SidebarPanelExtension<any
   extensionType: 'sidebarPanel',
   multiple: true
 }
+
+export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonExtension> = {
+  id: 'global.floating-action-button',
+  extensionType: 'floatingActionButton'
+}
+
 export const folderViewsFolderExtensionPoint: ExtensionPoint<FolderViewExtension> = {
   id: 'app.files.folder-views.folder',
   extensionType: 'folderView'
@@ -95,7 +102,8 @@ export const extensionPoints = () => {
       folderViewsTrashOverviewExtensionPoint,
       folderViewsSharedViaLinkExtensionPoint,
       folderViewsSharedWithOthersExtensionPoint,
-      folderViewsSearchExtensionPoint
+      folderViewsSearchExtensionPoint,
+      floatingActionButtonExtension
     ]
   })
 }

@@ -42,7 +42,12 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner, CustomComponentTarget } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  CustomComponentTarget,
+  FloatingActionButtonExtension,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg'
 import TopBar from '../components/Topbar/TopBar.vue'
 import MessageBar from '../components/MessageBar.vue'
 import SidebarNav from '../components/SidebarNav/SidebarNav.vue'
@@ -56,6 +61,7 @@ const MOBILE_BREAKPOINT = 640
 
 const { $gettext } = useGettext()
 const { navItems } = useNavItems()
+const { requestExtensions } = useExtensionRegistry()
 
 const requiredAuthContext = useRouteMeta('authContext')
 const { areSpacesLoading } = useSpacesLoading()
@@ -73,8 +79,15 @@ const onResize = () => {
   isMobileWidth.value = window.innerWidth < MOBILE_BREAKPOINT
 }
 
+const hasFloatingActionButton = computed(() => {
+  return !!requestExtensions<FloatingActionButtonExtension>({
+    id: 'global.floating-action-button',
+    extensionType: 'floatingActionButton'
+  }).filter((extension) => extension.isActive()).length
+})
+
 const isSidebarVisible = computed(() => {
-  return !unref(isMobileWidth) && unref(navItems).length
+  return !unref(isMobileWidth) && (unref(navItems).length || unref(hasFloatingActionButton))
 })
 
 const isIE11 = !!(window as any).MSInputMethodContext && !!(document as any).documentMode
