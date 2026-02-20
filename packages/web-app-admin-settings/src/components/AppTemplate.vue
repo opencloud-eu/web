@@ -7,7 +7,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="pb-2 px-4 bg-role-surface top-0 z-20"
+            class="pb-2 px-4 top-0 z-20"
             :class="{ sticky: isSticky }"
           >
             <div class="flex justify-between items-center h-13">

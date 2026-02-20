@@ -9,7 +9,7 @@
       <h1 class="sr-only" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
-        class="flex items-center files-app-bar-controls min-h-13"
+        class="flex items-center files-app-bar-controls min-h-12"
         :class="{
           'justify-between': breadcrumbs.length || hasSharesNavigation,
           'justify-end': !breadcrumbs.length && !hasSharesNavigation
