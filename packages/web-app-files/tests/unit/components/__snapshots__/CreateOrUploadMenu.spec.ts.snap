@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CreateOrUploadMenu component > action buttons > should show and be enabled if file creation is possible 1`] = `
-"<oc-drop-stub title="New" closeonclick="true" dropid="oc-drop-1" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="create-or-upload-drop w-auto min-w-3xs">
+"<oc-drop-stub title="New" closeonclick="true" dropid="create-or-upload-drop" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="w-auto min-w-3xs">
   <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">
@@ -44,7 +44,7 @@ exports[`CreateOrUploadMenu component > action buttons > should show and be enab
 `;
 
 exports[`CreateOrUploadMenu component > file handlers > should show entries for all new file handlers 1`] = `
-"<oc-drop-stub title="New" closeonclick="true" dropid="oc-drop-3" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="create-or-upload-drop w-auto min-w-3xs">
+"<oc-drop-stub title="New" closeonclick="true" dropid="create-or-upload-drop" isnestedelement="false" mode="click" offset="-10,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#test-toggle" enforcedroponmobile="false" class="w-auto min-w-3xs">
   <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">

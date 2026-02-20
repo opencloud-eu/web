@@ -223,12 +223,7 @@ export const clickResourceFromBreadcrumb = async ({
 
 /**/
 
-export type createResourceTypes =
-  | 'folder'
-  | 'txtFile'
-  | 'mdFile'
-  | 'OpenDocument'
-  | 'Microsoft Word'
+export type createResourceTypes = 'folder' | 'txtFile' | 'mdFile' | 'Document' | 'Microsoft Word'
 
 export interface createResourceArgs {
   page: Page
@@ -407,7 +402,7 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       await editTextDocument({ page, content, name })
       break
     }
-    case 'OpenDocument': {
+    case 'Document': {
       // By Default when OpenDocument is created, it is opened with collabora if both app-provider services are running together
       await createDocumentFile(args, 'Collabora')
       break
@@ -1735,7 +1730,7 @@ export const editResources = async (args: editResourcesArgs): Promise<void> => {
   }
 
   switch (type) {
-    case 'OpenDocument':
+    case 'Document':
       await fillContentOfDocument({ page, text: content, editorToOpen: 'Collabora' })
       break
     case 'Microsoft Word':
@@ -2115,7 +2110,7 @@ export const canEditContent = async ({
 }): Promise<boolean> => {
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (type) {
-    case 'OpenDocument':
+    case 'Document':
       const collaboraDocPermissionModeLocator = editorMainFrame.locator(
         collaboraDocPermissionModeSelector
       )

@@ -2,7 +2,8 @@
   <oc-drop
     :title="$gettext('New')"
     :toggle="toggle"
-    class="create-or-upload-drop w-auto min-w-3xs"
+    drop-id="create-or-upload-drop"
+    class="w-auto min-w-3xs"
     mode="click"
     close-on-click
     padding-size="small"
@@ -215,7 +216,7 @@ const folderIconResource = computed(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .create-or-upload-drop .oc-icon svg {
+  #create-or-upload-drop .oc-icon svg {
     /* reset the resource icon height because the ResourceIcon component messes with it */
     @apply h-5.5;
   }

@@ -28,12 +28,12 @@ Feature: Integration with Collabora online office
     And "Anonymous" unlocks the public link with password "%public%"
     Then "Anonymous" should see the content "OpenDocument Content" in editor "Collabora"
     When "Alice" edits the following resource
-      | resource         | type         | content                           |
-      | OpenDocument.odt | OpenDocument | Alice Edited OpenDocument Content |
+      | resource         | type     | content                           |
+      | OpenDocument.odt | Document | Alice Edited OpenDocument Content |
     Then "Anonymous" should see the content "Alice Edited OpenDocument Content" in editor "Collabora"
     When "Anonymous" edits the following resource
-      | resource         | type         | content                     |
-      | OpenDocument.odt | OpenDocument | Edited OpenDocument Content |
+      | resource         | type     | content                     |
+      | OpenDocument.odt | Document | Edited OpenDocument Content |
     Then "Alice" should see the content "Edited OpenDocument Content" in editor "Collabora"
     And "Alice" closes the file viewer
     When "Alice" edits the public link named "Unnamed link" of resource "OpenDocument.odt" changing role to "Can view"
