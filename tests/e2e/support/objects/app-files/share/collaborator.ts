@@ -2,7 +2,6 @@ import { Page, expect } from '@playwright/test'
 import util from 'util'
 import { Group, User } from '../../../types'
 import { getActualExpiryDate } from '../../../utils/datePicker'
-import { locatorUtils } from '../../../utils'
 
 export interface ICollaborator {
   collaborator: User | Group
@@ -253,15 +252,9 @@ export default class Collaborator {
     await page
       .locator(util.format(Collaborator.collaboratorEditDropdownButton, collaboratorRow))
       .click()
-
-    const panel = page.locator(Collaborator.invitePanel)
-    await Promise.all([
-      locatorUtils.waitForEvent(panel, 'transitionend'),
-      page
-        .locator(util.format(Collaborator.setExpirationDateCollaboratorButton, collaboratorRow))
-        .click()
-    ])
-
+    await page
+      .locator(util.format(Collaborator.setExpirationDateCollaboratorButton, collaboratorRow))
+      .click()
     await Collaborator.setExpirationDate(page, expirationDate)
   }
 
