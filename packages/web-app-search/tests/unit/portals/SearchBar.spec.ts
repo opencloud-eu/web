@@ -62,6 +62,10 @@ const selectors = {
 
 vi.mock('lodash-es', () => ({ debounce: (fn: unknown) => fn, kebabCase: (fn: unknown) => fn }))
 vi.mock('../../../src/composables/useAvailableProviders')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useIsAppActive: () => false
+}))
 
 beforeEach(() => {
   providerFiles.previewSearch.search.mockImplementation(() => {

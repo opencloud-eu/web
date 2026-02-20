@@ -1,6 +1,5 @@
 import { loadDesignSystem, pages, loadTranslations, supportedLanguages } from './defaults'
 import { router } from './router'
-import { PortalTarget } from '@opencloud-eu/web-pkg'
 import { createHead } from '@vueuse/head'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
@@ -41,7 +40,6 @@ import {
 } from '@opencloud-eu/web-client'
 import { loadCustomTranslations } from './helpers/customTranslations'
 import { createApp, watch } from 'vue'
-import PortalVue, { createWormhole } from 'portal-vue'
 import { createPinia } from 'pinia'
 import Avatar from './components/Avatar.vue'
 import { extensionPoints } from './extensionPoints'
@@ -113,14 +111,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     })
     announcePasswordPolicyService({ app })
     await announceAuthClient(configStore)
-
-    app.config.globalProperties.$wormhole = createWormhole()
-    app.use(PortalVue, {
-      wormhole: app.config.globalProperties.$wormhole,
-      // do not register portal-target component so we can register our own wrapper
-      portalTargetName: false
-    })
-    app.component('PortalTarget', PortalTarget)
 
     const applicationsPromise = initializeApplications({
       app,

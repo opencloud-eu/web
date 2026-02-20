@@ -102,11 +102,7 @@
             </oc-button>
           </dd>
         </template>
-        <portal-target
-          name="app.files.sidebar.file.details.table"
-          :slot-props="{ space, resource }"
-          :multiple="true"
-        />
+        <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
         <template v-if="hasTags">
           <dt>
             {{ $gettext('Tags') }}
@@ -157,7 +153,8 @@ import { ResourceIcon } from '@opencloud-eu/web-pkg'
 import { tagsHelper } from '../../../helpers/contextualHelpers'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import TagsSelect from './TagsSelect.vue'
-import { WebDavDetails } from '@opencloud-eu/web-pkg'
+import { WebDavDetails, CustomComponentTarget } from '@opencloud-eu/web-pkg'
+import { fileSideBarFileDetailsTableExtensionPoint } from '../../../extensionPoints'
 
 const { previewEnabled = true, tagsEnabled = true } = defineProps<{
   previewEnabled?: boolean

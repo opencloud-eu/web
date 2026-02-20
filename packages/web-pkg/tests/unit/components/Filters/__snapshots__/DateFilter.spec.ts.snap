@@ -85,25 +85,25 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input" type="date" value="">
+              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-0" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
               <!--v-if-->
             </div>
-            <!--v-if-->
+            <div id="v-0"></div>
           </div>
           <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-6">To
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input" type="date" value="">
+              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-1" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
               <!--v-if-->
             </div>
-            <!--v-if-->
+            <div id="v-1"></div>
           </div>
         </div>
         <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
@@ -202,25 +202,25 @@ exports[`DateFilter > renders all items 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input" type="date" value="">
+              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-0" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
               <!--v-if-->
             </div>
-            <!--v-if-->
+            <div id="v-0"></div>
           </div>
           <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-3">To
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input" type="date" value="">
+              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-1" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
               <!--v-if-->
             </div>
-            <!--v-if-->
+            <div id="v-1"></div>
           </div>
         </div>
         <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
