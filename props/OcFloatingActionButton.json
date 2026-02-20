@@ -1,5 +1,12 @@
 [
   {
+    "name": "buttonId",
+    "required": false,
+    "description": "The id of the primary action button.",
+    "default": "''",
+    "type": "string"
+  },
+  {
     "name": "ariaLabel",
     "required": false,
     "description": "The aria label of the primary action button.",
