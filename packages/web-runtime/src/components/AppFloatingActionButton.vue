@@ -23,7 +23,7 @@
       </div>
       <template v-else-if="!floatingActionButton.isDisabled?.()">
         <oc-floating-action-button
-          :id="getButtonId(floatingActionButton.id)"
+          :button-id="getButtonId(floatingActionButton.id)"
           class="oc-app-floating-action-button"
           mode="action"
           :handler="floatingActionButton.handler"

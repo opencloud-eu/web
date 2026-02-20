@@ -18,6 +18,7 @@
       </oc-button>
     </template>
     <oc-button
+      :id="buttonId"
       class="rounded-full size-14"
       appearance="filled"
       color-role="primary"
@@ -36,6 +37,11 @@ import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
+  /**
+   * @docs The id of the primary action button.
+   * @default ''
+   */
+  buttonId?: string
   /**
    * @docs The aria label of the primary action button.
    * @default 'Open actions menu'
@@ -66,8 +72,9 @@ export interface Props {
 }
 
 const {
-  mode = 'menu',
+  buttonId = '',
   ariaLabel = '',
+  mode = 'menu',
   items = [],
   handler = null,
   to = null
