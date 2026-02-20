@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
 - feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
 - feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
 
