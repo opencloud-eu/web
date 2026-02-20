@@ -31,6 +31,7 @@
   </oc-text-input>
   <oc-drop
     ref="dropRef"
+    toggle="#create-shortcut-modal-url-input"
     class="w-lg"
     padding-size="remove"
     drop-id="create-shortcut-modal-contextmenu"
@@ -315,7 +316,7 @@ export default defineComponent({
       }
 
       e.stopPropagation()
-      ;(unref(dropRef) as InstanceType<typeof OcDrop>).hide()
+      unref(dropRef).hide()
     }
 
     const onKeyEnterDrop = (e: Event) => {
@@ -334,7 +335,7 @@ export default defineComponent({
         dropItemResourceClicked(unref(searchResult)?.values?.[unref(activeDropItemIndex) - 1])
       }
 
-      ;(unref(dropRef) as InstanceType<typeof OcDrop>).hide()
+      unref(dropRef).hide()
     }
 
     const onHideDrop = () => {
@@ -351,7 +352,7 @@ export default defineComponent({
       const showDrop = inputUrl.value.trim().length
 
       if (showDrop) {
-        ;(unref(dropRef) as InstanceType<typeof OcDrop>).show()
+        unref(dropRef).show()
       }
     }
 
@@ -362,11 +363,11 @@ export default defineComponent({
       const hideDrop = !inputUrl.value.trim().length
 
       if (hideDrop) {
-        ;(unref(dropRef) as InstanceType<typeof OcDrop>).hide()
+        unref(dropRef).hide()
         return
       }
 
-      ;(unref(dropRef) as InstanceType<typeof OcDrop>).show()
+      unref(dropRef).show()
 
       if (!isLocationPublicActive(router, 'files-public-link')) {
         debouncedSearch()
