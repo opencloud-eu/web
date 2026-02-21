@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-02-20
+## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-02-21
 
 ### ❤️ Thanks to all contributors! ❤️
 
