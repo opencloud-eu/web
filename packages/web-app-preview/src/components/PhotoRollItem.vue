@@ -2,7 +2,7 @@
   <div
     ref="photoRollItem"
     class="flex flex-col items-center p-4 mb-1 photo-roll-item"
-    :class="{ 'bg-role-surface rounded-md': isActive }"
+    :class="{ 'bg-role-secondary-container rounded-md': isActive }"
   >
     <oc-button
       appearance="raw"
