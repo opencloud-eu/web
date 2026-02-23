@@ -5,7 +5,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 sticky">
+        <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 bg-role-surface sticky">
           <div class="flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <!--v-if-->
@@ -62,7 +62,7 @@ exports[`Users view > list view > renders list initially 1`] = `
   <main class="flex app-content size-full rounded-l-xl">
     <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
       <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 sticky">
+        <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 bg-role-surface sticky">
           <div class="flex justify-between items-center h-13">
             <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
             <!--v-if-->
