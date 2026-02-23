@@ -4,7 +4,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
 "<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
   <div class="flex justify-between items-center">
     <div class="flex">
-      <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>
+      <h3 class="font-semibold text-base m-0">Share with people</h3>
       <oc-contextual-helper-stub title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="pl-1"></oc-contextual-helper-stub>
     </div>
     <copy-private-link-stub resource="undefined"></copy-private-link-stub>
@@ -41,7 +41,7 @@ exports[`FileShares > current space > loads space members if a space is given an
 "<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
   <div class="flex justify-between items-center">
     <div class="flex">
-      <h3 class="font-semibold text-base m-0" data-msgid="Share with people" data-current-language="en">Share with people</h3>
+      <h3 class="font-semibold text-base m-0">Share with people</h3>
       <oc-contextual-helper-stub title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="pl-1"></oc-contextual-helper-stub>
     </div>
     <copy-private-link-stub resource="undefined"></copy-private-link-stub>

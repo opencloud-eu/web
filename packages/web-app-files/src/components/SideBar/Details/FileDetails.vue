@@ -79,7 +79,7 @@
           <dd data-testid="ownerDisplayName">
             <p class="m-0">
               {{ ownerDisplayName }}
-              <span v-if="ownedByCurrentUser" v-translate>(me)</span>
+              <span v-if="ownedByCurrentUser" v-text="$gettext('(me)')" />
             </p>
           </dd>
         </template>

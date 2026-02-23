@@ -2,7 +2,7 @@
   <div id="oc-files-sharing-sidebar" class="relative rounded-sm">
     <div class="flex justify-between items-center">
       <div class="flex">
-        <h3 v-translate class="font-semibold text-base m-0">Share with people</h3>
+        <h3 class="font-semibold text-base m-0" v-text="$gettext('Share with people')" />
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
       </div>
       <copy-private-link :resource="resource" />

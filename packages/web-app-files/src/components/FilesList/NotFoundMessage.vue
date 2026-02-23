@@ -5,12 +5,14 @@
   >
     <oc-icon name="cloud" type="div" size="xxlarge" />
     <div class="text-role-on-surface-variant text-xl">
-      <span v-translate>Resource not found</span>
+      <span v-text="$gettext('Resource not found')" />
     </div>
     <div class="text-role-on-surface-variant">
-      <span v-translate>
-        We went looking everywhere, but were unable to find the selected resource.
-      </span>
+      <span
+        v-text="
+          $gettext('We went looking everywhere, but were unable to find the selected resource.')
+        "
+      />
     </div>
     <div class="mt-2">
       <oc-button
@@ -20,7 +22,7 @@
         appearance="raw"
         :to="spacesRoute"
       >
-        <span v-translate>Go to »Spaces Overview«</span>
+        <span v-text="$gettext('Go to »Spaces Overview«')" />
       </oc-button>
       <oc-button
         v-if="showHomeButton"
@@ -29,7 +31,7 @@
         appearance="raw"
         :to="homeRoute"
       >
-        <span v-translate>Go to »Personal« page</span>
+        <span v-text="$gettext('Go to »Personal« page')" />
       </oc-button>
       <oc-button
         v-if="showPublicLinkButton"
@@ -38,7 +40,7 @@
         appearance="raw"
         :to="publicLinkRoute"
       >
-        <span v-translate>Reload public link</span>
+        <span v-text="$gettext('Reload public link')" />
       </oc-button>
     </div>
   </div>

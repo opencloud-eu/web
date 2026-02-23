@@ -1,7 +1,7 @@
 <template>
   <div v-if="noGroups" class="flex flex-col items-center text-center mt-12">
     <oc-icon name="group-2" size="xxlarge" />
-    <p v-translate>Select a group to view details</p>
+    <p v-text="$gettext('Select a group to view details')" />
   </div>
   <div
     v-if="multipleGroups"

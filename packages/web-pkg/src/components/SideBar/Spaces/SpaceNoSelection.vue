@@ -2,7 +2,7 @@
   <div class="mt-12">
     <div class="flex flex-col items-center space-info text-center">
       <oc-icon name="layout-grid" size="xxlarge" />
-      <p v-translate>Select a space to view details</p>
+      <p v-text="$gettext('Select a space to view details')" />
     </div>
   </div>
 </template>
