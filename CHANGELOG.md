@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency rollup-plugin-visualizer to v7 [[#2024](https://github.com/opencloud-eu/web/pull/2024)]
 - chore: adjust dev docker app-registry [[#1995](https://github.com/opencloud-eu/web/pull/1995)]
 - chore: adjust dev docker app-registry [[#1994](https://github.com/opencloud-eu/web/pull/1994)]
 - chore(deps): update typescript-eslint monorepo to v8.56.0 [[#1955](https://github.com/opencloud-eu/web/pull/1955)]
