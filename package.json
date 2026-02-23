@@ -78,7 +78,7 @@
     "qs": "^6.15.0",
     "requirejs": "2.3.8",
     "rollup-plugin-gzip": "^4.0.0",
-    "rollup-plugin-visualizer": "6.0.5",
+    "rollup-plugin-visualizer": "7.0.0",
     "simple-git": "3.31.1",
     "tailwindcss": "^4.1.11",
     "ts-node": "10.9.2",
