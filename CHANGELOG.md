@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#1996](https://github.com/opencloud-eu/web/pull/1996)]
 - chore(deps): update dependency rollup-plugin-visualizer to v7 [[#2024](https://github.com/opencloud-eu/web/pull/2024)]
 - chore: adjust dev docker app-registry [[#1995](https://github.com/opencloud-eu/web/pull/1995)]
 - chore: adjust dev docker app-registry [[#1994](https://github.com/opencloud-eu/web/pull/1994)]
