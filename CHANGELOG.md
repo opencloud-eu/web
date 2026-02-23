@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.0.3 [[#2013](https://github.com/opencloud-eu/web/pull/2013)]
 - chore(deps): update dependency fast-xml-parser to v5.3.7 [[#2014](https://github.com/opencloud-eu/web/pull/2014)]
 - chore(deps): update devdependencies (non-major) [[#1996](https://github.com/opencloud-eu/web/pull/1996)]
 - chore(deps): update dependency rollup-plugin-visualizer to v7 [[#2024](https://github.com/opencloud-eu/web/pull/2024)]
