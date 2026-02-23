@@ -11,22 +11,6 @@
       :batch-action-items="selectedUsers"
       :show-view-options="true"
     >
-      <template #topbarActions="{ limitedScreenSpace }">
-        <div>
-          <oc-button
-            v-if="createUserAction.isVisible()"
-            id="create-user-btn"
-            v-oc-tooltip="limitedScreenSpace ? createUserAction.label() : undefined"
-            :aria-label="limitedScreenSpace ? createUserAction.label() : undefined"
-            class="mr-2"
-            appearance="filled"
-            @click="createUserAction.handler()"
-          >
-            <oc-icon :name="createUserActionIcon" />
-            <span v-if="!limitedScreenSpace" v-text="createUserAction.label()" />
-          </oc-button>
-        </div>
-      </template>
       <template #mainContent>
         <users-list
           :is-loading="isLoading"
@@ -139,8 +123,7 @@ import {
   useUserActionsRemoveFromGroups,
   useUserActionsAddToGroups,
   useUserActionsEditLogin,
-  useUserActionsEditQuota,
-  useUserActionsCreateUser
+  useUserActionsEditQuota
 } from '../composables'
 import { User, Group, AppRole, Quota } from '@opencloud-eu/web-client/graph/generated'
 import {
@@ -206,13 +189,6 @@ export default defineComponent({
 
     const writableGroups = computed<Group[]>(() => {
       return unref(groups).filter((g) => !g.groupTypes?.includes('ReadOnly'))
-    })
-
-    const { actions: createUserActions } = useUserActionsCreateUser()
-    const createUserAction = computed(() => unref(createUserActions)[0])
-    const createUserActionIcon = computed(() => {
-      const action = unref(createUserAction)
-      return typeof action.icon === 'function' ? action.icon() : action.icon
     })
 
     const { actions: deleteActions } = useUserActionsDelete()
@@ -503,8 +479,6 @@ export default defineComponent({
       isFilteringMandatory,
       sideBarPanelContext,
       sideBarAvailablePanels,
-      createUserAction,
-      createUserActionIcon,
       userSettingsStore,
       isSideBarOpen
     }

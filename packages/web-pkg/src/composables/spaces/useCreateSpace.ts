@@ -1,10 +1,15 @@
 import { extractStorageId, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
-import { useResourcesStore } from '../piniaStores'
+import { useMessages, useResourcesStore, useSpacesStore } from '../piniaStores'
+import { useGettext } from 'vue3-gettext'
 
 export const useCreateSpace = () => {
   const clientService = useClientService()
   const resourcesStore = useResourcesStore()
+  const { $gettext } = useGettext()
+  const spacesStore = useSpacesStore()
+  const { upsertResource } = useResourcesStore()
+  const { showMessage, showErrorMessage } = useMessages()
 
   const createSpace = (name: string) => {
     const { graphAuthenticated } = clientService
@@ -20,5 +25,21 @@ export const useCreateSpace = () => {
     return spaceFolder
   }
 
-  return { createSpace, createDefaultMetaFolder }
+  const addNewSpace = async (name: string) => {
+    try {
+      const createdSpace = await createSpace(name)
+      upsertResource(createdSpace)
+      spacesStore.upsertSpace(createdSpace)
+      showMessage({ title: $gettext('Space was created successfully') })
+      return createdSpace
+    } catch (error) {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Creating space failed…'),
+        errors: [error]
+      })
+    }
+  }
+
+  return { createSpace, createDefaultMetaFolder, addNewSpace }
 }

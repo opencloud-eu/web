@@ -14,9 +14,6 @@ exports[`Users view > list view > renders initially warning if filters are manda
             </div>
           </div>
           <div class="flex items-center mt-1 min-h-10">
-            <div>
-              <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="mr-2"></oc-button-stub>
-            </div>
             <!--v-if-->
           </div>
         </div>
@@ -74,9 +71,6 @@ exports[`Users view > list view > renders list initially 1`] = `
             </div>
           </div>
           <div class="flex items-center mt-1 min-h-10">
-            <div>
-              <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="create-user-btn" class="mr-2"></oc-button-stub>
-            </div>
             <!--v-if-->
           </div>
         </div>

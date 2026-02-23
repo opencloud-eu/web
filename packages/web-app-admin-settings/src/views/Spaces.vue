@@ -11,14 +11,6 @@
       :batch-action-items="selectedSpaces"
       :show-view-options="true"
     >
-      <template #topbarActions="{ limitedScreenSpace }">
-        <create-space
-          v-if="hasCreatePermission"
-          :show-label="!limitedScreenSpace"
-          class="mr-2"
-          @space-created="(space: SpaceResource) => spaceSettingsStore.upsertSpace(space)"
-        />
-      </template>
       <template #sideBarHeader>
         <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
       </template>
@@ -72,8 +64,7 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsEditQuota,
   AppLoadingSpinner,
-  useAbility,
-  CreateSpace
+  useAbility
 } from '@opencloud-eu/web-pkg'
 import { call, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -112,8 +103,6 @@ const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
 const itemsPerPage = computed(() => {
   return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
 })
-
-const hasCreatePermission = computed(() => can('create-all', 'Drive'))
 
 const loadResourcesTask = useTask(function* (signal) {
   const drives = yield* call(
