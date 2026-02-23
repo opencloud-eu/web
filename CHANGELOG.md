@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.39.15 [[#2016](https://github.com/opencloud-eu/web/pull/2016)]
 - fix(deps): update dependency vue-router to v5.0.3 [[#2013](https://github.com/opencloud-eu/web/pull/2013)]
 - chore(deps): update dependency fast-xml-parser to v5.3.7 [[#2014](https://github.com/opencloud-eu/web/pull/2014)]
 - chore(deps): update devdependencies (non-major) [[#1996](https://github.com/opencloud-eu/web/pull/1996)]
