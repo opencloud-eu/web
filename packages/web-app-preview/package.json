@@ -17,6 +17,6 @@
     "@vueuse/core": "^14.0.0",
     "lodash-es": "^4.17.21",
     "vue3-gettext": "2.4.0",
-    "vue-router": "5.0.2"
+    "vue-router": "5.0.3"
   }
 }
