@@ -31,7 +31,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
       </button>
       <!--v-if-->
     </div>
-    <portal to="app.design-system.password-policy">
+    <teleport-stub defer="" to="#v-0">
       <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
         <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/close-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -45,11 +45,11 @@ exports[`OcTextInput > password input field > password policy > displays error s
           <!--v-if-->
         </div>
       </div>
-    </portal>
+    </teleport-stub>
     <!--v-if-->
   </div>
   <!--v-if-->
-  <!---->
+  <div id="v-0"></div>
 </div>"
 `;
 
@@ -84,7 +84,7 @@ exports[`OcTextInput > password input field > password policy > displays success
       </button>
       <!--v-if-->
     </div>
-    <portal to="app.design-system.password-policy">
+    <teleport-stub defer="" to="#v-0">
       <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
         <div class="flex items-center oc-text-input-password-policy-rule"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 mr-1"><svg data-testid="inline-svg-stub" src="icons/checkbox-circle-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -98,10 +98,10 @@ exports[`OcTextInput > password input field > password policy > displays success
           <!--v-if-->
         </div>
       </div>
-    </portal>
+    </teleport-stub>
     <!--v-if-->
   </div>
   <!--v-if-->
-  <!---->
+  <div id="v-0"></div>
 </div>"
 `;

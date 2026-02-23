@@ -52,7 +52,7 @@ The following example shows how to use the component to display action items.
 
 ### Mobile
 
-The mobile version of the drop uses a bottom drawer to display its content. It requires a portal to `app.runtime.bottom.drawer` to be set up in your application layout.
+The mobile version of the drop uses a bottom drawer to display its content. It requires a div with the id `app-runtime-bottom-drawer` to be set up in your application layout.
 
 You can specify a title for the bottom drawer using the `title` prop.
 

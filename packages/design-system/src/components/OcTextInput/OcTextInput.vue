@@ -28,6 +28,7 @@
         :type="type"
         :value="modelValue"
         :disabled="disabled || readOnly"
+        :teleport-id="teleportId"
         v-on="additionalListeners"
         @change="onChange(($event.target as HTMLInputElement).value)"
         @input="onInput(($event.target as HTMLInputElement).value)"
@@ -78,17 +79,16 @@
         v-text="descriptionMessage"
       />
     </div>
-    <portal-target v-if="type === 'password'" name="app.design-system.password-policy" />
+    <div :id="teleportId" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, unref, useAttrs, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, unref, useAttrs, useId, useTemplateRef, watch } from 'vue'
 import { PasswordPolicy, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInputPassword from '../OcTextInputPassword/OcTextInputPassword.vue'
-import { PortalTarget } from 'portal-vue'
 import { debounce } from 'lodash-es'
 
 defineOptions({
@@ -241,6 +241,8 @@ const {
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
+
+const teleportId = useId()
 
 const showErrorMessage = ref(false)
 const showDescriptionMessage = computed(() => {

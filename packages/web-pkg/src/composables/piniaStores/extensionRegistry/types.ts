@@ -59,6 +59,7 @@ export interface FolderViewExtension extends Extension {
 export interface CustomComponentExtension extends Extension {
   type: 'customComponent'
   content: Slot | Component
+  componentProps?: () => Record<string, unknown>
 }
 
 export interface AccountExtension extends Extension {

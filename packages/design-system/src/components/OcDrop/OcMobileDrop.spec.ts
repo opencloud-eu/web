@@ -143,7 +143,7 @@ const getWrapper = (props = { closeOnClick: false }) => {
         ...props
       },
       attachTo: document.body,
-      global: { renderStubDefaultSlot: true, plugins }
+      global: { renderStubDefaultSlot: true, plugins, stubs: { Teleport: true } }
     })
   }
 }

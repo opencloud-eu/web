@@ -17,10 +17,8 @@
       <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
-      <portal-target
-        name="app.files.sidebar.sharing.shared-with.top"
-        :slot-props="{ space, resource }"
-        :multiple="true"
+      <custom-component-target
+        :extension-point="fileSideBarSharesPanelSharedWithTopExtensionPoint"
       />
       <ul
         id="files-collaborators-list"
@@ -39,10 +37,8 @@
             @on-delete="deleteShareConfirmation"
           />
         </li>
-        <portal-target
-          name="app.files.sidebar.sharing.shared-with.bottom"
-          :slot-props="{ space, resource }"
-          :multiple="true"
+        <custom-component-target
+          :extension-point="fileSideBarSharesPanelSharedWithBottomExtensionPoint"
         />
       </ul>
       <div v-if="showShareToggle" class="flex justify-center">
@@ -94,7 +90,8 @@ import {
   useConfigStore,
   useSharesStore,
   useResourcesStore,
-  useCanShare
+  useCanShare,
+  CustomComponentTarget
 } from '@opencloud-eu/web-pkg'
 import { isLocationSharesActive } from '@opencloud-eu/web-pkg'
 import { textUtils } from '../../../helpers/textUtils'
@@ -114,13 +111,18 @@ import {
 } from '@opencloud-eu/web-client'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
 import CopyPrivateLink from '../../Shares/CopyPrivateLink.vue'
+import {
+  fileSideBarSharesPanelSharedWithTopExtensionPoint,
+  fileSideBarSharesPanelSharedWithBottomExtensionPoint
+} from '../../../extensionPoints'
 
 export default defineComponent({
   name: 'FileShares',
   components: {
     CopyPrivateLink,
     InviteCollaboratorForm,
-    CollaboratorListItem
+    CollaboratorListItem,
+    CustomComponentTarget
   },
   setup() {
     const userStore = useUserStore()
@@ -215,7 +217,9 @@ export default defineComponent({
       collaborators,
       canShare,
       showMessage,
-      showErrorMessage
+      showErrorMessage,
+      fileSideBarSharesPanelSharedWithTopExtensionPoint,
+      fileSideBarSharesPanelSharedWithBottomExtensionPoint
     }
   },
   computed: {

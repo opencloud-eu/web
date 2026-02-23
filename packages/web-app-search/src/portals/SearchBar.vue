@@ -120,6 +120,7 @@ import {
   queryItemAsString,
   useAuthStore,
   useCapabilityStore,
+  useIsAppActive,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import Mark from 'mark.js'
@@ -155,6 +156,7 @@ export default defineComponent({
     const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
     const scopeQueryValue = useRouteQuery('scope')
     const availableProviders = useAvailableProviders()
+    const isAppActive = useIsAppActive()
 
     const authStore = useAuthStore()
     const { userContextReady, publicLinkContextReady } = storeToRefs(authStore)
@@ -366,7 +368,8 @@ export default defineComponent({
       showPreview,
       updateTerm,
       getSearchResultLocation,
-      showDrop
+      showDrop,
+      isAppActive
     }
   },
 
@@ -381,7 +384,12 @@ export default defineComponent({
        * since we are not able to provide search in the public link yet.
        * Enable as soon this feature is available.
        */
-      return this.availableProviders.length && this.userContextReady && !this.publicLinkContextReady
+      return (
+        this.availableProviders.length &&
+        this.userContextReady &&
+        !this.publicLinkContextReady &&
+        !this.isAppActive
+      )
     },
     displayProviders() {
       /**

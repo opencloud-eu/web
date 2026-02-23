@@ -40,11 +40,11 @@ exports[`Users view > list view > renders initially warning if filters are manda
                   <!--v-if-->
                 </label>
                 <div class="relative">
-                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text">
+                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0">
                   <!--v-if-->
                 </div>
                 <!--v-if-->
-                <!--v-if-->
+                <div id="v-0"></div>
               </div>
               <oc-button-stub arialabel="Search users" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
             </div>
@@ -100,11 +100,11 @@ exports[`Users view > list view > renders list initially 1`] = `
                   <!--v-if-->
                 </label>
                 <div class="relative">
-                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text">
+                  <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0">
                   <!--v-if-->
                 </div>
                 <!--v-if-->
-                <!--v-if-->
+                <div id="v-0"></div>
               </div>
               <oc-button-stub arialabel="Search users" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="users-filter-confirm" class="ml-1 p-1 mt-5"></oc-button-stub>
             </div>

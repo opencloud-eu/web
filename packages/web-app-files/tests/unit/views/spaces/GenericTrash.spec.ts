@@ -103,7 +103,7 @@ function getMountedWrapper({
         plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
-        stubs: { ...defaultStubs, portal: true }
+        stubs: { ...defaultStubs }
       }
     })
   }

@@ -105,7 +105,7 @@ const getWrapper = ({
       },
       global: {
         plugins,
-        stubs: { 'router-link': true, 'portal-target': true, notifications: true },
+        stubs: { 'router-link': true, notifications: true },
         mocks,
         provide: mocks
       }

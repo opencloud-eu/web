@@ -1,5 +1,6 @@
 import {
   ActionExtension,
+  CustomComponentExtension,
   ExtensionPoint,
   FloatingActionButtonExtension,
   FolderViewExtension,
@@ -86,6 +87,23 @@ export const folderViewsSearchExtensionPoint: ExtensionPoint<FolderViewExtension
   extensionType: 'folderView'
 }
 
+export const fileSideBarFileDetailsTableExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
+  id: 'app.files.sidebar.file-details.table',
+  extensionType: 'customComponent'
+}
+
+export const fileSideBarSharesPanelSharedWithTopExtensionPoint: ExtensionPoint<CustomComponentExtension> =
+  {
+    id: 'app.files.sidebar.shares-panel.shared-with.top',
+    extensionType: 'customComponent'
+  }
+
+export const fileSideBarSharesPanelSharedWithBottomExtensionPoint: ExtensionPoint<CustomComponentExtension> =
+  {
+    id: 'app.files.sidebar.shares-panel.shared-with.bottom',
+    extensionType: 'customComponent'
+  }
+
 export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
@@ -103,7 +121,10 @@ export const extensionPoints = () => {
       folderViewsSharedViaLinkExtensionPoint,
       folderViewsSharedWithOthersExtensionPoint,
       folderViewsSearchExtensionPoint,
-      floatingActionButtonExtension
+      floatingActionButtonExtension,
+      fileSideBarFileDetailsTableExtensionPoint,
+      fileSideBarSharesPanelSharedWithTopExtensionPoint,
+      fileSideBarSharesPanelSharedWithBottomExtensionPoint
     ]
   })
 }

@@ -9,7 +9,7 @@ import {
   SidebarNavExtension
 } from '@opencloud-eu/web-pkg'
 import { isObject, isArray } from 'lodash-es'
-import { App, Component, computed, h } from 'vue'
+import { computed } from 'vue'
 import { AppNavigationItem } from '@opencloud-eu/web-pkg'
 
 /**
@@ -96,32 +96,6 @@ const announceNavigationItems = (
 }
 
 /**
- * open a wormhole portal, this wraps vue-portal
- *
- * @param instance
- * @param applicationId
- * @param toApp
- * @param toPortal
- * @param order
- * @param components
- */
-const openPortal = (
-  applicationId: string,
-  instance: App,
-  toApp: string,
-  toPortal: string,
-  order: number,
-  components: Component[]
-): void => {
-  instance.config.globalProperties.$wormhole.open({
-    to: ['app', toApp, toPortal].filter(Boolean).join('.'),
-    from: ['app', applicationId, toPortal, order].filter(Boolean).join('.'),
-    order: order,
-    content: () => components.map((c) => h(c))
-  })
-}
-
-/**
  * exposed runtime api, this wraps all available api actions in a closure and provides application
  * specific data to the implementations.
  *
@@ -150,13 +124,6 @@ export const buildRuntimeApi = ({
     announceRoutes: (routes: RouteRecordRaw[]): void =>
       announceRoutes(applicationId, router, routes),
     announceNavigationItems: (navigationItems: AppNavigationItem[]): void =>
-      announceNavigationItems(applicationId, extensionRegistry, navigationItems),
-    openPortal: (
-      instance: App,
-      toApp: string,
-      toPortal: string,
-      order: number,
-      components: Component[]
-    ): void => openPortal(applicationId, instance, toApp, toPortal, order, components)
+      announceNavigationItems(applicationId, extensionRegistry, navigationItems)
   }
 }
