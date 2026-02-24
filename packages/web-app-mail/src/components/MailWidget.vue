@@ -164,8 +164,22 @@ const accountsStore = useAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const connector = useMailDraftConnector()
 
-const { currentAccountId } = storeToRefs(accountsStore)
-const { draftsMailboxId } = storeToRefs(mailboxesStore)
+const { currentAccount } = storeToRefs(accountsStore)
+const { mailboxes } = storeToRefs(mailboxesStore)
+
+const currentAccountId = computed(() => unref(currentAccount).accountId || '')
+
+const draftsMailboxId = computed(() => {
+  const list = unref(mailboxes) || []
+
+  const byRole = (list as any[]).find((mailbox) => mailbox.role === 'drafts')?.id
+  if (byRole) {
+    return byRole
+  }
+
+  const byName = list.find((mailbox) => (mailbox.name || '').toLowerCase() === 'drafts')?.id
+  return byName || ''
+})
 
 const isExpanded = ref(false)
 const leaveModalOpen = ref(false)
@@ -174,7 +188,7 @@ const showFormattingToolbar = ref(false)
 const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
 
 const canSaveDraft = computed(() => {
-  return !!unref(draftsMailboxId)
+  return !!unref(currentAccountId) && !!unref(draftsMailboxId)
 })
 
 const createEmptyComposeState = (): ComposeFormState => ({
@@ -190,7 +204,7 @@ const createEmptyComposeState = (): ComposeFormState => ({
 const composeState = ref<ComposeFormState>(createEmptyComposeState())
 
 const isOpen = computed({
-  get: () => props.modelValue ?? true,
+  get: () => props.modelValue,
   set: (value: boolean) => {
     emit('update:modelValue', value)
     if (!value) {
