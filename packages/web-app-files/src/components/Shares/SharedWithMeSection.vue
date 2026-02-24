@@ -5,9 +5,16 @@
       <span class="text-base">({{ items.length }})</span>
     </h2>
 
-    <no-content-message v-if="!items.length" class="files-empty" icon="share-forward">
+    <no-content-message
+      v-if="!items.length"
+      class="files-empty"
+      img-src="/images/empty-states/shares.png"
+    >
       <template #message>
-        <span>{{ emptyMessage }}</span>
+        <span v-text="$gettext('Nothing shared, yet')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('All received shares will show up here')" />
       </template>
     </no-content-message>
     <component
@@ -101,11 +108,6 @@ export default defineComponent({
     title: {
       type: String,
       required: true
-    },
-    emptyMessage: {
-      type: String,
-      required: false,
-      default: ''
     },
     items: {
       type: Array as PropType<IncomingShareResource[]>,

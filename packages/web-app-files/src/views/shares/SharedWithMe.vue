@@ -74,9 +74,6 @@
           :sort-handler="handleSort"
           :folder-view="folderView"
           :title="shareSectionTitle"
-          :empty-message="
-            areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
-          "
           :view-mode="viewMode"
           :view-size="viewSize"
           :sort-fields="sortFields"

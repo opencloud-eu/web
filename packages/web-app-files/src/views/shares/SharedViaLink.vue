@@ -8,9 +8,16 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message v-if="isEmpty" id="files-shared-via-link-empty" icon="link">
+        <no-content-message
+          v-if="isEmpty"
+          id="files-shared-via-link-empty"
+          img-src="/images/empty-states/shares.png"
+        >
           <template #message>
-            <span v-text="$gettext('You have not shared any resource via link.')" />
+            <span v-text="$gettext('Nothing shared, yet')" />
+          </template>
+          <template #callToAction>
+            <span v-text="$gettext('All your links will show up here')" />
           </template>
         </no-content-message>
         <component
