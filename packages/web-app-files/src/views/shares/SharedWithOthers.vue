@@ -107,7 +107,6 @@ import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
-import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 
 export default defineComponent({
   components: {
@@ -213,7 +212,6 @@ export default defineComponent({
   async created() {
     await this.loadResourcesTask.perform()
     this.scrollToResourceFromRoute(this.filteredItems, 'files-app-bar')
-  },
-  methods: { $gettext }
+  }
 })
 </script>
