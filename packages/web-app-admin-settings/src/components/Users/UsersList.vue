@@ -1,112 +1,108 @@
 <template>
-  <div id="user-list">
-    <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
-      <slot name="filter" />
-    </div>
-    <app-loading-spinner v-if="isLoading" />
-    <div v-else>
-      <slot v-if="!users.length" name="noResults" />
-      <oc-table
-        v-else
-        ref="tableRef"
-        class="users-table"
-        :sort-by="sortBy"
-        :sort-dir="sortDir"
-        :fields="fields"
-        :data="paginatedItems"
-        :highlighted="highlighted"
-        :sticky="isSticky"
-        :header-position="fileListHeaderY"
-        :hover="true"
-        padding-x="medium"
-        @sort="handleSort"
-        @contextmenu-clicked="showContextMenuOnRightClick"
-        @highlight="rowClicked"
-      >
-        <template #selectHeader>
-          <span class="sr-only">{{ $gettext('Select users') }}</span>
-          <oc-checkbox
-            size="large"
-            :label="$gettext('Select all users')"
-            :model-value="allUsersSelected"
-            :label-hidden="true"
-            @update:model-value="
-              allUsersSelected ? unselectAllUsers() : selectUsers(paginatedItems)
-            "
-          />
-        </template>
-        <template #select="{ item }">
-          <oc-checkbox
-            size="large"
-            :model-value="isUserSelected(item)"
-            :option="item"
-            :label="getSelectUserLabel(item)"
-            :label-hidden="true"
-            @update:model-value="selectUser(item)"
-            @click.stop="rowClicked([item, $event])"
-          />
-        </template>
-        <template #avatarHeader>
-          <span class="sr-only">{{ $gettext('Avatar') }}</span>
-        </template>
-        <template #avatar="{ item }">
-          <user-avatar :user-id="item.id" :user-name="item.displayName" />
-        </template>
-        <template #role="{ item }">
-          <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
-        </template>
-        <template #accountEnabled="{ item }">
-          <span v-if="item.accountEnabled === false" class="flex items-center">
-            <oc-icon name="stop-circle" fill-type="line" class="mr-2" /><span
-              v-text="$gettext('Forbidden')"
-            />
-          </span>
-          <span v-else class="flex items-center">
-            <oc-icon name="play-circle" fill-type="line" class="mr-2" /><span
-              v-text="$gettext('Allowed')"
-            />
-          </span>
-        </template>
-        <template #actions="{ item }">
-          <oc-button
-            v-oc-tooltip="$gettext('Show details')"
-            :aria-label="$gettext('Show details')"
-            appearance="raw"
-            class="ml-1 quick-action-button p-1 users-table-btn-details"
-            @click="showDetails(item)"
-          >
-            <oc-icon name="information" fill-type="line" />
-          </oc-button>
-          <oc-button
-            v-oc-tooltip="$gettext('Edit')"
-            :aria-label="$gettext('Edit')"
-            appearance="raw"
-            class="ml-1 quick-action-button p-1 users-table-btn-edit"
-            @click="showEditPanel(item)"
-          >
-            <oc-icon name="pencil" fill-type="line" />
-          </oc-button>
-          <context-menu-quick-action
-            ref="contextMenuButtonRef"
-            :item="item"
-            :title="item.displayName"
-            class="users-table-btn-action-dropdown"
-            @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
-          >
-            <template #contextMenu>
-              <slot name="contextMenu" :user="item" />
-            </template>
-          </context-menu-quick-action>
-        </template>
-        <template #footer>
-          <pagination :pages="totalPages" :current-page="currentPage" />
-          <div class="text-center w-full my-2">
-            <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
-          </div>
-        </template>
-      </oc-table>
-    </div>
+  <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
+    <slot name="filter" />
   </div>
+  <app-loading-spinner v-if="isLoading" />
+  <template v-else>
+    <slot v-if="!users.length" name="noResults" />
+    <oc-table
+      v-else
+      ref="tableRef"
+      class="users-table"
+      :sort-by="sortBy"
+      :sort-dir="sortDir"
+      :fields="fields"
+      :data="paginatedItems"
+      :highlighted="highlighted"
+      :sticky="isSticky"
+      :header-position="fileListHeaderY"
+      :hover="true"
+      padding-x="medium"
+      @sort="handleSort"
+      @contextmenu-clicked="showContextMenuOnRightClick"
+      @highlight="rowClicked"
+    >
+      <template #selectHeader>
+        <span class="sr-only">{{ $gettext('Select users') }}</span>
+        <oc-checkbox
+          size="large"
+          :label="$gettext('Select all users')"
+          :model-value="allUsersSelected"
+          :label-hidden="true"
+          @update:model-value="allUsersSelected ? unselectAllUsers() : selectUsers(paginatedItems)"
+        />
+      </template>
+      <template #select="{ item }">
+        <oc-checkbox
+          size="large"
+          :model-value="isUserSelected(item)"
+          :option="item"
+          :label="getSelectUserLabel(item)"
+          :label-hidden="true"
+          @update:model-value="selectUser(item)"
+          @click.stop="rowClicked([item, $event])"
+        />
+      </template>
+      <template #avatarHeader>
+        <span class="sr-only">{{ $gettext('Avatar') }}</span>
+      </template>
+      <template #avatar="{ item }">
+        <user-avatar :user-id="item.id" :user-name="item.displayName" />
+      </template>
+      <template #role="{ item }">
+        <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
+      </template>
+      <template #accountEnabled="{ item }">
+        <span v-if="item.accountEnabled === false" class="flex items-center">
+          <oc-icon name="stop-circle" fill-type="line" class="mr-2" /><span
+            v-text="$gettext('Forbidden')"
+          />
+        </span>
+        <span v-else class="flex items-center">
+          <oc-icon name="play-circle" fill-type="line" class="mr-2" /><span
+            v-text="$gettext('Allowed')"
+          />
+        </span>
+      </template>
+      <template #actions="{ item }">
+        <oc-button
+          v-oc-tooltip="$gettext('Show details')"
+          :aria-label="$gettext('Show details')"
+          appearance="raw"
+          class="ml-1 quick-action-button p-1 users-table-btn-details"
+          @click="showDetails(item)"
+        >
+          <oc-icon name="information" fill-type="line" />
+        </oc-button>
+        <oc-button
+          v-oc-tooltip="$gettext('Edit')"
+          :aria-label="$gettext('Edit')"
+          appearance="raw"
+          class="ml-1 quick-action-button p-1 users-table-btn-edit"
+          @click="showEditPanel(item)"
+        >
+          <oc-icon name="pencil" fill-type="line" />
+        </oc-button>
+        <context-menu-quick-action
+          ref="contextMenuButtonRef"
+          :item="item"
+          :title="item.displayName"
+          class="users-table-btn-action-dropdown"
+          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
+        >
+          <template #contextMenu>
+            <slot name="contextMenu" :user="item" />
+          </template>
+        </context-menu-quick-action>
+      </template>
+      <template #footer>
+        <pagination :pages="totalPages" :current-page="currentPage" />
+        <div class="text-center w-full my-2">
+          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+        </div>
+      </template>
+    </oc-table>
+  </template>
 </template>
 
 <script lang="ts">

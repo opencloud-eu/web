@@ -20,19 +20,22 @@
           <no-content-message
             v-if="!spaces.length"
             id="admin-settings-spaces-empty"
-            icon="layout-grid"
+            img-src="/images/empty-states/space.png"
           >
             <template #message>
-              <span v-translate>No spaces in here</span>
+              <span v-text="$gettext('No spaces found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Create a new space and it will show up here')" />
             </template>
           </no-content-message>
-          <div v-else>
+          <template v-else>
             <spaces-list :class="{ 'settings-spaces-table-squashed': isSideBarOpen }">
               <template #contextMenu>
                 <context-actions :items="selectedSpaces" />
               </template>
             </spaces-list>
-          </div>
+          </template>
         </template>
       </template>
     </app-template>

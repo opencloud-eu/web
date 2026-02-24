@@ -30,9 +30,16 @@
             </template>
           </item-filter>
         </div>
-        <no-content-message v-if="isEmpty" id="files-shared-with-others-empty" icon="reply">
+        <no-content-message
+          v-if="isEmpty"
+          id="files-shared-with-others-empty"
+          img-src="/images/empty-states/share.png"
+        >
           <template #message>
-            <span v-text="$gettext('You have not shared any resources with other people.')" />
+            <span v-text="$gettext('Nothing shared, yet')" />
+          </template>
+          <template #callToAction>
+            <span v-text="$gettext('Anything you shared will show up here')" />
           </template>
         </no-content-message>
         <component

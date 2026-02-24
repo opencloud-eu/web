@@ -1,5 +1,4 @@
 <template>
-  <div>
     <app-template
       ref="template"
       :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
@@ -29,7 +28,6 @@
         </template>
       </template>
     </app-template>
-  </div>
 </template>
 
 <script lang="ts">

@@ -26,9 +26,17 @@
               autocomplete="off"
             />
           </div>
-
+          <no-content-message v-if="!displaySpaces.length" img-src="/images/empty-states/trash.png">
+            <template #message>
+              <span v-text="$gettext('No trash bins found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            </template>
+          </no-content-message>
           <component
             :is="folderView.component"
+            v-else
             class="trash-table"
             :resources="displaySpaces"
             :fields-displayed="['name']"

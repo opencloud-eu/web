@@ -24,14 +24,16 @@
         <no-content-message
           v-if="!spaces.length"
           id="files-spaces-empty"
-          class="h-[75vh]"
-          icon="layout-grid"
+          img-src="/images/empty-states/space.png"
         >
           <template #message>
-            <span v-text="$gettext('You don\'t have access to any spaces')" />
+            <span v-text="$gettext('No spaces found')" />
+          </template>
+          <template #callToAction>
+            <span v-text="noSpacesDescription" />
           </template>
         </no-content-message>
-        <div v-else class="spaces-list">
+        <template v-else>
           <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-text-input
               id="spaces-filter"
@@ -41,8 +43,21 @@
               autocomplete="off"
             />
           </div>
+          <no-content-message
+            v-if="!items.length"
+            id="files-spaces-empty"
+            img-src="/images/empty-states/space.png"
+          >
+            <template #message>
+              <span v-text="$gettext('No spaces found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            </template>
+          </no-content-message>
           <component
             :is="folderView.component"
+            v-else
             v-model:selected-ids="selectedResourcesIds"
             resource-type="space"
             :resources="paginatedItems"
@@ -124,7 +139,7 @@
             <template #usedQuota="{ resource }"> {{ getUsedQuota(resource) }}</template>
             <template #remainingQuota="{ resource }"> {{ getRemainingQuota(resource) }}</template>
           </component>
-        </div>
+        </template>
       </template>
     </files-view-wrapper>
     <file-side-bar :space="selectedSpace" />
@@ -422,6 +437,10 @@ const breadcrumbs = computed(() => {
 })
 const showSpaceMemberLabel = computed(() => {
   return $gettext('Show members')
+})
+
+const noSpacesDescription = computed(() => {
+  return $gettext('Use the "New" button to create a space or ask an Administrator to do so')
 })
 
 const openSidebarSharePanel = (space: SpaceResource) => {
