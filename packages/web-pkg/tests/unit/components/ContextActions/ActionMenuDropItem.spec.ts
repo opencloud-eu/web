@@ -28,7 +28,9 @@ function getWrapper(menuSectionDrop: MenuSectionDrop) {
         appearance: 'outline'
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        renderStubDefaultSlot: true,
+        stubs: { OcDrop: true }
       }
     })
   }

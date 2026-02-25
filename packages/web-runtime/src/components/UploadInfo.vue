@@ -694,8 +694,6 @@ export default defineComponent({
       switch (errorObject.responseCode) {
         case 507:
           return this.$gettext('Quota exceeded')
-        case 412:
-          return this.$gettext('Parent folder does not exist')
         default:
           return errorObject.errorMessage
             ? this.$gettext(errorObject.errorMessage)

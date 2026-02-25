@@ -42,7 +42,7 @@ describe('RoleDropdown', () => {
     expect(wrapper.find(selectors.recipientRoleBtn).exists()).toBeFalsy()
   })
   it('emits "optionChange"-event on role click', async () => {
-    const { wrapper } = getWrapper()
+    const { wrapper } = getWrapper({ mountType: shallowMount })
     ;(wrapper.vm.$refs.rolesDrop as any).tippy = { hide: vi.fn() }
     await wrapper.find(selectors.roleButton).trigger('click')
     expect(wrapper.emitted('optionChange')).toBeTruthy()

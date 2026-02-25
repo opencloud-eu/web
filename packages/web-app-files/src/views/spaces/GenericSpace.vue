@@ -8,7 +8,6 @@
         :has-bulk-actions="displayFullAppBar"
         :show-actions-on-selection="displayFullAppBar"
         :has-view-options="displayFullAppBar"
-        :is-side-bar-open="isSideBarOpen"
         :space="space"
         :view-modes="viewModes"
         @item-dropped="fileDropped"
@@ -32,12 +31,7 @@
           :class="{ 'h-[55vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header
-            v-if="hasSpaceHeader"
-            :space="space"
-            :is-side-bar-open="isSideBarOpen"
-            class="px-4 mt-2"
-          />
+          <space-header v-if="hasSpaceHeader" :space="space" class="px-4 mt-2" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -52,6 +46,12 @@
             </template>
           </no-content-message>
           <template v-else>
+            <list-header
+              v-if="readmeFile && !hasSpaceHeader"
+              :space="space"
+              :readme-file="readmeFile"
+              class="mx-4 my-2"
+            />
             <resource-details
               v-if="displayResourceAsSingleResource"
               :single-resource="paginatedResources[0]"
@@ -63,12 +63,10 @@
               v-model:selected-ids="selectedResourcesIds"
               :resources="paginatedResources"
               :view-mode="viewMode"
-              :target-route-callback="resourceTargetRouteCallback"
               :space="space"
               :drag-drop="true"
               :sort-by="sortBy"
               :sort-dir="sortDir"
-              :is-side-bar-open="isSideBarOpen"
               :header-position="fileListHeaderY /* table */"
               :sort-fields="sortFields /* tiles */"
               :view-size="viewSize /* tiles */"
@@ -78,11 +76,10 @@
               @item-visible="loadPreview({ space, resource: $event })"
               @sort="handleSort"
             >
-              <template #contextMenu="{ resource, isOpen, dropRef }">
+              <template #contextMenu="{ resource }">
                 <context-actions
-                  v-if="isOpen && isResourceInSelection(resource)"
+                  v-if="isResourceInSelection(resource)"
                   :action-options="{ space, resources: selectedResources }"
-                  :drop-ref="dropRef"
                 />
               </template>
 
@@ -103,7 +100,7 @@
         </template>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+    <file-side-bar :space="space" />
   </div>
 </template>
 
@@ -120,7 +117,6 @@ import {
   unref,
   ref
 } from 'vue'
-import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -149,7 +145,6 @@ import {
   NoContentMessage,
   Pagination,
   ResourceTable,
-  CreateTargetRouteOptions,
   createFileRouteOptions,
   createLocationPublic,
   createLocationSpaces,
@@ -183,6 +178,7 @@ import {
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
+import ListHeader from '../../components/FilesList/ListHeader.vue'
 
 export default defineComponent({
   name: 'GenericSpace',
@@ -203,7 +199,8 @@ export default defineComponent({
     ResourceTable,
     ResourceTiles,
     SpaceHeader,
-    WhitespaceContextMenu
+    WhitespaceContextMenu,
+    ListHeader
   },
   props: {
     space: {
@@ -217,7 +214,7 @@ export default defineComponent({
       default: null
     },
     itemId: {
-      type: [String, Number],
+      type: String,
       required: false,
       default: null
     }
@@ -250,17 +247,6 @@ export default defineComponent({
     const canUpload = computed(() => {
       return unref(currentFolder)?.canUpload({ user: userStore.user })
     })
-
-    const resourceTargetRouteCallback = ({
-      path,
-      fileId
-    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
-      const { params, query } = createFileRouteOptions(unref(space), { path, fileId })
-      if (isPublicSpaceResource(unref(space))) {
-        return createLocationPublic('files-public-link', { params, query })
-      }
-      return createLocationSpaces('files-spaces-generic', { params, query })
-    }
 
     const hasSpaceHeader = computed(() => {
       // for now the space header is only available in the root of a project space.
@@ -461,6 +447,12 @@ export default defineComponent({
       }
     }
 
+    const readmeFile = computed(() => {
+      return resourcesStore.resources.find((item) =>
+        ['readme.md', '.readme.md'].includes(item.name.toLowerCase())
+      )
+    })
+
     onMounted(() => {
       performLoaderTask(false)
       loadResourcesEventToken = eventBus.subscribe(
@@ -560,7 +552,6 @@ export default defineComponent({
       folderNotFound,
       hasSpaceHeader,
       isCurrentFolderEmpty,
-      resourceTargetRouteCallback,
       performLoaderTask,
       uploadHint: computed(() =>
         $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
@@ -571,7 +562,8 @@ export default defineComponent({
       totalResourcesCount,
       areHiddenFilesShown,
       fileDropped,
-      loadPreview
+      loadPreview,
+      readmeFile
     }
   },
 

@@ -11,13 +11,14 @@ import {
   useFileActionsPaste,
   useExtensionRegistry,
   OcUppyFile,
-  ClipboardActions
+  ClipboardActions,
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
-import { eventBus } from '@opencloud-eu/web-pkg'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
 import { computed, ref, unref } from 'vue'
 import { OcButton } from '@opencloud-eu/design-system/components'
+import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -29,7 +30,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const elSelector = {
   component: '.create-and-upload-actions',
-  newFileButton: '#new-file-menu-btn',
+  createOrUploadMenuBtn: '#floating-action-button',
   uploadBtn: '#upload-menu-btn',
   resourceUpload: 'resource-upload-stub',
   newFolderBtn: '#new-folder-btn',
@@ -42,41 +43,15 @@ const elSelector = {
 document.body.innerHTML = '<div id="files-view"></div>'
 
 describe('CreateAndUpload component', () => {
-  describe('action buttons', () => {
-    it('should show and be enabled if file creation is possible', () => {
+  describe('component visibility', () => {
+    it('should be visible when file creation is possible', () => {
       const { wrapper } = getWrapper()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn).props().disabled
-      ).toBeFalsy()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props().disabled
-      ).toBeFalsy()
-      expect(wrapper.html()).toMatchSnapshot()
-    })
-    it('should be disabled if file creation is not possible', () => {
-      const currentFolder = mock<Resource>({ canUpload: () => false })
-      const { wrapper } = getWrapper({ currentFolder, createActions: [] })
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.uploadBtn).props().disabled
-      ).toBeTruthy()
-      expect(
-        wrapper.findComponent<typeof OcButton>(elSelector.newFolderBtn).props().disabled
-      ).toBeTruthy()
+      expect(wrapper.find(elSelector.component).exists()).toBeTruthy()
     })
     it('should not be visible if file creation is not possible on a public page', () => {
       const currentFolder = mock<Resource>({ canUpload: () => false })
       const { wrapper } = getWrapper({ currentFolder, currentRouteName: 'files-public-link' })
       expect(wrapper.find(elSelector.component).exists()).toBeFalsy()
-    })
-  })
-  describe('file handlers', () => {
-    it('should always show for uploading files and folders', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll(elSelector.resourceUpload).length).toBe(2)
-    })
-    it('should show entries for all new file handlers', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.html()).toMatchSnapshot()
     })
   })
   describe('clipboard buttons', () => {
@@ -156,7 +131,9 @@ describe('CreateAndUpload component', () => {
       { driveType: 'share', updated: 0 },
       { driveType: 'public', updated: 0 }
     ])('updates the space quota for supported drive types: %s', async ({ driveType, updated }) => {
-      const file = mock<OcUppyFile>({ meta: { driveType, spaceId: '1' } })
+      const file = mock<OcUppyFile>({
+        meta: { driveType, spaceId: '1', relativeFolder: undefined }
+      })
       const spaces = [
         mock<SpaceResource>({ id: file.meta.spaceId, isOwner: () => driveType === 'personal' })
       ]
@@ -167,18 +144,48 @@ describe('CreateAndUpload component', () => {
       const spacesStore = useSpacesStore()
       expect(spacesStore.updateSpaceField).toHaveBeenCalledTimes(updated)
     })
-    it('reloads the file list if files were uploaded to the current path', async () => {
-      const eventSpy = vi.spyOn(eventBus, 'publish')
-      const itemId = 'itemId'
-      const space = mock<SpaceResource>({ id: '1' })
-      const { mocks } = getWrapper({ itemId, space })
-      const file = mock<OcUppyFile>({
-        meta: { driveType: 'project', spaceId: space.id, currentFolderId: itemId }
-      })
+
+    const itemId = 'itemId'
+    const space = mock<SpaceResource>({ id: '1' })
+    const file = mock<OcUppyFile>({
+      meta: {
+        driveType: 'project',
+        spaceId: space.id,
+        currentFolderId: itemId,
+        relativeFolder: undefined
+      }
+    })
+
+    it('updates the store with the new files', async () => {
+      const currentFolder = mock<Resource>({ id: itemId })
+      const uploadedFile = mock<Resource>({ id: '2' })
+      const { mocks } = getWrapper({ itemId, space, currentFolder, uploadedFiles: [uploadedFile] })
       const graphMock = mocks.$clientService.graphAuthenticated
       graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
-      await unref(mocks.onUploadCompleteCallback)({ successful: [file], failed: [] })
-      expect(eventSpy).toHaveBeenCalled()
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file] })
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.upsertResources).toHaveBeenCalledWith([uploadedFile])
+    })
+    it('does not update the store if no current folder given', async () => {
+      const currentFolder = mock<Resource>({ id: '2' })
+      const { mocks } = getWrapper({ itemId, space, currentFolder })
+      const graphMock = mocks.$clientService.graphAuthenticated
+      graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
+      const resourcesStore = useResourcesStore()
+      resourcesStore.currentFolder = null
+      await unref(mocks.onUploadCompleteCallback)({ successful: [file] })
+      expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
+    })
+    it('does not update the store if user navigated into another space after the upload', async () => {
+      const currentFolder = mock<Resource>({ id: '2' })
+      const { mocks } = getWrapper({ itemId, space, currentFolder })
+      const graphMock = mocks.$clientService.graphAuthenticated
+      graphMock.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
+      const uploadedFile = { ...file }
+      uploadedFile.meta.spaceId = 'another-space'
+      await unref(mocks.onUploadCompleteCallback)({ successful: [uploadedFile] })
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
     })
   })
   describe('drop target', () => {
@@ -208,7 +215,8 @@ function getWrapper({
     mock<FileAction>({ label: () => 'Mark-down file', ext: 'md' }),
     mock<FileAction>({ label: () => 'Draw.io document', ext: 'drawio' })
   ],
-  clipboardAction = ClipboardActions.Cut
+  clipboardAction = ClipboardActions.Cut,
+  uploadedFiles = []
 }: {
   clipboardResources?: Resource[]
   files?: Resource[]
@@ -220,6 +228,7 @@ function getWrapper({
   areFileExtensionsShown?: boolean
   createActions?: FileAction[]
   clipboardAction?: ClipboardActions
+  uploadedFiles?: Resource[]
 } = {}) {
   const capabilities = {
     spaces: { enabled: true },
@@ -261,6 +270,9 @@ function getWrapper({
     onUploadCompleteCallback.value = callback
     return null
   })
+  defaultMocks.$clientService.webdav.listFiles.mockResolvedValue(
+    mock<ListFilesResult>({ children: uploadedFiles })
+  )
 
   const mocks = {
     ...defaultMocks,

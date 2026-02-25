@@ -5,11 +5,11 @@ import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
 import { useRouter } from '../../router'
-import { useGettext } from 'vue3-gettext'
 import {
   Action,
   FileAction,
   FileActionOptions,
+  useFileActionFallbackToDownload,
   useIsFilesAppActive,
   useIsSearchActive,
   useWindowOpen
@@ -41,9 +41,6 @@ import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
 import { RouteRecordName } from 'vue-router'
 
-export const EDITOR_MODE_EDIT = 'edit'
-export const EDITOR_MODE_CREATE = 'create'
-
 export interface GetFileActionsOptions extends FileActionOptions {
   omitSystemActions?: boolean
 }
@@ -55,7 +52,6 @@ export interface FileActionOptionsWithEvent extends FileActionOptions<Resource> 
 export const useFileActions = () => {
   const appsStore = useAppsStore()
   const router = useRouter()
-  const { $gettext } = useGettext()
   const isSearchActive = useIsSearchActive()
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
   const { requestExtensions } = useExtensionRegistry()
@@ -73,6 +69,7 @@ export const useFileActions = () => {
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
+  const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
   const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
@@ -80,8 +77,7 @@ export const useFileActions = () => {
   const { actions: restoreActions } = useFileActionsRestore()
   const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
 
-  const systemActions = computed((): Action[] => [
-    ...unref(navigateActions),
+  const systemActions = computed<FileAction<any>[]>(() => [
     ...unref(downloadArchiveActions),
     ...unref(downloadFileActions),
     ...unref(deleteActions),
@@ -96,47 +92,19 @@ export const useFileActions = () => {
     ...unref(favoriteActions)
   ])
 
-  const defaultActions = computed<FileAction[]>(() => {
-    const contextActionExtensions = requestExtensions<ActionExtension>({
-      id: 'global.files.default-actions',
-      extensionType: 'action'
-    })
-    return contextActionExtensions.map((extension) => extension.action)
+  const extensionsContextActions = computed(() => {
+    return (
+      requestExtensions<ActionExtension>({
+        id: 'global.files.context-actions',
+        extensionType: 'action'
+      }) || []
+    )
+      .map((e) => e.action)
+      .filter(
+        (action) =>
+          isNil(action.category) || action.category === 'context' || action.category === 'actions'
+      )
   })
-
-  const extensionActions = computed(() => {
-    return requestExtensions<ActionExtension>({
-      id: 'global.files.context-actions',
-      extensionType: 'action'
-    }).map((e) => e.action)
-  })
-
-  const defaultEditorActions = computed((): FileAction[] => [
-    {
-      name: 'open',
-      icon: 'eye',
-      label: () => {
-        return $gettext('Open')
-      },
-      handler: ({ space, resources }) => {
-        const defaultEditorAction = getDefaultAction({ space, resources, omitSystemActions: true })
-        if (!defaultEditorAction) {
-          return
-        }
-
-        defaultEditorAction.handler({ space, resources })
-      },
-      isVisible: (options) => {
-        const defaultEditorAction = getDefaultAction({ ...options, omitSystemActions: true })
-        if (!defaultEditorAction) {
-          return false
-        }
-
-        return defaultEditorAction.isVisible(options)
-      },
-      class: 'oc-files-actions-default-editor-trigger'
-    }
-  ])
 
   const editorActions = computed(() => {
     if (unref(isEmbedModeEnabled)) {
@@ -225,7 +193,18 @@ export const useFileActions = () => {
     resource: Resource
   }) => {
     const remoteItemId = isShareSpaceResource(space) ? space.id : undefined
-    const routeName = appFileExtension.routeName || appFileExtension.app
+    let routeName = appFileExtension.routeName
+    if (routeName && !router.hasRoute(routeName)) {
+      console.warn(
+        `App "${appFileExtension.app}" specifies routeName "${routeName}" but no such route exists.`
+      )
+      return null
+    }
+
+    routeName = routeName || appFileExtension.app
+    if (!routeName || !router.hasRoute(routeName)) {
+      return null
+    }
     const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
     return router.resolve(routeOpts)
   }
@@ -273,23 +252,32 @@ export const useFileActions = () => {
   // TODO: Make user-configurable what is a defaultAction for a filetype/mimetype
   // returns the _first_ action from actions array which we now construct from
   // available mime-types coming from the app-provider and existing actions
-  const triggerDefaultAction = (options: FileActionOptions) => {
+  const triggerDefaultAction = (options: GetFileActionsOptions) => {
     const action = getDefaultAction(options)
-    action.handler({ ...options })
+    if (action) {
+      action.handler({ ...options })
+    }
   }
 
   const getDefaultAction = (options: GetFileActionsOptions): Action | undefined => {
-    const allActions = getAllAvailableActions(options)
-    if (allActions.length) {
-      return allActions[0]
+    const actions = getAllOpenWithActions(options)
+
+    if (actions.length) {
+      return actions[0].name === unref(downloadFileActions)[0].name
+        ? unref(fallbackToDownloadAction)[0]
+        : actions[0]
     }
     return undefined
   }
 
-  const getAllAvailableActions = (options: GetFileActionsOptions) => {
+  const getAllOpenWithActions = (options: GetFileActionsOptions) => {
     const filterCallback = (action: FileAction) => action.isVisible(options)
 
-    const primaryActions = [...unref(defaultActions), ...unref(editorActions)]
+    const primaryActions = [
+      ...unref(extensionsContextActions),
+      ...unref(editorActions),
+      ...unref(navigateActions)
+    ]
       .filter(filterCallback)
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))
 
@@ -297,23 +285,12 @@ export const useFileActions = () => {
       ? []
       : unref(systemActions).filter(filterCallback)
 
-    return [
-      ...primaryActions,
-      ...secondaryActions,
-      ...unref(extensionActions).filter(
-        (a) =>
-          a.isVisible(options as FileActionOptions) &&
-          (a.category === 'actions' || isNil(a.category))
-      )
-    ]
+    return [...primaryActions, ...secondaryActions]
   }
 
   return {
-    editorActions,
-    defaultEditorActions,
-    systemActions,
     getDefaultAction,
-    getAllAvailableActions,
+    getAllOpenWithActions,
     getEditorRouteOpts,
     openEditor,
     triggerDefaultAction

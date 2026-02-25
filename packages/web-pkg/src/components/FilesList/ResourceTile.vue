@@ -2,7 +2,7 @@
   <oc-card
     ref="observerTarget"
     body-class="p-0"
-    class="oc-tile-card flex flex-col h-full shadow-none"
+    class="oc-tile-card flex flex-col h-full shadow-none [&.item-accentuated]:bg-role-secondary-container"
     :data-item-id="resource.id"
     :class="{
       'oc-tile-card-selected bg-role-secondary-container outline-2 outline-role-outline':
@@ -27,7 +27,7 @@
         :link="resourceRoute"
         :is-resource-clickable="isResourceClickable"
         tabindex="-1"
-        @click="$emit('click', $event)"
+        @click="$emit('fileNameClicked', $event)"
       >
         <div
           class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
@@ -59,7 +59,7 @@
               }"
               :src="resource.thumbnail"
               :data-test-thumbnail-resource-name="resource.name"
-              @click="toggleTile([resource, $event])"
+              @click.stop="$emit('tileClicked', [resource, $event])"
             />
             <resource-icon
               v-else
@@ -74,7 +74,7 @@
           </slot>
         </div>
       </resource-link>
-      <div class="p-2" @click.stop="toggleTile([resource, $event])">
+      <div class="p-2" @click.stop="$emit('tileClicked', [resource, $event])">
         <div class="flex justify-between items-center">
           <div
             class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden"
@@ -88,7 +88,7 @@
               :parent-folder-name="getParentFolderName(resource)"
               :parent-folder-link="getParentFolderLink(resource)"
               :link="resourceRoute"
-              @click.stop="$emit('click', $event)"
+              @click.stop="$emit('fileNameClicked', $event)"
             />
           </div>
           <div class="flex items-center">
@@ -120,7 +120,6 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
-import { useToggleTile } from '../../composables/selection'
 import { OcCard } from '@opencloud-eu/design-system/components'
 import { useFolderLink } from '../../composables'
 
@@ -151,9 +150,10 @@ const {
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', event: MouseEvent | KeyboardEvent): void
+  (e: 'fileNameClicked', event: MouseEvent | KeyboardEvent): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
+  (e: 'tileClicked', event: [Resource, MouseEvent | KeyboardEvent]): void
 }>()
 
 defineSlots<{
@@ -165,7 +165,6 @@ defineSlots<{
   additionalResourceContent?: (props: { item: Resource }) => unknown
 }>()
 
-const { toggleTile } = useToggleTile()
 const { $gettext } = useGettext()
 const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)

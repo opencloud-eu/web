@@ -21,7 +21,6 @@
       :drop-id="dropId"
       :toggle="`#${toggleId}`"
       :is-nested-element="true"
-      :nested-parent-ref="parentDropRef"
       mode="hover"
       class="w-3xs oc-files-context-action-drop"
       padding-size="small"
@@ -45,21 +44,15 @@
 
 <script setup lang="ts">
 import ActionMenuItem from './ActionMenuItem.vue'
-import { AppearanceType, NestedDrop, uniqueId } from '@opencloud-eu/design-system/helpers'
+import { AppearanceType, uniqueId } from '@opencloud-eu/design-system/helpers'
 import type { ActionOptions } from '../../composables'
 import { MenuSectionDrop } from './types'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
-const {
-  menuSectionDrop,
-  appearance,
-  actionOptions,
-  parentDropRef = null
-} = defineProps<{
+const { menuSectionDrop, appearance, actionOptions } = defineProps<{
   menuSectionDrop: MenuSectionDrop
   appearance: AppearanceType
   actionOptions: ActionOptions
-  parentDropRef?: NestedDrop | null
 }>()
 
 const dropId = uniqueId(`oc-files-context-actions-${menuSectionDrop.name}-drop-`)

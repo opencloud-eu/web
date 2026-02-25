@@ -22,9 +22,7 @@
           'oc-breadcrumb-list-item',
           'flex',
           'items-center',
-          {
-            'sr-only': isItemHidden(item, index)
-          }
+          { 'sr-only': isItemHidden(item) }
         ]"
         @dragover.prevent
         @dragenter.prevent="dropItemStyling(item, index, false, $event)"
@@ -128,12 +126,13 @@
     </oc-button>
   </nav>
   <div
-    v-if="displayItems.length > 1"
-    class="oc-breadcrumb-mobile-current flex justify-center items-center w-0 flex-1"
+    v-if="displayItems.length"
+    class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1"
     :class="{
       'sm:hidden': mobileBreakpoint === 'sm',
       'md:hidden': mobileBreakpoint === 'md',
-      'lg:hidden': mobileBreakpoint === 'lg'
+      'lg:hidden': mobileBreakpoint === 'lg',
+      'justify-center': displayItems.length > 1
     }"
   >
     <span class="truncate" aria-current="page" v-text="currentFolder.text" />
@@ -226,7 +225,7 @@ const hiddenItems = ref<BreadcrumbItem[]>([])
 const displayItems: Ref<BreadcrumbItem[]> = ref([])
 displayItems.value = items
 
-const isItemHidden = (item: BreadcrumbItem, index: number): boolean => {
+const isItemHidden = (item: BreadcrumbItem): boolean => {
   return (
     hiddenItems.value.indexOf(item) !== -1 ||
     (item.isTruncationPlaceholder && hiddenItems.value.length === 0)
@@ -284,10 +283,6 @@ const reduceBreadcrumb = (offsetIndex: number) => {
   hiddenItems.value.push(removed[0])
   reduceBreadcrumb(offsetIndex)
 }
-
-const lastHiddenItem = computed(() =>
-  hiddenItems.value.length >= 1 ? unref(hiddenItems)[unref(hiddenItems).length - 1] : { to: {} }
-)
 
 const renderBreadcrumb = () => {
   displayItems.value = [...items]
@@ -352,7 +347,7 @@ const dropItemStyling = (
 
 @layer components {
   .oc-breadcrumb-item-dragover {
-    @apply bg-role-secondary-container rounded-xs transition-[background,border] duration-100 ring-4 ring-role-secondary-container;
+    @apply bg-role-secondary-container rounded-xs transition-[background] transition-[border] duration-100 ring-4 ring-role-secondary-container;
   }
 }
 </style>

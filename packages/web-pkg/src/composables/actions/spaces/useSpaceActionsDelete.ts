@@ -14,6 +14,7 @@ import {
   useSpacesStore,
   useUserStore
 } from '../../piniaStores'
+import { isPromiseFulfilled, isPromiseRejected } from '../../../helpers'
 
 export const useSpaceActionsDelete = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -43,7 +44,7 @@ export const useSpaceActionsDelete = () => {
     )
     const results = await Promise.allSettled(promises)
 
-    const succeeded = results.filter((r) => r.status === 'fulfilled')
+    const succeeded = results.filter(isPromiseFulfilled)
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && spaces.length === 1
@@ -58,7 +59,7 @@ export const useSpaceActionsDelete = () => {
       showMessage({ title })
     }
 
-    const failed = results.filter((r) => r.status === 'rejected')
+    const failed = results.filter(isPromiseRejected)
     if (failed.length) {
       failed.forEach(console.error)
 
@@ -74,7 +75,7 @@ export const useSpaceActionsDelete = () => {
             )
       showErrorMessage({
         title,
-        errors: (failed as PromiseRejectedResult[]).map((f) => f.reason)
+        errors: failed.map((f) => f.reason)
       })
     }
 

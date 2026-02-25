@@ -7,56 +7,65 @@
   <div
     v-else
     ref="preview"
-    class="flex size-full"
+    class="!flex size-full"
     tabindex="-1"
     @keydown.left="goToPrev"
     @keydown.right="goToNext"
+    @keydown.down="goToNext"
+    @keydown.up="goToPrev"
   >
+    <photo-roll
+      v-if="photoRollEnabled"
+      class="bg-role-surface-container w-1/5 hidden md:block"
+      :items="mediaFiles"
+      :active-index="activeIndex"
+      @select="onSelectPhotoRollItem"
+    />
     <div
       class="stage size-full flex flex-col text-center"
       :class="{ lightbox: isFullScreenModeActivated }"
     >
       <div class="stage_media size-full flex justify-center items-center grow overflow-hidden">
-        <div v-if="!activeMediaFileCached || activeMediaFileCached.isLoading" class="w-full">
+        <div v-if="!activeMediaFile || activeMediaFile.isLoading" class="w-full">
           <div class="absolute top-[50%] left-[50%]">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
           </div>
         </div>
         <div
-          v-else-if="activeMediaFileCached.isError"
+          v-else-if="activeMediaFile.isError"
           class="w-full flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
           <p>
-            {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFileCached.name }) }}
+            {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFile.name }) }}
           </p>
         </div>
         <media-image
-          v-else-if="activeMediaFileCached.isImage"
-          :file="activeMediaFileCached"
+          v-else-if="activeMediaFile.isImage"
+          :file="activeMediaFile"
           :current-image-rotation="currentImageRotation"
         />
         <media-video
-          v-else-if="activeMediaFileCached.isVideo"
-          :file="activeMediaFileCached"
+          v-else-if="activeMediaFile.isVideo"
+          :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
         />
         <media-audio
-          v-else-if="activeMediaFileCached.isAudio"
-          :file="activeMediaFileCached"
-          :resource="activeFilteredFile"
+          v-else-if="activeMediaFile.isAudio"
+          :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
         />
       </div>
       <media-controls
         class="stage_controls mx-auto my-4 h-auto"
-        :files="filteredFiles"
+        :files="mediaFiles"
         :active-index="activeIndex"
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
-        :show-image-controls="activeMediaFileCached?.isImage && !activeMediaFileCached?.isError"
+        :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
         :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
+        :photo-roll-enabled="photoRollEnabled"
         @set-rotation-right="imageRotateRight"
         @set-rotation-left="imageRotateLeft"
         @set-zoom="imageZoom"
@@ -66,50 +75,52 @@
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
         @delete-resource="$emit('delete:resource')"
+        @toggle-photo-roll="photoRollEnabled = !photoRollEnabled"
       />
     </div>
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import {
   computed,
-  defineComponent,
-  ref,
-  unref,
-  PropType,
   nextTick,
-  getCurrentInstance,
-  watch,
-  Ref
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  Ref,
+  unref,
+  useTemplateRef,
+  watch
 } from 'vue'
 import omit from 'lodash-es/omit'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   AppFileHandlingResult,
   AppFolderHandlingResult,
-  FileContext,
-  ProcessorType,
-  SortDir,
   createFileRouteOptions,
+  determineResourceTableSortFields,
+  FileContext,
+  isLocationSharesActive,
+  Key,
+  Modifier,
+  ProcessorType,
   queryItemAsString,
   sortHelper,
+  useAppNavigation,
+  useFileActionsDelete,
+  useGetMatchingSpace,
+  useKeyboardActions,
+  usePreviewService,
   useRoute,
   useRouteQuery,
-  useRouter,
-  usePreviewService,
-  useGetMatchingSpace,
-  isLocationSharesActive,
-  useAppNavigation,
-  useKeyboardActions,
-  Modifier,
-  Key,
-  useFileActionsDelete
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
-import { CachedFile } from './helpers/types'
+import PhotoRoll from './components/PhotoRoll.vue'
+import { MediaFile } from './helpers/types'
 import {
   useFileTypes,
   useFullScreenMode,
@@ -118,375 +129,339 @@ import {
 } from './composables'
 import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
-export const appId = 'preview'
-const PRELOAD_COUNT = 5
+const {
+  activeFiles,
+  currentFileContext,
+  loadFolderForFileContext,
+  getUrlForResource,
+  revokeUrl,
+  isFolderLoading
+} = defineProps<{
+  activeFiles: Resource[]
+  currentFileContext: FileContext
+  loadFolderForFileContext: AppFolderHandlingResult['loadFolderForFileContext']
+  getUrlForResource: AppFileHandlingResult['getUrlForResource']
+  revokeUrl: AppFileHandlingResult['revokeUrl']
+  isFolderLoading: boolean
+}>()
 
-export default defineComponent({
-  name: 'Preview',
-  components: {
-    MediaControls,
-    MediaAudio,
-    MediaImage,
-    MediaVideo
-  },
-  props: {
-    activeFiles: { type: Object as PropType<Resource[]>, required: true },
-    currentFileContext: { type: Object as PropType<FileContext>, required: true },
-    loadFolderForFileContext: {
-      type: Function as PropType<AppFolderHandlingResult['loadFolderForFileContext']>,
-      required: true
-    },
-    getUrlForResource: {
-      type: Function as PropType<AppFileHandlingResult['getUrlForResource']>,
-      required: true
-    },
-    revokeUrl: { type: Function as PropType<AppFileHandlingResult['revokeUrl']>, required: true },
-    isFolderLoading: { type: Boolean, required: true }
-  },
-  emits: ['update:resource', 'register:onDeleteResourceCallback', 'delete:resource'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    const route = useRoute()
-    const contextRouteQuery = useRouteQuery('contextRouteQuery') as unknown as Ref<
-      Record<string, string>
-    >
+const emit = defineEmits<{
+  (e: 'update:resource', resource: Resource): void
+  (e: 'delete:resource'): void
+  (e: 'register:onDeleteResourceCallback', callback: () => Promise<void>): void
+}>()
 
-    const { isFileTypeAudio, isFileTypeImage, isFileTypeVideo } = useFileTypes()
-    const previewService = usePreviewService()
-    const { dimensions } = usePreviewDimensions()
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const { closeApp } = useAppNavigation({ router, currentFileContext: props.currentFileContext })
-    const { bindKeyAction, removeKeyAction } = useKeyboardActions()
-    const { actions: deleteFileActions } = useFileActionsDelete()
+const router = useRouter()
+const route = useRoute()
+const contextRouteQuery = useRouteQuery('contextRouteQuery') as unknown as Ref<
+  Record<string, string>
+>
 
-    const activeIndex = ref<number>()
-    const cachedFiles = ref<Record<string, CachedFile>>({})
-    const folderLoaded = ref(false)
-    const isAutoPlayEnabled = ref(true)
-    const preview = ref<HTMLElement>()
-    const keyBindings: string[] = []
+const { isFileTypeAudio, isFileTypeImage, isFileTypeVideo } = useFileTypes()
+const previewService = usePreviewService()
+const { dimensions } = usePreviewDimensions()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { closeApp } = useAppNavigation({ router, currentFileContext })
+const { bindKeyAction, removeKeyAction } = useKeyboardActions()
+const { actions: deleteFileActions } = useFileActionsDelete()
+const {
+  currentImageRotation,
+  imageShrink,
+  imageZoom,
+  imageRotateLeft,
+  imageRotateRight,
+  resetImage
+} = useImageControls()
+const { isFullScreenModeActivated, toggleFullScreenMode } = useFullScreenMode()
 
-    const space = computed(() => {
-      if (!unref(activeFilteredFile)) {
-        return null
-      }
-      return getMatchingSpace(unref(activeFilteredFile))
-    })
+const activeIndex = ref<number>()
+const mediaFiles = ref<MediaFile[]>([])
+const folderLoaded = ref(false)
+const isAutoPlayEnabled = ref(true)
+const photoRollEnabled = ref(true)
+const preview = useTemplateRef<HTMLElement>('preview')
+const keyBindings: string[] = []
+let loadPreviewImageController: AbortController = null
 
-    const isDeleteButtonVisible = computed(() => {
-      if (!unref(space)) {
-        return false
-      }
-      return unref(deleteFileActions)[0]?.isVisible({
-        space: unref(space),
-        resources: [unref(activeFilteredFile)]
-      })
-    })
-
-    const sortBy = computed(() => {
-      if (!unref(contextRouteQuery)) {
-        return 'name'
-      }
-      return unref(contextRouteQuery)['sort-by'] ?? 'name'
-    })
-    const sortDir = computed<SortDir>(() => {
-      if (!unref(contextRouteQuery)) {
-        return SortDir.Desc
-      }
-      return (unref(contextRouteQuery)['sort-dir'] as SortDir) ?? SortDir.Asc
-    })
-
-    const fileIdQuery = useRouteQuery('fileId')
-    const fileId = computed(() => queryItemAsString(unref(fileIdQuery)))
-
-    const filteredFiles = computed(() => {
-      if (!props.activeFiles) {
-        return []
-      }
-
-      const files = props.activeFiles.filter((file) => {
-        if (
-          unref(props.currentFileContext.routeQuery)?.['q_share-visibility'] === 'hidden' &&
-          !(file as IncomingShareResource).hidden
-        ) {
-          return false
-        }
-
-        if (
-          unref(props.currentFileContext.routeQuery)?.['q_share-visibility'] !== 'hidden' &&
-          (file as IncomingShareResource).hidden
-        ) {
-          return false
-        }
-
-        return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
-      })
-
-      return sortHelper(files, [{ name: unref(sortBy) }], unref(sortBy), unref(sortDir))
-    })
-    const activeFilteredFile = computed(() => {
-      return unref(filteredFiles)[unref(activeIndex)]
-    })
-    const activeMediaFileCached = computed(() => {
-      return unref(cachedFiles)[unref(activeFilteredFile)?.id]
-    })
-
-    const loadFileIntoCache = async (file: Resource) => {
-      if (Object.hasOwn(unref(cachedFiles), file.id)) {
-        return
-      }
-
-      const cachedFile: CachedFile = {
-        id: file.id,
-        name: file.name,
-        url: undefined,
-        ext: file.extension,
-        mimeType: file.mimeType,
-        isVideo: isFileTypeVideo(file),
-        isImage: isFileTypeImage(file),
-        isAudio: isFileTypeAudio(file),
-        isLoading: ref(true),
-        isError: ref(false)
-      }
-      cachedFiles.value[file.id] = cachedFile
-
-      try {
-        if (cachedFile.isImage) {
-          cachedFile.url = await previewService.loadPreview(
-            {
-              space: unref(space),
-              resource: file,
-              dimensions: unref(dimensions),
-              processor: ProcessorType.enum.fit
-            },
-            false,
-            false
-          )
-          return
-        }
-        cachedFile.url = await props.getUrlForResource(unref(space), file)
-      } catch (e) {
-        console.error(e)
-        cachedFile.isError.value = true
-      } finally {
-        cachedFile.isLoading.value = false
-      }
-    }
-
-    const goToNext = () => {
-      if (unref(activeIndex) + 1 >= unref(filteredFiles).length) {
-        activeIndex.value = 0
-        updateLocalHistory()
-        return
-      }
-      activeIndex.value = unref(activeIndex) + 1
-      updateLocalHistory()
-    }
-
-    const goToPrev = () => {
-      if (unref(activeIndex) === 0) {
-        activeIndex.value = unref(filteredFiles).length - 1
-        updateLocalHistory()
-        return
-      }
-      activeIndex.value = unref(activeIndex) - 1
-      updateLocalHistory()
-    }
-
-    const onDeleteResourceCallback = async () => {
-      await nextTick()
-
-      if (!unref(filteredFiles).length) {
-        return closeApp()
-      }
-    }
-
-    const updateLocalHistory = () => {
-      // this is a rare edge case when browsing quickly through a lot of files
-      // we workaround context being null, when useDriveResolver is in loading state
-      if (!props.currentFileContext) {
-        return
-      }
-
-      const { params, query } = createFileRouteOptions(unref(space), unref(activeFilteredFile))
-      router.replace({
-        ...omit(unref(route), 'fullPath'),
-        path: unref(route).fullPath,
-        params: { ...unref(route).params, ...params },
-        query: { ...unref(route).query, ...query }
-      } as RouteLocationRaw)
-    }
-
-    const instance = getCurrentInstance()
-
-    watch(
-      () => props.currentFileContext,
-      async () => {
-        if (!props.currentFileContext) {
-          return
-        }
-
-        if (!unref(folderLoaded)) {
-          await props.loadFolderForFileContext(props.currentFileContext)
-          folderLoaded.value = true
-        }
-
-        ;(instance.proxy as any).setActiveFile()
-      },
-      { immediate: true }
-    )
-
-    watch(filteredFiles, () => {
-      if (!unref(filteredFiles).length) {
-        return
-      }
-
-      if (unref(activeIndex) >= unref(filteredFiles).length) {
-        activeIndex.value = 0
-        updateLocalHistory()
-      }
-    })
-
-    watch(activeFilteredFile, (file) => {
-      if (!file) {
-        return
-      }
-
-      emit('update:resource', file)
-    })
-
-    const loading = computed(() => {
-      if (props.isFolderLoading) {
-        return true
-      }
-      const file = unref(activeMediaFileCached)
-      if (!file) {
-        return true
-      }
-      return unref(file.isLoading)
-    })
-    watch(
-      loading,
-      async (loading) => {
-        if (!loading) {
-          await nextTick()
-          unref(preview).focus()
-        }
-      },
-      { immediate: true }
-    )
-
-    return {
-      ...useImageControls(),
-      ...useFullScreenMode(),
-      fileId,
-      activeFilteredFile,
-      activeIndex,
-      activeMediaFileCached,
-      cachedFiles,
-      filteredFiles,
-      updateLocalHistory,
-      isAutoPlayEnabled,
-      preview,
-      isFileTypeImage,
-      loadFileIntoCache,
-      space,
-      onDeleteResourceCallback,
-      goToNext,
-      goToPrev,
-      keyBindings,
-      bindKeyAction,
-      removeKeyAction,
-      isDeleteButtonVisible
-    }
-  },
-
-  watch: {
-    activeIndex(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.loadFileIntoCache(this.activeFilteredFile)
-        this.preloadImages()
-      }
-
-      if (oldValue !== null) {
-        this.isAutoPlayEnabled = false
-      }
-
-      this.currentImageRotation = 0
-    }
-  },
-
-  mounted() {
-    // keep a local history for this component
-    window.addEventListener('popstate', this.handleLocalHistoryEvent)
-    this.$emit('register:onDeleteResourceCallback', this.onDeleteResourceCallback)
-    this.keyBindings.push(
-      this.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
-        this.$emit('delete:resource', this.activeFilteredFile)
-      )
-    )
-    this.keyBindings.push(
-      this.bindKeyAction({ primary: Key.Delete }, () =>
-        this.$emit('delete:resource', this.activeFilteredFile)
-      )
-    )
-  },
-
-  beforeUnmount() {
-    window.removeEventListener('popstate', this.handleLocalHistoryEvent)
-    this.keyBindings.forEach((keyBindingId) => {
-      this.removeKeyAction(keyBindingId)
-    })
-
-    Object.values(this.cachedFiles).forEach((cachedFile) => {
-      this.revokeUrl(cachedFile.url)
-    })
-  },
-
-  methods: {
-    setActiveFile() {
-      for (let i = 0; i < this.filteredFiles.length; i++) {
-        const filterAttr = isLocationSharesActive(this.$router, 'files-shares-with-me')
-          ? 'remoteItemId'
-          : 'fileId'
-
-        // match the given file id with the filtered files to get the current index
-        if (this.filteredFiles[i][filterAttr] === this.fileId) {
-          this.activeIndex = i
-          return
-        }
-
-        this.activeIndex = 0
-      }
-    },
-    // react to PopStateEvent ()
-    handleLocalHistoryEvent() {
-      this.setActiveFile()
-    },
-    preloadImages() {
-      const preloadFile = (preloadFileIndex: number) => {
-        const cycleIndex =
-          (((this.activeIndex + preloadFileIndex) % this.filteredFiles.length) +
-            this.filteredFiles.length) %
-          this.filteredFiles.length
-
-        const file = this.filteredFiles[cycleIndex]
-        this.loadFileIntoCache(file)
-      }
-
-      for (let followingFileIndex = 1; followingFileIndex <= PRELOAD_COUNT; followingFileIndex++) {
-        preloadFile(followingFileIndex)
-      }
-
-      for (
-        let previousFileIndex = -1;
-        previousFileIndex >= PRELOAD_COUNT * -1;
-        previousFileIndex--
-      ) {
-        preloadFile(previousFileIndex)
-      }
-    }
+const space = computed(() => {
+  if (!unref(activeMediaFile)) {
+    return null
   }
+  return getMatchingSpace(unref(activeMediaFile).resource)
+})
+
+const isDeleteButtonVisible = computed(() => {
+  if (!unref(space)) {
+    return false
+  }
+  return unref(deleteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [unref(activeMediaFile).resource]
+  })
+})
+
+const sortBy = computed(() => {
+  if (!unref(contextRouteQuery)) {
+    return 'name'
+  }
+  return unref(contextRouteQuery)['sort-by'] ?? 'name'
+})
+const sortDir = computed<SortDir>(() => {
+  if (!unref(contextRouteQuery)) {
+    return SortDir.Asc
+  }
+  return (unref(contextRouteQuery)['sort-dir'] as SortDir) ?? SortDir.Asc
+})
+
+const fileIdQuery = useRouteQuery('fileId')
+const fileId = computed(() => queryItemAsString(unref(fileIdQuery)))
+
+const buildMediaFiles = () => {
+  if (!activeFiles) {
+    return
+  }
+
+  const filteredFiles = activeFiles.filter((file) => {
+    if (
+      unref(currentFileContext.routeQuery)?.['q_share-visibility'] === 'hidden' &&
+      !(file as IncomingShareResource).hidden
+    ) {
+      return false
+    }
+
+    if (
+      unref(currentFileContext.routeQuery)?.['q_share-visibility'] !== 'hidden' &&
+      (file as IncomingShareResource).hidden
+    ) {
+      return false
+    }
+
+    return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
+  })
+
+  const sortFields = determineResourceTableSortFields(filteredFiles[0])
+  const sortedFiles = sortHelper(filteredFiles, sortFields, unref(sortBy), unref(sortDir))
+
+  mediaFiles.value = sortedFiles.map((file) => {
+    return {
+      id: file.id,
+      name: file.name,
+      ext: file.extension,
+      mimeType: file.mimeType,
+      isVideo: isFileTypeVideo(file),
+      isImage: isFileTypeImage(file),
+      isAudio: isFileTypeAudio(file),
+      isLoading: true,
+      isError: false,
+      resource: file
+    }
+  })
+}
+
+const activeMediaFile = computed(() => {
+  return unref(mediaFiles)[unref(activeIndex)]
+})
+
+const loading = computed(() => {
+  if (isFolderLoading) {
+    return true
+  }
+  const file = unref(activeMediaFile)
+  if (!file) {
+    return true
+  }
+  return unref(file.isLoading)
+})
+
+const loadPreviewImage = async (mediaFile: MediaFile) => {
+  if (mediaFile.url) {
+    return
+  }
+
+  if (loadPreviewImageController) {
+    loadPreviewImageController.abort()
+  }
+
+  loadPreviewImageController = new AbortController()
+
+  try {
+    if (mediaFile.isImage) {
+      mediaFile.url = await previewService.loadPreview(
+        {
+          space: unref(space),
+          resource: mediaFile.resource,
+          dimensions: unref(dimensions),
+          processor: ProcessorType.enum.fit
+        },
+        false,
+        false,
+        loadPreviewImageController.signal
+      )
+    } else {
+      mediaFile.url = await getUrlForResource(unref(space), mediaFile.resource, {
+        signal: loadPreviewImageController.signal
+      })
+    }
+
+    mediaFile.isLoading = false
+  } catch (e) {
+    if (e.name === 'CanceledError') {
+      return
+    }
+
+    console.error(e)
+    mediaFile.isError = true
+    mediaFile.isLoading = false
+  } finally {
+    loadPreviewImageController = null
+  }
+}
+
+const goToNext = () => {
+  if (unref(activeIndex) + 1 >= unref(mediaFiles).length) {
+    activeIndex.value = 0
+    updateLocalHistory()
+    return
+  }
+  activeIndex.value = unref(activeIndex) + 1
+  updateLocalHistory()
+}
+
+const goToPrev = () => {
+  if (unref(activeIndex) === 0) {
+    activeIndex.value = unref(mediaFiles).length - 1
+    updateLocalHistory()
+    return
+  }
+  activeIndex.value = unref(activeIndex) - 1
+  updateLocalHistory()
+}
+
+const onDeleteResourceCallback = async () => {
+  await nextTick()
+
+  if (!unref(mediaFiles).length) {
+    return closeApp()
+  }
+}
+
+const updateLocalHistory = () => {
+  // this is a rare edge case when browsing quickly through a lot of files
+  // we workaround context being null, when useDriveResolver is in loading state
+  if (!currentFileContext) {
+    return
+  }
+
+  const { params, query } = createFileRouteOptions(unref(space), unref(activeMediaFile).resource)
+  router.replace({
+    ...omit(unref(route), 'fullPath'),
+    path: unref(route).fullPath,
+    params: { ...unref(route).params, ...params },
+    query: { ...unref(route).query, ...query }
+  } as RouteLocationRaw)
+}
+
+const setActiveFile = () => {
+  for (let i = 0; i < unref(mediaFiles).length; i++) {
+    const filterAttr = isLocationSharesActive(router, 'files-shares-with-me')
+      ? 'remoteItemId'
+      : 'fileId'
+
+    // match the given file id with the filtered files to get the current index
+    if (unref(mediaFiles)[i].resource[filterAttr] === unref(fileId)) {
+      activeIndex.value = i
+      return
+    }
+
+    activeIndex.value = 0
+  }
+}
+
+const onSelectPhotoRollItem = (index: number) => {
+  activeIndex.value = index
+  updateLocalHistory()
+}
+
+watch(
+  () => currentFileContext,
+  async () => {
+    if (!currentFileContext) {
+      return
+    }
+
+    if (!unref(folderLoaded)) {
+      await loadFolderForFileContext(currentFileContext)
+      folderLoaded.value = true
+    }
+
+    setActiveFile()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => activeFiles,
+  () => {
+    buildMediaFiles()
+
+    if (unref(mediaFiles).length && unref(activeIndex) >= unref(mediaFiles).length) {
+      activeIndex.value = 0
+      updateLocalHistory()
+    }
+  },
+  { immediate: true }
+)
+
+watch(activeMediaFile, (newValue, oldValue) => {
+  if (!unref(activeMediaFile)) {
+    return
+  }
+
+  loadPreviewImage(unref(activeMediaFile))
+  currentImageRotation.value = 0
+
+  if (oldValue !== null) {
+    isAutoPlayEnabled.value = false
+  }
+
+  emit('update:resource', unref(activeMediaFile).resource)
+})
+
+watch(
+  loading,
+  async (loading) => {
+    if (!loading) {
+      await nextTick()
+      unref(preview).focus()
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  // keep a local history for this component
+  window.addEventListener('popstate', setActiveFile)
+  emit('register:onDeleteResourceCallback', onDeleteResourceCallback)
+  keyBindings.push(
+    bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.Backspace }, () =>
+      emit('delete:resource')
+    )
+  )
+  keyBindings.push(bindKeyAction({ primary: Key.Delete }, () => emit('delete:resource')))
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('popstate', setActiveFile)
+  keyBindings.forEach((keyBindingId) => {
+    removeKeyAction(keyBindingId)
+  })
+
+  Object.values(unref(mediaFiles)).forEach((cachedFile) => {
+    revokeUrl(unref(cachedFile.url))
+  })
+
+  loadPreviewImageController?.abort()
 })
 </script>

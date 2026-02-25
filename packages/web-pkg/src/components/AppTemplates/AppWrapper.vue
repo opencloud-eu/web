@@ -17,10 +17,10 @@
     <div v-else class="flex size-full">
       <slot
         class="app-wrapper-content size-full"
-        :class="{ 'w-[calc(100%-440px)] hidden xs:block': isSideBarOpen }"
+        :class="{ 'w-[calc(100%-360px)]': isSideBarOpen && !isMobile }"
         v-bind="slotAttrs"
       />
-      <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+      <file-side-bar :space="space" />
     </div>
   </main>
 </template>
@@ -87,6 +87,8 @@ import { useFileActionsOpenWithApp } from '../../composables/actions/files/useFi
 import { UnsavedChangesModal } from '../Modals'
 import { formatFileSize, getSharedDriveItem } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
+import { storeToRefs } from 'pinia'
 
 const {
   applicationId,
@@ -119,7 +121,9 @@ const configStore = useConfigStore()
 const resourcesStore = useResourcesStore()
 const sharesStore = useSharesStore()
 const eventBus = useEventBus()
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
+const { isMobile } = useIsMobile()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId
@@ -420,7 +424,7 @@ const saveFileTask = useTask(function* () {
         errorPopup(
           new HttpError(
             $gettext(
-              'This file was updated outside this window. Please refresh the page (all changes will be lost).'
+              'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
             ),
             e.response
           )

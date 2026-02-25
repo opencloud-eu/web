@@ -341,3 +341,24 @@ Feature: link
       | resource  |
       | lorem.txt |
     And "Alice" logs out
+
+
+  Scenario: password is triggered when changing public link to writable role
+    Given "Admin" assigns following roles to the users using API
+      | id    | role  |
+      | Alice | Admin |
+    When "Alice" logs in
+    And "Alice" creates the following folders in personal space using API
+      | name         |
+      | folderPublic |
+    And "Alice" opens the "files" app
+    And "Alice" creates a public link of following resource using the sidebar panel
+      | resource     | role     | password |
+      | folderPublic | Can view | %public% |
+    
+    # @issue-2048
+    # Admin feature: ensure password is required for writable public links 
+    # in case when OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD=true and OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD=false
+    And "Alice" deletes a password of the public link named "Unnamed link" of resource "folderPublic"
+    And "Alice" edits the public link named "Unnamed link" of resource "folderPublic" changing role to "Secret File Drop" and setting a password
+    And "Alice" logs out

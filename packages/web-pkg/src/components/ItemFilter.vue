@@ -106,7 +106,12 @@ const {
 }>()
 
 const emit = defineEmits<{
-  (e: 'selectionChange', selectedItems: Item[]): void
+  (e: 'selectionChange', selectedItems: any[]): void
+}>()
+
+defineSlots<{
+  image?: (item: Item) => unknown
+  item?: (item: Item) => unknown
 }>()
 
 const router = useRouter()

@@ -97,36 +97,38 @@ const activeFiles = [
 ]
 
 describe('Preview app', () => {
-  describe('Method "preloadImages"', () => {
-    it('should preload images if active file changes', async () => {
-      const { wrapper } = createShallowMountWrapper()
+  describe('Method "loadPreviewImage"', () => {
+    it('should load the preview image if active file changes', async () => {
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await nextTick()
+      ;(wrapper.vm as any).goToNext()
       await nextTick()
 
-      wrapper.vm.cachedFiles = {}
-      wrapper.vm.goToNext()
-
-      await nextTick()
-
-      expect(
-        Object.values(wrapper.vm.cachedFiles)
-          .filter((cachedFile) => cachedFile.isImage)
-          .map((cachedFile) => cachedFile.id)
-          .sort((a, b) => a.localeCompare(b))
-      ).toEqual(['1', '2', '4', '6', '7', '8', '9'])
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledWith(
+        expect.objectContaining({
+          resource: expect.objectContaining({
+            name: 'cat_murr_murr.gif'
+          })
+        }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything()
+      )
     })
   })
 
-  describe('Computed "filteredFiles"', () => {
+  describe('Generated "mediaFiles"', () => {
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
-      expect(wrapper.vm.filteredFiles.length).toStrictEqual(7)
+      expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(7)
     })
 
-    it('should hide visible shares if the share visibility query is set to "hidden"', () => {
+    it('should hide visible shares if the share visibility query is set to "hidden"', async () => {
       const { wrapper } = createShallowMountWrapper({
         currentFileContext: { routeQuery: ref({ ['q_share-visibility']: 'hidden' }) }
       })
-      expect(wrapper.vm.filteredFiles.length).toStrictEqual(2)
+      await nextTick()
+      expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(2)
     })
   })
 })
@@ -158,6 +160,7 @@ function createShallowMountWrapper({
         mocks,
         provide: mocks
       }
-    })
+    }),
+    mocks
   }
 }

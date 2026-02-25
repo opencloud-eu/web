@@ -56,22 +56,21 @@ Feature: Search
       | resource          |
       | folder            |
       | FolDer            |
-      | PARENT            |
       | new-lorem-big.txt |
 
     # subfolder search
     And "Alice" searches "child" using the global search and the "all files" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource  |
-      | child-one |
-      | child-two |
+      | resource                   |
+      | FolDer/child-one           |
+      | FolDer/child-one/child-two |
     But following resources should not be displayed in the search list for user "Alice"
-      | resource          |
-      | folder            |
-      | FolDer            |
-      | folder_from_brian |
-      | .hidden-file.txt  |
-      | new-lorem-big.txt |
+      | resource             |
+      | folder               |
+      | FolDer               |
+      | new_share_from_brian |
+      | .hidden-file.txt     |
+      | new-lorem-big.txt    |
 
     # received shares search
     And "Alice" searches "NEW" using the global search and the "all files" filter
@@ -136,16 +135,16 @@ Feature: Search
     When "Alice" opens folder "mainFolder"
     And "Alice" searches "example" using the global search and the "all files" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource                          |
-      | exampleInsideThePersonalSpace.txt |
-      | exampleInsideTheMainFolder.txt    |
-      | exampleInsideTheSubFolder.txt     |
+      | resource                                           |
+      | exampleInsideThePersonalSpace.txt                  |
+      | mainFolder/exampleInsideTheMainFolder.txt          |
+      | mainFolder/subFolder/exampleInsideTheSubFolder.txt |
 
     When "Alice" searches "example" using the global search and the "current folder" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource                       |
-      | exampleInsideTheMainFolder.txt |
-      | exampleInsideTheSubFolder.txt  |
+      | resource                                           |
+      | mainFolder/exampleInsideTheMainFolder.txt          |
+      | mainFolder/subFolder/exampleInsideTheSubFolder.txt |
     But following resources should not be displayed in the search list for user "Alice"
       | resource                          |
       | exampleInsideThePersonalSpace.txt |

@@ -1,12 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar
-        :breadcrumbs="breadcrumbs"
-        :has-bulk-actions="true"
-        :is-side-bar-open="isSideBarOpen"
-        :view-modes="viewModes"
-      />
+      <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes" />
       <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
         <div class="mr-4 flex items-center">
           <oc-icon name="filter-2" class="mr-1" />
@@ -88,7 +83,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :header-position="fileListHeaderY"
           :resources="paginatedResources"
           :are-paths-displayed="true"
@@ -97,7 +91,6 @@
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
-          :resource-dom-selector="resourceDomSelector"
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
@@ -114,9 +107,9 @@
             />
             <!--eslint-enable-->
           </template>
-          <template #contextMenu="{ resource, isOpen }">
+          <template #contextMenu="{ resource }">
             <context-actions
-              v-if="isOpen && isResourceInSelection(resource)"
+              v-if="isResourceInSelection(resource)"
               :action-options="{ space: getMatchingSpace(resource), resources: selectedResources }"
             />
           </template>
@@ -132,11 +125,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedResourceSpace"
-    />
+    <file-side-bar :space="selectedResourceSpace" />
   </div>
 </template>
 
@@ -192,7 +181,6 @@ import {
   useKeyboardFileMouseActions,
   useKeyboardFileActions
 } from '../../composables/keyboardActions'
-import { extractDomSelector } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
 
@@ -235,14 +223,12 @@ const { triggerDefaultAction } = useFileActions()
 
 const {
   folderView,
-  isSideBarOpen,
   paginatedResources,
   paginationPage,
   paginationPages,
   selectedResources,
   selectedResourcesIds,
   selectedResourceSpace,
-  sideBarActivePanel,
   sortBy,
   sortDir,
   sortFields,
@@ -393,14 +379,6 @@ const breadcrumbs = computed(() => {
     }
   ]
 })
-
-const resourceDomSelector = ({ id, remoteItemId }: Resource) => {
-  let selectorStr = id.toString()
-  if (remoteItemId) {
-    selectorStr += remoteItemId
-  }
-  return extractDomSelector(selectorStr)
-}
 
 const itemCount = computed(() => {
   return unref(totalResourcesCount).files + unref(totalResourcesCount).folders

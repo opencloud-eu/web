@@ -3,9 +3,13 @@ import {
   buildOutgoingShareResource,
   ShareTypes
 } from '@opencloud-eu/web-client'
-import { eventBus, isLocationSharesActive, isLocationSpacesActive } from '@opencloud-eu/web-pkg'
+import {
+  eventBus,
+  isLocationSharesActive,
+  isLocationSpacesActive,
+  isItemInCurrentFolder
+} from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
-import { isItemInCurrentFolder } from './helpers'
 
 export const onSSESpaceMemberAddedEvent = async ({
   sseData,

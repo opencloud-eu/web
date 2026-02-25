@@ -1,81 +1,42 @@
-import { useFileActionsDeleteResources, useIsAppActive } from '../helpers'
+import { useFileActionsDeleteResources } from '../helpers'
 import {
-  isLocationPublicActive,
-  isLocationSpacesActive,
-  isLocationTrashActive,
-  isLocationCommonActive
-} from '../../../router'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { useRouter } from '../../router'
+  isIncomingShareResource,
+  isProjectSpaceResource,
+  isSpaceResource,
+  isTrashResource
+} from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
-import { computed, unref } from 'vue'
+import { FileAction } from '../types'
+import { computed } from 'vue'
 import { useUserStore, useCapabilityStore } from '../../piniaStores'
 
 export const useFileActionsDelete = () => {
   const userStore = useUserStore()
   const capabilityStore = useCapabilityStore()
-  const router = useRouter()
-  const isAppActive = useIsAppActive()
   const { displayDialog, filesList_delete } = useFileActionsDeleteResources()
 
   const { $gettext } = useGettext()
-
-  const handler = ({
-    space,
-    resources,
-    deletePermanent
-  }: FileActionOptions & { deletePermanent: boolean }) => {
-    if (isLocationCommonActive(router, 'files-common-search')) {
-      resources = resources.filter(
-        (r) => r.canBeDeleted() && !r.isShareRoot() && !isProjectSpaceResource(r)
-      )
-    }
-    if (deletePermanent) {
-      displayDialog(space, resources)
-      return
-    }
-
-    filesList_delete(resources)
-  }
 
   const actions = computed((): FileAction[] => [
     {
       name: 'delete',
       icon: 'delete-bin-5',
       label: () => $gettext('Delete'),
-      handler: ({ space, resources }) => handler({ space, resources, deletePermanent: false }),
-      isVisible: ({ space, resources }) => {
-        if (
-          !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationPublicActive(router, 'files-public-link') &&
-          !isLocationCommonActive(router, 'files-common-search') &&
-          !unref(isAppActive)
-        ) {
+      handler: ({ resources }) => {
+        filesList_delete(resources)
+      },
+      isVisible: ({ resources }) => {
+        if (!resources.length) {
           return false
         }
-
-        if (resources.length === 0) {
-          return false
-        }
-
-        if (
-          isLocationSpacesActive(router, 'files-spaces-generic') &&
-          space?.driveType === 'share' &&
-          resources[0].path === '/'
-        ) {
-          return false
-        }
-
-        if (isLocationCommonActive(router, 'files-common-search')) {
-          return resources.some(
-            (r) => r.canBeDeleted() && !r.isShareRoot() && !isProjectSpaceResource(r)
-          )
-        }
-
-        return !resources.some((resource) => {
-          return !resource.canBeDeleted() || isProjectSpaceResource(resource)
-        })
+        return resources.every(
+          (r) =>
+            r.canBeDeleted() &&
+            !isSpaceResource(r) &&
+            !isIncomingShareResource(r) &&
+            !isTrashResource(r) &&
+            !r.isShareRoot() // shared root folders on the search result page
+        )
       },
       isDisabled: ({ resources }) => {
         return resources.length === 1 && resources[0].locked
@@ -88,11 +49,14 @@ export const useFileActionsDelete = () => {
       name: 'delete-permanent',
       icon: 'delete-bin-5',
       label: () => $gettext('Delete'),
-      handler: ({ space, resources }) => handler({ space, resources, deletePermanent: true }),
+      handler: ({ space, resources }) => {
+        displayDialog(space, resources)
+      },
       isVisible: ({ space, resources }) => {
-        if (!isLocationTrashActive(router, 'files-trash-generic')) {
+        if (!resources.length) {
           return false
         }
+
         if (!capabilityStore.filesPermanentDeletion) {
           return false
         }
@@ -104,7 +68,7 @@ export const useFileActionsDelete = () => {
           return false
         }
 
-        return resources.length > 0
+        return resources.every(isTrashResource)
       },
       class: 'oc-files-actions-delete-permanent-trigger'
     }

@@ -1,24 +1,21 @@
 <template>
-  <oc-bottom-drawer
+  <oc-mobile-drop
     v-if="useBottomDrawer"
     ref="bottomDrawerRef"
     :drawer-id="dropId"
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
-    :is-nested-element="isNestedElement"
-    :nested-parent-ref="nestedParentRef"
-    use-portal
     @show="emit('showDrop')"
     @hide="emit('hideDrop')"
   >
     <slot />
-  </oc-bottom-drawer>
+  </oc-mobile-drop>
   <div v-else :id="dropId" ref="drop" class="oc-drop shadow-md/20 rounded-sm" @click="onClick">
-    <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
+    <oc-card v-if="isOpen && $slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
       <slot />
     </oc-card>
-    <slot v-else name="special" />
+    <slot v-else-if="isOpen" name="special" />
   </div>
 </template>
 
@@ -26,10 +23,10 @@
 import tippy, { hideAll, Props as TippyProps, Instance } from 'tippy.js'
 import { detectOverflow, Modifier } from '@popperjs/core'
 import { destroy, hideOnEsc } from '../../directives/OcTooltip'
-import { getTailwindPaddingClass, NestedDrop, SizeType, uniqueId } from '../../helpers'
+import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '../../composables'
-import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
+import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
 
 export interface Props {
@@ -51,10 +48,6 @@ export interface Props {
    * @default false
    */
   isNestedElement?: boolean
-  /**
-   * @docs The parent `OcDrop` ref of the nested drop.
-   */
-  nestedParentRef?: NestedDrop
   /**
    * @docs Determines the event that triggers the drop.
    * @default 'click'
@@ -139,17 +132,17 @@ const {
   target,
   toggle = '',
   title = '',
-  enforceDropOnMobile = false,
-  nestedParentRef = null
+  enforceDropOnMobile = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { isMobile } = useIsMobile()
+const isOpen = ref(false)
 
 const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
-const bottomDrawerRef = useTemplateRef<typeof OcBottomDrawer>('bottomDrawerRef')
+const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
 
 const drop = useTemplateRef('drop')
 const tippyInstance = ref<Instance | null>(null)
@@ -169,11 +162,7 @@ const hide = () => {
   unref(tippyInstance)?.hide()
 }
 
-const getElement = () => {
-  return unref(useBottomDrawer) ? unref(bottomDrawerRef).getElement() : unref(drop)
-}
-
-defineExpose({ show, hide, getElement, tippy: tippyInstance })
+defineExpose({ show, hide, tippy: tippyInstance })
 
 const onClick = (event: Event) => {
   const isNestedDropToggle = (event.target as HTMLElement)
@@ -192,10 +181,6 @@ const onFocusOut = (event: FocusEvent) => {
     hide()
   }
 }
-
-onBeforeUnmount(() => {
-  drop.value?.removeEventListener('focusout', onFocusOut)
-})
 
 const triggerMapping = computed(() => {
   return (
@@ -222,6 +207,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  unref(drop)?.removeEventListener('focusout', onFocusOut)
   destroy(unref(tippyInstance))
 })
 
@@ -247,15 +233,17 @@ const initializeTippy = () => {
     theme: 'none',
     maxWidth: 416,
     offset,
-    ...(!isNestedElement && {
-      onShow: (instance) => {
-        emit('showDrop')
+    onShow: (instance) => {
+      isOpen.value = true
+      emit('showDrop')
+      if (!isNestedElement) {
         hideAll({ exclude: instance })
-      },
-      onHide: () => {
-        emit('hideDrop')
       }
-    }),
+    },
+    onHide: () => {
+      isOpen.value = false
+      emit('hideDrop')
+    },
     popperOptions: {
       ...popperOptions,
       modifiers: [
@@ -323,24 +311,24 @@ watch(
     @apply w-xs max-w-full;
   }
 
-  .oc-bottom-drawer li a,
-  .oc-bottom-drawer li button,
+  .oc-mobile-drop li a,
+  .oc-mobile-drop li button,
   .oc-drop li a,
   .oc-drop li button {
     @apply p-2 w-full;
   }
 
-  .oc-bottom-drawer li,
+  .oc-mobile-drop li,
   .oc-drop li {
     @apply mb-1;
   }
 
-  .oc-bottom-drawer li:first-child,
+  .oc-mobile-drop li:first-child,
   .oc-drop li:first-child {
     @apply mt-0;
   }
 
-  .oc-bottom-drawer li:last-child,
+  .oc-mobile-drop li:last-child,
   .oc-drop li:last-child {
     @apply mb-0;
   }

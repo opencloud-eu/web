@@ -13,7 +13,13 @@ import { computed, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import GroupSelect from './GroupSelect.vue'
-import { useClientService, Modal, useMessages } from '@opencloud-eu/web-pkg'
+import {
+  useClientService,
+  Modal,
+  useMessages,
+  isPromiseFulfilled,
+  isPromiseRejected
+} from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
 
 const { groups, users } = defineProps<{
@@ -77,7 +83,7 @@ const onConfirm = async () => {
 
   const results = await Promise.allSettled(promises)
 
-  const succeeded = results.filter((r) => r.status === 'fulfilled')
+  const succeeded = results.filter(isPromiseFulfilled)
   if (succeeded.length) {
     const title =
       succeeded.length === 1 && unref(selectedOptions).length === 1 && users.length === 1
@@ -94,7 +100,7 @@ const onConfirm = async () => {
     showMessage({ title })
   }
 
-  const failed = results.filter((r) => r.status === 'rejected')
+  const failed = results.filter(isPromiseRejected)
   if (failed.length) {
     failed.forEach(console.error)
 
@@ -112,7 +118,7 @@ const onConfirm = async () => {
           )
     showErrorMessage({
       title,
-      errors: (failed as PromiseRejectedResult[]).map((f) => f.reason)
+      errors: failed.map((f) => f.reason)
     })
   }
 

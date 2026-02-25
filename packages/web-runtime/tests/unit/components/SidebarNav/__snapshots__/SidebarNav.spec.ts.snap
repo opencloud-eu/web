@@ -1,24 +1,14 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcSidebarNav > renders navItems into a list 1`] = `
-"<div id="web-nav-sidebar" class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]"><button type="button" aria-label="Toggle sidebar" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-end text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default pr-2 toggle-sidebar-button pb-2 pt-4 min-h-10.5 hover:overflow-hidden transition-all duration-200 ease-out" aria-expanded="true">
-    <!--v-if-->
-    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-8 raw-hover-surface rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-drop-left-line.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-8"></svg></span>
-  </button>
+"<div id="web-nav-sidebar" class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]" closed="false">
   <nav class="oc-sidebar-nav mb-4 mt-2 px-1" aria-label="Sidebar navigation menu">
+    <!--v-if-->
     <div id="nav-highlighter" class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm transition-transform duration-200 ease-[cubic-bezier(0.51, 0.06, 0.56, 1.37)]" aria-hidden="true"></div>
     <ul class="oc-list relative">
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="folder" name="Personal" active="true" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="share-forward" name="Shares" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
-      <sidebar-nav-item-stub index="00000000000000000000000000000000" icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="folder" name="Personal" active="true" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="share-forward" name="Shares" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
+      <sidebar-nav-item-stub icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="fill" collapsed="false"></sidebar-nav-item-stub>
     </ul>
   </nav> <!-- @slot bottom content of the sidebar -->
   <div class="versions flex flex-col justify-end items-start grow pb-4 pl-4 text-xs text-role-on-surface-variant"><span></span>

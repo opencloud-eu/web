@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios'
 import { urlJoin } from '../utils'
-import convert from 'xml-js'
 import { pbkdf2Sync } from 'crypto'
+import { XMLParser } from 'fast-xml-parser'
 
 export interface UrlSignOptions {
   axiosClient: AxiosInstance
@@ -12,6 +12,7 @@ export class UrlSign {
   private axiosClient: AxiosInstance
   private baseURI: string
 
+  private xmlParser: XMLParser
   private signingKey: string
 
   private ALGORITHM = 'sha512'
@@ -22,6 +23,7 @@ export class UrlSign {
   constructor({ axiosClient, baseURI }: UrlSignOptions) {
     this.axiosClient = axiosClient
     this.baseURI = baseURI
+    this.xmlParser = new XMLParser()
   }
 
   public async signUrl(url: string, username: string) {
@@ -51,8 +53,8 @@ export class UrlSign {
       }
     )
 
-    const parsedXML = convert.xml2js(data.data, { compact: true }) as any
-    this.signingKey = parsedXML.ocs.data['signing-key']._text
+    const parsedXML = this.xmlParser.parse(data.data)
+    this.signingKey = parsedXML.ocs.data['signing-key']
     return this.signingKey
   }
 

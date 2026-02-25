@@ -16,6 +16,21 @@ export default defineConfig({
         `,
         silenceDeprecations: ['legacy-js-api', 'import']
       }
+    },
+    postcss: {
+      plugins: [
+        {
+          // The design-system css file is supposed to be imported in the main css file of the consuming
+          // application. We need to remove the tailwind reference directives because they are already
+          // resolved in the main css file via the top tailwind import. Leaving them would cause issues.
+          postcssPlugin: 'remove-reference-directive',
+          AtRule: {
+            reference(atRule) {
+              atRule.remove()
+            }
+          }
+        }
+      ]
     }
   },
   build: {
@@ -36,7 +51,8 @@ export default defineConfig({
         ),
         '**/tests',
         '**/*.spec.ts',
-        'vue'
+        'vue',
+        'pinia'
       ],
       output: {
         globals: {

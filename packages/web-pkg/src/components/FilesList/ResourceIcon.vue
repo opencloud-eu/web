@@ -8,26 +8,29 @@
       'oc-resource-icon',
       'inline-flex',
       'items-center',
-      { 'opacity-80 grayscale': isDisabledSpace, '[&_svg]:h-[70%]': !isSpace && !isFolder }
+      {
+        'opacity-80 grayscale': hasDisabledSpaceIcon,
+        '[&_svg]:h-[70%]': !hasSpaceIcon && !hasFolderIcon
+      }
     ]"
   />
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, inject, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { computed, inject, unref } from 'vue'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { AVAILABLE_SIZES, SizeType } from '@opencloud-eu/design-system/helpers'
+import { SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   createDefaultFileIconMapping,
   IconType,
   ResourceIconMapping,
   resourceIconMappingInjectionKey
-} from '../../helpers/resource/icon'
+} from '../../helpers'
 
 const defaultFolderIcon: IconType = {
   name: 'resource-type-folder',
@@ -49,94 +52,68 @@ const defaultSpaceIconDisabled: IconType = {
   color: 'var(--oc-role-secondary)'
 }
 
-const defaultFallbackIcon: IconType = {
+const defaultFileIcon: IconType = {
   name: 'resource-type-file',
   color: 'var(--oc-role-on-surface)'
 }
 
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
-export default defineComponent({
-  name: 'ResourceIcon',
-  props: {
-    /**
-     * The resource to be displayed
-     */
-    resource: {
-      type: Object as PropType<Resource | SpaceResource>,
-      required: true
-    },
-    /**
-     * The size of the icon. Defaults to large.
-     * `xsmall, small, medium, large, xlarge, xxlarge`
-     */
-    size: {
-      type: String as PropType<SizeType>,
-      default: 'large',
-      validator: (value: string): boolean => {
-        return AVAILABLE_SIZES.some((e) => e === value)
-      }
-    }
-  },
-  setup(props) {
-    const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
+const { resource, size = 'large' } = defineProps<{
+  resource: Resource | SpaceResource
+  size?: SizeType
+}>()
 
-    const isFolder = computed(() => {
-      // fallback is necessary since
-      // sometimes resources without a type
-      // but with `isFolder` are being passed
-      return props.resource.type === 'folder' || props.resource.isFolder
-    })
+const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 
-    const isSpace = computed(() => {
-      return props.resource.type === 'space'
-    })
+const hasFolderIcon = computed(() => {
+  return unref(icon)?.name === defaultFolderIcon.name
+})
 
-    const isDisabledSpace = computed(() => {
-      return isProjectSpaceResource(props.resource) && props.resource.disabled === true
-    })
+const hasSpaceIcon = computed(() => {
+  return resource.type === 'space'
+})
 
-    const isPersonalSpace = computed(() => {
-      return isPersonalSpaceResource(props.resource)
-    })
-    const extension = computed(() => {
-      return props.resource.extension?.toLowerCase()
-    })
-    const mimeType = computed(() => {
-      return props.resource.mimeType?.toLowerCase()
-    })
+const hasDisabledSpaceIcon = computed(() => {
+  return isProjectSpaceResource(resource) && resource.disabled === true
+})
 
-    const icon = computed((): IconType => {
-      if (unref(isPersonalSpace)) {
-        return defaultPersonalSpaceIcon
-      }
-      if (unref(isDisabledSpace)) {
-        return defaultSpaceIconDisabled
-      }
-      if (unref(isSpace)) {
-        return defaultSpaceIcon
-      }
-      if (unref(isFolder)) {
-        return defaultFolderIcon
-      }
+const fallbackIcon = computed(() => {
+  if (resource.type === 'folder' || resource.isFolder) {
+    return defaultFolderIcon
+  }
+  return defaultFileIcon
+})
 
-      const icon =
-        defaultFileIconMapping[unref(extension)] ||
-        iconMappingInjection?.mimeType[unref(mimeType)] ||
-        iconMappingInjection?.extension[unref(extension)]
+const hasPersonalSpaceIcon = computed(() => {
+  return isPersonalSpaceResource(resource)
+})
+const extension = computed(() => {
+  return resource.extension?.toLowerCase()
+})
+const mimeType = computed(() => {
+  return resource.mimeType?.toLowerCase()
+})
 
-      return {
-        ...defaultFallbackIcon,
-        ...icon
-      }
-    })
+const icon = computed((): IconType => {
+  if (unref(hasPersonalSpaceIcon)) {
+    return defaultPersonalSpaceIcon
+  }
+  if (unref(hasDisabledSpaceIcon)) {
+    return defaultSpaceIconDisabled
+  }
+  if (unref(hasSpaceIcon)) {
+    return defaultSpaceIcon
+  }
 
-    return {
-      icon,
-      isSpace,
-      isFolder,
-      isDisabledSpace
-    }
+  const typeIconOrUndefined =
+    defaultFileIconMapping[unref(extension)] ||
+    iconMappingInjection?.mimeType[unref(mimeType)] ||
+    iconMappingInjection?.extension[unref(extension)]
+
+  return {
+    ...unref(fallbackIcon),
+    ...typeIconOrUndefined
   }
 })
 </script>

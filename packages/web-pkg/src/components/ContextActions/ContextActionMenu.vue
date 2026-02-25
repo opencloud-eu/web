@@ -24,7 +24,6 @@
           :menu-section-drop="drop"
           :appearance="appearance"
           :action-options="actionOptions"
-          :parent-drop-ref="dropRef"
         />
       </template>
     </oc-list>
@@ -35,7 +34,7 @@
 import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
 import { ActionOptions } from '../../composables'
-import { AppearanceType, NestedDrop } from '@opencloud-eu/design-system/helpers'
+import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
 import { MenuSection } from './types'
 
@@ -54,11 +53,6 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<ActionOptions>,
       required: true
-    },
-    dropRef: {
-      type: Object as PropType<NestedDrop>,
-      required: false,
-      default: null
     }
   },
   methods: {

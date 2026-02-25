@@ -1,12 +1,7 @@
+import { useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import SidebarNav from '../../../../src/components/SidebarNav/SidebarNav.vue'
 import sidebarNavItemFixtures from '../../../__fixtures__/sidebarNavItems'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-
-vi.mock('uuid', () => ({
-  v4: () => {
-    return '00000000-0000-0000-0000-000000000000'
-  }
-}))
 
 const slots = {
   bottom: '<span class="footer">Footer</span>'
@@ -21,33 +16,25 @@ describe('OcSidebarNav', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
   })
-  it('expands the navbar in open state', () => {
-    const { wrapper } = getWrapper({ closed: false })
-    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('true')
-  })
-  it('collapses the navbar in closed state', () => {
-    const { wrapper } = getWrapper({ closed: true })
-    expect(wrapper.find('.toggle-sidebar-button').attributes('aria-expanded')).toBe('false')
-  })
-  it('emits "update:nav-bar-closed" upon button click', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.find('.toggle-sidebar-button').trigger('click')
-    expect(wrapper.emitted('update:nav-bar-closed').length).toBeGreaterThan(0)
-  })
-  it('initially sets the highlighter to the active nav item', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.vm.$nextTick()
-    expect(wrapper.vm.highlighterAttrs).toEqual({
-      style: {
-        transform: 'translateY(0px)',
-        'transition-duration': '0.2s'
-      }
-    })
-  })
 })
 
-function getWrapper({ closed = false, checkForUpdates = true, slots = {} } = {}) {
+function getWrapper({ closed = false, slots = {} } = {}) {
   const mocks = defaultComponentMocks()
+
+  const plugins = defaultPlugins({
+    piniaOptions: {
+      capabilityState: {
+        capabilities: {
+          core: {
+            status: { productversion: '3.5.0' }
+          }
+        }
+      }
+    }
+  })
+
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockReturnValue([])
 
   return {
     wrapper: mount(SidebarNav, {
@@ -58,19 +45,7 @@ function getWrapper({ closed = false, checkForUpdates = true, slots = {} } = {})
       },
       global: {
         renderStubDefaultSlot: true,
-        plugins: [
-          ...defaultPlugins({
-            piniaOptions: {
-              capabilityState: {
-                capabilities: {
-                  core: {
-                    status: { productversion: '3.5.0' }
-                  }
-                }
-              }
-            }
-          })
-        ],
+        plugins,
         mocks,
         provide: mocks,
         stubs: { SidebarNavItem: true }

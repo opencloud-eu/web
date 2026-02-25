@@ -1,10 +1,10 @@
 <template>
   <div id="account-extensions">
-    <h1 class="mt-0" v-text="$gettext('Extensions')" />
+    <h1 class="text-lg mt-1" v-text="$gettext('Extensions')" />
     <no-content-message
       v-if="!extensionPointsWithUserPreferences.length"
       id="account-extensions-empty"
-      icon="brush-2"
+      icon="puzzle-2"
     >
       <template #message>
         <span v-text="$gettext('No extensions available')" />

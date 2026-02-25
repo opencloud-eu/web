@@ -1,7 +1,8 @@
 import { ref, unref } from 'vue'
-import { SortDir, SortOptions, useSort } from '../../../../src/composables'
+import { SortOptions, useSort } from '../../../../src/composables'
 import { Resource } from '@opencloud-eu/web-client'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 describe('useSort', () => {
   it('should be valid', () => {

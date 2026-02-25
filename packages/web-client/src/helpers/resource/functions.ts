@@ -47,9 +47,6 @@ export const extractNameWithoutExtension = (resource?: Resource): string => {
 
 export const extractExtensionFromFile = (resource: Resource): string => {
   const name = resource.name
-  if (resource.type === 'directory' || resource.isFolder) {
-    return ''
-  }
 
   const parts = name.split('.')
   if (parts.length > 2) {
@@ -142,7 +139,7 @@ export function buildResource(
     parentFolderId: resource.props[DavProperty.FileParent],
     mimeType: resource.props[DavProperty.MimeType],
     name,
-    extension: isFolder ? '' : extension,
+    extension,
     path: resourcePath,
     webDavPath: resource.filename,
     type: isFolder ? 'folder' : resource.type,
@@ -197,7 +194,8 @@ export function buildResource(
     canEditTags: function () {
       return (
         this.permissions.indexOf(DavPermission.Updateable) >= 0 ||
-        this.permissions.indexOf(DavPermission.FileUpdateable) >= 0
+        this.permissions.indexOf(DavPermission.FileUpdateable) >= 0 ||
+        this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
       )
     },
     isMounted: function () {
@@ -255,6 +253,8 @@ export function buildDeletedResource(resource: WebDavResponseResource): TrashRes
     canCreate: () => false,
     isMounted: () => false,
     isReceivedShare: () => false,
+    hasPreview: () => false,
+    isShareRoot: () => false,
     getDomSelector: () => extractDomSelector(id)
   }
 }

@@ -48,7 +48,7 @@
               appearance="raw"
               :aria-label="seeVersionsLabel"
               no-hover
-              @click="expandVersionsPanel"
+              @click="openSideBarPanel('versions')"
             >
               {{ capitalizedTimestamp }}
             </oc-button>
@@ -96,7 +96,7 @@
               appearance="raw"
               :aria-label="seeVersionsLabel"
               no-hover
-              @click="expandVersionsPanel"
+              @click="openSideBarPanel('versions')"
             >
               {{ versions.length }}
             </oc-button>
@@ -138,7 +138,8 @@ import {
   formatDateFromJSDate,
   useResourceContents,
   useLoadPreview,
-  useInterceptModifierClick
+  useSideBar,
+  useResourceIndicators
 } from '@opencloud-eu/web-pkg'
 import upperFirst from 'lodash-es/upperFirst'
 import {
@@ -148,10 +149,7 @@ import {
   ShareTypes
 } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
-import { getIndicators } from '@opencloud-eu/web-pkg'
 import { formatFileSize, formatRelativeDateFromJSDate } from '@opencloud-eu/web-pkg'
-import { eventBus } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
@@ -172,13 +170,14 @@ const capabilityStore = useCapabilityStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { resourceContentsText } = useResourceContents({ showSizeInformation: false })
 const { loadPreview, previewsLoading } = useLoadPreview()
+const { openSideBarPanel } = useSideBar()
+const { getIndicators } = useResourceIndicators()
 
 const language = useGettext()
 const { $gettext, current: currentLanguage } = language
 
 const resourcesStore = useResourcesStore()
 const { ancestorMetaData, currentFolder } = storeToRefs(resourcesStore)
-const { interceptModifierClick } = useInterceptModifierClick()
 const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
@@ -234,10 +233,7 @@ const hasDeletionDate = computed(() => {
 const shareIndicators = computed(() => {
   return getIndicators({
     space: unref(space),
-    resource: unref(resource),
-    ancestorMetaData: unref(ancestorMetaData),
-    user: unref(user),
-    interceptModifierClick
+    resource: unref(resource)
   }).filter(({ category }) => category === 'sharing')
 })
 
@@ -319,12 +315,8 @@ const capitalizedTimestamp = computed(() => {
   return upperFirst(displayDate)
 })
 
-const expandVersionsPanel = () => {
-  eventBus.publish(SideBarEventTopics.setActivePanel, 'versions')
-}
-
 watch(
-  () => unref(resource).id,
+  () => unref(resource).mdate,
   async () => {
     if (unref(resource)) {
       preview.value = await loadPreview({

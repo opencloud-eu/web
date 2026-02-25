@@ -3,7 +3,6 @@ import { fileList } from '../../helpers/ui'
 import {
   usePagination,
   useSort,
-  SortDir,
   SortField,
   useResourcesStore,
   folderService,
@@ -12,7 +11,6 @@ import {
   FolderViewExtension,
   FolderView
 } from '@opencloud-eu/web-pkg'
-import { useSideBar } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
   determineResourceTableSortFields,
@@ -29,7 +27,7 @@ import {
   useViewSize,
   FolderViewModeConstants
 } from '@opencloud-eu/web-pkg'
-
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -58,9 +56,6 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   selectedResources: Ref<Resource[]>
   selectedResourcesIds: Ref<string[]>
   isResourceInSelection(resource: Resource): boolean
-
-  isSideBarOpen: Ref<boolean>
-  sideBarActivePanel: Ref<string>
 } & SelectedResourcesResult &
   ScrollToResult
 
@@ -119,14 +114,21 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     page: paginationPage
   } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
 
-  const accentuateItem = async (id: string) => {
-    await nextTick()
-    fileList.accentuateItem(id)
-  }
   resourcesStore.$onAction((action) => {
-    if (action.name === 'upsertResource') {
-      accentuateItem(action.args[0].id)
-    }
+    action.after(async () => {
+      switch (action.name) {
+        case 'upsertResource':
+          await nextTick()
+          fileList.accentuateItem(action.args[0].id)
+          break
+        case 'upsertResources':
+          await nextTick()
+          for (const resource of action.args[0]) {
+            fileList.accentuateItem(resource.id)
+          }
+          break
+      }
+    })
   })
 
   return {
@@ -147,7 +149,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     sortBy,
     sortDir,
     ...useSelectedResources(),
-    ...useSideBar(),
     ...useScrollTo()
   }
 }

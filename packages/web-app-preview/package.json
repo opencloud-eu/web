@@ -11,11 +11,12 @@
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
+    "@opencloud-eu/design-system": "workspace:*",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "@vueuse/core": "^14.0.0",
     "lodash-es": "^4.17.21",
     "vue3-gettext": "2.4.0",
-    "vue-router": "4.6.3"
+    "vue-router": "5.0.3"
   }
 }

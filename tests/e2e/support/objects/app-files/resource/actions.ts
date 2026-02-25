@@ -1,4 +1,5 @@
 import { Download, Locator, Page, expect } from '@playwright/test'
+import { setDefaultTimeout } from '@cucumber/cucumber'
 import util from 'util'
 import path from 'path'
 import { waitForResources } from './utils'
@@ -6,7 +7,9 @@ import { editor, sidebar } from '../utils'
 import { environment, utils } from '../../../../support'
 import { config } from '../../../../config'
 import { File, Space } from '../../../types'
+import { waitProcessingToFinish } from '../fileEvents'
 
+const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
 const downloadFileButtonSingleShareView = '.oc-files-actions-download-file-trigger'
 const downloadFolderButtonSingleShareView = '.oc-files-actions-download-archive-trigger'
@@ -32,19 +35,16 @@ const breadcrumbResourceNameSelector =
   '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
-const addNewResourceButton = `#new-file-menu-btn`
+const addNewResourceButton = `.oc-app-floating-action-button`
 const createNewFolderButton = '#new-folder-btn'
 const createNewTxtFileButton = '.new-file-btn-txt'
 const createNewMdFileButton = '.new-file-btn-md'
-const createNewOfficeDocumentFileBUtton = '//div[@id="new-file-menu-drop"]//span[text()="%s"]'
+const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const createNewShortcutButton = '#new-shortcut-btn'
 const shortcutResorceInput = '#create-shortcut-modal-url-input'
 const saveTextFileInEditorButton = '#app-save-action:visible'
-const textEditor = '#text-editor #text-editor-container'
 const textEditorPlainTextInput = '#text-editor #text-editor-container .cm-content'
-const textEditorMarkdownInput = '#text-editor #text-editor-container .cm-content'
 const resourceNameInput = '.oc-modal input'
-const resourceUploadButton = '#upload-menu-btn'
 const fileUploadInput = '#files-file-upload-input'
 const folderUploadInput = '#files-folder-upload-input'
 const uploadInfoCloseButton = '#close-upload-info-btn'
@@ -75,6 +75,7 @@ const searchList =
   '//div[@id="files-global-search-options"]//li[contains(@class,"preview")]//span[contains(@class,"oc-resource-name")]'
 const globalSearchOptions = '#files-global-search-options'
 const loadingSpinner = '#files-global-search-options .loading'
+const searchListItem = '#files-global-search span[data-test-resource-name="%s"]'
 const filesViewOptionButton = '#files-view-options-btn'
 const hiddenFilesToggleButton = '//*[@data-testid="files-switch-hidden-files"]//button'
 const previewImage = '//main[@id="preview"]//div[contains(@class,"stage_media")]//img'
@@ -109,7 +110,7 @@ const filesContextMenuAction = 'div[id^="context-menu-drop"] button.oc-files-act
 const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
-  '//*[@data-test-resource-name="%s"]/ancestor::tr//td//span[@data-test-indicator-type="resource-locked"]'
+  '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-locked"]'
 const sharesNavigationButtonSelector = '.oc-sidebar-nav [data-nav-name="files-shares"]'
 const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
@@ -127,11 +128,15 @@ const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
 const mobileViewmodeSwitchBtn = '#mobile-viewmode-switch-toggle'
 const mobileViewmodeSwitchDropdown = '#mobile-viewmode-switch-drop'
 
+// file viewer
+const pdfViewerContainer = '#pdf-viewer object.pdf-viewer'
+const textEditorContainer = '#text-editor-container div.md-editor-content'
+
 // online office locators
 // Collabora
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
 const collaboraDocTextAreaSelector = '#clipboard-area'
-const collaboraCanvasEditorSelector = '.leaflet-layer'
+const collaboraCanvasEditorSelector = '#document-canvas'
 // OnlyOffice
 const onlyOfficeInnerFrameSelector = '[name="frameEditor"]'
 const onlyOfficeSaveButtonSelector = '#slot-btn-dt-save > button'
@@ -149,6 +154,27 @@ const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[tex
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
+const undoBtn = 'action-handler'
+
+export const getResourceLocator = ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Locator => {
+  return page.locator(util.format(resourceNameSelector, resource))
+}
+
+export const getResourceSearchItemLocator = ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Locator => {
+  return page.locator(util.format(searchListItem, resource))
+}
 
 export const clickResource = async ({
   page,
@@ -201,6 +227,7 @@ export type createResourceTypes =
   | 'folder'
   | 'txtFile'
   | 'mdFile'
+  | 'Document'
   | 'OpenDocument'
   | 'Microsoft Word'
 
@@ -398,20 +425,27 @@ const createDocumentFile = async (
   args: createResourceArgs,
   editorToOpen: string
 ): Promise<void> => {
-  const { page, name, type, content } = args
+  const { page, name, content, type } = args
   // for creating office suites documents we need the external app provider services to be ready
   // though the service is ready it takes some time for the list of office suites documents to be visible in the dropdown in the webUI
   // which requires a retry to check if the service is ready and the office suites documents is visible in the dropdown
+  let typeLocator = type
+  switch (type) {
+    case 'OpenDocument': {
+      typeLocator = 'Document'
+    }
+  }
+
   const isAppProviderServiceReadyInWebUI = await isAppProviderServiceForOfficeSuitesReadyInWebUI(
     page,
-    type
+    typeLocator
   )
   if (isAppProviderServiceReadyInWebUI === false) {
     throw new Error(
       `The document of type ${type} did not appear in the webUI for ${editorToOpen}. Possible reason could be the app provider service for ${editorToOpen} was not ready yet.`
     )
   }
-  await page.locator(util.format(createNewOfficeDocumentFileBUtton, type)).click()
+  await page.locator(util.format(createNewOfficeDocumentFileBUtton, typeLocator)).click()
   const resourceInput = page.locator(resourceNameInput)
   await resourceInput.clear()
   await resourceInput.fill(name)
@@ -447,14 +481,14 @@ const createDocumentFile = async (
         "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
       )
   }
-  const respPromise = Promise.all([
-    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND')
+  await Promise.all([
+    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
+    editor.close(page)
   ])
-  await editor.close(page)
-  await respPromise
 
-  await page.reload()
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
+  // wait for lock to be removed
+  expect(getLockLocator({ page, resource: name })).not.toBeVisible()
 }
 
 export const fillContentOfDocument = async ({
@@ -565,11 +599,7 @@ export const editTextDocument = async ({
   name: string
   content: string
 }): Promise<void> => {
-  const isMarkdownMode = await page.locator(textEditor).getAttribute('data-markdown-mode')
-  const inputLocator =
-    isMarkdownMode === 'true' ? textEditorMarkdownInput : textEditorPlainTextInput
-
-  await page.locator(inputLocator).fill(content)
+  await page.locator(textEditorPlainTextInput).fill(content)
   await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
     page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
@@ -598,7 +628,7 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to })
   }
 
-  await page.locator(resourceUploadButton).click()
+  await page.locator(addNewResourceButton).click()
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   await page.locator(inputSelector).waitFor({ state: 'visible' })
 
@@ -680,7 +710,7 @@ export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> =
   const { page, resources } = args
 
   // waiting to files view
-  await page.locator(addNewResourceButton).waitFor()
+  await expect(page.locator(addNewResourceButton)).not.toHaveAttribute('disabled')
   await utils.dragDropFiles(page, resources, filesView)
 
   await page.locator(uploadInfoCloseButton).click()
@@ -730,7 +760,14 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
   await pauseResumeUpload(page)
   await page.locator(pauseUploadButton).waitFor()
 
-  await page.locator(uploadInfoSuccessLabelSelector).waitFor({ timeout: config.timeout * 1000 })
+  // increase the test timeout for large uploads
+  setDefaultTimeout(config.largeUploadTimeout * 1000)
+  await page
+    .locator(uploadInfoSuccessLabelSelector)
+    .waitFor({ timeout: config.largeUploadTimeout * 1000 })
+  // revert  to the default timeout
+  setDefaultTimeout(config.testTimeout * 1000)
+
   await page.locator(uploadInfoCloseButton).click()
 }
 
@@ -742,7 +779,7 @@ export const cancelResourceUpload = async (page: Page): Promise<void> => {
 
 /**/
 
-interface resourceArgs {
+export interface resourceArgs {
   name: string
   type?: string
 }
@@ -1151,7 +1188,10 @@ export const renameResource = async (args: renameResourceArgs): Promise<void> =>
 
   await page.locator(util.format(resourceNameSelector, resourceBase)).click({ button: 'right' })
   await page.locator(util.format(filesContextMenuAction, 'rename')).click()
-  await page.locator(fileRenameInput).fill(newName)
+  const resourceInput = page.locator(fileRenameInput)
+  // Clear the field and fill in the name
+  await resourceInput.clear()
+  await resourceInput.fill(newName)
   await Promise.all([
     page.waitForResponse(
       (resp) =>
@@ -1281,8 +1321,10 @@ export interface deleteResourceTrashbinArgs {
   resource: string
 }
 
-export interface deleteTrashbinMultipleResourcesArgs
-  extends Omit<deleteResourceTrashbinArgs, 'resource'> {
+export interface deleteTrashbinMultipleResourcesArgs extends Omit<
+  deleteResourceTrashbinArgs,
+  'resource'
+> {
   resources: string[]
 }
 
@@ -1548,6 +1590,7 @@ export const searchResourceGlobalSearch = async (
   }
 
   await page.locator(globalSearchBarFilter).click()
+  await page.locator(appLoadingSpinner).waitFor({ state: 'detached' })
 
   if (!keyword) {
     await page.locator(globalSearchInput).click()
@@ -1775,6 +1818,8 @@ export interface openFileInViewerArgs {
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {
   const { page, name, actionType } = args
+  await waitProcessingToFinish(page, name)
+
   switch (actionType) {
     case 'OnlyOffice':
       await Promise.all([
@@ -1820,15 +1865,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       ])
       break
     case 'mediaviewer': {
-      await Promise.all([
-        page.waitForResponse(
-          (resp) =>
-            resp.url().includes('preview') &&
-            resp.status() === 200 &&
-            resp.request().method() === 'GET'
-        ),
-        page.locator(util.format(resourceNameSelector, name)).click()
-      ])
+      await page.locator(util.format(resourceNameSelector, name)).click()
       const extension = name.split('.').pop()
       switch (extension) {
         case 'mp3':
@@ -1845,7 +1882,16 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       }
       break
     }
-    case 'pdfviewer':
+    case 'pdfviewer': {
+      await Promise.all([
+        page.waitForResponse(
+          (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+        ),
+        page.locator(util.format(resourceNameSelector, name)).click()
+      ])
+      await page.locator(pdfViewerContainer).waitFor()
+      break
+    }
     case 'texteditor': {
       await Promise.all([
         page.waitForResponse(
@@ -1853,6 +1899,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
         ),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
+      await page.locator(textEditorContainer).waitFor()
       break
     }
   }
@@ -2265,7 +2312,7 @@ export const uploadImageFromClipboard = async ({ page }: { page: Page }): Promis
   // since direct clipboard access is not available in Playwright tests.
   const buffer = await page.screenshot()
 
-  await page.locator(resourceUploadButton).click()
+  await page.locator(addNewResourceButton).click()
   const fileInput = await page.locator(fileUploadInput)
   await fileInput.setInputFiles({
     name: 'image.png',
@@ -2305,4 +2352,38 @@ export const openResourcePanel = async ({
 }): Promise<void> => {
   await sidebar.open({ page, resource })
   await sidebar.openPanel({ page, name: panel })
+}
+
+export const deleteAndUndo = async ({
+  page,
+  method,
+  resourcesWithInfo,
+  via,
+  folder
+}: {
+  page: Page
+  method: 'keyboard' | 'undo button'
+  resourcesWithInfo: resourceArgs[]
+  via: ActionViaType
+  folder?: string
+}): Promise<void> => {
+  await deleteResource({
+    page,
+    resourcesWithInfo,
+    via,
+    folder
+  })
+
+  const undoButton = page.getByTestId(undoBtn)
+  await expect(undoButton.first()).toBeVisible()
+
+  const responsePromise = page.waitForResponse(
+    (resp) => resp.request().method() === 'MOVE' && resp.status() === 201
+  )
+  if (method === 'keyboard') {
+    await page.keyboard.press('ControlOrMeta+z')
+  } else {
+    await undoButton.first().click()
+  }
+  await responsePromise
 }

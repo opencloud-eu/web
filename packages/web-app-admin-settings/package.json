@@ -14,14 +14,14 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
     "@opencloud-eu/web-pkg": "workspace:^",
-    "axios": "1.13.1",
+    "axios": "1.13.5",
     "email-validator": "^2.0.4",
     "fuse.js": "7.1.0",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.23",
     "mark.js": "^8.11.1",
-    "pinia": "3.0.3",
+    "pinia": "3.0.4",
     "uuid": "13.0.0",
     "vue-concurrency": "5.0.3",
-    "vue-router": "4.6.3"
+    "vue-router": "5.0.3"
   }
 }

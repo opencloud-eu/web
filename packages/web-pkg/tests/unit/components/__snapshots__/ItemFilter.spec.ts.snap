@@ -2,9 +2,8 @@
 
 exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 "<div class="item-filter flex item-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90" id="oc-filter-chip-3">
-      <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+  <div class="oc-filter-chip flex">
+    <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="none" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="oc-filter-chip-3" class="oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap] px-3"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -13,7 +12,7 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -22,44 +21,38 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-    </button>
-    <div id="oc-drop-4" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
-      <div class="oc-card">
-        <!--v-if-->
-        <div class="oc-card-body p-2">
-          <!--v-if-->
-          <div>
-            <ul class="oc-list item-filter-list">
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Albert Einstein</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Marie Curie</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-            </ul>
-          </div>
-        </div>
-        <!--v-if-->
+    </oc-button-stub>
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-4" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-3" enforcedroponmobile="false" class="oc-filter-chip-drop">
+      <!--v-if-->
+      <div>
+        <ul class="oc-list item-filter-list">
+          <li class="my-1">
+            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate"></div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </oc-button-stub>
+          </li>
+          <li class="my-1">
+            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate"></div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </oc-button-stub>
+          </li>
+        </ul>
       </div>
-    </div>
+    </oc-drop-stub>
     <!--v-if-->
   </div>
 </div>"
@@ -67,9 +60,8 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
 
 exports[`ItemFilter > renders all items 1`] = `
 "<div class="item-filter flex item-filter-users">
-  <div class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 px-2 text-xs rounded-full h-[26px] max-w-40 gap-1 focus:z-90" id="oc-filter-chip-1">
-      <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+  <div class="oc-filter-chip flex">
+    <oc-button-stub appearance="outline" colorrole="secondary" disabled="false" gapsize="none" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="oc-filter-chip-1" class="oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap] px-3"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -78,7 +70,7 @@ exports[`ItemFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -87,44 +79,38 @@ exports[`ItemFilter > renders all items 1`] = `
       };
       return svg;
     }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-    </button>
-    <div id="oc-drop-2" class="oc-drop shadow-md/20 rounded-sm oc-filter-chip-drop">
-      <div class="oc-card">
-        <!--v-if-->
-        <div class="oc-card-body p-2">
-          <!--v-if-->
-          <div>
-            <ul class="oc-list item-filter-list">
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Albert Einstein</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-              <li class="my-1"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-between text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-                  <!--v-if-->
-                  <!-- @slot Content of the button -->
-                  <div class="flex items-center truncate">
-                    <!--v-if-->
-                    <div></div>
-                    <div class="truncate">Marie Curie</div>
-                  </div>
-                  <div class="flex">
-                    <!--v-if-->
-                  </div>
-                </button></li>
-            </ul>
-          </div>
-        </div>
-        <!--v-if-->
+    </oc-button-stub>
+    <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-2" isnestedelement="false" mode="click" offset="0,0" paddingsize="small" popperoptions="[object Object]" position="bottom-start" toggle="#oc-filter-chip-1" enforcedroponmobile="false" class="oc-filter-chip-drop">
+      <!--v-if-->
+      <div>
+        <ul class="oc-list item-filter-list">
+          <li class="my-1">
+            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate"></div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </oc-button-stub>
+          </li>
+          <li class="my-1">
+            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+              <div class="flex items-center truncate">
+                <!--v-if-->
+                <div></div>
+                <div class="truncate"></div>
+              </div>
+              <div class="flex">
+                <!--v-if-->
+              </div>
+            </oc-button-stub>
+          </li>
+        </ul>
       </div>
-    </div>
+    </oc-drop-stub>
     <!--v-if-->
   </div>
 </div>"

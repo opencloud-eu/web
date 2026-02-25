@@ -12,6 +12,12 @@ Feature: profile photo
     When "Alice" uploads the profile image "testavatar.jpeg"
     Then "Alice" should have a profile picture
 
+    And "Admin" logs in
+    And "Admin" opens the "admin-settings" app
+    When "Admin" navigates to the users management page
+    Then "Admin" sees profile photo of the user "Alice"
+    And "Admin" logs out
+
     When "Alice" changes the profile image "testavatar.png"
     Then "Alice" should have a profile picture
 

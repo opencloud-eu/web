@@ -3,15 +3,11 @@
     v-if="isOpen"
     ref="sidebar"
     class="files-side-bar z-30"
-    :is-open="isOpen"
-    :active-panel="activePanel"
     :available-panels="availablePanels"
     :panel-context="panelContext"
     :loading="isLoading"
     v-bind="$attrs"
     data-custom-key-bindings-disabled="true"
-    @select-panel="setActiveSideBarPanel"
-    @close="closeSideBar"
   >
     <template #rootHeader>
       <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="false" />
@@ -24,8 +20,8 @@
   </InnerSideBar>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, provide, readonly, ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, provide, readonly, ref, unref, watch } from 'vue'
 import PQueue from 'p-queue'
 import { SideBarPanelContext } from '../SideBar/types'
 import InnerSideBar from '../SideBar/SideBar.vue'
@@ -38,9 +34,7 @@ import {
 } from '../../router'
 import {
   SidebarPanelExtension,
-  SideBarEventTopics,
   useClientService,
-  useEventBus,
   useRouter,
   useActiveLocation,
   useExtensionRegistry,
@@ -51,7 +45,8 @@ import {
   useConfigStore,
   useAppsStore,
   useCanListShares,
-  useCanListVersions
+  useCanListVersions,
+  useSideBar
 } from '../../composables'
 import {
   isProjectSpaceResource,
@@ -63,410 +58,365 @@ import {
   isLinkShare,
   isShareSpaceResource,
   isIncomingShareResource,
-  isPersonalSpaceResource
+  isPersonalSpaceResource,
+  isOutgoingShareResource
 } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
 import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 
-export default defineComponent({
-  name: 'FileSideBar',
-  components: { FileInfo, SpaceInfo, InnerSideBar },
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true
-    },
-    activePanel: {
-      type: String,
-      required: false,
-      default: null
-    },
-    space: {
-      type: Object as PropType<SpaceResource>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const router = useRouter()
-    const clientService = useClientService()
-    const extensionRegistry = useExtensionRegistry()
-    const eventBus = useEventBus()
-    const spacesStore = useSpacesStore()
-    const sharesStore = useSharesStore()
-    const configStore = useConfigStore()
-    const appsStore = useAppsStore()
-    const { canListShares } = useCanListShares()
-    const { canListVersions } = useCanListVersions()
+const { space = undefined } = defineProps<{
+  space?: SpaceResource
+}>()
 
-    const resourcesStore = useResourcesStore()
-    const { currentFolder } = storeToRefs(resourcesStore)
+const router = useRouter()
+const clientService = useClientService()
+const extensionRegistry = useExtensionRegistry()
+const spacesStore = useSpacesStore()
+const sharesStore = useSharesStore()
+const configStore = useConfigStore()
+const appsStore = useAppsStore()
+const { canListShares } = useCanListShares()
+const { canListVersions } = useCanListVersions()
 
-    const loadedResource = ref<Resource>()
-    const versions = ref<Resource[]>([])
+const resourcesStore = useResourcesStore()
+const { currentFolder } = storeToRefs(resourcesStore)
 
-    const availableInternalShareRoles = ref<ShareRole[]>([])
-    const availableExternalShareRoles = ref<ShareRole[]>([])
+const sidebarStore = useSideBar()
+const { isSideBarOpen: isOpen, sideBarActivePanel: activePanel } = storeToRefs(sidebarStore)
 
-    const { selectedResources } = useSelectedResources()
+const loadedResource = ref<Resource>()
+const versions = ref<Resource[]>([])
 
-    const sharesLoading = ref(false)
+const availableInternalShareRoles = ref<ShareRole[]>([])
+const availableExternalShareRoles = ref<ShareRole[]>([])
 
-    const isLoading = computed(() => {
-      return unref(sharesLoading)
-    })
+const { selectedResources } = useSelectedResources()
 
-    const panelContext = computed<SideBarPanelContext<SpaceResource, Resource, Resource>>(() => {
-      if (unref(selectedResources).length === 0) {
-        return {
-          root: props.space,
-          parent: null,
-          items: unref(currentFolder)?.id ? [unref(currentFolder)] : []
-        }
-      }
-      return {
-        root: props.space,
-        parent: unref(currentFolder),
-        items: unref(selectedResources)
-      }
-    })
+const sharesLoading = ref(false)
 
-    const isSharedWithMeLocation = useActiveLocation(isLocationSharesActive, 'files-shares-with-me')
-    const isSharedWithOthersLocation = useActiveLocation(
-      isLocationSharesActive,
-      'files-shares-with-others'
-    )
-    const isSharedViaLinkLocation = useActiveLocation(
-      isLocationSharesActive,
-      'files-shares-via-link'
-    )
-    const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects')
-    const isFavoritesLocation = useActiveLocation(isLocationCommonActive, 'files-common-favorites')
-    const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
+const isLoading = computed(() => {
+  return unref(sharesLoading)
+})
 
-    const closeSideBar = () => {
-      eventBus.publish(SideBarEventTopics.close)
-    }
-    const setActiveSideBarPanel = (panelName: string) => {
-      eventBus.publish(SideBarEventTopics.setActivePanel, panelName)
-    }
-    const isFileHeaderVisible = computed(() => {
-      return (
-        unref(panelContext).items?.length === 1 &&
-        !isProjectSpaceResource(unref(panelContext).items[0])
-      )
-    })
-    const isSpaceHeaderVisible = computed(() => {
-      return (
-        unref(panelContext).items?.length === 1 &&
-        isProjectSpaceResource(unref(panelContext).items[0])
-      )
-    })
-
-    const isShareLocation = computed(() => {
-      return (
-        unref(isSharedWithMeLocation) ||
-        unref(isSharedWithOthersLocation) ||
-        unref(isSharedViaLinkLocation)
-      )
-    })
-    const isFlatFileList = computed(() => {
-      return unref(isShareLocation) || unref(isSearchLocation) || unref(isFavoritesLocation)
-    })
-
-    const availablePanels = computed(() =>
-      extensionRegistry
-        .requestExtensions<SidebarPanelExtension<SpaceResource, Resource, Resource>>({
-          id: 'global.files.sidebar',
-          extensionType: 'sidebarPanel'
-        })
-        .map((e) => e.panel)
-    )
-
-    const loadVersionsTask = useTask(function* (signal, resource: Resource) {
-      versions.value = yield clientService.webdav.listFileVersions(resource.id, { signal })
-    })
-
-    const loadSharesTask = useTask(function* (signal, resource: Resource) {
-      sharesStore.setLoading(true)
-      sharesStore.removeOrphanedShares()
-
-      const { collaboratorShares: collaboratorCache, linkShares: linkCache } = sharesStore
-      const client = clientService.graphAuthenticated.permissions
-
-      let driveId = props.space?.id
-      if (isShareSpaceResource(props?.space)) {
-        const matchingMountPoint = yield spacesStore.getMountPointForSpace({
-          graphClient: clientService.graphAuthenticated,
-          space: props.space,
-          signal
-        })
-        if (matchingMountPoint) {
-          driveId = matchingMountPoint.root.remoteItem.rootId
-        }
-      }
-
-      // load direct shares
-      const { shares, allowedRoles } = yield* call(
-        client.listPermissions(driveId, resource.fileId, sharesStore.graphRoles, {}, { signal })
-      )
-
-      const loadedCollaboratorShares = shares.filter(isCollaboratorShare)
-      const loadedLinkShares = shares.filter(isLinkShare)
-
-      const rolesArray = Object.values(sharesStore.graphRoles)
-      availableInternalShareRoles.value =
-        allowedRoles?.map((r) => {
-          return {
-            ...r,
-            icon: rolesArray.find((role) => role.id === r.id)?.icon
-          }
-        }) || []
-
-      // load external share roles
-      if (appsStore.isAppEnabled('open-cloud-mesh')) {
-        const { allowedRoles } = yield* call(
-          client.listPermissions(
-            driveId,
-            resource.fileId,
-            sharesStore.graphRoles,
-            {
-              filter: `@libre.graph.permissions.roles.allowedValues/rolePermissions/any(p:contains(p/condition, '@Subject.UserType=="Federated"'))`,
-              select: [ListPermissionsSpaceRootSelectEnum.LibreGraphPermissionsRolesAllowedValues]
-            },
-            { signal }
-          )
-        )
-
-        availableExternalShareRoles.value =
-          allowedRoles?.map((r) => {
-            return {
-              ...r,
-              icon: rolesArray.find((role) => role.id === r.id)?.icon
-            }
-          }) || []
-      }
-
-      // use cache for indirect shares
-      const useCache = !unref(isFlatFileList) && !unref(isProjectsLocation)
-      if (useCache) {
-        collaboratorCache.forEach((share) => {
-          if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
-            return
-          }
-
-          loadedCollaboratorShares.push({ ...share, indirect: true })
-        })
-
-        linkCache.forEach((share) => {
-          if (loadedLinkShares.some((s) => s.id === share.id)) {
-            return
-          }
-
-          loadedLinkShares.push({ ...share, indirect: true })
-        })
-      }
-
-      if (isLocationCommonActive(router, 'files-common-search')) {
-        yield resourcesStore.loadAncestorMetaData({
-          folder: unref(resource),
-          space: unref(props.space),
-          client: clientService.webdav,
-          signal
-        })
-      }
-
-      // gather all ancestors we need to load shares for (indirect shares, space members)
-      const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
-      const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
-        .filter(({ id, path }) => {
-          if (id === resource.id || cachedIds.includes(id)) {
-            // share already cached
-            return false
-          }
-          if (isIncomingShareResource(resource)) {
-            // incoming shares don't have ancestors because they are root elements themselves
-            return false
-          }
-          if (isPersonalSpaceResource(props.space)) {
-            // filter out personal space roots since they don't have shares
-            return path !== '/'
-          }
-          return true
-        })
-        .map(({ id }) => id)
-
-      if (
-        unref(isFlatFileList) &&
-        isProjectSpaceResource(props.space) &&
-        !isProjectSpaceResource(resource)
-      ) {
-        // add project space to ancestors in flat file list where we don't have ancestors
-        // to display space members in the sidebar
-        ancestorIds.push(props.space.id)
-      }
-
-      const queue = new PQueue({
-        concurrency: configStore.options.concurrentRequests.shares.list
-      })
-
-      const promises = [...new Set(ancestorIds)].map((id) => {
-        return queue.add(() =>
-          clientService.graphAuthenticated.permissions
-            .listPermissions(driveId, id, sharesStore.graphRoles, {}, { signal })
-            .then((result) => {
-              const indirectShares = result.shares.map((s) => ({ ...s, indirect: true }))
-              loadedCollaboratorShares.push(...indirectShares.filter(isCollaboratorShare))
-              loadedLinkShares.push(...indirectShares.filter(isLinkShare))
-            })
-        )
-      })
-
-      yield Promise.allSettled(promises)
-      sharesStore.setCollaboratorShares(loadedCollaboratorShares)
-      sharesStore.setLinkShares(loadedLinkShares)
-      sharesStore.setLoading(false)
-    }).restartable()
-
-    const currentResourceMtime = ref<string>() // used to check if we need to load new versions
-    watch(
-      () => [...unref(panelContext).items, props.isOpen],
-      async (newValue, oldValue) => {
-        if (unref(panelContext).items?.length !== 1) {
-          return
-        }
-
-        if (!props.isOpen) {
-          versions.value = []
-          return
-        }
-
-        const res1 = newValue?.[0] as Resource
-        const res2 = oldValue?.[0] as Resource
-        if (res1?.id === res2?.id && res1?.mdate === unref(currentResourceMtime)) {
-          // don't load versions if the content of the resource didn't change
-          return
-        }
-
-        const resource = unref(panelContext).items[0]
-        currentResourceMtime.value = resource.mdate
-
-        if (loadVersionsTask.isRunning) {
-          loadVersionsTask.cancelAll()
-        }
-
-        if (!canListVersions({ space: props.space, resource })) {
-          return
-        }
-
-        try {
-          await loadVersionsTask.perform(resource)
-        } catch (e) {
-          console.error(e)
-        }
-      },
-      { immediate: true, deep: true }
-    )
-
-    const panelItemIds = computed(() => unref(panelContext).items.map((item) => item.id))
-
-    watch(
-      () => [panelItemIds, props.isOpen],
-      async () => {
-        if (!props.isOpen || !unref(panelContext).items?.length) {
-          sharesStore.pruneShares()
-          loadedResource.value = null
-          return
-        }
-        if (unref(panelContext).items?.length !== 1) {
-          // don't load additional metadata for empty or multi-select contexts
-          return
-        }
-
-        const resource = unref(panelContext).items[0]
-        sharesLoading.value = true
-
-        if (isProjectSpaceResource(resource)) {
-          await spacesStore.loadGraphPermissions({
-            ids: [resource.id],
-            graphClient: clientService.graphAuthenticated
-          })
-        }
-
-        if (canListShares({ space: props.space, resource })) {
-          try {
-            if (loadSharesTask.isRunning) {
-              loadSharesTask.cancelAll()
-            }
-
-            loadSharesTask.perform(resource)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-
-        if (!unref(isShareLocation)) {
-          loadedResource.value = resource
-          sharesLoading.value = false
-          return
-        }
-
-        // shared resources look different, hence we need to fetch the actual resource here
-        try {
-          const webDavResource = await clientService.webdav.getFileInfo(props.space, {
-            path: resource.path
-          })
-
-          // make sure props from the share (=resource) are available on the merged resource
-          const mergedResource = {
-            ...webDavResource,
-            ...resource,
-            tags: webDavResource.tags // tags are always [] in Graph API, hence take them from webdav
-          }
-          loadedResource.value = mergedResource
-        } catch (error) {
-          loadedResource.value = resource
-          console.error(error)
-        }
-        sharesLoading.value = false
-      },
-      {
-        deep: true,
-        immediate: true
-      }
-    )
-
-    provide('resource', readonly(loadedResource))
-    provide('versions', readonly(versions))
-    provide(
-      'space',
-      computed(() => props.space)
-    )
-    provide(
-      'activePanel',
-      computed(() => props.activePanel)
-    )
-    provide('availableInternalShareRoles', readonly(availableInternalShareRoles))
-    provide('availableExternalShareRoles', readonly(availableExternalShareRoles))
-    provide(
-      'versionsLoading',
-      computed(() => loadVersionsTask.isRunning)
-    )
-
+const panelContext = computed<SideBarPanelContext<SpaceResource, Resource, Resource>>(() => {
+  if (unref(selectedResources).length === 0) {
     return {
-      loadedResource,
-      setActiveSideBarPanel,
-      closeSideBar,
-      panelContext,
-      availablePanels,
-      isFileHeaderVisible,
-      isSpaceHeaderVisible,
-      isLoading,
-
-      // unit tests
-      loadSharesTask
+      root: space,
+      parent: null,
+      items: unref(currentFolder)?.id ? [unref(currentFolder)] : []
     }
   }
+  return {
+    root: space,
+    parent: unref(currentFolder),
+    items: unref(selectedResources)
+  }
 })
+
+const isSharedWithMeLocation = useActiveLocation(isLocationSharesActive, 'files-shares-with-me')
+const isSharedWithOthersLocation = useActiveLocation(
+  isLocationSharesActive,
+  'files-shares-with-others'
+)
+const isSharedViaLinkLocation = useActiveLocation(isLocationSharesActive, 'files-shares-via-link')
+const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects')
+const isFavoritesLocation = useActiveLocation(isLocationCommonActive, 'files-common-favorites')
+const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
+
+const isFileHeaderVisible = computed(() => {
+  return (
+    unref(panelContext).items?.length === 1 && !isProjectSpaceResource(unref(panelContext).items[0])
+  )
+})
+const isSpaceHeaderVisible = computed(() => {
+  return (
+    unref(panelContext).items?.length === 1 && isProjectSpaceResource(unref(panelContext).items[0])
+  )
+})
+
+const isShareLocation = computed(() => {
+  return (
+    unref(isSharedWithMeLocation) ||
+    unref(isSharedWithOthersLocation) ||
+    unref(isSharedViaLinkLocation)
+  )
+})
+const isFlatFileList = computed(() => {
+  return unref(isShareLocation) || unref(isSearchLocation) || unref(isFavoritesLocation)
+})
+
+const availablePanels = computed(() =>
+  extensionRegistry
+    .requestExtensions<SidebarPanelExtension<SpaceResource, Resource, Resource>>({
+      id: 'global.files.sidebar',
+      extensionType: 'sidebarPanel'
+    })
+    .map((e) => e.panel)
+)
+
+const loadVersionsTask = useTask(function* (signal, resource: Resource) {
+  versions.value = yield clientService.webdav.listFileVersions(resource.id, { signal })
+})
+
+const loadSharesTask = useTask(function* (signal, resource: Resource) {
+  sharesStore.setLoading(true)
+  sharesStore.removeOrphanedShares()
+
+  const { collaboratorShares: collaboratorCache, linkShares: linkCache } = sharesStore
+  const client = clientService.graphAuthenticated.permissions
+
+  let driveId = space?.id
+  if (isShareSpaceResource(space)) {
+    const matchingMountPoint = yield spacesStore.getMountPointForSpace({
+      graphClient: clientService.graphAuthenticated,
+      space,
+      signal
+    })
+    if (matchingMountPoint) {
+      driveId = matchingMountPoint.root.remoteItem.rootId
+    }
+  }
+
+  // load direct shares
+  const { shares, allowedRoles } = yield* call(
+    client.listPermissions(driveId, resource.fileId, sharesStore.graphRoles, {}, { signal })
+  )
+
+  const loadedCollaboratorShares = shares.filter(isCollaboratorShare)
+  const loadedLinkShares = shares.filter(isLinkShare)
+
+  const rolesArray = Object.values(sharesStore.graphRoles)
+  availableInternalShareRoles.value =
+    allowedRoles?.map((r) => {
+      return {
+        ...r,
+        icon: rolesArray.find((role) => role.id === r.id)?.icon
+      }
+    }) || []
+
+  // load external share roles
+  if (appsStore.isAppEnabled('open-cloud-mesh')) {
+    const { allowedRoles } = yield* call(
+      client.listPermissions(
+        driveId,
+        resource.fileId,
+        sharesStore.graphRoles,
+        {
+          filter: `@libre.graph.permissions.roles.allowedValues/rolePermissions/any(p:contains(p/condition, '@Subject.UserType=="Federated"'))`,
+          select: [ListPermissionsSpaceRootSelectEnum.LibreGraphPermissionsRolesAllowedValues]
+        },
+        { signal }
+      )
+    )
+
+    availableExternalShareRoles.value =
+      allowedRoles?.map((r) => {
+        return {
+          ...r,
+          icon: rolesArray.find((role) => role.id === r.id)?.icon
+        }
+      }) || []
+  }
+
+  // use cache for indirect shares
+  const useCache = !unref(isFlatFileList) && !unref(isProjectsLocation)
+  if (useCache) {
+    collaboratorCache.forEach((share) => {
+      if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
+        return
+      }
+
+      loadedCollaboratorShares.push({ ...share, indirect: true })
+    })
+
+    linkCache.forEach((share) => {
+      if (loadedLinkShares.some((s) => s.id === share.id)) {
+        return
+      }
+
+      loadedLinkShares.push({ ...share, indirect: true })
+    })
+  }
+
+  if (isLocationCommonActive(router, 'files-common-search')) {
+    yield resourcesStore.loadAncestorMetaData({
+      folder: unref(resource),
+      space,
+      client: clientService.webdav,
+      signal
+    })
+  }
+
+  // gather all ancestors we need to load shares for (indirect shares, space members)
+  const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
+  const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
+    .filter(({ id, path }) => {
+      if (id === resource.id || cachedIds.includes(id)) {
+        // share already cached
+        return false
+      }
+      if (isIncomingShareResource(resource)) {
+        // incoming shares don't have ancestors because they are root elements themselves
+        return false
+      }
+      if (isPersonalSpaceResource(space)) {
+        // filter out personal space roots since they don't have shares
+        return path !== '/'
+      }
+      return true
+    })
+    .map(({ id }) => id)
+
+  if (unref(isFlatFileList) && isProjectSpaceResource(space) && !isProjectSpaceResource(resource)) {
+    // add project space to ancestors in flat file list where we don't have ancestors
+    // to display space members in the sidebar
+    ancestorIds.push(space.id)
+  }
+
+  const queue = new PQueue({
+    concurrency: configStore.options.concurrentRequests.shares.list
+  })
+
+  const promises = [...new Set(ancestorIds)].map((id) => {
+    return queue.add(() =>
+      clientService.graphAuthenticated.permissions
+        .listPermissions(driveId, id, sharesStore.graphRoles, {}, { signal })
+        .then((result) => {
+          const indirectShares = result.shares.map((s) => ({ ...s, indirect: true }))
+          loadedCollaboratorShares.push(...indirectShares.filter(isCollaboratorShare))
+          loadedLinkShares.push(...indirectShares.filter(isLinkShare))
+        })
+    )
+  })
+
+  yield Promise.allSettled(promises)
+  sharesStore.setCollaboratorShares(loadedCollaboratorShares)
+  sharesStore.setLinkShares(loadedLinkShares)
+  sharesStore.setLoading(false)
+}).restartable()
+
+const currentResourceMtime = ref<string>() // used to check if we need to load new versions
+watch(
+  () => [...unref(panelContext).items, isOpen],
+  async (newValue, oldValue) => {
+    if (unref(panelContext).items?.length !== 1) {
+      return
+    }
+
+    if (!unref(isOpen)) {
+      currentResourceMtime.value = undefined
+      versions.value = []
+      return
+    }
+
+    const res1 = newValue?.[0] as Resource
+    const res2 = oldValue?.[0] as Resource
+    if (res1?.id === res2?.id && res1?.mdate === unref(currentResourceMtime)) {
+      // don't load versions if the content of the resource didn't change
+      return
+    }
+
+    const resource = unref(panelContext).items[0]
+    currentResourceMtime.value = resource.mdate
+
+    if (loadVersionsTask.isRunning) {
+      loadVersionsTask.cancelAll()
+    }
+
+    if (!canListVersions({ space, resource })) {
+      return
+    }
+
+    try {
+      await loadVersionsTask.perform(resource)
+    } catch (e) {
+      console.error(e)
+    }
+  },
+  { immediate: true, deep: true }
+)
+
+const panelItemIds = computed(() => unref(panelContext).items.map((item) => item.id))
+
+watch(
+  () => [panelItemIds, isOpen],
+  async () => {
+    if (!unref(isOpen) || !unref(panelContext).items?.length) {
+      sharesStore.pruneShares()
+      loadedResource.value = null
+      return
+    }
+    if (unref(panelContext).items?.length !== 1) {
+      // don't load additional metadata for empty or multi-select contexts
+      return
+    }
+
+    const resource = unref(panelContext).items[0]
+    sharesLoading.value = true
+
+    if (isProjectSpaceResource(resource)) {
+      await spacesStore.loadGraphPermissions({
+        ids: [resource.id],
+        graphClient: clientService.graphAuthenticated
+      })
+    }
+
+    if (canListShares({ space, resource })) {
+      try {
+        if (loadSharesTask.isRunning) {
+          loadSharesTask.cancelAll()
+        }
+
+        loadSharesTask.perform(resource)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (!isOutgoingShareResource(resource) && !isIncomingShareResource(resource)) {
+      loadedResource.value = resource
+      sharesLoading.value = false
+      return
+    }
+
+    // shared resources look different, hence we need to fetch the actual resource here
+    try {
+      const webDavResource = await clientService.webdav.getFileInfo(space, {
+        path: resource.path
+      })
+
+      // make sure props from the share (=resource) are available on the merged resource
+      const mergedResource = {
+        ...webDavResource,
+        ...resource,
+        tags: webDavResource.tags // tags are always [] in Graph API, hence take them from webdav
+      }
+      loadedResource.value = mergedResource
+    } catch (error) {
+      loadedResource.value = resource
+      console.error(error)
+    }
+    sharesLoading.value = false
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
+
+provide('resource', readonly(loadedResource))
+provide('versions', readonly(versions))
+provide(
+  'space',
+  computed(() => space)
+)
+provide('availableInternalShareRoles', readonly(availableInternalShareRoles))
+provide('availableExternalShareRoles', readonly(availableExternalShareRoles))
+provide(
+  'versionsLoading',
+  computed(() => loadVersionsTask.isRunning)
+)
+/** @deprecated use from useSideBar instead */
+provide('activePanel', activePanel)
 </script>

@@ -1,7 +1,95 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ContextMenuQuickAction component > renders component 1`] = `
-"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1">
+"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1" data-test-context-menu-resource-name="function(...args) {
+		registerCalls(args, state, prototypeState);
+		registerInvocationOrder(invocationCallCounter++, state, prototypeState);
+		const result = {
+			type: &quot;incomplete&quot;,
+			value: undefined
+		};
+		const settledResult = {
+			type: &quot;incomplete&quot;,
+			value: undefined
+		};
+		registerResult(result, state, prototypeState);
+		registerSettledResult(settledResult, state, prototypeState);
+		const context = new.target ? undefined : this;
+		const [instanceIndex, instancePrototypeIndex] = registerInstance(context, state, prototypeState);
+		const [contextIndex, contextPrototypeIndex] = registerContext(context, state, prototypeState);
+		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || (prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.onceMockImplementations.shift()) || (prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.mockImplementation) || original || function() {};
+		let returnValue;
+		let thrownValue;
+		let didThrow = false;
+		try {
+			if (new.target) {
+				returnValue = Reflect.construct(implementation, args, new.target);
+				// jest calls this before the implementation, but we have to resolve this _after_
+				// because we cannot do it before the \`Reflect.construct\` called the custom implementation.
+				// fortunetly, the constructor is always an empty functon because \`prototypeMethods\`
+				// are only used by the automocker, so this doesn't matter
+				for (const prop of prototypeMembers) {
+					const prototypeMock = returnValue[prop];
+					// the method was overidden because of inheritence, ignore it
+					// eslint-disable-next-line ts/no-use-before-define
+					if (prototypeMock !== mock.prototype[prop]) {
+						continue;
+					}
+					const isMock = isMockFunction(prototypeMock);
+					const prototypeState = isMock ? prototypeMock.mock : undefined;
+					const prototypeConfig = isMock ? MOCK_CONFIGS.get(prototypeMock) : undefined;
+					returnValue[prop] = createMockInstance({
+						originalImplementation: keepMembersImplementation ? prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.mockOriginal : undefined,
+						prototypeState,
+						prototypeConfig,
+						keepMembersImplementation
+					});
+				}
+			} else {
+				returnValue = implementation.apply(this, args);
+			}
+		} catch (error) {
+			thrownValue = error;
+			didThrow = true;
+			if (error instanceof TypeError &amp;&amp; error.message.includes(&quot;is not a constructor&quot;)) {
+				console.warn(\`[vitest] The \${namedObject[name].getMockName()} mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#vi-spyon for examples.\`);
+			}
+			throw error;
+		} finally {
+			if (didThrow) {
+				result.type = &quot;throw&quot;;
+				result.value = thrownValue;
+				settledResult.type = &quot;rejected&quot;;
+				settledResult.value = thrownValue;
+			} else {
+				result.type = &quot;return&quot;;
+				result.value = returnValue;
+				if (new.target) {
+					state.contexts[contextIndex - 1] = returnValue;
+					state.instances[instanceIndex - 1] = returnValue;
+					if (contextPrototypeIndex != null &amp;&amp; prototypeState) {
+						prototypeState.contexts[contextPrototypeIndex - 1] = returnValue;
+					}
+					if (instancePrototypeIndex != null &amp;&amp; prototypeState) {
+						prototypeState.instances[instancePrototypeIndex - 1] = returnValue;
+					}
+				}
+				if (returnValue instanceof Promise) {
+					returnValue.then((settledValue) => {
+						settledResult.type = &quot;fulfilled&quot;;
+						settledResult.value = settledValue;
+					}, (rejectedValue) => {
+						settledResult.type = &quot;rejected&quot;;
+						settledResult.value = rejectedValue;
+					});
+				} else {
+					settledResult.type = &quot;fulfilled&quot;;
+					settledResult.value = returnValue;
+				}
+			}
+		}
+		return returnValue;
+	}">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -13,11 +101,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
   <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-    <div class="oc-card">
-      <!--v-if-->
-      <div class="oc-card-body p-2"></div>
-      <!--v-if-->
-    </div>
+    <!--v-if-->
   </div>
 </button>"
 `;

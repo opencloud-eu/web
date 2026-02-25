@@ -2,14 +2,14 @@
   <div id="tiles-view" class="px-4 pt-2">
     <div class="flex items-center mb-2 pb-2 oc-tiles-controls">
       <oc-checkbox
-        v-if="isSelectable"
+        v-if="isSelectable && !isFilePicker"
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
         class="ml-2"
         size="large"
         :label="selectAllCheckboxLabel"
         :label-hidden="true"
-        :disabled="resources.length === disabledResourceIds.length"
+        :disabled="resources.length === disabledResources.length"
         :model-value="areAllResourcesSelected"
         @click.stop="toggleSelectionAll"
       />
@@ -51,30 +51,28 @@
         class="oc-tiles-item has-item-context-menu"
       >
         <resource-tile
-          :ref="(el) => (tileRefs.tiles[resource.id] = el as ResourceTileRef)"
           :resource="resource"
           :space="space"
-          :resource-route="getRoute(resource)"
+          :resource-route="getResourceLink(resource)"
           :is-resource-selected="isResourceSelected(resource)"
-          :is-resource-clickable="isResourceClickable(resource)"
-          :is-resource-disabled="isResourceDisabled(resource) || isSpaceResourceDisabled(resource)"
+          :is-resource-clickable="isResourceClickable(resource, areResourcesClickable)"
+          :is-resource-disabled="isResourceDisabled(resource)"
           :is-extension-displayed="areFileExtensionsShown"
           :is-path-displayed="arePathsDisplayed"
           :resource-icon-size="resourceIconSize"
           :draggable="dragDrop"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
-          @vue:mounted="
-            $emit('rowMounted', resource, tileRefs.tiles[resource.id], ImageDimension.Tile)
-          "
-          @contextmenu="showContextMenu($event, resource, tileRefs.tiles[resource.id])"
-          @click.stop="(e: MouseEvent) => handleClickWithModifier(e, resource)"
+          :class="{ 'opacity-60': isResourceCut(resource) }"
+          @contextmenu="showContextMenuOnRightClick($event, resource)"
+          @file-name-clicked.stop="(event) => fileNameClicked({ resource, event })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
           @dragleave.prevent="setDropStyling(resource, true, $event)"
           @drop="fileDropped(resource, $event)"
           @dragover="$event.preventDefault()"
           @item-visible="$emit('itemVisible', resource)"
+          @tile-clicked="fileContainerClicked({ resource, event: $event[1] })"
         >
           <template #selection>
             <oc-checkbox
@@ -87,7 +85,7 @@
               :model-value="isResourceSelected(resource)"
               :data-test-selection-resource-name="resource.name"
               :data-test-selection-resource-path="resource.path"
-              @click.stop.prevent="toggleTile([resource, $event])"
+              @click.stop.prevent="fileCheckboxClicked({ resource, event: $event })"
             />
           </template>
           <template #imageField>
@@ -107,20 +105,14 @@
           </template>
           <template #contextMenu>
             <context-menu-quick-action
-              v-if="isSpaceResource(resource) || !isResourceDisabled(resource)"
-              :ref="(el) => (tileRefs.dropBtns[resource.id] = el as ContextMenuQuickActionRef)"
+              v-if="shouldShowContextDrop(resource)"
               :item="resource"
               :title="resource.name"
               class="resource-tiles-btn-action-dropdown"
-              @quick-action-clicked="showContextMenuOnBtnClick($event, resource, resource.id)"
+              @quick-action-clicked="showContextMenuOnBtnClick($event, resource)"
             >
-              <template #contextMenu="{ isOpen, dropRef }">
-                <slot
-                  name="contextMenu"
-                  :resource="resource"
-                  :is-open="isOpen"
-                  :drop-ref="dropRef"
-                />
+              <template #contextMenu>
+                <slot name="contextMenu" :resource="resource" />
               </template>
             </context-menu-quick-action>
           </template>
@@ -137,7 +129,7 @@
       />
     </oc-list>
     <Teleport v-if="dragItem" to="body">
-      <resource-ghost-element ref="ghostElementRef" :preview-items="[dragItem, ...dragSelection]" />
+      <resource-ghost-element ref="ghostElement" :preview-items="[dragItem, ...dragSelection]" />
     </Teleport>
     <div class="p-1 text-sm">
       <slot name="footer" />
@@ -146,64 +138,31 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ComponentPublicInstance,
-  nextTick,
-  onBeforeUnmount,
-  onBeforeUpdate,
-  onMounted,
-  ref,
-  unref,
-  watch,
-  useTemplateRef
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-
-// Constants should match what is being used in OcTable/ResourceTable
-// Alignment regarding naming would be an API-breaking change and can
-// Be done at a later point in time?
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
-import {
-  ContextMenuBtnClickEventData,
-  CreateTargetRouteOptions,
-  displayPositionedDropdown
-} from '../../helpers'
-import { eventBus } from '../../services'
-import { ImageDimension } from '../../constants'
 import ResourceTile from './ResourceTile.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import {
   FolderViewModeConstants,
-  SortDir,
   SortField,
-  useResourceRouteResolver,
   useTileSize,
   useResourcesStore,
   useViewSizeMax,
   useEmbedMode,
-  useCanBeOpenedWithSecureView,
-  useFileActions,
-  useGetMatchingSpace,
-  embedModeFilePickMessageData,
-  routeToContextQuery,
-  useRouter,
-  useSideBar
+  useSideBar,
+  FileActionOptions,
+  useResourceViewHelpers
 } from '../../composables'
-import { useInterceptModifierClick } from '../../composables/keyboardActions'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { SizeType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
-
-type ResourceTileRef = ComponentPublicInstance<typeof ResourceTile>
-type ContextMenuQuickActionRef = ComponentPublicInstance<typeof ContextMenuQuickAction>
+import { storeToRefs } from 'pinia'
 
 const {
   resources = [],
   selectedIds = [],
   isSelectable = true,
-  targetRouteCallback,
   space,
   sortFields = [],
   sortBy,
@@ -217,7 +176,6 @@ const {
   resources?: Resource[]
   selectedIds?: string[]
   isSelectable?: boolean
-  targetRouteCallback?: (arg: CreateTargetRouteOptions) => unknown
   space?: SpaceResource
   sortFields?: SortField[]
   sortBy?: string
@@ -230,8 +188,8 @@ const {
 }>()
 
 const emit = defineEmits<{
+  (e: 'fileClick', options: FileActionOptions): void
   (e: 'fileDropped', id: string): void
-  (e: 'rowMounted', resource: Resource, compnent: ResourceTileRef, dimension: ImageDimension): void
   (e: 'sort', value: { sortBy: string; sortDir: SortDir }): void
   (e: 'itemVisible', resource: Resource): void
   (e: 'update:selectedIds', ids: string[]): void
@@ -240,287 +198,53 @@ const emit = defineEmits<{
 defineSlots<{
   image?: (props: { resource: Resource }) => unknown
   actions?: (props: { resource: Resource }) => unknown
-  contextMenu?: (props: {
-    resource: Resource
-    isOpen: boolean
-    dropRef: HTMLElement | null
-  }) => unknown
+  contextMenu?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
   additionalResourceContent?: (props: { resource: Resource }) => unknown
 }>()
 
 const { $gettext } = useGettext()
-const router = useRouter()
 const resourcesStore = useResourcesStore()
-const { getDefaultAction } = useFileActions()
-const { getMatchingSpace } = useGetMatchingSpace()
-const { interceptModifierClick } = useInterceptModifierClick()
-const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
-const { isMobile } = useIsMobile()
-const {
-  isEnabled: isEmbedModeEnabled,
-  fileTypes: embedModeFileTypes,
-  isLocationPicker,
-  isFilePicker,
-  postMessage
-} = useEmbedMode()
+const { areFileExtensionsShown } = storeToRefs(resourcesStore)
+const { isLocationPicker, isFilePicker } = useEmbedMode()
 const viewSizeMax = useViewSizeMax()
 const viewSizeCurrent = computed(() => {
   return Math.min(unref(viewSizeMax), viewSize)
 })
-const { isSideBarOpen } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
+const {
+  disabledResources,
+  isResourceSelected,
+  fileContainerClicked,
+  fileNameClicked,
+  fileCheckboxClicked,
+  isResourceDisabled,
+  isResourceInDeleteQueue,
+  isResourceClickable,
+  isResourceCut,
+  getResourceLink,
+  dragItem,
+  dragSelection,
+  dragStart,
+  fileDropped,
+  setDropStyling,
+  shouldShowContextDrop,
+  showContextMenuOnRightClick,
+  showContextMenuOnBtnClick,
+  selectAllCheckboxLabel,
+  getResourceCheckboxLabel,
+  toggleSelectionAll,
+  areAllResourcesSelected
+} = useResourceViewHelpers({
+  space: computed(() => space),
+  resources: computed(() => resources),
+  selectedIds: computed(() => selectedIds),
+  emit
+})
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
-
-const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
-
-const selectAllCheckboxLabel = computed(() => {
-  return unref(areAllResourcesSelected) ? $gettext('Clear selection') : $gettext('Select all')
-})
-
-const dragItem = ref<Resource>()
-const ghostElementRef =
-  useTemplateRef<ComponentPublicInstance<typeof ResourceGhostElement>>('ghostElementRef')
-
-const tileRefs = ref({
-  tiles: {} as Record<string, ResourceTileRef>,
-  dropBtns: {} as Record<string, ContextMenuQuickActionRef>
-})
-
-const resourceRouteResolver = useResourceRouteResolver(
-  {
-    space: ref(space),
-    targetRouteCallback: computed(() => targetRouteCallback)
-  },
-  { emit }
-)
-
-const getRoute = (resource: Resource) => {
-  if (resource.isFolder) {
-    return resourceRouteResolver.createFolderLink({
-      path: resource.path,
-      fileId: resource.fileId,
-      resource: resource
-    })
-  }
-
-  let s = space
-  if (!s) {
-    s = getMatchingSpace(resource)
-  }
-
-  const action = getDefaultAction({ resources: [resource], space: s })
-  if (!action?.route) {
-    return null
-  }
-
-  return action.route({ space: s, resources: [resource] })
-}
-
-const emitTileClick = (resource: Resource, event?: MouseEvent) => {
-  if (event && interceptModifierClick(event as MouseEvent, resource)) {
-    return
-  }
-
-  if (unref(isEmbedModeEnabled) && unref(isFilePicker)) {
-    return postMessage<embedModeFilePickMessageData>('opencloud-embed:file-pick', {
-      resource: JSON.parse(JSON.stringify(resource)),
-      locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
-    })
-  }
-
-  if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-    toggleSelection(resource)
-  }
-
-  if (resource.type !== 'space' && resource.type !== 'folder') {
-    resourceRouteResolver.createFileAction(resource as Resource)
-  }
-}
-
-const showContextMenuOnBtnClick = (
-  data: ContextMenuBtnClickEventData,
-  item: Resource,
-  index: string
-) => {
-  const { dropdown, event } = data
-
-  if (event && interceptModifierClick(event as MouseEvent, item)) {
-    return
-  }
-
-  if (dropdown?.tippy === undefined) {
-    return
-  }
-  resourcesStore.setSelection([item.id])
-  displayPositionedDropdown(dropdown.tippy, event, unref(tileRefs).dropBtns[index])
-}
-
-const isResourceSelected = (resource: Resource) => {
-  return selectedIds.includes(resource.id)
-}
-
-const selectedResources = computed(() => {
-  return resources.filter((resource) => selectedIds.includes(resource.id))
-})
-
-const isResourceClickable = (resource: Resource) => {
-  if (!areResourcesClickable) {
-    return false
-  }
-
-  if (isResourceDisabled(resource) || isSpaceResourceDisabled(resource)) {
-    return false
-  }
-
-  if (resource.isFolder) {
-    return true
-  }
-
-  if (!resource.canDownload() && !canBeOpenedWithSecureView(resource)) {
-    return false
-  }
-
-  if (unref(isEmbedModeEnabled) && !unref(isFilePicker)) {
-    return false
-  }
-
-  return true
-}
-
-const isResourceDisabled = (resource: Resource) => {
-  if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {
-    return (
-      !unref(embedModeFileTypes).includes(resource.extension) &&
-      !unref(embedModeFileTypes).includes(resource.mimeType) &&
-      !resource.isFolder
-    )
-  }
-
-  if (isResourceInDeleteQueue(resource.id)) {
-    return true
-  }
-
-  return resource.processing === true
-}
-
-const isSpaceResourceDisabled = (resource: Resource) => {
-  // a disabled space behaves a bit different than a disabled resource because
-  // it still allows certain actions, hence we need to handle them separately.
-  if (isResourceDisabled(resource)) {
-    return true
-  }
-
-  return isSpaceResource(resource) && resource.disabled
-}
-
-const disabledResourceIds = computed(() => {
-  return (
-    resources
-      ?.filter((resource) => isResourceDisabled(resource) === true)
-      ?.map((resource) => resource.id) || []
-  )
-})
-
-const emitSelect = (selectedIds: string[]) => {
-  emit('update:selectedIds', selectedIds)
-}
-
-const toggleSelectionAll = () => {
-  if (unref(areAllResourcesSelected)) {
-    return emit('update:selectedIds', [])
-  }
-
-  emit(
-    'update:selectedIds',
-    resources
-      .filter((resource) => !unref(disabledResourceIds).includes(resource.id))
-      .map((resource) => resource.id)
-  )
-}
-
-const showContextMenu = (
-  event: MouseEvent | KeyboardEvent,
-  item: Resource,
-  reference: ComponentPublicInstance<unknown>
-) => {
-  if (event instanceof MouseEvent && interceptModifierClick(event, item)) {
-    return
-  }
-
-  event.preventDefault()
-  const drop = unref(tileRefs).tiles[item.id]?.$el.getElementsByClassName(
-    'resource-tiles-btn-action-dropdown'
-  )[0]
-
-  if (drop === undefined) {
-    return
-  }
-  if (!isResourceSelected(item)) {
-    emitSelect([item.id])
-  }
-
-  if (unref(isMobile)) {
-    // we can't use displayPositionedDropdown() on mobile because we need to open the bottom drawer.
-    // this can be triggered by clicking the context menu button of the current row.
-    const el = document.getElementById(`context-menu-trigger-${item.getDomSelector()}`)
-    el?.click()
-    return
-  }
-
-  displayPositionedDropdown(drop._tippy, event, reference)
-}
-
-const handleClickWithModifier = (event: MouseEvent, item: Resource) => {
-  if (interceptModifierClick(event, item)) {
-    toggleSelection(item)
-    return
-  }
-
-  emitTileClick(item, event)
-}
-
-const toggleTile = (data: [Resource, MouseEvent | KeyboardEvent], event?: MouseEvent) => {
-  const resource = data[0]
-  const eventData = data[1]
-
-  if (event && interceptModifierClick(event as MouseEvent, resource)) {
-    return
-  }
-
-  if (eventData && eventData.metaKey) {
-    return eventBus.publish('app.files.list.clicked.meta', resource)
-  }
-  if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
-    eventBus.publish('app.files.shiftAnchor.reset')
-  }
-  if (eventData && eventData.shiftKey) {
-    return eventBus.publish('app.files.list.clicked.shift', {
-      resource,
-      skipTargetSelection: false
-    })
-  }
-  toggleSelection(resource)
-}
-
-const toggleSelection = (resource: Resource) => {
-  const selected = !isResourceSelected(resource)
-    ? [...selectedIds, resource.id]
-    : selectedIds.filter((id) => id !== resource.id)
-  emit('update:selectedIds', selected)
-}
-
-const getResourceCheckboxLabel = (resource: Resource) => {
-  switch (resource.type) {
-    case 'folder':
-      return $gettext('Select folder')
-    case 'space':
-      return $gettext('Select space')
-    default:
-      return $gettext('Select file')
-  }
-}
 
 const currentSortField = computed(() => {
   return sortFields.find((o) => o.name === sortBy && o.sortDir === sortDir) || sortFields[0]
@@ -541,65 +265,6 @@ const resourceIconSize = computed<SizeType>(() => {
   const size = unref(viewSizeCurrent)
   return (sizeMap[size] ?? 'xxlarge') as SizeType
 })
-onBeforeUpdate(() => {
-  tileRefs.value = {
-    tiles: {},
-    dropBtns: {}
-  }
-})
-
-const setDropStyling = (
-  resource: Resource,
-  leaving: boolean,
-  event: MouseEvent | KeyboardEvent | DragEvent
-) => {
-  const hasFilePayload = ((event as DragEvent).dataTransfer?.types || []).some((e) => e === 'Files')
-  if (
-    hasFilePayload ||
-    (event.currentTarget as HTMLElement)?.contains(
-      (event as MouseEvent).relatedTarget as HTMLElement
-    ) ||
-    selectedIds.includes(resource.id) ||
-    resource.type !== 'folder'
-  ) {
-    return
-  }
-  const el = unref(tileRefs).tiles[resource.id]
-  if (leaving) {
-    el.$el.classList.remove('bg-role-secondary-container')
-    return
-  }
-  el.$el.classList.add('bg-role-secondary-container')
-}
-const dragSelection = computed(() => {
-  return unref(selectedResources).filter(({ id }) => id !== unref(dragItem)?.id)
-})
-const setDragItem = async (item: Resource, event: DragEvent) => {
-  dragItem.value = item
-  await nextTick()
-  unref(ghostElementRef).$el.ariaHidden = 'true'
-  unref(ghostElementRef).$el.style.left = '-99999px'
-  unref(ghostElementRef).$el.style.top = '-99999px'
-  event.dataTransfer.setDragImage(unref(ghostElementRef).$el, 0, 0)
-  event.dataTransfer.dropEffect = 'move'
-  event.dataTransfer.effectAllowed = 'move'
-}
-const dragStart = async (resource: Resource, event: DragEvent) => {
-  if (!isResourceSelected(resource)) {
-    toggleSelection(resource)
-  }
-  await setDragItem(resource, event)
-}
-
-const fileDropped = (resource: Resource, event: DragEvent) => {
-  const hasFilePayload = (event.dataTransfer.types || []).some((e) => e === 'Files')
-  if (hasFilePayload) {
-    return
-  }
-  dragItem.value = null
-  setDropStyling(resource, true, event)
-  emit('fileDropped', resource.id)
-}
 
 const viewWidth = ref(0)
 const updateViewWidth = () => {
@@ -642,18 +307,6 @@ const tileSizePixels = computed(() => {
   return unref(viewWidth) / unref(maxTilesCurrent) - unref(gapSizePixels)
 })
 
-const areAllResourcesSelected = computed(() => {
-  const allResourcesDisabled = unref(disabledResourceIds).length === resources.length
-  const allSelected =
-    unref(selectedResources).length === resources.length - unref(disabledResourceIds).length
-
-  return !allResourcesDisabled && allSelected
-})
-
-const isResourceInDeleteQueue = (id: string): boolean => {
-  return resourcesStore.deleteQueue.includes(id)
-}
-
 watch(
   tileSizePixels,
   (px: number | undefined) => {
@@ -673,12 +326,6 @@ watch(isSideBarOpen, () => {
 onMounted(() => {
   window.addEventListener('resize', updateViewWidth)
   updateViewWidth()
-})
-
-eventBus.subscribe('app.files.list.clicked.default', (resource) => {
-  if (isResourceClickable(resource as Resource)) {
-    emitSelect([(resource as Resource).id])
-  }
 })
 
 onBeforeUnmount(() => {

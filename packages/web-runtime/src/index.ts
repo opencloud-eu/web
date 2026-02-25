@@ -29,7 +29,8 @@ import {
   announceGettext,
   announceArchiverService,
   announceAppProviderService,
-  announceUpdates
+  announceUpdates,
+  announceGroupware
 } from './container/bootstrap'
 import { applicationStore } from './container/store'
 import {
@@ -43,10 +44,10 @@ import { createApp, watch } from 'vue'
 import PortalVue, { createWormhole } from 'portal-vue'
 import { createPinia } from 'pinia'
 import Avatar from './components/Avatar.vue'
-import focusMixin from './mixins/focusMixin'
 import { extensionPoints } from './extensionPoints'
 import { isSilentRedirectRoute } from './helpers/silentRedirect'
 import { extensions } from './extensions'
+import { UnifiedRoleDefinition } from '@opencloud-eu/web-client/graph/generated'
 
 export const bootstrapApp = async (configurationPath: string, appsReadyCallback: () => void) => {
   const isSilentRedirect = isSilentRedirectRoute()
@@ -67,7 +68,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     messagesStore,
     sharesStore,
     webWorkersStore,
-    updatesStore
+    updatesStore,
+    groupwareConfigStore
   } = announcePiniaStores()
 
   extensionRegistry.registerExtensionPoints(extensionPoints())
@@ -162,7 +164,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   app.use(createHead())
 
   app.component('AvatarImage', Avatar)
-  app.mixin(focusMixin)
 
   app.mount('#opencloud')
 
@@ -204,13 +205,24 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         return
       }
 
-      await announceConfiguration({
-        path: configurationPath,
-        configStore,
-        token: authStore.accessToken
-      })
-
       const clientService = app.config.globalProperties.$clientService
+
+      const [graphRoleDefinitions] = await Promise.all([
+        clientService.graphAuthenticated.permissions.listRoleDefinitions(),
+        spacesStore.loadSpaces({ graphClient: clientService.graphAuthenticated }),
+        announceConfiguration({
+          path: configurationPath,
+          configStore,
+          token: authStore.accessToken
+        }),
+        announceGroupware({
+          clientService,
+          configStore,
+          capabilityStore,
+          groupwareConfigStore
+        })
+      ])
+
       const previewService = app.config.globalProperties.$previewService
       const passwordPolicyService = app.config.globalProperties.passwordPolicyService
       passwordPolicyService.initialize(capabilityStore)
@@ -231,15 +243,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         })
       }
 
-      // load sharing roles from graph API
-      const graphRoleDefinitions =
-        await clientService.graphAuthenticated.permissions.listRoleDefinitions()
-      sharesStore.setGraphRoles(graphRoleDefinitions)
-
-      // Load spaces to make them available across the application
-      await spacesStore.loadSpaces({ graphClient: clientService.graphAuthenticated })
+      sharesStore.setGraphRoles(graphRoleDefinitions as UnifiedRoleDefinition[])
       const personalSpace = spacesStore.spaces.find(isPersonalSpaceResource)
-
       if (personalSpace) {
         spacesStore.updateSpaceField({
           id: personalSpace.id,
@@ -247,6 +252,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
           value: app.config.globalProperties.$gettext('Personal')
         })
       }
+      spacesStore.setSpacesInitialized(true)
     },
     {
       immediate: true

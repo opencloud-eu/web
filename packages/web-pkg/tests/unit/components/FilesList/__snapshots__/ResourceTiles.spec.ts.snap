@@ -2,7 +2,7 @@
 
 exports[`ResourceTiles component > renders a footer slot 1`] = `
 "<div data-v-67d39700="" id="tiles-view" class="px-4 pt-2">
-  <div data-v-67d39700="" class="flex items-center mb-2 pb-2 oc-tiles-controls"><span data-v-5c58355a="" data-v-67d39700="" class="ml-2"><input data-v-5c58355a="" id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" disabled="" aria-label="Select all"> <!--v-if--></span>
+  <div data-v-67d39700="" class="flex items-center mb-2 pb-2 oc-tiles-controls"><span data-v-5c58355a="" data-v-67d39700="" class="inline-flex items-center ml-2"><input data-v-5c58355a="" id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" disabled="" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
   <ul data-v-67d39700="" class="oc-list oc-tiles grid justify-start gap-3"> </ul>
@@ -13,12 +13,12 @@ exports[`ResourceTiles component > renders a footer slot 1`] = `
 
 exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
 "<div data-v-67d39700="" id="tiles-view" class="px-4 pt-2">
-  <div data-v-67d39700="" class="flex items-center mb-2 pb-2 oc-tiles-controls"><span data-v-5c58355a="" data-v-67d39700="" class="ml-2"><input data-v-5c58355a="" id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" aria-label="Select all"> <!--v-if--></span>
+  <div data-v-67d39700="" class="flex items-center mb-2 pb-2 oc-tiles-controls"><span data-v-5c58355a="" data-v-67d39700="" class="inline-flex items-center ml-2"><input data-v-5c58355a="" id="tiles-view-select-all" type="checkbox" name="checkbox" class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle size-5" aria-label="Select all"> <!--v-if--></span>
     <!--v-if-->
   </div>
   <ul data-v-67d39700="" class="oc-list oc-tiles grid justify-start gap-3">
     <li data-v-67d39700="" class="oc-tiles-item has-item-context-menu">
-      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false">
+      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none [&amp;.item-accentuated]:bg-role-secondary-container bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="1" draggable="false">
         <!--v-if-->
         <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
           <div class="p-2">
@@ -49,11 +49,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
                   <div id="context-menu-drop-1" class="oc-drop shadow-md/20 rounded-sm">
-                    <div class="oc-card">
-                      <!--v-if-->
-                      <div class="oc-card-body p-2"></div>
-                      <!--v-if-->
-                    </div>
+                    <!--v-if-->
                   </div>
                 </button>
               </div>
@@ -65,7 +61,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       </div>
     </li>
     <li data-v-67d39700="" class="oc-tiles-item has-item-context-menu">
-      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false">
+      <div data-v-67d39700="" class="oc-card oc-tile-card flex flex-col h-full shadow-none [&amp;.item-accentuated]:bg-role-secondary-container bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest" data-item-id="2" draggable="false">
         <!--v-if-->
         <div class="oc-card-body p-0"><a data-v-88f32d7c="" attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
           <div class="p-2">
@@ -96,11 +92,7 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
       return svg;
     }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
                   <div id="context-menu-drop-2" class="oc-drop shadow-md/20 rounded-sm">
-                    <div class="oc-card">
-                      <!--v-if-->
-                      <div class="oc-card-body p-2"></div>
-                      <!--v-if-->
-                    </div>
+                    <!--v-if-->
                   </div>
                 </button>
               </div>

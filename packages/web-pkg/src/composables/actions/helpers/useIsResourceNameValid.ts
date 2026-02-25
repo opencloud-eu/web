@@ -21,6 +21,10 @@ export const useIsResourceNameValid = () => {
       return { isValid: false, error: $gettext('The name cannot contain "/"') }
     }
 
+    if (/[\\]/.test(newName)) {
+      return { isValid: false, error: $gettext('The name cannot contain "\\"') }
+    }
+
     if (newName === '.') {
       return { isValid: false, error: $gettext('The name cannot be equal to "."') }
     }

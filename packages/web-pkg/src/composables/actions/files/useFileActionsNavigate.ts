@@ -1,36 +1,33 @@
-import { isSameResource } from '../../../helpers/resource'
+import { createFileRouteOptions, isSameResource } from '../../../helpers'
 import {
   createLocationPublic,
   createLocationSpaces,
+  createLocationTrash,
   isLocationPublicActive,
   isLocationTrashActive
 } from '../../../router'
 import merge from 'lodash-es/merge'
-import { SpaceResource } from '@opencloud-eu/web-client'
-import { createFileRouteOptions } from '../../../helpers/router'
-import { useGetMatchingSpace } from '../../spaces'
 import { useRouter } from '../../router'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { FileAction } from '../types'
 import { useResourcesStore } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
+import { isTrashResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsNavigate = () => {
   const router = useRouter()
   const { $gettext } = useGettext()
-  const { getMatchingSpace } = useGetMatchingSpace()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
 
-  const getSpace = (space: SpaceResource) => {
-    return space ? space : getMatchingSpace(space)
-  }
-
   const routeName = computed(() => {
     if (isLocationPublicActive(router, 'files-public-link')) {
       return createLocationPublic('files-public-link')
+    }
+    if (isLocationTrashActive(router, 'files-trash-overview')) {
+      return createLocationTrash('files-trash-generic')
     }
 
     return createLocationSpaces('files-spaces-generic')
@@ -40,30 +37,25 @@ export const useFileActionsNavigate = () => {
     {
       name: 'navigate',
       icon: 'folder-open',
-      label: () => $gettext('Open'),
+      label: () => $gettext('Navigate'),
       isVisible: ({ resources }) => {
-        if (isLocationTrashActive(router, 'files-trash-generic')) {
-          return false
-        }
         if (resources.length !== 1) {
           return false
         }
-
         if (unref(currentFolder) !== null && isSameResource(resources[0], unref(currentFolder))) {
+          // edge case: current folder breadcrumb menu is not supposed to show the navigate action for itself
           return false
         }
-
-        if (!resources[0].isFolder || resources[0].type === 'space') {
+        if (isTrashResource(resources[0])) {
           return false
         }
-
-        return true
+        return resources[0].isFolder || resources[0].type === 'space'
       },
       route: ({ space, resources }) => {
         return merge(
           {},
           unref(routeName),
-          createFileRouteOptions(getSpace(space), {
+          createFileRouteOptions(space, {
             path: resources[0].path,
             fileId: resources[0].fileId
           })

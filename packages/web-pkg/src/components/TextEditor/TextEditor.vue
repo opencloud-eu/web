@@ -3,58 +3,63 @@
     id="text-editor-container"
     class="h-full [&_.md-editor-preview]:!font-(family-name:--oc-font-family)"
   >
-    <md-preview
-      v-if="isReadOnly"
-      id="text-editor-preview-component"
-      :model-value="currentContent"
-      no-katex
-      no-mermaid
-      no-prettier
-      no-upload-img
-      no-highlight
-      no-echarts
-      :language="languages[language.current] || 'en-US'"
-      :theme="theme"
-      auto-focus
-      read-only
-      :toolbars="[]"
-    />
+    <article v-if="isReadOnly">
+      <md-preview
+        id="text-editor-preview-component"
+        :model-value="currentContent"
+        no-katex
+        no-mermaid
+        no-prettier
+        no-upload-img
+        no-highlight
+        no-echarts
+        :language="languages[language.current] || 'en-US'"
+        :theme="theme"
+        auto-focus
+        read-only
+      />
+    </article>
     <md-editor
       v-else
       id="text-editor-component"
+      :class="{ 'no-line-numbers': !showLineNumbers }"
       class="[&_.cm-content]:!font-(family-name:--oc-font-family)"
       :model-value="currentContent"
       no-katex
       no-mermaid
       no-prettier
       no-highlight
+      no-echarts
       :on-upload-img="onUploadImg"
       :language="languages[language.current] || 'en-US'"
       :theme="theme"
       :preview="isMarkdown"
-      :toolbars="isMarkdown ? undefined : ['revoke', 'next']"
-      :toolbars-exclude="[
-        'save',
-        'katex',
-        'github',
-        'catalog',
-        'mermaid',
-        'prettier',
-        'fullscreen',
-        'htmlPreview',
-        'pageFullscreen'
-      ]"
+      :toolbars="toolbars"
       auto-focus
       @on-change="(value: string) => $emit('update:currentContent', value)"
-    />
+    >
+      <template #defToolbars>
+        <NormalToolbar
+          :title="showLineNumbers ? $gettext('hide line numbers') : $gettext('show line numbers')"
+          @on-click="showLineNumbers = !showLineNumbers"
+        >
+          <oc-icon
+            class="!flex items-center justify-center size-6"
+            size="small"
+            name="hashtag"
+            fill-type="none"
+          />
+        </NormalToolbar>
+      </template>
+    </md-editor>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+import { computed, defineComponent, PropType, unref, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 
-import { config, MdEditor, MdPreview, XSSPlugin } from 'md-editor-v3'
+import { config, MdEditor, MdPreview, XSSPlugin, NormalToolbar } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 
 import { languages, languageUserDefined } from './l18n'
@@ -72,7 +77,11 @@ import 'cropperjs/dist/cropper.css'
 export default defineComponent({
   name: 'TextEditor',
   // type casts are needed to ensure type inference works correctly when building web-pkg
-  components: { MdEditor: MdEditor as any, MdPreview: MdPreview as any },
+  components: {
+    MdEditor: MdEditor as any,
+    MdPreview: MdPreview as any,
+    NormalToolbar: NormalToolbar as any
+  },
   props: {
     applicationConfig: { type: Object as PropType<AppConfigObject>, required: false },
     currentContent: {
@@ -87,6 +96,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const language = useGettext()
     const { currentTheme } = useThemeStore()
+    const showLineNumbers = ref(true)
 
     const editorConfig = computed(() => {
       // TODO: Remove typecasting once vue-tsc has figured it out
@@ -103,6 +113,39 @@ export default defineComponent({
     })
 
     const theme = computed(() => (unref(currentTheme).isDark ? 'dark' : 'light'))
+
+    const toolbars = computed(() => {
+      if (!unref(isMarkdown)) {
+        return ['revoke', 'next', '=', 0]
+      }
+      return [
+        'bold',
+        'underline',
+        'italic',
+        '-',
+        'title',
+        'strikeThrough',
+        'sub',
+        'sup',
+        'quote',
+        'unorderedList',
+        'orderedList',
+        'task',
+        '-',
+        'codeRow',
+        'code',
+        'link',
+        'image',
+        'table',
+        '-',
+        'revoke',
+        'next',
+        '=',
+        0,
+        'preview',
+        'previewOnly'
+      ]
+    })
 
     config({
       editorConfig: {
@@ -174,9 +217,11 @@ export default defineComponent({
     return {
       isMarkdown,
       theme,
+      toolbars,
       language,
       languages,
-      onUploadImg
+      onUploadImg,
+      showLineNumbers
     }
   }
 })
@@ -212,8 +257,17 @@ export default defineComponent({
   }
 }
 
+#text-editor-component.no-line-numbers .cm-gutters {
+  display: none !important;
+}
+
 #text-editor-preview-component {
   background-color: transparent;
+}
+
+#text-editor-component-preview > :first-child,
+#text-editor-preview-component-preview > :first-child {
+  margin-top: 0 !important;
 }
 
 // overwrite md-editor styles

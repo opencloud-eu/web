@@ -130,7 +130,8 @@ import {
   useKeyboardActions,
   ContextMenuBtnClickEventData,
   useIsTopBarSticky,
-  useSharesStore
+  useSharesStore,
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,
@@ -146,8 +147,7 @@ import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
-import { eventBus, SortDir } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
+import { eventBus } from '@opencloud-eu/web-pkg'
 import { ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
 import {
   useFileListHeaderPosition,
@@ -164,7 +164,7 @@ import {
 } from '../../composables/keyboardActions'
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 
 const router = useRouter()
 const route = useRoute()
@@ -172,6 +172,7 @@ const language = useGettext()
 const { $gettext } = language
 const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
+const { openSideBar } = useSideBar()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuButtonRef =
@@ -426,7 +427,7 @@ watch([filterTerm, paginatedItems], () => {
   })
 })
 
-const fileClicked = (data: [SpaceResource, MouseEvent]) => {
+const fileClicked = (data: [SpaceResource, MouseEvent | KeyboardEvent]) => {
   const resource = data[0]
   const eventData = data[1]
   const isCheckboxClicked = (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
@@ -487,7 +488,7 @@ const spaceDetailsLabel = computed(() => {
 })
 const showDetailsForSpace = (space: SpaceResource) => {
   selectSpace(space)
-  eventBus.publish(SideBarEventTopics.open)
+  openSideBar()
 }
 
 const selectSpace = (selectedSpace: SpaceResource) => {

@@ -1,12 +1,7 @@
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import {
-  useFileActions,
-  Action,
-  useOpenWithDefaultApp,
-  FileAction
-} from '../../../../src/composables'
+import { useFileActions, useOpenWithDefaultApp } from '../../../../src/composables'
 
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -20,23 +15,23 @@ describe('useOpenWithDefaultApp', () => {
   describe('method "openWithDefaultApp"', () => {
     it('should call the default action handler for files', () => {
       getWrapper({
-        setup: ({ openWithDefaultApp }, { defaultEditorAction }) => {
+        setup: ({ openWithDefaultApp }, { triggerDefaultAction }) => {
           openWithDefaultApp({
             space: mock<SpaceResource>(),
             resource: mock<Resource>({ isFolder: false })
           })
-          expect(defaultEditorAction.handler).toHaveBeenCalled()
+          expect(triggerDefaultAction).toHaveBeenCalled()
         }
       })
     })
     it('should not call the default action handler for folders', () => {
       getWrapper({
-        setup: ({ openWithDefaultApp }, { defaultEditorAction }) => {
+        setup: ({ openWithDefaultApp }, { triggerDefaultAction }) => {
           openWithDefaultApp({
             space: mock<SpaceResource>(),
             resource: mock<Resource>({ isFolder: true })
           })
-          expect(defaultEditorAction.handler).not.toHaveBeenCalled()
+          expect(triggerDefaultAction).not.toHaveBeenCalled()
         }
       })
     })
@@ -45,21 +40,21 @@ describe('useOpenWithDefaultApp', () => {
 
 function getWrapper({
   setup,
-  defaultEditorAction = mock<Action>({ handler: vi.fn() })
+  triggerDefaultAction = vi.fn()
 }: {
   setup: (
     instance: ReturnType<typeof useOpenWithDefaultApp>,
-    mocks: { defaultEditorAction: FileAction }
+    mocks: { triggerDefaultAction: () => void }
   ) => void
-  defaultEditorAction?: FileAction
+  triggerDefaultAction?: () => void
 }) {
   vi.mocked(useFileActions).mockReturnValue(
     mock<ReturnType<typeof useFileActions>>({
-      getDefaultAction: () => defaultEditorAction
+      triggerDefaultAction
     })
   )
 
-  const mocks = { defaultEditorAction }
+  const mocks = { triggerDefaultAction }
 
   return {
     wrapper: getComposableWrapper(() => {

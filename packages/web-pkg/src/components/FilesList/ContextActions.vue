@@ -1,9 +1,5 @@
 <template>
-  <context-action-menu
-    :menu-sections="menuSections"
-    :action-options="actionOptions"
-    :drop-ref="dropRef"
-  />
+  <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
 </template>
 
 <script lang="ts">
@@ -24,7 +20,7 @@ import {
   useFileActionsEnableSync,
   useFileActionsFavorite,
   useFileActionsMove,
-  useFileActionsNavigate,
+  useFileActionsOpenWithDefault,
   useFileActionsPaste,
   useFileActionsRename,
   useFileActionsRestore,
@@ -36,7 +32,6 @@ import {
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
-import { NestedDrop } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -45,17 +40,13 @@ export default defineComponent({
     actionOptions: {
       type: Object as PropType<FileActionOptions>,
       required: true
-    },
-    dropRef: {
-      type: Object as PropType<NestedDrop>,
-      required: false,
-      default: null
     }
   },
   setup(props) {
-    const { editorActions, defaultEditorActions } = useFileActions()
+    const { getAllOpenWithActions } = useFileActions()
     const { $gettext } = useGettext()
 
+    const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
     const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
@@ -66,7 +57,6 @@ export default defineComponent({
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: moveActions } = useFileActionsMove()
-    const { actions: navigateActions } = useFileActionsNavigate()
     const { actions: pasteActions } = useFileActionsPaste()
     const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
@@ -119,16 +109,13 @@ export default defineComponent({
     )
 
     const menuItemsContext = computed(() => {
-      return [...unref(navigateActions), ...unref(defaultEditorActions)]
+      return unref(openWithDefaultActions)
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
     const menuItemsContextDrop = computed(() => {
-      return [
-        ...unref(editorActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'context')
-      ]
+      return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })

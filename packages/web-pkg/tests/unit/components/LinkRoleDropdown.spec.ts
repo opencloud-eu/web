@@ -64,7 +64,9 @@ function getWrapper({
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: { OcDrop: true },
+        renderStubDefaultSlot: true
       }
     })
   }

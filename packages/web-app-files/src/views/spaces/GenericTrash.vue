@@ -4,7 +4,6 @@
       <app-bar
         :breadcrumbs="breadcrumbs"
         :has-bulk-actions="true"
-        :is-side-bar-open="isSideBarOpen"
         :space="space"
         :view-modes="viewModes"
       >
@@ -19,7 +18,7 @@
             class="mr-2"
             @click="emptyTrashBinAction.handler({ resources: [space] })"
           >
-            <oc-icon :name="emptyTrashBinAction.icon" size="medium" />
+            <oc-icon :name="emptyTrashBinActionIcon" size="medium" />
             {{ emptyTrashBinAction.label() }}
           </oc-button>
         </template>
@@ -40,7 +39,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :fields-displayed="['name', 'ddate']"
           :are-paths-displayed="true"
           :resources="paginatedResources"
@@ -56,9 +54,9 @@
           :view-size="viewSize"
           @sort="handleSort"
         >
-          <template #contextMenu="{ resource, isOpen }">
+          <template #contextMenu="{ resource }">
             <context-actions
-              v-if="isOpen && isResourceInSelection(resource)"
+              v-if="isResourceInSelection(resource)"
               :action-options="{ space, resources: selectedResources }"
             />
           </template>
@@ -69,7 +67,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" :space="space" />
+    <file-side-bar :space="space" />
   </div>
 </template>
 
@@ -117,12 +115,10 @@ const {
   paginationPages,
   paginationPage,
   selectedResourcesIds,
-  isSideBarOpen,
   fileListHeaderY,
   sortBy,
   sortDir,
   handleSort,
-  sideBarActivePanel,
   selectedResources,
   isResourceInSelection,
   viewMode,
@@ -136,6 +132,10 @@ const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).l
 
 const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
 const emptyTrashBinAction = computed(() => unref(emptyTrashBinActions)[0])
+const emptyTrashBinActionIcon = computed(() => {
+  const action = unref(emptyTrashBinAction)
+  return typeof action.icon === 'function' ? action.icon({ resources: [props.space] }) : action.icon
+})
 
 const breadcrumbs = computed(() => {
   let currentNodeName = props.space?.name

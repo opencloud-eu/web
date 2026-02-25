@@ -15,7 +15,12 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
-import { ProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  ProjectSpaceResource,
+  Resource,
+  SpaceResource,
+  TrashResource
+} from '@opencloud-eu/web-client'
 
 describe('emptyTrashBin', () => {
   describe('isVisible property', () => {
@@ -92,10 +97,22 @@ describe('emptyTrashBin', () => {
 
           expect(showMessage).toHaveBeenCalledTimes(1)
 
-          expect(clearResources).toHaveBeenCalledTimes(1)
+          expect(clearResources).not.toHaveBeenCalled()
           expect(resetSelection).toHaveBeenCalledTimes(1)
 
           expect(updateSpaceField).toHaveBeenCalledTimes(1)
+        }
+      })
+    })
+
+    it('should clear resources when trash resources are present in the file list', () => {
+      getWrapper({
+        resources: [mock<TrashResource>({ ddate: 'date' })],
+        setup: async ({ emptyTrashBin }, { space }) => {
+          await emptyTrashBin({ space })
+
+          const { clearResources } = useResourcesStore()
+          expect(clearResources).toHaveBeenCalledTimes(1)
         }
       })
     })
@@ -128,11 +145,13 @@ function getWrapper({
   invalidLocation = false,
   resolveClearTrashBin = true,
   driveType = 'personal',
+  resources = [],
   setup
 }: {
   invalidLocation?: boolean
   resolveClearTrashBin?: boolean
   driveType?: string
+  resources?: Resource[]
   setup: (
     instance: ReturnType<typeof useFileActionsEmptyTrashBin>,
     {
@@ -165,7 +184,8 @@ function getWrapper({
       },
       {
         mocks,
-        provide: mocks
+        provide: mocks,
+        pluginOptions: { piniaOptions: { resourcesStore: { resources } } }
       }
     )
   }

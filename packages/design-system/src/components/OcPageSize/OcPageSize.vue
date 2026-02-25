@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { uniqueId } from '../../helpers'
+import { PageSizeOption, uniqueId } from '../../helpers'
 import OcSelect from '../OcSelect/OcSelect.vue'
 
 export interface Props {
@@ -49,14 +49,14 @@ export interface Emits {
   /**
    * @docs Emitted when the value of the select has changed.
    */
-  (event: 'change', value: string | boolean): void
+  (event: 'change', value: PageSizeOption): void
 }
 
 const { label, options, selected, selectId = uniqueId('oc-page-size-') } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 
-const emitChange = (value: string | boolean) => {
+const emitChange = (value: PageSizeOption) => {
   emit('change', value)
 }
 </script>

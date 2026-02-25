@@ -1,5 +1,5 @@
 import SearchBar from '../../../src/portals/SearchBar.vue'
-import flushPromises from 'flush-promises'
+import { flushPromises } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
 import { markRaw, nextTick, ref } from 'vue'
 import { defineComponent } from 'vue'
@@ -8,7 +8,7 @@ import {
   mount,
   defaultComponentMocks,
   RouteLocation,
-  nextTicks
+  ocDropStub
 } from '@opencloud-eu/web-test-helpers'
 import { useAvailableProviders } from '../../../src/composables'
 import { SearchBarFilter, SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
@@ -63,7 +63,6 @@ const selectors = {
 vi.mock('lodash-es', () => ({ debounce: (fn: unknown) => fn, kebabCase: (fn: unknown) => fn }))
 vi.mock('../../../src/composables/useAvailableProviders')
 
-// @vitest-environment jsdom
 beforeEach(() => {
   providerFiles.previewSearch.search.mockImplementation(() => {
     return {
@@ -84,137 +83,85 @@ beforeEach(() => {
   })
 })
 
-let wrapper: ReturnType<typeof getMountedWrapper>['wrapper']
-afterEach(() => {
-  wrapper.unmount()
-})
-
 describe('Search Bar portal component', () => {
   vi.spyOn(console, 'warn').mockImplementation(undefined)
   test('does not render a search field if no availableProviders given', () => {
-    wrapper = getMountedWrapper({ providers: [] }).wrapper
+    const { wrapper } = getMountedWrapper({ providers: [] })
     expect(wrapper.find(selectors.search).exists()).toBeFalsy()
   })
   test('does not render a search field if no user given', () => {
-    wrapper = getMountedWrapper({ userContextReady: false }).wrapper
+    const { wrapper } = getMountedWrapper({ userContextReady: false })
     expect(wrapper.find(selectors.search).exists()).toBeFalsy()
   })
   test('updates the search term on input', () => {
-    wrapper = getMountedWrapper().wrapper
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('alice')
     expect(wrapper.vm.term).toBe('alice')
   })
   test('shows message if no results are available', async () => {
-    wrapper = getMountedWrapper().wrapper
-    providerFiles.previewSearch.search.mockImplementationOnce(() => {
-      return {
-        values: []
-      }
-    })
-    providerContacts.previewSearch.search.mockImplementationOnce(() => {
-      return {
-        values: []
-      }
-    })
+    const { wrapper } = getMountedWrapper()
+    providerFiles.previewSearch.search.mockReturnValueOnce({ values: [] })
+    providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
     wrapper.find(selectors.searchInput).setValue('nothing found')
     await flushPromises()
     expect(wrapper.find(selectors.noResults)).toBeTruthy()
   })
   test('displays all available providers', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
-    await nextTicks(3)
+    await flushPromises()
     expect(wrapper.findAll(selectors.providerListItem).length).toEqual(2)
   })
   test('only displays provider list item if search results are attached', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
-    providerContacts.previewSearch.search.mockImplementation(() => {
-      return {
-        values: []
-      }
-    })
+    const { wrapper } = getMountedWrapper()
+    providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
     wrapper.find(selectors.searchInput).setValue('albert')
-    await nextTicks(3)
+    await flushPromises()
     expect(wrapper.findAll(selectors.providerListItem).length).toEqual(1)
   })
   test('displays the provider name in the provider list item', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
-    await nextTicks(3)
+    await flushPromises()
     const providerDisplayNameItems = wrapper.findAll(selectors.providerDisplayName)
     expect(providerDisplayNameItems.at(0).text()).toEqual('Files')
     expect(providerDisplayNameItems.at(1).text()).toEqual('Contacts')
   })
   test('The search provider only displays the more results link if a listSearch component is present', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
-    await nextTicks(3)
+    await flushPromises()
     expect(wrapper.findAll(selectors.providerMoreResultsLink).length).toEqual(1)
   })
-  test('hides options on preview item click', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
-    wrapper.find(selectors.searchInput).setValue('albert')
-    await nextTicks(3)
-    expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
-    wrapper.findAll('.preview-component').at(0).trigger('click')
-    expect(wrapper.findAll(selectors.optionsHidden).length).toEqual(1)
-  })
   test('hides options on key press enter', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
-    expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
     wrapper.find(selectors.searchInput).trigger('keyup.enter')
-    expect(wrapper.findAll(selectors.optionsHidden).length).toEqual(1)
+    expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
   test('hides options on key press escape', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
-    expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
     wrapper.find(selectors.searchInput).trigger('keyup.esc')
-    expect(wrapper.findAll(selectors.optionsHidden).length).toEqual(1)
+    expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
   test('hides options if no search term is given', async () => {
-    wrapper = getMountedWrapper().wrapper
-    await nextTick()
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
-    expect(wrapper.findAll(selectors.optionsVisible).length).toEqual(1)
     wrapper.find(selectors.searchInput).setValue('')
-    expect(wrapper.findAll(selectors.optionsHidden).length).toEqual(1)
+    expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
   test('sets the search term according to route value on mount', async () => {
-    wrapper = getMountedWrapper({
-      mocks: {
-        $route: {
-          query: {
-            term: 'alice'
-          }
-        }
-      }
-    }).wrapper
-
-    await wrapper.vm.$nextTick()
+    const { wrapper } = getMountedWrapper({ mocks: { $route: { query: { term: 'alice' } } } })
+    await nextTick()
     expect(wrapper.vm.term).toBe('alice')
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('alice')
-  })
-  test('sets active preview item via keyboard navigation', async () => {
-    wrapper = getMountedWrapper().wrapper
-    wrapper.find(selectors.searchInput).setValue('albert')
-    await flushPromises()
-    wrapper.find(selectors.searchInput).trigger('keyup.down')
-    wrapper.find(selectors.searchInput).trigger('keyup.down')
+    expect(wrapper.get('input').element.value).toBe('alice')
   })
   test('navigates to files-common-search route on key press enter if search term is given', async () => {
-    wrapper = getMountedWrapper().wrapper
+    const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
     const spyRouterPushStub = wrapper.vm.$router.push
     await flushPromises()
@@ -226,7 +173,7 @@ describe('Search Bar portal component', () => {
     })
   })
   test('does not navigate to the list view if no list provider given', async () => {
-    wrapper = getMountedWrapper({ providers: [providerContacts] }).wrapper
+    const { wrapper } = getMountedWrapper({ providers: [providerContacts] })
     wrapper.find(selectors.searchInput).setValue('albert')
     const spyRouterPushStub = wrapper.vm.$router.push
     await flushPromises()
@@ -234,10 +181,10 @@ describe('Search Bar portal component', () => {
     expect(spyRouterPushStub).not.toHaveBeenCalled()
   })
   test('executes search if term is empty but route is common search', () => {
-    wrapper = getMountedWrapper({
+    const { wrapper } = getMountedWrapper({
       route: 'files-common-search',
       store: { resourcesStore: { currentFolder: { fileId: 'root-dir' } } }
-    }).wrapper
+    })
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
       .vm.$emit('update:model-value', {
@@ -291,7 +238,6 @@ function getMountedWrapper({
 
   return {
     wrapper: mount(SearchBar, {
-      attachTo: document.body,
       global: {
         plugins: [
           ...defaultPlugins({
@@ -299,9 +245,11 @@ function getMountedWrapper({
           })
         ],
         mocks: localMocks,
+        renderStubDefaultSlot: true,
         provide: { ...localMocks, isMobileWidth: ref(false) },
         stubs: {
-          'router-link': true
+          'router-link': true,
+          OcDrop: ocDropStub
         }
       }
     })

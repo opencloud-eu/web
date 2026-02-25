@@ -25,7 +25,9 @@ interface Config {
   parallel: number
 
   slowMo: number
-  timeout: number
+  testTimeout: number
+  readonly timeout: number
+  readonly largeUploadTimeout: number
   minTimeout: number
   tokenTimeout: number
   headless: boolean

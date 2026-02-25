@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { Page, Locator } from '@playwright/test'
 import util from 'util'
 import { UsersEnvironment } from '../../../environment'
 
@@ -34,6 +34,7 @@ const userNameInput = '#create-user-input-user-name'
 const displayNameInput = '#create-user-input-display-name'
 const emailInput = '#create-user-input-email'
 const passwordInput = '#create-user-input-password'
+const userAvatarImg = `[data-item-id="%s"] .oc-avatar .avatarImg`
 
 export interface UserInterface {
   displayName: string
@@ -424,4 +425,9 @@ export const waitForEditPanelToBeVisible = async (args: { page: Page }): Promise
 const getGroupId = (group: string): string => {
   const usersEnvironment = new UsersEnvironment()
   return usersEnvironment.getCreatedGroupByDisplayName(group).uuid
+}
+
+export const getUserProfilePicture = (args: { page: Page; uuid: string }): Locator => {
+  const { page, uuid } = args
+  return page.locator(util.format(userAvatarImg, uuid))
 }

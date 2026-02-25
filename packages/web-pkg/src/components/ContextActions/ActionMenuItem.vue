@@ -20,19 +20,19 @@
         data-testid="action-img"
         :src="action.img"
         alt=""
-        class="oc-icon oc-icon-m"
+        class="oc-icon oc-icon-m w-[22px]"
       />
       <oc-image
         v-else-if="hasExternalImageIcon"
         data-testid="action-img"
-        :src="action.icon"
+        :src="actionIcon"
         alt=""
-        class="oc-icon oc-icon-m"
+        class="oc-icon oc-icon-m w-[22px]"
       />
       <oc-icon
-        v-else-if="action.icon"
+        v-else-if="actionIcon"
         data-testid="action-icon"
-        :name="action.icon"
+        :name="actionIcon"
         :fill-type="action.iconFillType || 'line'"
         :size="size"
       />
@@ -41,7 +41,7 @@
         class="oc-files-context-action-label flex flex-col"
         data-testid="action-label"
       >
-        <span v-text="action.label(actionOptions)" />
+        <span class="text-left" v-text="action.label(actionOptions)" />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"
@@ -137,14 +137,21 @@ export default defineComponent({
       }
     })
 
+    const actionIcon = computed(() => {
+      return typeof props.action.icon === 'function'
+        ? props.action.icon(props.actionOptions)
+        : props.action.icon
+    })
+
     return {
       componentType,
-      componentProps
+      componentProps,
+      actionIcon
     }
   },
   computed: {
     hasExternalImageIcon() {
-      return this.action.icon && /^https?:\/\//i.test(this.action.icon)
+      return this.actionIcon && /^https?:\/\//i.test(this.actionIcon)
     },
     componentListeners() {
       if (typeof this.action.handler !== 'function') {

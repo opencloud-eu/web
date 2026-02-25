@@ -1,4 +1,4 @@
-import { isSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { isSpaceResource, isTrashResource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useClientService } from '../../clientService'
 import { useGettext } from 'vue3-gettext'
@@ -22,16 +22,18 @@ export const useFileActionsEmptyTrashBin = () => {
   const { dispatchModal } = useModals()
   const resourcesStore = useResourcesStore()
   const spacesStore = useSpacesStore()
-
   const loadingService = useLoadingService()
 
   const emptyTrashBin = async ({ space }: { space: SpaceResource }) => {
     try {
       await clientService.webdav.clearTrashBin(space)
       showMessage({ title: $gettext('All deleted files were removed') })
-      resourcesStore.clearResources()
       resourcesStore.resetSelection()
       spacesStore.updateSpaceField({ id: space.id, field: 'hasTrashedItems', value: false })
+      if (resourcesStore.resources.some(isTrashResource)) {
+        // trash resources mean we're inside a trash bin, hence we clear all resources
+        resourcesStore.clearResources()
+      }
     } catch (error) {
       console.error(error)
       showErrorMessage({
@@ -59,7 +61,9 @@ export const useFileActionsEmptyTrashBin = () => {
   const actions = computed((): SpaceAction[] => [
     {
       name: 'empty-trash-bin',
-      icon: 'delete-bin-2',
+      icon: ({ resources }: SpaceActionOptions) => {
+        return resources[0]?.hasTrashedItems ? 'delete-bin-2' : 'delete-bin-7'
+      },
       label: () => $gettext('Empty trash bin'),
       handler,
       isVisible: ({ resources }) => {

@@ -4,10 +4,8 @@
       ref="template"
       :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
       :breadcrumbs="breadcrumbs"
-      :side-bar-active-panel="sideBarActivePanel"
       :side-bar-available-panels="sideBarAvailablePanels"
       :side-bar-panel-context="sideBarPanelContext"
-      :is-side-bar-open="isSideBarOpen"
       :show-batch-actions="!!selectedSpaces.length"
       :batch-actions="batchActions"
       :batch-action-items="selectedSpaces"
@@ -95,7 +93,8 @@ import { Quota } from '@opencloud-eu/web-client/graph/generated'
 
 const clientService = useClientService()
 const { $gettext } = useGettext()
-const { isSideBarOpen, sideBarActivePanel } = useSideBar()
+const sidebarStore = useSideBar()
+const { isSideBarOpen } = storeToRefs(sidebarStore)
 const { can } = useAbility()
 
 let loadResourcesEventToken: string
@@ -135,7 +134,6 @@ const isLoading = computed(() => {
 })
 
 const breadcrumbs = computed(() => [
-  { text: $gettext('Administration Settings'), to: { path: '/admin-settings' } },
   {
     text: $gettext('Spaces'),
     onClick: () => {

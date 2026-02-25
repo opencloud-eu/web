@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper class="flex-col">
-      <app-bar :has-bulk-actions="true" :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :has-bulk-actions="true" :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -69,7 +69,6 @@
           id="files-shared-with-me-view"
           :file-list-header-y="fileListHeaderY"
           :items="items"
-          :is-side-bar-open="isSideBarOpen"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"
@@ -78,15 +77,13 @@
           :empty-message="
             areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
           "
-          :grouping-settings="groupingSettings"
+          :view-mode="viewMode"
+          :view-size="viewSize"
+          :sort-fields="sortFields"
         />
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedShareSpace"
-    />
+    <file-side-bar :space="selectedShareSpace" />
   </div>
 </template>
 
@@ -109,7 +106,6 @@ import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue
 import { computed, defineComponent, onMounted, ref, unref, watch } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
-import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
 import { useOpenWithDefaultApp, defaultFuseOptions } from '@opencloud-eu/web-pkg'
@@ -149,8 +145,6 @@ export default defineComponent({
       loadResourcesTask,
       selectedResources,
       selectedResourcesIds,
-      sideBarActivePanel,
-      isSideBarOpen,
       paginatedResources,
       scrollToResourceFromRoute
     } = resourcesViewDefaults
@@ -286,8 +280,6 @@ export default defineComponent({
       selectedResources,
       selectedResourcesIds,
       fileListHeaderY,
-      isSideBarOpen,
-      sideBarActivePanel,
       selectedShareSpace,
 
       areHiddenFilesShown,
@@ -309,10 +301,7 @@ export default defineComponent({
       viewSize,
       viewModes,
       folderView,
-      sortFields,
-
-      // CERN
-      ...useGroupingSettings({ sortBy: sortBy, sortDir: sortDir })
+      sortFields
     }
   }
 })

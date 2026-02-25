@@ -4,10 +4,8 @@
       ref="template"
       :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
       :breadcrumbs="breadcrumbs"
-      :side-bar-active-panel="sideBarActivePanel"
       :side-bar-available-panels="sideBarAvailablePanels"
       :side-bar-panel-context="sideBarPanelContext"
-      :is-side-bar-open="isSideBarOpen"
       :show-batch-actions="!!selectedGroups.length"
       :batch-actions="batchActions"
       :batch-action-items="selectedGroups"
@@ -23,7 +21,7 @@
             appearance="filled"
             @click="createGroupAction.handler()"
           >
-            <oc-icon :name="createGroupAction.icon" />
+            <oc-icon :name="createGroupActionIcon" />
             <span v-if="!limitedScreenSpace" v-text="createGroupAction.label()" />
           </oc-button>
         </div>
@@ -63,8 +61,7 @@ import {
   NoContentMessage,
   SideBarPanel,
   SideBarPanelContext,
-  useClientService,
-  useSideBar
+  useClientService
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import {
@@ -103,6 +100,10 @@ export default defineComponent({
 
     const { actions: createGroupActions } = useGroupActionsCreateGroup()
     const createGroupAction = computed(() => unref(createGroupActions)[0])
+    const createGroupActionIcon = computed(() => {
+      const action = unref(createGroupAction)
+      return typeof action.icon === 'function' ? action.icon() : action.icon
+    })
 
     const loadResourcesTask = useTask(function* (signal) {
       const loadedGroups = yield* call(
@@ -177,7 +178,6 @@ export default defineComponent({
     })
 
     return {
-      ...useSideBar(),
       groups,
       selectedGroups,
       template,
@@ -187,6 +187,7 @@ export default defineComponent({
       sideBarAvailablePanels,
       sideBarPanelContext,
       createGroupAction,
+      createGroupActionIcon,
       groupSettingsStore,
       isLoading
     }
@@ -194,7 +195,6 @@ export default defineComponent({
   computed: {
     breadcrumbs() {
       return [
-        { text: this.$gettext('Administration Settings'), to: { path: '/admin-settings' } },
         {
           text: this.$gettext('Groups'),
           onClick: () => {

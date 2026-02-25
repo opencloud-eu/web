@@ -18,7 +18,6 @@
           'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest': !active
         }
       ]"
-      :data-nav-id="index"
       :data-nav-name="navName"
       :aria-label="
         collapsed ? $gettext('Navigate to %{ pageName } page', { pageName: name }) : undefined
@@ -41,10 +40,6 @@ import { RouteLocationRaw } from 'vue-router'
 export default defineComponent({
   props: {
     name: {
-      type: String,
-      required: true
-    },
-    index: {
       type: String,
       required: true
     },

@@ -1,6 +1,5 @@
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Drop from './OcDrop.vue'
-import { getTailwindPaddingClass, SizeType } from '../../helpers'
 import { computed, nextTick } from 'vue'
 import { useIsMobile } from '../../composables'
 
@@ -20,7 +19,7 @@ const dom = ({
       components: { 'oc-drop': Drop }
     },
     {
-      global: { plugins: defaultPlugins(), stubs: { OcBottomDrawer: true } },
+      global: { plugins: defaultPlugins(), stubs: { OcMobileDrop: true } },
       attachTo: document.body,
       data: () => ({ position, mode, paddingSize, enforceDropOnMobile })
     }
@@ -51,25 +50,6 @@ describe('OcDrop', () => {
       })
       expect(wrapper.attributes().id).toBe(id)
     }
-  })
-
-  it.each<SizeType | 'remove'>([
-    'xsmall',
-    'small',
-    'medium',
-    'large',
-    'xlarge',
-    'xxlarge',
-    'remove'
-  ])('handles padding size prop for value %s', async (size) => {
-    const { wrapper } = dom({ paddingSize: size })
-
-    const drop = wrapper.findComponent({ name: 'oc-drop' })
-    await nextTick()
-
-    const tailwindClassObj = getTailwindPaddingClass(size)
-    const tailwindClass = Object.entries(tailwindClassObj).find(([, v]) => v)?.[0]
-    expect(drop.html().includes(tailwindClass)).toBeTruthy()
   })
 
   describe('tippy', () => {
@@ -132,7 +112,7 @@ describe('OcDrop', () => {
     })
   })
 
-  describe('Component "OcBottomDrawer"', () => {
+  describe('Component "OcMobileDrop"', () => {
     it('renders on mobile device', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
         isMobile: computed(() => true)
@@ -140,7 +120,7 @@ describe('OcDrop', () => {
 
       const { wrapper } = dom()
       await nextTick()
-      expect(wrapper.find('oc-bottom-drawer-stub').exists()).toBeTruthy()
+      expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeTruthy()
     })
     it('does not render on mobile device when "enforceDropOnMobile" is true', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
@@ -149,7 +129,7 @@ describe('OcDrop', () => {
 
       const { wrapper } = dom({ enforceDropOnMobile: true })
       await nextTick()
-      expect(wrapper.find('oc-bottom-drawer-stub').exists()).toBeFalsy()
+      expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeFalsy()
     })
   })
 })

@@ -3,7 +3,9 @@
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
-    <div class="bg-role-surface-container p-2 w-lg flex items-center justify-around rounded-sm">
+    <div
+      class="bg-role-surface-container p-2 w-lg max-w-[80vw] flex flex-wrap items-center justify-around rounded-sm"
+    >
       <oc-button
         v-oc-tooltip="previousDescription"
         class="preview-controls-previous raw-hover-surface"
@@ -25,6 +27,16 @@
         @click="$emit('toggleNext')"
       >
         <oc-icon size="large" name="arrow-drop-right" />
+      </oc-button>
+      <oc-button
+        v-oc-tooltip="togglePhotoRollDescription"
+        class="raw-hover-surface p-1 hidden md:flex"
+        data-testid="toggle-photo-roll"
+        appearance="raw"
+        :aria-label="togglePhotoRollDescription"
+        @click="$emit('togglePhotoRoll')"
+      >
+        <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
       </oc-button>
       <div class="flex">
         <oc-button
@@ -113,14 +125,14 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Resource } from '@opencloud-eu/web-client'
 import { isMacOs } from '@opencloud-eu/web-pkg/src'
+import { MediaFile } from '../helpers/types'
 
 export default defineComponent({
   name: 'MediaControls',
   props: {
     files: {
-      type: Array as PropType<Resource[]>,
+      type: Array as PropType<MediaFile[]>,
       required: true
     },
     activeIndex: {
@@ -146,6 +158,10 @@ export default defineComponent({
     currentImageRotation: {
       type: Number,
       default: 0
+    },
+    photoRollEnabled: {
+      type: Boolean,
+      default: true
     }
   },
   emits: [
@@ -157,7 +173,8 @@ export default defineComponent({
     'toggleNext',
     'togglePrevious',
     'resetImage',
-    'deleteResource'
+    'deleteResource',
+    'togglePhotoRoll'
   ],
   setup(props) {
     const { $gettext } = useGettext()
@@ -181,10 +198,18 @@ export default defineComponent({
       })
     })
 
+    const togglePhotoRollDescription = computed(() => {
+      if (props.photoRollEnabled) {
+        return $gettext('Hide photo roll')
+      }
+      return $gettext('Show photo roll')
+    })
+
     return {
       screenreaderFileCount,
       ariaHiddenFileCount,
       resourceDeleteDescription,
+      togglePhotoRollDescription,
       enterFullScreenDescription: $gettext('Enter full screen mode'),
       exitFullScreenDescription: $gettext('Exit full screen mode'),
       imageShrinkDescription: $gettext('Shrink the image (⇧ + Mouse wheel)'),

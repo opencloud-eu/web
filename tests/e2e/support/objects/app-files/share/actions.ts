@@ -6,7 +6,7 @@ import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
 import { locatorUtils } from '../../../utils'
 
-const invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
+const invitePanel = '#oc-files-sharing-sidebar'
 const quickShareButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
 const actionMenuDropdownButton = `
@@ -28,7 +28,10 @@ const calendarDatePickerId = 'recipient-datepicker-btn'
 const informMessage = '//div[contains(@class,"oc-notification-message-title")]'
 const showMoreBtn = '.toggle-shares-list-btn:has-text("Show more")'
 const userTypeFilter = '.invite-form-share-role-type'
+const userTypeFilterDropdown = '.invite-form-share-role-type ul.oc-list'
 const userTypeSelector = '.invite-form-share-role-type-item'
+const selectedUserTypeLabel =
+  '//div[contains(@class,"invite-form-share-role-type")]//span[contains(@class,"oc-filter-chip-label") and text()="%s"]'
 
 export interface ShareArgs {
   page: Page
@@ -60,6 +63,9 @@ export const openSharingPanel = async function (
       break
   }
 
+  await page.locator(invitePanel).waitFor()
+  await page.locator('div.oc-loader').waitFor({ state: 'detached' })
+
   // always click on the “Show more” button if it exists
   const showMore = page.locator(showMoreBtn)
   if ((await showMore.count()) > 0) {
@@ -90,11 +96,16 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
   }
   const federatedShare = recipients[0].shareType
   if (federatedShare) {
-    await Promise.all([
-      locatorUtils.waitForEvent(page.locator(invitePanel), 'transitionend'),
-      page.locator(userTypeFilter).click()
-    ])
+    await page.locator(userTypeFilter).click()
+    if (!(await page.locator(userTypeFilterDropdown).isVisible())) {
+      // wait and retry changing share user type
+      console.info('[INFO] Federated share type not applied, retrying...')
+      await page.waitForTimeout(1000)
+      await page.locator(userTypeFilter).click()
+    }
+    await page.locator(userTypeFilterDropdown).waitFor()
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
+    await page.locator(util.format(selectedUserTypeLabel, 'External users')).waitFor()
   }
   await Collaborator.inviteCollaborators({ page, collaborators: recipients })
   await sidebar.close({ page })

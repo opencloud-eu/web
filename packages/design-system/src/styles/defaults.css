@@ -15,6 +15,7 @@
   --oc-color-icon-jupyter: rgb(243, 119, 38);
   --oc-color-icon-markdown: rgb(75, 100, 137);
   --oc-color-icon-medical: rgb(9, 132, 219);
+  --oc-color-icon-notes: rgb(244, 187, 68);
   --oc-color-icon-pdf: rgb(236, 13, 71);
   --oc-color-icon-presentation: rgb(238, 107, 59);
   --oc-color-icon-root: rgb(0, 187, 219);
@@ -22,7 +23,7 @@
   --oc-color-icon-text: #171C1F;
   --oc-color-icon-video: rgb(4, 84, 89);
   --oc-font-family: OpenCloud, Inter, sans-serif;
-  --oc-role-background: #FBFCFE;
+  --oc-role-background: #FFFFFF;
   --oc-role-chrome: #20434F;
   --oc-role-error: #BA1A1A;
   --oc-role-error-container: #FFDAD6;
@@ -54,12 +55,12 @@
   --oc-role-secondary-container: #CFE6F1;
   --oc-role-secondary-fixed: #CFE6F1;
   --oc-role-shadow: #000000;
-  --oc-role-surface: #FBFCFE;
+  --oc-role-surface: #FFFFFF;
   --oc-role-surface-bright: #F8F9FB;
-  --oc-role-surface-container: #ECEEF0;
-  --oc-role-surface-container-high: #E7E8EA;
-  --oc-role-surface-container-highest: #E1E3E4;
-  --oc-role-surface-container-low: #F2F4F5;
+  --oc-role-surface-container: #F6F8FA;
+  --oc-role-surface-container-high: #F2F4F5;
+  --oc-role-surface-container-highest: #ECEEF0;
+  --oc-role-surface-container-low: #FBFCFE;
   --oc-role-surface-container-lowest: #FFFFFF;
   --oc-role-surface-dim: #D8DADC;
   --oc-role-surface-tint: #715289;

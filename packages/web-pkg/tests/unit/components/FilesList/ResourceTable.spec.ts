@@ -9,18 +9,18 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore } from '../../../../src/composables/piniaStores'
-import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
+import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
+import {
+  useCanBeOpenedWithSecureView,
+  ResourceIndicator
+} from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
-import { eventBus } from '../../../../src/services/eventBus'
-import { SideBarEventTopics } from '../../../../src/composables/sideBar'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
 import { useFileActionsRename } from '../../../../src/composables/actions/files'
 import { FileAction } from '../../../../src/composables/actions/types'
-import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({
   isLocationPicker: computed(() => false),
@@ -359,9 +359,10 @@ describe('ResourceTable', () => {
     describe('all rows already selected', () => {
       it('de-selects all resources via the select-all checkbox', async () => {
         const { wrapper } = getMountedWrapper({
+          deleteQueue: [],
           props: {
             selectedIds: resourcesWithAllFields.map((resource) => resource.id),
-            resources: resourcesWithAllFields.slice(0, -1)
+            resources: resourcesWithAllFields
           }
         })
 
@@ -520,6 +521,7 @@ describe('ResourceTable', () => {
     it('emits select event on contextmenu click', async () => {
       const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getMountedWrapper()
+      vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
       await wrapper.find('.oc-tbody-tr').trigger('contextmenu')
       expect(wrapper.emitted('update:selectedIds').length).toBe(1)
       expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
@@ -625,12 +627,13 @@ describe('ResourceTable', () => {
         expect(resourceRow.find('.resource-table-tag-more').exists()).toBe(renderButton)
       })
       it('opens sidebar on click', async () => {
-        const spyBus = vi.spyOn(eventBus, 'publish')
         const resource = mock<Resource>({ id: '1', tags: ['1', '2', '3'] })
         const { wrapper } = getMountedWrapper({ props: { resources: [resource] } })
         const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
+
+        const { openSideBar } = useSideBar()
         await resourceRow.find('.resource-table-tag-more').trigger('click')
-        expect(spyBus).toHaveBeenCalledWith(SideBarEventTopics.open)
+        expect(openSideBar).toHaveBeenCalled()
       })
     })
   })
@@ -676,7 +679,8 @@ function getMountedWrapper({
   addProcessingResources = false,
   canBeOpenedWithSecureView = true,
   hasRenameAction = true,
-  resources = resourcesWithAllFields
+  resources = resourcesWithAllFields,
+  deleteQueue = ['in-delete-queue==']
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
@@ -684,6 +688,7 @@ function getMountedWrapper({
   canBeOpenedWithSecureView?: boolean
   hasRenameAction?: boolean
   resources?: Resource[]
+  deleteQueue?: string[]
 } = {}) {
   const capabilities = {
     files: { tags: true }
@@ -721,7 +726,7 @@ function getMountedWrapper({
             piniaOptions: {
               authState: { userContextReady },
               capabilityState: { capabilities },
-              resourcesStore: { deleteQueue: ['in-delete-queue=='] }
+              resourcesStore: { deleteQueue }
             }
           })
         ],

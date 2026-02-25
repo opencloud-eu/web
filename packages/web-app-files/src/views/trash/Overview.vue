@@ -35,7 +35,6 @@
             :sort-by="sortBy"
             :sort-dir="sortDir"
             :sort-fields="sortFields.filter((field) => field.name === 'name')"
-            :is-side-bar-open="isSideBarOpen"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
@@ -43,13 +42,11 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
-            :target-route-callback="resourceTargetRouteCallback"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           >
-            <template #contextMenu="{ resource, isOpen }">
+            <template #contextMenu="{ resource }">
               <trash-context-actions
-                v-if="isOpen"
                 :loading="resource.graphPermissions === undefined"
                 :action-options="{ resources: [resource] as SpaceResource[] }"
               />
@@ -72,7 +69,7 @@
         </template>
       </template>
     </files-view-wrapper>
-    <file-side-bar :is-open="isSideBarOpen" :active-panel="sideBarActivePanel" />
+    <file-side-bar />
   </div>
 </template>
 
@@ -87,11 +84,9 @@ import {
   AppLoadingSpinner,
   createFileRouteOptions,
   createLocationTrash,
-  CreateTargetRouteOptions,
   defaultFuseOptions,
   FileSideBar,
   NoContentMessage,
-  SortDir,
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
@@ -107,12 +102,12 @@ import {
   isProjectSpaceResource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { RouteLocationNamedRaw } from 'vue-router'
 import TrashContextActions from '../../components/Trash/TrashContextActions.vue'
 import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
 import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
 import { useResourcesViewDefaults } from '../../composables'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
@@ -126,16 +121,8 @@ const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>(
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint
 })
 
-const {
-  isSideBarOpen,
-  fileListHeaderY,
-  sideBarActivePanel,
-  viewMode,
-  viewModes,
-  viewSize,
-  sortFields,
-  folderView
-} = resourcesViewDefaults
+const { fileListHeaderY, viewMode, viewModes, viewSize, sortFields, folderView } =
+  resourcesViewDefaults
 
 const { loadPreview } = useLoadPreview(viewMode)
 
@@ -263,10 +250,6 @@ const getTrashLink = (space: SpaceResource) =>
   createLocationTrash('files-trash-generic', {
     ...createFileRouteOptions(space)
   })
-
-const resourceTargetRouteCallback = ({
-  resource
-}: CreateTargetRouteOptions): RouteLocationNamedRaw => getTrashLink(resource as SpaceResource)
 
 let markInstance: Mark | undefined
 onMounted(async () => {

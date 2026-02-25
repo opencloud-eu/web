@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/design-system",
-  "version": "4.1.0",
+  "version": "5.1.0",
   "description": "OpenCloud Design System is used to design OpenCloud UI components",
   "keywords": [
     "vue design system",
@@ -71,7 +71,7 @@
       "./dist/translations.json": {
         "default": "./dist/translations.json"
       },
-      "./dist/tailwind.css": {
+      "./tailwind": {
         "default": "./dist/tailwind.css"
       },
       "./types": {
@@ -105,7 +105,7 @@
     "@vueuse/core": "^14.0.0",
     "deepmerge": "^4.2.2",
     "emoji-mart": "^5.6.0",
-    "focus-trap": "^7.6.0",
+    "focus-trap": "^7.8.0",
     "focus-trap-vue": "^4.0.1",
     "fuse.js": "^7.0.0",
     "lodash-es": "^4.17.21",
@@ -113,24 +113,27 @@
     "portal-vue": "^3.0.0",
     "tippy.js": "^6.3.7",
     "vue-inline-svg": "^4.0.0",
-    "vue-router": "^4.2.5",
+    "vue-router": "^5.0.0",
     "vue-select": "^4.0.0-beta.6",
     "vue3-gettext": "^2.4.0"
+  },
+  "peerDependencies": {
+    "pinia": "^3.0.3"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*",
     "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-vue": "6.0.1",
+    "@vitejs/plugin-vue": "6.0.4",
     "clean-publish": "^6.0.0",
-    "glob": "^11.0.0",
     "markdown-it-container": "^4.0.0",
     "postcss": "^8.5.2",
     "process": "^0.11.10",
+    "sass": "^1.97.3",
     "tailwindcss": "^4.1.11",
     "url": "^0.11.3",
     "vite": "^7.0.0",
     "vite-plugin-dts": "^4.2.3",
-    "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-plugin-node-polyfills": "^0.25.0",
     "vitepress": "^1.6.3",
     "yaml": "^2.3.4"
   }

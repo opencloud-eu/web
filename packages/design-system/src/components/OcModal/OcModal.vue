@@ -15,9 +15,12 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap py-3 px-4 rounded-t-sm"
+          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-sm"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
+          <div v-if="$slots['headerActions']" class="flex items-center gap-1">
+            <slot name="headerActions" />
+          </div>
         </div>
         <div class="oc-modal-body px-4 pt-4">
           <div
@@ -88,6 +91,7 @@
 
 <script setup lang="ts">
 import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
@@ -211,6 +215,11 @@ export interface Slots {
    * @docs Custom content of the modal.
    */
   content?: () => unknown
+
+  /**
+   * @docs Custom actions in the modal header.
+   */
+  headerActions?: () => unknown
 }
 
 const {
@@ -320,14 +329,5 @@ const confirm = () => {
 
 const inputOnInput = (value: string) => {
   emit('input', value)
-}
-</script>
-
-<script lang="ts">
-// this needs to be non-script-setup so we can use FocusTrap in unit tests
-import { FocusTrap } from 'focus-trap-vue'
-
-export default {
-  components: { FocusTrap }
 }
 </script>

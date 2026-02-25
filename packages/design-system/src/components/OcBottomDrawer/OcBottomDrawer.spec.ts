@@ -1,140 +1,58 @@
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import BottomDrawer from './OcBottomDrawer.vue'
-import { defineComponent, nextTick } from 'vue'
-import OcButton from '../OcButton/OcButton.vue'
-
-const selectors = {
-  toggle: '#button-drawer-toggle',
-  drawer: '.oc-bottom-drawer',
-  closeButton: '.oc-bottom-drawer-close-button',
-  background: '.oc-bottom-drawer-background',
-  actionButton: '#action-button'
-}
+import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
+import OcBottomDrawer from './OcBottomDrawer.vue'
+import { nextTick } from 'vue'
 
 describe('OcBottomDrawer', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
+  describe('active state', () => {
+    it('adds the active class when the drawer is active', async () => {
+      const addClassMock = vi.fn()
+      const htmlElMock = { classList: { add: addClassMock } } as unknown as HTMLElement
+      vi.spyOn(document, 'getElementById').mockReturnValue(htmlElMock)
+
+      const { wrapper } = getWrapper()
+      await nextTick()
+
+      expect(addClassMock).toHaveBeenCalled()
+      expect(wrapper.find('dialog').attributes('open')).toBeDefined()
+    })
+    it('does not add the active class when the drawer is not active', async () => {
+      const addClassMock = vi.fn()
+      const htmlElMock = { classList: { add: addClassMock } } as unknown as HTMLElement
+      vi.spyOn(document, 'getElementById').mockReturnValue(htmlElMock)
+
+      const { wrapper } = getWrapper({ isDrawerActive: false })
+      await nextTick()
+
+      expect(addClassMock).not.toHaveBeenCalled()
+      expect(wrapper.find('dialog').attributes('open')).toBeUndefined()
+    })
   })
-
-  it('renders when toggle is clicked', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.find(selectors.toggle).trigger('click')
-    const drawer = wrapper.find(selectors.drawer)
-    expect(drawer.exists()).toBe(true)
-    expect(drawer.classes()).toContain('active')
-    const backdrop = wrapper.find(selectors.background)
-    expect(backdrop.exists()).toBe(true)
-    expect(backdrop.classes()).toEqual(expect.arrayContaining(['fixed', 'inset-0']))
-    expect(backdrop.attributes('class')).toMatch(/z-\[/)
-    wrapper.unmount()
+  describe('full height', () => {
+    it('adds the h-full class when hasFullHeight is true', () => {
+      const { wrapper } = getWrapper({ hasFullHeight: true })
+      expect(wrapper.find('dialog > div').classes()).toContain('h-full')
+    })
+    it('adds the maxHeight class when hasFullHeight is false', () => {
+      const { wrapper } = getWrapper({ hasFullHeight: false, maxHeight: 'max-h-[80vh]' })
+      expect(wrapper.find('dialog > div').classes()).toContain('max-h-[80vh]')
+    })
   })
-
-  it('does not render when toggle is not clicked', async () => {
-    const { wrapper } = getWrapper()
-    await nextTick()
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
-  })
-
-  it('closes when close button is clicked', async () => {
-    const { wrapper } = getWrapper()
-
-    await wrapper.find(selectors.toggle).trigger('click')
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-
-    wrapper.find(selectors.closeButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
-    wrapper.unmount()
-  })
-
-  it('closes when background is clicked', async () => {
-    const { wrapper } = getWrapper()
-
-    await wrapper.find(selectors.toggle).trigger('click')
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-
-    await wrapper.find(selectors.background).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
-    wrapper.unmount()
-  })
-
-  it('closes when esc key is pressed', async () => {
-    const { wrapper } = getWrapper()
-
-    await wrapper.find(selectors.toggle).trigger('click')
-    await nextTick()
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-
-    const esc = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })
-    document.dispatchEvent(esc)
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
-    wrapper.unmount()
-  })
-
-  it('closes when inner button is clicked and "closeOnClick" is true', async () => {
-    const { wrapper } = getWrapper({ closeOnClick: true })
-
-    wrapper.find(selectors.toggle).trigger('click')
-    await nextTick()
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-
-    wrapper.find(selectors.actionButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(false)
-    wrapper.unmount()
-  })
-
-  it('does not close when inner button is clicked and "closeOnClick" is false', async () => {
-    const { wrapper } = getWrapper({ closeOnClick: false })
-
-    wrapper.find(selectors.toggle).trigger('click')
-    await nextTick()
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-
-    wrapper.find(selectors.actionButton).trigger('click')
-    await new Promise((r) => setTimeout(r, 160))
-    expect(wrapper.find(selectors.drawer).exists()).toBe(true)
-    wrapper.unmount()
+  describe('max height', () => {
+    it('applies the correct maxHeight class', () => {
+      const { wrapper } = getWrapper({ maxHeight: 'max-h-[75vh]' })
+      expect(wrapper.find('dialog > div').classes()).toContain('max-h-[75vh]')
+    })
   })
 })
 
-const getWrapper = (props = { closeOnClick: false }) => {
-  const RootComponent = defineComponent({
-    components: { BottomDrawer, OcButton },
-    props: ['props'],
-    template: `
-      <div>
-        <button id="button-drawer-toggle">Toggle Drawer</button>
-        <BottomDrawer
-          drawerId="button-drawer"
-          toggle="#button-drawer-toggle"
-          title="Bottom Drawer"
-          :close-on-click="${props.closeOnClick}"
-          v-bind="props"
-        >
-          <oc-button
-            appearance="raw"
-            class="raw-hover-surface"
-            id="action-button"
-          >
-            action button
-          </oc-button>
-        </BottomDrawer>
-      </div>
-    `
-  })
-
+const getWrapper = (props: PartialComponentProps<typeof OcBottomDrawer> = {}) => {
   return {
-    wrapper: mount(RootComponent, {
+    wrapper: mount(OcBottomDrawer, {
       props: {
-        drawerId: 'button-drawer',
-        toggle: '#button-drawer-toggle',
-        title: 'Bottom Drawer',
+        id: 'some-id',
+        isFocusTrapActive: false,
         ...props
       },
-      attachTo: document.body,
       global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] }
     })
   }

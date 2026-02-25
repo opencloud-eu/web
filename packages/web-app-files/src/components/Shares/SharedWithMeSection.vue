@@ -14,25 +14,22 @@
       :is="folderView.component"
       v-else
       v-model:selected-ids="selectedResourcesIds"
-      :is-side-bar-open="isSideBarOpen"
       :fields-displayed="displayedFields"
       :resources="resourceItems"
       :are-resources-clickable="resourceClickable"
-      :target-route-callback="resourceTargetRouteCallback"
       :header-position="fileListHeaderY"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
-      :grouping-settings="groupingSettings"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
       @sort="sortHandler"
     >
-      <template #contextMenu="{ resource, isOpen }">
+      <template #contextMenu="{ resource }">
         <context-actions
-          v-if="isOpen && isResourceInSelection(resource)"
+          v-if="isResourceInSelection(resource)"
           :action-options="{ space: getMatchingSpace(resource), resources: selectedResources }"
         />
       </template>
@@ -75,6 +72,7 @@
 import {
   FolderView,
   ResourceTable,
+  SortField,
   useCapabilityStore,
   useConfigStore,
   useFileActions,
@@ -83,18 +81,13 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, PropType, unref } from 'vue'
-import { SortDir, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
-import { createLocationSpaces } from '@opencloud-eu/web-pkg'
+import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useSelectedResources } from '@opencloud-eu/web-pkg'
-import { RouteLocationNamedRaw } from 'vue-router'
-import { CreateTargetRouteOptions } from '@opencloud-eu/web-pkg'
-import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
-import { useResourcesViewDefaults } from '../../composables'
-import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export default defineComponent({
   components: {
@@ -153,34 +146,29 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
-    isSideBarOpen: {
-      type: Boolean,
-      default: false
-    },
     fileListHeaderY: {
       type: Number,
       default: 0
     },
-
-    /**
-     * This is only relevant for CERN and can be ignored in any other cases.
-     */
-    groupingSettings: {
-      type: Object,
-      required: false,
-      default: null
+    viewMode: {
+      type: String,
+      required: true
+    },
+    viewSize: {
+      type: Number,
+      required: true
+    },
+    sortFields: {
+      type: Object as PropType<SortField[]>,
+      required: true
     }
   },
-  setup() {
+  setup(props) {
     const capabilityStore = useCapabilityStore()
     const configStore = useConfigStore()
     const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { viewMode, viewSize, sortFields } = useResourcesViewDefaults({
-      folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
-    })
-
-    const { loadPreview } = useLoadPreview(viewMode)
+    const { loadPreview } = useLoadPreview(computed(() => props.viewMode))
 
     const { triggerDefaultAction } = useFileActions()
     const { actions: hideShareActions } = useFileActionsToggleHideShare()
@@ -192,32 +180,17 @@ export default defineComponent({
       return resource.shareTypes.includes(ShareTypes.remote.value)
     }
 
-    const resourceTargetRouteCallback = ({
-      path,
-      fileId,
-      resource
-    }: CreateTargetRouteOptions): RouteLocationNamedRaw => {
-      return createLocationSpaces(
-        'files-spaces-generic',
-        createFileRouteOptions(getMatchingSpace(resource), { path, fileId })
-      )
-    }
-
     return {
       capabilityStore,
       configStore,
       triggerDefaultAction,
       hideShareAction,
-      resourceTargetRouteCallback,
       ...useSelectedResources(),
       getMatchingSpace,
       updateResourceField,
       isExternalShare,
       ShareTypes,
-      loadPreview,
-      viewMode,
-      viewSize,
-      sortFields
+      loadPreview
     }
   },
 

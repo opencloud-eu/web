@@ -8,6 +8,7 @@ import { useLoadingService } from '../../loadingService'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
+import { isPromiseFulfilled, isPromiseRejected } from '../../../helpers'
 
 export const useSpaceActionsRestore = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -45,7 +46,7 @@ export const useSpaceActionsRestore = () => {
     })
     await spacesStore.loadGraphPermissions({ ids: spaces.map((s) => s.id), graphClient: client })
 
-    const succeeded = results.filter((r) => r.status === 'fulfilled')
+    const succeeded = results.filter(isPromiseFulfilled)
     if (succeeded.length) {
       const title =
         succeeded.length === 1 && spaces.length === 1
@@ -60,13 +61,13 @@ export const useSpaceActionsRestore = () => {
       showMessage({ title })
     }
 
-    const failed = results.filter((r) => r.status === 'rejected')
+    const failed = results.filter(isPromiseRejected)
     if (failed.length) {
       failed.forEach(console.error)
 
       const title =
         failed.length === 1 && spaces.length === 1
-          ? $gettext('Failed to enabled space »%{space}«', { space: spaces[0].name })
+          ? $gettext('Failed to enable space »%{space}«', { space: spaces[0].name })
           : $ngettext(
               'Failed to enable %{spaceCount} space',
               'Failed to enable %{spaceCount} spaces',
@@ -76,7 +77,7 @@ export const useSpaceActionsRestore = () => {
             )
       showErrorMessage({
         title,
-        errors: (failed as PromiseRejectedResult[]).map((f) => f.reason)
+        errors: failed.map((f) => f.reason)
       })
     }
   }

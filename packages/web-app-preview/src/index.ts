@@ -7,8 +7,9 @@ import translations from '../l10n/translations.json'
 import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'
 import { mimeTypes } from './mimeTypes'
+import { appId } from './utils'
 
-const { default: App, appId } = app
+const { default: App } = app
 
 export default defineWebApplication({
   setup() {

@@ -162,10 +162,11 @@ export function buildIncomingShareResource({
     canUpload: () => sharePermissions.includes(GraphSharePermission.createUpload),
     canCreate: () => sharePermissions.includes(GraphSharePermission.createChildren),
     canBeDeleted: () => sharePermissions.includes(GraphSharePermission.deleteStandard),
-    canEditTags: () => sharePermissions.includes(GraphSharePermission.createChildren),
+    canEditTags: () => sharePermissions.includes(GraphSharePermission.createUpload),
     isMounted: () => false,
     isReceivedShare: () => true,
     canShare: () => false,
+    isShareRoot: () => true,
     getDomSelector: () => extractDomSelector(driveItem.id)
   }
 
@@ -225,6 +226,7 @@ export function buildOutgoingShareResource({
     canBeDeleted: () => true,
     canEditTags: () => true,
     isMounted: () => false,
+    isShareRoot: () => false,
     isReceivedShare: () => true,
     canShare: () => true,
     getDomSelector: () => extractDomSelector(driveItem.id)

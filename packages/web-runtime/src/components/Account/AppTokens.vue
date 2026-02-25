@@ -1,7 +1,7 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
     <div class="flex items-center mb-4">
-      <h1 class="mt-0" v-text="$gettext('App Tokens')" />
+      <h1 class="m-0 text-lg" v-text="$gettext('App Tokens')" />
       <oc-button
         v-if="!authAppServiceDisabled"
         size="small"
@@ -22,12 +22,15 @@
         )
       "
     />
-    <p
+    <no-content-message
       v-else-if="!appTokens.length"
-      class="ml-2"
+      icon="key-2"
       data-testid="no-app-tokens-available"
-      v-text="$gettext('No app tokens available.')"
-    />
+    >
+      <template #message>
+        <span v-text="$gettext('No app tokens available.')" />
+      </template>
+    </no-content-message>
     <div v-else>
       <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
         <template #label="{ item }">
@@ -84,6 +87,7 @@ import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage } from '@opencloud-eu/web-pkg/src'
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { dispatchModal } = useModals()

@@ -19,7 +19,7 @@ const selectors = {
   batchActionsStub: 'batch-actions-stub',
   viewOptionsStub: 'view-options-stub',
   sidebarToggleStub: 'sidebar-toggle-stub',
-  mobileNavPortal: 'portal-target[name="app.runtime.mobile.nav"]'
+  mobileNavStub: 'mobile-nav-stub'
 }
 
 const selectedFiles = [mock<Resource>(), mock<Resource>()]
@@ -94,14 +94,14 @@ describe('AppBar component', () => {
         expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
       })
     })
-    describe('mobile navigation portal', () => {
+    describe('mobile navigation ', () => {
       it.each([
         { items: [], shows: true },
         { items: [breadcrumbItems[0]], shows: true },
         { items: [breadcrumbItems[0], breadcrumbItems[1]], shows: false }
       ])('if less than 2 breadcrumb items given', ({ items, shows }) => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: items })
-        expect(wrapper.find(selectors.mobileNavPortal).exists()).toBe(shows)
+        expect(wrapper.find(selectors.mobileNavStub).exists()).toBe(shows)
       })
     })
     describe('viewoptions', () => {

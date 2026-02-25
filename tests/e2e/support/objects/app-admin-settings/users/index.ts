@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { Page, Locator } from '@playwright/test'
 import { UsersEnvironment } from '../../../environment'
 import * as po from './actions'
 
@@ -185,5 +185,9 @@ export class Users {
 
   async waitForEditPanelToBeVisible(): Promise<void> {
     await po.waitForEditPanelToBeVisible({ page: this.#page })
+  }
+
+  getUserProfilePicture({ key }: { key: string }): Locator {
+    return po.getUserProfilePicture({ page: this.#page, uuid: this.getUUID({ key }) })
   }
 }

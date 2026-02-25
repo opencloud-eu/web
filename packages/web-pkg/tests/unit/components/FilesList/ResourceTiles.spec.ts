@@ -1,13 +1,15 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vue'
 import { sortFields } from '../../../../src/helpers/ui/resourceTiles'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, extractDomSelector } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { extractDomSelector } from '@opencloud-eu/web-client'
-import { useCanBeOpenedWithSecureView } from '../../../../src/composables/resources'
+import {
+  useCanBeOpenedWithSecureView,
+  ResourceIndicator
+} from '../../../../src/composables/resources'
 import { displayPositionedDropdown } from '../../../../src/helpers/contextMenuDropdown'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
-import { ResourceIndicator } from '../../../../src/helpers/statusIndicators'
+import { useResourcesStore } from '../../../../src'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => ({
@@ -30,7 +32,7 @@ vi.mock('../../../../src/composables/resources', async (importOriginal) => ({
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useFileActions: vi.fn().mockReturnValue({
-    getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
+    getDefaultAction: vi.fn().mockReturnValue({ route: () => ({}), handler: vi.fn() })
   })
 }))
 
@@ -120,18 +122,10 @@ describe('ResourceTiles component', () => {
         preventDefault: vi.fn()
       } as unknown as MouseEvent
 
-      await resourceTile.vm.$emit('click', mockMouseEvent)
-      expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
-      expect(wrapper.emitted('update:selectedIds')[0][0]).toEqual([resources[0].id])
-    })
-
-    it('does not emit fileClick event upon click on tile when embed mode is enabled', async () => {
-      mockUseEmbedMode.mockReturnValue({
-        isEnabled: computed(() => true)
-      })
-      const { wrapper } = getWrapper({ props: { resources } })
-      await wrapper.find('.oc-tiles-item .oc-resource-name').trigger('click')
-      expect(wrapper.emitted().fileClick).toBeUndefined()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.selectedIds = [resources[0].id]
+      await resourceTile.vm.$emit('fileNameClicked', mockMouseEvent)
+      expect(wrapper.emitted('fileClick')).toBeTruthy()
     })
 
     it('does not emit fileClick event if file can not be opened via secure view', async () => {
@@ -179,7 +173,7 @@ describe('ResourceTiles component', () => {
       expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(sortField.label)
     })
     it('emits the "sort"-event', async () => {
-      const { wrapper } = getWrapper({ props: { sortFields } })
+      const { wrapper } = getWrapper({ props: { sortFields }, stubs: { OcDrop: true } })
       const filterChip = wrapper.findComponent<typeof OcFilterChip>({ name: 'oc-filter-chip' })
       await filterChip.trigger('click')
       const sortItem = filterChip.findAll('.oc-tiles-sort-filter-chip-item')
@@ -219,6 +213,8 @@ describe('ResourceTiles component', () => {
     it('triggers the positioned dropdown on click', async () => {
       const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
       const { wrapper } = getWrapper({ props: { resources } })
+      vi.spyOn(document, 'getElementById').mockImplementation(() => ({}) as HTMLElement)
+
       const btn = wrapper.find('.resource-tiles-btn-action-dropdown')
       await btn.trigger('click')
       expect(spyDisplayPositionedDropdown).toHaveBeenCalled()
@@ -309,7 +305,8 @@ describe('ResourceTiles component', () => {
           ],
           mocks: mocks,
           provide: mocks,
-          stubs
+          stubs,
+          renderStubDefaultSlot: true
         }
       })
     }

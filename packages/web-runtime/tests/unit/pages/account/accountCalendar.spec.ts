@@ -33,8 +33,11 @@ describe('account calendar page', () => {
     expect(wrapper.find('.calendar-not-configured-message').exists()).toBeFalsy()
   })
 
-  it('does not render content if CalDAV is not available', () => {
-    const wrapper = getWrapper()
+  it('does not render content if CalDAV is not available', async () => {
+    const wrapper = getWrapper({ available: false })
+
+    await flushPromises()
+    await nextTick()
 
     expect(wrapper.find('.calendar-not-configured-message').exists()).toBeTruthy()
   })
@@ -55,7 +58,9 @@ describe('account calendar page', () => {
   })
 })
 
-function getWrapper() {
+function getWrapper(opts: { available?: boolean } = {}) {
+  const { available = true } = opts
+
   const mocks = {
     ...defaultComponentMocks()
   }
@@ -80,7 +85,7 @@ function getWrapper() {
   mocks.$clientService.httpAuthenticated.get.mockResolvedValue({
     status: 301,
     request: {
-      responseURL: 'https://example.com/caldav/'
+      responseURL: available ? 'https://example.com/caldav/' : 'https://example.com/somewhere-else'
     }
   } as AxiosResponse)
   return mount(AccountCalendar, {

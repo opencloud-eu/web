@@ -1,4 +1,4 @@
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import {
   ClientService,
@@ -11,7 +11,7 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { isItemInCurrentFolder, sseEventWrapper } from '../../../../src/container/sse'
+import { sseEventWrapper } from '../../../../src/container/sse'
 import PQueue from 'p-queue'
 import { Language } from 'vue3-gettext'
 import { Router } from 'vue-router'
@@ -44,55 +44,6 @@ describe('helpers', () => {
         ...getMocks()
       })
       expect(console.error).toHaveBeenCalledWith(`Unable to process sse event ${topic}`, error)
-    })
-  })
-  describe('method "isItemInCurrentFolder"', () => {
-    it('returns "true" when item is in current folder', () => {
-      const mocks = getMocks()
-      expect(
-        isItemInCurrentFolder({
-          resourcesStore: mocks.resourcesStore,
-          parentFolderId: 'currenFolder!currentFolder'
-        })
-      ).toBeTruthy()
-    })
-    it('returns "false" when item is not in current folder', () => {
-      const mocks = getMocks()
-      expect(
-        isItemInCurrentFolder({
-          resourcesStore: mocks.resourcesStore,
-          parentFolderId: 'differentFolder!differentFolder'
-        })
-      ).toBeFalsy()
-    })
-    describe('current folder is space', () => {
-      it('returns "true" when item is in current folder', () => {
-        const mocks = getMocks({
-          currentFolder: mock<SpaceResource>({
-            id: 'bbf8b91f-54be-45f0-935e-a50c4922db21$c96eb07d-54a5-47bf-8402-64ad9a007797'
-          })
-        })
-        expect(
-          isItemInCurrentFolder({
-            resourcesStore: mocks.resourcesStore,
-            parentFolderId:
-              'bbf8b91f-54be-45f0-935e-a50c4922db21$c96eb07d-54a5-47bf-8402-64ad9a007797!c96eb07d-54a5-47bf-8402-64ad9a007797'
-          })
-        ).toBeTruthy()
-      })
-      it('returns "false" when item is not in current folder', () => {
-        const mocks = getMocks({
-          currentFolder: mock<SpaceResource>({
-            id: 'bbf8b91f-54be-45f0-935e-a50c4922db21$c96eb07d-54a5-47bf-8402-64ad9a007797'
-          })
-        })
-        expect(
-          isItemInCurrentFolder({
-            resourcesStore: mocks.resourcesStore,
-            parentFolderId: 'differentFolder!differentFolder'
-          })
-        ).toBeFalsy()
-      })
     })
   })
 })

@@ -1,6 +1,6 @@
 <template>
   <div id="account-preferences">
-    <h1 class="mt-0" v-text="$gettext('Preferences')" />
+    <h1 class="text-lg mt-1" v-text="$gettext('Preferences')" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <account-table
@@ -119,8 +119,7 @@
                     :label-hidden="!isMobileWidth"
                     :disabled="choice.attribute === 'disabled'"
                     @update:model-value="
-                      (value: boolean | string) =>
-                        updateMultiChoiceSettingsValue(option.name, choice.key, value)
+                      (value) => updateMultiChoiceSettingsValue(option.name, choice.key, value)
                     "
                   />
                 </span>
@@ -141,10 +140,7 @@
                 :options="option.singleChoiceValue.options"
                 :clearable="false"
                 option-label="displayValue"
-                @update:model-value="
-                  (value: { displayValue: string; value: { stringValue: string } }) =>
-                    updateSingleChoiceValue(option.name, value)
-                "
+                @update:model-value="(value) => updateSingleChoiceValue(option.name, value)"
               />
             </oc-table-td>
           </oc-table-tr>
@@ -471,11 +467,7 @@ const updateValueInValueList = (value: SettingsValue) => {
   valuesList.value.splice(index, 1, value)
 }
 
-const updateMultiChoiceSettingsValue = async (
-  identifier: string,
-  key: string,
-  value: boolean | string
-) => {
+const updateMultiChoiceSettingsValue = async (identifier: string, key: string, value: boolean) => {
   try {
     if (typeof value !== 'boolean') {
       const error = new TypeError(`Unsupported value type ${typeof value}`)

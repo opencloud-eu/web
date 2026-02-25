@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :is-side-bar-open="isSideBarOpen" :view-modes="viewModes">
+      <app-bar :view-modes="viewModes">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -39,7 +39,6 @@
           :is="folderView.component"
           v-else
           v-model:selected-ids="selectedResourcesIds"
-          :is-side-bar-open="isSideBarOpen"
           :fields-displayed="['name', 'sharedWith', 'sdate']"
           :are-paths-displayed="true"
           :resources="filteredItems"
@@ -49,14 +48,13 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
-          :grouping-settings="groupingSettings"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
         >
-          <template #contextMenu="{ resource, isOpen }">
+          <template #contextMenu="{ resource }">
             <context-actions
-              v-if="isOpen && isResourceInSelection(resource)"
+              v-if="isResourceInSelection(resource)"
               :action-options="{ space: getMatchingSpace(resource), resources: selectedResources }"
             />
           </template>
@@ -67,11 +65,7 @@
         </component>
       </template>
     </files-view-wrapper>
-    <file-side-bar
-      :is-open="isSideBarOpen"
-      :active-panel="sideBarActivePanel"
-      :space="selectedResourceSpace"
-    />
+    <file-side-bar :space="selectedResourceSpace" />
   </div>
 </template>
 
@@ -100,7 +94,6 @@ import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 
 import { useResourcesViewDefaults } from '../../composables'
 import { defineComponent, computed, unref } from 'vue'
-import { useGroupingSettings } from '@opencloud-eu/web-pkg'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
@@ -136,14 +129,8 @@ export default defineComponent({
     const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
       folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
     })
-    const {
-      sortBy,
-      sortDir,
-      loadResourcesTask,
-      selectedResourcesIds,
-      paginatedResources,
-      viewMode
-    } = resourcesViewDefaults
+    const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
+      resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
 
     const shareTypes = computed(() => {
@@ -205,10 +192,7 @@ export default defineComponent({
       filteredItems,
       shareTypes,
       getMatchingSpace,
-      loadPreview,
-
-      // CERN
-      ...useGroupingSettings({ sortBy, sortDir })
+      loadPreview
     }
   },
 

@@ -1,4 +1,3 @@
-import { ComponentPublicInstance, Ref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
 export interface ContextualHelperDataListItem {
@@ -88,10 +87,9 @@ export type JustifyContentType =
   | 'space-between'
   | 'space-evenly'
 
-export type NestedDrop = Ref<
-  ComponentPublicInstance & {
-    show: () => void
-    hide: () => void
-    getElement: () => HTMLElement
-  }
->
+export enum SortDir {
+  Desc = 'desc',
+  Asc = 'asc'
+}
+
+export type PageSizeOption = string | number | boolean

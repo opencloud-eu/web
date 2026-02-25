@@ -5,15 +5,15 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { SortDir, eventBus, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { displayPositionedDropdown } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
 import { nextTick } from 'vue'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 const spaceMocks = [
   mock<SpaceResource>({
@@ -142,10 +142,11 @@ describe('SpacesList', () => {
     expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
   })
   it('should show the space details on details button click', async () => {
-    const eventBusSpy = vi.spyOn(eventBus, 'publish')
     const { wrapper } = getWrapper({ spaces: spaceMocks })
+
+    const { openSideBar } = useSideBar()
     await wrapper.find('.spaces-table-btn-details').trigger('click')
-    expect(eventBusSpy).toHaveBeenCalledWith(SideBarEventTopics.open)
+    expect(openSideBar).toHaveBeenCalled()
   })
   describe('toggle selection', () => {
     describe('selectSpaces method', () => {

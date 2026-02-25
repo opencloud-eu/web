@@ -39,7 +39,11 @@
       </portal>
       <portal to="app.runtime.header.right" :order="100">
         <notifications v-if="isNotificationBellEnabled" />
-        <side-bar-toggle v-if="isSideBarToggleVisible" :disabled="isSideBarToggleDisabled" />
+        <side-bar-toggle
+          v-if="isSideBarToggleVisible"
+          :disabled="isSideBarToggleDisabled"
+          class="hidden sm:flex"
+        />
         <user-menu />
       </portal>
     </template>

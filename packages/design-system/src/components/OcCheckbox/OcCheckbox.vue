@@ -1,5 +1,5 @@
 <template>
-  <span @click="$emit('click', $event)">
+  <span class="inline-flex items-center" @click="$emit('click', $event)">
     <input
       :id="id"
       v-model="model"
@@ -80,7 +80,7 @@ const {
 
 const emit = defineEmits<Emits>()
 
-const model = defineModel<boolean | unknown[]>()
+const model = defineModel<boolean>()
 
 const isChecked = computed(() => {
   const val = unref(model)

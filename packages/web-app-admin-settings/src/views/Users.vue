@@ -3,10 +3,8 @@
     <app-template
       ref="template"
       :breadcrumbs="breadcrumbs"
-      :side-bar-active-panel="sideBarActivePanel"
       :side-bar-available-panels="sideBarAvailablePanels"
       :side-bar-panel-context="sideBarPanelContext"
-      :is-side-bar-open="isSideBarOpen"
       :side-bar-loading="sideBarLoading"
       :show-batch-actions="!!selectedUsers.length"
       :batch-actions="batchActions"
@@ -24,7 +22,7 @@
             appearance="filled"
             @click="createUserAction.handler()"
           >
-            <oc-icon :name="createUserAction.icon" />
+            <oc-icon :name="createUserActionIcon" />
             <span v-if="!limitedScreenSpace" v-text="createUserAction.label()" />
           </oc-button>
         </div>
@@ -200,6 +198,8 @@ export default defineComponent({
     const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const clientService = useClientService()
     const configStore = useConfigStore()
+    const sidebarStore = useSideBar()
+    const { isSideBarOpen } = storeToRefs(sidebarStore)
 
     const userSettingsStore = useUserSettingsStore()
     const { users, selectedUsers } = storeToRefs(userSettingsStore)
@@ -210,6 +210,10 @@ export default defineComponent({
 
     const { actions: createUserActions } = useUserActionsCreateUser()
     const createUserAction = computed(() => unref(createUserActions)[0])
+    const createUserActionIcon = computed(() => {
+      const action = unref(createUserAction)
+      return typeof action.icon === 'function' ? action.icon() : action.icon
+    })
 
     const { actions: deleteActions } = useUserActionsDelete()
     const { actions: removeFromGroupsActions } = useUserActionsRemoveFromGroups({
@@ -478,7 +482,6 @@ export default defineComponent({
     ] satisfies SideBarPanel<unknown, unknown, User>[]
 
     return {
-      ...useSideBar(),
       maxQuota: capabilityRefs.spacesMaxQuota,
       template,
       selectedUsers,
@@ -501,13 +504,14 @@ export default defineComponent({
       sideBarPanelContext,
       sideBarAvailablePanels,
       createUserAction,
-      userSettingsStore
+      createUserActionIcon,
+      userSettingsStore,
+      isSideBarOpen
     }
   },
   computed: {
     breadcrumbs() {
       return [
-        { text: this.$gettext('Administration Settings'), to: { path: '/admin-settings' } },
         {
           text: this.$gettext('Users'),
           onClick: () => {

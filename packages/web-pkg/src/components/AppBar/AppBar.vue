@@ -9,7 +9,7 @@
       <h1 class="sr-only" v-text="pageTitle" />
       <oc-hidden-announcer :announcement="selectedResourcesAnnouncement" level="polite" />
       <div
-        class="flex items-center files-app-bar-controls min-h-13"
+        class="flex items-center files-app-bar-controls min-h-12"
         :class="{
           'justify-between': breadcrumbs.length || hasSharesNavigation,
           'justify-end': !breadcrumbs.length && !hasSharesNavigation
@@ -32,7 +32,7 @@
             />
           </template>
         </oc-breadcrumb>
-        <portal-target v-if="showMobileNav" name="app.runtime.mobile.nav" />
+        <mobile-nav v-if="showMobileNav" />
         <slot v-if="hasSharesNavigation" name="navigation" />
         <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
@@ -102,6 +102,7 @@ import {
   useResourcesStore,
   useRouteMeta,
   useRouter,
+  useSideBar,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsEditQuota,
@@ -112,13 +113,15 @@ import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
+import MobileNav from '../Navigation/MobileNav.vue'
 
 export default defineComponent({
   name: 'AppBar',
   components: {
     BatchActions,
     ContextActions,
-    ViewOptions
+    ViewOptions,
+    MobileNav
   },
   props: {
     viewModeDefault: {
@@ -144,7 +147,6 @@ export default defineComponent({
     hasFileExtensions: { type: Boolean, default: true },
     hasPagination: { type: Boolean, default: true },
     showActionsOnSelection: { type: Boolean, default: false },
-    isSideBarOpen: { type: Boolean, default: false },
     batchActionsLoading: { type: Boolean, default: false },
     space: {
       type: Object as PropType<SpaceResource>,
@@ -159,6 +161,9 @@ export default defineComponent({
     const router = useRouter()
     const { requestExtensions } = useExtensionRegistry()
     const { isSticky } = useIsTopBarSticky()
+
+    const sidebarStore = useSideBar()
+    const { isSideBarOpen } = storeToRefs(sidebarStore)
 
     const resourcesStore = useResourcesStore()
     const { selectedResources } = storeToRefs(resourcesStore)
@@ -279,7 +284,8 @@ export default defineComponent({
       fileDroppedBreadcrumb,
       pageTitle,
       selectedResources,
-      isSticky
+      isSticky,
+      isSideBarOpen
     }
   },
   data: function () {

@@ -17,7 +17,7 @@
         <template v-if="avatars.length > 0">
           <oc-avatar
             v-for="avatar in avatars"
-            :key="avatar.username"
+            :key="avatar.userName"
             :src="avatar.avatar"
             :user-name="avatar.displayName"
             :width="width"
@@ -56,7 +56,7 @@ type Item = {
   displayName?: string
   name?: string
   avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest' | string
-  username?: string
+  userName?: string
   avatar?: string
   userId?: string
 }
@@ -154,7 +154,7 @@ const otherItems = computed(() => {
 const avatarsAriaLabel = computed(() => {
   if (isTooltipDisplayed) return tooltip.value as string
   const names = (avatars.value || [])
-    .map((a) => a?.displayName || a?.name || a?.username)
+    .map((a) => a?.displayName || a?.name || a?.userName)
     .filter(Boolean)
   return names.length ? names.join(', ') : undefined
 })

@@ -67,6 +67,11 @@ describe('useIsResourceNameValid', () => {
       },
       {
         currentName: 'currentName',
+        newName: 'new\\name',
+        message: 'The name cannot contain "\\"'
+      },
+      {
+        currentName: 'currentName',
         newName: '.',
         message: 'The name cannot be equal to "."'
       },

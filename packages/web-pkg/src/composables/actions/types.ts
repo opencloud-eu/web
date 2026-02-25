@@ -10,7 +10,7 @@ export type ActionOptions = Record<string, unknown | unknown[]>
 export interface Action<T = ActionOptions> {
   name: string
   category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
-  icon: string
+  icon: string | ((options?: ActionOptions) => string)
   iconFillType?: IconFillType
   appearance?: AppearanceType
   id?: string
@@ -31,7 +31,7 @@ export interface Action<T = ActionOptions> {
   handler?(options?: T): Promise<void> | void
 
   // componentType: router-link
-  route?(options?: T): RouteLocationRaw
+  route?(options?: T): RouteLocationRaw | undefined
 
   // componentType: a
   href?(options?: T): string

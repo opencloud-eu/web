@@ -82,13 +82,13 @@ const routes: readonly RouteRecordRaw[] = [
     path: '/web-oidc-callback',
     name: routeNames.oidcCallback,
     component: OidcCallbackPage,
-    meta: { title: $gettext('Oidc callback'), authContext: 'anonymous' }
+    meta: { title: $gettext('OIDC callback'), authContext: 'anonymous' }
   },
   {
     path: '/web-oidc-silent-redirect',
     name: routeNames.oidcSilentRedirect,
     component: OidcCallbackPage,
-    meta: { title: $gettext('Oidc redirect'), authContext: 'anonymous' }
+    meta: { title: $gettext('OIDC redirect'), authContext: 'anonymous' }
   },
   {
     path: '/f/:fileId',

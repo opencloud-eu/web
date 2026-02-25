@@ -7,7 +7,7 @@
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"
-            class="py-2 px-4 bg-role-surface top-0 z-20"
+            class="pb-2 px-4 top-0 z-20"
             :class="{ sticky: isSticky }"
           >
             <div class="flex justify-between items-center h-13">
@@ -17,7 +17,7 @@
                 :items="breadcrumbs"
                 :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
               />
-              <portal-target name="app.runtime.mobile.nav" />
+              <mobile-nav />
               <div class="flex">
                 <view-options
                   v-if="showViewOptions"
@@ -48,13 +48,9 @@
         </div>
         <side-bar
           v-if="isSideBarOpen"
-          :active-panel="sideBarActivePanel"
           :available-panels="sideBarAvailablePanels"
           :panel-context="sideBarPanelContext"
           :loading="sideBarLoading"
-          :is-open="isSideBarOpen"
-          @select-panel="selectPanel"
-          @close="closeSideBar"
         >
           <template #header>
             <slot name="sideBarHeader" />
@@ -73,7 +69,9 @@ import {
   BatchActions,
   SideBarPanelContext,
   Action,
-  useIsTopBarSticky
+  useIsTopBarSticky,
+  useSideBar,
+  MobileNav
 } from '@opencloud-eu/web-pkg'
 import {
   defineComponent,
@@ -83,32 +81,28 @@ import {
   Ref,
   ref,
   unref,
-  VNodeRef,
+  useTemplateRef,
   watch
 } from 'vue'
-import { eventBus, useAppDefaults } from '@opencloud-eu/web-pkg'
-import { SideBarEventTopics } from '@opencloud-eu/web-pkg'
+import { useAppDefaults } from '@opencloud-eu/web-pkg'
 import { SideBarPanel } from '@opencloud-eu/web-pkg'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { ViewOptions } from '@opencloud-eu/web-pkg'
 import { Item } from '@opencloud-eu/web-client'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   components: {
     SideBar,
     AppLoadingSpinner,
     BatchActions,
-    ViewOptions
+    ViewOptions,
+    MobileNav
   },
   props: {
     breadcrumbs: {
       required: true,
       type: Array as PropType<BreadcrumbItem[]>
-    },
-    isSideBarOpen: {
-      required: false,
-      type: Boolean,
-      default: false
     },
     sideBarAvailablePanels: {
       required: false,
@@ -119,11 +113,6 @@ export default defineComponent({
       required: false,
       type: Object as PropType<SideBarPanelContext<unknown, unknown, unknown>>,
       default: (): SideBarPanelContext<unknown, unknown, unknown> => ({})
-    },
-    sideBarActivePanel: {
-      required: false,
-      type: [String, null],
-      default: null
     },
     loading: {
       required: false,
@@ -161,30 +150,25 @@ export default defineComponent({
       default: true
     }
   },
-  setup(props) {
-    const appBarRef = ref<VNodeRef>()
+  setup() {
+    const sidebarStore = useSideBar()
+    const { isSideBarOpen } = storeToRefs(sidebarStore)
+    const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
     const limitedScreenSpace = ref(false)
     const { isSticky } = useIsTopBarSticky()
 
     const onResize = () => {
-      limitedScreenSpace.value = props.isSideBarOpen
+      limitedScreenSpace.value = unref(isSideBarOpen)
         ? window.innerWidth <= 1600
         : window.innerWidth <= 1200
     }
     const resizeObserver = new ResizeObserver(onResize)
 
-    const closeSideBar = () => {
-      eventBus.publish(SideBarEventTopics.close)
-    }
-    const selectPanel = (panel: string) => {
-      eventBus.publish(SideBarEventTopics.setActivePanel, panel)
-    }
-
     watch(
       appBarRef,
       (ref) => {
         if (ref) {
-          resizeObserver.observe(unref(appBarRef) as unknown as HTMLElement)
+          resizeObserver.observe(unref(appBarRef))
         }
       },
       { immediate: true }
@@ -192,7 +176,7 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       if (unref(appBarRef)) {
-        resizeObserver.unobserve(unref(appBarRef) as unknown as HTMLElement)
+        resizeObserver.unobserve(unref(appBarRef))
       }
     })
 
@@ -200,8 +184,7 @@ export default defineComponent({
       isMobileWidth: inject<Ref<boolean>>('isMobileWidth'),
       appBarRef,
       limitedScreenSpace,
-      closeSideBar,
-      selectPanel,
+      isSideBarOpen,
       ...useAppDefaults({
         applicationId: 'admin-settings'
       }),

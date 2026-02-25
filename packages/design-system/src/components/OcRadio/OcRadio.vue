@@ -10,7 +10,7 @@
         'size-4': size === 'medium',
         'size-5': size === 'large'
       }"
-      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background-color,border] duration-200 ease-in-out not-disabled:cursor-pointer bg-no-repeat bg-center appearance-none"
+      class="oc-radio checked:bg-role-secondary-container border rounded-[50%] focus:outline-0 overflow-hidden m-0 inline-block transition-[background] transition-[border] duration-200 ease-in-out not-disabled:cursor-pointer bg-no-repeat bg-center appearance-none"
       :aria-checked="option === modelValue"
       :value="option"
       :disabled="disabled"

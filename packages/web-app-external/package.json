@@ -10,13 +10,13 @@
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "lodash-es": "4.17.21",
-    "pinia": "3.0.3",
+    "lodash-es": "4.17.23",
+    "pinia": "3.0.4",
     "qs": "^6.13.0",
     "uuid": "13.0.0",
     "vue-concurrency": "5.0.3",
     "vue3-gettext": "2.4.0",
-    "vue-router": "4.6.3",
-    "zod": "4.1.12"
+    "vue-router": "5.0.3",
+    "zod": "4.3.6"
   }
 }

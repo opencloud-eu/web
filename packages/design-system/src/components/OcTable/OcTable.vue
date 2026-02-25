@@ -78,10 +78,9 @@
           )
         "
         @dragstart="dragStart(item, $event)"
-        @drop="dropRowEvent(domSelector(item), $event)"
-        @dragenter.prevent="dropRowStyling(domSelector(item), false, $event)"
-        @dragleave.prevent="dropRowStyling(domSelector(item), true, $event)"
-        @mouseleave="dropRowStyling(domSelector(item), true, $event)"
+        @drop="dropRowEvent(item, $event)"
+        @dragenter.prevent="dropRowStyling(item, false, $event)"
+        @dragleave.prevent="dropRowStyling(item, true, $event)"
         @dragover="dragOver($event)"
         @item-visible="$emit('itemVisible', item)"
       >
@@ -122,7 +121,7 @@ import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { Item as BaseItem, FieldType, SizeType } from '../../helpers'
+import { Item as BaseItem, FieldType, SizeType, SortDir } from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -132,9 +131,6 @@ import {
   EVENT_ITEM_DRAGGED
 } from '../../helpers/constants'
 import { useGettext } from 'vue3-gettext'
-
-const SORT_DIRECTION_ASC = 'asc' as const
-const SORT_DIRECTION_DESC = 'desc' as const
 
 type Item = BaseItem & any
 
@@ -201,7 +197,7 @@ export interface Props {
   /**
    * @docs The default sort direction.
    */
-  sortDir?: 'asc' | 'desc'
+  sortDir?: SortDir
   /**
    * @docs Determines if the table header should be sticky. This is helpful when it should still be visible when scrolling.
    * @default false
@@ -213,12 +209,12 @@ export interface Emits {
   /**
    * @docs Emitted when an item has been dropped onto a row.
    */
-  (e: 'itemDropped', selector: string, event: DragEvent): void
+  (e: 'itemDropped', args: [Item, DragEvent]): void
 
   /**
    * @docs Emitted when an item has been dragged onto a row.
    */
-  (e: 'itemDragged', item: Item, event: DragEvent): void
+  (e: 'itemDragged', args: [Item, DragEvent]): void
 
   /**
    * @docs Emitted when a table header has been clicked.
@@ -248,12 +244,12 @@ export interface Emits {
   /**
    * @docs Emitted when a column has been sorted.
    */
-  (e: 'sort', sort: { sortBy: string; sortDir: 'asc' | 'desc' }): void
+  (e: 'sort', sort: { sortBy: string; sortDir: SortDir }): void
 
   /**
    * @docs Emitted when an element has entered a drop zone inside the table.
    */
-  (e: 'dropRowStyling', selector: string, leaving: boolean, event: DragEvent): void
+  (e: 'dropRowStyling', item: Item, leaving: boolean, event: DragEvent): void
 
   /**
    * @docs Emitted when an item has been scrolled into the view.
@@ -269,7 +265,7 @@ export interface Slots {
   /**
    * @docs Each field can have it's own slot.
    */
-  [dynamicSlot: string]: () => unknown
+  [dynamicSlot: string]: any
 }
 
 const {
@@ -332,15 +328,15 @@ const dragOver = (event: DragEvent) => {
 }
 
 const dragStart = (item: Item, event: DragEvent) => {
-  emit(EVENT_ITEM_DRAGGED, item, event)
+  emit(EVENT_ITEM_DRAGGED, [item, event])
 }
 
-const dropRowEvent = (selector: string, event: DragEvent) => {
-  emit(EVENT_ITEM_DROPPED, selector, event)
+const dropRowEvent = (item: Item, event: DragEvent) => {
+  emit(EVENT_ITEM_DROPPED, [item, event])
 }
 
-const dropRowStyling = (selector: string, leaving: boolean, event: DragEvent) => {
-  emit('dropRowStyling', selector, leaving, event)
+const dropRowStyling = (item: Item, leaving: boolean, event: DragEvent) => {
+  emit('dropRowStyling', item, leaving, event)
 }
 
 const isFieldTypeSlot = (field: FieldType) => {
@@ -503,7 +499,7 @@ const extractSortThProps = (props: Record<string, string>, field: FieldType) => 
 
   let sort = 'none'
   if (sortBy === field.name) {
-    sort = sortDir === SORT_DIRECTION_ASC ? 'ascending' : 'descending'
+    sort = sortDir === SortDir.Asc ? 'ascending' : 'descending'
   }
   props['aria-sort'] = sort
 }
@@ -520,11 +516,11 @@ const handleSort = (field: FieldType) => {
   let sortDirection = sortDir
   // toggle sortDir if already sorted by this column
   if (sortBy === field.name && sortDir !== undefined) {
-    sortDirection = sortDir === SORT_DIRECTION_DESC ? SORT_DIRECTION_ASC : SORT_DIRECTION_DESC
+    sortDirection = sortDir === SortDir.Desc ? SortDir.Asc : SortDir.Desc
   }
   // set default sortDir of the field when sortDir not set or sortBy changed
   if (sortBy !== field.name || sortDir === undefined) {
-    sortDirection = (field.sortDir || SORT_DIRECTION_DESC) as 'asc' | 'desc'
+    sortDirection = (field.sortDir || SortDir.Desc) as SortDir
   }
 
   /**
@@ -550,7 +546,7 @@ const handleSort = (field: FieldType) => {
   .oc-table-hover tr {
     @apply transition-colors duration-200 ease-in-out;
   }
-  .oc-table-accentuated,
+  .item-accentuated,
   .oc-table-highlighted,
   .oc-table .highlightedDropTarget {
     @apply bg-role-secondary-container;

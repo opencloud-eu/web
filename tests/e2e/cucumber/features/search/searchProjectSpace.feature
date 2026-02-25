@@ -23,8 +23,8 @@ Feature: Search in the project space
     # search for project space objects
     When "Alice" searches "-'s" using the global search and the "all files" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource               |
-      | new-'single'quotes.txt |
+      | resource                                          |
+      | folder(WithSymbols:!;_+-&)/new-'single'quotes.txt |
     But following resources should not be displayed in the search list for user "Alice"
       | resource                   |
       | folder(WithSymbols:!;_+-&) |
@@ -33,6 +33,6 @@ Feature: Search in the project space
       | resource                   |
       | folder(WithSymbols:!;_+-&) |
     But following resources should not be displayed in the search list for user "Alice"
-      | resource               |
-      | new-'single'quotes.txt |
+      | resource                                          |
+      | folder(WithSymbols:!;_+-&)/new-'single'quotes.txt |
     And "Alice" logs out

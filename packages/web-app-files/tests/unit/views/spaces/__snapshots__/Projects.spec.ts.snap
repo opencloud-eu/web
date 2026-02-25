@@ -4,7 +4,7 @@ exports[`Projects view > different files view states > lists all available proje
 "<div class="flex w-full">
   <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
     <div id="files-view" class="outline-0 z-0 flex flex-col">
-      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" issidebaropen="false" batchactionsloading="false"></app-bar-stub>
+      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" batchactionsloading="false"></app-bar-stub>
       <div class="spaces-list">
         <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
           <div class="w-3xs"><label class="inline-block mb-0.5" for="spaces-filter">Search
@@ -18,11 +18,11 @@ exports[`Projects view > different files view states > lists all available proje
             <!--v-if-->
           </div>
         </div>
-        <resource-table-stub resources="[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" arethumbnailsdisplayed="true" selectedids="" hasactions="true" showrenamequickaction="true" areresourcesclickable="true" headerposition="0" isselectable="true" issidebaropen="false" paddingx="small" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="image,name,totalQuota,usedQuota,remainingQuota,indicators,mdate" sortdir="asc" resourcetype="space" lazy="true" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1"></resource-table-stub>
+        <resource-table-stub resources="[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" selectedids="" hasactions="true" showrenamequickaction="true" areresourcesclickable="true" headerposition="0" isselectable="true" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="image,name,totalQuota,usedQuota,remainingQuota,indicators,mdate" sortdir="asc" resourcetype="space" lazy="true" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1"></resource-table-stub>
       </div>
     </div>
   </div>
   <!--v-if-->
-  <file-side-bar-stub isopen="false"></file-side-bar-stub>
+  <file-side-bar-stub></file-side-bar-stub>
 </div>"
 `;

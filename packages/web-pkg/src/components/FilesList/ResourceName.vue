@@ -1,6 +1,6 @@
 <template>
   <span
-    v-oc-tooltip="tooltip"
+    v-oc-tooltip="pathTooltip"
     class="oc-resource-name flex min-w-0"
     :class="[{ 'inline-block': !truncateName }]"
     :data-test-resource-path="fullPath"
@@ -23,134 +23,80 @@
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import path from 'path'
 
-export default defineComponent({
-  name: 'ResourceName',
-  props: {
-    /**
-     * The name of the resource
-     */
-    name: {
-      type: String,
-      required: true
-    },
-    /**
-     * The prefix that will be shown in the path
-     */
-    pathPrefix: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    /**
-     * The extension of the resource, if there is one
-     */
-    extension: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    /**
-     * The type of the resource
-     */
-    type: {
-      type: String,
-      required: true
-    },
-    /**
-     * A full path of the resource
-     */
-    fullPath: {
-      type: String,
-      required: true
-    },
-    /**
-     * Asserts whether the resource path should be displayed
-     */
-    isPathDisplayed: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    /**
-     * Asserts whether the resource extension should be displayed
-     */
-    isExtensionDisplayed: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    /**
-     * Asserts whether the resource name should be truncated if it's too long
-     */
-    truncateName: {
-      type: Boolean,
-      required: false,
-      default: true
-    }
-  },
+const {
+  name,
+  type,
+  fullPath,
+  pathPrefix = '',
+  extension = '',
+  isPathDisplayed = false,
+  isExtensionDisplayed = true,
+  truncateName = true
+} = defineProps<{
+  name: string
+  type: string
+  fullPath: string
+  pathPrefix?: string
+  extension?: string
+  isPathDisplayed?: boolean
+  isExtensionDisplayed?: boolean
+  truncateName?: boolean
+}>()
 
-  computed: {
-    tooltip() {
-      return this.pathTooltip
-    },
-
-    fullName() {
-      return (this.displayPath || '') + this.name
-    },
-
-    displayName() {
-      if (this.extension) {
-        return this.name.slice(0, -this.extension.length - 1)
-      }
-      return this.name
-    },
-
-    displayExtension() {
-      return this.extension ? '.' + this.extension : ''
-    },
-
-    displayPath() {
-      if (!this.isPathDisplayed) {
-        return null
-      }
-      const pathSplit = this.fullPath.replace(/^\//, '').split('/')
-      if (pathSplit.length < 2) {
-        return null
-      }
-      if (pathSplit.length === 2) {
-        return pathSplit[0] + '/'
-      }
-      return `…/${pathSplit[pathSplit.length - 2]}/`
-    },
-
-    pathTooltip() {
-      if (!this.isPathDisplayed) {
-        return null
-      }
-      if (this.displayPath === this.fullPath) {
-        return null
-      }
-      if (this.pathPrefix) {
-        return path.join(this.pathPrefix, this.fullPath)
-      }
-      return this.fullPath
-    },
-
-    htmlTitle() {
-      if (this.tooltip) {
-        return
-      }
-
-      if (this.isExtensionDisplayed) {
-        return `${this.displayName}${this.displayExtension}`
-      }
-
-      return this.displayName
-    }
+const displayName = computed(() => {
+  if (extension) {
+    return name.slice(0, -extension.length - 1)
   }
+  return name
+})
+const displayExtension = computed(() => {
+  return extension ? '.' + extension : ''
+})
+
+const displayPath = computed(() => {
+  if (!isPathDisplayed) {
+    return null
+  }
+  const pathSplit = fullPath.replace(/^\//, '').split('/')
+  if (pathSplit.length < 2) {
+    return null
+  }
+  if (pathSplit.length === 2) {
+    return pathSplit[0] + '/'
+  }
+  return `…/${pathSplit[pathSplit.length - 2]}/`
+})
+
+const pathTooltip = computed(() => {
+  if (!isPathDisplayed) {
+    return null
+  }
+  if (unref(displayPath) === fullPath) {
+    return null
+  }
+  if (pathPrefix) {
+    return path.join(pathPrefix, fullPath)
+  }
+  return fullPath
+})
+
+const htmlTitle = computed(() => {
+  if (unref(pathTooltip)) {
+    return undefined
+  }
+
+  if (isExtensionDisplayed) {
+    return `${unref(displayName)}${unref(displayExtension)}`
+  }
+
+  return unref(displayName)
+})
+
+const fullName = computed(() => {
+  return (unref(displayPath) || '') + name
 })
 </script>

@@ -32,7 +32,16 @@ export const config = {
   parallel: parseInt(process.env.PARALLEL) || 1,
   // playwright
   slowMo: parseInt(process.env.SLOW_MO) || 0,
-  timeout: parseInt(process.env.TIMEOUT) || 120,
+  // timeout for a whole test scenario
+  testTimeout: parseInt(process.env.TEST_TIMEOUT) || 120,
+  // timeout used for test actions
+  get timeout() {
+    return this.testTimeout / 2
+  },
+  // double the timeout for large file uploads
+  get largeUploadTimeout() {
+    return this.testTimeout * 2
+  },
   minTimeout: parseInt(process.env.MIN_TIMEOUT) || 5,
   tokenTimeout: parseInt(process.env.TOKEN_TIMEOUT) || 40,
   headless: process.env.HEADLESS === 'true',

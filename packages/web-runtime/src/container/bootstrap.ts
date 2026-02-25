@@ -4,7 +4,6 @@ import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
 import { loadTheme } from '../helpers/theme'
 import { createGettext, GetTextOptions, Language, Translations } from 'vue3-gettext'
-import { getBackendVersion, getWebVersion } from './versions'
 import {
   useModals,
   useThemeStore,
@@ -46,7 +45,14 @@ import {
   ClassicApplicationScript,
   UpdatesStore,
   useUpdatesStore,
-  Updates
+  Updates,
+  useGroupwareConfigStore,
+  GroupwareConfigStore,
+  RawGroupwareConfigSchema,
+  useSideBar,
+  getExtensionNavItems,
+  getBackendVersion,
+  getWebVersion
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -55,7 +61,6 @@ import { merge } from 'lodash-es'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
-import { getExtensionNavItems } from '../helpers/navItems'
 import {
   onSSEFileLockingEvent,
   onSSEItemRenamedEvent,
@@ -83,9 +88,22 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
 
+// Snapshot embed query params on first call so they survive Vue Router
+// navigations (the delegated-auth callback redirects to /files/spaces/…,
+// which strips the original query string before the second config load).
+let cachedEmbedConfig: RawConfig['options']['embed'] | undefined
+
+export const _resetEmbedConfigCache = () => {
+  cachedEmbedConfig = undefined
+}
+
 const getEmbedConfigFromQuery = (
   doesEmbedEnabledOptionExists: boolean
 ): RawConfig['options']['embed'] => {
+  if (cachedEmbedConfig) {
+    return cachedEmbedConfig
+  }
+
   const config: RawConfig['options']['embed'] = {}
 
   if (!doesEmbedEnabledOptionExists) {
@@ -129,6 +147,7 @@ const getEmbedConfigFromQuery = (
     config.delegateAuthenticationOrigin = delegateAuthenticationOrigin
   }
 
+  cachedEmbedConfig = config
   return config
 }
 
@@ -392,6 +411,8 @@ export const announcePiniaStores = () => {
   const userStore = useUserStore()
   const webWorkersStore = useWebWorkersStore()
   const updatesStore = useUpdatesStore()
+  const groupwareConfigStore = useGroupwareConfigStore()
+  const sidebarStore = useSideBar()
 
   return {
     appsStore,
@@ -406,7 +427,9 @@ export const announcePiniaStores = () => {
     spacesStore,
     userStore,
     webWorkersStore,
-    updatesStore
+    updatesStore,
+    groupwareConfigStore,
+    sidebarStore
   }
 }
 
@@ -714,6 +737,9 @@ export const announceUpdates = async ({
     const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
       'https://update.opencloud.eu/server.json',
       {
+        headers: {
+          'Cache-Control': 'no-cache'
+        },
         params: {
           server: bytesToHex(sha256ServerUrl),
           edition: capabilityStore.status.edition || 'rolling',
@@ -795,6 +821,36 @@ export const announceCustomStyles = ({ configStore }: { configStore?: ConfigStor
     link.rel = 'stylesheet'
     document.head.appendChild(link)
   })
+}
+
+/**
+ * announce Groupware.
+ *
+ * @param clientService
+ * @param capabilityStore
+ * @param configStore
+ * @param groupwareConfigStore
+ */
+export const announceGroupware = async ({
+  clientService,
+  configStore,
+  capabilityStore,
+  groupwareConfigStore
+}: {
+  clientService: ClientService
+  configStore: ConfigStore
+  capabilityStore: CapabilityStore
+  groupwareConfigStore: GroupwareConfigStore
+}) => {
+  if (!capabilityStore.capabilities.groupware?.enabled) {
+    return
+  }
+  try {
+    const { data } = await clientService.httpAuthenticated.get(configStore.groupwareUrl)
+    groupwareConfigStore.loadGroupwareConfig(RawGroupwareConfigSchema.parse(data))
+  } catch (e) {
+    console.error(`Unable to load groupware config ${e}`)
+  }
 }
 
 export const registerSSEEventListeners = ({

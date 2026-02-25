@@ -36,7 +36,6 @@ export interface GlobalProperties extends ComponentCustomProperties, Language {
 
 export interface AppReadyHookArgs {
   globalProperties: GlobalProperties
-  router: Router
   instance?: App
   portal?: any
 }
@@ -58,6 +57,7 @@ export type AppConfigObject = Record<string, any>
 export interface ApplicationFileExtension {
   app?: string
   extension?: string
+  type?: 'file' | 'folder'
   createFileHandler?: (arg: {
     fileName: string
     space: SpaceResource

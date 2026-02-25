@@ -6,8 +6,7 @@ import { SharePermissionBit } from '@opencloud-eu/web-client'
 
 const defaultValues = {
   core: {
-    'support-sse': false,
-    'support-url-signing': false
+    'support-sse': false
   },
   dav: {},
   files: {
@@ -74,9 +73,8 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     isInitialized.value = true
   }
 
-  /** @deprecated the server always supports this */
-  const supportUrlSigning = computed(() => unref(capabilities).core['support-url-signing'])
   const supportSSE = computed(() => unref(capabilities).core['support-sse'])
+  const supportRadicale = computed(() => unref(capabilities).core['support-radicale'])
   const personalDataExport = computed(() => unref(capabilities).graph['personal-data-export'])
   const status = computed(() => unref(capabilities).core.status)
 
@@ -149,8 +147,8 @@ export const useCapabilityStore = defineStore('capabilities', () => {
 
     // getters
     status,
-    supportUrlSigning,
     supportSSE,
+    supportRadicale,
     personalDataExport,
     davReports,
     davTrashbin,

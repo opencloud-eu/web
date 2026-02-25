@@ -89,7 +89,7 @@ export interface Capabilities {
       }
       'check-for-updates'?: boolean
       'support-sse'?: boolean
-      'support-url-signing'?: boolean
+      'support-radicale'?: boolean
       'webdav-root'?: string
     }
     dav: {
@@ -175,6 +175,9 @@ export interface Capabilities {
         read_only_attributes?: string[]
         edit_login_allowed_disabled?: boolean
       }
+    }
+    groupware?: {
+      enabled?: boolean
     }
   }
   version: {

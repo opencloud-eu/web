@@ -47,17 +47,24 @@ Feature: Trashbin delete
     Given "Alice" creates the following folders in personal space using API
       | name          |
       | folderToShare |
-      | empty-folder   |
+      | empty-folder  |
     And "Alice" creates the following files into personal space using API
       | pathToFile              | content     |
       | folderToShare/lorem.txt | lorem ipsum |
       | sample.txt              | sample      |
+    And "Alice" opens the "files" app
+    And following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | sample.txt |
     And "Alice" shares the following resource using the sidebar panel
       | resource      | recipient | type | role     | resourceType |
       | folderToShare | Brian     | user | Can edit | folder       |
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "folderToShare"
+    And following resources should be displayed in the files list for user "Brian"
+      | resource  |
+      | lorem.txt |
     When "Brian" deletes the following resources using the sidebar panel
       | resource  |
       | lorem.txt |
@@ -127,8 +134,8 @@ Feature: Trashbin delete
       | hr       |
     And "Brian" should see the text "3 trash bins in total (including 2 empty)" at the footer of the trashbin page
     When "Brian" empties the trashbin for space "sales" using quick action
+    And "Brian" should see the text "3 trash bins in total (including 3 empty)" at the footer of the trashbin page
     Then following resources should not be displayed in the trashbin for user "Brian"
       | resource |
       | sales    |    
     And "Brian" logs out
-    
