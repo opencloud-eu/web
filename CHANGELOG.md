@@ -25,6 +25,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.14.0 [[#2035](https://github.com/opencloud-eu/web/pull/2035)]
+- chore(deps): update typescript-eslint monorepo to v8.56.1 [[#2031](https://github.com/opencloud-eu/web/pull/2031)]
 - chore(deps): update traefik docker tag to v3.6.9 [[#2032](https://github.com/opencloud-eu/web/pull/2032)]
 - chore(deps): update dependency @codemirror/view to v6.39.15 [[#2016](https://github.com/opencloud-eu/web/pull/2016)]
 - fix(deps): update dependency vue-router to v5.0.3 [[#2013](https://github.com/opencloud-eu/web/pull/2013)]
