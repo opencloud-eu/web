@@ -78,16 +78,14 @@
           <template #message>
             <p class="text-role-on-surface-variant">
               <span
-                v-text="
-                  !!$route.query.term ? $gettext('No results found') : $gettext('Search for files')
-                "
+                v-text="hasFilter ? $gettext('No results found') : $gettext('Search for files')"
               />
             </p>
           </template>
           <template #callToAction>
             <span
               v-text="
-                !!$route.query.term
+                hasFilter
                   ? $gettext('Try refining the search term or filters to get results')
                   : $gettext('Adjust the search term or filters to get results')
               "
@@ -341,6 +339,15 @@ const availableMediaTypeValues = computed(() => {
 const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
   return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
 }
+
+const hasFilter = computed(() => {
+  return (
+    !!unref(lastModifiedParam) ||
+    !!unref(mediaTypeParam) ||
+    !!unref(titleOnlyParam) ||
+    !!unref(searchTermQuery)
+  )
+})
 
 const doSearch = (manuallyUpdateFilterChip = false) => {
   const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'
