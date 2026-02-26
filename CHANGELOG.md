@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-02-25
+## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-02-26
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -25,6 +25,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.40.0 [[#2036](https://github.com/opencloud-eu/web/pull/2036)]
+- chore(deps): update dependency fast-xml-parser to v5.4.1 [[#2037](https://github.com/opencloud-eu/web/pull/2037)]
 - chore(deps): update vue monorepo to v3.5.29 [[#2034](https://github.com/opencloud-eu/web/pull/2034)]
 - chore(deps): update node.js to v24.14.0 [[#2035](https://github.com/opencloud-eu/web/pull/2035)]
 - chore(deps): update typescript-eslint monorepo to v8.56.1 [[#2031](https://github.com/opencloud-eu/web/pull/2031)]
