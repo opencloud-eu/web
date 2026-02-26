@@ -89,7 +89,7 @@
               v-text="
                 !!$route.query.term
                   ? $gettext('Try refining the search term or filters to get results')
-                  : $gettext('Enter a search term to get results')
+                  : $gettext('Adjust the search term or filters to get results')
               "
             />
           </template>
