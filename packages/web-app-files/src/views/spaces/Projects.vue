@@ -26,7 +26,7 @@
           v-if="!spaces.length"
           id="files-spaces-empty"
           class="h-[75vh]"
-          icon="layout-grid"
+          img-src="/images/empty-states/spaces.png"
         >
           <template #message>
             <span v-text="$gettext('You don\'t have access to any spaces')" />

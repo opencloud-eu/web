@@ -71,12 +71,17 @@
       </div>
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <no-content-message v-if="!paginatedResources.length" icon="search" icon-fill-type="line">
+        <no-content-message
+          v-if="!paginatedResources.length"
+          img-src="/images/empty-states/folder.png"
+        >
           <template #message>
             <p class="text-role-on-surface-variant">
-              <span v-if="!!$route.query.term" v-text="$gettext('No results found')" />
-              <span v-else v-text="$gettext('Search for files')" />
+              <span v-text="$gettext('No results found')" />
             </p>
+          </template>
+          <template #callToAction>
+            <span v-text="$gettext('Try refining the search term or filters to get results')" />
           </template>
         </no-content-message>
         <component
