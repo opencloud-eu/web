@@ -77,11 +77,21 @@
         >
           <template #message>
             <p class="text-role-on-surface-variant">
-              <span v-text="$gettext('No results found')" />
+              <span
+                v-text="
+                  !!$route.query.term ? $gettext('No results found') : $gettext('Search for files')
+                "
+              />
             </p>
           </template>
           <template #callToAction>
-            <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            <span
+              v-text="
+                !!$route.query.term
+                  ? $gettext('Try refining the search term or filters to get results')
+                  : $gettext('Enter a search term to get results')
+              "
+            />
           </template>
         </no-content-message>
         <component
