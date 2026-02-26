@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @kulmann
+@AlexAndBear, @JammingBen, @MahdiBaghbani, @dschmidt, @kulmann
 
 ### 💥 Breaking changes
 
@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat(ocm): implement WAYF page and enhance invitation workflow [[#1486](https://github.com/opencloud-eu/web/pull/1486)]
 - fix: visual active state in preview app (photo roll) [[#2029](https://github.com/opencloud-eu/web/pull/2029)]
 - feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
 - feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
