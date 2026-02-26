@@ -51,12 +51,11 @@ const receivedAtRelativeDate = computed(() => {
 })
 
 const previewText = computed(() => {
-  const mailPreview = mail.preview ?? ''
-  if (!mailPreview) {
+  if (!mail.preview) {
     return ''
   }
 
-  const stripped = DOMPurify.sanitize(mailPreview, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  const stripped = DOMPurify.sanitize(mail.preview, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
   return stripped.replace(/\s+/g, ' ').trim()
 })
 </script>
