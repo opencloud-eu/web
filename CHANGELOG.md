@@ -10,18 +10,19 @@
 
 - refactor!: mobile nav to web-pkg [[#2007](https://github.com/opencloud-eu/web/pull/2007)]
 
+### 📈 Enhancement
+
+- fix: visual active state in preview app (photo roll) [[#2029](https://github.com/opencloud-eu/web/pull/2029)]
+- feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
+- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
+- feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
+- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent 'New'-button flicker when navigating [[#2026](https://github.com/opencloud-eu/web/pull/2026)]
 - fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
 - fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
-
-### 📈 Enhancement
-
-- feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
-- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
-- feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
-- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
 
 ### 📦️ Dependencies
 
