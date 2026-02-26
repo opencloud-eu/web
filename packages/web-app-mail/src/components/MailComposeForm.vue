@@ -123,7 +123,7 @@ const fromOptions = computed<FromOption[]>(() => {
       account.identities?.map((identity) => ({
         label: identity.name ? `${identity.name} <${identity.email}>` : identity.email,
         value: identity.id,
-        name: identity.name ?? identity.email,
+        name: identity.name || identity.email,
         email: identity.email,
         accountId: account.accountId,
         identityId: identity.id
