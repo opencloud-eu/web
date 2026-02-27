@@ -39,50 +39,43 @@
     </oc-select>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, PropType, ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref, watch } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
-export default defineComponent({
-  name: 'GroupSelect',
-  props: {
-    selectedGroups: {
-      type: Array as PropType<Group[]>,
-      required: true
-    },
-    groupOptions: {
-      type: Array as PropType<Group[]>,
-      required: true
-    },
-    requiredMark: {
-      type: Boolean,
-      default: false,
-      required: false
-    }
+type Option = Group & { readonly?: boolean }
+
+const {
+  selectedGroups,
+  groupOptions,
+  requiredMark = false
+} = defineProps<{
+  selectedGroups: Group[]
+  groupOptions: Group[]
+  requiredMark?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'selectedOptionChange', value: Option[]): void
+}>()
+
+const selectedOptions = ref<Option[]>([])
+const onUpdate = (group: Option[]) => {
+  selectedOptions.value = group
+  emit('selectedOptionChange', unref(selectedOptions))
+}
+
+const currentGroups = computed(() => selectedGroups)
+watch(
+  currentGroups,
+  () => {
+    selectedOptions.value = selectedGroups
+      .map((g) => ({
+        ...g,
+        readonly: g.groupTypes?.includes('ReadOnly')
+      }))
+      .sort((a: any, b: any) => b.readonly - a.readonly)
   },
-  emits: ['selectedOptionChange'],
-  setup(props, { emit }) {
-    const selectedOptions = ref<(Group[] | Group) & { readonly?: boolean }>([])
-    const onUpdate = (group: Group) => {
-      selectedOptions.value = group
-      emit('selectedOptionChange', unref(selectedOptions))
-    }
-
-    const currentGroups = computed(() => props.selectedGroups)
-    watch(
-      currentGroups,
-      () => {
-        selectedOptions.value = props.selectedGroups
-          .map((g) => ({
-            ...g,
-            readonly: g.groupTypes?.includes('ReadOnly')
-          }))
-          .sort((a: any, b: any) => b.readonly - a.readonly)
-      },
-      { immediate: true }
-    )
-
-    return { selectedOptions, onUpdate }
-  }
-})
+  { immediate: true }
+)
 </script>
