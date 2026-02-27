@@ -31,9 +31,7 @@ function createKeyActions(): KeyboardActions {
 }
 
 function triggerAction(keyActions: KeyboardActions, key: string, modifier: string | null = null) {
-  const action = keyActions.actions.value.find(
-    (a) => a.primary === key && a.modifier === modifier
-  )
+  const action = keyActions.actions.value.find((a) => a.primary === key && a.modifier === modifier)
   action?.callback(new KeyboardEvent('keydown'))
 }
 
