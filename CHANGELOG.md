@@ -10,6 +10,10 @@
 
 - refactor!: mobile nav to web-pkg [[#2007](https://github.com/opencloud-eu/web/pull/2007)]
 
+### 🔒 Security
+
+- chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
+
 ### 📈 Enhancement
 
 - feat(ocm): implement WAYF page and enhance invitation workflow [[#1486](https://github.com/opencloud-eu/web/pull/1486)]
