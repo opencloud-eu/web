@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/messages to v32.1.0 [[#2043](https://github.com/opencloud-eu/web/pull/2043)]
 - chore(deps): update tiptap monorepo to v3.20.0 [[#1999](https://github.com/opencloud-eu/web/pull/1999)]
 - chore(deps): update dependency simple-git to v3.32.3 [[#2039](https://github.com/opencloud-eu/web/pull/2039)]
 - chore(deps): update devdependencies (non-major) [[#2030](https://github.com/opencloud-eu/web/pull/2030)]
