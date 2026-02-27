@@ -1,6 +1,6 @@
 import { ApplicationEntity, User } from '../../types'
 import { checkResponseStatus, request } from '../http'
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 
 interface ApplicationsResponse {
   value: ApplicationEntity[]
@@ -9,7 +9,7 @@ interface ApplicationsResponse {
 export const getApplicationEntity = async (admin: User): Promise<ApplicationEntity> => {
   const response = await request({
     method: 'GET',
-    path: join('graph', 'v1.0', 'applications'),
+    path: urlJoin('graph', 'v1.0', 'applications'),
     user: admin
   })
   checkResponseStatus(response, 'Failed while getting application id')
@@ -33,7 +33,7 @@ export const createTagsForResource = async ({
   }
   const response = await request({
     method: 'PUT',
-    path: join('graph', 'v1.0', 'extensions', 'org.libregraph', 'tags'),
+    path: urlJoin('graph', 'v1.0', 'extensions', 'org.libregraph', 'tags'),
     body: JSON.stringify(body),
     user: user
   })

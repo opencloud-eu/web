@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { request, realmBasePath } from './utils'
 import { checkResponseStatus } from '../http'
 import { Group, User } from '../../types'
@@ -14,7 +14,7 @@ export const createGroup = async ({
 }): Promise<Group> => {
   const creationRes = await request({
     method: 'POST',
-    path: join(realmBasePath, 'groups'),
+    path: urlJoin(realmBasePath, 'groups'),
     body: { name: group.displayName },
     user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }
@@ -28,7 +28,7 @@ export const createGroup = async ({
     const roleData = await getRealmRole(openCloudKeycloakUserRoles[role])
     const roleAssignmentRes = await request({
       method: 'POST',
-      path: join(realmBasePath, 'groups', groupId, 'role-mappings/realm'),
+      path: urlJoin(realmBasePath, 'groups', groupId, 'role-mappings/realm'),
       body: [
         {
           id: roleData.id,
@@ -56,7 +56,7 @@ export const addUserToGroup = async ({
 }): Promise<void> => {
   const response = await request({
     method: 'PUT',
-    path: join(realmBasePath, 'users', user.keycloakUuid, 'groups', group.keycloakUuid),
+    path: urlJoin(realmBasePath, 'users', user.keycloakUuid, 'groups', group.keycloakUuid),
     body: {},
     user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }
@@ -67,7 +67,7 @@ export const addUserToGroup = async ({
 export const deleteGroup = async ({ group }: { group: Group }): Promise<Group> => {
   const response = await request({
     method: 'DELETE',
-    path: join(realmBasePath, 'groups', group.keycloakUuid),
+    path: urlJoin(realmBasePath, 'groups', group.keycloakUuid),
     body: {},
     user: getAdminUser(),
     header: { 'Content-Type': 'application/json' }

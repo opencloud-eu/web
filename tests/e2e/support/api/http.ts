@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../utils/urlJoin'
 import { APIResponse, request as apiRequest } from '@playwright/test'
 import { User } from '../types'
 import { config } from '../../config'
@@ -42,7 +42,7 @@ export const request = async ({
 
   const baseUrl = isKeycloakRequest ? config.keycloakUrl : config.baseUrl
 
-  return await context.fetch(join(baseUrl, path), {
+  return await context.fetch(urlJoin(baseUrl, path), {
     method,
     data: body,
     headers: basicHeader

@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 
 import { checkResponseStatus, request } from '../http'
 import { User } from '../../types'
@@ -17,7 +17,7 @@ export const disableAutoAcceptShare = async ({ user }: { user: User }): Promise<
   })
   const response = await request({
     method: 'POST',
-    path: join('api', 'v0', 'settings', 'values-save'),
+    path: urlJoin('api', 'v0', 'settings', 'values-save'),
     body: body,
     user: user
   })

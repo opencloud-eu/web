@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { checkResponseStatus, request } from '../http'
 import { User } from '../../types'
 
@@ -13,7 +13,7 @@ export const getOpenWithWebUrl = async ({
 }): Promise<string> => {
   const response = await request({
     method: 'POST',
-    path: join('app', 'open-with-web', `?file_id=${fileId}&app_name=${editorName}`),
+    path: urlJoin('app', 'open-with-web', `?file_id=${fileId}&app_name=${editorName}`),
     user: user
   })
   checkResponseStatus(response, 'Failed while getting url')

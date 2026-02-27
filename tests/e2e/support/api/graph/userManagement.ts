@@ -1,6 +1,6 @@
 import { checkResponseStatus, request } from '../http'
 import { Group, Me, User } from '../../types'
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { config } from '../../../config'
 import { getApplicationEntity } from './utils'
 import { userRoleStore } from '../../store'
@@ -15,7 +15,7 @@ interface GroupResponse {
 export const me = async ({ user }: { user: User }): Promise<Me> => {
   const response = await request({
     method: 'GET',
-    path: join('graph', 'v1.0', 'me'),
+    path: urlJoin('graph', 'v1.0', 'me'),
     user
   })
 
@@ -32,7 +32,7 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1.0', 'users'),
+    path: urlJoin('graph', 'v1.0', 'users'),
     body,
     user: admin
   })
@@ -49,7 +49,7 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
 export const deleteUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
   await request({
     method: 'DELETE',
-    path: join('graph', 'v1.0', 'users', user.username),
+    path: urlJoin('graph', 'v1.0', 'users', user.username),
     user: admin
   })
   try {
@@ -62,7 +62,7 @@ export const deleteUser = async ({ user, admin }: { user: User; admin: User }): 
 export const getUserId = async ({ user, admin }: { user: User; admin: User }): Promise<string> => {
   const response = await request({
     method: 'GET',
-    path: join('graph', 'v1.0', 'users', user.username),
+    path: urlJoin('graph', 'v1.0', 'users', user.username),
     user: admin
   })
 
@@ -83,7 +83,7 @@ export const createGroup = async ({
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1.0', 'groups'),
+    path: urlJoin('graph', 'v1.0', 'groups'),
     body,
     user: admin
   })
@@ -108,7 +108,7 @@ export const deleteGroup = async ({
 
   await request({
     method: 'DELETE',
-    path: join('graph', 'v1.0', 'groups', groupId),
+    path: urlJoin('graph', 'v1.0', 'groups', groupId),
     user: admin
   })
   return group
@@ -124,12 +124,12 @@ export const addUserToGroup = async ({
   admin: User
 }): Promise<void> => {
   const body = {
-    '@odata.id': join(config.baseUrl, 'graph', 'v1.0', 'users', userId)
+    '@odata.id': urlJoin(config.baseUrl, 'graph', 'v1.0', 'users', userId)
   }
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1.0', 'groups', groupId, 'members', '$ref'),
+    path: urlJoin('graph', 'v1.0', 'groups', groupId, 'members', '$ref'),
     body: body,
     user: admin
   })
@@ -149,7 +149,7 @@ export const assignRole = async (admin: User, id: string, role: string): Promise
   }
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1.0', 'users', id, 'appRoleAssignments'),
+    path: urlJoin('graph', 'v1.0', 'users', id, 'appRoleAssignments'),
     user: admin,
     body: {
       principalId: id,
@@ -163,7 +163,7 @@ export const assignRole = async (admin: User, id: string, role: string): Promise
 export const getGroups = async (adminUser: User): Promise<Group[]> => {
   const response = await request({
     method: 'GET',
-    path: join('graph', 'v1.0', 'groups'),
+    path: urlJoin('graph', 'v1.0', 'groups'),
     user: adminUser
   })
   const data = (await response.json()) as GroupResponse
@@ -181,7 +181,7 @@ export const uploadProfileImage = async ({
 
   const response = await request({
     method: 'PATCH',
-    path: join('graph', 'v1.0', 'me', 'photo', '$value'),
+    path: urlJoin('graph', 'v1.0', 'me', 'photo', '$value'),
     body: imageBuffer,
     user
   })
