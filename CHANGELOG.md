@@ -27,6 +27,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.20.0 [[#1999](https://github.com/opencloud-eu/web/pull/1999)]
+- chore(deps): update dependency simple-git to v3.32.3 [[#2039](https://github.com/opencloud-eu/web/pull/2039)]
 - chore(deps): update devdependencies (non-major) [[#2030](https://github.com/opencloud-eu/web/pull/2030)]
 - fix(deps): update dependency @sentry/vue to v10.40.0 [[#2036](https://github.com/opencloud-eu/web/pull/2036)]
 - chore(deps): update dependency fast-xml-parser to v5.4.1 [[#2037](https://github.com/opencloud-eu/web/pull/2037)]
