@@ -1,6 +1,6 @@
 import { checkResponseStatus, request } from '../http'
 import { User } from '../../types'
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { XMLParser } from 'fast-xml-parser'
 import { getSpaceIdBySpaceName } from '../graph'
 import _ from 'lodash-es/object'
@@ -35,7 +35,7 @@ const createFolder = async ({
 
   let parentFolder = ''
   for (const resource of paths) {
-    const path = join('remote.php', 'dav', webDavEndPathToRoot, parentFolder, resource)
+    const path = urlJoin('remote.php', 'dav', webDavEndPathToRoot, parentFolder, resource)
     // check if the folder exists already or not
     const folderExist = await folderExists({ user, path })
     if (folderExist === false) {
@@ -46,7 +46,7 @@ const createFolder = async ({
       })
       checkResponseStatus(response, 'Failed while creating folder')
     }
-    parentFolder = join(parentFolder, resource)
+    parentFolder = urlJoin(parentFolder, resource)
   }
 }
 const createFile = async ({
@@ -65,7 +65,7 @@ const createFile = async ({
   const today = new Date()
   const response = await request({
     method: 'PUT',
-    path: join('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
+    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
     body: content,
     user: user,
     header: mtimeDeltaDays
@@ -87,7 +87,7 @@ const deleteFile = async ({
 }): Promise<void> => {
   const response = await request({
     method: 'DELETE',
-    path: join('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
+    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
     user: user,
     header: {}
   })
@@ -190,7 +190,7 @@ export const getDataOfFileInsideSpace = async ({
     '</d:propfind>'
   const response = await request({
     method: 'PROPFIND',
-    path: join(
+    path: urlJoin(
       'remote.php',
       'dav',
       'spaces',

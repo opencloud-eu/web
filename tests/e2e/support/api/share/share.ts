@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { checkResponseStatus, request } from '../http'
 import { Group, User } from '../../types'
 import { getSpaceIdBySpaceName } from '../graph'
@@ -139,7 +139,7 @@ export const createShare = async ({
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'invite'),
+    path: urlJoin('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'invite'),
     body: {
       recipients: [
         {
@@ -177,7 +177,7 @@ export const addMembersToTheProjectSpace = async ({
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1beta1', 'drives', driveId, 'root', 'invite'),
+    path: urlJoin('graph', 'v1beta1', 'drives', driveId, 'root', 'invite'),
     body: {
       recipients: [
         {
@@ -232,7 +232,7 @@ export const createLinkShare = async ({
   password = password === '%public%' ? securePassword : password
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'createLink'),
+    path: urlJoin('graph', 'v1beta1', 'drives', driveId, 'items', itemId, 'createLink'),
     body: {
       type: roleType,
       password,
@@ -276,7 +276,7 @@ export const createSpaceLinkShare = async ({
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1beta1', 'drives', driveId, 'root', 'createLink'),
+    path: urlJoin('graph', 'v1beta1', 'drives', driveId, 'root', 'createLink'),
     body: {
       type: roleType,
       password,

@@ -1,4 +1,4 @@
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { getUserIdFromResponse, request, realmBasePath } from './utils'
 import { deleteUser as graphDeleteUser, getUserId } from '../graph'
 import { checkResponseStatus } from '../http'
@@ -38,7 +38,7 @@ export const createUser = async ({ user }: { user: User }): Promise<User> => {
   // create a user
   const creationRes = await request({
     method: 'POST',
-    path: join(realmBasePath, 'users'),
+    path: urlJoin(realmBasePath, 'users'),
     body,
     user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
@@ -71,7 +71,7 @@ export const createUser = async ({ user }: { user: User }): Promise<User> => {
 export const assignRole = async ({ uuid, role }: { uuid: string; role: string }) => {
   return request({
     method: 'POST',
-    path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
+    path: urlJoin(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
     body: [
       await getRealmRole(openCloudKeycloakUserRoles[role]),
       await getRealmRole('offline_access')
@@ -85,7 +85,7 @@ export const unAssignRole = async ({ uuid, role }: { uuid: string; role: string 
   // can't unassign multiple realm roles at once
   const response = await request({
     method: 'DELETE',
-    path: join(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
+    path: urlJoin(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
     body: [await getRealmRole(openCloudKeycloakUserRoles[role])],
     user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
@@ -102,7 +102,7 @@ export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
   const usersEnvironment = new UsersEnvironment()
   const response = await request({
     method: 'DELETE',
-    path: join(
+    path: urlJoin(
       realmBasePath,
       'users',
       usersEnvironment.getCreatedUser({ key: user.id }).keycloakUuid
@@ -128,7 +128,7 @@ export const getRealmRole = async (role: string): Promise<KeycloakRealmRole> => 
 
   const response = await request({
     method: 'GET',
-    path: join(realmBasePath, 'roles'),
+    path: urlJoin(realmBasePath, 'roles'),
     user: getKeycloakAdminUser()
   })
   checkResponseStatus(response, 'Failed while fetching realm roles')

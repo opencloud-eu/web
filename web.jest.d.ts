@@ -6,11 +6,6 @@ declare module '*.vue' {
   export default component
 }
 
-declare module 'join-path' {
-  const joinPath: (...args: string[]) => string
-  export default joinPath
-}
-
 declare module 'qs' {
   export function parse(str: string): Record<string, string | string[]>
   export function stringify(obj: Record<string, any>, opts?: Record<string, any>): string

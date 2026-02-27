@@ -1,5 +1,5 @@
 import { APIResponse } from '@playwright/test'
-import join from 'join-path'
+import { urlJoin } from '../../utils/urlJoin'
 import { checkResponseStatus, request } from '../http'
 import { Space, User } from '../../types'
 import {
@@ -23,7 +23,7 @@ export const getSpaceIdBySpaceName = async ({
 }): Promise<string> => {
   const response = await request({
     method: 'GET',
-    path: join('graph', 'v1.0', 'me', 'drives'),
+    path: urlJoin('graph', 'v1.0', 'me', 'drives'),
     user: user
   })
   checkResponseStatus(response, 'Failed while fetching spaces')
@@ -54,7 +54,7 @@ export const createSpace = async ({
 
   const response = await request({
     method: 'POST',
-    path: join('graph', 'v1.0', 'drives'),
+    path: urlJoin('graph', 'v1.0', 'drives'),
     body,
     user: user
   })
@@ -117,7 +117,7 @@ export const updateSpaceSpecialSection = async ({
 
   const response = await request({
     method: 'PATCH',
-    path: join('graph', 'v1.0', 'drives', spaceId),
+    path: urlJoin('graph', 'v1.0', 'drives', spaceId),
     body: body,
     user: user
   })
@@ -136,7 +136,7 @@ export const disableSpace = ({
 }): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
-    path: join('graph', 'v1.0', 'drives', space.id),
+    path: urlJoin('graph', 'v1.0', 'drives', space.id),
     user: user
   })
 }
@@ -150,7 +150,7 @@ export const deleteSpace = ({
 }): Promise<APIResponse> => {
   return request({
     method: 'DELETE',
-    path: join('graph', 'v1.0', 'drives', space.id),
+    path: urlJoin('graph', 'v1.0', 'drives', space.id),
     user: user,
     header: { Purge: 'T' }
   })
