@@ -46,7 +46,7 @@
     "@babel/preset-env": "7.29.0",
     "@babel/register": "7.28.6",
     "@cucumber/cucumber": "12.7.0",
-    "@cucumber/messages": "32.0.1",
+    "@cucumber/messages": "32.1.0",
     "@cucumber/pretty-formatter": "3.2.0",
     "@noble/hashes": "2.0.1",
     "@opencloud-eu/babel-preset": "workspace:*",

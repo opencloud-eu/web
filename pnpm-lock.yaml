@@ -35,11 +35,11 @@ importers:
         specifier: 12.7.0
         version: 12.7.0
       '@cucumber/messages':
-        specifier: 32.0.1
-        version: 32.0.1
+        specifier: 32.1.0
+        version: 32.1.0
       '@cucumber/pretty-formatter':
         specifier: 3.2.0
-        version: 3.2.0(@cucumber/messages@32.0.1)
+        version: 3.2.0(@cucumber/messages@32.1.0)
       '@noble/hashes':
         specifier: 2.0.1
         version: 2.0.1
@@ -1149,9 +1149,6 @@ importers:
       fast-xml-parser:
         specifier: ^5.0.0
         version: 5.4.1
-      join-path:
-        specifier: 1.1.1
-        version: 1.1.1
       lodash-es:
         specifier: 4.17.23
         version: 4.17.23
@@ -1909,6 +1906,9 @@ packages:
 
   '@cucumber/messages@32.0.1':
     resolution: {integrity: sha512-1OSoW+GQvFUNAl6tdP2CTBexTXMNJF0094goVUcvugtQeXtJ0K8sCP0xbq7GGoiezs/eJAAOD03+zAPT64orHQ==}
+
+  '@cucumber/messages@32.1.0':
+    resolution: {integrity: sha512-eYe6DAjOlR7GYW9/dctpw0/hi6mthgIMJA2bdph/PupP4HqCkZmWaczPmj0uzRBbm68nDhD3mDBZsikPhwbECA==}
 
   '@cucumber/pretty-formatter@1.0.1':
     resolution: {integrity: sha512-A1lU4VVP0aUWdOTmpdzvXOyEYuPtBDI0xYwYJnmoMDplzxMdhcHk86lyyvYDoMoPzzq6OkOE3isuosvUU4X7IQ==}
@@ -3583,9 +3583,6 @@ packages:
     resolution: {integrity: sha512-M1HQyIXcBGtVywBt8WVdim+lrNaK7VHp99Qt5pSNziXznKHViIBbXWtfRTpEFpF/c4FdfxNAsCCwPp5phBYJtw==}
     engines: {node: '>=0.10.0'}
 
-  as-array@2.0.0:
-    resolution: {integrity: sha512-1Sd1LrodN0XYxYeZcN1J4xYZvmvTwD5tDWaPUGPIzH1mFsmzsPnVtd2exWhecMjtZk/wYWjNZJiD3b1SLCeJqg==}
-
   asn1.js@4.10.1:
     resolution: {integrity: sha512-p32cOF5q0Zqs9uBiONKYLm6BClCoBCM5O9JfeUSlnQLBTxYdTK+pW+nXflm8UkKd2UYlEbYz5qEi0JuZR9ckSw==}
 
@@ -4853,9 +4850,6 @@ packages:
 
   jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
-
-  join-path@1.1.1:
-    resolution: {integrity: sha512-jnt9OC34sLXMLJ6YfPQ2ZEKrR9mB5ZbSnQb4LPaOx1c5rTzxpR33L18jjp0r75mGGTJmsil3qwN1B5IBeTnSSA==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -6434,9 +6428,6 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  url-join@0.0.1:
-    resolution: {integrity: sha512-H6dnQ/yPAAVzMQRvEvyz01hhfQL5qRWSEt7BX8t9DqnPw9BjMb64fjIRq76Uvf1hkHp+mTZvEVJ5guXOT0Xqaw==}
-
   url-join@5.0.0:
     resolution: {integrity: sha512-n2huDr9h9yzd6exQVnH/jU5mr+Pfx08LRXXZhkLLetAMESRj+anQsTAh940iMrIetKAmry9coFuZQ2jY8/p3WA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -6467,9 +6458,6 @@ packages:
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
-
-  valid-url@1.0.9:
-    resolution: {integrity: sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==}
 
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
@@ -7933,7 +7921,7 @@ snapshots:
       '@cucumber/gherkin-utils': 11.0.0
       '@cucumber/html-formatter': 23.0.0(@cucumber/messages@32.0.1)
       '@cucumber/junit-xml-formatter': 0.9.0(@cucumber/messages@32.0.1)
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.0.1)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.1.0)
       '@cucumber/messages': 32.0.1
       '@cucumber/pretty-formatter': 1.0.1(@cucumber/cucumber@12.7.0)(@cucumber/messages@32.0.1)
       '@cucumber/tag-expressions': 9.1.0
@@ -7970,7 +7958,7 @@ snapshots:
   '@cucumber/gherkin-streams@6.0.0(@cucumber/gherkin@38.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@32.0.1))(@cucumber/messages@32.0.1)':
     dependencies:
       '@cucumber/gherkin': 38.0.0
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.0.1)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.1.0)
       '@cucumber/messages': 32.0.1
       commander: 14.0.0
       source-map-support: 0.5.21
@@ -7978,14 +7966,14 @@ snapshots:
   '@cucumber/gherkin-utils@11.0.0':
     dependencies:
       '@cucumber/gherkin': 38.0.0
-      '@cucumber/messages': 32.0.1
+      '@cucumber/messages': 32.1.0
       '@teppeis/multimaps': 3.0.0
       commander: 14.0.2
       source-map-support: 0.5.21
 
   '@cucumber/gherkin@38.0.0':
     dependencies:
-      '@cucumber/messages': 32.0.1
+      '@cucumber/messages': 32.1.0
 
   '@cucumber/html-formatter@23.0.0(@cucumber/messages@32.0.1)':
     dependencies:
@@ -7999,11 +7987,16 @@ snapshots:
       luxon: 3.7.2
       xmlbuilder: 15.1.1
 
-  '@cucumber/message-streams@4.0.1(@cucumber/messages@32.0.1)':
+  '@cucumber/message-streams@4.0.1(@cucumber/messages@32.1.0)':
     dependencies:
-      '@cucumber/messages': 32.0.1
+      '@cucumber/messages': 32.1.0
 
   '@cucumber/messages@32.0.1':
+    dependencies:
+      class-transformer: 0.5.1
+      reflect-metadata: 0.2.2
+
+  '@cucumber/messages@32.1.0':
     dependencies:
       class-transformer: 0.5.1
       reflect-metadata: 0.2.2
@@ -8017,10 +8010,10 @@ snapshots:
       figures: 3.2.0
       ts-dedent: 2.2.0
 
-  '@cucumber/pretty-formatter@3.2.0(@cucumber/messages@32.0.1)':
+  '@cucumber/pretty-formatter@3.2.0(@cucumber/messages@32.1.0)':
     dependencies:
-      '@cucumber/messages': 32.0.1
-      '@cucumber/query': 15.0.1(@cucumber/messages@32.0.1)
+      '@cucumber/messages': 32.1.0
+      '@cucumber/query': 15.0.1(@cucumber/messages@32.1.0)
       luxon: 3.7.2
 
   '@cucumber/query@14.7.0(@cucumber/messages@32.0.1)':
@@ -8029,9 +8022,9 @@ snapshots:
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
-  '@cucumber/query@15.0.1(@cucumber/messages@32.0.1)':
+  '@cucumber/query@15.0.1(@cucumber/messages@32.1.0)':
     dependencies:
-      '@cucumber/messages': 32.0.1
+      '@cucumber/messages': 32.1.0
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
@@ -9647,8 +9640,6 @@ snapshots:
 
   array-find-index@1.0.2: {}
 
-  as-array@2.0.0: {}
-
   asn1.js@4.10.1:
     dependencies:
       bn.js: 4.12.2
@@ -11031,12 +11022,6 @@ snapshots:
   jiti@2.6.1: {}
 
   jju@1.4.0: {}
-
-  join-path@1.1.1:
-    dependencies:
-      as-array: 2.0.0
-      url-join: 0.0.1
-      valid-url: 1.0.9
 
   joycon@3.1.1: {}
 
@@ -12677,8 +12662,6 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  url-join@0.0.1: {}
-
   url-join@5.0.0: {}
 
   url-parse@1.5.10:
@@ -12708,8 +12691,6 @@ snapshots:
   uuid@13.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
-
-  valid-url@1.0.9: {}
 
   validate-npm-package-license@3.0.4:
     dependencies:
