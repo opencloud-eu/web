@@ -119,9 +119,7 @@ export const useKeyboardFileNavigation = (
     }
     keyActions.resetSelectionCursor()
     tileViewStart.value = null
-    resourcesStore.resetSelection()
-    await nextTick()
-    resourcesStore.addSelection(nextId)
+    resourcesStore.setSelection([nextId])
     await nextTick()
     focusCheckbox(nextId)
     scrollToResource(nextId, { topbarElement: 'files-app-bar' })
