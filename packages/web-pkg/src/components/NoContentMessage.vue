@@ -1,5 +1,5 @@
 <template>
-  <div class="no-content-message flex flex-col justify-center items-center text-center">
+  <div class="no-content-message flex flex-col justify-center items-center text-center h-full">
     <oc-image
       v-if="imgSrc"
       width="120"
@@ -37,12 +37,3 @@ const {
   imgSrc?: string
 }>()
 </script>
-<style scoped>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .no-content-message {
-    height: 75vh;
-  }
-}
-</style>

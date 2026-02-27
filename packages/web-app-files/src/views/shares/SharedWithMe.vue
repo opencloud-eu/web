@@ -67,6 +67,7 @@
         </div>
         <shared-with-me-section
           id="files-shared-with-me-view"
+          class="h-full"
           :file-list-header-y="fileListHeaderY"
           :items="items"
           :sort-by="sortBy"
