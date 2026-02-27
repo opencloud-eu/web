@@ -55,10 +55,10 @@
           <!-- Search Section -->
           <div class="px-4 pb-2 border-b shrink-0 overflow-hidden min-h-[80px]">
             <oc-text-input
+              id="wayf-search"
               v-model="query"
               :label="$gettext('Search providers')"
               type="text"
-              id="wayf-search"
               name="search"
               class="mb-2"
             >
@@ -149,10 +149,10 @@
               <h3 class="text-base font-semibold m-0" v-text="$gettext('Manual Provider Entry')" />
             </div>
             <oc-text-input
+              id="wayf-manual"
               v-model="manualProvider"
               :label="$gettext('Enter provider domain manually')"
               type="text"
-              id="wayf-manual"
               name="manual"
               class="mb-2"
               @keyup.enter="goToManualProvider"

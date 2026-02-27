@@ -15,6 +15,7 @@ import { mock } from 'vitest-mock-extended'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes, IncomingShareResource, ShareType } from '@opencloud-eu/web-client'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/composables/resourcesViewDefaults')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -46,13 +47,13 @@ describe('SharedWithMe view', () => {
   })
   describe('open with default app', () => {
     it('gets called if given via route query param', async () => {
-      const { wrapper, mocks } = getMountedWrapper({ openWithDefaultAppQuery: 'true' })
-      await wrapper.vm.loadResourcesTask.last
+      const { mocks } = getMountedWrapper({ openWithDefaultAppQuery: 'true' })
+      await flushPromises()
       expect(mocks.openWithDefaultApp).toHaveBeenCalled()
     })
     it('gets not called if not given via route query param', async () => {
-      const { wrapper, mocks } = getMountedWrapper()
-      await wrapper.vm.loadResourcesTask.last
+      const { mocks } = getMountedWrapper()
+      await flushPromises()
       expect(mocks.openWithDefaultApp).not.toHaveBeenCalled()
     })
   })
@@ -74,7 +75,7 @@ describe('SharedWithMe view', () => {
       })
       it('shows all hidden shares', async () => {
         const { wrapper } = getMountedWrapper()
-        wrapper.vm.setAreHiddenFilesShown(mock<InlineFilterOption>({ name: 'hidden' }))
+        ;(wrapper.vm as any).setAreHiddenFilesShown(mock<InlineFilterOption>({ name: 'hidden' }))
         await wrapper.vm.$nextTick()
         expect(wrapper.findAll('shared-with-me-section-stub').length).toBe(1)
         expect(
@@ -148,9 +149,13 @@ describe('SharedWithMe view', () => {
         })
 
         await wrapper.vm.$nextTick()
-        wrapper.vm.filterTerm = 'share1'
-        expect(wrapper.vm.items.find(({ name }) => name === 'share1')).toBeDefined()
-        expect(wrapper.vm.items.find(({ name }) => name === 'share2')).toBeUndefined()
+        ;(wrapper.vm as any).filterTerm = 'share1'
+        await wrapper.vm.$nextTick()
+        const sharedWithMeSec = wrapper.findComponent<typeof SharedWithMeSection>(
+          'shared-with-me-section-stub'
+        )
+        expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share1')).toBeDefined()
+        expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share2')).toBeUndefined()
       })
     })
   })
