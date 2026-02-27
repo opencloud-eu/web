@@ -14,11 +14,11 @@
     >
       <template #selected-option="{ displayName, id }">
         <span class="flex justify-center">
-          <avatar-image
-            class="flex self-center mr-2"
-            :width="16.8"
+          <oc-avatar
             :userid="id"
             :user-name="displayName"
+            :width="16"
+            class="flex self-center mr-2"
           />
           <span>{{ displayName }}</span>
         </span>
@@ -26,11 +26,11 @@
       <template #option="{ displayName, id }">
         <div class="flex">
           <span class="flex justify-center">
-            <avatar-image
-              class="flex self-center mr-2"
-              :width="16.8"
+            <oc-avatar
               :userid="id"
               :user-name="displayName"
+              :width="16"
+              class="flex self-center mr-2"
             />
             <span>{{ displayName }}</span>
           </span>

@@ -49,7 +49,7 @@
               filter-name="sharedBy"
             >
               <template #image="{ item }">
-                <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
+                <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
               </template>
               <template #item="{ item }">
                 <span class="ml-2" v-text="item.displayName" />
@@ -98,7 +98,8 @@ import {
   InlineFilterOption,
   ItemFilter,
   useAppsStore,
-  useResourcesStore
+  useResourcesStore,
+  UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -122,7 +123,8 @@ export default defineComponent({
     SharedWithMeSection,
     FileSideBar,
     ItemFilterInline,
-    ItemFilter
+    ItemFilter,
+    UserAvatar
   },
 
   setup() {
