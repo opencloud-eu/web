@@ -43,7 +43,6 @@ import { loadCustomTranslations } from './helpers/customTranslations'
 import { createApp, watch } from 'vue'
 import PortalVue, { createWormhole } from 'portal-vue'
 import { createPinia } from 'pinia'
-import Avatar from './components/Avatar.vue'
 import { extensionPoints } from './extensionPoints'
 import { isSilentRedirectRoute } from './helpers/silentRedirect'
 import { extensions } from './extensions'
@@ -162,8 +161,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
   app.use(router)
   app.use(createHead())
-
-  app.component('AvatarImage', Avatar)
 
   app.mount('#opencloud')
 
