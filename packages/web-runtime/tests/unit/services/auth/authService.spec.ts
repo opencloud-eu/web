@@ -71,7 +71,9 @@ describe('AuthService', () => {
 
       Object.defineProperty(authService, 'userManager', {
         value: mock<UserManager>({
-          getAccessToken: vi.fn().mockResolvedValue('access-token'),
+          getUser: vi
+            .fn()
+            .mockResolvedValue({ access_token: 'access-token', profile: { sid: 'session-id' } }),
           updateContext: mockUpdateContext
         })
       })
@@ -80,7 +82,7 @@ describe('AuthService', () => {
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
-      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', true)
+      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', 'session-id', true)
     })
 
     it('when embed mode is disabled and access_token is not present, should not call updateContext', async () => {
@@ -88,7 +90,7 @@ describe('AuthService', () => {
 
       Object.defineProperty(authService, 'userManager', {
         value: mock<UserManager>({
-          getAccessToken: vi.fn().mockResolvedValue(null),
+          getUser: vi.fn().mockResolvedValue({ access_token: null, profile: { sid: null } }),
           updateContext: mockUpdateContext
         })
       })
@@ -105,7 +107,9 @@ describe('AuthService', () => {
 
       Object.defineProperty(authService, 'userManager', {
         value: mock<UserManager>({
-          getAccessToken: vi.fn().mockResolvedValue('access-token'),
+          getUser: vi
+            .fn()
+            .mockResolvedValue({ access_token: 'access-token', profile: { sid: 'session-id' } }),
           updateContext: mockUpdateContext
         })
       })
@@ -114,7 +118,7 @@ describe('AuthService', () => {
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
-      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', true)
+      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', 'session-id', true)
     })
 
     it('when embed mode is enabled, access_token is present and auth is delegated, should not call updateContext', async () => {
@@ -122,7 +126,9 @@ describe('AuthService', () => {
 
       Object.defineProperty(authService, 'userManager', {
         value: mock<UserManager>({
-          getAccessToken: vi.fn().mockResolvedValue('access-token'),
+          getUser: vi
+            .fn()
+            .mockResolvedValue({ access_token: 'access-token', profile: { sid: 'session-id' } }),
           updateContext: mockUpdateContext
         })
       })
@@ -141,7 +147,9 @@ describe('AuthService', () => {
 
       Object.defineProperty(authService, 'userManager', {
         value: mock<UserManager>({
-          getAccessToken: vi.fn().mockResolvedValue('access-token'),
+          getUser: vi
+            .fn()
+            .mockResolvedValue({ access_token: 'access-token', profile: { sid: 'session-id' } }),
           updateContext: mockUpdateContext
         })
       })
@@ -150,7 +158,7 @@ describe('AuthService', () => {
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
-      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', true)
+      expect(mockUpdateContext).toHaveBeenCalledWith('access-token', 'session-id', true)
     })
   })
 })

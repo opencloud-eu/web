@@ -3,6 +3,7 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import {
   ClientService,
   PreviewService,
+  useAuthStore,
   useConfigStore,
   useMessages,
   useResourcesStore,
@@ -63,6 +64,7 @@ const getMocks = ({
   const userStore = useUserStore()
   const configStore = useConfigStore()
   const sharesStore = useSharesStore()
+  const authStore = useAuthStore()
   const clientService = mockDeep<ClientService>()
   const previewService = mockDeep<PreviewService>()
   const router = mockDeep<Router>()
@@ -77,6 +79,7 @@ const getMocks = ({
     userStore,
     sharesStore,
     configStore,
+    authStore,
     clientService,
     previewService,
     resourceQueue,
