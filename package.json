@@ -68,7 +68,7 @@
     "browserslist-useragent-regexp": "^4.0.0",
     "commander": "14.0.3",
     "ejs": "4.0.1",
-    "eslint": "9.39.3",
+    "eslint": "10.0.2",
     "franc-min": "^6.2.0",
     "happy-dom": "20.7.0",
     "license-checker-rseidelsohn": "4.4.2",
