@@ -9,7 +9,20 @@
         autocomplete="off"
       />
     </div>
+    <no-content-message
+      v-if="!items.length"
+      id="admin-settings-spaces-empty"
+      img-src="/images/empty-states/space.png"
+    >
+      <template #message>
+        <span v-text="$gettext('No spaces found')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('Try refining the filters to get results')" />
+      </template>
+    </no-content-message>
     <oc-table
+      v-else
       class="settings-spaces-table"
       :sort-by="sortBy"
       :sort-dir="sortDir"
@@ -131,7 +144,8 @@ import {
   ContextMenuBtnClickEventData,
   useIsTopBarSticky,
   useSharesStore,
-  useSideBar
+  useSideBar,
+  NoContentMessage
 } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,

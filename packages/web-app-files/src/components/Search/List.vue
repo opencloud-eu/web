@@ -71,12 +71,25 @@
       </div>
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <no-content-message v-if="!paginatedResources.length" icon="search" icon-fill-type="line">
+        <no-content-message
+          v-if="!paginatedResources.length"
+          img-src="/images/empty-states/folder.png"
+        >
           <template #message>
             <p class="text-role-on-surface-variant">
-              <span v-if="!!$route.query.term" v-text="$gettext('No results found')" />
-              <span v-else v-text="$gettext('Search for files')" />
+              <span
+                v-text="hasFilter ? $gettext('No results found') : $gettext('Search for files')"
+              />
             </p>
+          </template>
+          <template #callToAction>
+            <span
+              v-text="
+                hasFilter
+                  ? $gettext('Try refining the search term or filters to get results')
+                  : $gettext('Adjust the search term or filters to get results')
+              "
+            />
           </template>
         </no-content-message>
         <component
@@ -326,6 +339,15 @@ const availableMediaTypeValues = computed(() => {
 const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
   return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
 }
+
+const hasFilter = computed(() => {
+  return (
+    !!unref(lastModifiedParam) ||
+    !!unref(mediaTypeParam) ||
+    !!unref(titleOnlyParam) ||
+    !!unref(searchTermQuery)
+  )
+})
 
 const doSearch = (manuallyUpdateFilterChip = false) => {
   const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'

@@ -50,7 +50,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
             </div>
           </div>
           <div>
-            <no-content-message-stub icon="error-warning" iconfilltype="fill"></no-content-message-stub>
+            <no-content-message-stub icon="" iconfilltype="fill" imgsrc="/images/empty-states/user.png"></no-content-message-stub>
           </div>
         </div>
       </div>

@@ -9,7 +9,20 @@
         autocomplete="off"
       />
     </div>
+    <no-content-message
+      v-if="!items.length"
+      id="admin-settings-groups-empty"
+      img-src="/images/empty-states/group.png"
+    >
+      <template #message>
+        <span v-text="$gettext('No groups found')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('Try refining the filters to get results')" />
+      </template>
+    </no-content-message>
     <oc-table
+      v-else
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -156,10 +169,11 @@ import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage } from '@opencloud-eu/web-pkg/src'
 
 export default defineComponent({
   name: 'GroupsList',
-  components: { ContextMenuQuickAction, Pagination },
+  components: { NoContentMessage, ContextMenuQuickAction, Pagination },
   setup() {
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')

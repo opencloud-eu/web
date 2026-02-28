@@ -29,9 +29,16 @@
       <template #mainContent>
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
-          <no-content-message v-if="!groups.length" id="admin-settings-groups-empty" icon="user">
+          <no-content-message
+            v-if="!groups.length"
+            id="admin-settings-groups-empty"
+            img-src="/images/empty-states/group.png"
+          >
             <template #message>
-              <span v-translate>No groups in here</span>
+              <span v-text="$gettext('No groups found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Create a new group and it will show up here')" />
             </template>
           </no-content-message>
           <div v-else>

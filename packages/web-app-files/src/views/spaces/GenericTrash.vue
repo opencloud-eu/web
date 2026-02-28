@@ -28,11 +28,15 @@
         <no-content-message
           v-if="isEmpty"
           id="files-trashbin-empty"
-          icon="delete-bin-7"
-          icon-fill-type="line"
+          img-src="/images/empty-states/trash.png"
         >
           <template #message>
             <span v-text="$gettext('This trash bin is empty')" />
+          </template>
+          <template #callToAction>
+            <span
+              v-text="$gettext('All deleted files and folders of this space will show up here')"
+            />
           </template>
         </no-content-message>
         <component

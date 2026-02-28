@@ -110,15 +110,21 @@
           <template #noResults>
             <no-content-message
               v-if="isFilteringMandatory && !isFilteringActive"
-              icon="error-warning"
+              img-src="/images/empty-states/user.png"
             >
               <template #message>
+                <span v-text="$gettext('No users found')" />
+              </template>
+              <template #callToAction>
                 <span v-text="$gettext('Please specify a filter to see results')" />
               </template>
             </no-content-message>
-            <no-content-message v-else icon="user">
+            <no-content-message v-else img-src="/images/empty-states/user.png">
               <template #message>
-                <span v-text="$gettext('No users in here')" />
+                <span v-text="$gettext('No users found')" />
+              </template>
+              <template #callToAction>
+                <span v-text="$gettext('Try refining the search term or filters to get results')" />
               </template>
             </no-content-message>
           </template>
