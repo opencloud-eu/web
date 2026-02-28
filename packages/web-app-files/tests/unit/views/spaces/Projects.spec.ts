@@ -116,13 +116,6 @@ describe('Projects view', () => {
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
   })
-  it('should display the "Create Space"-button when permission given', () => {
-    const { wrapper } = getMountedWrapper({
-      abilities: [{ action: 'create-all', subject: 'Drive' }],
-      stubAppBar: false
-    })
-    expect(wrapper.find('create-space-stub').exists()).toBeTruthy()
-  })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', async () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
     const { wrapper } = getMountedWrapper({

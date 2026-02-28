@@ -11,21 +11,6 @@
       :batch-action-items="selectedGroups"
       :show-view-options="true"
     >
-      <template #topbarActions="{ limitedScreenSpace }">
-        <div>
-          <oc-button
-            id="create-group-btn"
-            v-oc-tooltip="limitedScreenSpace ? createGroupAction.label() : undefined"
-            :aria-label="limitedScreenSpace ? createGroupAction.label() : undefined"
-            class="mr-2"
-            appearance="filled"
-            @click="createGroupAction.handler()"
-          >
-            <oc-icon :name="createGroupActionIcon" />
-            <span v-if="!limitedScreenSpace" v-text="createGroupAction.label()" />
-          </oc-button>
-        </div>
-      </template>
       <template #mainContent>
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
@@ -55,7 +40,7 @@ import EditPanel from '../components/Groups/SideBar/EditPanel.vue'
 import GroupsList from '../components/Groups/GroupsList.vue'
 import MembersPanel from '../components/Groups/SideBar/MembersPanel.vue'
 import { useGroupSettingsStore } from '../composables'
-import { useGroupActionsCreateGroup, useGroupActionsDelete } from '../composables/actions/groups'
+import { useGroupActionsDelete } from '../composables/actions/groups'
 import {
   AppLoadingSpinner,
   NoContentMessage,
@@ -97,13 +82,6 @@ export default defineComponent({
     const { selectedGroups, groups } = storeToRefs(groupSettingsStore)
     const clientService = useClientService()
     const { $gettext } = useGettext()
-
-    const { actions: createGroupActions } = useGroupActionsCreateGroup()
-    const createGroupAction = computed(() => unref(createGroupActions)[0])
-    const createGroupActionIcon = computed(() => {
-      const action = unref(createGroupAction)
-      return typeof action.icon === 'function' ? action.icon() : action.icon
-    })
 
     const loadResourcesTask = useTask(function* (signal) {
       const loadedGroups = yield* call(
@@ -186,8 +164,6 @@ export default defineComponent({
       batchActions,
       sideBarAvailablePanels,
       sideBarPanelContext,
-      createGroupAction,
-      createGroupActionIcon,
       groupSettingsStore,
       isLoading
     }
