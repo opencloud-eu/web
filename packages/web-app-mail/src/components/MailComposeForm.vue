@@ -76,6 +76,7 @@ import MailAttachmentList from './MailAttachmentList.vue'
 type FromOption = {
   value: string
   label: string
+  name: string
   email: string
   accountId: string
   identityId: string
@@ -122,6 +123,7 @@ const fromOptions = computed<FromOption[]>(() => {
       account.identities?.map((identity) => ({
         label: identity.name ? `${identity.name} <${identity.email}>` : identity.email,
         value: identity.id,
+        name: identity.name || identity.email,
         email: identity.email,
         accountId: account.accountId,
         identityId: identity.id
