@@ -1,5 +1,66 @@
 # Changelog
 
+## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-01
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @MahdiBaghbani, @dschmidt, @kulmann
+
+### 💥 Breaking changes
+
+- refactor!: mobile nav to web-pkg [[#2007](https://github.com/opencloud-eu/web/pull/2007)]
+
+### 🔒 Security
+
+- chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
+
+### 🐛 Bug Fixes
+
+- fix(files): prevent selection reset during keyboard navigation [[#2044](https://github.com/opencloud-eu/web/pull/2044)]
+- fix: prevent 'New'-button flicker when navigating [[#2026](https://github.com/opencloud-eu/web/pull/2026)]
+- fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
+- fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
+
+### 📈 Enhancement
+
+- feat(ocm): implement WAYF page and enhance invitation workflow [[#1486](https://github.com/opencloud-eu/web/pull/1486)]
+- fix: visual active state in preview app (photo roll) [[#2029](https://github.com/opencloud-eu/web/pull/2029)]
+- feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
+- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
+- feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
+- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency @cucumber/messages to v32.1.0 [[#2043](https://github.com/opencloud-eu/web/pull/2043)]
+- chore(deps): update tiptap monorepo to v3.20.0 [[#1999](https://github.com/opencloud-eu/web/pull/1999)]
+- chore(deps): update dependency simple-git to v3.32.3 [[#2039](https://github.com/opencloud-eu/web/pull/2039)]
+- chore(deps): update devdependencies (non-major) [[#2030](https://github.com/opencloud-eu/web/pull/2030)]
+- fix(deps): update dependency @sentry/vue to v10.40.0 [[#2036](https://github.com/opencloud-eu/web/pull/2036)]
+- chore(deps): update dependency fast-xml-parser to v5.4.1 [[#2037](https://github.com/opencloud-eu/web/pull/2037)]
+- chore(deps): update vue monorepo to v3.5.29 [[#2034](https://github.com/opencloud-eu/web/pull/2034)]
+- chore(deps): update node.js to v24.14.0 [[#2035](https://github.com/opencloud-eu/web/pull/2035)]
+- chore(deps): update typescript-eslint monorepo to v8.56.1 [[#2031](https://github.com/opencloud-eu/web/pull/2031)]
+- chore(deps): update traefik docker tag to v3.6.9 [[#2032](https://github.com/opencloud-eu/web/pull/2032)]
+- chore(deps): update dependency @codemirror/view to v6.39.15 [[#2016](https://github.com/opencloud-eu/web/pull/2016)]
+- fix(deps): update dependency vue-router to v5.0.3 [[#2013](https://github.com/opencloud-eu/web/pull/2013)]
+- chore(deps): update dependency fast-xml-parser to v5.3.7 [[#2014](https://github.com/opencloud-eu/web/pull/2014)]
+- chore(deps): update devdependencies (non-major) [[#1996](https://github.com/opencloud-eu/web/pull/1996)]
+- chore(deps): update dependency rollup-plugin-visualizer to v7 [[#2024](https://github.com/opencloud-eu/web/pull/2024)]
+- chore: adjust dev docker app-registry [[#1995](https://github.com/opencloud-eu/web/pull/1995)]
+- chore: adjust dev docker app-registry [[#1994](https://github.com/opencloud-eu/web/pull/1994)]
+- chore(deps): update typescript-eslint monorepo to v8.56.0 [[#1955](https://github.com/opencloud-eu/web/pull/1955)]
+- chore(deps): update devdependencies (non-major) [[#1962](https://github.com/opencloud-eu/web/pull/1962)]
+- fix(deps): update dependency qs to v6.15.0 [[#1968](https://github.com/opencloud-eu/web/pull/1968)]
+- chore(deps): update dependency eslint-plugin-vuejs-accessibility to v2.5.0 [[#1976](https://github.com/opencloud-eu/web/pull/1976)]
+- fix(deps): update dependency @sentry/vue to v10.39.0 [[#1988](https://github.com/opencloud-eu/web/pull/1988)]
+- chore(deps): update dependency fast-xml-parser to v5.3.6 [[#1979](https://github.com/opencloud-eu/web/pull/1979)]
+- chore(deps): update dependency @codemirror/view to v6.39.14 [[#1970](https://github.com/opencloud-eu/web/pull/1970)]
+- chore(deps): update traefik docker tag to v3.6.8 [[#1967](https://github.com/opencloud-eu/web/pull/1967)]
+- chore(deps): update node.js to v24.13.1 [[#1961](https://github.com/opencloud-eu/web/pull/1961)]
+- chore(deps): update dependency eslint-plugin-vue to v10.8.0 [[#1980](https://github.com/opencloud-eu/web/pull/1980)]
+- chore(deps): update dependency eslint-plugin-n to v17.24.0 [[#1982](https://github.com/opencloud-eu/web/pull/1982)]
+
 ## [5.1.0](https://github.com/opencloud-eu/web/releases/tag/v5.1.0) - 2026-02-16
 
 ### ❤️ Thanks to all contributors! ❤️
