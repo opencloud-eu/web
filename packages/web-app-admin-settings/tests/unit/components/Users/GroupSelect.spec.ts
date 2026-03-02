@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import GroupSelect from '../../../../src/components/Users/GroupSelect.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
@@ -13,16 +14,18 @@ describe('GroupSelect', () => {
   it('correctly maps the read-only state', () => {
     const groupMock = mock<Group>({ id: '1', groupTypes: ['ReadOnly'] })
     const { wrapper } = getWrapper(groupMock)
-    expect(
-      (wrapper.vm.selectedOptions as (Group & { readonly?: boolean })[])[0].readonly
-    ).toBeTruthy()
+    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    expect(vueSelect.props('modelValue')[0].readonly).toBeTruthy()
   })
-  it('emits "selectedOptionChange" on update', () => {
+  it('emits "selectedOptionChange" on update', async () => {
     const group = mock<Group>({ id: '2', groupTypes: [] })
     const { wrapper } = getWrapper()
-    wrapper.vm.onUpdate(group)
+    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+
+    vueSelect.vm.$emit('update:modelValue', group)
     expect(wrapper.emitted().selectedOptionChange).toBeTruthy()
-    expect(wrapper.vm.selectedOptions).toEqual(group)
+    await nextTick()
+    expect(vueSelect.props('modelValue')).toEqual(group)
   })
 })
 
@@ -34,7 +37,8 @@ function getWrapper(group = groupMock) {
         groupOptions: [group]
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        stubs: { OcSelect: false }
       }
     })
   }

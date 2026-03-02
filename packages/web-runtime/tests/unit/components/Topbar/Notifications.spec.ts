@@ -5,7 +5,7 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { RouterLink, RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 import { AxiosResponse } from 'axios'
-import Avatar from '../../../../src/components/Avatar.vue'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
 
 const selectors = {
   notificationBellStub: 'notification-bell-stub',
@@ -68,7 +68,7 @@ describe('Notification component', () => {
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await wrapper.vm.fetchNotificationsTask.last
-      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.userAvatarStub)
+      const avatarImageStub = wrapper.findComponent<typeof UserAvatar>(selectors.userAvatarStub)
       expect(avatarImageStub.attributes('userid')).toEqual(notification.user)
       expect(avatarImageStub.attributes('username')).toEqual(notification.user)
     })
@@ -82,7 +82,7 @@ describe('Notification component', () => {
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await wrapper.vm.fetchNotificationsTask.last
-      const avatarImageStub = wrapper.findComponent<typeof Avatar>(selectors.userAvatarStub)
+      const avatarImageStub = wrapper.findComponent<typeof UserAvatar>(selectors.userAvatarStub)
       expect(avatarImageStub.attributes('userid')).toEqual(id)
       expect(avatarImageStub.attributes('username')).toEqual(displayname)
     })
