@@ -1,9 +1,9 @@
 import join from 'join-path'
-import { request, realmBasePath } from './utils'
+import { request, realmBasePath, getKeycloakAdminUser } from './utils'
 import { checkResponseStatus } from '../http'
 import { Group, User } from '../../types'
 import { UsersEnvironment } from '../../environment'
-import { getAdminUser, getRealmRole, openCloudKeycloakUserRoles } from './user'
+import { getRealmRole, openCloudKeycloakUserRoles } from './user'
 
 export const createGroup = async ({
   group,
@@ -16,7 +16,7 @@ export const createGroup = async ({
     method: 'POST',
     path: join(realmBasePath, 'groups'),
     body: { name: group.displayName },
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(creationRes, 'Failed while creating group')
@@ -39,7 +39,7 @@ export const createGroup = async ({
           containerId: 'openCloud'
         }
       ],
-      user: getAdminUser(),
+      user: getKeycloakAdminUser(),
       header: { 'Content-Type': 'application/json' }
     })
     checkResponseStatus(roleAssignmentRes, `Failed while assigning role ${role} to group`)
@@ -58,7 +58,7 @@ export const addUserToGroup = async ({
     method: 'PUT',
     path: join(realmBasePath, 'users', user.keycloakUuid, 'groups', group.keycloakUuid),
     body: {},
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(response, 'Failed while adding a user to the group')
@@ -69,7 +69,7 @@ export const deleteGroup = async ({ group }: { group: Group }): Promise<Group> =
     method: 'DELETE',
     path: join(realmBasePath, 'groups', group.keycloakUuid),
     body: {},
-    user: getAdminUser(),
+    user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
   checkResponseStatus(response, 'Failed while adding a user to the group')
