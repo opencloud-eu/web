@@ -2,7 +2,7 @@ import { Page } from '@playwright/test'
 import util from 'util'
 import { selectUser } from '../users/actions'
 
-const newGroupBtn = '#create-group-btn'
+const newGroupBtn = '.oc-app-floating-action-button'
 const createGroupInput = '#create-group-input-display-name'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const editActionBtnContextMenu = '.context-menu .oc-groups-actions-edit-trigger'

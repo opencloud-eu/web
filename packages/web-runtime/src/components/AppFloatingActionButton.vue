@@ -13,7 +13,7 @@
       </oc-button>
       <component
         :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent"
+        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
         :toggle="`#${getButtonId(floatingActionButton.id)}`"
       />
     </div>
@@ -26,7 +26,7 @@
       />
       <component
         :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent"
+        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
         :toggle="`#${getButtonId(floatingActionButton.id)}`"
       />
     </template>

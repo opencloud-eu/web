@@ -6,7 +6,7 @@ import Collaborator, { ICollaborator } from '../share/collaborator'
 import { createLink } from '../link/actions'
 import { File } from '../../../types'
 
-const newSpaceMenuButton = '#new-space-menu-btn'
+const newSpaceMenuButton = '.oc-app-floating-action-button'
 const spaceContextMenuButton = '#space-context-btn'
 const spaceNameInputField = '.oc-modal input'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'

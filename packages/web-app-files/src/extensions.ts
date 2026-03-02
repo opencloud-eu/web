@@ -1,12 +1,15 @@
 import {
   ApplicationInformation,
   Extension,
+  FloatingActionButtonExtension,
+  isLocationSpacesActive,
   useCapabilityStore,
   useConfigStore,
   useIsFilesAppActive,
   useResourcesStore,
   useRouter,
   useSearch,
+  useSpaceActionsCreate,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
@@ -30,6 +33,9 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const { search: searchFunction } = useSearch()
   const { $gettext } = useGettext()
   const isFilesAppActive = useIsFilesAppActive()
+
+  const { actions: createSpaceActions } = useSpaceActionsCreate()
+  const createSpaceAction = computed(() => unref(createSpaceActions)[0])
 
   const fileActionExtensions = useFileActions()
   const trashActionExtensions = useTrashActions()
@@ -56,11 +62,30 @@ export const extensions = (appInfo: ApplicationInformation) => {
       isActive: () => {
         return unref(isFilesAppActive)
       },
+      handler: () => {
+        if (isLocationSpacesActive(router, 'files-spaces-projects')) {
+          return unref(createSpaceAction).handler()
+        }
+      },
       isDisabled: () => {
+        if (
+          isLocationSpacesActive(router, 'files-spaces-projects') &&
+          unref(createSpaceAction).isVisible()
+        ) {
+          return false
+        }
+
         return !unref(currentFolder)?.canUpload({ user: userStore.user })
       },
+      mode: () => {
+        if (isLocationSpacesActive(router, 'files-spaces-projects')) {
+          return 'handler'
+        }
+
+        return 'drop'
+      },
       dropComponent: CreateOrUploadMenu
-    },
+    } as FloatingActionButtonExtension,
     ...((userStore.user && [
       {
         id: `app.${appInfo.id}.menuItem`,
