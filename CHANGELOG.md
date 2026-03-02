@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @MahdiBaghbani, @dschmidt, @kulmann, @saw-jan
+@AlexAndBear, @JammingBen, @MahdiBaghbani, @ScharfViktor, @dschmidt, @kulmann, @saw-jan
 
 ### 💥 Breaking changes
 
@@ -13,6 +13,11 @@
 ### 🔒 Security
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
+
+### ✅ Tests
+
+- update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
+- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
 
 ### 🐛 Bug Fixes
 
@@ -31,10 +36,6 @@
 - feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
 - feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
 - feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
-
-### ✅ Tests
-
-- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
 
 ### 📦️ Dependencies
 
