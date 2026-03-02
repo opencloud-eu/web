@@ -30,13 +30,12 @@ export const generateInvitation = async (args: { page: Page; user: string }): Pr
     }),
     page.locator(generateInvitationActionConfirmButton).click()
   ])
+  await expect(page.locator(util.format(invitationToken, inviteCode))).toBeVisible()
 
   const serverHostname = new URL(config.baseUrl).host
-
-  // Generate the invitation code by Base64 encoding "token@openCloudUrl"
-  inviteCode = btoa(inviteCode + '@' + serverHostname)
-  await expect(page.locator(util.format(invitationToken, inviteCode))).toBeVisible()
-  federatedInvitationCode.set(user, { code: inviteCode })
+  // Invitation token format: "token@server-host"
+  const inviteToken = `${inviteCode}@${serverHostname}`
+  federatedInvitationCode.set(user, { code: inviteToken })
 }
 
 export const acceptInvitation = async (args: { page: Page; sharer: string }): Promise<void> => {
