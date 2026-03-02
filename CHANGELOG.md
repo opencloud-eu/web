@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @MahdiBaghbani, @dschmidt, @kulmann
+@AlexAndBear, @JammingBen, @MahdiBaghbani, @dschmidt, @kulmann, @saw-jan
 
 ### 💥 Breaking changes
 
@@ -13,6 +13,10 @@
 ### 🔒 Security
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
+
+### ✅ Tests
+
+- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
 
 ### 🐛 Bug Fixes
 
