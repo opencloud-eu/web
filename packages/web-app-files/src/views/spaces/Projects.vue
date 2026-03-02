@@ -13,8 +13,7 @@
         :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
         <template #actions>
-          <create-space v-if="hasCreatePermission" class="mr-2" />
-          <div v-if="!selectedResourcesIds?.length" class="flex items-center pl-2">
+          <div v-if="!selectedResourcesIds?.length" class="flex items-center">
             <span v-text="$gettext('Learn about spaces')" />
             <oc-contextual-helper :list="spacesHelpList" :title="$gettext('Spaces')" class="ml-1" />
           </div>
@@ -144,8 +143,6 @@ import {
   useSpacesStore,
   useLoadPreview,
   AppBar,
-  CreateSpace,
-  useAbility,
   useClientService,
   FolderViewModeConstants,
   useSort,
@@ -183,7 +180,6 @@ const spacesStore = useSpacesStore()
 const router = useRouter()
 const route = useRoute()
 const clientService = useClientService()
-const { can } = useAbility()
 const language = useGettext()
 const { $gettext, $ngettext } = language
 const filterTerm = ref('')
@@ -315,9 +311,6 @@ watch(selectedResourcesIds, async (ids) => {
     graphClient: clientService.graphAuthenticated
   })
 })
-
-const hasCreatePermission = computed(() => can('create-all', 'Drive'))
-
 const { loadPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()

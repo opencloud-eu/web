@@ -68,6 +68,8 @@ export interface AccountExtension extends Extension {
   icon: string
 }
 
+export type FloatingActionButtonExtensionMode = 'drop' | 'handler'
+
 export interface FloatingActionButtonExtension extends Extension {
   type: 'floatingActionButton'
   label: () => string
@@ -75,6 +77,7 @@ export interface FloatingActionButtonExtension extends Extension {
   isDisabled?: () => boolean
   color?: string
   icon?: string
+  mode: () => FloatingActionButtonExtensionMode
   handler?: () => Promise<void> | void
   dropComponent?: Component
 }

@@ -5,15 +5,25 @@ import Groups from './views/Groups.vue'
 import Spaces from './views/Spaces.vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
+  activeApp,
   ApplicationInformation,
   AppMenuItemExtension,
   ClassicApplicationScript,
   defineWebApplication,
+  Extension,
+  FloatingActionButtonExtension,
   useAbility,
+  useRoute,
+  useSpaceActionsCreate,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import {
+  useGroupActionsCreateGroup,
+  useSpaceSettingsStore,
+  useUserActionsCreateUser
+} from './composables'
 
 const appId = 'admin-settings'
 
@@ -151,6 +161,19 @@ export default defineWebApplication({
     const { can } = useAbility()
     const userStore = useUserStore()
     const { $gettext } = useGettext()
+    const currentRoute = useRoute()
+    const { upsertSpace } = useSpaceSettingsStore()
+
+    const { actions: createUserActions } = useUserActionsCreateUser()
+    const createUserAction = computed(() => unref(createUserActions)[0])
+    const { actions: createGroupActions } = useGroupActionsCreateGroup()
+    const createGroupAction = computed(() => unref(createGroupActions)[0])
+    const { actions: createSpaceActions } = useSpaceActionsCreate({
+      onSpaceCreated: (space) => {
+        upsertSpace(space)
+      }
+    })
+    const createSpaceAction = computed(() => unref(createSpaceActions)[0])
 
     const appInfo: ApplicationInformation = {
       name: $gettext('Admin Settings'),
@@ -159,8 +182,8 @@ export default defineWebApplication({
       color: '#2b2b2b'
     }
 
-    const menuItems = computed<AppMenuItemExtension[]>(() => {
-      const items: AppMenuItemExtension[] = []
+    const extensions = computed<Extension[]>(() => {
+      const items: Extension[] = []
 
       const menuItemAvailable =
         userStore.user &&
@@ -170,7 +193,7 @@ export default defineWebApplication({
           can('read-all', 'Drive'))
 
       if (menuItemAvailable) {
-        items.push({
+        const menuItem: AppMenuItemExtension = {
           id: `app.${appInfo.id}.menuItem`,
           type: 'appMenuItem',
           label: () => appInfo.name,
@@ -178,8 +201,63 @@ export default defineWebApplication({
           icon: appInfo.icon,
           priority: 40,
           path: urlJoin(appInfo.id)
-        })
+        }
+
+        items.push(menuItem)
       }
+
+      const floatingActionButton: FloatingActionButtonExtension = {
+        id: `com.github.opencloud-eu.web.${appInfo.id}.floating-action-button`,
+        extensionPointIds: ['global.floating-action-button'],
+        type: 'floatingActionButton',
+        icon: 'add',
+        label: () => $gettext('New'),
+        mode: () => 'handler',
+        handler: () => {
+          if (unref(currentRoute).name === 'admin-settings-spaces') {
+            return unref(createSpaceAction).handler()
+          }
+
+          if (unref(currentRoute).name === 'admin-settings-users') {
+            return unref(createUserAction).handler()
+          }
+
+          if (unref(currentRoute).name === 'admin-settings-groups') {
+            return unref(createGroupAction).handler()
+          }
+
+          return null
+        },
+        isActive: () => {
+          return activeApp(unref(currentRoute)) === appInfo.id
+        },
+        isDisabled: () => {
+          if (
+            unref(currentRoute).name === 'admin-settings-spaces' &&
+            unref(createSpaceAction).isVisible()
+          ) {
+            return false
+          }
+
+          if (
+            unref(currentRoute).name === 'admin-settings-users' &&
+            unref(createUserAction).isVisible()
+          ) {
+            return false
+          }
+
+          if (
+            unref(currentRoute).name === 'admin-settings-groups' &&
+            unref(createGroupAction).isVisible()
+          ) {
+            return false
+          }
+
+          return true
+        }
+      }
+
+      items.push(floatingActionButton)
 
       return items
     })
@@ -189,7 +267,7 @@ export default defineWebApplication({
       routes,
       navItems,
       translations,
-      extensions: menuItems
+      extensions
     }
   }
 })

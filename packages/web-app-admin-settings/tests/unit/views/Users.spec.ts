@@ -88,8 +88,7 @@ const getClientService = () => {
 
 const selectors = {
   itemFilterGroupsStub: 'item-filter-stub[filtername="groups"]',
-  itemFilterRolesStub: 'item-filter-stub[filtername="roles"]',
-  createUserButton: '#create-user-btn'
+  itemFilterRolesStub: 'item-filter-stub[filtername="roles"]'
 }
 
 describe('Users view', () => {
@@ -106,24 +105,6 @@ describe('Users view', () => {
       })
       await wrapper.vm.loadResourcesTask.last
       expect(wrapper.html()).toMatchSnapshot()
-    })
-  })
-  describe('create user button', () => {
-    it('should be displayed if action enabled', () => {
-      const { wrapper } = getMountedWrapper({
-        mountType: mount,
-        createUserActionEnabled: true
-      })
-      const createUserButton = wrapper.find(selectors.createUserButton)
-      expect(createUserButton.exists()).toBeTruthy()
-    })
-    it('should not be displayed if action disabled', () => {
-      const { wrapper } = getMountedWrapper({
-        mountType: mount,
-        createUserActionEnabled: false
-      })
-      const createUserButton = wrapper.find(selectors.createUserButton)
-      expect(createUserButton.exists()).toBeFalsy()
     })
   })
 
