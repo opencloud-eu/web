@@ -2,6 +2,14 @@
 
 exports[`GroupSelect > renders the select input 1`] = `
 "<div id="user-group-select-form">
-  <oc-select-stub label="Groups" id="oc-select-1" filter="[Function]" disabled="false" inlinelabel="false" labelhidden="false" optionlabel="displayName" searchable="true" clearable="false" loading="false" fixmessageline="true" multiple="true" readonly="false" positionfixed="false" requiredmark="false" hasborder="true" model-value="[object Object]" class="mb-2" options="undefined"></oc-select-stub>
+  <div data-v-9521f10d="" class="mb-2" model-value="[object Object]" options="undefined"><label data-v-9521f10d="" aria-hidden="true" for="oc-select-1" class="inline-block mb-0.5">Groups
+      <!--v-if-->
+    </label>
+    <!--v-if-->
+    <vue-select-stub data-v-9521f10d="" modelvalue="[object Object]" inputid="oc-select-1" components="[object Object]" options="undefined" disabled="false" clearable="false" deselectfromdropdown="false" searchable="true" multiple="true" placeholder="" transition="vs__fade" clearsearchonselect="true" closeonselect="true" label="displayName" autocomplete="off" reduce="[Function]" selectable="[Function]" getoptionlabel="[Function]" getoptionkey="[Function]" taggable="false" pushtags="false" filterable="true" filterby="[Function]" filter="[Function]" createoption="[Function]" resetonoptionschange="false" clearsearchonblur="[Function]" nodrop="false" dir="auto" selectontab="false" selectonkeycodes="13" searchinputqueryselector="[type=search]" mapkeydown="[Function]" appendtobody="false" calculateposition="[Function]" dropdownshouldopen="[Function]" uid="1" loading="false" class="oc-select bg-transparent mb-2"></vue-select-stub>
+    <div data-v-9521f10d="" class="oc-text-input-message text-sm">
+      <!--v-if--> <span data-v-9521f10d="" id="oc-select-1-message" class=""></span>
+    </div>
+  </div>
 </div>"
 `;

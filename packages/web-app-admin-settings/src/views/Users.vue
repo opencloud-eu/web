@@ -40,7 +40,7 @@
                 @selection-change="filterGroups"
               >
                 <template #image="{ item }">
-                  <avatar-image :width="32" :userid="item.id" :user-name="item.displayName" />
+                  <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
                 </template>
                 <template #item="{ item }">
                   <div class="ml-2" v-text="item.displayName" />
@@ -59,7 +59,7 @@
                 @selection-change="filterRoles"
               >
                 <template #image="{ item }">
-                  <avatar-image
+                  <oc-avatar
                     :width="32"
                     :userid="item.id"
                     :user-name="$gettext(item.displayName)"
