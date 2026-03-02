@@ -32,6 +32,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency globals to v17.4.0 [[#2048](https://github.com/opencloud-eu/web/pull/2048)]
+- chore(deps): update dependency @cucumber/messages to v32.2.0 [[#2047](https://github.com/opencloud-eu/web/pull/2047)]
 - fix(deps): update dependency axios to v1.13.6 [[#2046](https://github.com/opencloud-eu/web/pull/2046)]
 - chore(deps): update dependency @cucumber/messages to v32.1.0 [[#2043](https://github.com/opencloud-eu/web/pull/2043)]
 - chore(deps): update tiptap monorepo to v3.20.0 [[#1999](https://github.com/opencloud-eu/web/pull/1999)]
