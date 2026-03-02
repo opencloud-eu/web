@@ -1,33 +1,33 @@
 <template>
-    <app-template
-      ref="template"
-      :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
-      :breadcrumbs="breadcrumbs"
-      :side-bar-available-panels="sideBarAvailablePanels"
-      :side-bar-panel-context="sideBarPanelContext"
-      :show-batch-actions="!!selectedGroups.length"
-      :batch-actions="batchActions"
-      :batch-action-items="selectedGroups"
-      :show-view-options="true"
-    >
-      <template #mainContent>
-        <app-loading-spinner v-if="isLoading" />
+  <app-template
+    ref="template"
+    :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
+    :breadcrumbs="breadcrumbs"
+    :side-bar-available-panels="sideBarAvailablePanels"
+    :side-bar-panel-context="sideBarPanelContext"
+    :show-batch-actions="!!selectedGroups.length"
+    :batch-actions="batchActions"
+    :batch-action-items="selectedGroups"
+    :show-view-options="true"
+  >
+    <template #mainContent>
+      <app-loading-spinner v-if="isLoading" />
+      <template v-else>
+        <no-content-message v-if="!groups.length" id="admin-settings-groups-empty" icon="user">
+          <template #message>
+            <span v-translate>No groups in here</span>
+          </template>
+        </no-content-message>
         <template v-else>
-          <no-content-message v-if="!groups.length" id="admin-settings-groups-empty" icon="user">
-            <template #message>
-              <span v-translate>No groups in here</span>
+          <groups-list>
+            <template #contextMenu>
+              <context-actions :action-options="{ resources: selectedGroups }" />
             </template>
-          </no-content-message>
-          <div v-else>
-            <groups-list>
-              <template #contextMenu>
-                <context-actions :action-options="{ resources: selectedGroups }" />
-              </template>
-            </groups-list>
-          </div>
+          </groups-list>
         </template>
       </template>
-    </app-template>
+    </template>
+  </app-template>
 </template>
 
 <script lang="ts">

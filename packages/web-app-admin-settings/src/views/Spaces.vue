@@ -1,45 +1,43 @@
 <template>
-  <div>
-    <app-template
-      ref="template"
-      :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
-      :breadcrumbs="breadcrumbs"
-      :side-bar-available-panels="sideBarAvailablePanels"
-      :side-bar-panel-context="sideBarPanelContext"
-      :show-batch-actions="!!selectedSpaces.length"
-      :batch-actions="batchActions"
-      :batch-action-items="selectedSpaces"
-      :show-view-options="true"
-    >
-      <template #sideBarHeader>
-        <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
-      </template>
-      <template #mainContent>
-        <app-loading-spinner v-if="isLoading" />
-        <template v-else>
-          <no-content-message
-            v-if="!spaces.length"
-            id="admin-settings-spaces-empty"
-            img-src="/images/empty-states/space.png"
-          >
-            <template #message>
-              <span v-text="$gettext('No spaces found')" />
-            </template>
-            <template #callToAction>
-              <span v-text="$gettext('Create a new space and it will show up here')" />
-            </template>
-          </no-content-message>
-          <template v-else>
-            <spaces-list :class="{ 'settings-spaces-table-squashed': isSideBarOpen }">
-              <template #contextMenu>
-                <context-actions :items="selectedSpaces" />
-              </template>
-            </spaces-list>
+  <app-template
+    ref="template"
+    :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
+    :breadcrumbs="breadcrumbs"
+    :side-bar-available-panels="sideBarAvailablePanels"
+    :side-bar-panel-context="sideBarPanelContext"
+    :show-batch-actions="!!selectedSpaces.length"
+    :batch-actions="batchActions"
+    :batch-action-items="selectedSpaces"
+    :show-view-options="true"
+  >
+    <template #sideBarHeader>
+      <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
+    </template>
+    <template #mainContent>
+      <app-loading-spinner v-if="isLoading" />
+      <template v-else>
+        <no-content-message
+          v-if="!spaces.length"
+          id="admin-settings-spaces-empty"
+          img-src="/images/empty-states/space.png"
+        >
+          <template #message>
+            <span v-text="$gettext('No spaces found')" />
           </template>
+          <template #callToAction>
+            <span v-text="$gettext('Create a new space and it will show up here')" />
+          </template>
+        </no-content-message>
+        <template v-else>
+          <spaces-list :class="{ 'settings-spaces-table-squashed': isSideBarOpen }">
+            <template #contextMenu>
+              <context-actions :items="selectedSpaces" />
+            </template>
+          </spaces-list>
         </template>
       </template>
-    </app-template>
-  </div>
+    </template>
+  </app-template>
 </template>
 
 <script setup lang="ts">
