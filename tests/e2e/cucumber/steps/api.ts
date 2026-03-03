@@ -1,4 +1,4 @@
-import { Given, DataTable } from '@cucumber/cucumber'
+import { Given, DataTable, When } from '@cucumber/cucumber'
 import { World } from '../environment'
 import { api } from '../../support'
 import fs from 'fs'
@@ -368,5 +368,29 @@ Given(
         pathToFile: info.resource
       })
     }
+  }
+)
+
+When(
+  'admin disables user {string} using keycloak API',
+  async function (this: World, stepUser: string): Promise<void> {
+    const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
+    await api.keycloak.setUserEnabled({ uuid: user.keycloakUuid, enabled: false })
+  }
+)
+
+When(
+  'admin enables user {string} using keycloak API',
+  async function (this: World, stepUser: string): Promise<void> {
+    const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
+    await api.keycloak.setUserEnabled({ uuid: user.keycloakUuid, enabled: true })
+  }
+)
+
+When(
+  'admin deletes sessions of user {string} using keycloak API',
+  async function (this: World, stepUser: string): Promise<void> {
+    const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
+    await api.keycloak.deleteUserSessions({ uuid: user.keycloakUuid })
   }
 )

@@ -4,6 +4,7 @@ import { World } from '../../environment'
 import { config } from '../../../config'
 import { objects } from '../../../support'
 import { listenSSE } from '../../../support/environment/sse'
+import { expect } from '@playwright/test'
 
 async function createNewSession(world: World, stepUser: string) {
   const { page } = await world.actorsEnvironment.createActor({
@@ -54,15 +55,20 @@ async function LogOutUser(this: World, stepUser: string): Promise<void> {
 When('{string} logs out', LogOutUser)
 
 Then('{string} fails to log in', async function (this: World, stepUser: string): Promise<void> {
-  await createNewSession(this, stepUser)
+  const sessionObject = await createNewSession(this, stepUser)
   const { page } = this.actorsEnvironment.getActor({ key: stepUser })
   const user = this.usersEnvironment.getCreatedUser({ key: stepUser })
 
   await page.goto(config.baseUrl)
-  await page.locator('#oc-login-username').fill(user.id)
-  await page.locator('#oc-login-password').fill(user.password)
-  await page.locator('button[type="submit"]').click()
-  await page.locator('#oc-login-error-message').waitFor()
+  await sessionObject.signIn(user.username, user.password)
+
+  const errorLocator = config.keycloak
+    ? page.locator('.kc-feedback-text', {
+        hasText: 'Account is disabled, contact your administrator.'
+      })
+    : page.locator('#oc-login-error-message')
+
+  await expect(errorLocator).toBeVisible()
 })
 
 When(
@@ -116,3 +122,12 @@ Given('using {string} server', function (this: World, server: string): void {
       throw new Error(`Invalid server type: ${server}\nUse one of these: [LOCAL, FEDERATED]`)
   }
 })
+
+Then(
+  '{string} should be logged out',
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await expect(page.locator('#web-content')).toBeHidden()
+    await expect(page.locator('#exitAnchor')).toBeVisible()
+  }
+)
