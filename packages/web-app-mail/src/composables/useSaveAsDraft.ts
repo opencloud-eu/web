@@ -1,4 +1,4 @@
-import { computed, Ref, ref, toValue, unref } from 'vue'
+import { computed, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 
 export type DraftEmailPayload = Record<string, any> & {
@@ -55,10 +55,10 @@ export const useSaveAsDraft = (opts: {
     }
 
     let res: DraftEmailResponse
-    if (!draftId.value) {
+    if (!unref(draftId)) {
       res = yield opts.api.createDraft(accountId, payload)
     } else {
-      res = yield opts.api.replaceDraft(accountId, draftId.value, payload)
+      res = yield opts.api.replaceDraft(accountId, unref(draftId), payload)
     }
 
     draftId.value = res.id
@@ -68,11 +68,11 @@ export const useSaveAsDraft = (opts: {
 
   const discardDraftTask = useTask(function* () {
     const accountId = unref(opts.accountId)
-    if (!accountId || !draftId.value) {
+    if (!accountId || !unref(draftId)) {
       return
     }
 
-    yield opts.api.deleteDraft(accountId, draftId.value)
+    yield opts.api.deleteDraft(accountId, unref(draftId))
     draftId.value = null
     isDirty.value = false
   }).restartable()
