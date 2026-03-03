@@ -1,65 +1,68 @@
 <template>
   <main class="flex app-content size-full rounded-l-xl">
-    <div
-      class="admin-settings-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0"
-    >
-      <app-loading-spinner v-if="loading" />
-      <template v-else>
-        <div id="admin-settings-view-wrapper" class="outline-0 z-0 flex flex-col">
-          <div
-            id="admin-settings-app-bar"
-            ref="appBarRef"
-            class="pb-2 px-4 top-0 z-20 bg-role-surface"
-            :class="{ sticky: isSticky }"
-          >
-            <div class="flex justify-between items-center h-13">
-              <oc-breadcrumb
-                v-if="!isMobileWidth"
-                id="admin-settings-breadcrumb"
-                :items="breadcrumbs"
-                :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
-              />
-              <mobile-nav />
-              <div class="flex">
-                <view-options
-                  v-if="showViewOptions"
-                  :has-hidden-files="false"
-                  :has-file-extensions="false"
-                  :has-pagination="true"
-                  :pagination-options="paginationOptions"
-                  :per-page-default="perPageDefault"
-                  per-page-storage-prefix="admin-settings"
+    <app-loading-spinner v-if="loading" />
+    <template v-else>
+      <div class="admin-settings-wrapper flex w-full flex-1 h-full flex-nowrap sm:flex-wrap">
+        <div
+          id="admin-settings-view-wrapper"
+          class="relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0"
+        >
+          <div id="admin-settings-view" class="outline-0 z-0 flex flex-col">
+            <div
+              id="admin-settings-app-bar"
+              ref="appBarRef"
+              class="pb-2 px-4 top-0 z-20 bg-role-surface"
+              :class="{ sticky: isSticky }"
+            >
+              <div class="flex justify-between items-center h-13">
+                <oc-breadcrumb
+                  v-if="!isMobileWidth"
+                  id="admin-settings-breadcrumb"
+                  :items="breadcrumbs"
+                  :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
+                />
+                <mobile-nav />
+                <div class="flex">
+                  <view-options
+                    v-if="showViewOptions"
+                    :has-hidden-files="false"
+                    :has-file-extensions="false"
+                    :has-pagination="true"
+                    :pagination-options="paginationOptions"
+                    :per-page-default="perPageDefault"
+                    per-page-storage-prefix="admin-settings"
+                  />
+                </div>
+              </div>
+              <div v-if="showAppBar" class="flex items-center mt-1 min-h-10">
+                <slot
+                  name="topbarActions"
+                  :limited-screen-space="limitedScreenSpace"
+                  class="flex-1 flex flex-start"
+                />
+                <batch-actions
+                  v-if="showBatchActions"
+                  :actions="batchActions"
+                  :action-options="{ resources: batchActionItems }"
+                  :limited-screen-space="limitedScreenSpace"
                 />
               </div>
             </div>
-            <div v-if="showAppBar" class="flex items-center mt-1 min-h-10">
-              <slot
-                name="topbarActions"
-                :limited-screen-space="limitedScreenSpace"
-                class="flex-1 flex flex-start"
-              />
-              <batch-actions
-                v-if="showBatchActions"
-                :actions="batchActions"
-                :action-options="{ resources: batchActionItems }"
-                :limited-screen-space="limitedScreenSpace"
-              />
-            </div>
+            <slot name="mainContent" />
           </div>
-          <slot name="mainContent" />
         </div>
-        <side-bar
-          v-if="isSideBarOpen"
-          :available-panels="sideBarAvailablePanels"
-          :panel-context="sideBarPanelContext"
-          :loading="sideBarLoading"
-        >
-          <template #header>
-            <slot name="sideBarHeader" />
-          </template>
-        </side-bar>
-      </template>
-    </div>
+      </div>
+      <side-bar
+        v-if="isSideBarOpen"
+        :available-panels="sideBarAvailablePanels"
+        :panel-context="sideBarPanelContext"
+        :loading="sideBarLoading"
+      >
+        <template #header>
+          <slot name="sideBarHeader" />
+        </template>
+      </side-bar>
+    </template>
   </main>
 </template>
 
