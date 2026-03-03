@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-02-20
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-03-03
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -18,6 +18,7 @@
 
 ### ✅ Tests
 
+- port #2051 [[#2056](https://github.com/opencloud-eu/web/pull/2056)]
 - [stable-4.2] Port #1714, #1736 and #1700 [[#1738](https://github.com/opencloud-eu/web/pull/1738)]
 - [stable-4.2] e2e-tests. undo deleted resources (#1580) [[#1704](https://github.com/opencloud-eu/web/pull/1704)]
 
