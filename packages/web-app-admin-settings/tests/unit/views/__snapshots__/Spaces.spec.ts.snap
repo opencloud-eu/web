@@ -1,28 +1,24 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Spaces view > loading states > should render spaces list after loading has been finished 1`] = `
-"<div>
-  <main class="flex app-content size-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
-      <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
-        <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 bg-role-surface sticky">
-          <div class="flex justify-between items-center h-13">
-            <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
-            <!--v-if-->
-            <div class="flex">
-              <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
-            </div>
-          </div>
-          <div class="flex items-center mt-1 min-h-10">
-            <!--v-if-->
+"<main class="flex app-content size-full rounded-l-xl">
+  <div class="admin-settings-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
+    <div id="admin-settings-view-wrapper" class="outline-0 z-0 flex flex-col">
+      <div id="admin-settings-app-bar" class="pb-2 px-4 top-0 z-20 bg-role-surface sticky">
+        <div class="flex justify-between items-center h-13">
+          <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
+          <!--v-if-->
+          <div class="flex">
+            <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
           </div>
         </div>
-        <div>
-          <spaces-list-stub class=""></spaces-list-stub>
+        <div class="flex items-center mt-1 min-h-10">
+          <!--v-if-->
         </div>
       </div>
-      <!--v-if-->
+      <spaces-list-stub class=""></spaces-list-stub>
     </div>
-  </main>
-</div>"
+    <!--v-if-->
+  </div>
+</main>"
 `;

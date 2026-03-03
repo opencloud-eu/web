@@ -1,115 +1,115 @@
 <template>
-  <div>
-    <app-template
-      ref="template"
-      :breadcrumbs="breadcrumbs"
-      :side-bar-available-panels="sideBarAvailablePanels"
-      :side-bar-panel-context="sideBarPanelContext"
-      :side-bar-loading="sideBarLoading"
-      :show-batch-actions="!!selectedUsers.length"
-      :batch-actions="batchActions"
-      :batch-action-items="selectedUsers"
-      :show-view-options="true"
-    >
-      <template #mainContent>
-        <users-list
-          :is-loading="isLoading"
-          :roles="roles"
-          :class="{ 'users-table-squashed': isSideBarOpen }"
-        >
-          <template #contextMenu>
-            <context-actions :items="selectedUsers" />
-          </template>
-          <template #filter>
-            <div class="flex items-center">
-              <div class="mr-4 flex items-center">
-                <oc-icon name="filter-2" class="mr-1" />
-                <span v-text="$gettext('Filter:')" />
-              </div>
-              <item-filter
-                v-if="groups.length"
-                :allow-multiple="true"
-                :filter-label="$gettext('Groups')"
-                :filterable-attributes="['displayName']"
-                :items="groups"
-                :option-filter-label="$gettext('Filter groups')"
-                :show-option-filter="true"
-                class="mr-2"
-                display-name-attribute="displayName"
-                filter-name="groups"
-                @selection-change="filterGroups"
-              >
-                <template #image="{ item }">
-                  <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
-                </template>
-                <template #item="{ item }">
-                  <div class="ml-2" v-text="item.displayName" />
-                </template>
-              </item-filter>
-              <item-filter
-                v-if="roles.length"
-                :allow-multiple="true"
-                :filter-label="$gettext('Roles')"
-                :filterable-attributes="['displayName']"
-                :items="roles"
-                :option-filter-label="$gettext('Filter roles')"
-                :show-option-filter="true"
-                display-name-attribute="displayName"
-                filter-name="roles"
-                @selection-change="filterRoles"
-              >
-                <template #image="{ item }">
-                  <oc-avatar
-                    :width="32"
-                    :userid="item.id"
-                    :user-name="$gettext(item.displayName)"
-                  />
-                </template>
-                <template #item="{ item }">
-                  <div class="ml-2" v-text="$gettext(item.displayName)" />
-                </template>
-              </item-filter>
+  <app-template
+    ref="template"
+    :breadcrumbs="breadcrumbs"
+    :side-bar-available-panels="sideBarAvailablePanels"
+    :side-bar-panel-context="sideBarPanelContext"
+    :side-bar-loading="sideBarLoading"
+    :show-batch-actions="!!selectedUsers.length"
+    :batch-actions="batchActions"
+    :batch-action-items="selectedUsers"
+    :show-view-options="true"
+  >
+    <template #mainContent>
+      <users-list
+        :is-loading="isLoading"
+        :roles="roles"
+        :class="{ 'users-table-squashed': isSideBarOpen }"
+      >
+        <template #contextMenu>
+          <context-actions :items="selectedUsers" />
+        </template>
+        <template #filter>
+          <div class="flex items-center">
+            <div class="mr-4 flex items-center">
+              <oc-icon name="filter-2" class="mr-1" />
+              <span v-text="$gettext('Filter:')" />
             </div>
-            <div class="flex items-center">
-              <oc-text-input
-                id="users-filter"
-                v-model.trim="filterTermDisplayName"
-                class="w-3xs"
-                :label="$gettext('Search')"
-                autocomplete="off"
-                @keypress.enter="filterDisplayName"
-              />
-              <oc-button
-                id="users-filter-confirm"
-                v-oc-tooltip="$gettext('Search')"
-                class="ml-1 p-1 mt-5"
-                appearance="raw"
-                :aria-label="$gettext('Search users')"
-                @click="filterDisplayName"
-              >
-                <oc-icon name="search" fill-type="line" aria-hidden="true" />
-              </oc-button>
-            </div>
-          </template>
-          <template #noResults>
-            <no-content-message
-              v-if="isFilteringMandatory && !isFilteringActive"
-              icon="error-warning"
+            <item-filter
+              v-if="groups.length"
+              :allow-multiple="true"
+              :filter-label="$gettext('Groups')"
+              :filterable-attributes="['displayName']"
+              :items="groups"
+              :option-filter-label="$gettext('Filter groups')"
+              :show-option-filter="true"
+              class="mr-2"
+              display-name-attribute="displayName"
+              filter-name="groups"
+              @selection-change="filterGroups"
             >
-              <template #message>
-                <span v-text="$gettext('Please specify a filter to see results')" />
+              <template #image="{ item }">
+                <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
               </template>
-            </no-content-message>
-            <no-content-message v-else icon="user">
-              <template #message>
-                <span v-text="$gettext('No users in here')" />
+              <template #item="{ item }">
+                <div class="ml-2" v-text="item.displayName" />
               </template>
-            </no-content-message>
-          </template>
-        </users-list>
-      </template>
-    </app-template>
-  </div>
+            </item-filter>
+            <item-filter
+              v-if="roles.length"
+              :allow-multiple="true"
+              :filter-label="$gettext('Roles')"
+              :filterable-attributes="['displayName']"
+              :items="roles"
+              :option-filter-label="$gettext('Filter roles')"
+              :show-option-filter="true"
+              display-name-attribute="displayName"
+              filter-name="roles"
+              @selection-change="filterRoles"
+            >
+              <template #image="{ item }">
+                <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
+              </template>
+              <template #item="{ item }">
+                <div class="ml-2" v-text="$gettext(item.displayName)" />
+              </template>
+            </item-filter>
+          </div>
+          <div class="flex items-center">
+            <oc-text-input
+              id="users-filter"
+              v-model.trim="filterTermDisplayName"
+              class="w-3xs"
+              :label="$gettext('Search')"
+              autocomplete="off"
+              @keypress.enter="filterDisplayName"
+            />
+            <oc-button
+              id="users-filter-confirm"
+              v-oc-tooltip="$gettext('Search')"
+              class="ml-1 p-1 mt-5"
+              appearance="raw"
+              :aria-label="$gettext('Search users')"
+              @click="filterDisplayName"
+            >
+              <oc-icon name="search" fill-type="line" aria-hidden="true" />
+            </oc-button>
+          </div>
+        </template>
+        <template #noResults>
+          <no-content-message
+            v-if="isFilteringMandatory && !isFilteringActive"
+            img-src="/images/empty-states/user.png"
+          >
+            <template #message>
+              <span v-text="$gettext('No users found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Please specify a filter to see results')" />
+            </template>
+          </no-content-message>
+          <no-content-message v-else img-src="/images/empty-states/user.png">
+            <template #message>
+              <span v-text="$gettext('No users found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            </template>
+          </no-content-message>
+        </template>
+      </users-list>
+    </template>
+  </app-template>
 </template>
 
 <script lang="ts">
