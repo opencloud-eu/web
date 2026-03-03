@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- refactor!: floating UI [[#1998](https://github.com/opencloud-eu/web/pull/1998)]
 - refactor!: port vue-portal to teleport or extension system [[#2015](https://github.com/opencloud-eu/web/pull/2015)]
 - refactor!: mobile nav to web-pkg [[#2007](https://github.com/opencloud-eu/web/pull/2007)]
 
