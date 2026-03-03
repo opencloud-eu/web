@@ -176,6 +176,8 @@ const onClick = (event: Event) => {
   }
 }
 
+const awaitAnimationFrame = () => new Promise((resolve) => requestAnimationFrame(resolve))
+
 const showDrop = async ({
   event,
   useMouseAnchor
@@ -213,7 +215,7 @@ const showDrop = async ({
   }
 
   // fixes a timing issue with the rendering of the drop
-  await new Promise((resolve) => setTimeout(resolve, 0))
+  await awaitAnimationFrame()
 
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
