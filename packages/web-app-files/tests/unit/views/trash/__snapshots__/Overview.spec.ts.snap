@@ -10,11 +10,11 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
             <!--v-if-->
           </label>
           <div class="relative">
-            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" value="">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0" value="">
             <!--v-if-->
           </div>
           <!--v-if-->
-          <!--v-if-->
+          <div id="v-0"></div>
         </div>
       </div>
       <resource-table-stub resources="[object Object],[object Object],[object Object]" resourcedomselector="[Function]" arepathsdisplayed="false" selectedids="" hasactions="true" showrenamequickaction="false" areresourcesclickable="true" headerposition="0" isselectable="false" dragdrop="false" viewmode="resource-table" hover="true" sortby="name" fieldsdisplayed="name" sortdir="asc" resourcetype="file" lazy="true" class="trash-table" sort-fields="" are-thumbnails-displayed="false" view-size="1"></resource-table-stub>

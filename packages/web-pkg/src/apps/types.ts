@@ -15,7 +15,6 @@ import type {
   UppyService
 } from '../services'
 import type { AuthServiceInterface } from '../composables'
-import type { Wormhole } from 'portal-vue/types/types.js'
 
 export interface GlobalProperties extends ComponentCustomProperties, Language {
   $ability: Ability
@@ -30,14 +29,12 @@ export interface GlobalProperties extends ComponentCustomProperties, Language {
   $previewService: PreviewService
   $router: Router
   $uppyService: UppyService
-  $wormhole: Wormhole
   passwordPolicyService: PasswordPolicyService
 }
 
 export interface AppReadyHookArgs {
   globalProperties: GlobalProperties
   instance?: App
-  portal?: any
 }
 
 export interface AppNavigationItem {

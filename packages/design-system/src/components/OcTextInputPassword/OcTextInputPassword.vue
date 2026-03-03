@@ -52,7 +52,7 @@
       <oc-icon size="small" name="refresh" fill-type="line" />
     </oc-button>
   </div>
-  <portal v-if="showPasswordPolicyInformation" to="app.design-system.password-policy">
+  <teleport v-if="showPasswordPolicyInformation" defer :to="`#${teleportId}`">
     <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
@@ -76,7 +76,7 @@
         />
       </div>
     </div>
-  </portal>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -91,6 +91,7 @@ export interface Props {
   generatePasswordMethod?: (...args: unknown[]) => string
   hasError?: boolean
   passwordPolicy?: PasswordPolicy
+  teleportId?: string
   value?: string
 }
 
@@ -99,7 +100,8 @@ const {
   generatePasswordMethod,
   hasError = false,
   passwordPolicy,
-  value = ''
+  value = '',
+  teleportId = ''
 } = defineProps<Props>()
 
 const emit = defineEmits([

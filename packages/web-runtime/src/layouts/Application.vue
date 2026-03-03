@@ -28,9 +28,9 @@
         </template>
       </div>
 
-      <portal-target name="app.runtime.bottom.drawer" :multiple="true" />
+      <div id="app-runtime-bottom-drawer" />
       <div id="mobile-right-sidebar" />
-      <portal-target name="app.runtime.footer" />
+      <div id="app-runtime-footer" class="w-full" />
     </div>
     <div
       class="snackbars absolute inset-x-[20px] sm:left-auto bottom-[20px] z-[calc(var(--z-index-modal)+1)]"

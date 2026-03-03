@@ -1,11 +1,7 @@
 <template>
   <header
     id="oc-topbar"
-    :class="[
-      { 'grid-cols-[auto_1fr_1fr]': contentOnLeftPortal },
-      { 'grid-cols-[auto_9fr_1fr]': !contentOnLeftPortal }
-    ]"
-    class="sticky grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto]"
+    class="sticky grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr]"
     :aria-label="$gettext('Top bar')"
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
@@ -27,17 +23,13 @@
         </picture>
       </router-link>
     </div>
-    <div v-if="!contentOnLeftPortal" class="flex justify-end sm:justify-center col-2">
+    <div class="topbar-center flex justify-end sm:justify-center col-2">
       <custom-component-target :extension-point="topBarCenterExtensionPoint" />
     </div>
     <div class="flex items-center justify-end gap-5 col-3">
-      <portal-target name="app.runtime.header.right" multiple />
-    </div>
-    <template v-if="!isEmbedModeEnabled">
-      <portal to="app.runtime.header.right" :order="50">
+      <template v-if="!isEmbedModeEnabled">
+        <custom-component-target :extension-point="topBarRightExtensionPoint" />
         <feedback-link v-if="isFeedbackLinkEnabled" v-bind="feedbackLinkOptions" />
-      </portal>
-      <portal to="app.runtime.header.right" :order="100">
         <notifications v-if="isNotificationBellEnabled" />
         <side-bar-toggle
           v-if="isSideBarToggleVisible"
@@ -45,15 +37,15 @@
           class="hidden sm:flex"
         />
         <user-menu />
-      </portal>
-    </template>
-    <portal-target name="app.runtime.header.left" @change="updateLeftPortal" />
+      </template>
+    </div>
+    <custom-component-target :extension-point="topBarLeftExtensionPoint" />
   </header>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, unref, ref } from 'vue'
+import { computed, unref } from 'vue'
 import ApplicationsMenu from './ApplicationsMenu.vue'
 import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
@@ -70,7 +62,12 @@ import {
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { routeNames } from '../../router/names'
-import { appMenuExtensionPoint, topBarCenterExtensionPoint } from '../../extensionPoints'
+import {
+  appMenuExtensionPoint,
+  topBarCenterExtensionPoint,
+  topBarLeftExtensionPoint,
+  topBarRightExtensionPoint
+} from '../../extensionPoints'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 
@@ -117,11 +114,6 @@ const isSideBarToggleDisabled = computed(() => {
   return isRuntimeRoute(unref(router.currentRoute))
 })
 
-const contentOnLeftPortal = ref(false)
-const updateLeftPortal = (newContent: { hasContent: boolean; sources: string[] }) => {
-  contentOnLeftPortal.value = newContent.hasContent
-}
-
 const sidebarLogoAlt = computed(() => {
   return $gettext('Navigate to personal files page')
 })
@@ -147,6 +139,10 @@ const feedbackLinkOptions = computed(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #oc-topbar:has(> :last-child:nth-child(4)) .topbar-center {
+    @apply hidden;
+  }
+
   #oc-topbar .oc-logo-image {
     image-rendering: auto;
     image-rendering: crisp-edges;
