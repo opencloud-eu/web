@@ -67,9 +67,20 @@ export interface Props {
    * @docs The title of the bottom drawer.
    */
   title?: string
+  /**
+   * @docs Whether the component should register a click handler on the toggle element. Set this to false if you want to control the drawer programmatically and don't want the component to interfere with the toggle element.
+   * @default true
+   */
+  registerClickHandler?: boolean
 }
 
-const { drawerId, toggle, closeOnClick = false, title = '' } = defineProps<Props>()
+const {
+  drawerId,
+  toggle,
+  closeOnClick = false,
+  title = '',
+  registerClickHandler = true
+} = defineProps<Props>()
 
 export interface Emits {
   /**
@@ -154,7 +165,7 @@ onKeyStroke('Escape', (e) => {
 })
 
 onMounted(() => {
-  if (!unref(toggle)) {
+  if (!unref(toggle) || !registerClickHandler) {
     return
   }
 
@@ -162,7 +173,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  document.querySelector(toggle)?.removeEventListener('click', show)
+  if (registerClickHandler) {
+    document.querySelector(toggle)?.removeEventListener('click', show)
+  }
+
   if (unref(drawer)) {
     closeDrawer(unref(drawer).id)
   }

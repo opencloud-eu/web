@@ -6,6 +6,7 @@
     :toggle="toggle"
     :close-on-click="closeOnClick"
     :title="title"
+    :register-click-handler="mode !== 'manual'"
     @show="emit('showDrop')"
     @hide="emit('hideDrop')"
   >
