@@ -58,7 +58,7 @@
               <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
             </oc-button>
             <div class="ml-auto flex items-center min-w-0">
-              <MailSavedHint :show="showSavedHint" />
+              <MailSavedHint v-if="showSavedHint" />
             </div>
           </div>
         </div>
@@ -147,7 +147,7 @@ import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { useSavedHint } from '../composables/useSavedHint'
 import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
 import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
-import { plainTextForChangeCheck, plainTextForSave } from '../helpers/mailComposeText'
+import { plainTextFromHtml } from '../helpers/mailComposeText'
 
 const { $gettext } = useGettext()
 
@@ -232,7 +232,7 @@ const hasMeaningfulChanges = computed(() => {
   const cc = (state.cc ?? '').trim()
   const bcc = (state.bcc ?? '').trim()
   const subject = (state.subject ?? '').trim()
-  const bodyText = plainTextForChangeCheck(state.body ?? '')
+  const bodyText = plainTextFromHtml(state.body ?? '')
   const attachments = state.attachments ?? []
 
   return !!to || !!cc || !!bcc || !!subject || !!bodyText || attachments.length > 0
@@ -246,7 +246,7 @@ const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = 
     const state = unref(composeState)
 
     const bodyHtml = state.body ?? ''
-    const bodyPlain = plainTextForSave(bodyHtml)
+    const bodyPlain = plainTextFromHtml(bodyHtml)
 
     const hasText = bodyPlain.length > 0
     const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
@@ -266,11 +266,11 @@ const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = 
         ...(hasHtml ? { h: { value: bodyHtml } } : {})
       },
 
-      attachments: (state.attachments ?? []).map((a: any) => ({
-        blobId: a.blobId,
-        name: a.name,
-        type: a.type,
-        disposition: a.disposition ?? 'attachment'
+      attachments: (state.attachments ?? []).map((attachment: any) => ({
+        blobId: attachment.blobId,
+        name: attachment.name,
+        type: attachment.type,
+        disposition: attachment.disposition ?? 'attachment'
       }))
     }
   }

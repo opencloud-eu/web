@@ -1,8 +1,15 @@
-import { watch, onBeforeUnmount, toValue, type MaybeRefOrGetter } from 'vue'
+import { watch, onBeforeUnmount, toValue, type Ref } from 'vue'
 
-export const useAutoSaveDraft = <T>(opts: {
-  isOpen: MaybeRefOrGetter<boolean>
-  canAutoSaveNow: MaybeRefOrGetter<boolean>
+export const useAutoSaveDraft = <T>( {
+  isOpen,
+  canAutoSaveNow,
+  intervalMs,
+  save,
+  onSaved,
+  onError
+}: {
+  isOpen: Ref<boolean>
+  canAutoSaveNow: Ref<boolean>
   intervalMs: number
   save: () => Promise<T | null | undefined>
   onSaved?: (result: T) => void
@@ -29,22 +36,22 @@ export const useAutoSaveDraft = <T>(opts: {
         return
       }
 
-      if (!toValue(opts.canAutoSaveNow)) {
+      if (!toValue(canAutoSaveNow)) {
         scheduleNext()
         return
       }
 
       try {
-        const res = await opts.save()
+        const res = await save()
         if (res) {
-          opts.onSaved?.(res)
+          onSaved?.(res)
         }
       } catch (error) {
-        opts.onError?.(error)
+        onError?.(error)
       } finally {
         scheduleNext()
       }
-    }, opts.intervalMs)
+    }, intervalMs)
   }
 
   const start = () => {
@@ -56,7 +63,7 @@ export const useAutoSaveDraft = <T>(opts: {
   }
 
   watch(
-    () => toValue(opts.isOpen),
+    () => toValue(isOpen),
     (open) => {
       if (open) {
         start()

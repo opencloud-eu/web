@@ -1,4 +1,4 @@
-import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed, Ref, ref, toValue, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 
 export type DraftEmailPayload = Record<string, any> & {
@@ -24,8 +24,8 @@ export type MailDraftApi = {
 }
 
 export const useSaveAsDraft = (opts: {
-  accountId: MaybeRefOrGetter<string>
-  draftMailboxId: MaybeRefOrGetter<string>
+  accountId: Ref<string>
+  draftMailboxId: Ref<string>
   api: MailDraftApi
   getDraftPayload: () =>
     | Omit<DraftEmailPayload, 'mailboxIds' | 'keywords'>
@@ -36,12 +36,12 @@ export const useSaveAsDraft = (opts: {
   const isDirty = ref(false)
 
   const canSave = computed(() => {
-    return !!toValue(opts.accountId) && !!toValue(opts.draftMailboxId)
+    return !!unref(opts.accountId) && !!unref(opts.draftMailboxId)
   })
 
   const saveDraftTask = useTask(function* () {
-    const accountId = toValue(opts.accountId)
-    const draftMailboxId = toValue(opts.draftMailboxId)
+    const accountId = unref(opts.accountId)
+    const draftMailboxId = unref(opts.draftMailboxId)
     if (!accountId || !draftMailboxId) {
       return null
     }
@@ -67,7 +67,7 @@ export const useSaveAsDraft = (opts: {
   }).restartable()
 
   const discardDraftTask = useTask(function* () {
-    const accountId = toValue(opts.accountId)
+    const accountId = unref(opts.accountId)
     if (!accountId || !draftId.value) {
       return
     }
