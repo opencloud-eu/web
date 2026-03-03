@@ -41,7 +41,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 const { requestExtensions } = useExtensionRegistry()
 const { isMobile } = useIsMobile()
 
-const isDisabled = ref(false)
+const isDisabled = ref(true)
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({

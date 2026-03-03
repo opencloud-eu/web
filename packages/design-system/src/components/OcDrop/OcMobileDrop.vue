@@ -1,5 +1,5 @@
 <template>
-  <portal v-if="isActive" to="app.runtime.bottom.drawer">
+  <teleport v-if="isActive" to="#app-runtime-bottom-drawer">
     <oc-bottom-drawer
       :id="drawerId"
       :is-drawer-active="isCurrentlyOnTop"
@@ -36,7 +36,7 @@
         </div>
       </oc-card>
     </oc-bottom-drawer>
-  </portal>
+  </teleport>
 </template>
 
 <script setup lang="ts">

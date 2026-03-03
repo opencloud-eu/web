@@ -8,10 +8,6 @@ import OcTextInput from './OcTextInput.vue'
 import { PasswordPolicy } from '../../helpers'
 import { mock } from 'vitest-mock-extended'
 
-vi.mock('portal-vue', () => ({
-  PortalTarget: undefined
-}))
-
 vi.mock('lodash-es', () => ({
   debounce: (fn: any) => fn,
   kebabCase: (str: string) => str
@@ -65,7 +61,8 @@ describe('OcTextInput', () => {
         ...options.props
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        stubs: { Teleport: true }
       }
     })
   }
