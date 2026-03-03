@@ -33,6 +33,7 @@
         <router-link
           v-if="item.to"
           :aria-current="getAriaCurrent(index)"
+          :aria-label="item.ariaLabel"
           :to="item.to"
           class="first:text-base text-xl text-role-on-surface"
         >
@@ -43,6 +44,7 @@
         <oc-button
           v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
+          :aria-label="item.ariaLabel"
           appearance="raw-inverse"
           color-role="surface"
           class="flex first:text-base text-xl"
@@ -301,7 +303,8 @@ const renderBreadcrumb = async () => {
       displayItems.value[placeholderIndex] = {
         ...unref(displayItems)[placeholderIndex],
         to: lastHidden.to as BreadcrumbItem['to'],
-        onClick: lastHidden.onClick
+        onClick: lastHidden.onClick,
+        ariaLabel: lastHidden.text
       }
     }
   }

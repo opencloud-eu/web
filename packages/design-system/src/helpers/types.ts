@@ -74,6 +74,7 @@ export interface BreadcrumbItem {
   onClick?: () => void
   isTruncationPlaceholder?: boolean
   isStaticNav?: boolean
+  ariaLabel?: string
 }
 
 export type AppearanceType = 'filled' | 'outline' | 'raw' | 'raw-inverse'
