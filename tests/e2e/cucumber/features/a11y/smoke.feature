@@ -93,11 +93,11 @@ Feature: Accessibility checks
 
     # notifications
     And "Brian" opens notifications dropdown
-    And "Brian" checks the accessibility of the DOM selector "#oc-notifications-drop" on the "notifications dropdown"
+    And "Brian" checks the accessibility of the DOM selector "#oc-notifications-drop.oc-drop" on the "notifications dropdown"
 
     # apps menu
     And "Brian" opens the apps menu
-    And "Brian" checks the accessibility of the DOM selector "#app-switcher-dropdown" on the "apps menu"
+    And "Brian" checks the accessibility of the DOM selector "#app-switcher-dropdown.oc-drop" on the "apps menu"
 
 
     ## 3. left sidebar web-nav-sidebar
