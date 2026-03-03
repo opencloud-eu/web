@@ -83,14 +83,14 @@ describe('oidcCallback page', () => {
       window.postMessage(
         {
           name: 'opencloud-embed:update-token',
-          data: { access_token: 'access-token' }
+          data: { access_token: 'access-token', session_id: 'session-id' }
         },
         '*'
       )
 
       await new Promise<void>((resolve) => setTimeout(() => resolve(), 10))
 
-      expect(signInCallbackSpy).toHaveBeenCalledWith('access-token')
+      expect(signInCallbackSpy).toHaveBeenCalledWith('access-token', 'session-id')
     })
 
     it('when token update event is received but name is incorrect does not call signInCallback', async () => {

@@ -132,6 +132,11 @@ export class UserManager extends OidcUserManager {
     return user?.access_token
   }
 
+  async getSessionId(): Promise<string | null> {
+    const user = await this.getUser()
+    return user?.profile?.sid
+  }
+
   async removeUser(unloadReason: UnloadReason = 'logout') {
     this._unloadReason = unloadReason
     await super.removeUser()
@@ -155,7 +160,7 @@ export class UserManager extends OidcUserManager {
     }
   }
 
-  updateContext(accessToken: string, fetchUserData: boolean) {
+  updateContext(accessToken: string, sessionId: string, fetchUserData: boolean) {
     const userKnown = !!this.userStore.user
     const accessTokenChanged = this.authStore.accessToken !== accessToken
     if (!accessTokenChanged) {
@@ -163,6 +168,7 @@ export class UserManager extends OidcUserManager {
     }
 
     this.authStore.setAccessToken(accessToken)
+    this.authStore.setSessionId(sessionId)
 
     this.updateAccessTokenPromise = (async () => {
       if (!fetchUserData) {
