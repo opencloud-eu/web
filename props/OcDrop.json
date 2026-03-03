@@ -21,25 +21,18 @@
     "type": "string"
   },
   {
-    "name": "isNestedElement",
-    "required": false,
-    "description": "Determines if the drop element is nested.",
-    "default": "false",
-    "type": "boolean"
-  },
-  {
     "name": "mode",
     "required": false,
-    "description": "Determines the event that triggers the drop.",
+    "description": "Determines the event that triggers the drop. `manual` can be used to control the drop programmatically via the exposed `show` and `hide` methods.",
     "default": "'click'",
     "type": "'click' | 'hover' | 'manual'"
   },
   {
     "name": "offset",
     "required": false,
-    "description": "The visual offset of the drop.",
-    "default": "[0, 0]",
-    "type": "TippyProps['offset']"
+    "description": "The vertical offset of the drop.",
+    "default": "5",
+    "type": "number"
   },
   {
     "name": "paddingSize",
@@ -49,25 +42,11 @@
     "type": "SizeType | 'remove'"
   },
   {
-    "name": "popperOptions",
-    "required": false,
-    "description": "The popper options of the drop. Please refer to the component source for more information.",
-    "default": "",
-    "type": "TippyProps['popperOptions']"
-  },
-  {
     "name": "position",
     "required": false,
-    "description": "The position of the drop.",
+    "description": "The position of the drop. Check the floating-ui documentation for more details on the type.",
     "default": "'bottom-start'",
-    "type": "| 'top-start'\n    | 'right-start'\n    | 'bottom-start'\n    | 'left-start'\n    | 'auto-start'\n    | 'top-end'\n    | 'right-end'\n    | 'bottom-end'\n    | 'left-end'\n    | 'auto-end'"
-  },
-  {
-    "name": "target",
-    "required": false,
-    "description": "Element selector that can be used as a target of the drop.",
-    "default": "",
-    "type": "string"
+    "type": "Placement"
   },
   {
     "name": "toggle",

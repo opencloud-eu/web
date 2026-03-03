@@ -26,5 +26,12 @@
     "description": "The title of the bottom drawer.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "registerClickHandler",
+    "required": false,
+    "description": "Whether the component should register a click handler on the toggle element. Set this to false if you want to control the drawer programmatically and don't want the component to interfere with the toggle element.",
+    "default": "true",
+    "type": "boolean"
   }
 ]
