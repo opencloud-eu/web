@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @ScharfViktor, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
 
 ### 🔒 Security
 
@@ -15,6 +15,10 @@
 - fix(deps): update dependency lodash-es to v4.17.23 [security] [[#1858](https://github.com/opencloud-eu/web/pull/1858)]
 - chore(deps): bump preact to v10.28.2 [security] [[#1824](https://github.com/opencloud-eu/web/pull/1824)]
 - chore(deps): bump qs to v6.14.1 [security] [[#1813](https://github.com/opencloud-eu/web/pull/1813)]
+
+### 🐛 Bug Fixes
+
+- [stable-4.2] fix: backchannel logout react to sid (#1969) [[#2060](https://github.com/opencloud-eu/web/pull/2060)]
 
 ### ✅ Tests
 
