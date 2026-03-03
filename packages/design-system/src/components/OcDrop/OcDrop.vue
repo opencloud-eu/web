@@ -24,7 +24,7 @@
         <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
           <slot />
         </oc-card>
-        <slot name="special" />
+        <slot v-else name="special" />
       </div>
     </Transition>
   </template>
@@ -78,7 +78,7 @@ export interface Props {
    */
   paddingSize?: SizeType | 'remove'
   /**
-   * @docs The position of the drop. Check the floating-ui document for more details on the type.
+   * @docs The position of the drop. Check the floating-ui documentation for more details on the type.
    * @default 'bottom-start'
    */
   position?: Placement
