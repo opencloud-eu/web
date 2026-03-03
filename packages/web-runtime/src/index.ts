@@ -236,6 +236,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
           userStore,
           previewService,
           configStore,
+          authStore,
           router
         })
       }

@@ -863,6 +863,7 @@ export const registerSSEEventListeners = ({
   previewService,
   configStore,
   userStore,
+  authStore,
   router
 }: {
   language: Language
@@ -874,6 +875,7 @@ export const registerSSEEventListeners = ({
   previewService: PreviewService
   configStore: ConfigStore
   userStore: UserStore
+  authStore: AuthStore
   router: Router
 }): void => {
   const resourceQueue = new PQueue({
@@ -898,7 +900,8 @@ export const registerSSEEventListeners = ({
     previewService,
     language,
     router,
-    resourceQueue
+    resourceQueue,
+    authStore
   } satisfies Partial<SseEventWrapperOptions>
 
   clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.ITEM_RENAMED, (msg) =>
