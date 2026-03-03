@@ -16,6 +16,16 @@
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
 
+### 🐛 Bug Fixes
+
+- fix: admin settings layout [[#2062](https://github.com/opencloud-eu/web/pull/2062)]
+- fix: backchannel logout react to sid [[#1969](https://github.com/opencloud-eu/web/pull/1969)]
+- fix: broken AvatarImage usages [[#2042](https://github.com/opencloud-eu/web/pull/2042)]
+- fix(files): prevent selection reset during keyboard navigation [[#2044](https://github.com/opencloud-eu/web/pull/2044)]
+- fix: prevent 'New'-button flicker when navigating [[#2026](https://github.com/opencloud-eu/web/pull/2026)]
+- fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
+- fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
+
 ### 📈 Enhancement
 
 - feat: add polished icons for no content message [[#2033](https://github.com/opencloud-eu/web/pull/2033)]
@@ -26,15 +36,6 @@
 - feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
 - feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
 - feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
-
-### 🐛 Bug Fixes
-
-- fix: backchannel logout react to sid [[#1969](https://github.com/opencloud-eu/web/pull/1969)]
-- fix: broken AvatarImage usages [[#2042](https://github.com/opencloud-eu/web/pull/2042)]
-- fix(files): prevent selection reset during keyboard navigation [[#2044](https://github.com/opencloud-eu/web/pull/2044)]
-- fix: prevent 'New'-button flicker when navigating [[#2026](https://github.com/opencloud-eu/web/pull/2026)]
-- fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
-- fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
 
 ### ✅ Tests
 
