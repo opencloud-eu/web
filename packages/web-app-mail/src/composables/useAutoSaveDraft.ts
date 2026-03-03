@@ -1,4 +1,4 @@
-import { watch, onBeforeUnmount, toValue, type Ref } from 'vue'
+import { watch, onBeforeUnmount, type Ref, unref } from 'vue'
 
 export const useAutoSaveDraft = <T>({
   isOpen,
@@ -36,7 +36,7 @@ export const useAutoSaveDraft = <T>({
         return
       }
 
-      if (!toValue(canAutoSaveNow)) {
+      if (!unref(canAutoSaveNow)) {
         scheduleNext()
         return
       }
@@ -63,7 +63,7 @@ export const useAutoSaveDraft = <T>({
   }
 
   watch(
-    () => toValue(isOpen),
+    () => unref(isOpen),
     (open) => {
       if (open) {
         start()
