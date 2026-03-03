@@ -6,7 +6,6 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
-import { displayPositionedDropdown } from '@opencloud-eu/web-pkg'
 import { nextTick } from 'vue'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
@@ -84,7 +83,6 @@ const selectors = {
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  displayPositionedDropdown: vi.fn(),
   queryItemAsString: vi.fn()
 }))
 
@@ -128,18 +126,6 @@ describe('SpacesList', () => {
     ;(wrapper.vm as any).filterTerm = 'Another'
     await nextTick()
     expect((wrapper.vm as any).items).toEqual([spaceMocks[1]])
-  })
-  it('should show the context menu on right click', async () => {
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ spaces: spaceMocks })
-    await wrapper.find(`[data-item-id="${spaceMocks[0].id}"]`).trigger('contextmenu')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
-  })
-  it('should show the context menu on context menu button click', async () => {
-    const spyDisplayPositionedDropdown = vi.mocked(displayPositionedDropdown)
-    const { wrapper } = getWrapper({ spaces: spaceMocks })
-    await wrapper.find('.spaces-table-btn-action-dropdown').trigger('click')
-    expect(spyDisplayPositionedDropdown).toHaveBeenCalledTimes(1)
   })
   it('should show the space details on details button click', async () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })

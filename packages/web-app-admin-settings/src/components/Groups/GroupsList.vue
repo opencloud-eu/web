@@ -32,7 +32,7 @@
     :hover="true"
     padding-x="medium"
     @sort="handleSort"
-    @contextmenu-clicked="showContextMenuOnRightClick"
+    @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
     @highlight="rowClicked"
   >
     <template #selectHeader>
@@ -104,7 +104,7 @@
         <oc-icon name="pencil" fill-type="line" />
       </oc-button>
       <context-menu-quick-action
-        ref="contextMenuButtonRef"
+        :ref="(el: any) => (contextMenuDrops[item.id] = el?.drop)"
         :item="item"
         :title="item.displayName"
         class="groups-table-btn-action-dropdown"
@@ -134,16 +134,13 @@ import {
   onMounted,
   ref,
   unref,
-  useTemplateRef,
   watch
 } from 'vue'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 import {
-  ContextMenuBtnClickEventData,
   ContextMenuQuickAction,
   defaultFuseOptions,
-  displayPositionedDropdown,
   eventBus,
   Pagination,
   useFileListHeaderPosition,
@@ -166,6 +163,7 @@ import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'GroupsList',
@@ -173,8 +171,7 @@ export default defineComponent({
   setup() {
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-    const contextMenuButtonRef =
-      useTemplateRef<ComponentPublicInstance<typeof ContextMenuQuickAction>>('contextMenuButtonRef')
+    const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
     const sortBy = ref<keyof Group>('displayName')
     const sortDir = ref<SortDir>(SortDir.Asc)
     const filterTerm = ref('')
@@ -249,30 +246,15 @@ export default defineComponent({
       unselectAllGroups()
       selectGroup(resource)
     }
-    const showContextMenuOnBtnClick = (data: ContextMenuBtnClickEventData, group: Group) => {
-      const { dropdown, event } = data
-      if (dropdown?.tippy === undefined) {
-        return
-      }
-      if (!isGroupSelected(group)) {
-        groupSettingsStore.setSelectedGroups([group])
-      }
-      displayPositionedDropdown(dropdown.tippy, event, unref(contextMenuButtonRef))
+    const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, group: Group) => {
+      unref(contextMenuDrops)[group.id]?.show({ event })
     }
-    const showContextMenuOnRightClick = (
-      row: ComponentPublicInstance<unknown>,
-      event: MouseEvent,
-      group: Group
-    ) => {
+    const showContextMenuOnRightClick = (event: MouseEvent, group: Group) => {
       event.preventDefault()
-      const dropdown = row.$el.getElementsByClassName('groups-table-btn-action-dropdown')[0]
-      if (dropdown === undefined) {
-        return
-      }
       if (!isGroupSelected(group)) {
         groupSettingsStore.setSelectedGroups([group])
       }
-      displayPositionedDropdown(dropdown._tippy, event, unref(contextMenuButtonRef))
+      unref(contextMenuDrops)[group.id]?.show({ event, useMouseAnchor: true })
     }
 
     const showEditPanel = (group: Group) => {
@@ -400,7 +382,7 @@ export default defineComponent({
       showContextMenuOnBtnClick,
       showContextMenuOnRightClick,
       fileListHeaderY,
-      contextMenuButtonRef,
+      contextMenuDrops,
       showEditPanel,
       readOnlyLabel,
       filterTerm,

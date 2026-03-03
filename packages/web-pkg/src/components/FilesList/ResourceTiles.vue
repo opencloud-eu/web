@@ -64,7 +64,9 @@
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
           :class="{ 'opacity-60': isResourceCut(resource) }"
-          @contextmenu="showContextMenuOnRightClick($event, resource)"
+          @contextmenu="
+            showContextMenuOnRightClick($event, resource, contextMenuDrops[resource.id])
+          "
           @file-name-clicked.stop="(event) => fileNameClicked({ resource, event })"
           @dragstart="dragStart(resource, $event)"
           @dragenter.prevent="setDropStyling(resource, false, $event)"
@@ -106,10 +108,18 @@
           <template #contextMenu>
             <context-menu-quick-action
               v-if="shouldShowContextDrop(resource)"
+              :ref="
+                (el) =>
+                  (contextMenuDrops[resource.id] = (
+                    el as ComponentPublicInstance<typeof ContextMenuQuickAction>
+                  )?.drop)
+              "
               :item="resource"
               :title="resource.name"
               class="resource-tiles-btn-action-dropdown"
-              @quick-action-clicked="showContextMenuOnBtnClick($event, resource)"
+              @quick-action-clicked="
+                showContextMenuOnBtnClick($event, resource, contextMenuDrops[resource.id])
+              "
             >
               <template #contextMenu>
                 <slot name="contextMenu" :resource="resource" />
@@ -138,7 +148,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  watch
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ContextMenuQuickAction } from '../ContextActions'
@@ -158,6 +176,7 @@ import {
 import { SizeType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { storeToRefs } from 'pinia'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const {
   resources = [],
@@ -242,6 +261,8 @@ const {
   selectedIds: computed(() => selectedIds),
   emit
 })
+
+const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy

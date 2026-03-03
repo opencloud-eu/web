@@ -2,8 +2,14 @@ import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-help
 import Drop from './OcDrop.vue'
 import { computed, nextTick } from 'vue'
 import { useIsMobile } from '../../composables'
+import { computePosition, ComputePositionReturn } from '@floating-ui/dom'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../composables/useIsMobile')
+vi.mock('@floating-ui/dom', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  computePosition: vi.fn(() => ({}))
+}))
 
 const dom = ({
   position = 'auto',
@@ -35,10 +41,12 @@ describe('OcDrop', () => {
     }))
   })
 
-  it('handles dropId prop', () => {
+  it('handles dropId prop', async () => {
     for (let i = 0; i < 5; i++) {
       const wrapper = shallowMount(Drop)
-      expect(wrapper.attributes().id).toBe(`oc-drop-${i + 1}`)
+      wrapper.vm.show()
+      await nextTick()
+      expect(wrapper.find('div').attributes().id).toBe(`oc-drop-${i + 1}`)
     }
 
     for (let i = 0; i < 5; i++) {
@@ -48,67 +56,61 @@ describe('OcDrop', () => {
           dropId: id
         }
       })
-      expect(wrapper.attributes().id).toBe(id)
+      wrapper.vm.show()
+      await nextTick()
+      expect(wrapper.find('div').attributes().id).toBe(id)
     }
   })
 
-  describe('tippy', () => {
-    it('inits tippy', async () => {
+  describe('floating UI', () => {
+    it('applies the calculated position values for the drop', async () => {
+      vi.useFakeTimers()
+      vi.mocked(computePosition).mockResolvedValue({ x: 2, y: 3 } as ComputePositionReturn)
       const { wrapper } = dom()
-      await nextTick()
-
       const drop = wrapper.findComponent({ name: 'oc-drop' })
-      const tippy = drop.vm.tippyInstance
-
-      expect(tippy).toBeTruthy()
-      expect(tippy.reference).toBe(wrapper.find('#trigger').element)
-      expect(tippy.props.content).toBe(drop.vm.$refs.drop)
-    })
-
-    it('updates tippy', async () => {
-      const { wrapper } = dom()
-
-      await wrapper.setData({
-        position: 'left',
-        mode: 'hover'
-      })
-
-      const drop = wrapper.findComponent({ name: 'oc-drop' })
-      const tippy = drop.vm.tippyInstance
+      drop.vm.show()
       await nextTick()
-
-      expect(tippy.props.placement).toBe('left')
-      expect(tippy.props.trigger).toBe('mouseenter focus')
+      expect(wrapper.find('.oc-card').exists()).toBeTruthy()
+      vi.runAllTimers()
+      await flushPromises()
+      expect(wrapper.find('.oc-drop').attributes('style')).toContain('left: 2px;')
+      expect(wrapper.find('.oc-drop').attributes('style')).toContain('top: 3px;')
     })
-
-    it('renders tippy', async () => {
-      const { wrapper } = dom()
-      await nextTick()
-      const trigger = wrapper.find('#trigger')
-      const wait = async () => {
-        await wrapper.vm.$nextTick()
-        return new Promise((resolve) => setTimeout(resolve, 100))
-      }
-
-      await trigger.trigger('click') // show
-      await wait()
-      expect(wrapper.findComponent(Drop).exists()).toBeTruthy()
-      expect(trigger.attributes()['aria-expanded']).toBe('true')
-      expect(wrapper.element).toMatchSnapshot()
-
-      await trigger.trigger('click') // hide
-      await wait()
-      expect(trigger.attributes()['aria-expanded']).toBe('false')
-      expect(wrapper.element).toMatchSnapshot()
-
-      await wrapper.setData({
-        mode: 'hover'
+    describe('mode', () => {
+      it('registers a click handler on the anchor in click mode', async () => {
+        vi.useFakeTimers()
+        vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
+        const { wrapper } = dom({ mode: 'click' })
+        await wrapper.find('#trigger').trigger('click')
+        vi.runAllTimers()
+        await flushPromises()
+        expect(wrapper.find('.oc-drop').exists()).toBeTruthy()
       })
+      it('registers a mouseenter and /-leave handlers on the anchor in hover mode', async () => {
+        vi.useFakeTimers()
+        vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
+        const { wrapper } = dom({ mode: 'hover' })
+        const trigger = wrapper.find('#trigger')
 
-      await trigger.trigger('mouseenter') // show
-      await wait()
-      expect(trigger.attributes()['aria-expanded']).toBe('true')
-      expect(wrapper.element).toMatchSnapshot()
+        await trigger.trigger('mouseenter')
+        vi.runAllTimers()
+        await flushPromises()
+        expect(wrapper.find('.oc-drop').exists()).toBeTruthy()
+
+        await trigger.trigger('mouseleave')
+        vi.runAllTimers()
+        await flushPromises()
+        expect(wrapper.find('.oc-drop').exists()).toBeFalsy()
+      })
+      it('does not register any event handler on the anchor in manual mode', async () => {
+        vi.useFakeTimers()
+        vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
+        const { wrapper } = dom({ mode: 'manual' })
+        await wrapper.find('#trigger').trigger('click')
+        vi.runAllTimers()
+        await flushPromises()
+        expect(wrapper.find('.oc-drop').exists()).toBeFalsy()
+      })
     })
   })
 

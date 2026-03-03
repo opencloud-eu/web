@@ -7,7 +7,6 @@ export * from './ui'
 
 export * from './breadcrumbs'
 export * from './clipboardActions'
-export * from './contextMenuDropdown'
 export * from './datetime'
 export * from './download'
 export * from './filesize'

@@ -161,15 +161,6 @@ describe('GenericSpace view', () => {
       expect(wrapper.find('.file-empty-upload-hint').exists()).toBeFalsy()
     })
   })
-  describe('whitespace context menu', () => {
-    it('shows whitespace context menu on right click in whitespace', async () => {
-      const { wrapper } = getMountedWrapper()
-      await wrapper.vm.loadResourcesTask.last
-      await wrapper.find('#files-view').trigger('contextmenu')
-      await wrapper.vm.$nextTick()
-      expect(wrapper.vm.whitespaceContextMenu).toBeDefined()
-    })
-  })
   describe('for a single file', () => {
     describe('on EOS for single shared resources', () => {
       it('renders the ResourceDetails component if no currentFolder id is present', () => {

@@ -22,6 +22,10 @@ async function checkAccessibility(
   includeSelector: string
 ): Promise<void> {
   await expect(page.locator(includeSelector)).toBeVisible()
+  if (includeSelector.includes('oc-drop')) {
+    // wait for drop animation
+    await page.waitForTimeout(300)
+  }
   const builder = new AxeBuilder({ page }).withTags(a11yRuleTags).include(includeSelector)
   const results = await builder.analyze()
 

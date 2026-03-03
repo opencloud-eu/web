@@ -5,6 +5,7 @@ import { sidebar, editor } from '../utils'
 import Collaborator, { ICollaborator } from '../share/collaborator'
 import { createLink } from '../link/actions'
 import { File } from '../../../types'
+import { closeNotifications } from '../../../utils/closeNotifications'
 
 const newSpaceMenuButton = '.oc-app-floating-action-button'
 const spaceContextMenuButton = '#space-context-btn'
@@ -110,6 +111,7 @@ export const changeSpaceName = async (args: {
   ])
 
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 /**/
@@ -136,6 +138,7 @@ export const changeSpaceSubtitle = async (args: {
   ])
 
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 /**/
@@ -164,6 +167,7 @@ export const changeSpaceDescription = async (args: {
     page.locator(spacesDescriptionSaveTextFileInEditorButton).click()
   ])
   await editor.close(page)
+  await closeNotifications({ page })
 }
 
 /**/
@@ -194,6 +198,7 @@ export const changeQuota = async (args: {
   ])
 
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 export interface SpaceMembersArgs {
@@ -244,6 +249,7 @@ export const changeSpaceImage = async (args: {
   ])
 
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 export const changeSpaceIcon = async (args: {
@@ -279,6 +285,7 @@ export const changeSpaceIcon = async (args: {
     page.locator(`button[aria-label="${icon}"]`).first().click()
   ])
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 export const deleteSpaceImage = async (args: {
@@ -313,6 +320,7 @@ export const deleteSpaceImage = async (args: {
     deleteTrigger.click()
   ])
   !contextMenu && (await sidebar.close({ page }))
+  await closeNotifications({ page })
 }
 
 export interface removeAccessMembersArgs extends Omit<SpaceMembersArgs, 'users'> {
