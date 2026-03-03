@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: faulty french translation for 'copy link and password' results i… [[#2061](https://github.com/opencloud-eu/web/pull/2061)]
 - [stable-4.2] fix: backchannel logout react to sid (#1969) [[#2060](https://github.com/opencloud-eu/web/pull/2060)]
 
 ### ✅ Tests
