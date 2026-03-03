@@ -31,7 +31,7 @@
         @drop="dropItemEvent(item, index)"
       >
         <router-link
-          v-if="item.to && !item.isTruncationPlaceholder"
+          v-if="item.to"
           :aria-current="getAriaCurrent(index)"
           :to="item.to"
           class="first:text-base text-xl text-role-on-surface"
@@ -41,7 +41,7 @@
           }}</span>
         </router-link>
         <oc-button
-          v-else-if="item.onClick && !item.isTruncationPlaceholder"
+          v-else-if="item.onClick"
           :aria-current="getAriaCurrent(index)"
           appearance="raw-inverse"
           color-role="surface"
@@ -64,13 +64,6 @@
             v-text="item.text"
           />
         </oc-button>
-        <span
-          v-else-if="item.isTruncationPlaceholder"
-          class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
-          tabindex="-1"
-          aria-hidden="true"
-          v-text="item.text"
-        />
         <span
           v-else
           class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
@@ -284,21 +277,34 @@ const reduceBreadcrumb = (offsetIndex: number) => {
   reduceBreadcrumb(offsetIndex)
 }
 
-const renderBreadcrumb = () => {
+const renderBreadcrumb = async () => {
   displayItems.value = [...items]
-  if (displayItems.value.length > truncationOffset - 1) {
+
+  if (unref(displayItems).length > truncationOffset - 1) {
     displayItems.value.splice(truncationOffset - 1, 0, {
       text: '...',
       allowContextActions: false,
-      to: {} as BreadcrumbItem['to'],
       isTruncationPlaceholder: true
     })
   }
-  visibleItems.value = [...displayItems.value]
+
+  visibleItems.value = [...unref(displayItems)]
   hiddenItems.value = []
-  nextTick(() => {
-    reduceBreadcrumb(truncationOffset)
-  })
+
+  await nextTick()
+  reduceBreadcrumb(truncationOffset)
+
+  const lastHidden = unref(hiddenItems)[unref(hiddenItems).length - 1]
+  if (lastHidden) {
+    const placeholderIndex = unref(displayItems).findIndex((item) => item.isTruncationPlaceholder)
+    if (placeholderIndex !== -1) {
+      displayItems.value[placeholderIndex] = {
+        ...unref(displayItems)[placeholderIndex],
+        to: lastHidden.to as BreadcrumbItem['to'],
+        onClick: lastHidden.onClick
+      }
+    }
+  }
 }
 
 watch([() => maxWidth, () => items], renderBreadcrumb, { immediate: true })

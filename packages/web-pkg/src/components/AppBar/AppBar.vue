@@ -22,7 +22,6 @@
           :show-context-actions="showContextActions"
           :items="breadcrumbs"
           :max-width="breadcrumbMaxWidth"
-          :truncation-offset="breadcrumbTruncationOffset"
           :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
           @item-dropped-breadcrumb="fileDroppedBreadcrumb"
         >
@@ -70,7 +69,6 @@ import { computed, defineComponent, inject, PropType, ref, Ref, unref, useSlots 
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
-  isShareSpaceResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
@@ -255,12 +253,6 @@ export default defineComponent({
       return props.breadcrumbs.length <= 1
     })
 
-    const breadcrumbTruncationOffset = computed(() => {
-      if (!unref(space)) {
-        return 2
-      }
-      return isProjectSpaceResource(unref(space)) || isShareSpaceResource(unref(space)) ? 3 : 2
-    })
     const fileDroppedBreadcrumb = (data: RouteLocationRaw) => {
       emit(EVENT_ITEM_DROPPED, data)
     }
@@ -280,7 +272,6 @@ export default defineComponent({
       showBreadcrumb,
       showMobileNav,
       breadcrumbMaxWidth,
-      breadcrumbTruncationOffset,
       fileDroppedBreadcrumb,
       pageTitle,
       selectedResources,
