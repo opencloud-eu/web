@@ -93,7 +93,7 @@ const nameWithFillType = computed(() => {
 const tailwindSize = computed(() => ({
   'size-3': size === 'xsmall',
   'size-4': size === 'small',
-  'size-5.5': size === 'medium',
+  'size-5': size === 'medium',
   'size-8': size === 'large',
   'size-12': size === 'xlarge',
   'size-22': size === 'xxlarge',
