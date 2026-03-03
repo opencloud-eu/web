@@ -17,7 +17,6 @@
         :key="index"
         :data-key="index"
         :data-item-id="item.id"
-        :aria-hidden="item.isTruncationPlaceholder"
         :class="[
           'oc-breadcrumb-list-item',
           'flex',
