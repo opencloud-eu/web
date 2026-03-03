@@ -377,6 +377,8 @@ export const createNewFolder = async ({
 
 export const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
   const { page, name, type, content } = args
+  await page.locator(addNewResourceButton).waitFor({ state: 'visible' })
+  await expect(page.locator(addNewResourceButton)).toBeEnabled()
   await page.locator(addNewResourceButton).click()
   switch (type) {
     case 'folder': {
