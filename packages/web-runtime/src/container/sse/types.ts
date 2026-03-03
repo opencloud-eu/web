@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  AuthStore,
   ClientService,
   ConfigStore,
   MessageStore,
@@ -19,7 +20,8 @@ export const eventSchema = z.object({
   spaceid: z.string().optional(),
   initiatorid: z.string().optional(),
   etag: z.string().optional(),
-  affecteduserids: z.array(z.string()).optional().nullable()
+  affecteduserids: z.array(z.string()).optional().nullable(),
+  sessionid: z.string().optional()
 })
 
 export type EventSchemaType = z.infer<typeof eventSchema>
@@ -31,6 +33,7 @@ export interface SSEEventOptions {
   messageStore: MessageStore
   sharesStore: SharesStore
   configStore: ConfigStore
+  authStore: AuthStore
   clientService: ClientService
   previewService: PreviewService
   router: Router

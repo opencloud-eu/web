@@ -4,6 +4,7 @@ import { PublicLinkType } from '@opencloud-eu/web-client'
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string>()
+  const sessionId = ref<string>()
   const idpContextReady = ref(false)
   const userContextReady = ref(false)
   const publicLinkToken = ref<string>()
@@ -13,6 +14,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setAccessToken = (value: string) => {
     accessToken.value = value
+  }
+  const setSessionId = (value: string) => {
+    sessionId.value = value
   }
   const setIdpContextReady = (value: boolean) => {
     idpContextReady.value = value
@@ -34,6 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const clearUserContext = () => {
     setAccessToken(null)
+    setSessionId(null)
     setIdpContextReady(null)
     setUserContextReady(null)
   }
@@ -49,6 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     accessToken,
+    sessionId,
     idpContextReady,
     userContextReady,
     publicLinkToken,
@@ -57,6 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkContextReady,
 
     setAccessToken,
+    setSessionId,
     setIdpContextReady,
     setUserContextReady,
     setPublicLinkContext,

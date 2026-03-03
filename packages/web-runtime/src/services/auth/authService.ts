@@ -164,7 +164,7 @@ export class AuthService implements AuthServiceInterface {
             `New User Loaded. access_token： ${user.access_token}, refresh_token: ${user.refresh_token}`
           )
           try {
-            await this.userManager.updateContext(user.access_token, fetchUserData)
+            await this.userManager.updateContext(user.access_token, user.profile.sid, fetchUserData)
           } catch (e) {
             console.error(e)
             await this.handleAuthError(unref(this.router.currentRoute))
@@ -211,12 +211,15 @@ export class AuthService implements AuthServiceInterface {
 
       // relevant for page reload: token is already in userStore
       // no userLoaded event and no signInCallback gets triggered
-      const accessToken = await this.userManager.getAccessToken()
+      const user = await this.userManager.getUser()
+      const accessToken = user?.access_token
+      const sessionId = user?.profile?.sid
+
       if (accessToken) {
         console.debug('[authService:initializeContext] - updating context with saved access_token')
 
         try {
-          await this.userManager.updateContext(accessToken, fetchUserData)
+          await this.userManager.updateContext(accessToken, sessionId, fetchUserData)
 
           if (!this.tokenTimerInitialized) {
             const user = await this.userManager.getUser()
@@ -247,7 +250,7 @@ export class AuthService implements AuthServiceInterface {
   /**
    * Sign in callback gets called from the IDP after initial login.
    */
-  public async signInCallback(accessToken?: string) {
+  public async signInCallback(accessToken?: string, sessionId?: string) {
     try {
       if (
         this.configStore.options.embed.enabled &&
@@ -255,7 +258,7 @@ export class AuthService implements AuthServiceInterface {
         accessToken
       ) {
         console.debug('[authService:signInCallback] - setting access_token and fetching user')
-        await this.userManager.updateContext(accessToken, true)
+        await this.userManager.updateContext(accessToken, sessionId, true)
 
         // Setup a listener to handle token refresh
         console.debug('[authService:signInCallback] - adding listener to update-token event')
@@ -383,7 +386,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     console.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
-    return this.userManager.updateContext(event.data, false)
+    return this.userManager.updateContext(event.data.accesssToken, event.data.sessionId, false)
   }
 }
 
