@@ -56,7 +56,6 @@ describe('ContextActionMenu component', () => {
     expect(wrapper.html()).toMatchSnapshot()
 
     expect(wrapper.findAll('#oc-files-context-menu > ul').length).toEqual(menuSections.length)
-    expect(wrapper.findAll('.oc-files-context-action-drop').length).toEqual(3)
   })
 })
 

@@ -10,7 +10,6 @@ import * as directives from './directives'
 // fonts must be imported here to ensure they are included in the build
 import './styles/fonts.scss'
 import './styles/layers.css'
-import 'tippy.js/dist/tippy.css'
 
 let gettextInstance: ReturnType<typeof createGettext> | null = null
 

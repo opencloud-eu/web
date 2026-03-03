@@ -1,5 +1,6 @@
 export * as locatorUtils from './locator'
 export * from './runtimeFs'
+export * from './closeNotifications'
 export * from './dragDrop'
 export * from './datePicker'
 export * from './tokenHelper'

@@ -4,17 +4,19 @@
   </div>
   <div v-else>
     <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
-    <input
-      id="space-image-upload-input"
-      ref="spaceImageInput"
-      class="absolute left-[-99999px]"
-      type="file"
-      name="file"
-      multiple
-      tabindex="-1"
-      accept="image/jpeg, image/png"
-      @change="showModalImageSpace"
-    />
+    <div class="relative overflow-hidden">
+      <input
+        id="space-image-upload-input"
+        ref="spaceImageInput"
+        class="absolute left-[-99999px]"
+        type="file"
+        name="file"
+        multiple
+        tabindex="-1"
+        accept="image/jpeg, image/png"
+        @change="showModalImageSpace"
+      />
+    </div>
   </div>
 </template>
 

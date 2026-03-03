@@ -27,7 +27,9 @@
     :lazy="lazy"
     padding-x="medium"
     @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
-    @contextmenu-clicked="(el, event, item) => showContextMenuOnRightClick(event, item)"
+    @contextmenu-clicked="
+      (el, event, item) => showContextMenuOnRightClick(event, item, contextMenuDrops[item.id])
+    "
     @item-dropped="fileDropped($event[0], $event[1])"
     @item-dragged="dragStart($event[0], $event[1])"
     @drop-row-styling="setDropStyling"
@@ -38,7 +40,7 @@
       <div class="resource-table-select-all flex justify-center items-center">
         <oc-checkbox
           id="resource-table-select-all"
-          v-oc-tooltip="{ content: selectAllCheckboxLabel, placement: 'bottom' }"
+          v-oc-tooltip="selectAllCheckboxLabel"
           size="large"
           :label="selectAllCheckboxLabel"
           :disabled="resources.length === disabledResources.length"
@@ -114,7 +116,6 @@
       <slot name="additionalResourceContent" :resource="item" />
     </template>
     <template #syncEnabled="{ item }">
-      <!-- @slot syncEnabled column -->
       <slot name="syncEnabled" :resource="item" />
     </template>
     <template #size="{ item }">
@@ -239,11 +240,17 @@
       >
         <slot name="quickActions" :resource="item" />
         <context-menu-quick-action
+          :ref="
+            (el) =>
+              (contextMenuDrops[item.id] = (
+                el as ComponentPublicInstance<typeof ContextMenuQuickAction>
+              )?.drop)
+          "
           :title="item.name"
           :item="item"
           :resource-dom-selector="resourceDomSelector"
           class="resource-table-btn-action-dropdown"
-          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
+          @quick-action-clicked="showContextMenuOnBtnClick($event, item, contextMenuDrops[item.id])"
         >
           <template #contextMenu>
             <slot name="contextMenu" :resource="item" />
@@ -261,7 +268,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { ComponentPublicInstance, computed, ref, unref } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import {
   extractDomSelector,
@@ -299,7 +306,7 @@ import { FileActionOptions, useFileActionsRename } from '../../composables/actio
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
-import { OcButton, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
+import { OcButton, OcDrop, OcSpinner, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { useGettext } from 'vue3-gettext'
@@ -433,6 +440,8 @@ const { actions: renameActions } = useFileActionsRename()
 const { actions: renameActionsSpace } = useSpaceActionsRename()
 const renameHandler = computed(() => unref(renameActions)[0].handler)
 const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0].handler)
+
+const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
 const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
 

@@ -7,8 +7,7 @@
     "paths": {
       "@vue/shared": ["node_modules/@vue/shared/"],
       "@codemirror/autocomplete": ["./node_modules/@codemirror/autocomplete"],
-      "vue/jsx-runtime": ["./node_modules/vue/jsx-runtime"],
-      "@popperjs/core": ["./../design-system/node_modules/@popperjs/core"]
+      "vue/jsx-runtime": ["./node_modules/vue/jsx-runtime"]
     }
   },
 

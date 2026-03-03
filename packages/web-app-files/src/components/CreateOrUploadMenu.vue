@@ -7,7 +7,6 @@
     mode="click"
     close-on-click
     padding-size="small"
-    :offset="[-10, 0]"
     @show-drop="showDrop"
   >
     <oc-list
