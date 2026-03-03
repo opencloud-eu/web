@@ -1,9 +1,11 @@
 <template>
   <main class="flex app-content size-full rounded-l-xl">
-    <div class="admin-settings-wrapper flex-1 flex size-full flex-nowrap sm:flex-wrap">
+    <div
+      class="admin-settings-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0"
+    >
       <app-loading-spinner v-if="loading" />
       <template v-else>
-        <div id="admin-settings-view-wrapper" class="flex-1 size-full flex-wrap overflow-y-auto">
+        <div id="admin-settings-view-wrapper" class="outline-0 z-0 flex flex-col">
           <div
             id="admin-settings-app-bar"
             ref="appBarRef"

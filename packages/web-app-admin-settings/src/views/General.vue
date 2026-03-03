@@ -1,22 +1,20 @@
 <template>
-  <div>
-    <app-template
-      ref="template"
-      :breadcrumbs="[
-        {
-          text: $gettext('General')
-        }
-      ]"
-      :show-app-bar="false"
-      :side-bar-available-panels="sideBarAvailablePanels"
-    >
-      <template #mainContent>
-        <div class="px-4">
-          <InfoSection />
-        </div>
-      </template>
-    </app-template>
-  </div>
+  <app-template
+    ref="template"
+    :breadcrumbs="[
+      {
+        text: $gettext('General')
+      }
+    ]"
+    :show-app-bar="false"
+    :side-bar-available-panels="sideBarAvailablePanels"
+  >
+    <template #mainContent>
+      <div class="px-4">
+        <InfoSection />
+      </div>
+    </template>
+  </app-template>
 </template>
 
 <script setup lang="ts">

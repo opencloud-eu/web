@@ -90,11 +90,11 @@ describe('Projects view', () => {
     })
     it('lists all available project spaces', async () => {
       const spaces = spacesResources
-      const { wrapper } = getMountedWrapper({ spaces, stubResourceTable: true })
+      const { wrapper } = getMountedWrapper({ spaces })
       await flushPromises()
       expect(wrapper.html()).toMatchSnapshot()
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
-      expect(wrapper.find('.spaces-list').exists()).toBeTruthy()
+      expect(wrapper.find('.spaces-table').exists()).toBeTruthy()
     })
     it('shows only filtered spaces if filter applied', async () => {
       const { wrapper } = getMountedWrapper({ spaces: spacesResources })
@@ -142,8 +142,7 @@ function getMountedWrapper({
   abilities = [],
   stubAppBar = true,
   includeDisabled = false,
-  store = {},
-  stubResourceTable = false
+  store = {}
 }: {
   mocks?: Record<string, unknown>
   spaces?: SpaceResource[]
@@ -151,7 +150,6 @@ function getMountedWrapper({
   stubAppBar?: boolean
   includeDisabled?: boolean
   store?: PiniaMockOptions
-  stubResourceTable?: boolean
 } = {}) {
   const plugins = defaultPlugins({
     abilities,
@@ -202,8 +200,8 @@ function getMountedWrapper({
           ...defaultStubs,
           'space-context-actions': true,
           'app-bar': stubAppBar,
-          CreateSpace: true,
-          'resource-table': stubResourceTable
+          'resource-table': false,
+          CreateSpace: true
         }
       }
     })

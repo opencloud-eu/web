@@ -28,18 +28,18 @@
         <not-found-message
           v-if="folderNotFound"
           :space="space"
-          :class="{ 'h-[55vh]': isSpaceFrontpage }"
+          :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
           <space-header v-if="hasSpaceHeader" :space="space" class="px-4 mt-2" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
-            :class="{ 'h-[55vh]': isSpaceFrontpage }"
-            icon="folder"
+            :class="{ 'h-[40vh]': isSpaceFrontpage }"
+            img-src="/images/empty-states/folder.png"
           >
             <template #message>
-              <span v-text="$gettext('No resources found')" />
+              <span v-text="$gettext('No files found')" />
             </template>
             <template #callToAction>
               <span v-if="canUpload" class="file-empty-upload-hint" v-text="uploadHint" />
@@ -554,7 +554,7 @@ export default defineComponent({
       isCurrentFolderEmpty,
       performLoaderTask,
       uploadHint: computed(() =>
-        $gettext('Drag files and folders here or use the "New" or "Upload" buttons to add files')
+        $gettext('Drag files and folders here or use the "New" button to add files')
       ),
       whitespaceContextMenu,
       createNewFolderAction,

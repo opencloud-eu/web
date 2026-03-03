@@ -67,6 +67,7 @@
         </div>
         <shared-with-me-section
           id="files-shared-with-me-view"
+          class="h-full"
           :file-list-header-y="fileListHeaderY"
           :items="items"
           :sort-by="sortBy"
@@ -74,9 +75,6 @@
           :sort-handler="handleSort"
           :folder-view="folderView"
           :title="shareSectionTitle"
-          :empty-message="
-            areHiddenFilesShown ? $gettext('No hidden shares') : $gettext('No shares')
-          "
           :view-mode="viewMode"
           :view-size="viewSize"
           :sort-fields="sortFields"

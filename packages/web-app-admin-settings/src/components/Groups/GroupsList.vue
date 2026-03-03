@@ -1,119 +1,128 @@
 <template>
-  <div id="group-list">
-    <div class="group-filters flex justify-end flex-wrap items-end mx-4 mb-4">
-      <oc-text-input
-        id="groups-filter"
-        v-model="filterTerm"
-        class="w-3xs"
-        :label="$gettext('Search')"
-        autocomplete="off"
-      />
-    </div>
-    <oc-table
-      :sort-by="sortBy"
-      :sort-dir="sortDir"
-      :fields="fields"
-      :data="paginatedItems"
-      :highlighted="highlighted"
-      :sticky="isSticky"
-      :header-position="fileListHeaderY"
-      :hover="true"
-      padding-x="medium"
-      @sort="handleSort"
-      @contextmenu-clicked="showContextMenuOnRightClick"
-      @highlight="rowClicked"
-    >
-      <template #selectHeader>
-        <oc-checkbox
-          size="large"
-          :label="$gettext('Select all groups')"
-          :model-value="allGroupsSelected"
-          :label-hidden="true"
-          @update:model-value="
-            allGroupsSelected ? unselectAllGroups() : selectGroups(paginatedItems)
-          "
-        />
-      </template>
-      <template #avatarHeader>
-        <span class="sr-only">{{ $gettext('Avatar') }}</span>
-      </template>
-      <template #select="rowData">
-        <oc-checkbox
-          size="large"
-          :model-value="isGroupSelected(rowData.item)"
-          :option="rowData.item"
-          :label="getSelectGroupLabel(rowData.item)"
-          :label-hidden="true"
-          @update:model-value="selectGroup(rowData.item)"
-          @click.stop="rowClicked([rowData.item, $event])"
-        />
-      </template>
-      <template #avatar="rowData">
-        <OcAvatar
-          :width="32"
-          :userid="rowData.item.id"
-          :user-name="rowData.item.displayName"
-          background-color="var(--oc-role-secondary)"
-        />
-      </template>
-      <template #displayName="rowData">
-        <div class="flex items-center">
-          {{ rowData.item.displayName }}
-          <oc-icon
-            v-if="rowData.item.groupTypes?.includes('ReadOnly')"
-            v-oc-tooltip="readOnlyLabel"
-            name="lock"
-            size="small"
-            fill-type="line"
-            class="ml-2"
-            :accessible-label="readOnlyLabel"
-          />
-        </div>
-      </template>
-      <template #members="rowData">
-        {{ rowData.item.members.length }}
-      </template>
-      <template #actions="{ item }">
-        <oc-button
-          v-oc-tooltip="$gettext('Show details')"
-          :aria-label="$gettext('Show details')"
-          appearance="raw"
-          class="ml-1 quick-action-button p-1 groups-table-btn-details"
-          @click="showDetails(item)"
-        >
-          <oc-icon name="information" fill-type="line" />
-        </oc-button>
-        <oc-button
-          v-if="!item.groupTypes?.includes('ReadOnly')"
-          v-oc-tooltip="$gettext('Edit')"
-          :aria-label="$gettext('Edit')"
-          appearance="raw"
-          class="ml-1 quick-action-button p-1 groups-table-btn-edit"
-          @click="showEditPanel(item)"
-        >
-          <oc-icon name="pencil" fill-type="line" />
-        </oc-button>
-        <context-menu-quick-action
-          ref="contextMenuButtonRef"
-          :item="item"
-          :title="item.displayName"
-          class="groups-table-btn-action-dropdown"
-          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
-        >
-          <template #contextMenu>
-            <slot name="contextMenu" :group="item" />
-          </template>
-        </context-menu-quick-action>
-      </template>
-      <template #footer>
-        <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="text-center w-full my-2">
-          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
-          <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
-        </div>
-      </template>
-    </oc-table>
+  <div class="group-filters flex justify-end flex-wrap items-end mx-4 mb-4">
+    <oc-text-input
+      id="groups-filter"
+      v-model="filterTerm"
+      class="w-3xs"
+      :label="$gettext('Search')"
+      autocomplete="off"
+    />
   </div>
+  <no-content-message
+    v-if="!items.length"
+    id="admin-settings-groups-empty"
+    img-src="/images/empty-states/group.png"
+  >
+    <template #message>
+      <span v-text="$gettext('No groups found')" />
+    </template>
+    <template #callToAction>
+      <span v-text="$gettext('Try refining the search term or filters to get results')" />
+    </template>
+  </no-content-message>
+  <oc-table
+    v-else
+    :sort-by="sortBy"
+    :sort-dir="sortDir"
+    :fields="fields"
+    :data="paginatedItems"
+    :highlighted="highlighted"
+    :sticky="isSticky"
+    :header-position="fileListHeaderY"
+    :hover="true"
+    padding-x="medium"
+    @sort="handleSort"
+    @contextmenu-clicked="showContextMenuOnRightClick"
+    @highlight="rowClicked"
+  >
+    <template #selectHeader>
+      <oc-checkbox
+        size="large"
+        :label="$gettext('Select all groups')"
+        :model-value="allGroupsSelected"
+        :label-hidden="true"
+        @update:model-value="allGroupsSelected ? unselectAllGroups() : selectGroups(paginatedItems)"
+      />
+    </template>
+    <template #avatarHeader>
+      <span class="sr-only">{{ $gettext('Avatar') }}</span>
+    </template>
+    <template #select="rowData">
+      <oc-checkbox
+        size="large"
+        :model-value="isGroupSelected(rowData.item)"
+        :option="rowData.item"
+        :label="getSelectGroupLabel(rowData.item)"
+        :label-hidden="true"
+        @update:model-value="selectGroup(rowData.item)"
+        @click.stop="rowClicked([rowData.item, $event])"
+      />
+    </template>
+    <template #avatar="rowData">
+      <OcAvatar
+        :width="32"
+        :userid="rowData.item.id"
+        :user-name="rowData.item.displayName"
+        background-color="var(--oc-role-secondary)"
+      />
+    </template>
+    <template #displayName="rowData">
+      <div class="flex items-center">
+        {{ rowData.item.displayName }}
+        <oc-icon
+          v-if="rowData.item.groupTypes?.includes('ReadOnly')"
+          v-oc-tooltip="readOnlyLabel"
+          name="lock"
+          size="small"
+          fill-type="line"
+          class="ml-2"
+          :accessible-label="readOnlyLabel"
+        />
+      </div>
+    </template>
+    <template #members="rowData">
+      {{ rowData.item.members.length }}
+    </template>
+    <template #actions="{ item }">
+      <oc-button
+        v-oc-tooltip="$gettext('Show details')"
+        :aria-label="$gettext('Show details')"
+        appearance="raw"
+        class="ml-1 quick-action-button p-1 groups-table-btn-details"
+        @click="showDetails(item)"
+      >
+        <oc-icon name="information" fill-type="line" />
+      </oc-button>
+      <oc-button
+        v-if="!item.groupTypes?.includes('ReadOnly')"
+        v-oc-tooltip="$gettext('Edit')"
+        :aria-label="$gettext('Edit')"
+        appearance="raw"
+        class="ml-1 quick-action-button p-1 groups-table-btn-edit"
+        @click="showEditPanel(item)"
+      >
+        <oc-icon name="pencil" fill-type="line" />
+      </oc-button>
+      <context-menu-quick-action
+        ref="contextMenuButtonRef"
+        :item="item"
+        :title="item.displayName"
+        class="groups-table-btn-action-dropdown"
+        @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
+      >
+        <template #contextMenu>
+          <slot name="contextMenu" :group="item" />
+        </template>
+      </context-menu-quick-action>
+    </template>
+    <template #footer>
+      <pagination :pages="totalPages" :current-page="currentPage" />
+      <div class="text-center w-full my-2">
+        <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+        <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
+      </div>
+    </template>
+  </oc-table>
 </template>
 
 <script lang="ts">
@@ -156,10 +165,11 @@ import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'GroupsList',
-  components: { ContextMenuQuickAction, Pagination },
+  components: { NoContentMessage, ContextMenuQuickAction, Pagination },
   setup() {
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')

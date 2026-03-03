@@ -1,123 +1,132 @@
 <template>
-  <div id="space-list">
-    <div class="space-filters flex justify-end flex-wrap items-end mx-4 mb-4">
-      <oc-text-input
-        id="spaces-filter"
-        v-model="filterTerm"
-        class="w-3xs"
-        :label="$gettext('Search')"
-        autocomplete="off"
-      />
-    </div>
-    <oc-table
-      class="settings-spaces-table"
-      :sort-by="sortBy"
-      :sort-dir="sortDir"
-      :fields="fields"
-      :data="paginatedItems"
-      :highlighted="highlighted"
-      :sticky="isSticky"
-      :header-position="fileListHeaderY"
-      :hover="true"
-      padding-x="medium"
-      @sort="handleSort"
-      @contextmenu-clicked="showContextMenuOnRightClick"
-      @highlight="fileClicked"
-    >
-      <template #selectHeader>
-        <span class="sr-only">{{ $gettext('Select spaces') }}</span>
-        <oc-checkbox
-          size="large"
-          :label="$gettext('Select all spaces')"
-          :model-value="allSpacesSelected"
-          :label-hidden="true"
-          @update:model-value="
-            allSpacesSelected ? unselectAllSpaces() : selectSpaces(paginatedItems)
-          "
-        />
-      </template>
-      <template #iconHeader>
-        <span class="sr-only">{{ $gettext('Icon') }}</span>
-      </template>
-      <template #avatarHeader>
-        <span class="sr-only">{{ $gettext('Avatar') }}</span>
-      </template>
-      <template #select="{ item }">
-        <oc-checkbox
-          size="large"
-          :model-value="isSpaceSelected(item)"
-          :option="item"
-          :label="getSelectSpaceLabel(item)"
-          :label-hidden="true"
-          @update:model-value="selectSpace(item)"
-          @click.stop="fileClicked([item, $event])"
-        />
-      </template>
-      <template #icon>
-        <oc-icon name="layout-grid" />
-      </template>
-      <template #name="{ item }">
-        <span :data-test-space-name="item.name" v-text="item.name" />
-      </template>
-      <template #manager="{ item }">
-        {{ getManagerNames(item) }}
-      </template>
-      <template #members="{ item }">
-        {{ getMemberCount(item) }}
-      </template>
-      <template #totalQuota="{ item }"> {{ getTotalQuota(item) }}</template>
-      <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
-      <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
-      <template #mdate="{ item }">
-        <span
-          v-oc-tooltip="formatDate(item.mdate)"
-          tabindex="0"
-          v-text="formatDateRelative(item.mdate)"
-        />
-      </template>
-      <template #status="{ item }">
-        <span class="flex items-center">
-          <oc-icon
-            v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
-            :name="item.disabled ? 'stop-circle' : 'play-circle'"
-            size="small"
-            fill-type="line"
-          />
-        </span>
-      </template>
-      <template #actions="{ item }">
-        <div class="spaces-list-actions">
-          <oc-button
-            v-oc-tooltip="spaceDetailsLabel"
-            :aria-label="spaceDetailsLabel"
-            appearance="raw"
-            class="ml-1 quick-action-button p-1 spaces-table-btn-details"
-            @click.stop.prevent="showDetailsForSpace(item)"
-          >
-            <oc-icon name="information" fill-type="line" />
-          </oc-button>
-          <context-menu-quick-action
-            ref="contextMenuButtonRef"
-            :item="item"
-            :title="item.name"
-            class="spaces-table-btn-action-dropdown"
-            @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
-          >
-            <template #contextMenu>
-              <slot name="contextMenu" :space="item" />
-            </template>
-          </context-menu-quick-action>
-        </div>
-      </template>
-      <template #footer>
-        <pagination :pages="totalPages" :current-page="currentPage" />
-        <div class="text-center w-full my-2">
-          <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
-          <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
-        </div>
-      </template>
-    </oc-table>
+  <div class="space-filters flex justify-end flex-wrap items-end mx-4 mb-4">
+    <oc-text-input
+      id="spaces-filter"
+      v-model="filterTerm"
+      class="w-3xs"
+      :label="$gettext('Search')"
+      autocomplete="off"
+    />
   </div>
+  <no-content-message
+    v-if="!items.length"
+    id="admin-settings-spaces-empty"
+    img-src="/images/empty-states/space.png"
+  >
+    <template #message>
+      <span v-text="$gettext('No spaces found')" />
+    </template>
+    <template #callToAction>
+      <span v-text="$gettext('Try refining the search term or filters to get results')" />
+    </template>
+  </no-content-message>
+  <oc-table
+    v-else
+    class="settings-spaces-table"
+    :sort-by="sortBy"
+    :sort-dir="sortDir"
+    :fields="fields"
+    :data="paginatedItems"
+    :highlighted="highlighted"
+    :sticky="isSticky"
+    :header-position="fileListHeaderY"
+    :hover="true"
+    padding-x="medium"
+    @sort="handleSort"
+    @contextmenu-clicked="showContextMenuOnRightClick"
+    @highlight="fileClicked"
+  >
+    <template #selectHeader>
+      <span class="sr-only">{{ $gettext('Select spaces') }}</span>
+      <oc-checkbox
+        size="large"
+        :label="$gettext('Select all spaces')"
+        :model-value="allSpacesSelected"
+        :label-hidden="true"
+        @update:model-value="allSpacesSelected ? unselectAllSpaces() : selectSpaces(paginatedItems)"
+      />
+    </template>
+    <template #iconHeader>
+      <span class="sr-only">{{ $gettext('Icon') }}</span>
+    </template>
+    <template #avatarHeader>
+      <span class="sr-only">{{ $gettext('Avatar') }}</span>
+    </template>
+    <template #select="{ item }">
+      <oc-checkbox
+        size="large"
+        :model-value="isSpaceSelected(item)"
+        :option="item"
+        :label="getSelectSpaceLabel(item)"
+        :label-hidden="true"
+        @update:model-value="selectSpace(item)"
+        @click.stop="fileClicked([item, $event])"
+      />
+    </template>
+    <template #icon>
+      <oc-icon name="layout-grid" />
+    </template>
+    <template #name="{ item }">
+      <span :data-test-space-name="item.name" v-text="item.name" />
+    </template>
+    <template #manager="{ item }">
+      {{ getManagerNames(item) }}
+    </template>
+    <template #members="{ item }">
+      {{ getMemberCount(item) }}
+    </template>
+    <template #totalQuota="{ item }"> {{ getTotalQuota(item) }}</template>
+    <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
+    <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
+    <template #mdate="{ item }">
+      <span
+        v-oc-tooltip="formatDate(item.mdate)"
+        tabindex="0"
+        v-text="formatDateRelative(item.mdate)"
+      />
+    </template>
+    <template #status="{ item }">
+      <span class="flex items-center">
+        <oc-icon
+          v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
+          :name="item.disabled ? 'stop-circle' : 'play-circle'"
+          size="small"
+          fill-type="line"
+        />
+      </span>
+    </template>
+    <template #actions="{ item }">
+      <div class="spaces-list-actions">
+        <oc-button
+          v-oc-tooltip="spaceDetailsLabel"
+          :aria-label="spaceDetailsLabel"
+          appearance="raw"
+          class="ml-1 quick-action-button p-1 spaces-table-btn-details"
+          @click.stop.prevent="showDetailsForSpace(item)"
+        >
+          <oc-icon name="information" fill-type="line" />
+        </oc-button>
+        <context-menu-quick-action
+          ref="contextMenuButtonRef"
+          :item="item"
+          :title="item.name"
+          class="spaces-table-btn-action-dropdown"
+          @quick-action-clicked="showContextMenuOnBtnClick($event, item)"
+        >
+          <template #contextMenu>
+            <slot name="contextMenu" :space="item" />
+          </template>
+        </context-menu-quick-action>
+      </div>
+    </template>
+    <template #footer>
+      <pagination :pages="totalPages" :current-page="currentPage" />
+      <div class="text-center w-full my-2">
+        <p class="text-role-on-surface-variant">{{ footerTextTotal }}</p>
+        <p v-if="filterTerm" class="text-role-on-surface-variant">{{ footerTextFilter }}</p>
+      </div>
+    </template>
+  </oc-table>
 </template>
 
 <script setup lang="ts">
@@ -131,7 +140,8 @@ import {
   ContextMenuBtnClickEventData,
   useIsTopBarSticky,
   useSharesStore,
-  useSideBar
+  useSideBar,
+  NoContentMessage
 } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,
