@@ -148,6 +148,7 @@ import { useSavedHint } from '../composables/useSavedHint'
 import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
 import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
 import { plainTextFromHtml } from '../helpers/mailComposeText'
+import isEmpty from 'lodash-es/isEmpty'
 
 const { $gettext } = useGettext()
 
@@ -228,14 +229,14 @@ const parseRecipients = (value: string) => {
 const hasMeaningfulChanges = computed(() => {
   const state = unref(composeState)
 
-  const to = (state.to ?? '').trim()
-  const cc = (state.cc ?? '').trim()
-  const bcc = (state.bcc ?? '').trim()
-  const subject = (state.subject ?? '').trim()
-  const bodyText = plainTextFromHtml(state.body ?? '')
-  const attachments = state.attachments ?? []
-
-  return !!to || !!cc || !!bcc || !!subject || !!bodyText || attachments.length > 0
+  return (
+    !isEmpty(state.to?.trim()) ||
+    !isEmpty(state.cc?.trim()) ||
+    !isEmpty(state.bcc?.trim()) ||
+    !isEmpty(state.subject?.trim()) ||
+    !isEmpty(plainTextFromHtml(state.body ?? '').trim()) ||
+    (state.attachments?.length ?? 0) > 0
+  )
 })
 
 const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = useSaveAsDraft({

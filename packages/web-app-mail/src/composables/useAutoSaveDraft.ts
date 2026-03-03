@@ -1,6 +1,6 @@
 import { watch, onBeforeUnmount, toValue, type Ref } from 'vue'
 
-export const useAutoSaveDraft = <T>( {
+export const useAutoSaveDraft = <T>({
   isOpen,
   canAutoSaveNow,
   intervalMs,
