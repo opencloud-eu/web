@@ -16,6 +16,12 @@
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
 
+### ✅ Tests
+
+- test(e2e): increase timeout for large file upload step [[#2067](https://github.com/opencloud-eu/web/pull/2067)]
+- update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
+- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
+
 ### 🐛 Bug Fixes
 
 - fix: admin settings layout [[#2062](https://github.com/opencloud-eu/web/pull/2062)]
@@ -36,11 +42,6 @@
 - feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
 - feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
 - feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
-
-### ✅ Tests
-
-- update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
-- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
 
 ### 📦️ Dependencies
 
