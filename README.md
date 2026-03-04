@@ -69,7 +69,7 @@ We currently publish a new release every couple of weeks, strictly following [se
 ## Documentation
 
 The documentation is an important part of this project and can be found in the [Web dev docs](https://docs.opencloud.eu/docs/dev/web/).
-If you want to contribute to the documentation you can find the source files in the [docs repository](https://github.com/opencloud-eu/docs/tree/main/docs/dev/20-web).
+If you want to contribute to the documentation you can find the source files in the [docs repository](https://github.com/opencloud-eu/docs/tree/main/docs/dev/web).
 
 ## Contribution
 
