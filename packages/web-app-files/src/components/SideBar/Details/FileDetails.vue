@@ -238,7 +238,7 @@ const hasAnyShares = computed(() => {
   return unref(resource).shareTypes?.length > 0 || unref(sharedAncestor)
 })
 const sharedViaTooltip = computed(() => {
-  return $gettext("Navigate to '%{folder}'", { folder: unref(sharedAncestor).path || '' }, true)
+  return $gettext("Navigate to '%{folder}'", { folder: unref(sharedAncestor).path || '' })
 })
 const showSharedBy = computed(() => {
   return unref(showShares) && !unref(ownedByCurrentUser) && unref(sharedByDisplayNames)

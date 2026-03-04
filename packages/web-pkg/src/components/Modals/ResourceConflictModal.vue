@@ -55,34 +55,20 @@ export default defineComponent({
         return ''
       }
       if (!props.separateSkipHandling) {
-        return $gettext(
-          'Apply to all %{count} conflicts',
-          { count: props.conflictCount.toString() },
-          true
-        )
+        return $gettext('Apply to all %{count} conflicts', {
+          count: props.conflictCount.toString()
+        })
       } else if (props.resource.isFolder) {
-        return $gettext(
-          'Apply to all %{count} folders',
-          { count: props.conflictCount.toString() },
-          true
-        )
+        return $gettext('Apply to all %{count} folders', { count: props.conflictCount.toString() })
       } else {
-        return $gettext(
-          'Apply to all %{count} files',
-          { count: props.conflictCount.toString() },
-          true
-        )
+        return $gettext('Apply to all %{count} files', { count: props.conflictCount.toString() })
       }
     })
 
     const message = computed(() =>
       props.resource.isFolder
-        ? $gettext(
-            'Folder with name »%{name}« already exists.',
-            { name: props.resource.name },
-            true
-          )
-        : $gettext('File with name »%{name}« already exists.', { name: props.resource.name }, true)
+        ? $gettext('Folder with name »%{name}« already exists.', { name: props.resource.name })
+        : $gettext('File with name »%{name}« already exists.', { name: props.resource.name })
     )
 
     const confirmSecondaryText = computed(() => {

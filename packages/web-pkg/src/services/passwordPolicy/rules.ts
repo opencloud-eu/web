@@ -64,13 +64,9 @@ export class MustContainRule implements PasswordPolicyRule {
   explain(options: PasswordPolicyRuleOptions, verified: boolean): PasswordPolicyRuleExplained {
     return {
       code: 'mustContain',
-      helperMessage: this.$gettext(
-        'Valid special characters: %{characters}',
-        {
-          characters: options.characters
-        },
-        true
-      ),
+      helperMessage: this.$gettext('Valid special characters: %{characters}', {
+        characters: options.characters
+      }),
       message: this.$gettext('%{param1}+ special characters'),
       format: [options.minLength],
       ...(isBoolean(verified) && { verified })
