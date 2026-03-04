@@ -1,5 +1,4 @@
 import { Download, Locator, Page, expect } from '@playwright/test'
-import { setDefaultTimeout } from '@cucumber/cucumber'
 import util from 'util'
 import path from 'path'
 import { waitForResources } from './utils'
@@ -762,13 +761,9 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
   await pauseResumeUpload(page)
   await page.locator(pauseUploadButton).waitFor()
 
-  // increase the test timeout for large uploads
-  setDefaultTimeout(config.largeUploadTimeout * 1000)
   await page
     .locator(uploadInfoSuccessLabelSelector)
     .waitFor({ timeout: config.largeUploadTimeout * 1000 })
-  // revert  to the default timeout
-  setDefaultTimeout(config.testTimeout * 1000)
 
   await page.locator(uploadInfoCloseButton).click()
 }
