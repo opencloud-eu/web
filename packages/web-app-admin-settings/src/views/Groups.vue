@@ -16,7 +16,7 @@
         <no-content-message
           v-if="!groups.length"
           id="admin-settings-groups-empty"
-          img-src="/images/empty-states/group.png"
+          img-src="/images/empty-states/empty-groups.svg"
         >
           <template #message>
             <span v-text="$gettext('No groups found')" />
