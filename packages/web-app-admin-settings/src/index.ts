@@ -24,6 +24,7 @@ import {
   useUserActionsCreateUser
 } from './composables'
 import { APPID } from './appid'
+import { extensionPoints } from './extensionPoints'
 
 export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext }) => [
   {
@@ -262,7 +263,8 @@ export default defineWebApplication({
       routes,
       navItems,
       translations,
-      extensions
+      extensions,
+      extensionPoints: extensionPoints()
     }
   }
 })
