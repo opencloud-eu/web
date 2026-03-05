@@ -2,7 +2,6 @@ import {
   ActionExtension,
   CustomComponentExtension,
   ExtensionPoint,
-  FloatingActionButtonExtension,
   FolderViewExtension,
   SidebarPanelExtension
 } from '@opencloud-eu/web-pkg'
@@ -37,11 +36,6 @@ export const fileSideBarExtensionPoint: ExtensionPoint<SidebarPanelExtension<any
   id: 'global.files.sidebar',
   extensionType: 'sidebarPanel',
   multiple: true
-}
-
-export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonExtension> = {
-  id: 'global.floating-action-button',
-  extensionType: 'floatingActionButton'
 }
 
 export const folderViewsFolderExtensionPoint: ExtensionPoint<FolderViewExtension> = {
@@ -121,7 +115,6 @@ export const extensionPoints = () => {
       folderViewsSharedViaLinkExtensionPoint,
       folderViewsSharedWithOthersExtensionPoint,
       folderViewsSearchExtensionPoint,
-      floatingActionButtonExtension,
       fileSideBarFileDetailsTableExtensionPoint,
       fileSideBarSharesPanelSharedWithTopExtensionPoint,
       fileSideBarSharesPanelSharedWithBottomExtensionPoint

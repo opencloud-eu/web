@@ -46,6 +46,7 @@ import {
   AppLoadingSpinner,
   CustomComponentTarget,
   FloatingActionButtonExtension,
+  useActiveApp,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import TopBar from '../components/Topbar/TopBar.vue'
@@ -62,6 +63,7 @@ const MOBILE_BREAKPOINT = 640
 const { $gettext } = useGettext()
 const { navItems } = useNavItems()
 const { requestExtensions } = useExtensionRegistry()
+const activeApp = useActiveApp()
 
 const requiredAuthContext = useRouteMeta('authContext')
 const { areSpacesLoading } = useSpacesLoading()
@@ -81,9 +83,9 @@ const onResize = () => {
 
 const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({
-    id: 'global.floating-action-button',
+    id: `app.${unref(activeApp)}.floating-action-button`,
     extensionType: 'floatingActionButton'
-  }).filter((extension) => extension.isActive()).length
+  }).filter((extension) => extension.isVisible()).length
 })
 
 const isSidebarVisible = computed(() => {

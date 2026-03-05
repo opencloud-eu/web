@@ -5,7 +5,6 @@ import Groups from './views/Groups.vue'
 import Spaces from './views/Spaces.vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
-  activeApp,
   ApplicationInformation,
   AppMenuItemExtension,
   ClassicApplicationScript,
@@ -208,7 +207,7 @@ export default defineWebApplication({
 
       const floatingActionButton: FloatingActionButtonExtension = {
         id: `com.github.opencloud-eu.web.${appInfo.id}.floating-action-button`,
-        extensionPointIds: ['global.floating-action-button'],
+        extensionPointIds: ['app.admin-settings.floating-action-button'],
         type: 'floatingActionButton',
         icon: 'add',
         label: () => $gettext('New'),
@@ -227,9 +226,6 @@ export default defineWebApplication({
           }
 
           return null
-        },
-        isActive: () => {
-          return activeApp(unref(currentRoute)) === appInfo.id
         },
         isDisabled: () => {
           if (
