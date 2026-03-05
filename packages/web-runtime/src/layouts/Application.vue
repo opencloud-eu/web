@@ -85,7 +85,7 @@ const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({
     id: `app.${unref(activeApp)}.floating-action-button`,
     extensionType: 'floatingActionButton'
-  }).filter((extension) => extension.isVisible()).length
+  }).filter(({ isVisible }) => !isVisible || isVisible()).length
 })
 
 const isSidebarVisible = computed(() => {
