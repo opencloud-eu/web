@@ -18,6 +18,7 @@
 
 ### 📈 Enhancement
 
+- Improve empty state icons [[#2094](https://github.com/opencloud-eu/web/pull/2094)]
 - feat: ease use of floating action button extension [[#2090](https://github.com/opencloud-eu/web/pull/2090)]
 - feat: add polished icons for no content message [[#2033](https://github.com/opencloud-eu/web/pull/2033)]
 - feat: add fab to admin settings and spaces overview [[#2025](https://github.com/opencloud-eu/web/pull/2025)]
