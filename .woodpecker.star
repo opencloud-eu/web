@@ -22,7 +22,7 @@ POSTGRES_ALPINE = "postgres:alpine3.18"
 OPENLDAP = "bitnamilegacy/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 
-WEB_PUBLISH_NPM_PACKAGES = ["babel-preset", "design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
+WEB_PUBLISH_NPM_PACKAGES = ["design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
 
