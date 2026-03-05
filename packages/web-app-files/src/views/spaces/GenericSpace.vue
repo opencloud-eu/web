@@ -36,7 +36,7 @@
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
             :class="{ 'h-[40vh]': isSpaceFrontpage }"
-            img-src="/images/empty-states/folder.png"
+            img-src="/images/empty-states/empty-folder.svg"
           >
             <template #message>
               <span v-text="$gettext('No files found')" />

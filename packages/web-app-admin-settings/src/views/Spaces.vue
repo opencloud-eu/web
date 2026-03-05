@@ -19,7 +19,7 @@
         <no-content-message
           v-if="!spaces.length"
           id="admin-settings-spaces-empty"
-          img-src="/images/empty-states/space.png"
+          img-src="/images/empty-states/empty-spaces.svg"
         >
           <template #message>
             <span v-text="$gettext('No spaces found')" />
