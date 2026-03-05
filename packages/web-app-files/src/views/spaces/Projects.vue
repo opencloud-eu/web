@@ -24,7 +24,7 @@
         <no-content-message
           v-if="!spaces.length"
           id="files-spaces-empty"
-          img-src="/images/empty-states/space.png"
+          img-src="/images/empty-states/empty-spaces.svg"
         >
           <template #message>
             <span v-text="$gettext('No spaces found')" />
@@ -46,7 +46,7 @@
           <no-content-message
             v-if="!items.length"
             id="files-spaces-empty"
-            img-src="/images/empty-states/space.png"
+            img-src="/images/empty-states/empty-spaces.svg"
           >
             <template #message>
               <span v-text="$gettext('No spaces found')" />

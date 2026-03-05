@@ -28,7 +28,7 @@
         <no-content-message
           v-if="isEmpty"
           id="files-trashbin-empty"
-          img-src="/images/empty-states/trash.png"
+          img-src="/images/empty-states/empty-trash.svg"
         >
           <template #message>
             <span v-text="$gettext('This trash bin is empty')" />

@@ -33,7 +33,7 @@
         <no-content-message
           v-if="isEmpty"
           id="files-shared-with-others-empty"
-          img-src="/images/empty-states/share.png"
+          img-src="/images/empty-states/empty-shared-with-others.svg"
         >
           <template #message>
             <span v-text="$gettext('Nothing shared, yet')" />

@@ -26,7 +26,10 @@
               autocomplete="off"
             />
           </div>
-          <no-content-message v-if="!displaySpaces.length" img-src="/images/empty-states/trash.png">
+          <no-content-message
+            v-if="!displaySpaces.length"
+            img-src="/images/empty-states/empty-trash.svg"
+          >
             <template #message>
               <span v-text="$gettext('No trash bins found')" />
             </template>
