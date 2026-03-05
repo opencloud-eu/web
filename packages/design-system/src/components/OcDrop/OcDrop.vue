@@ -18,7 +18,7 @@
         v-if="isOpen"
         :id="dropId"
         ref="drop"
-        class="oc-drop shadow-md/20 rounded-sm bg-role-surface"
+        class="oc-drop shadow-md/20 rounded-sm bg-role-surface overflow-y-visible"
         @click="onClick"
       >
         <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
