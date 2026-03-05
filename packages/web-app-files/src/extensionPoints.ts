@@ -40,7 +40,7 @@ export const fileSideBarExtensionPoint: ExtensionPoint<SidebarPanelExtension<any
 }
 
 export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonExtension> = {
-  id: 'global.floating-action-button',
+  id: 'app.files.floating-action-button',
   extensionType: 'floatingActionButton'
 }
 

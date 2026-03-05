@@ -26,9 +26,10 @@ import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web
 import { unref } from 'vue'
 import { extensionPoints } from './extensionPoints'
 import { useGettext } from 'vue3-gettext'
+import { APPID } from './appid'
 
 const appInfo: ApplicationInformation = {
-  id: 'files',
+  id: APPID,
   icon: 'resource-type-folder',
   color: 'var(--oc-role-secondary)',
   extensions: []
