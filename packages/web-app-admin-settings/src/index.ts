@@ -23,8 +23,7 @@ import {
   useSpaceSettingsStore,
   useUserActionsCreateUser
 } from './composables'
-
-const appId = 'admin-settings'
+import { APPID } from './appid'
 
 export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext }) => [
   {
@@ -113,7 +112,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
     name: $gettext('General'),
     icon: 'settings-4',
     route: {
-      path: `/${appId}/general?`
+      path: `/${APPID}/general?`
     },
     isVisible: () => {
       return $ability.can('read-all', 'Setting')
@@ -124,7 +123,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
     name: $gettext('Users'),
     icon: 'user',
     route: {
-      path: `/${appId}/users?`
+      path: `/${APPID}/users?`
     },
     isVisible: () => {
       return $ability.can('read-all', 'Account')
@@ -135,7 +134,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
     name: $gettext('Groups'),
     icon: 'group-2',
     route: {
-      path: `/${appId}/groups?`
+      path: `/${APPID}/groups?`
     },
     isVisible: () => {
       return $ability.can('read-all', 'Group')
@@ -146,7 +145,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
     name: $gettext('Spaces'),
     icon: 'layout-grid',
     route: {
-      path: `/${appId}/spaces?`
+      path: `/${APPID}/spaces?`
     },
     isVisible: () => {
       return $ability.can('read-all', 'Drive')
@@ -176,7 +175,7 @@ export default defineWebApplication({
 
     const appInfo: ApplicationInformation = {
       name: $gettext('Admin Settings'),
-      id: appId,
+      id: APPID,
       icon: 'settings-4',
       color: '#2b2b2b'
     }
