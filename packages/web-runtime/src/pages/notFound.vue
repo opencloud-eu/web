@@ -1,5 +1,5 @@
 <template>
-  <no-content-message img-src="/images/empty-states/404.svg" class="h-full">
+  <no-content-message img-src="/images/empty-states/404.svg" class="page-not-found h-full">
     <template #message>
       <span v-text="$gettext('404')" />
     </template>
