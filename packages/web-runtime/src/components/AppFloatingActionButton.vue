@@ -35,19 +35,24 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, unref, watchEffect } from 'vue'
-import { FloatingActionButtonExtension, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import {
+  FloatingActionButtonExtension,
+  useActiveApp,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { requestExtensions } = useExtensionRegistry()
 const { isMobile } = useIsMobile()
+const activeApp = useActiveApp()
 
 const isDisabled = ref(true)
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
-    id: 'global.floating-action-button',
+    id: `app.${unref(activeApp)}.floating-action-button`,
     extensionType: 'floatingActionButton'
-  }).find(({ isActive }) => isActive())
+  }).find(({ isVisible }) => !isVisible || isVisible())
 })
 
 const getButtonId = (extensionId: string): string => {

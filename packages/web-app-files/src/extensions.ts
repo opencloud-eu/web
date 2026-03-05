@@ -5,7 +5,6 @@ import {
   isLocationSpacesActive,
   useCapabilityStore,
   useConfigStore,
-  useIsFilesAppActive,
   useResourcesStore,
   useRouter,
   useSearch,
@@ -22,6 +21,7 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import CreateOrUploadMenu from './components/CreateOrUploadMenu.vue'
+import { APPID } from './appid'
 
 export const extensions = (appInfo: ApplicationInformation) => {
   const capabilityStore = useCapabilityStore()
@@ -32,7 +32,6 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const router = useRouter()
   const { search: searchFunction } = useSearch()
   const { $gettext } = useGettext()
-  const isFilesAppActive = useIsFilesAppActive()
 
   const { actions: createSpaceActions } = useSpaceActionsCreate()
   const createSpaceAction = computed(() => unref(createSpaceActions)[0])
@@ -54,14 +53,11 @@ export const extensions = (appInfo: ApplicationInformation) => {
       searchProvider: new SDKSearch(capabilityStore, router, searchFunction, configStore)
     },
     {
-      id: 'com.github.opencloud-eu.web.files.floating-action-button',
-      extensionPointIds: ['global.floating-action-button'],
+      id: `com.github.opencloud-eu.web.${APPID}.floating-action-button`,
+      extensionPointIds: ['app.files.floating-action-button'],
       type: 'floatingActionButton',
       icon: 'add',
       label: () => $gettext('New'),
-      isActive: () => {
-        return unref(isFilesAppActive)
-      },
       handler: () => {
         if (isLocationSpacesActive(router, 'files-spaces-projects')) {
           return unref(createSpaceAction).handler()
