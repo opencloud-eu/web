@@ -50,8 +50,8 @@
     </oc-button>
     <oc-drop
       v-if="showDrop"
-      id="files-global-search-options"
       ref="optionsDropRef"
+      drop-id="files-global-search-options"
       toggle="#files-global-search-bar"
       mode="manual"
       target="#files-global-search-bar"
@@ -59,6 +59,7 @@
       padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
+      :is-menu="false"
     >
       <oc-list class="oc-list-divider">
         <li
@@ -309,7 +310,7 @@ export default defineComponent({
       if (!unref(term)) {
         return
       }
-      unref(optionsDrop)?.show()
+      unref(optionsDrop)?.show({ noFocus: true })
       await search()
     }
 
@@ -319,7 +320,7 @@ export default defineComponent({
       if (!unref(term)) {
         return unref(optionsDrop)?.hide()
       }
-      return unref(optionsDrop)?.show()
+      return unref(optionsDrop)?.show({ noFocus: true })
     }
 
     const debouncedSearch = debounce(search, 500)
@@ -472,9 +473,10 @@ export default defineComponent({
         return
       }
 
-      const previewElements = this.optionsDrop.$el.querySelectorAll('.preview')
-
-      this.optionsDrop.$el.scrollTo(
+      const previewElements = (this.optionsDrop.$refs.drop as HTMLElement).querySelectorAll(
+        '.preview'
+      )
+      ;(this.optionsDrop.$refs.drop as HTMLElement).scrollTo(
         0,
         this.activePreviewIndex === null
           ? 0
@@ -524,7 +526,9 @@ export default defineComponent({
       )
     },
     isPreviewElementActive(searchId: string) {
-      const previewElements = this.optionsDrop.$el.querySelectorAll('.preview')
+      const previewElements = (this.optionsDrop.$refs.drop as HTMLElement).querySelectorAll(
+        '.preview'
+      )
       return previewElements[this.activePreviewIndex]?.dataset?.searchId === searchId
     },
     showSearchBar() {

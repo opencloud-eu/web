@@ -150,6 +150,7 @@ const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
+const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
@@ -274,7 +275,7 @@ export const openTemplateFile = async ({
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
   await page.locator(openWithButton).hover()
-  await page.locator(util.format(contextMenuAction, webOffice)).click()
+  await page.locator(util.format(subContextMenuAction, webOffice)).click()
 }
 
 export const createFileFromTemplate = async ({
@@ -297,7 +298,7 @@ export const createFileFromTemplate = async ({
   } else if (via.startsWith('context')) {
     await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
     await page.locator(openWithButton).hover()
-    await page.locator(util.format(contextMenuAction, menuItem)).click()
+    await page.locator(util.format(subContextMenuAction, menuItem)).click()
     return
   }
   throw new Error(`Invalid action '${via}' was provided`)

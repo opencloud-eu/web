@@ -79,8 +79,9 @@
       drop-id="files-view-options-drop"
       toggle="#files-view-options-btn"
       mode="click"
-      class="w-auto"
+      class="w-auto [&.oc-drop]:overflow-visible"
       padding-size="medium"
+      :is-menu="false"
     >
       <oc-list>
         <li v-if="hasHiddenFiles" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
