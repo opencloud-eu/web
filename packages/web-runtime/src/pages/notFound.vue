@@ -9,5 +9,5 @@
   </no-content-message>
 </template>
 <script setup lang="ts">
-import { NoContentMessage } from '@opencloud-eu/web-pkg/src'
+import { NoContentMessage } from '@opencloud-eu/web-pkg'
 </script>
