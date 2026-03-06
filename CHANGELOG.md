@@ -53,6 +53,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint to v10 [[#1945](https://github.com/opencloud-eu/web/pull/1945)]
 - chore(deps): update dependency md-editor-v3 to v6.4.0 [[#2072](https://github.com/opencloud-eu/web/pull/2072)]
 - chore(deps): update devdependencies (non-major) [[#2057](https://github.com/opencloud-eu/web/pull/2057)]
 - fix(deps): update dependency @sentry/vue to v10.42.0 - autoclosed [[#2052](https://github.com/opencloud-eu/web/pull/2052)]
