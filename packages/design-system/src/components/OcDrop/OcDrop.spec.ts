@@ -43,7 +43,7 @@ describe('OcDrop', () => {
 
   it('handles dropId prop', async () => {
     for (let i = 0; i < 5; i++) {
-      const wrapper = shallowMount(Drop)
+      const wrapper = shallowMount(Drop, { global: { stubs: { teleport: false } } })
       wrapper.vm.show()
       await nextTick()
       expect(wrapper.find('div').attributes().id).toBe(`oc-drop-${i + 1}`)
@@ -52,9 +52,8 @@ describe('OcDrop', () => {
     for (let i = 0; i < 5; i++) {
       const id = `custom-drop-id-${i}`
       const wrapper = shallowMount(Drop, {
-        props: {
-          dropId: id
-        }
+        props: { dropId: id },
+        global: { stubs: { teleport: false } }
       })
       wrapper.vm.show()
       await nextTick()

@@ -27,6 +27,7 @@
       @keyup.up="onKeyUpUp"
       @keyup.down="onKeyUpDown"
       @keyup.enter="onKeyUpEnter"
+      @keydown.tab="hideOptionsDrop"
     >
       <template #locationFilter>
         <search-bar-filter
@@ -50,8 +51,8 @@
     </oc-button>
     <oc-drop
       v-if="showDrop"
-      id="files-global-search-options"
       ref="optionsDropRef"
+      drop-id="files-global-search-options"
       toggle="#files-global-search-bar"
       mode="manual"
       target="#files-global-search-bar"
@@ -59,6 +60,7 @@
       padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
+      :is-menu="false"
     >
       <oc-list class="oc-list-divider">
         <li
@@ -73,13 +75,19 @@
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
-            <oc-list>
+            <oc-list role="menu">
               <li
                 class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 text-xs"
               >
                 <span class="display-name" v-text="$gettext(provider.displayName)" />
                 <span v-if="!!provider.listSearch">
-                  <router-link class="more-results p-0" :to="getSearchResultLocation(provider.id)">
+                  <router-link
+                    class="more-results p-0"
+                    :to="getSearchResultLocation(provider.id)"
+                    :class="{
+                      'outline-2 outline-role-outline rounded': activePreviewIndex === 0
+                    }"
+                  >
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>
@@ -89,7 +97,7 @@
                 :key="providerSearchResultValue.id"
                 :data-search-id="providerSearchResultValue.id"
                 :class="{
-                  'active bg-role-surface-container': isPreviewElementActive(
+                  'active bg-role-secondary-container': isPreviewElementActive(
                     providerSearchResultValue.id
                   )
                 }"
@@ -186,6 +194,10 @@ export default defineComponent({
       unref(availableProviders).some((p) => !!p.listSearch)
     )
 
+    const dropElement = computed<HTMLElement>(
+      () => unref(optionsDropRef)?.$refs.drop as HTMLElement
+    )
+
     watch(isMobileWidth, () => {
       const searchBarEl = document.getElementById('files-global-search-bar')
       if (!searchBarEl) {
@@ -272,9 +284,17 @@ export default defineComponent({
         router.push(getSearchResultLocation('files.sdk'))
       }
       if (unref(activePreviewIndex) !== null) {
-        unref(optionsDrop)
-          ?.$el.querySelectorAll('.preview')
-          [unref(activePreviewIndex)].firstChild.click()
+        const previewEls = getFocusableElements()
+        const activeEL = previewEls?.[unref(activePreviewIndex)] as HTMLElement
+        if (activeEL instanceof HTMLAnchorElement || activeEL instanceof HTMLButtonElement) {
+          activeEL.click()
+          return
+        }
+
+        const clickableEl = activeEL?.querySelector<HTMLAnchorElement>('button, a')
+        if (clickableEl) {
+          clickableEl.click()
+        }
       }
     }
 
@@ -309,7 +329,7 @@ export default defineComponent({
       if (!unref(term)) {
         return
       }
-      unref(optionsDrop)?.show()
+      unref(optionsDrop)?.show({ noFocus: true })
       await search()
     }
 
@@ -319,7 +339,7 @@ export default defineComponent({
       if (!unref(term)) {
         return unref(optionsDrop)?.hide()
       }
-      return unref(optionsDrop)?.show()
+      return unref(optionsDrop)?.show({ noFocus: true })
     }
 
     const debouncedSearch = debounce(search, 500)
@@ -346,10 +366,17 @@ export default defineComponent({
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
     })
 
+    const getFocusableElements = () => {
+      const elements = [document.querySelector('.more-results')]
+      elements.push(...Array.from(document.querySelectorAll('li.preview')))
+      return elements as HTMLElement[]
+    }
+
     return {
       userContextReady,
       publicLinkContextReady,
       showCancelButton,
+      dropElement,
       onLocationFilterChange,
       currentFolderAvailable,
       listProviderAvailable,
@@ -370,7 +397,8 @@ export default defineComponent({
       updateTerm,
       getSearchResultLocation,
       showDrop,
-      isAppActive
+      isAppActive,
+      getFocusableElements
     }
   },
 
@@ -416,7 +444,7 @@ export default defineComponent({
             return
           }
           if (this.optionsDrop) {
-            this.markInstance = new Mark(this.optionsDrop.$refs.drop as HTMLElement)
+            this.markInstance = new Mark(this.dropElement)
             this.markInstance.unmark()
             this.markInstance.mark(this.term, {
               element: 'span',
@@ -445,7 +473,7 @@ export default defineComponent({
       this.optionsDrop.hide()
     },
     findNextPreviewIndex(previous = false) {
-      const elements = Array.from(document.querySelectorAll('li.preview'))
+      const elements = this.getFocusableElements()
       let index =
         this.activePreviewIndex !== null ? this.activePreviewIndex : previous ? elements.length : -1
       const increment = previous ? -1 : 1
@@ -453,36 +481,17 @@ export default defineComponent({
       do {
         index += increment
         if (index < 0 || index > elements.length - 1) {
-          return null
+          return 0
         }
       } while (elements[index].classList.contains('disabled'))
-
       return index
     },
     onKeyUpUp() {
       this.activePreviewIndex = this.findNextPreviewIndex(true)
-      this.scrollToActivePreviewOption()
     },
     onKeyUpDown() {
       this.activePreviewIndex = this.findNextPreviewIndex(false)
-      this.scrollToActivePreviewOption()
     },
-    scrollToActivePreviewOption() {
-      if (typeof this.optionsDrop.$el.scrollTo !== 'function') {
-        return
-      }
-
-      const previewElements = this.optionsDrop.$el.querySelectorAll('.preview')
-
-      this.optionsDrop.$el.scrollTo(
-        0,
-        this.activePreviewIndex === null
-          ? 0
-          : previewElements[this.activePreviewIndex].getBoundingClientRect().y -
-              previewElements[this.activePreviewIndex].getBoundingClientRect().height
-      )
-    },
-
     getSearchResultForProvider(provider: SearchProvider) {
       return this.searchResults.find(({ providerId }) => providerId === provider.id)?.result
     },
@@ -524,8 +533,9 @@ export default defineComponent({
       )
     },
     isPreviewElementActive(searchId: string) {
-      const previewElements = this.optionsDrop.$el.querySelectorAll('.preview')
-      return previewElements[this.activePreviewIndex]?.dataset?.searchId === searchId
+      const previewElements = this.getFocusableElements()
+      const activeEl = previewElements?.[this.activePreviewIndex] as HTMLElement
+      return activeEl?.dataset?.searchId === searchId
     },
     showSearchBar() {
       document.getElementById('files-global-search-bar').style.visibility = 'visible'

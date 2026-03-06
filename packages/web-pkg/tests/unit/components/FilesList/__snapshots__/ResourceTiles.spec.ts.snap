@@ -50,7 +50,9 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
                 </button>
                 <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+                  <!--teleport start-->
                   <!--v-if-->
+                  <!--teleport end-->
                 </transition-stub>
               </div>
             </div>
@@ -93,7 +95,9 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
     }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
                 </button>
                 <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+                  <!--teleport start-->
                   <!--v-if-->
+                  <!--teleport end-->
                 </transition-stub>
               </div>
             </div>

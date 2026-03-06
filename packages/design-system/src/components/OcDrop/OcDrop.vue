@@ -14,18 +14,22 @@
   </oc-mobile-drop>
   <template v-else>
     <Transition name="oc-drop">
-      <div
-        v-if="isOpen"
-        :id="dropId"
-        ref="drop"
-        class="oc-drop shadow-md/20 rounded-sm bg-role-surface"
-        @click="onClick"
-      >
-        <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
-          <slot />
-        </oc-card>
-        <slot v-else name="special" />
-      </div>
+      <Teleport :disabled="!teleport" :to="teleport ? teleport : undefined">
+        <div
+          v-if="isOpen"
+          :id="dropId"
+          ref="drop"
+          class="oc-drop shadow-md/20 rounded-sm bg-role-surface"
+          :class="attrs?.class"
+          :tabindex="-1"
+          @click="onClick"
+        >
+          <oc-card v-if="$slots.default" :body-class="[getTailwindPaddingClass(paddingSize)]">
+            <slot />
+          </oc-card>
+          <slot v-else name="special" />
+        </div>
+      </Teleport>
     </Transition>
   </template>
 </template>
@@ -40,6 +44,7 @@ import {
   onMounted,
   ref,
   unref,
+  useAttrs,
   useTemplateRef,
   watch
 } from 'vue'
@@ -47,6 +52,7 @@ import { useIsMobile } from '../../composables'
 import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
 import { useEventListeners } from './useEventListeners'
+import { getFocusableItems } from '../../helpers/getFocusableElements'
 
 export interface Props {
   /**
@@ -91,6 +97,15 @@ export interface Props {
    * @default false
    */
   enforceDropOnMobile?: boolean
+  /**
+   * @docs Teleport the drop to a different DOM element. This can be useful to prevent overflow issues.
+   */
+  teleport?: string
+  /**
+   * @docs Enables navigation through the drop with arrow keys. Use this if the drop only contains menu items. Disabling this disables arrow key navigation but enables regular tab navigation.
+   * @default true
+   */
+  isMenu?: boolean
 }
 
 export interface Emits {
@@ -125,12 +140,15 @@ const {
   position = 'bottom-start',
   toggle = '',
   title = '',
-  enforceDropOnMobile = false
+  enforceDropOnMobile = false,
+  teleport = '',
+  isMenu = true
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
+const attrs = useAttrs()
 const { registerEventListener, unregisterEventListeners } = useEventListeners()
 const { isMobile } = useIsMobile()
 const isOpen = ref(false)
@@ -143,10 +161,14 @@ const anchor = computed(() => {
   if (!toggle) {
     return null
   }
-  return document.querySelector(toggle)
+  return document.querySelector<HTMLButtonElement>(toggle)
 })
 
-const show = ({ event, useMouseAnchor }: { event?: Event; useMouseAnchor?: boolean } = {}) => {
+const show = async ({
+  event,
+  useMouseAnchor,
+  noFocus = false
+}: { event?: Event; useMouseAnchor?: boolean; noFocus?: boolean } = {}) => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).show()
     return
@@ -155,6 +177,13 @@ const show = ({ event, useMouseAnchor }: { event?: Event; useMouseAnchor?: boole
     return
   }
   showDrop({ event, useMouseAnchor })
+
+  if (!noFocus) {
+    // usually, opening the drop should also focus it to allow for keyboard navigation within the drop.
+    // however, in certain situations (e.g. when typing opens a drop), this may be unwanted behavior.
+    await nextTick()
+    unref(drop).focus()
+  }
 }
 const hide = () => {
   if (unref(useBottomDrawer)) {
@@ -204,7 +233,7 @@ const showDrop = async ({
           bottom: mouseEvent.clientY
         }
       }
-    } as Element
+    } as HTMLButtonElement
   }
 
   isOpen.value = true
@@ -216,6 +245,18 @@ const showDrop = async ({
 
   // fixes a timing issue with the rendering of the drop
   await awaitAnimationFrame()
+
+  if (isMenu) {
+    // if drop is a menu, set role="menu" on all ul elements in the drop for better screen reader support
+    const uls = unref(drop)?.getElementsByTagName('ul')
+    Array.from(uls || []).forEach((ul) => ul.setAttribute('role', 'menu'))
+
+    const menuItems = unref(drop)?.querySelectorAll('button, a')
+    Array.from(menuItems || []).forEach((item) => {
+      item.setAttribute('role', 'menuitem') // menu items should have role="menuitem" for better screen reader support
+      item.setAttribute('tabindex', '-1') // menu items should not be focussable via tabs
+    })
+  }
 
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
@@ -244,8 +285,12 @@ const showDrop = async ({
   registerEventListener(document, 'contextmenu', handleDropClickOutside, 'document', {
     capture: true
   })
-  registerEventListener(document, 'keydown', handleDropKeydown, 'document')
-  registerEventListener(unref(drop), 'focusout', handleDropFocusOut, 'drop')
+  registerEventListener(unref(drop), 'keydown', handleDropKeydown, 'drop')
+
+  if (!isMenu) {
+    // when the drop is not a menu, we need to close it when the user leaves the drop after tabbing through it
+    registerEventListener(unref(drop), 'focusout', handleDropFocusOut, 'drop')
+  }
 
   if (mode === 'hover') {
     registerEventListener(unref(drop), 'mouseenter', handleDropMouseEnter, 'drop')
@@ -273,22 +318,103 @@ const handleDropFocusOut = (event: Event) => {
   }
 }
 
-const handleDropClickOutside = (event: Event) => {
+const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
   const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
   if (clickedOutsideDrop) {
     const anchorElement = unref(anchor)
     const clickedOnAnchor = anchorElement && anchorElement.contains(target)
     if (!clickedOnAnchor) {
+      await awaitAnimationFrame()
       hideDrop()
     }
   }
 }
 
 const handleDropKeydown = (event: Event) => {
-  if (isKeyboardEvent(event) && event.code === 'Escape') {
+  if (!isKeyboardEvent(event)) {
+    return
+  }
+
+  if (['ArrowLeft', 'ArrowRight'].includes(event.code)) {
+    // arrow left/right are used to open sub drops
+    if (mode === 'hover') {
+      hideDrop()
+      unref(anchor)?.focus()
+    }
+    return
+  }
+
+  if (event.code === 'Escape') {
+    // close drop on escape
+    event.stopPropagation()
     hideDrop()
-    ;(unref(anchor) as HTMLElement)?.focus()
+    unref(anchor)?.focus()
+    return
+  }
+
+  if (event.code === 'Space' && event.target instanceof HTMLAnchorElement) {
+    // make space click work for anchor elements inside a drop
+    event.target.click()
+    return
+  }
+
+  if (!isMenu) {
+    // everything below goes for arrow navigation only, hence early return if this is disabled
+    return
+  }
+
+  event.stopPropagation()
+
+  if (event.code === 'Tab') {
+    // hide drop on tab because the focus now went from the anchor to the next element
+    hideDrop()
+    return
+  }
+
+  if (['ArrowDown', 'ArrowUp'].includes(event.code)) {
+    // navigate through focusable items in the drop with arrow up/down
+    event.preventDefault()
+    const items = getFocusableItems(unref(drop))
+    if (!items.length) {
+      return
+    }
+    const currentIndex = items.indexOf(document.activeElement as HTMLElement)
+    if (event.code === 'ArrowDown') {
+      const next = currentIndex === -1 || currentIndex === items.length - 1 ? 0 : currentIndex + 1
+      items[next].focus()
+    } else if (event.code === 'ArrowUp') {
+      const prev = currentIndex <= 0 ? items.length - 1 : currentIndex - 1
+      items[prev].focus()
+    }
+  }
+}
+
+const handleAnchorKeydown = async (event: Event) => {
+  if (!isKeyboardEvent(event)) {
+    return
+  }
+
+  const openDropAndFocusFirstEl = async () => {
+    showDrop()
+    await nextTick()
+    const focusableItems = getFocusableItems(unref(drop))
+    focusableItems[0]?.focus()
+  }
+
+  if (event.code === 'Enter') {
+    // enter should open a drop
+    event.preventDefault()
+    await openDropAndFocusFirstEl()
+    return
+  }
+
+  if (mode === 'hover') {
+    if (['ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) {
+      // sub drops that open on hover can be opened via arrow left/right or space
+      event.preventDefault()
+      await openDropAndFocusFirstEl()
+    }
   }
 }
 
@@ -309,8 +435,12 @@ const handleDropMouseLeave = () => {
   hoverCloseTimeout = setTimeout(hideDrop, 100)
 }
 
-const handleAnchorClick = (event: Event) => {
+const handleAnchorClick = async (event: Event) => {
   showDrop({ event })
+  if (unref(isOpen)) {
+    await nextTick()
+    unref(drop).focus()
+  }
 }
 
 const handleAnchorMouseEnter = (event: Event) => {
@@ -342,8 +472,10 @@ const setupAnchorEvents = () => {
   switch (mode) {
     case 'click':
       registerEventListener(anchorElement, 'click', handleAnchorClick, 'anchor')
+      registerEventListener(anchorElement, 'keydown', handleAnchorKeydown, 'anchor')
       break
     case 'hover':
+      registerEventListener(anchorElement, 'keydown', handleAnchorKeydown, 'anchor')
       registerEventListener(anchorElement, 'mouseenter', handleAnchorMouseEnter, 'anchor')
       registerEventListener(anchorElement, 'mouseleave', handleAnchorMouseLeave, 'anchor')
       break
@@ -414,5 +546,9 @@ onBeforeUnmount(() => {
   .oc-drop li:last-child {
     @apply mb-0;
   }
+}
+
+.oc-drop:focus-visible {
+  @apply shadow-md/20 outline-0;
 }
 </style>

@@ -23,7 +23,8 @@
       mode="hover"
       class="w-3xs oc-files-context-action-drop"
       padding-size="small"
-      position="bottom-start"
+      teleport="#app-runtime-drop"
+      position="right-start"
       close-on-click
     >
       <template v-if="menuSectionDrop.items.length">
