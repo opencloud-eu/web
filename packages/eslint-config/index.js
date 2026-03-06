@@ -19,7 +19,7 @@ export default [
   },
   {
     languageOptions: {
-      ecmaVersion: 5,
+      ecmaVersion: 2015,
       globals: {
         ...globals.browser,
         ...globals.amd,
@@ -28,7 +28,6 @@ export default [
       },
       parserOptions: {
         parser: {
-          js: '@babel/eslint-parser',
           ts: '@typescript-eslint/parser',
           vue: 'vue-eslint-parser'
         },
