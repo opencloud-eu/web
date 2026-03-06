@@ -69,6 +69,16 @@ Feature: keycloak integration
       | displayname | Carol King        |
       | email       | carol@example.org |
       | groups      | finance, security |
+    
+    # disble user and delete user sessions to force logout
+    When admin disables user "Carol" using keycloak API
+    And admin deletes sessions of user "Carol" using keycloak API
+    Then "Carol" should be logged out
+    And "Carol" fails to log in
+
+    # enable user again to verify that the user can log in and access the app
+    When admin enables user "Carol" using keycloak API
+    Then "Carol" logs in
     And "Carol" opens the "files" app
     And "Carol" navigates to the project space "brianSpace.1"
     And "Carol" logs out
