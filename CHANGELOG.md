@@ -17,6 +17,13 @@
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
 
+### ✅ Tests
+
+- keycloak tests [[#2064](https://github.com/opencloud-eu/web/pull/2064)]
+- test(e2e): increase timeout for large file upload step [[#2067](https://github.com/opencloud-eu/web/pull/2067)]
+- update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
+- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
+
 ### 📈 Enhancement
 
 - Improve empty state icons [[#2094](https://github.com/opencloud-eu/web/pull/2094)]
@@ -40,12 +47,6 @@
 - fix: prevent 'New'-button flicker when navigating [[#2026](https://github.com/opencloud-eu/web/pull/2026)]
 - fix(web-runtime): cache embed query params across config reloads [[#1977](https://github.com/opencloud-eu/web/pull/1977)]
 - fix(web-pkg): guard against missing routes in getEditorRoute [[#1975](https://github.com/opencloud-eu/web/pull/1975)]
-
-### ✅ Tests
-
-- test(e2e): increase timeout for large file upload step [[#2067](https://github.com/opencloud-eu/web/pull/2067)]
-- update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
-- [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
 
 ### 📦️ Dependencies
 
