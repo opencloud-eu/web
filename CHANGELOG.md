@@ -17,6 +17,19 @@
 
 - chore(deps): fix current security alerts [[#2040](https://github.com/opencloud-eu/web/pull/2040)]
 
+### 📈 Enhancement
+
+- feat: increase topbar height [[#2070](https://github.com/opencloud-eu/web/pull/2070)]
+- Improve empty state icons [[#2094](https://github.com/opencloud-eu/web/pull/2094)]
+- feat: ease use of floating action button extension [[#2090](https://github.com/opencloud-eu/web/pull/2090)]
+- feat: add polished icons for no content message [[#2033](https://github.com/opencloud-eu/web/pull/2033)]
+- feat: add fab to admin settings and spaces overview [[#2025](https://github.com/opencloud-eu/web/pull/2025)]
+- feat(ocm): implement WAYF page and enhance invitation workflow [[#1486](https://github.com/opencloud-eu/web/pull/1486)]
+- feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
+- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
+- feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
+- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
+
 ### 🐛 Bug Fixes
 
 - fix: don't show 'new' button in secret file drop [[#2086](https://github.com/opencloud-eu/web/pull/2086)]
@@ -36,18 +49,6 @@
 - test(e2e): increase timeout for large file upload step [[#2067](https://github.com/opencloud-eu/web/pull/2067)]
 - update keycloak version [[#2051](https://github.com/opencloud-eu/web/pull/2051)]
 - [full-ci] test: fix ocm invite token parsing [[#2049](https://github.com/opencloud-eu/web/pull/2049)]
-
-### 📈 Enhancement
-
-- Improve empty state icons [[#2094](https://github.com/opencloud-eu/web/pull/2094)]
-- feat: ease use of floating action button extension [[#2090](https://github.com/opencloud-eu/web/pull/2090)]
-- feat: add polished icons for no content message [[#2033](https://github.com/opencloud-eu/web/pull/2033)]
-- feat: add fab to admin settings and spaces overview [[#2025](https://github.com/opencloud-eu/web/pull/2025)]
-- feat(ocm): implement WAYF page and enhance invitation workflow [[#1486](https://github.com/opencloud-eu/web/pull/1486)]
-- feat: modernize surface colors [[#2023](https://github.com/opencloud-eu/web/pull/2023)]
-- feat: create or upload floating action button [[#1997](https://github.com/opencloud-eu/web/pull/1997)]
-- feat: eleminate collapsed state of left side bar [[#1993](https://github.com/opencloud-eu/web/pull/1993)]
-- feat: unifiy create and upload button [[#1989](https://github.com/opencloud-eu/web/pull/1989)]
 
 ### 📦️ Dependencies
 
