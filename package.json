@@ -67,7 +67,7 @@
     "browserslist-to-esbuild": "^2.0.0",
     "browserslist-useragent-regexp": "^4.0.0",
     "commander": "14.0.3",
-    "ejs": "4.0.1",
+    "ejs": "5.0.1",
     "eslint": "9.39.3",
     "franc-min": "^6.2.0",
     "happy-dom": "20.7.0",
