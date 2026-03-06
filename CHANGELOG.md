@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency ejs to v5 [[#2096](https://github.com/opencloud-eu/web/pull/2096)]
 - chore(deps): update dependency @codemirror/view to v6.39.16 [[#2050](https://github.com/opencloud-eu/web/pull/2050)]
 - chore(deps): update dependency globals to v17.4.0 [[#2048](https://github.com/opencloud-eu/web/pull/2048)]
 - chore(deps): update dependency @cucumber/messages to v32.2.0 [[#2047](https://github.com/opencloud-eu/web/pull/2047)]
