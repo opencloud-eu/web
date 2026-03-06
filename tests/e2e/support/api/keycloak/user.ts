@@ -144,3 +144,41 @@ export const getRealmRole = async (role: string): Promise<KeycloakRealmRole> => 
 
   throw new Error(`Role '${role}' not found in the keycloak realm`)
 }
+
+export const setUserEnabled = async ({ uuid, enabled }: { uuid: string; enabled: boolean }) => {
+  const response = await request({
+    method: 'PUT',
+    path: urlJoin(realmBasePath, 'users', uuid),
+    body: { enabled },
+    user: getKeycloakAdminUser(),
+    header: { 'Content-Type': 'application/json' }
+  })
+  checkResponseStatus(response, enabled ? 'Can not enable user' : 'Can not disable user')
+  return response
+}
+
+const getUserSessionsId = async ({ uuid }: { uuid: string }): Promise<string[]> => {
+  const response = await request({
+    method: 'GET',
+    path: urlJoin(realmBasePath, 'users', uuid, 'sessions'),
+    user: getKeycloakAdminUser()
+  })
+  checkResponseStatus(response, 'Can not get user sessions')
+  const sessions = (await response.json()) as { id: string }[]
+  if (sessions.length === 0) {
+    throw new Error('No active session found for the user')
+  }
+  return sessions.map((session) => session.id)
+}
+
+export const deleteUserSessions = async ({ uuid }: { uuid: string }) => {
+  const sessions = await getUserSessionsId({ uuid })
+  for (const session of sessions) {
+    const response = await request({
+      method: 'DELETE',
+      path: urlJoin(realmBasePath, 'sessions', session),
+      user: getKeycloakAdminUser()
+    })
+    checkResponseStatus(response, 'Can not delete user session')
+  }
+}
