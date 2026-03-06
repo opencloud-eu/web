@@ -53,6 +53,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency md-editor-v3 to v6.4.0 [[#2072](https://github.com/opencloud-eu/web/pull/2072)]
 - chore(deps): update devdependencies (non-major) [[#2057](https://github.com/opencloud-eu/web/pull/2057)]
 - fix(deps): update dependency @sentry/vue to v10.42.0 - autoclosed [[#2052](https://github.com/opencloud-eu/web/pull/2052)]
 - chore(deps): update dependency fast-xml-parser to v5.4.2 [[#2059](https://github.com/opencloud-eu/web/pull/2059)]
