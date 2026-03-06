@@ -417,6 +417,4 @@ provide(
   'versionsLoading',
   computed(() => loadVersionsTask.isRunning)
 )
-/** @deprecated use from useSideBar instead */
-provide('activePanel', activePanel)
 </script>
