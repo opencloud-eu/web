@@ -2,6 +2,7 @@ import {
   ApplicationInformation,
   Extension,
   FloatingActionButtonExtension,
+  isLocationPublicActive,
   isLocationSpacesActive,
   useCapabilityStore,
   useConfigStore,
@@ -79,6 +80,13 @@ export const extensions = (appInfo: ApplicationInformation) => {
         }
 
         return 'drop'
+      },
+      isVisible: () => {
+        if (isLocationPublicActive(router, 'files-public-upload')) {
+          return false
+        }
+
+        return true
       },
       dropComponent: CreateOrUploadMenu
     } as FloatingActionButtonExtension,
