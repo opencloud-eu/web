@@ -49,6 +49,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2057](https://github.com/opencloud-eu/web/pull/2057)]
+- fix(deps): update dependency @sentry/vue to v10.42.0 - autoclosed [[#2052](https://github.com/opencloud-eu/web/pull/2052)]
+- chore(deps): update dependency fast-xml-parser to v5.4.2 [[#2059](https://github.com/opencloud-eu/web/pull/2059)]
 - chore(deps): update dependency @floating-ui/dom to v1.7.6 [[#2065](https://github.com/opencloud-eu/web/pull/2065)]
 - chore(deps): update dependency dompurify to v3.3.2 [security] [[#2095](https://github.com/opencloud-eu/web/pull/2095)]
 - chore(deps): update dependency ejs to v5 [[#2096](https://github.com/opencloud-eu/web/pull/2096)]
