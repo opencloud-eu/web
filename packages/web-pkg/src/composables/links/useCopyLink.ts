@@ -33,11 +33,10 @@ export const useCopyLink = () => {
         // Only copy to clipboard if the user tries to create one single link
         try {
           copyToClipboardText = password
-            ? $gettext(
-                '%{link} Password:%{password}',
-                { link: succeeded[0].value.webUrl, password },
-                true
-              )
+            ? $gettext('%{link} Password:%{password}', {
+                link: succeeded[0].value.webUrl,
+                password
+              })
             : succeeded[0].value.webUrl
 
           successMessage = $gettext('The link has been copied to your clipboard.')

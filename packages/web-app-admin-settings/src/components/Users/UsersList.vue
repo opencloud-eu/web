@@ -446,7 +446,7 @@ export default defineComponent({
       this.sortDir = event.sortDir
     },
     getSelectUserLabel(user: User) {
-      return this.$gettext('Select %{ user }', { user: user.displayName }, true)
+      return this.$gettext('Select %{ user }', { user: user.displayName })
     }
   }
 })

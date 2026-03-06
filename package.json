@@ -22,7 +22,7 @@
     "test:e2e:ipad-chromium": "BROWSER=ipad-chromium NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e ./tests/e2e/cucumber/features/mobile-view",
     "test:e2e:ipad-safari": "BROWSER=ipad-landscape-webkit NODE_TLS_REJECT_UNAUTHORIZED=0 TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e ./tests/e2e/cucumber/features/mobile-view",
     "test:unit": "NODE_OPTIONS=--unhandled-rejections=throw vitest --config ./tests/unit/config/vitest.config.ts",
-    "licenses:check": "license-checker-rseidelsohn --summary --relativeLicensePath --onlyAllow 'Python-2.0;Apache*;Apache License, Version 2.0;Apache-2.0;Apache 2.0;Artistic-2.0;BSD;BSD-3-Clause;CC-BY-3.0;CC-BY-4.0;CC0-1.0;ISC;MIT;MPL-2.0;Public Domain;Unicode-TOU;Unlicense;WTFPL;BlueOak-1.0.0' --excludePackages '@opencloud-eu/babel-preset;@opencloud-eu/eslint-config;@opencloud-eu/prettier-config;@opencloud-eu/tsconfig;@opencloud-eu/web-client;@opencloud-eu/web-pkg;external;web-app-files;text-editor;preview;web-app-ocm;@opencloud-eu/design-system;pdf-viewer;web-app-search;admin-settings;webfinger;web-runtime;@opencloud-eu/web-test-helpers'",
+    "licenses:check": "license-checker-rseidelsohn --summary --relativeLicensePath --onlyAllow 'Python-2.0;Apache*;Apache License, Version 2.0;Apache-2.0;Apache 2.0;Artistic-2.0;BSD;BSD-3-Clause;CC-BY-3.0;CC-BY-4.0;CC0-1.0;ISC;MIT;MPL-2.0;Public Domain;Unicode-TOU;Unlicense;WTFPL;BlueOak-1.0.0' --excludePackages '@opencloud-eu/eslint-config;@opencloud-eu/prettier-config;@opencloud-eu/tsconfig;@opencloud-eu/web-client;@opencloud-eu/web-pkg;external;web-app-files;text-editor;preview;web-app-ocm;@opencloud-eu/design-system;pdf-viewer;web-app-search;admin-settings;webfinger;web-runtime;@opencloud-eu/web-test-helpers'",
     "licenses:csv": "license-checker-rseidelsohn --relativeLicensePath --csv --out ./third-party-licenses/third-party-licenses.csv",
     "licenses:save": "license-checker-rseidelsohn --relativeLicensePath --out /dev/null --files ./third-party-licenses/third-party-licenses",
     "vite": "vue-demi-fix && vite",
@@ -42,14 +42,10 @@
   ],
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.0",
-    "@babel/register": "7.28.6",
     "@cucumber/cucumber": "12.7.0",
     "@cucumber/messages": "32.2.0",
     "@cucumber/pretty-formatter": "3.2.0",
     "@noble/hashes": "2.0.1",
-    "@opencloud-eu/babel-preset": "workspace:*",
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
     "@opencloud-eu/tsconfig": "workspace:*",
@@ -94,7 +90,7 @@
     "vue": "^3.5.23",
     "vue-demi": "0.14.10",
     "vue-tsc": "3.2.5",
-    "vue3-gettext": "2.4.0"
+    "vue3-gettext": "^4.0.0-beta.1"
   },
   "engines": {
     "node": ">=18"
@@ -105,8 +101,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "caf@15.0.1": "patches/caf@15.0.1.patch",
-      "vue3-gettext@2.4.0": "patches/vue3-gettext@2.4.0.patch"
+      "caf@15.0.1": "patches/caf@15.0.1.patch"
     }
   }
 }

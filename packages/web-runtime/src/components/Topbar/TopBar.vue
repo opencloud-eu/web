@@ -1,7 +1,7 @@
 <template>
   <header
     id="oc-topbar"
-    class="sticky grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr]"
+    class="sticky my-1 grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr]"
     :aria-label="$gettext('Top bar')"
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">

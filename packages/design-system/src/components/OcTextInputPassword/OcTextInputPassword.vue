@@ -133,7 +133,7 @@ const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
     paramObj[`param${formatKey + 1}`] = rule.format[formatKey]?.toString()
   }
 
-  return $gettext(rule.message, paramObj, true)
+  return $gettext(rule.message, paramObj)
 }
 
 const copyPasswordToClipboard = () => {

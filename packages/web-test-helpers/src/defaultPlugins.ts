@@ -35,15 +35,6 @@ export const defaultPlugins = ({
 
   if (gettext) {
     plugins.push(createGettext({ translations: {}, silent: true }))
-  } else {
-    plugins.push({
-      install(app: App) {
-        // mock `v-translate` directive
-        app.directive('translate', {
-          mounted: () => undefined
-        })
-      }
-    })
   }
 
   if (pinia) {
