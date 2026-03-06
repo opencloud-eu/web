@@ -1,10 +1,3 @@
-/** @deprecated use from design-system instead */
-export const EVENT_TROW_MOUNTED = 'rowMounted'
-/** @deprecated use from design-system instead */
-export const EVENT_FILE_DROPPED = 'fileDropped'
-/** @deprecated use from design-system instead */
-export const EVENT_TROW_CONTEXTMENU = 'contextmenuClicked'
-
 export abstract class ImageDimension {
   static readonly Thumbnail: [number, number] = [36, 36]
   static readonly Tile: [number, number] = [1000, 1000]

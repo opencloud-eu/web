@@ -29,7 +29,6 @@ describe('SharesPanel', () => {
             ...defaultPlugins({ piniaOptions: { sharesState: { loading: sharesLoading } } })
           ],
           provide: {
-            activePanel: null,
             displayedItem: {},
             displayedSpace: {},
             spaceMembers: { value: [] }
