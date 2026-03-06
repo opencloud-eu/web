@@ -19,6 +19,7 @@
 
 ### 📈 Enhancement
 
+- feat: use proper size-5 class for medium sized icons  [[#2066](https://github.com/opencloud-eu/web/pull/2066)]
 - feat: increase topbar height [[#2070](https://github.com/opencloud-eu/web/pull/2070)]
 - Improve empty state icons [[#2094](https://github.com/opencloud-eu/web/pull/2094)]
 - feat: ease use of floating action button extension [[#2090](https://github.com/opencloud-eu/web/pull/2090)]
