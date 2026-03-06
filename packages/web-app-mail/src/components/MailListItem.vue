@@ -25,7 +25,7 @@
         <mail-indicators :mail="mail" />
       </div>
       <div class="mail-list-item-preview text-role-on-surface-variant mt-1">
-        <span class="line-clamp-2" v-text="mail.preview"></span>
+        <span class="line-clamp-2" v-text="previewText"></span>
       </div>
     </div>
   </div>
@@ -37,11 +37,9 @@ import { computed } from 'vue'
 import { formatRelativeDateFromISO } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import MailIndicators from './MailIndicators.vue'
+import DOMPurify from 'dompurify'
 
-const { mail } = defineProps<{
-  mail: Mail
-}>()
-
+const { mail } = defineProps<{ mail: Mail }>()
 const { current: currentLanguage } = useGettext()
 
 const fromText = computed(() => {
@@ -50,5 +48,14 @@ const fromText = computed(() => {
 
 const receivedAtRelativeDate = computed(() => {
   return formatRelativeDateFromISO(mail.receivedAt, currentLanguage)
+})
+
+const previewText = computed(() => {
+  if (!mail.preview) {
+    return ''
+  }
+
+  const stripped = DOMPurify.sanitize(mail.preview, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  return stripped.replace(/\s+/g, ' ').trim()
 })
 </script>
