@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @floating-ui/dom to v1.7.6 [[#2065](https://github.com/opencloud-eu/web/pull/2065)]
 - chore(deps): update dependency dompurify to v3.3.2 [security] [[#2095](https://github.com/opencloud-eu/web/pull/2095)]
 - chore(deps): update dependency ejs to v5 [[#2096](https://github.com/opencloud-eu/web/pull/2096)]
 - chore(deps): update dependency @codemirror/view to v6.39.16 [[#2050](https://github.com/opencloud-eu/web/pull/2050)]
