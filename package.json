@@ -90,7 +90,7 @@
     "vue": "^3.5.23",
     "vue-demi": "0.14.10",
     "vue-tsc": "3.2.5",
-    "vue3-gettext": "2.4.0"
+    "vue3-gettext": "^4.0.0-beta.1"
   },
   "engines": {
     "node": ">=18"
@@ -101,8 +101,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "caf@15.0.1": "patches/caf@15.0.1.patch",
-      "vue3-gettext@2.4.0": "patches/vue3-gettext@2.4.0.patch"
+      "caf@15.0.1": "patches/caf@15.0.1.patch"
     }
   }
 }

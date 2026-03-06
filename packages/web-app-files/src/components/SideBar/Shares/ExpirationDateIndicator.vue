@@ -33,11 +33,10 @@ export default defineComponent({
     })
 
     const expirationDateTooltip = computed(() => {
-      return $gettext(
-        'Expires %{timeToExpiry} (%{expiryDate})',
-        { timeToExpiry: unref(expirationDateRelative), expiryDate: unref(dateExpire) },
-        true
-      )
+      return $gettext('Expires %{timeToExpiry} (%{expiryDate})', {
+        timeToExpiry: unref(expirationDateRelative),
+        expiryDate: unref(dateExpire)
+      })
     })
 
     const screenreaderShareExpiration = computed(() => {

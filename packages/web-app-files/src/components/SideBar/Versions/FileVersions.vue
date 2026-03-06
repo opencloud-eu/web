@@ -40,7 +40,10 @@
       </oc-list>
     </div>
     <div v-else>
-      <p v-translate data-testid="file-versions-no-versions">No versions available for this file</p>
+      <p
+        data-testid="file-versions-no-versions"
+        v-text="$gettext('No versions available for this file')"
+      />
     </div>
   </div>
 </template>

@@ -243,11 +243,9 @@ export default defineComponent({
     title() {
       // share might not be loaded
       if (this.share) {
-        return this.$gettext(
-          '%{owner} shared this folder with you for uploading',
-          { owner: this.share.publicLinkShareOwner },
-          true
-        )
+        return this.$gettext('%{owner} shared this folder with you for uploading', {
+          owner: this.share.publicLinkShareOwner
+        })
       }
       return ''
     }

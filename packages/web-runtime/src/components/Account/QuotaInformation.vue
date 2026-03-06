@@ -52,8 +52,7 @@ export default defineComponent({
             percentage: (unref(quotaUsagePercent) || 0).toString()
           })
         : $gettext('%{used} used', {
-            used: formatFileSize(used, currentLanguage),
-            total: formatFileSize(total, currentLanguage)
+            used: formatFileSize(used, currentLanguage)
           })
     })
 

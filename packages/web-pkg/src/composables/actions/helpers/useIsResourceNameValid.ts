@@ -51,7 +51,7 @@ export const useIsResourceNameValid = () => {
     )
     if (exists) {
       const translated = $gettext('The name »%{name}« is already taken')
-      return { isValid: false, error: $gettext(translated, { name: newName }, true) }
+      return { isValid: false, error: $gettext(translated, { name: newName }) }
     }
 
     return { isValid: true, error: undefined }
