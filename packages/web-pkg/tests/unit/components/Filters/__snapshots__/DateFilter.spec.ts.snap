@@ -59,7 +59,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -67,10 +67,10 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -78,7 +78,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
         <div data-v-e73bd97a="" class="mt-2">
           <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-5">From
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
       <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -184,10 +184,10 @@ exports[`DateFilter > renders all items 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5.5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
         const title = document.createElement(&quot;title&quot;);
         title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -195,7 +195,7 @@ exports[`DateFilter > renders all items 1`] = `
         svg.insertBefore(title, svg.firstChild);
       };
       return svg;
-    }" aria-hidden="true" focusable="false" class="size-5.5"></svg></span>
+    }" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
         <div data-v-e73bd97a="" class="mt-2">
           <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-2">From
