@@ -9,10 +9,9 @@
         isResourceSelected,
       'bg-role-surface-container hover:bg-role-surface-container-highest outline outline-role-surface-container-highest':
         !isResourceSelected,
-      'oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none':
-        isResourceDisabled && !isProjectSpaceResource(resource),
+      'oc-tile-card-disabled opacity-70 grayscale-60 pointer-events-none': isResourceDisabled,
       'state-trashed [&_.tile-preview]:opacity-80 [&_.tile-default-image_svg]:opacity-80 [&_.tile-preview]:grayscale [&_.tile-default-image_svg]:grayscale':
-        isResourceDisabled && isProjectSpaceResource(resource)
+        isProjectSpaceResource(resource) && resource.disabled
     }"
     @contextmenu="$emit('contextmenu', $event)"
   >
@@ -38,7 +37,7 @@
           <slot v-else name="selection" :item="resource" />
         </div>
         <oc-tag
-          v-if="isResourceDisabled && isProjectSpaceResource(resource)"
+          v-if="isProjectSpaceResource(resource) && resource.disabled"
           class="z-10 absolute text-role-on-surface"
           type="span"
         >
