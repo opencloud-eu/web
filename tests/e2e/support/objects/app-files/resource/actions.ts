@@ -631,7 +631,7 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
 
   await page.locator(addNewResourceButton).click()
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
-  await page.locator(inputSelector).waitFor({ state: 'visible' })
+  await expect(page.locator(folderUploadInput)).toBeAttached()
 
   let uploadAction: Promise<void> = page
     .locator(inputSelector)
