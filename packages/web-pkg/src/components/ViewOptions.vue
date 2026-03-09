@@ -9,7 +9,11 @@
         class="my-2 mx-1 p-1 align-middle"
         :class="{ 'sm:hidden': !isSideBarOpen, 'md:hidden': isSideBarOpen }"
       >
-        <oc-icon :name="currentViewMode.icon.name" :fill-type="currentViewMode.icon.fillType" />
+        <oc-icon
+          v-if="currentViewMode"
+          :name="currentViewMode.icon.name"
+          :fill-type="currentViewMode.icon.fillType"
+        />
       </oc-button>
       <oc-drop
         :title="$gettext('View mode')"
