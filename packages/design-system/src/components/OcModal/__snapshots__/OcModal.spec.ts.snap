@@ -7,7 +7,7 @@ exports[`OcModal > displays input 1`] = `
       <div class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl">
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Create new folder</h2>
         <div class="flex items-center gap-1">
-          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-modal-title-actions-cancel">
+          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
@@ -33,7 +33,7 @@ exports[`OcModal > displays loading state 1`] = `
     <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-3xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title">
       <div class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl">
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Example title</h2>
-        <div class="flex items-center gap-1"> <button type="button" disabled="" aria-label="Cancel" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-title-actions-cancel">
+        <div class="flex items-center gap-1"> <button type="button" disabled="" aria-label="Cancel" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-title-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
       if (__props.accessibleLabel !== &quot;&quot;) {
@@ -66,7 +66,7 @@ exports[`OcModal > matches snapshot 1`] = `
       <div class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl">
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
-          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-modal-title-actions-cancel">
+          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
@@ -93,7 +93,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
       <div class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl">
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
-          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="oc-modal-title-actions-cancel">
+          <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
