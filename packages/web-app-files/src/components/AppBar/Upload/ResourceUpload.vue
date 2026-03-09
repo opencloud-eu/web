@@ -3,7 +3,7 @@
     v-oc-tooltip="
       isRemoteUploadInProgress ? $gettext('Please wait until all imports have finished') : null
     "
-    class="relative overflow-hidden"
+    class="relative"
   >
     <oc-button
       :class="btnClass"
