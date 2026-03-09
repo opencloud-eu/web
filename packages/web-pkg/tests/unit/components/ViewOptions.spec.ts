@@ -106,8 +106,14 @@ describe('ViewOptions component', () => {
       const { wrapper } = getWrapper({
         props: {
           viewModes: [
-            mock<FolderView>({ name: '1', label: '' }),
-            mock<FolderView>({ name: '2', label: '' })
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.tiles,
+              icon: { name: 'app-1', fillType: 'none' }
+            }),
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.table,
+              icon: { name: 'app-2', fillType: 'none' }
+            })
           ]
         }
       })
@@ -121,7 +127,18 @@ describe('ViewOptions component', () => {
     })
     it('shows if the viewModes include "resource-tiles"', () => {
       const { wrapper } = getWrapper({
-        props: { viewModes: [mock<FolderView>({ name: FolderViewModeConstants.name.tiles })] },
+        props: {
+          viewModes: [
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.tiles,
+              icon: { name: 'app-1', fillType: 'none' }
+            }),
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.table,
+              icon: { name: 'app-2', fillType: 'none' }
+            })
+          ]
+        },
         viewMode: FolderViewModeConstants.name.tiles
       })
       expect(wrapper.find(selectors.tileSizeSlider).exists()).toBeTruthy()
@@ -129,7 +146,18 @@ describe('ViewOptions component', () => {
     it.each([1, 2, 3, 4, 5, 6])('applies the correct size step', (tileSize) => {
       const { mocks } = getWrapper({
         tileSize: tileSize.toString(),
-        props: { viewModes: [mock<FolderView>({ name: FolderViewModeConstants.name.tiles })] }
+        props: {
+          viewModes: [
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.tiles,
+              icon: { name: 'app-1', fillType: 'none' }
+            }),
+            mock<FolderView>({
+              name: FolderViewModeConstants.name.table,
+              icon: { name: 'app-2', fillType: 'none' }
+            })
+          ]
+        }
       })
       expect(unref(mocks.tileSizeQueryMock)).toBe(tileSize.toString())
     })
