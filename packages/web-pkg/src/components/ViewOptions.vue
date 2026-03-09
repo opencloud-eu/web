@@ -1,13 +1,12 @@
 <template>
   <div class="flex items-center">
-    <template v-if="viewModes.length">
+    <template v-if="viewModes.length > 1">
       <oc-button
-        id="mobile-viewmode-switch-toggle"
+        id="viewmode-switch-toggle"
         v-oc-tooltip="$gettext('Switch view mode')"
         :aria-label="$gettext('Switch view mode')"
         appearance="raw"
         class="my-2 mx-1 p-1 align-middle"
-        :class="{ 'sm:hidden': !isSideBarOpen, 'md:hidden': isSideBarOpen }"
       >
         <oc-icon
           v-if="currentViewMode"
@@ -17,10 +16,10 @@
       </oc-button>
       <oc-drop
         :title="$gettext('View mode')"
-        drop-id="mobile-viewmode-switch-drop"
-        toggle="#mobile-viewmode-switch-toggle"
+        drop-id="viewmode-switch-drop"
+        toggle="#viewmode-switch-toggle"
         class="w-auto"
-        padding-size="medium"
+        padding-size="small"
         close-on-click
       >
         <oc-list>
@@ -28,6 +27,7 @@
             <oc-button
               :appearance="viewModeQuery === viewMode.name ? 'filled' : 'raw'"
               :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
+              :class="[viewMode.name]"
               justify-content="left"
               @click="setViewMode(viewMode)"
             >
@@ -48,25 +48,6 @@
         </oc-list>
       </oc-drop>
     </template>
-    <div
-      v-if="viewModes.length > 1"
-      class="viewmode-switch-buttons oc-button-group hidden mr-2"
-      :class="{ 'sm:inline-flex': !isSideBarOpen, 'md:inline-flex': isSideBarOpen }"
-    >
-      <oc-button
-        v-for="viewMode in viewModes"
-        :key="viewMode.name"
-        v-oc-tooltip="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
-        :no-hover="viewModeQuery === viewMode.name"
-        :class="[viewMode.name]"
-        :appearance="viewModeQuery === viewMode.name ? 'filled' : 'outline'"
-        :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
-        :aria-label="$gettext('Switch to %{viewMode}', { viewMode: viewMode.label })"
-        @click="setViewMode(viewMode)"
-      >
-        <oc-icon :name="viewMode.icon.name" :fill-type="viewMode.icon.fillType" size="small" />
-      </oc-button>
-    </div>
     <oc-button
       id="files-view-options-btn"
       key="files-view-options-btn"

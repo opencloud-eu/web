@@ -1695,7 +1695,8 @@ export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<voi
       tiles: 'resource-tiles',
       'table-condensed': 'resource-table-condensed'
     }
-    await page.locator(`.viewmode-switch-buttons .${webSelectors[target]}`).click()
+    await page.locator(`#viewmode-switch-toggle .${webSelectors[target]}`).click()
+    await page.locator(`#viewmode-switch-drop .${webSelectors[target]}`).click()
   }
 }
 

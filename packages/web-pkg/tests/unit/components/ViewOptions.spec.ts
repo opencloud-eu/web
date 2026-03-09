@@ -27,7 +27,7 @@ const selectors = {
   pageSizeSelect: '.oc-page-size',
   hiddenFilesSwitch: '[data-testid="files-switch-hidden-files"]',
   fileExtensionsSwitch: '[data-testid="files-switch-files-extensions-files"]',
-  viewModeSwitchBtns: '.viewmode-switch-buttons',
+  viewModeSwitchBtns: '#viewmode-switch-toggle',
   tileSizeSlider: '[data-testid="files-tiles-size-slider"]'
 }
 
