@@ -7,14 +7,16 @@
         icon: 'cloud',
         label: 'This resource is synced in your cloud.',
         accessibleDescription: 'This resource is synced in your cloud.',
-        handler: cloudHandler
+        handler: cloudHandler,
+        kind: 'icon'
       },
       {
         id: '2',
         icon: 'user',
         label: 'This resource has been shared.',
         accessibleDescription: 'This resource has been shared.',
-        handler: shareHandler
+        handler: shareHandler,
+        kind: 'icon'
       }
     ]"
   />

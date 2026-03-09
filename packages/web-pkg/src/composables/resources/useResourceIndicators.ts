@@ -14,7 +14,7 @@ import { IconFillType } from '../../helpers'
 
 export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
 
-export interface ResourceIndicator {
+export interface ResourceIndicatorIcon {
   id: string
   accessibleDescription: string
   label: string
@@ -23,7 +23,20 @@ export interface ResourceIndicator {
   type: string
   category: ResourceIndicatorCategory
   handler?: (resource: Resource, event?: MouseEvent) => void
+  kind: 'icon'
 }
+
+export interface ResourceIndicatorTag {
+  id: string
+  accessibleDescription: string
+  label: string
+  type: string
+  category: ResourceIndicatorCategory
+  class?: string
+  kind: 'tag'
+}
+
+export type ResourceIndicator = ResourceIndicatorIcon | ResourceIndicatorTag
 
 export const useResourceIndicators = () => {
   const { $gettext } = useGettext()
@@ -61,6 +74,7 @@ export const useResourceIndicators = () => {
   }): ResourceIndicator => {
     return {
       id: `files-sharing-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: shareUserIconDescribedBy({ isDirect }),
       label: $gettext('Show invited people'),
       icon: 'group',
@@ -80,6 +94,7 @@ export const useResourceIndicators = () => {
   const getSyncedIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
     return {
       id: `files-sharing-synced-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: $gettext('This item is synced with your devices'),
       label: $gettext('Synced with your devices'),
       icon: 'loop-right',
@@ -97,6 +112,7 @@ export const useResourceIndicators = () => {
     if (resource.shareRoles?.length) {
       return {
         id: `files-sharing-role-${resource.getDomSelector()}`,
+        kind: 'icon',
         accessibleDescription: $gettext(resource.shareRoles[0].description),
         label: $gettext(resource.shareRoles[0].displayName),
         icon: resource.shareRoles[0].icon,
@@ -108,6 +124,7 @@ export const useResourceIndicators = () => {
 
     return {
       id: `files-sharing-role-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: ShareTypes.remote.label,
       label: ShareTypes.remote.label,
       icon: ShareTypes.remote.icon,
@@ -126,6 +143,7 @@ export const useResourceIndicators = () => {
   }): ResourceIndicator => {
     return {
       id: `file-link-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: shareLinkDescribedBy({ isDirect }),
       label: $gettext('Show links'),
       icon: 'link',
@@ -139,6 +157,7 @@ export const useResourceIndicators = () => {
   const getLockedIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
     return {
       id: `resource-locked-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: $gettext('Item locked'),
       label: $gettext('This item is locked'),
       icon: 'lock',
@@ -151,6 +170,7 @@ export const useResourceIndicators = () => {
   const getProcessingIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
     return {
       id: `resource-processing-${resource.getDomSelector()}`,
+      kind: 'icon',
       accessibleDescription: $gettext('Item in processing'),
       label: $gettext('This item is in processing'),
       icon: 'loop-right',
@@ -163,24 +183,24 @@ export const useResourceIndicators = () => {
   const getSpaceEnabledIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
     return {
       id: `resource-space-enabled-${resource.getDomSelector()}`,
+      kind: 'tag',
       accessibleDescription: $gettext('Space is enabled'),
-      label: $gettext('This space is enabled'),
-      icon: 'play-circle',
+      label: $gettext('Enabled'),
       category: 'space',
       type: 'resource-space-enabled',
-      fillType: 'line'
+      class: '!bg-green-200 !text-green-900'
     }
   }
 
   const getSpaceDisabledIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
     return {
       id: `resource-space-disabled-${resource.getDomSelector()}`,
+      kind: 'tag',
       accessibleDescription: $gettext('Space is disabled'),
-      label: $gettext('This space is disabled'),
-      icon: 'stop-circle',
+      label: $gettext('Disabled'),
       category: 'space',
       type: 'resource-space-disabled',
-      fillType: 'line'
+      class: '!bg-red-200 !text-red-900'
     }
   }
 
