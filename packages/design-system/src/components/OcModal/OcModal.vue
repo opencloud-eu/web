@@ -26,7 +26,6 @@
               class="oc-modal-title-actions-cancel"
               :disabled="isLoading"
               :aria-label="cancelLabel"
-              no-hover
               @click="cancelModalAction"
             >
               <oc-icon name="close" />
@@ -312,7 +311,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
     return focusTrapInitial as FocusTargetOrFalse
   }
   // needs to be one of those elements or undefined. null will throw errors
-  return () => unref(ocModalInput)?.$el || unref(ocModal) || undefined
+  return () => unref(ocModalInput)?.$el?.querySelector('input') || unref(ocModal) || undefined
 })
 
 const classes = computed(() => {
