@@ -251,7 +251,12 @@ const showDrop = async ({
     const uls = unref(drop)?.getElementsByTagName('ul')
     Array.from(uls || []).forEach((ul) => ul.setAttribute('role', 'menu'))
 
-    const menuItems = unref(drop)?.querySelectorAll('button, a')
+    // li elements sit between role="menu" and role="menuitem"; marking them as role="none" removes
+    // them from the accessibility tree so the required parent-child relationship is satisfied
+    const lis = unref(drop)?.querySelectorAll('ul li')
+    Array.from(lis || []).forEach((li) => li.setAttribute('role', 'none'))
+
+    const menuItems = unref(drop)?.querySelectorAll('ul li button, ul li a')
     Array.from(menuItems || []).forEach((item) => {
       item.setAttribute('role', 'menuitem') // menu items should have role="menuitem" for better screen reader support
       item.setAttribute('tabindex', '-1') // menu items should not be focussable via tabs
