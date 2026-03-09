@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border z-[calc(var(--z-index-modal)+1)] border-role-outline rounded-lg focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
+        class="border z-[calc(var(--z-index-modal)+1)] border-role-outline rounded-3xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -15,11 +15,22 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-sm"
+          class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
-          <div v-if="$slots['headerActions']" class="flex items-center gap-1">
-            <slot name="headerActions" />
+          <div class="flex items-center gap-1">
+            <slot name="headerActions"></slot>
+            <oc-button
+              v-if="!hideCancelButton"
+              appearance="raw"
+              class="oc-modal-title-actions-cancel"
+              :disabled="isLoading"
+              :aria-label="cancelLabel"
+              no-hover
+              @click="cancelModalAction"
+            >
+              <oc-icon name="close" />
+            </oc-button>
           </div>
         </div>
         <div class="oc-modal-body px-4 pt-4">
@@ -67,12 +78,6 @@
 
         <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
           <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
-            <oc-button
-              class="oc-modal-body-actions-cancel"
-              :disabled="isLoading"
-              @click="cancelModalAction"
-              >{{ $gettext(cancelLabel) }}
-            </oc-button>
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ml-2"
@@ -148,6 +153,11 @@ export interface Props {
    * @default false
    */
   hideActions?: boolean
+  /**
+   * @docs Hide the cancel button next to the title.
+   * @default false
+   */
+  hideCancelButton?: boolean
   /**
    * @docs Hide the confirm button.
    * @default false
@@ -235,6 +245,7 @@ const {
   hasInput = false,
   hideActions = false,
   hideConfirmButton = false,
+  hideCancelButton = false,
   inputDescription,
   inputRequiredMark = false,
   inputError,
