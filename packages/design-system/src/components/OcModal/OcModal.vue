@@ -25,7 +25,7 @@
               appearance="raw"
               class="oc-modal-title-actions-cancel"
               :disabled="isLoading"
-              :aria-label="cancelLabel"
+              :aria-label="cancelAriaLabel"
               @click="cancelModalAction"
             >
               <oc-icon name="close" />
@@ -107,11 +107,6 @@ export interface Props {
    * @docs Title of the modal.
    */
   title: string
-  /**
-   * @docs Text for the cancel button.
-   * @default Cancel
-   */
-  buttonCancelText?: string
   /**
    * @docs Disables the confirm button.
    * @default false
@@ -233,7 +228,6 @@ export interface Slots {
 
 const {
   title,
-  buttonCancelText = 'Cancel',
   buttonConfirmDisabled = false,
   buttonConfirmText = 'Confirm',
   contextualHelperData,
@@ -286,8 +280,8 @@ const confirmLabel = computed(() => {
   return buttonConfirmText || $gettext('Confirm')
 })
 
-const cancelLabel = computed(() => {
-  return buttonCancelText || $gettext('Cancel')
+const cancelAriaLabel = computed(() => {
+  return $gettext('Cancel')
 })
 
 watch(
