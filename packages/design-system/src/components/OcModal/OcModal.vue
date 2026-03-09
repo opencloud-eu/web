@@ -148,7 +148,7 @@ export interface Props {
    */
   hideActions?: boolean
   /**
-   * @docs Hide the cancel button next to the title.
+   * @docs Hide the cancel button.
    * @default false
    */
   hideCancelButton?: boolean
