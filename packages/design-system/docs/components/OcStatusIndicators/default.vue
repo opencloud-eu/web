@@ -17,6 +17,13 @@
         accessibleDescription: 'This resource has been shared.',
         handler: shareHandler,
         kind: 'icon'
+      },
+      {
+        id: '3',
+        label: 'Active',
+        accessibleDescription: 'This resource is active.',
+        kind: 'tag',
+        class: '!bg-green-200 !text-green-800'
       }
     ]"
   />
