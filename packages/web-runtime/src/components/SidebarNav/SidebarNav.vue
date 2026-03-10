@@ -5,13 +5,6 @@
   >
     <nav class="oc-sidebar-nav mb-4 mt-2 px-1" :aria-label="$gettext('Sidebar navigation menu')">
       <app-floating-action-button />
-      <div
-        v-show="isAnyNavItemActive"
-        id="nav-highlighter"
-        class="absolute ml-2 bg-role-secondary-container text-role-on-secondary-container rounded-sm transition-transform duration-200 ease-[cubic-bezier(0.51, 0.06, 0.56, 1.37)]"
-        v-bind="highlighterAttrs"
-        :aria-hidden="true"
-      />
       <oc-list class="relative">
         <sidebar-nav-item
           v-for="(link, index) in navItems"
@@ -20,7 +13,7 @@
           :target="link.route"
           :active="link.active"
           :icon="link.icon"
-          :fill-type="link.fillType"
+          :fill-type="link.fillType || 'line'"
           :name="link.name"
           :handler="link.handler"
         />
@@ -39,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
 import AppFloatingActionButton from '../AppFloatingActionButton.vue'
 import { useCapabilityStore, VersionCheck, NavItem, getBackendVersion } from '@opencloud-eu/web-pkg'
@@ -50,7 +43,6 @@ const { navItems } = defineProps<{ navItems: NavItem[] }>()
 
 let resizeObserver: ResizeObserver
 const navItemRefs = ref<Record<string, NavItemRef>>({})
-const highlighterAttrs = ref<Record<string, unknown>>({})
 const capabilityStore = useCapabilityStore()
 
 const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
@@ -77,31 +69,5 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   resizeObserver.disconnect()
-})
-
-const updateHighlighterPosition = () => {
-  const activeItemIndex = navItems.findIndex((n) => n.active)
-  const activeEl = unref(navItemRefs)[activeItemIndex]
-  if (activeEl) {
-    highlighterAttrs.value = {
-      style: {
-        transform: `translateY(${activeEl.$el.offsetTop}px)`,
-        'transition-duration': '0.2s'
-      }
-    }
-  }
-}
-
-watch(
-  () => navItems,
-  async () => {
-    await nextTick()
-    updateHighlighterPosition()
-  },
-  { deep: true, immediate: true }
-)
-
-const isAnyNavItemActive = computed(() => {
-  return navItems.some((i) => i.active === true)
 })
 </script>
