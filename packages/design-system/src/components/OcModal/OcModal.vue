@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="z-[calc(var(--z-index-modal)+1)] rounded-3xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
+        class="z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -15,7 +15,7 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-3xl"
+          class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-xl"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
           <div class="flex items-center gap-1">
