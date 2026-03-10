@@ -7,13 +7,6 @@
     "type": "string"
   },
   {
-    "name": "buttonCancelText",
-    "required": false,
-    "description": "Text for the cancel button.",
-    "default": "Cancel",
-    "type": "string"
-  },
-  {
     "name": "buttonConfirmDisabled",
     "required": false,
     "description": "Disables the confirm button.",
@@ -73,6 +66,13 @@
     "name": "hideActions",
     "required": false,
     "description": "Hide the action buttons.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hideCancelButton",
+    "required": false,
+    "description": "Hide the cancel button.",
     "default": "false",
     "type": "boolean"
   },
