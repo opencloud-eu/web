@@ -18,6 +18,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.6.10 [[#2102](https://github.com/opencloud-eu/web/pull/2102)]
 - chore(deps): update tiptap monorepo to v3.20.1 [[#2101](https://github.com/opencloud-eu/web/pull/2101)]
 
 ## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-09
