@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
 - feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
 - feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
 
