@@ -15,7 +15,7 @@
         'opacity-100',
         'select-none',
         'rounded-xl',
-        { 'active overflow-hidden border': active },
+        { 'active overflow-hidden outline': active },
         {
           'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest': !active
         }
@@ -105,6 +105,9 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
+  .oc-sidebar-nav-item-link:is(.active) {
+    outline-color: var(--oc-role-surface-container-highest);
+  }
   .oc-sidebar-nav-item-link:not(.active) {
     color: var(--oc-role-on-surface-variant);
   }
