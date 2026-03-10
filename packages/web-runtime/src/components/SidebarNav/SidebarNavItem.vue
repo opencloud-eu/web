@@ -3,17 +3,19 @@
     <oc-button
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
-      color-role="secondaryContainer"
+      color-role="surface"
       :justify-content="'space-between'"
       :class="[
         'oc-sidebar-nav-item-link',
         'relative',
         'w-full',
         'whitespace-nowrap',
-        'p-2',
+        'px-2',
+        'py-3',
         'opacity-100',
         'select-none',
-        { 'active overflow-hidden': active },
+        'rounded-xl',
+        { 'active overflow-hidden outline': active },
         {
           'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest': !active
         }
@@ -26,7 +28,11 @@
     >
       <span class="flex">
         <oc-icon :name="icon" :fill-type="fillType" />
-        <span class="ml-4 text" :class="{ 'text-invisible opacity-0': collapsed }" v-text="name" />
+        <span
+          class="ml-4 text font-bold"
+          :class="{ 'text-invisible opacity-0': collapsed }"
+          v-text="name"
+        />
       </span>
     </oc-button>
   </li>
@@ -94,3 +100,16 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-sidebar-nav-item-link:is(.active) {
+    outline-color: var(--oc-role-surface-container-highest);
+  }
+  .oc-sidebar-nav-item-link:not(.active) {
+    color: var(--oc-role-on-surface-variant);
+  }
+}
+</style>
