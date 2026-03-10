@@ -6,13 +6,15 @@
 
 @AlexAndBear, @ScharfViktor
 
-### 🐛 Bug Fixes
-
-- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
-
 ### 📈 Enhancement
 
+- feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
 - feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
+
+### 🐛 Bug Fixes
+
+- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-09
 
