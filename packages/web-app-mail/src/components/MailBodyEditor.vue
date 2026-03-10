@@ -137,7 +137,6 @@ const openLinkModal = () => {
   dispatchModal({
     title: $gettext('Add link'),
     elementClass: 'mail-body-editor-link-modal',
-    cancelText: $gettext('Cancel'),
     confirmText: $gettext('Apply'),
     hasInput: true,
     inputType: 'text',

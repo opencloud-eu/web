@@ -26,12 +26,12 @@ export type Modal = {
   elementClass?: string
   title: string
   message?: string
-  cancelText?: string
   confirmDisabled?: boolean
   isLoading?: boolean
   confirmText?: string
   hideActions?: boolean
   hideConfirmButton?: boolean
+  hideCancelButton?: boolean
   hasInput?: boolean
   inputValue?: string
   inputType?: 'text' | 'number' | 'email' | 'password' | 'date'

@@ -69,7 +69,7 @@ describe('OcModal', () => {
       }
     })
 
-    const cancelButton = wrapper.find('.oc-modal-body-actions-cancel')
+    const cancelButton = wrapper.find('.oc-modal-title-actions-cancel')
     const confirmButton = wrapper.find('.oc-modal-body-actions-confirm')
 
     expect(cancelButton.attributes('disabled')).toBeDefined()

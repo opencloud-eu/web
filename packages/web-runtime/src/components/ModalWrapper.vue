@@ -15,7 +15,7 @@
     :input-required-mark="modal.inputRequiredMark"
     :hide-actions="modal.hideActions"
     :hide-confirm-button="modal.hideConfirmButton"
-    :button-cancel-text="modal.cancelText"
+    :hide-cancel-button="modal.hideCancelButton"
     :button-confirm-text="modal.confirmText"
     :button-confirm-disabled="modal.confirmDisabled"
     :contextual-helper-label="modal.contextualHelperLabel"

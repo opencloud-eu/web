@@ -55,9 +55,6 @@
     />
   </div>
   <div class="flex justify-end items-center mt-2">
-    <oc-button class="link-modal-cancel oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
-      {{ $gettext('Cancel') }}
-    </oc-button>
     <div class="ml-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"

@@ -93,7 +93,7 @@ const deleteLinkButton =
 const confirmDeleteButton = `//button[contains(@class,"oc-modal-body-actions-confirm") and text()="Delete"]`
 const notificationContainer = 'div.oc-notification'
 const publicLinkPasswordErrorMessage = `//div[contains(@class, "oc-text-input-message")]/span[contains(@class, "oc-text-input-danger")]`
-const cancelButton = '.oc-modal-body-actions-cancel'
+const cancelButton = '.oc-modal-title-actions-cancel'
 const showOrHidePasswordButton = '.oc-text-input-show-password-toggle'
 const copyPasswordButton = '.oc-text-input-copy-password-button'
 const generatePasswordButton = '.oc-text-input-generate-password-button'
