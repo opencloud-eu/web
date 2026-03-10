@@ -1,4 +1,4 @@
-import StatusIndicators from './OcStatusIndicators.vue'
+import StatusIndicators, { IndicatorIcon } from './OcStatusIndicators.vue'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 const fileResource = {
@@ -10,11 +10,12 @@ const fileResource = {
   isFolder: false,
   extension: 'jpg'
 }
-const indicator = {
+const indicator: IndicatorIcon = {
   id: 'testid',
   label: 'testlabel',
   type: 'testtype',
   icon: 'icon',
+  kind: 'icon',
   handler: vi.fn()
 }
 describe('OcStatusIndicators', () => {
