@@ -47,6 +47,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
         return $gettext('Personal')
       },
       icon: appInfo.icon,
+      fillType: 'fill',
       route: {
         path: `/${appInfo.id}/spaces/personal`
       },
