@@ -124,8 +124,8 @@ const sharerAvatarSelector =
 const recipientAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
 const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
-const mobileViewmodeSwitchBtn = '#mobile-viewmode-switch-toggle'
-const mobileViewmodeSwitchDropdown = '#mobile-viewmode-switch-drop'
+const mobileViewmodeSwitchBtn = '#viewmode-switch-toggle'
+const mobileViewmodeSwitchDropdown = '#viewmode-switch-drop'
 
 // file viewer
 const pdfViewerContainer = '#pdf-viewer object.pdf-viewer'
@@ -1695,7 +1695,8 @@ export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<voi
       tiles: 'resource-tiles',
       'table-condensed': 'resource-table-condensed'
     }
-    await page.locator(`.viewmode-switch-buttons .${webSelectors[target]}`).click()
+    await page.locator('#viewmode-switch-toggle').click()
+    await page.locator(`#viewmode-switch-drop .${webSelectors[target]}`).click()
   }
 }
 
