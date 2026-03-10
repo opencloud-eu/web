@@ -74,6 +74,7 @@ export class ConflictDialog {
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
         hideActions: true,
+        hideCancelButton: true,
         customComponent: ResourceConflictModal,
         customComponentAttrs: () => ({
           resource,

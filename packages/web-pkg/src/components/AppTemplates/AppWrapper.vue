@@ -660,6 +660,7 @@ onBeforeRouteLeave((_to, _from, next) => {
       customComponent: UnsavedChangesModal,
       focusTrapInitial: '.oc-modal-body-actions-confirm',
       hideActions: true,
+      hideCancelButton: true,
       customComponentAttrs: () => {
         return {
           closeCallback: () => {

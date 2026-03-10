@@ -16,13 +16,6 @@
     />
     <div class="link-modal-actions flex justify-end items-center mt-2">
       <oc-button
-        class="oc-modal-body-actions-cancel ml-2"
-        appearance="outline"
-        @click="$emit('cancel')"
-      >
-        {{ $gettext('Cancel') }}
-      </oc-button>
-      <oc-button
         :disabled="isConfirmDisabled"
         class="oc-modal-body-actions-confirm ml-2"
         appearance="filled"

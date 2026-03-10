@@ -7,7 +7,7 @@
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="border z-[calc(var(--z-index-modal)+1)] border-role-outline rounded-lg focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
+        class="z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl"
         tabindex="0"
         role="dialog"
         aria-modal="true"
@@ -15,11 +15,21 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title bg-role-surface-container flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-sm"
+          class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-xl"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
-          <div v-if="$slots['headerActions']" class="flex items-center gap-1">
-            <slot name="headerActions" />
+          <div class="flex items-center gap-1">
+            <slot name="headerActions"></slot>
+            <oc-button
+              v-if="!hideCancelButton"
+              appearance="raw"
+              class="oc-modal-title-actions-cancel"
+              :disabled="isLoading"
+              :aria-label="cancelAriaLabel"
+              @click="cancelModalAction"
+            >
+              <oc-icon name="close" />
+            </oc-button>
           </div>
         </div>
         <div class="oc-modal-body px-4 pt-4">
@@ -68,12 +78,6 @@
         <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
           <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
             <oc-button
-              class="oc-modal-body-actions-cancel"
-              :disabled="isLoading"
-              @click="cancelModalAction"
-              >{{ $gettext(cancelLabel) }}
-            </oc-button>
-            <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ml-2"
               :appearance="buttonConfirmAppearance"
@@ -103,11 +107,6 @@ export interface Props {
    * @docs Title of the modal.
    */
   title: string
-  /**
-   * @docs Text for the cancel button.
-   * @default Cancel
-   */
-  buttonCancelText?: string
   /**
    * @docs Disables the confirm button.
    * @default false
@@ -148,6 +147,11 @@ export interface Props {
    * @default false
    */
   hideActions?: boolean
+  /**
+   * @docs Hide the cancel button.
+   * @default false
+   */
+  hideCancelButton?: boolean
   /**
    * @docs Hide the confirm button.
    * @default false
@@ -224,7 +228,6 @@ export interface Slots {
 
 const {
   title,
-  buttonCancelText = 'Cancel',
   buttonConfirmDisabled = false,
   buttonConfirmText = 'Confirm',
   contextualHelperData,
@@ -235,6 +238,7 @@ const {
   hasInput = false,
   hideActions = false,
   hideConfirmButton = false,
+  hideCancelButton = false,
   inputDescription,
   inputRequiredMark = false,
   inputError,
@@ -276,8 +280,8 @@ const confirmLabel = computed(() => {
   return buttonConfirmText || $gettext('Confirm')
 })
 
-const cancelLabel = computed(() => {
-  return buttonCancelText || $gettext('Cancel')
+const cancelAriaLabel = computed(() => {
+  return $gettext('Cancel')
 })
 
 watch(
@@ -301,7 +305,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
     return focusTrapInitial as FocusTargetOrFalse
   }
   // needs to be one of those elements or undefined. null will throw errors
-  return () => unref(ocModalInput)?.$el || unref(ocModal) || undefined
+  return () => unref(ocModalInput)?.$el?.querySelector('input') || unref(ocModal) || undefined
 })
 
 const classes = computed(() => {

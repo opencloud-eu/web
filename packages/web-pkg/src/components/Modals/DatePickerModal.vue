@@ -11,9 +11,6 @@
   />
 
   <div class="flex justify-end items-center mt-2">
-    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="$emit('cancel')">
-      {{ $gettext('Cancel') }}
-    </oc-button>
     <oc-button
       :disabled="confirmDisabled"
       class="oc-modal-body-actions-confirm ml-2"
