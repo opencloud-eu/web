@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-10
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @ScharfViktor
+
+### 🐛 Bug Fixes
+
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
+
+### 📈 Enhancement
+
+- feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
+
 ## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-09
 
 ### ❤️ Thanks to all contributors! ❤️
