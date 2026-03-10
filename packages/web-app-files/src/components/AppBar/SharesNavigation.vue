@@ -5,7 +5,7 @@
         <oc-button
           type="router-link"
           class="mr-4 py-2 w-full"
-          :class="{ 'border-b-2 border-role-secondary-container rounded-none': navItem.active }"
+          :class="{ 'border-b border-role-secondary rounded-none': navItem.active }"
           appearance="raw"
           :to="navItem.to"
         >

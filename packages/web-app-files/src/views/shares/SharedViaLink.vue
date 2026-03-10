@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes">
+      <app-bar :view-modes="viewModes" :breadcrumbs="breadcrumbs">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -56,6 +56,7 @@
 
 <script lang="ts">
 import {
+  createLocationShares,
   FileSideBar,
   useConfigStore,
   useFileActions,
@@ -72,12 +73,14 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, unref } from 'vue'
+import { computed, defineComponent, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
+import { v4 as uuidV4 } from 'uuid'
+import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   components: {
@@ -94,6 +97,8 @@ export default defineComponent({
   },
 
   setup() {
+    const { $gettext } = useGettext()
+
     const { getMatchingSpace } = useGetMatchingSpace()
     const configStore = useConfigStore()
     const { options: configOptions } = storeToRefs(configStore)
@@ -130,13 +135,25 @@ export default defineComponent({
       selectedResourcesIds.value = [matchedNewResource.id]
     })
 
+    const breadcrumbs = computed(() => {
+      return [
+        {
+          id: uuidV4(),
+          text: $gettext('Shares'),
+          to: createLocationShares('files-shares-via-link'),
+          isStaticNav: true
+        }
+      ]
+    })
+
     return {
       ...useFileActions(),
       ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
       totalResourcesCount,
-      loadPreview
+      loadPreview,
+      breadcrumbs
     }
   },
 
