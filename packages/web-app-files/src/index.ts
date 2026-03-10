@@ -31,7 +31,6 @@ import { APPID } from './appid'
 const appInfo: ApplicationInformation = {
   id: APPID,
   icon: 'resource-type-folder',
-  iconFillType: 'fill',
   color: 'var(--oc-role-secondary)',
   extensions: []
 }
