@@ -16,6 +16,10 @@
 - fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
 - fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
+### 📦️ Dependencies
+
+- chore(deps): update tiptap monorepo to v3.20.1 [[#2101](https://github.com/opencloud-eu/web/pull/2101)]
+
 ## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-09
 
 ### ❤️ Thanks to all contributors! ❤️
