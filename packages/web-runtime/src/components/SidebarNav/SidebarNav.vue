@@ -8,7 +8,6 @@
       <oc-list class="relative">
         <sidebar-nav-item
           v-for="(link, index) in navItems"
-          :ref="(el) => (navItemRefs[index] = el as NavItemRef)"
           :key="index"
           :target="link.route"
           :active="link.active"
@@ -32,42 +31,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
 import AppFloatingActionButton from '../AppFloatingActionButton.vue'
 import { useCapabilityStore, VersionCheck, NavItem, getBackendVersion } from '@opencloud-eu/web-pkg'
 
-type NavItemRef = InstanceType<typeof SidebarNavItem>
-
 const { navItems } = defineProps<{ navItems: NavItem[] }>()
 
-let resizeObserver: ResizeObserver
-const navItemRefs = ref<Record<string, NavItemRef>>({})
 const capabilityStore = useCapabilityStore()
-
 const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
-
-onMounted(() => {
-  const navBar = document.getElementById('web-nav-sidebar')
-  const highlighter = document.getElementById('nav-highlighter')
-
-  if (!highlighter || !navBar) {
-    return
-  }
-
-  resizeObserver = new ResizeObserver(() => {
-    const navItem = document.getElementsByClassName('oc-sidebar-nav-item-link')[0]
-    if (!navItem) {
-      return
-    }
-    highlighter.style.setProperty('transition-duration', `0.05s`)
-    highlighter.style.setProperty('width', `${navItem.clientWidth}px`)
-    highlighter.style.setProperty('height', `${navItem.clientHeight}px`)
-  })
-  resizeObserver.observe(navBar)
-})
-
-onBeforeUnmount(() => {
-  resizeObserver.disconnect()
-})
 </script>
