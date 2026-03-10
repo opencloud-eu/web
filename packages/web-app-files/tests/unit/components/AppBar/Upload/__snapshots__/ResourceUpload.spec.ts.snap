@@ -5,7 +5,7 @@ exports[`Resource Upload Component > file upload > should render component 1`] =
     <!--v-if-->
     <!-- @slot Content of the button -->
     <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-file-upload-button">Files</span>
-  </button> <input id="files-file-upload-input" multiple="" class="hidden" type="file" aria-labelledby="files-file-upload-button" name="folder" tabindex="-1"></div>"
+  </button> <input id="files-file-upload-input" multiple="" class="hidden" type="file" aria-labelledby="files-file-upload-button" name="folder" tabindex="-1" hidden=""></div>"
 `;
 
 exports[`Resource Upload Component > folder upload > should render component 1`] = `
@@ -13,5 +13,5 @@ exports[`Resource Upload Component > folder upload > should render component 1`]
     <!--v-if-->
     <!-- @slot Content of the button -->
     <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-folder-upload-button">Folder</span>
-  </button> <input id="files-folder-upload-input" webkitdirectory="true" mozdirectory="true" allowdirs="true" class="hidden" type="file" aria-labelledby="files-folder-upload-button" name="file" tabindex="-1"></div>"
+  </button> <input id="files-folder-upload-input" webkitdirectory="true" mozdirectory="true" allowdirs="true" class="hidden" type="file" aria-labelledby="files-folder-upload-button" name="file" tabindex="-1" hidden=""></div>"
 `;

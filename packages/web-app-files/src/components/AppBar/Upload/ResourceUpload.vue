@@ -24,6 +24,7 @@
       :aria-labelledby="uploadLabelId"
       :name="isFolder ? 'file' : 'folder'"
       tabindex="-1"
+      hidden
     />
   </div>
 </template>
