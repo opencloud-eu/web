@@ -25,7 +25,8 @@ describe('ResourceStatusIndicators component', () => {
         label: 'label',
         accessibleDescription: 'accessible description',
         icon: 'download',
-        fillType: 'fill'
+        fillType: 'fill',
+        kind: 'icon'
       }
     ] satisfies ResourceIndicator[]
 

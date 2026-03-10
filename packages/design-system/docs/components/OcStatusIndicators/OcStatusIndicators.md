@@ -18,7 +18,7 @@ Indicators should be described via the `accessibleDescription` if they serve a p
 
 ### Default
 
-The most basic use case involves a `resource` and a given list of `indicators`. Each indicator has a `handler` function that is called when the user clicks on it.
+The most basic use case involves a `resource` and a given list of `indicators`. The indicators with kind `icon` have a `handler` function that is called when the user clicks on it.
 
 ::: livecode {path=/components/OcStatusIndicators/default.vue}
 <<< @/components/OcStatusIndicators/default.vue
