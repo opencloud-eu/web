@@ -85,7 +85,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-0" value="">
+              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -97,7 +97,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-1" value="">
+              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -202,7 +202,7 @@ exports[`DateFilter > renders all items 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-0" value="">
+              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
@@ -214,7 +214,7 @@ exports[`DateFilter > renders all items 1`] = `
               <!--v-if-->
             </label>
             <div class="relative">
-              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input" type="date" teleport-id="v-1" value="">
+              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
               <!--v-if-->
             </div>
             <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">

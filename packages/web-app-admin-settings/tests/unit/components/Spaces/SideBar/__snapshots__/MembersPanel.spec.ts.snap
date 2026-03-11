@@ -6,7 +6,7 @@ exports[`MembersPanel > should display an empty result if no matching members fo
       <!--v-if-->
     </label>
     <div class="relative">
-      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0" value="no-match">
+      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="no-match">
       <!--v-if-->
     </div>
     <!--v-if-->
@@ -36,7 +36,7 @@ exports[`MembersPanel > should render all members accordingly to their role assi
       <!--v-if-->
     </label>
     <div class="relative">
-      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0" value="">
+      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="">
       <!--v-if-->
     </div>
     <!--v-if-->
