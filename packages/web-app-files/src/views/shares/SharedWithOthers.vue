@@ -9,10 +9,6 @@
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <div v-if="shareTypes.length > 1" class="flex m-4">
-          <div class="mr-4 flex items-center">
-            <oc-icon name="filter-2" class="mr-1" />
-            <span v-text="$gettext('Filter:')" />
-          </div>
           <item-filter
             :allow-multiple="true"
             :filter-label="$gettext('Share Type')"

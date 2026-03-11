@@ -21,10 +21,6 @@
         </template>
         <template #filter>
           <div class="flex items-center">
-            <div class="mr-4 flex items-center">
-              <oc-icon name="filter-2" class="mr-1" />
-              <span v-text="$gettext('Filter:')" />
-            </div>
             <item-filter
               v-if="groups.length"
               :allow-multiple="true"

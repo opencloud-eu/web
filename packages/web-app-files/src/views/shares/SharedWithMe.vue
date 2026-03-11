@@ -10,10 +10,6 @@
       <template v-else>
         <div class="flex justify-between flex-wrap items-end mx-4 mb-4">
           <div class="flex flex-wrap">
-            <div class="mr-4 flex items-center">
-              <oc-icon name="filter-2" class="mr-1" />
-              <span v-text="$gettext('Filter:')" />
-            </div>
             <item-filter-inline
               class="share-visibility-filter"
               filter-name="share-visibility"
