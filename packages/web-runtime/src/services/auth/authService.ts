@@ -146,8 +146,25 @@ export class AuthService implements AuthServiceInterface {
             this.handleAuthError(unref(this.router.currentRoute), { forceSignin: true })
           }
 
-          // retry silent signin once, force logout if it fails
-          this.userManager.signinSilent().catch(handleExpirationError)
+          // attempt silent signin in a retry loop. on network error, we retry every 2s up to 10
+          // times (20s). beyond or for any other error, we fallback to idp sign in.
+          const signinWithNetworkRetry = async (retriesLeft: number) => {
+            try {
+              await this.userManager.signinSilent()
+            } catch (error) {
+              const isDueToNetworkError =
+                error instanceof TypeError && error.message.toLowerCase().includes('fetch')
+              if (isDueToNetworkError && retriesLeft > 0) {
+                console.debug(`signinSilent failed due to network error, retrying (${retriesLeft})`)
+                await new Promise((resolve) => setTimeout(resolve, 2000))
+                return signinWithNetworkRetry(retriesLeft - 1)
+              }
+
+              handleExpirationError()
+            }
+          }
+
+          signinWithNetworkRetry(10)
         })
 
         this.userManager.events.addAccessTokenExpiring(() => {
