@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper class="flex-col">
-      <app-bar :has-bulk-actions="true" :view-modes="viewModes">
+      <app-bar :has-bulk-actions="true" :view-modes="viewModes" :breadcrumbs="breadcrumbs">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -97,7 +97,8 @@ import {
   ItemFilter,
   useAppsStore,
   useResourcesStore,
-  UserAvatar
+  UserAvatar,
+  createLocationShares
 } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -111,6 +112,7 @@ import { useOpenWithDefaultApp, defaultFuseOptions } from '@opencloud-eu/web-pkg
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
+import { v4 as uuidV4 } from 'uuid'
 
 const { openWithDefaultApp } = useOpenWithDefaultApp()
 const appsStore = useAppsStore()
@@ -138,6 +140,17 @@ const { $gettext } = useGettext()
 
 const areHiddenFilesShown = ref(false)
 const filterTerm = ref('')
+
+const breadcrumbs = computed(() => {
+  return [
+    {
+      id: uuidV4(),
+      text: $gettext('Shares'),
+      to: createLocationShares('files-shares-with-me'),
+      isStaticNav: true
+    }
+  ]
+})
 
 const shareSectionTitle = computed(() => {
   return unref(areHiddenFilesShown) ? $gettext('Hidden Shares') : $gettext('Shares')

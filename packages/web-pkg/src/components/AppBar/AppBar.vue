@@ -33,7 +33,6 @@
           </template>
         </oc-breadcrumb>
         <mobile-nav v-if="showMobileNav" />
-        <slot v-if="hasSharesNavigation" name="navigation" />
         <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
             :view-modes="viewModes"
@@ -45,6 +44,7 @@
           />
         </div>
       </div>
+      <slot v-if="hasSharesNavigation" name="navigation" />
       <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
         <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
