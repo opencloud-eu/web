@@ -116,7 +116,7 @@
               <oc-icon name="text" fill-type="none" />
             </oc-button>
             <div class="ml-auto flex items-center min-w-0">
-              <MailSavedHint :show="showSavedHint" />
+              <MailSavedHint v-if="showSavedHint" />
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
 import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
 import { plainTextFromHtml } from '../helpers/mailComposeText'
 import isEmpty from 'lodash-es/isEmpty'
-import type { Mailbox, MailAddress } from '../types'
+import type { Mail, Mailbox, MailAddress } from '../types'
 
 type ComposeAttachment = ComposeFormState['attachments'][number]
 
@@ -152,7 +152,11 @@ const { dispatchModal } = useModals()
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
 
-const props = defineProps<{ modelValue?: boolean }>()
+const props = defineProps<{
+  modelValue?: boolean
+  draftMail?: Mail | null
+}>()
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
@@ -191,6 +195,49 @@ const createEmptyComposeState = (): ComposeFormState => ({
 })
 
 const composeState = ref<ComposeFormState>(createEmptyComposeState())
+
+const recipientsToInput = (recipients: MailAddress[] = []) => {
+  return recipients.map((recipient) => recipient.email).join(', ')
+}
+
+const getDraftBody = (mail: Mail) => {
+  const htmlPartId = mail.htmlBody?.[0]?.partId
+  if (htmlPartId) {
+    return mail.bodyValues?.[htmlPartId]?.value ?? ''
+  }
+
+  const textPartId = mail.textBody?.[0]?.partId
+  if (textPartId) {
+    return mail.bodyValues?.[textPartId]?.value ?? ''
+  }
+
+  return ''
+}
+
+const getDraftAttachments = (mail: Mail) => {
+  return (mail.attachments ?? [])
+    .filter((attachment) => attachment.blobId)
+    .map((attachment) => ({
+      id: attachment.blobId,
+      blobId: attachment.blobId,
+      name: attachment.name,
+      type: attachment.type,
+      disposition: 'attachment' as const,
+      size: attachment.size ?? 0
+    }))
+}
+
+const createComposeStateFromDraft = (mail: Mail): ComposeFormState => {
+  return {
+    from: undefined,
+    to: recipientsToInput(mail.to),
+    cc: recipientsToInput(mail.cc),
+    bcc: recipientsToInput(mail.bcc),
+    subject: mail.subject ?? '',
+    body: getDraftBody(mail),
+    attachments: getDraftAttachments(mail)
+  }
+}
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -278,6 +325,14 @@ const resetCompose = async () => {
   })
 }
 
+const applyDraftMail = async (mail: Mail) => {
+  await runWithResetGuard(() => {
+    composeState.value = createComposeStateFromDraft(mail)
+    clearSavedHint()
+    resetDraft(mail.id)
+  })
+}
+
 const doClose = () => {
   isExpanded.value = false
   isOpen.value = false
@@ -347,6 +402,18 @@ watch(isOpen, async (open) => {
     await resetCompose()
   }
 })
+
+watch(
+  () => [unref(isOpen), props.draftMail] as const,
+  async ([open, draftMail]) => {
+    if (!open || !draftMail) {
+      return
+    }
+
+    await applyDraftMail(draftMail)
+  },
+  { immediate: true }
+)
 </script>
 
 <style>

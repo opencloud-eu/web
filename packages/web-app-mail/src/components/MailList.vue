@@ -5,7 +5,7 @@
       class="md:hidden"
       mode="action"
       :aria-label="$gettext('Write new Email')"
-      @click="openCompose"
+      @click="openNewCompose"
     />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
@@ -60,6 +60,12 @@
       </oc-list>
     </template>
   </template>
+  <MailWidget
+    v-if="showCompose"
+    :model-value="showCompose"
+    :draft-mail="draftMail"
+    @close="closeCompose"
+  />
 </template>
 
 <script setup lang="ts">
@@ -71,8 +77,10 @@ import { useMailsStore } from '../composables/piniaStores/mails'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
-import { ref, unref } from 'vue'
+import { unref } from 'vue'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useMailCompose } from '../composables/useMailCompose'
+import MailWidget from './MailWidget.vue'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
@@ -86,18 +94,10 @@ const { updateMailField, setCurrentMail } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
 
-const showCompose = ref(false)
-
-const emit = defineEmits<{
-  (e: 'compose-mail'): void
-}>()
-
-const openCompose = () => {
-  emit('compose-mail')
-}
+const { isOpen: showCompose, draftMail, openNewCompose, closeCompose } = useMailCompose()
 
 defineExpose({
-  openCompose
+  openCompose: openNewCompose
 })
 
 const onNavigateBack = () => {
