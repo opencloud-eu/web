@@ -370,7 +370,7 @@ export const openEditPanel = async (args: {
       await page.locator(editActionBtnContextMenu).click()
       break
     case 'quick-action':
-      await await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
+     await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
       break
     default:
       throw new Error(`${action} not implemented`)
