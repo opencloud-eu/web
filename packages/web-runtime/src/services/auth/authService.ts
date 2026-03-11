@@ -152,8 +152,7 @@ export class AuthService implements AuthServiceInterface {
             try {
               await this.userManager.signinSilent()
             } catch (error) {
-              const isDueToNetworkError =
-                error instanceof TypeError && error.message.toLowerCase().includes('fetch')
+              const isDueToNetworkError = error instanceof TypeError
               if (isDueToNetworkError && retriesLeft > 0) {
                 console.debug(`signinSilent failed due to network error, retrying (${retriesLeft})`)
                 await new Promise((resolve) => setTimeout(resolve, 2000))
