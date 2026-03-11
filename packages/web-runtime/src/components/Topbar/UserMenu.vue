@@ -148,7 +148,6 @@
 import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import {
-  routeToContextQuery,
   useAuthService,
   useAuthStore,
   UserAvatar,
@@ -171,7 +170,6 @@ const { user } = storeToRefs(userStore)
 const accountPageRoute = computed(() => ({
   name: authStore.userContextReady ? 'account-information' : 'account-preferences',
   query: {
-    ...routeToContextQuery(unref(route)),
     ...(!authStore.userContextReady &&
       authStore.publicLinkContextReady && { contextRouteName: 'files-public-link' })
   }
