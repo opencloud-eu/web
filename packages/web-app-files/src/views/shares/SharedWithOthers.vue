@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes">
+      <app-bar :view-modes="viewModes" :breadcrumbs="breadcrumbs">
         <template #navigation>
           <SharesNavigation />
         </template>
@@ -78,6 +78,7 @@
 
 <script lang="ts">
 import {
+  createLocationShares,
   queryItemAsString,
   useAppsStore,
   useCapabilityStore,
@@ -107,6 +108,7 @@ import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
+import { v4 as uuidV4 } from 'uuid'
 
 export default defineComponent({
   components: {
@@ -139,6 +141,17 @@ export default defineComponent({
     const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
       resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
+
+    const breadcrumbs = computed(() => {
+      return [
+        {
+          id: uuidV4(),
+          text: $gettext('Shares'),
+          to: createLocationShares('files-shares-with-others'),
+          isStaticNav: true
+        }
+      ]
+    })
 
     const shareTypes = computed(() => {
       const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
@@ -199,7 +212,8 @@ export default defineComponent({
       filteredItems,
       shareTypes,
       getMatchingSpace,
-      loadPreview
+      loadPreview,
+      breadcrumbs
     }
   },
 
