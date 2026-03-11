@@ -143,7 +143,7 @@ export class AuthService implements AuthServiceInterface {
         this.userManager.events.addAccessTokenExpired((): void => {
           const handleExpirationError = () => {
             console.error('AccessToken Expired')
-            this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
+            this.handleAuthError(unref(this.router.currentRoute), { forceSignin: true })
           }
 
           // retry silent signin once, force logout if it fails
@@ -297,7 +297,7 @@ export class AuthService implements AuthServiceInterface {
 
   public async handleAuthError(
     route: RouteLocation,
-    { forceLogout = false }: { forceLogout?: boolean } = {}
+    { forceSignin = false }: { forceSignin?: boolean } = {}
   ) {
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
@@ -309,9 +309,9 @@ export class AuthService implements AuthServiceInterface {
       })
     }
     if (isUserContextRequired(this.router, route) || isIdpContextRequired(this.router, route)) {
-      if (forceLogout) {
+      if (forceSignin) {
         this.tokenTimerWorker?.resetTokenTimer()
-        await this.logoutUser()
+        await this.loginUser(route.fullPath)
         return
       }
 
