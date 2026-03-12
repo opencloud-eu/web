@@ -19,15 +19,6 @@ exports[`Users view > list view > renders initially warning if filters are manda
         </div>
         <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
           <div class="flex items-center">
-            <div class="mr-4 flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span>Filter:</span></div>
             <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
             <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
           </div>
@@ -72,15 +63,6 @@ exports[`Users view > list view > renders list initially 1`] = `
         </div>
         <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
           <div class="flex items-center">
-            <div class="mr-4 flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 mr-1"><svg data-testid="inline-svg-stub" src="icons/filter-2-fill.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span>Filter:</span></div>
             <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
             <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
           </div>

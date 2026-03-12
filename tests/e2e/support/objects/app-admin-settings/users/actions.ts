@@ -2,6 +2,7 @@ import { Page, Locator } from '@playwright/test'
 import util from 'util'
 import { UsersEnvironment } from '../../../environment'
 
+const appBar = '#admin-settings-app-bar'
 const userIdSelector = `[data-item-id="%s"] .users-table-btn-action-dropdown`
 const editActionBtnContextMenu = '.context-menu .oc-users-actions-edit-trigger'
 const editActionBtnQuickActions =
@@ -252,6 +253,7 @@ export const filterUsers = async (args: {
       page.locator(util.format(userFilterOption, value)).click()
     ])
   }
+  await page.locator(appBar).click()
 }
 
 export const changeUser = async (args: {
@@ -368,7 +370,6 @@ export const openEditPanel = async (args: {
       await page.locator(editActionBtnContextMenu).click()
       break
     case 'quick-action':
-      await selectUser({ page, uuid })
       await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
       break
     default:

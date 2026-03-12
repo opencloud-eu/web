@@ -1,14 +1,14 @@
 <template>
   <div>
     <div
-      class="item-inline-filter inline-flex outline outline-role-secondary outline-offset-[-1px] rounded-full"
+      class="item-inline-filter inline-flex outline outline-offset-[-1px] rounded-md"
       :class="`item-inline-filter-${filterName}`"
     >
       <oc-button
         v-for="(option, index) in filterOptions"
         :id="option.name"
         :key="index"
-        class="item-inline-filter-option py-1 px-2 text-xs first:rounded-l-full last:rounded-r-full h-[26px]"
+        class="item-inline-filter-option py-1 px-2 first:rounded-l-md last:rounded-r-md h-[32px]"
         :class="{
           'item-inline-filter-option-selected': activeOption === option.name
         }"
@@ -84,3 +84,12 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .item-inline-filter {
+    outline-color: var(--color-role-outline-variant);
+  }
+}
+</style>
