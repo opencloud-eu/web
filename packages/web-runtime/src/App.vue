@@ -9,6 +9,7 @@
     </skip-to>
     <component :is="layout"></component>
     <modal-wrapper />
+    <div id="app-runtime-drop" />
   </div>
   <app-floating-action-button v-if="isMobile" />
 </template>

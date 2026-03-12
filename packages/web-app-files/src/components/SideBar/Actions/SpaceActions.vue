@@ -8,6 +8,7 @@
       tabindex="-1"
       accept="image/jpeg, image/png"
       class="absolute left-[-99999px]"
+      hidden
       @change="showModalImageSpace"
     />
     <oc-list id="oc-spaces-actions-sidebar" class="sidebar-actions-panel">
