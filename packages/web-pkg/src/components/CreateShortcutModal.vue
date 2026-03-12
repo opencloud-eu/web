@@ -39,6 +39,7 @@
     position="bottom-start"
     close-on-click
     enforce-drop-on-mobile
+    :is-menu="false"
     @hide-drop="onHideDrop"
     @show-drop="onShowDrop"
   >
@@ -352,7 +353,7 @@ export default defineComponent({
       const showDrop = inputUrl.value.trim().length
 
       if (showDrop) {
-        unref(dropRef).show()
+        unref(dropRef).show({ noFocus: true })
       }
     }
 
@@ -367,7 +368,7 @@ export default defineComponent({
         return
       }
 
-      unref(dropRef).show()
+      unref(dropRef).show({ noFocus: true })
 
       if (!isLocationPublicActive(router, 'files-public-link')) {
         debouncedSearch()

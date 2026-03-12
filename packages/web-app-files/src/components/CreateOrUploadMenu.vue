@@ -7,7 +7,6 @@
     mode="click"
     close-on-click
     padding-size="small"
-    @show-drop="showDrop"
   >
     <oc-list
       id="create-list"
@@ -50,7 +49,7 @@
     >
       <li
         v-for="(action, key) in extensionActions"
-        :key="`${key}-${actionKeySuffix}`"
+        :key="`${key}-${useId()}`"
         v-oc-tooltip="
           isActionDisabled(action) && action.disabledTooltip ? action.disabledTooltip() : null
         "
@@ -125,12 +124,11 @@ import {
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 
-import { computed, unref, ref } from 'vue'
+import { computed, unref, useId } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { Action, ResourceIcon } from '@opencloud-eu/web-pkg'
-import { v4 as uuidV4 } from 'uuid'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../extensionPoints'
 import ResourceUpload from './AppBar/Upload/ResourceUpload.vue'
@@ -186,12 +184,6 @@ const extensionActions = computed(() => {
 const canUpload = computed(() => {
   return unref(currentFolder)?.canUpload({ user: userStore.user })
 })
-
-const actionKeySuffix = ref(uuidV4())
-const showDrop = () => {
-  // force actions to be re-rendered when the drop is being opened
-  actionKeySuffix.value = uuidV4()
-}
 
 const isActionDisabled = (action: Action) => {
   return action.isDisabled ? action.isDisabled() : false

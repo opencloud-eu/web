@@ -6,7 +6,8 @@
     :toggle="toggle"
     :mode="mode"
     close-on-click
-    :enforce-drop-on-mobile="true"
+    enforce-drop-on-mobile
+    :is-menu="false"
     @hide-drop="() => (dropOpen = false)"
     @show-drop="() => (dropOpen = true)"
   >

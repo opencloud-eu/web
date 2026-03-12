@@ -2,14 +2,14 @@
   <div id="oc-notifications" class="flex">
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
-      id="oc-notifications-drop"
       :title="$gettext('Notifications')"
-      drop-id="notifications-dropdown"
+      drop-id="oc-notifications-drop"
       toggle="#oc-notifications-bell"
       mode="click"
       class="w-md max-w-full max-h-[400px] overflow-y-auto overflow-x-hidden"
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
+      :is-menu="false"
     >
       <div class="flex justify-end items-center mb-2">
         <oc-button

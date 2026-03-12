@@ -14,6 +14,7 @@
         multiple
         tabindex="-1"
         accept="image/jpeg, image/png"
+        hidden
         @change="showModalImageSpace"
       />
     </div>

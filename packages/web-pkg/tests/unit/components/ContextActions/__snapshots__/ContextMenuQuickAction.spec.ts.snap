@@ -103,6 +103,8 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 </button>
 
 <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+  <!--teleport start-->
   <!--v-if-->
+  <!--teleport end-->
 </transition-stub>"
 `;
