@@ -19,7 +19,7 @@
           v-if="isOpen"
           :id="dropId"
           ref="drop"
-          class="oc-drop shadow-md/20 rounded-sm bg-role-surface"
+          class="oc-drop shadow-sm/10 rounded-xl bg-role-surface border border-role-surface-container-highest"
           :class="attrs?.class"
           :tabindex="-1"
           @click="onClick"
