@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import {
   AppLoadingSpinner,
+  CustomComponentExtension,
   CustomComponentTarget,
   FloatingActionButtonExtension,
   useActiveApp,
@@ -88,8 +89,26 @@ const hasFloatingActionButton = computed(() => {
   }).filter(({ isVisible }) => !isVisible || isVisible()).length
 })
 
+const hasSidebarNavExtension = computed(() => {
+  const mainExtensionPoint = {
+    id: `app.${unref(activeApp)}.sidebar-nav.main`,
+    extensionType: 'customComponent'
+  }
+  const bottomExtensionPoint = {
+    id: `app.${unref(activeApp)}.sidebar-nav.bottom`,
+    extensionType: 'customComponent'
+  }
+  return (
+    requestExtensions<CustomComponentExtension>(mainExtensionPoint).length > 0 ||
+    requestExtensions<CustomComponentExtension>(bottomExtensionPoint).length > 0
+  )
+})
+
 const isSidebarVisible = computed(() => {
-  return !unref(isMobileWidth) && (unref(navItems).length || unref(hasFloatingActionButton))
+  return (
+    !unref(isMobileWidth) &&
+    (unref(navItems).length || unref(hasFloatingActionButton) || unref(hasSidebarNavExtension))
+  )
 })
 
 const isIE11 = !!(window as any).MSInputMethodContext && !!(document as any).documentMode
