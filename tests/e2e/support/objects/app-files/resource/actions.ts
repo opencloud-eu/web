@@ -189,7 +189,9 @@ export const clickResource = async ({
 
     const resource = page.locator(util.format(resourceNameSelector, folder))
     await Promise.all([
-      page.waitForResponse((resp) => resp.request().method() === 'PROPFIND'),
+      page.waitForResponse(
+        (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+      ),
       resource.click()
     ])
   }
@@ -368,10 +370,14 @@ export const createNewFolder = async ({
 }): Promise<void> => {
   await page.locator(createNewFolderButton).click()
   await page.locator(resourceNameInput).fill(resource)
-  await Promise.all([
-    page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
-    page.locator(util.format(actionConfirmationButton, 'Create')).click()
-  ])
+  const createBtn = page.locator(util.format(actionConfirmationButton, 'Create'))
+  await expect(createBtn).toBeEnabled()
+
+  const mkcolPromise = page.waitForResponse(
+    (resp) => resp.status() === 201 && resp.request().method() === 'MKCOL'
+  )
+  await createBtn.click()
+  await mkcolPromise
 }
 
 export const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
