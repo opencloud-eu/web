@@ -3,10 +3,6 @@
     <files-view-wrapper>
       <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes" />
       <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
-        <div class="mr-4 flex items-center">
-          <oc-icon name="filter-2" class="mr-1" />
-          <span v-text="$gettext('Filter:')" />
-        </div>
         <item-filter
           v-if="availableMediaTypeValues.length"
           ref="mediaTypeFilter"

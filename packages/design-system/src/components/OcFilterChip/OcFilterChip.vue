@@ -6,9 +6,9 @@
     <oc-button
       :id="id"
       :gap-size="filterActive ? 'small' : 'none'"
-      class="oc-filter-chip-button oc-pill py-1 text-xs rounded-full h-[26px] max-w-40 focus:z-90 transition-[gap]"
+      class="oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap]"
       :class="{
-        'oc-filter-chip-button-selected rounded-l-full rounded-r-none pr-2 pl-3': filterActive,
+        'oc-filter-chip-button-selected rounded-l-md rounded-r-none pr-2 pl-3': filterActive,
         'px-3': !filterActive
       }"
       :appearance="buttonAppearance"
@@ -55,7 +55,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-r-full h-[26px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
+      class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"
@@ -190,3 +190,12 @@ const buttonColorRole = computed(() => {
 
 defineExpose({ hideDrop })
 </script>
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-filter-chip-button {
+    outline-color: var(--color-role-outline-variant);
+  }
+}
+</style>
