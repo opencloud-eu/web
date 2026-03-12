@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
+### ✅ Tests
+
+- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
+
 ### 🐛 Bug Fixes
 
 - fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
