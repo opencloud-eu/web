@@ -4,7 +4,14 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### 🐛 Bug Fixes
+
+- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
+- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
+- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ### 📈 Enhancement
 
@@ -13,12 +20,6 @@
 - feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
 - feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
 - feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
-
-### 🐛 Bug Fixes
-
-- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
-- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
-- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ### 📦️ Dependencies
 
