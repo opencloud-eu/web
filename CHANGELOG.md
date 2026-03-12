@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: polish filters [[#2124](https://github.com/opencloud-eu/web/pull/2124)]
 - feat: polish shares page [[#2116](https://github.com/opencloud-eu/web/pull/2116)]
 - feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
 - feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
@@ -21,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.5.3 [[#2121](https://github.com/opencloud-eu/web/pull/2121)]
 - chore(deps): update dependency dompurify to v3.3.3 [[#2092](https://github.com/opencloud-eu/web/pull/2092)]
 - chore(deps): update typescript-eslint monorepo to v8.57.0 [[#2112](https://github.com/opencloud-eu/web/pull/2112)]
 - fix(deps): update dependency @sentry/vue to v10.43.0 [[#2119](https://github.com/opencloud-eu/web/pull/2119)]
