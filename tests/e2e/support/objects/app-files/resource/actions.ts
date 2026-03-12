@@ -193,6 +193,8 @@ export const clickResource = async ({
     )
     await resource.click()
     await propfindPromise
+    // wait for the loading spinner to disappear and page is loaded
+    await expect(page.locator('#app-loading-spinner')).toBeHidden()
   }
 }
 
