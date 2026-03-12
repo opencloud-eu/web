@@ -61,5 +61,19 @@
     "description": "Enforce the drop to be displayed even on mobile devices where usually a bottom drawer is used.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "teleport",
+    "required": false,
+    "description": "Teleport the drop to a different DOM element. This can be useful to prevent overflow issues.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "isMenu",
+    "required": false,
+    "description": "Enables navigation through the drop with arrow keys. Use this if the drop only contains menu items. Disabling this disables arrow key navigation but enables regular tab navigation.",
+    "default": "true",
+    "type": "boolean"
   }
 ]
