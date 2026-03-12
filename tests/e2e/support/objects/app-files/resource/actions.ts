@@ -188,12 +188,11 @@ export const clickResource = async ({
     const folder = name.replace(/'/g, "\\'").replace(/"/g, '\\"')
 
     const resource = page.locator(util.format(resourceNameSelector, folder))
-    await Promise.all([
-      page.waitForResponse(
-        (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
-      ),
-      resource.click()
-    ])
+    const propfindPromise = page.waitForResponse(
+      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+    )
+    await resource.click()
+    await propfindPromise
   }
 }
 
