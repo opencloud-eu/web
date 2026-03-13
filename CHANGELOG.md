@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.40.0 [[#2131](https://github.com/opencloud-eu/web/pull/2131)]
 - chore(deps): update dependency fast-xml-parser to v5.5.4 [[#2140](https://github.com/opencloud-eu/web/pull/2140)]
 - chore(deps): update devdependencies (non-major) [[#2138](https://github.com/opencloud-eu/web/pull/2138)]
 - chore(deps): update dependency fast-xml-parser to v5.5.3 [[#2121](https://github.com/opencloud-eu/web/pull/2121)]
