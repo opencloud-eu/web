@@ -17,7 +17,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 		const context = new.target ? undefined : this;
 		const [instanceIndex, instancePrototypeIndex] = registerInstance(context, state, prototypeState);
 		const [contextIndex, contextPrototypeIndex] = registerContext(context, state, prototypeState);
-		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || (prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.onceMockImplementations.shift()) || (prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.mockImplementation) || original || function() {};
+		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || prototypeConfig?.onceMockImplementations.shift() || prototypeConfig?.mockImplementation || original || function() {};
 		let returnValue;
 		let thrownValue;
 		let didThrow = false;
@@ -39,7 +39,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 					const prototypeState = isMock ? prototypeMock.mock : undefined;
 					const prototypeConfig = isMock ? MOCK_CONFIGS.get(prototypeMock) : undefined;
 					returnValue[prop] = createMockInstance({
-						originalImplementation: keepMembersImplementation ? prototypeConfig === null || prototypeConfig === void 0 ? void 0 : prototypeConfig.mockOriginal : undefined,
+						originalImplementation: keepMembersImplementation ? prototypeConfig?.mockOriginal : undefined,
 						prototypeState,
 						prototypeConfig,
 						keepMembersImplementation
