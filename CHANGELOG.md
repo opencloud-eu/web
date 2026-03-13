@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2138](https://github.com/opencloud-eu/web/pull/2138)]
 - chore(deps): update dependency fast-xml-parser to v5.5.3 [[#2121](https://github.com/opencloud-eu/web/pull/2121)]
 - chore(deps): update dependency dompurify to v3.3.3 [[#2092](https://github.com/opencloud-eu/web/pull/2092)]
 - chore(deps): update typescript-eslint monorepo to v8.57.0 [[#2112](https://github.com/opencloud-eu/web/pull/2112)]
