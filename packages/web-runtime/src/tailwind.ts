@@ -1,6 +1,6 @@
 /**
  * This file acts as one of the main entry points for vite. It ensures that
- * Tailwind CSS always comes before any other CSS, which is necessary for the
- * layer styles to be applied correctly.
+ * Tailwind CSS is included in the build. The CSS ordering in the production
+ * output is handled by the ensure-tailwind-css-order plugin in vite.config.ts.
  */
 import '@opencloud-eu/design-system/tailwind'
