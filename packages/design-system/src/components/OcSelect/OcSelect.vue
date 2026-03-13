@@ -525,11 +525,6 @@ export default { components: { VueSelect } }
   .vs {
     &__search {
       color: var(--oc-role-on-surface);
-      height: 26px;
-    }
-
-    &__dropdown-menu {
-      min-height: 36px;
     }
 
     &__search::placeholder {
@@ -538,6 +533,7 @@ export default { components: { VueSelect } }
 
     &__dropdown-toggle,
     &__dropdown-menu {
+      min-height: 36px;
       -webkit-appearance: none;
       color: var(--oc-role-on-surface);
       background-color: var(--oc-role-surface);
@@ -547,7 +543,7 @@ export default { components: { VueSelect } }
       line-height: inherit;
       max-width: 100%;
       outline: none;
-      padding: 2px;
+      padding: 4px;
       transition-duration: 0.2s;
       transition-timing-function: ease-in-out;
       transition-property: color, background-color;
