@@ -23,7 +23,7 @@
     </div>
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
-      <div class="versions flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant">
+      <div class="flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant">
         <span v-text="backendVersion" />
         <version-check />
       </div>
