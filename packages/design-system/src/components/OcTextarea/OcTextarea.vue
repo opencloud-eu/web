@@ -100,10 +100,15 @@ defineExpose({ focus })
 
 @layer components {
   .oc-textarea {
-    @apply rounded-sm m-0 py-1 border border-role-outline w-full max-w-full overflow-auto opacity-70 px-2 align-top bg-role-surface;
+    @apply rounded-sm m-0 py-1 border border-b-role-outline-variant w-full max-w-full overflow-auto opacity-70 px-2 align-top bg-role-surface;
   }
+
+  .oc-textarea:focus {
+    @apply border border-role-outline-variant outline-1 outline-role-outline;
+  }
+
   .oc-textarea::placeholder {
-    @apply opacity-100;
+    @apply text-role-on-surface-variant;
   }
 }
 </style>

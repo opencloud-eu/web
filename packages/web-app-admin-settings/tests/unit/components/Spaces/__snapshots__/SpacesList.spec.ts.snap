@@ -6,7 +6,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <!--v-if-->
     </label>
     <div class="relative">
-      <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0" value="">
+      <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="">
       <!--v-if-->
     </div>
     <!--v-if-->
