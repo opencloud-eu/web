@@ -143,11 +143,27 @@ export class AuthService implements AuthServiceInterface {
         this.userManager.events.addAccessTokenExpired((): void => {
           const handleExpirationError = () => {
             console.error('AccessToken Expired')
-            this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
+            this.handleAuthError(unref(this.router.currentRoute), { forceSignin: true })
           }
 
-          // retry silent signin once, force logout if it fails
-          this.userManager.signinSilent().catch(handleExpirationError)
+          // attempt silent signin in a retry loop. on network error, we retry every 2s up to 10
+          // times (20s). beyond or for any other error, we fallback to idp sign in.
+          const signinWithNetworkRetry = async (retriesLeft: number) => {
+            try {
+              await this.userManager.signinSilent()
+            } catch (error) {
+              const isDueToNetworkError = error instanceof TypeError
+              if (isDueToNetworkError && retriesLeft > 0) {
+                console.debug(`signinSilent failed due to network error, retrying (${retriesLeft})`)
+                await new Promise((resolve) => setTimeout(resolve, 2000))
+                return signinWithNetworkRetry(retriesLeft - 1)
+              }
+
+              handleExpirationError()
+            }
+          }
+
+          signinWithNetworkRetry(10)
         })
 
         this.userManager.events.addAccessTokenExpiring(() => {
@@ -297,7 +313,7 @@ export class AuthService implements AuthServiceInterface {
 
   public async handleAuthError(
     route: RouteLocation,
-    { forceLogout = false }: { forceLogout?: boolean } = {}
+    { forceSignin = false }: { forceSignin?: boolean } = {}
   ) {
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
@@ -309,9 +325,9 @@ export class AuthService implements AuthServiceInterface {
       })
     }
     if (isUserContextRequired(this.router, route) || isIdpContextRequired(this.router, route)) {
-      if (forceLogout) {
+      if (forceSignin) {
         this.tokenTimerWorker?.resetTokenTimer()
-        await this.logoutUser()
+        await this.loginUser(route.fullPath)
         return
       }
 
