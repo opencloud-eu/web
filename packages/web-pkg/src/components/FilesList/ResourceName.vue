@@ -15,8 +15,9 @@
       v-else
       class="oc-resource-basename break-normal text-role-on-surface leading-4"
       v-text="displayName"
-    /><span
-      v-if="extension && isExtensionDisplayed"
+    />
+    <span
+      v-if="extension && isExtensionDisplayed && displayExtension"
       class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
       v-text="displayExtension"
     />
@@ -48,12 +49,16 @@ const {
 }>()
 
 const displayName = computed(() => {
-  if (extension) {
+  if (extension && !name.startsWith('.')) {
     return name.slice(0, -extension.length - 1)
   }
   return name
 })
 const displayExtension = computed(() => {
+  if (name.startsWith('.')) {
+    return ''
+  }
+
   return extension ? '.' + extension : ''
 })
 
