@@ -164,7 +164,6 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
         dropDownActionOptions: unref(actionOptions),
         onClose: () => {
           closeApp()
-          unregisterExtensions([topBarExtensionId])
         }
       })
     }
@@ -664,16 +663,19 @@ onBeforeRouteLeave((_to, _from, next) => {
       customComponentAttrs: () => {
         return {
           closeCallback: () => {
+            unregisterExtensions([topBarExtensionId])
             next()
           }
         }
       },
       async onConfirm() {
+        unregisterExtensions([topBarExtensionId])
         await save()
         next()
       }
     })
   } else {
+    unregisterExtensions([topBarExtensionId])
     next()
   }
 })
