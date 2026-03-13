@@ -16,7 +16,7 @@ import {
 } from '@opencloud-eu/web-pkg/src'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
-import { computed, unref, watch } from 'vue'
+import { computed, onUnmounted, unref, watch } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { useRoute } from 'vue-router'
@@ -102,6 +102,10 @@ const getNavItems = () => {
     }
   })
 }
+
+onUnmounted(() => {
+  extensionRegistry.unregisterExtensions(['com.github.opencloud-eu.web.account.navItems'])
+})
 
 watch(
   () => gettext.current,
