@@ -43,6 +43,5 @@ Feature: language settings
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" opens the user menu
-    And "Anonymous" opens "Preferences" on the user menu
     And "Anonymous" changes the language to "Deutsch - German"
     Then "Anonymous" should see the following account page title "Einstellungen"
