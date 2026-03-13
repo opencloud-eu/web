@@ -11,7 +11,6 @@
 <script setup lang="ts">
 import {
   useActiveLocation,
-  useAuthStore,
   useCapabilityStore,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg/src'
@@ -24,7 +23,6 @@ import { useRoute } from 'vue-router'
 
 const extensionRegistry = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
-const authStore = useAuthStore()
 
 const { supportRadicale } = storeToRefs(capabilityStore)
 const { $gettext, current: currentLanguage } = useGettext()
