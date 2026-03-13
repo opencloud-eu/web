@@ -6,7 +6,7 @@
     <div class="flex flex-col gap-2 grow">
       <nav class="oc-sidebar-nav px-1" :aria-label="$gettext('Sidebar navigation menu')">
         <app-floating-action-button />
-        <oc-list class="relative">
+        <oc-list class="relative mt-2">
           <sidebar-nav-item
             v-for="(link, index) in navItems"
             :key="index"
