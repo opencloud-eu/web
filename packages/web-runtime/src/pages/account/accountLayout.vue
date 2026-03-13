@@ -13,15 +13,15 @@
 import {
   useActiveLocation,
   useCapabilityStore,
-  useExtensionRegistry
-} from '@opencloud-eu/web-pkg/src'
+  useExtensionRegistry,
+  MobileNav
+} from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
 import { computed, onUnmounted, unref, watch } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { useRoute } from 'vue-router'
-import MobileNav from '@opencloud-eu/web-pkg/src/components/Navigation/MobileNav.vue'
 
 const extensionRegistry = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
