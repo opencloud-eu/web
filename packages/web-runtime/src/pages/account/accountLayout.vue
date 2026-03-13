@@ -16,7 +16,7 @@ import {
 } from '@opencloud-eu/web-pkg/src'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
-import { computed, onUnmounted, unref, watch } from 'vue'
+import { computed, unref, watch } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { useRoute } from 'vue-router'
@@ -25,7 +25,9 @@ const extensionRegistry = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
 
 const { supportRadicale } = storeToRefs(capabilityStore)
-const { $gettext, current: currentLanguage } = useGettext()
+const gettext = useGettext()
+const { $gettext } = gettext
+
 const route = useRoute()
 
 const isAccountInformationActive = useActiveLocation(isLocationAccountActive, 'account-information')
@@ -101,14 +103,11 @@ const getNavItems = () => {
   })
 }
 
-onUnmounted(() => {
-  const navItems = getNavItems()
-  extensionRegistry.unregisterExtensions(navItems.map((item) => item.id))
-})
-
 watch(
-  () => currentLanguage,
+  () => gettext.current,
   () => {
+    extensionRegistry.unregisterExtensions(['com.github.opencloud-eu.web.account.navItems'])
+
     const navItems = getNavItems()
     extensionRegistry.registerExtensions(computed(() => navItems))
   },
