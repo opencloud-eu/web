@@ -111,8 +111,9 @@ const getNavItems = () => {
 
   return [...baseItems, ...extensionItems].map((navItem) => {
     return {
-      id: `app.account.navItems`,
+      id: 'com.github.opencloud-eu.web.account.navItems',
       type: 'sidebarNav',
+      extensionPointIds: ['app.account.navItems'],
       navItem
     }
   })
