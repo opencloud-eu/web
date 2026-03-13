@@ -10,7 +10,6 @@
 </template>
 <script setup lang="ts">
 import {
-  routeToContextQuery,
   useActiveLocation,
   useAuthStore,
   useCapabilityStore,
@@ -42,21 +41,6 @@ const preferencesPanelExtensions = computed(() => {
 })
 
 const getNavItems = () => {
-  if (!authStore.userContextReady) {
-    return [
-      {
-        id: `app.account.navItems`,
-        extensionType: 'sidebarNav',
-        type: 'sidebarNav',
-        navItem: {
-          name: $gettext('Preferences'),
-          route: { name: 'account-preferences', query: routeToContextQuery(unref(route)) }, // Persist query for hybrid auth context
-          icon: 'settings-4'
-        }
-      }
-    ]
-  }
-
   const baseItems = [
     {
       name: $gettext('Profile'),
