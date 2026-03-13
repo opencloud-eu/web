@@ -1,17 +1,28 @@
 import { computed, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
+import type { Keywords, Mail, MailAddress, MailBodyPart, MailBodyValue, MailboxIds } from '../types'
 
-export type DraftEmailPayload = Record<string, any> & {
-  mailboxIds: Record<string, true>
-  keywords: Record<string, boolean>
+// Handles creating, updating, and discarding email drafts while tracking draft state and save status.
+
+export type DraftEmailBasePayload = {
+  from?: MailAddress[]
+  to?: MailAddress[]
+  cc?: MailAddress[]
+  bcc?: MailAddress[]
+  subject?: string
+  textBody?: MailBodyPart[]
+  htmlBody?: MailBodyPart[]
+  bodyValues?: Record<string, MailBodyValue>
+  attachments?: MailBodyPart[]
+  keywords?: Keywords
 }
 
-export type DraftEmailResponse = {
-  id: string
-  blobId?: string
-  threadId?: string
-  size?: number
+export type DraftEmailPayload = DraftEmailBasePayload & {
+  mailboxIds: MailboxIds
+  keywords: Keywords
 }
+
+export type DraftEmailResponse = Pick<Mail, 'id' | 'blobId' | 'threadId' | 'size'>
 
 export type MailDraftApi = {
   createDraft: (accountId: string, payload: DraftEmailPayload) => Promise<DraftEmailResponse>
@@ -27,9 +38,7 @@ export const useSaveAsDraft = (opts: {
   accountId: Ref<string>
   draftMailboxId: Ref<string>
   api: MailDraftApi
-  getDraftPayload: () =>
-    | Omit<DraftEmailPayload, 'mailboxIds' | 'keywords'>
-    | Partial<DraftEmailPayload>
+  getDraftPayload: () => DraftEmailBasePayload
   initialDraftId?: string | null
 }) => {
   const draftId = ref<string | null>(opts.initialDraftId ?? null)
@@ -46,12 +55,12 @@ export const useSaveAsDraft = (opts: {
       return null
     }
 
-    const base = opts.getDraftPayload() ?? {}
+    const base = opts.getDraftPayload() || {}
 
     const payload: DraftEmailPayload = {
-      ...(base as any),
+      ...base,
       mailboxIds: { [draftMailboxId]: true },
-      keywords: { ...(base as any).keywords, $draft: true }
+      keywords: { ...(base.keywords || {}), $draft: true }
     }
 
     let res: DraftEmailResponse
@@ -91,7 +100,7 @@ export const useSaveAsDraft = (opts: {
   }
 
   const saveAsDraft = async () => {
-    if (!canSave.value) {
+    if (!unref(canSave)) {
       return null
     }
     return await saveDraftTask.perform()

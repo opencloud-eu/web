@@ -5,7 +5,7 @@
       class="md:hidden"
       mode="action"
       :aria-label="$gettext('Write new Email')"
-      @click="showCompose = true"
+      @click="openCompose"
     />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
@@ -58,7 +58,6 @@
           </oc-button>
         </li>
       </oc-list>
-      <MailWidget v-if="showCompose" :model-value="true" @close="showCompose = false" />
     </template>
   </template>
 </template>
@@ -66,7 +65,6 @@
 <script setup lang="ts">
 import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
-import MailWidget from './MailWidget.vue'
 import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
 import { useMailsStore } from '../composables/piniaStores/mails'
@@ -76,22 +74,26 @@ import { useLoadMail } from '../composables/useLoadMail'
 import { ref, unref } from 'vue'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
 
-const accountsStore = useAccountsStore()
-const { currentAccount } = storeToRefs(accountsStore)
-
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
+const accountsStore = useAccountsStore()
+const { loadMail } = useLoadMail()
+const { isLoading } = useLoadMails()
+
+const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail, mails } = storeToRefs(mailsStore)
 const { updateMailField, setCurrentMail } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
-const { loadMail } = useLoadMail()
-const { isLoading } = useLoadMails()
 
 const showCompose = ref(false)
 
+const emit = defineEmits<{
+  (e: 'compose-mail'): void
+}>()
+
 const openCompose = () => {
-  showCompose.value = true
+  emit('compose-mail')
 }
 
 defineExpose({

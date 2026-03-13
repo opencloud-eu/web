@@ -123,22 +123,15 @@
       </div>
     </template>
   </oc-modal>
-  <MailLeaveModal
-    v-model="leaveModalOpen"
-    :is-saving="isSaving"
-    :can-save-draft="canSaveDraft"
-    @save="onSaveDraftAndClose"
-    @discard="onDiscardAndClose"
-  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { useModals } from '@opencloud-eu/web-pkg'
 import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
-import MailLeaveModal from './MailLeaveModal.vue'
 import MailSavedHint from './MailSavedHint.vue'
 import { useSaveAsDraft } from '../composables/useSaveAsDraft'
 import { useMailDraftConnector } from '../composables/useMailDraftConnector'
@@ -149,8 +142,12 @@ import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
 import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
 import { plainTextFromHtml } from '../helpers/mailComposeText'
 import isEmpty from 'lodash-es/isEmpty'
+import type { Mailbox, MailAddress } from '../types'
+
+type ComposeAttachment = ComposeFormState['attachments'][number]
 
 const { $gettext } = useGettext()
+const { dispatchModal } = useModals()
 
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
@@ -171,19 +168,10 @@ const { mailboxes } = storeToRefs(mailboxesStore)
 const currentAccountId = computed(() => unref(currentAccount).accountId || '')
 
 const draftsMailboxId = computed(() => {
-  const list = unref(mailboxes) || []
-
-  const byRole = (list as any[]).find((mailbox) => mailbox.role === 'drafts')?.id
-  if (byRole) {
-    return byRole
-  }
-
-  const byName = list.find((mailbox) => (mailbox.name || '').toLowerCase() === 'drafts')?.id
-  return byName || ''
+  return (unref(mailboxes) || []).find((mailbox: Mailbox) => mailbox.role === 'drafts')?.id
 })
 
 const isExpanded = ref(false)
-const leaveModalOpen = ref(false)
 const showFormattingToolbar = ref(false)
 
 const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
@@ -218,10 +206,10 @@ const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const parseRecipients = (value: string) => {
-  return (value ?? '')
+const parseRecipients = (value: string): MailAddress[] => {
+  return (value || '')
     .split(',')
-    .map((s) => s.trim())
+    .map((recipient) => recipient.trim())
     .filter(Boolean)
     .map((email) => ({ email }))
 }
@@ -267,11 +255,11 @@ const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = 
         ...(hasHtml ? { h: { value: bodyHtml } } : {})
       },
 
-      attachments: (state.attachments ?? []).map((attachment: any) => ({
+      attachments: (state.attachments || []).map((attachment: ComposeAttachment) => ({
         blobId: attachment.blobId,
         name: attachment.name,
         type: attachment.type,
-        disposition: attachment.disposition ?? 'attachment'
+        disposition: 'attachment' as const
       }))
     }
   }
@@ -285,7 +273,6 @@ const resetCompose = async () => {
   await runWithResetGuard(() => {
     composeState.value = createEmptyComposeState()
     showFormattingToolbar.value = false
-    leaveModalOpen.value = false
     clearSavedHint()
     resetDraft(null)
   })
@@ -307,7 +294,17 @@ const requestClose = () => {
     return
   }
 
-  leaveModalOpen.value = true
+  dispatchModal({
+    title: $gettext('Leave this screen?'),
+    message: $gettext(
+      'Your email isn’t finished yet. You can save it as a draft or exit without saving.'
+    ),
+    confirmText: $gettext('Save as draft'),
+    cancelText: $gettext('Discard'),
+    hasInput: false,
+    onConfirm: () => onSaveDraftAndClose(),
+    onCancel: () => onDiscardAndClose()
+  })
 }
 
 const onSaveDraftAndClose = async () => {
@@ -326,7 +323,6 @@ const onDiscardAndClose = async () => {
 const canAutoSaveNow = computed(() => {
   return (
     unref(isOpen) &&
-    !unref(leaveModalOpen) &&
     unref(canSaveDraft) &&
     unref(hasMeaningfulChanges) &&
     unref(isDirty) &&

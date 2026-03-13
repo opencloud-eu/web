@@ -29,6 +29,7 @@
         <MailDetails :key="currentMail?.id" />
       </div>
     </div>
+    <MailWidget v-if="showCompose" :model-value="true" @close="onCloseCompose" />
   </template>
 </template>
 
@@ -37,6 +38,7 @@ import { ref, unref, onMounted, ComponentPublicInstance, useTemplateRef } from '
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
+import MailWidget from '../components/MailWidget.vue'
 import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
@@ -70,45 +72,41 @@ const currentAccountIdQuery = useRouteQuery('accountId')
 const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
 
+const showCompose = ref(false)
+
 const onComposeMail = () => {
-  mailListRef.value?.openCompose()
+  showCompose.value = true
+}
+
+const onCloseCompose = () => {
+  showCompose.value = false
 }
 
 onMounted(async () => {
   await loadAccounts()
-
-  const selectedAccountId = unref(currentAccountIdQuery)
-  const account = selectedAccountId
-    ? (unref(accounts).find((a) => a.accountId === selectedAccountId) ??
-      unref(accounts)?.[0] ??
-      null)
-    : (unref(accounts)?.[0] ?? null)
-
-  if (!account) {
-    isLoading.value = false
-    return
+  if (unref(currentAccountIdQuery)) {
+    setCurrentAccount(
+      unref(accounts).find((account) => account.accountId === unref(currentAccountIdQuery))
+    )
+  } else {
+    setCurrentAccount(unref(accounts)?.[0])
   }
 
-  setCurrentAccount(account)
+  console.log(unref(currentAccount))
 
-  await loadMailboxes(unref(account).accountId)
-
-  const selectedMailboxId = unref(currentMailboxIdQuery)
-  const mailbox = selectedMailboxId
-    ? (unref(mailboxes).find((m) => m.id === selectedMailboxId) ?? unref(mailboxes)?.[0] ?? null)
-    : (unref(mailboxes)?.[0] ?? null)
-
-  if (!mailbox) {
-    isLoading.value = false
-    return
+  await loadMailboxes(unref(currentAccount).accountId)
+  if (unref(currentMailboxIdQuery)) {
+    setCurrentMailbox(
+      unref(mailboxes).find((mailbox) => mailbox.id === unref(currentMailboxIdQuery))
+    )
+  } else {
+    setCurrentMailbox(unref(mailboxes)?.[0])
   }
 
-  setCurrentMailbox(mailbox)
-
-  await loadMails(unref(account).accountId, unref(mailbox).id)
+  await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
 
   if (unref(currentMailIdQuery)) {
-    await loadMail(unref(account).accountId, queryItemAsString(unref(currentMailIdQuery)))
+    await loadMail(unref(currentAccount).accountId, queryItemAsString(unref(currentMailIdQuery)))
   }
 
   isLoading.value = false
