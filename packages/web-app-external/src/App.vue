@@ -1,5 +1,4 @@
 <template>
-  <div v-if="isCollabora" id="chrome-colors" class="bg-role-chrome text-role-on-chrome hidden" />
   <div v-if="isLoading" class="size-full flex justify-center items-center">
     <oc-spinner size="large" />
   </div>
@@ -82,6 +81,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from './components/FileNameModal.vue'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { storeToRefs } from 'pinia'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -104,7 +104,8 @@ const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient, webdav } = useClientService()
 const { dispatchModal } = useModals()
-const { currentTheme } = useThemeStore()
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 const { getParentFolderLink } = useFolderLink()
 
 const viewModeQuery = useRouteQuery('view_mode')
@@ -146,19 +147,32 @@ const errorPopup = (error: string) => {
 }
 
 const getCollaboraUiDefaults = () => {
-  const theme = currentTheme.isDark ? 'dark' : 'light'
+  const theme = unref(currentTheme).isDark ? 'dark' : 'light'
   return `UITheme=${theme}`
 }
 
 const getCollaboraCss = () => {
-  const chromeEl = document.getElementById('chrome-colors')
-  if (!chromeEl) {
-    return ''
+  const { roles } = unref(currentTheme).designTokens
+
+  // map collabora colors to oc colors
+  // https://github.com/CollaboraOnline/online/blob/main/browser/css/color-palette.css
+  const colorMap = {
+    '--color-main-text': roles.onSurface,
+    '--co-body-bg': roles.chrome,
+    '--co-color-main-text': roles.onChrome,
+    '--co-color-background-light': roles.surfaceContainer,
+    '--co-primary-element': roles.primary,
+    '--color-background-dark': roles.surfaceContainerHigh,
+    '--color-background-darker': roles.surfaceContainerHighest,
+    '--color-primary-lighter': roles.primaryContainerLow,
+    '--color-canvas': roles.surfaceContainerHighest,
+    '--color-border': roles.outlineVariant,
+    '--co-border-radius': '5px'
   }
-  const chromeStyle = window.getComputedStyle(chromeEl)
-  const chromeColor = chromeStyle.getPropertyValue('background-color')
-  const onChromeColor = chromeStyle.getPropertyValue('color')
-  return `--co-body-bg=${chromeColor};--co-color-main-text=${onChromeColor}`
+
+  return Object.entries(colorMap)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(';')
 }
 
 const loadAppUrl = useTask(function* (signal, viewMode: string) {
