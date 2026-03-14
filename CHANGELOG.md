@@ -1,5 +1,48 @@
 # Changelog
 
+## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-14
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+
+### 📈 Enhancement
+
+- feat(runtime): add dynamic extension points for sidebar-nav [[#2134](https://github.com/opencloud-eu/web/pull/2134)]
+- feat: polish drop menus [[#2133](https://github.com/opencloud-eu/web/pull/2133)]
+- feat: polish filters [[#2124](https://github.com/opencloud-eu/web/pull/2124)]
+- feat: polish shares page [[#2116](https://github.com/opencloud-eu/web/pull/2116)]
+- feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
+- feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
+- feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
+
+### 🐛 Bug Fixes
+
+- fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
+- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
+- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
+- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
+
+### ✅ Tests
+
+- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency vite-plugin-static-copy to v3.3.0 [[#2142](https://github.com/opencloud-eu/web/pull/2142)]
+- chore(deps): update dependency @codemirror/view to v6.40.0 [[#2131](https://github.com/opencloud-eu/web/pull/2131)]
+- chore(deps): update dependency fast-xml-parser to v5.5.4 [[#2140](https://github.com/opencloud-eu/web/pull/2140)]
+- chore(deps): update devdependencies (non-major) [[#2138](https://github.com/opencloud-eu/web/pull/2138)]
+- chore(deps): update dependency fast-xml-parser to v5.5.3 [[#2121](https://github.com/opencloud-eu/web/pull/2121)]
+- chore(deps): update dependency dompurify to v3.3.3 [[#2092](https://github.com/opencloud-eu/web/pull/2092)]
+- chore(deps): update typescript-eslint monorepo to v8.57.0 [[#2112](https://github.com/opencloud-eu/web/pull/2112)]
+- fix(deps): update dependency @sentry/vue to v10.43.0 [[#2119](https://github.com/opencloud-eu/web/pull/2119)]
+- chore(deps): update dependency @codemirror/view to v6.39.17 [[#2115](https://github.com/opencloud-eu/web/pull/2115)]
+- chore(deps): update devdependencies (non-major) [[#2103](https://github.com/opencloud-eu/web/pull/2103)]
+- chore(deps): update traefik docker tag to v3.6.10 [[#2102](https://github.com/opencloud-eu/web/pull/2102)]
+- chore(deps): update tiptap monorepo to v3.20.1 [[#2101](https://github.com/opencloud-eu/web/pull/2101)]
+
 ## [6.0.0](https://github.com/opencloud-eu/web/releases/tag/v6.0.0) - 2026-03-09
 
 ### ❤️ Thanks to all contributors! ❤️
