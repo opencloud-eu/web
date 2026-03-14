@@ -5,7 +5,7 @@
       class="md:hidden"
       mode="action"
       :aria-label="$gettext('Write new Email')"
-      @click="showCompose = true"
+      @click="openNewCompose"
     />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
@@ -58,7 +58,12 @@
           </oc-button>
         </li>
       </oc-list>
-      <MailWidget v-model="showCompose" />
+      <MailWidget
+        v-if="showCompose"
+        :model-value="showCompose"
+        :draft-mail="draftMail"
+        @close="closeCompose"
+      />
     </template>
   </template>
 </template>
@@ -73,8 +78,9 @@ import { useMailsStore } from '../composables/piniaStores/mails'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
-import { ref, unref } from 'vue'
+import { unref } from 'vue'
 import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useMailCompose } from '../composables/useMailCompose'
 
 const accountsStore = useAccountsStore()
 const { currentAccount } = storeToRefs(accountsStore)
@@ -88,14 +94,10 @@ const { setCurrentMailbox } = mailboxesStore
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
 
-const showCompose = ref(false)
-
-const openCompose = () => {
-  showCompose.value = true
-}
+const { isOpen: showCompose, draftMail, openNewCompose, closeCompose } = useMailCompose()
 
 defineExpose({
-  openCompose
+  openCompose: openNewCompose
 })
 
 const onNavigateBack = () => {
@@ -107,9 +109,9 @@ const onSelectMail = async (mail: Mail) => {
   await loadMail(unref(currentAccount).accountId, mail.id)
 
   updateMailField({
-    id: unref(currentMail).id,
+    id: mail.id,
     field: 'keywords',
-    value: { ...unref(currentMail).keywords, ...{ $seen: true } }
+    value: { ...mail.keywords, ...{ $seen: true } }
   })
 }
 </script>

@@ -25,7 +25,7 @@
               fill-type="line"
             />
           </oc-button>
-          <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
+          <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
             <oc-icon name="close" fill-type="line" />
           </oc-button>
         </div>
@@ -46,7 +46,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="composeState.from?.accountId"
+              :account-id="currentAccountId"
             />
             <oc-button
               type="button"
@@ -57,6 +57,9 @@
             >
               <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
             </oc-button>
+            <div class="ml-auto flex items-center min-w-0">
+              <MailSavedHint v-if="showSavedHint" />
+            </div>
           </div>
         </div>
       </div>
@@ -78,7 +81,7 @@
       >
         <oc-icon name="collapse-diagonal" fill-type="line" />
       </oc-button>
-      <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
+      <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
         <oc-icon name="close" fill-type="line" />
       </oc-button>
     </template>
@@ -99,7 +102,7 @@
             </oc-button>
             <MailComposeAttachmentButton
               v-model="composeState.attachments"
-              :account-id="composeState.from?.accountId"
+              :account-id="currentAccountId"
             />
             <oc-button
               type="button"
@@ -110,25 +113,52 @@
               :title="$gettext('Toggle text formatting toolbar')"
               @click="showFormattingToolbar = !showFormattingToolbar"
             >
-              <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
+              <oc-icon name="text" fill-type="none" />
             </oc-button>
+            <div class="ml-auto flex items-center min-w-0">
+              <MailSavedHint :show="showSavedHint" />
+            </div>
           </div>
         </div>
       </div>
     </template>
   </oc-modal>
+  <MailLeaveModal
+    v-model="leaveModalOpen"
+    :is-saving="isSaving"
+    :can-save-draft="canSaveDraft"
+    @save="onSaveDraftAndClose"
+    @discard="onDiscardAndClose"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import MailComposeForm, { ComposeFormState } from './MailComposeForm.vue'
+import { storeToRefs } from 'pinia'
+import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
+import MailLeaveModal from './MailLeaveModal.vue'
+import MailSavedHint from './MailSavedHint.vue'
+import { useSaveAsDraft } from '../composables/useSaveAsDraft'
+import { useMailDraftConnector } from '../composables/useMailDraftConnector'
+import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
+import { useSavedHint } from '../composables/useSavedHint'
+import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
+import { useComposeDirtyTracking } from '../composables/useComposeDirtyTracking'
+import { plainTextFromHtml } from '../helpers/mailComposeText'
+import isEmpty from 'lodash-es/isEmpty'
+import type { Mail, MailAddress } from '../types'
 
 const { $gettext } = useGettext()
 
+const SAVED_HINT_DURATION_MS = 2000
+const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
+
 const props = defineProps<{
   modelValue?: boolean
+  draftMail?: Mail | null
 }>()
 
 const emit = defineEmits<{
@@ -136,9 +166,38 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const isExpanded = ref(false)
+const accountsStore = useAccountsStore()
+const mailboxesStore = useMailboxesStore()
+const connector = useMailDraftConnector()
 
-const composeState = ref<ComposeFormState>({
+const { currentAccount } = storeToRefs(accountsStore)
+const { mailboxes } = storeToRefs(mailboxesStore)
+
+const currentAccountId = computed(() => unref(currentAccount).accountId || '')
+
+const draftsMailboxId = computed(() => {
+  const list = unref(mailboxes) || []
+
+  const byRole = (list as any[]).find((mailbox) => mailbox.role === 'drafts')?.id
+  if (byRole) {
+    return byRole
+  }
+
+  const byName = list.find((mailbox) => (mailbox.name || '').toLowerCase() === 'drafts')?.id
+  return byName || ''
+})
+
+const isExpanded = ref(false)
+const leaveModalOpen = ref(false)
+const showFormattingToolbar = ref(false)
+
+const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
+
+const canSaveDraft = computed(() => {
+  return !!unref(currentAccountId) && !!unref(draftsMailboxId)
+})
+
+const createEmptyComposeState = (): ComposeFormState => ({
   from: undefined,
   to: '',
   cc: '',
@@ -148,13 +207,58 @@ const composeState = ref<ComposeFormState>({
   attachments: []
 })
 
-const showFormattingToolbar = ref(false)
+const composeState = ref<ComposeFormState>(createEmptyComposeState())
+
+const recipientsToInput = (recipients: MailAddress[] = []) => {
+  return recipients.map((recipient) => recipient.email).join(', ')
+}
+
+const getDraftBody = (mail: Mail) => {
+  const htmlPartId = mail.htmlBody?.[0]?.partId
+  if (htmlPartId) {
+    return mail.bodyValues?.[htmlPartId]?.value ?? ''
+  }
+
+  const textPartId = mail.textBody?.[0]?.partId
+  if (textPartId) {
+    return mail.bodyValues?.[textPartId]?.value ?? ''
+  }
+
+  return ''
+}
+
+const getDraftAttachments = (mail: Mail) => {
+  return (mail.attachments ?? [])
+    .filter((attachment) => attachment.blobId)
+    .map((attachment) => ({
+      id: attachment.blobId,
+      blobId: attachment.blobId,
+      name: attachment.name,
+      type: attachment.type,
+      disposition: 'attachment' as const,
+      size: attachment.size ?? 0
+    }))
+}
+
+const createComposeStateFromDraft = (mail: Mail): ComposeFormState => {
+  return {
+    from: undefined,
+    to: recipientsToInput(mail.to),
+    cc: recipientsToInput(mail.cc),
+    bcc: recipientsToInput(mail.bcc),
+    subject: mail.subject ?? '',
+    body: getDraftBody(mail),
+    attachments: getDraftAttachments(mail)
+  }
+}
 
 const isOpen = computed({
-  get: () => props.modelValue ?? true,
+  get: () => props.modelValue,
   set: (value: boolean) => {
     emit('update:modelValue', value)
-    if (!value) emit('close')
+    if (!value) {
+      emit('close')
+    }
   }
 })
 
@@ -162,10 +266,161 @@ const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const close = () => {
+const parseRecipients = (value: string) => {
+  return (value ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((email) => ({ email }))
+}
+
+const hasMeaningfulChanges = computed(() => {
+  const state = unref(composeState)
+
+  return (
+    !isEmpty(state.to?.trim()) ||
+    !isEmpty(state.cc?.trim()) ||
+    !isEmpty(state.bcc?.trim()) ||
+    !isEmpty(state.subject?.trim()) ||
+    !isEmpty(plainTextFromHtml(state.body ?? '').trim()) ||
+    (state.attachments?.length ?? 0) > 0
+  )
+})
+
+const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = useSaveAsDraft({
+  accountId: currentAccountId,
+  draftMailboxId: draftsMailboxId,
+  api: connector,
+  getDraftPayload: () => {
+    const state = unref(composeState)
+
+    const bodyHtml = state.body ?? ''
+    const bodyPlain = plainTextFromHtml(bodyHtml)
+
+    const hasText = bodyPlain.length > 0
+    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
+
+    return {
+      from: state.from ? [{ email: state.from.email, name: state.from.name }] : [],
+      to: parseRecipients(state.to),
+      cc: parseRecipients(state.cc),
+      bcc: parseRecipients(state.bcc),
+      subject: state.subject ?? '',
+
+      textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
+      htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
+
+      bodyValues: {
+        ...(hasText ? { t: { value: bodyPlain } } : {}),
+        ...(hasHtml ? { h: { value: bodyHtml } } : {})
+      },
+
+      attachments: (state.attachments ?? []).map((attachment: any) => ({
+        blobId: attachment.blobId,
+        name: attachment.name,
+        type: attachment.type,
+        disposition: 'attachment' as const
+      }))
+    }
+  }
+})
+
+const { runWithResetGuard } = useComposeDirtyTracking(composeState, () => {
+  markDirty()
+})
+
+const resetCompose = async () => {
+  await runWithResetGuard(() => {
+    composeState.value = createEmptyComposeState()
+    showFormattingToolbar.value = false
+    leaveModalOpen.value = false
+    clearSavedHint()
+    resetDraft(null)
+  })
+}
+
+const applyDraftMail = async (mail: Mail) => {
+  await runWithResetGuard(() => {
+    composeState.value = createComposeStateFromDraft(mail)
+    leaveModalOpen.value = false
+    clearSavedHint()
+    resetDraft(mail?.id)
+  })
+}
+
+const doClose = () => {
   isExpanded.value = false
   isOpen.value = false
 }
+
+const requestClose = () => {
+  if (!unref(hasMeaningfulChanges)) {
+    doClose()
+    return
+  }
+
+  if (!unref(isDirty)) {
+    doClose()
+    return
+  }
+
+  leaveModalOpen.value = true
+}
+
+const onSaveDraftAndClose = async () => {
+  if (!unref(canSaveDraft)) {
+    return
+  }
+  await saveAsDraft()
+  doClose()
+}
+
+const onDiscardAndClose = async () => {
+  await discardDraft()
+  doClose()
+}
+
+const canAutoSaveNow = computed(() => {
+  return (
+    unref(isOpen) &&
+    !unref(leaveModalOpen) &&
+    unref(canSaveDraft) &&
+    unref(hasMeaningfulChanges) &&
+    unref(isDirty) &&
+    !unref(isSaving)
+  )
+})
+
+useAutoSaveDraft({
+  isOpen,
+  canAutoSaveNow,
+  intervalMs: AUTO_SAVE_INTERVAL_MS,
+  save: saveAsDraft,
+  onSaved: () => {
+    flashSavedHint()
+  },
+  onError: (error) => {
+    console.error('Failed to auto-save draft:', error)
+  }
+})
+
+watch(isOpen, async (open) => {
+  if (!open) {
+    await resetCompose()
+  }
+})
+
+watch(
+  () => [unref(isOpen), props.draftMail] as const,
+  async ([open, draftMail]) => {
+    if (!open || !draftMail) {
+      return
+    }
+
+    await applyDraftMail(draftMail)
+  },
+  { immediate: true }
+)
 </script>
 
 <style>
