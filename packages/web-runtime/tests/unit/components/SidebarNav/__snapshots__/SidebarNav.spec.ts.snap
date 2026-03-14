@@ -5,7 +5,7 @@ exports[`OcSidebarNav > renders navItems into a list 1`] = `
   <div class="flex flex-col gap-2 grow">
     <nav class="oc-sidebar-nav px-1" aria-label="Sidebar navigation menu">
       <!--v-if-->
-      <ul class="oc-list relative">
+      <ul class="oc-list relative mt-2">
         <sidebar-nav-item-stub icon="folder" name="Personal" active="true" target="[object Object]" filltype="line" collapsed="false"></sidebar-nav-item-stub>
         <sidebar-nav-item-stub icon="share-forward" name="Shares" active="false" target="[object Object]" filltype="line" collapsed="false"></sidebar-nav-item-stub>
         <sidebar-nav-item-stub icon="delete" name="Deleted files" active="false" target="[object Object]" filltype="line" collapsed="false"></sidebar-nav-item-stub>

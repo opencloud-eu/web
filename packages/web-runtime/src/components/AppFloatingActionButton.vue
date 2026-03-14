@@ -1,6 +1,6 @@
 <template>
   <template v-if="floatingActionButton">
-    <div v-if="!isMobile" class="py-2 px-2">
+    <div v-if="!isMobile" class="pt-2 px-2">
       <oc-button
         :id="getButtonId(floatingActionButton.id)"
         :disabled="isDisabled"
