@@ -300,7 +300,6 @@ const requestClose = () => {
       'Your email isn’t finished yet. You can save it as a draft or exit without saving.'
     ),
     confirmText: $gettext('Save as draft'),
-    cancelText: $gettext('Discard'),
     hasInput: false,
     onConfirm: () => onSaveDraftAndClose(),
     onCancel: () => onDiscardAndClose()
