@@ -89,6 +89,18 @@ describe('The app provider extension', () => {
 
       expect(uiDefaultsInput.attributes('value')).toBe(`UITheme=${expected}`)
     })
+    it('should set the oc theme colors in the css_variables hidden field', async () => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponsePost
+      })
+      const { wrapper } = createShallowMountWrapper({ makeRequest, appName: 'collabora' })
+      await flushPromises()
+
+      const cssVariablesInput = wrapper.find('input[name="css_variables"]')
+      expect(cssVariablesInput.html()).toMatchSnapshot()
+    })
   })
 })
 
@@ -120,6 +132,17 @@ function createShallowMountWrapper({
 
   const currentTheme = mock<WebThemeType>()
   currentTheme.isDark = isDark
+  currentTheme.designTokens.roles = {
+    onSurface: '#111111',
+    surface: '#222222',
+    onChore: '#333333',
+    surfaceContainer: '#444444',
+    surfaceContainerHigh: '#555555',
+    surfaceContainerHighest: '#666666',
+    primary: '#777777',
+    onPrimary: '#888888',
+    outlineVariant: '#999999'
+  }
 
   return {
     wrapper: shallowMount(App, {
