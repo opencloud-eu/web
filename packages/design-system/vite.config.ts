@@ -4,6 +4,7 @@ import dts from 'vite-plugin-dts'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   css: {
@@ -62,6 +63,7 @@ export default defineConfig({
     }
   },
   plugins: [
+    tailwindcss(),
     vue(),
     viteStaticCopy({
       targets: (() => {
