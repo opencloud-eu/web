@@ -1,64 +1,53 @@
 <template>
   <div class="mailbox-tree px-1 flex flex-col">
     <app-loading-spinner v-if="isLoading" />
-    <template v-else>
-      <no-content-message v-if="!mailboxes?.length" img-src="/images/empty-states/empty-mails.svg">
-        <template #message>
-          <span v-text="$gettext('No mailboxes found')" />
-        </template>
-      </no-content-message>
-      <oc-list v-else>
-        <li v-for="mailbox in mailboxes" :key="mailbox.id" class="pb-1 px-2">
-          <oc-button
-            :class="[
-              'sidebar-mailbox-item',
-              'relative',
-              'w-full',
-              'whitespace-nowrap',
-              'px-2',
-              'py-3',
-              'select-none',
-              'rounded-xl',
-              { 'active overflow-hidden outline': currentMailbox?.id === mailbox.id },
-              {
-                'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest':
-                  currentMailbox?.id !== mailbox.id
-              }
-            ]"
-            :appearance="currentMailbox?.id === mailbox.id ? 'filled' : 'raw-inverse'"
-            color-role="surface"
-            justify-content="left"
-            @click="onSelectMailbox(mailbox)"
-          >
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center truncate">
-                <oc-icon name="folder" class="mr-2" fill-type="line" />
-                <span class="truncate font-bold" v-text="mailbox.name" />
-              </div>
-              <oc-tag
-                v-if="mailbox.unreadEmails"
-                v-oc-tooltip="$gettext('Unread emails')"
-                :rounded="true"
-                class="ml-2"
-                appearance="filled"
-                size="small"
-                ><span v-text="mailbox.unreadEmails"
-              /></oc-tag>
+    <oc-list v-else>
+      <li v-for="mailbox in mailboxes" :key="mailbox.id" class="pb-1 px-2">
+        <oc-button
+          :class="[
+            'sidebar-mailbox-item',
+            'relative',
+            'w-full',
+            'whitespace-nowrap',
+            'px-2',
+            'py-3',
+            'select-none',
+            'rounded-xl',
+            { 'active overflow-hidden outline': currentMailbox?.id === mailbox.id },
+            {
+              'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest':
+                currentMailbox?.id !== mailbox.id
+            }
+          ]"
+          :appearance="currentMailbox?.id === mailbox.id ? 'filled' : 'raw-inverse'"
+          color-role="surface"
+          justify-content="left"
+          @click="onSelectMailbox(mailbox)"
+        >
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center truncate">
+              <oc-icon name="folder" class="mr-2" fill-type="line" />
+              <span class="truncate font-bold" v-text="mailbox.name" />
             </div>
-          </oc-button>
-        </li>
-      </oc-list>
-    </template>
+            <oc-tag
+              v-if="mailbox.unreadEmails"
+              v-oc-tooltip="$gettext('Unread emails')"
+              :rounded="true"
+              class="ml-2"
+              appearance="filled"
+              size="small"
+              ><span v-text="mailbox.unreadEmails"
+            /></oc-tag>
+          </div>
+        </oc-button>
+      </li>
+    </oc-list>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Mailbox } from '../types'
-import {
-  AppLoadingSpinner,
-  NoContentMessage,
-  useGroupwareAccountsStore
-} from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
