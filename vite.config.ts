@@ -7,7 +7,6 @@ import {
   ViteDevServer
 } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import EnvironmentPlugin from 'vite-plugin-environment'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -233,6 +232,9 @@ export default defineConfig(({ mode, command }) => {
           }
         }
       },
+      define: {
+        'process.env.PACKAGE_VERSION': JSON.stringify(version)
+      },
       resolve: {
         dedupe: ['vue3-gettext'],
         alias: {
@@ -249,9 +251,6 @@ export default defineConfig(({ mode, command }) => {
         // We need to "undefine" `define` which is set by requirejs loaded in index.html
         treatAsCommonjs(),
 
-        EnvironmentPlugin({
-          PACKAGE_VERSION: version
-        }),
         vue({
           template: {
             compilerOptions
