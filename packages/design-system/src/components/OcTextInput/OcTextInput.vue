@@ -18,7 +18,7 @@
         v-bind="additionalAttributes"
         ref="inputRef"
         :aria-invalid="ariaInvalid"
-        class="oc-text-input oc-input"
+        class="oc-text-input oc-input h-9"
         :class="{
           'oc-text-input-danger border-role-error': !!showErrorMessage,
           'pl-6': !!readOnly,
@@ -367,11 +367,11 @@ watch(
 
 @layer components {
   .oc-input {
-    @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline outline-0 overflow-visible appearance-none;
+    @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline-variant outline-0 overflow-visible appearance-none;
   }
 
   .oc-input:focus {
-    @apply border border-role-surface outline-2 outline-role-outline;
+    @apply border border-role-outline-variant outline-1 outline-role-outline;
   }
 
   .oc-input:disabled {
@@ -379,7 +379,7 @@ watch(
   }
 
   .oc-input::placeholder {
-    @apply text-role-on-surface opacity-100;
+    @apply text-role-on-surface-variant;
   }
 }
 </style>

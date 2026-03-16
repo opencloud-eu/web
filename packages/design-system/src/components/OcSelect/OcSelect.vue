@@ -334,7 +334,7 @@ const setKeyboardOutline = async () => {
   const highlightedOption = optionEls[unref(selectRef).typeAheadPointer]
   if (highlightedOption) {
     await nextTick()
-    highlightedOption.classList.add('outline-2')
+    highlightedOption.classList.add('outline')
     highlightedOption.classList.add('outline-role-outline-variant')
   }
 }
@@ -527,19 +527,23 @@ export default { components: { VueSelect } }
       color: var(--oc-role-on-surface);
     }
 
-    &__search::placeholder,
+    &__search::placeholder {
+      color: var(--oc-role-on-surface-variant);
+    }
+
     &__dropdown-toggle,
     &__dropdown-menu {
+      min-height: 36px;
       -webkit-appearance: none;
       color: var(--oc-role-on-surface);
       background-color: var(--oc-role-surface);
       border-radius: var(--radius-sm);
-      border: 1px solid var(--oc-role-outline);
+      border: 1px solid var(--oc-role-outline-variant);
       box-sizing: border-box;
       line-height: inherit;
       max-width: 100%;
       outline: none;
-      padding: 2px;
+      padding: 4px;
       transition-duration: 0.2s;
       transition-timing-function: ease-in-out;
       transition-property: color, background-color;
@@ -627,8 +631,8 @@ export default { components: { VueSelect } }
   &:focus-within {
     .vs__dropdown-menu,
     .vs__dropdown-toggle {
-      border: 1px solid var(--oc-role-surface);
-      outline: 2px solid var(--oc-role-outline);
+      border: 1px solid var(--oc-role-outline-variant);
+      outline: 1px solid var(--oc-role-outline);
     }
   }
 }
