@@ -35,6 +35,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.5.6 [[#2145](https://github.com/opencloud-eu/web/pull/2145)]
 - chore(deps): update dependency vite-plugin-static-copy to v3.3.0 [[#2142](https://github.com/opencloud-eu/web/pull/2142)]
 - chore(deps): update dependency @codemirror/view to v6.40.0 [[#2131](https://github.com/opencloud-eu/web/pull/2131)]
 - chore(deps): update dependency fast-xml-parser to v5.5.4 [[#2140](https://github.com/opencloud-eu/web/pull/2140)]
