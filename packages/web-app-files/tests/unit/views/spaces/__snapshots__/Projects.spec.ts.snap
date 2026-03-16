@@ -27,14 +27,14 @@ exports[`Projects view > different files view states > lists all available proje
     <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle min-w-38 oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-name z-10" style="top: 0px;" aria-sort="ascending"><button data-v-3c9ab66c="" type="button" aria-label="Sort by name" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-1 justify-start text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-button-sort w-full hover:underline">
         <!--v-if-->
         <!-- @slot Content of the button --> <span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Name</span> <span data-v-3c9ab66c="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 p-1 rounded-sm"><svg data-testid="inline-svg-stub" src="icons/arrow-down-line.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button></th>
     <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-indicators z-10" style="top: 0px;">
       <div data-v-3c9ab66c=""><span data-v-3c9ab66c="" class="oc-table-thead-content inline-table align-middle header-text">Status</span></div>
