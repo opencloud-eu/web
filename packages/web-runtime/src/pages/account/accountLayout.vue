@@ -4,6 +4,7 @@
     class="flex justify-center p-4 overflow-auto app-content border w-full bg-role-surface rounded-l-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
   >
     <div class="w-full lg:w-3/4 xl:w-1/2">
+      <mobile-nav class="py-2" />
       <router-view />
     </div>
   </main>
@@ -12,8 +13,9 @@
 import {
   useActiveLocation,
   useCapabilityStore,
-  useExtensionRegistry
-} from '@opencloud-eu/web-pkg/src'
+  useExtensionRegistry,
+  MobileNav
+} from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
 import { computed, onUnmounted, unref, watch } from 'vue'
