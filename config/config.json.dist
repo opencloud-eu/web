@@ -1,10 +1,5 @@
 {
   "server" : "",
-  "auth": {
-    "clientId": "",
-    "url": "",
-    "authUrl": ""
-  },
   "apps" : [
     "files",
     "pdf-viewer",

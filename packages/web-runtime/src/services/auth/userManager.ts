@@ -10,7 +10,7 @@ import { buildUrl, useAppsStore } from '@opencloud-eu/web-pkg'
 import { getAbilities } from './abilities'
 import { AuthStore, UserStore, CapabilityStore, ConfigStore } from '@opencloud-eu/web-pkg'
 import { ClientService } from '@opencloud-eu/web-pkg'
-import { Ability } from '@opencloud-eu/web-client'
+import { Ability, urlJoin } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
@@ -23,6 +23,7 @@ const postLoginRedirectUrlKey = 'oc.postLoginRedirectUrl'
 type UnloadReason = 'authError' | 'logout'
 
 export interface UserManagerOptions {
+  webfingerDiscoveryData: WebfingerDiscoveryData
   clientService: ClientService
   configStore: ConfigStore
   ability: Ability
@@ -35,6 +36,13 @@ export interface UserManagerOptions {
 
   // number of seconds before an access token is to expire to raise the accessTokenExpiring event
   accessTokenExpiryThreshold: number
+}
+
+// data that gets injected into the UserManager from the Webfinger discovery process
+export interface WebfingerDiscoveryData {
+  authority: string
+  client_id: string
+  scope: string
 }
 
 export class UserManager extends OidcUserManager {
@@ -70,41 +78,16 @@ export class UserManager extends OidcUserManager {
 
       post_logout_redirect_uri: buildUrl(options.router, '/'),
       accessTokenExpiringNotificationTimeInSeconds: options.accessTokenExpiryThreshold,
-      authority: '',
-      client_id: '',
+      metadataUrl: urlJoin(options.configStore.serverUrl, '.well-known/openid-configuration'),
 
       // we trigger the token renewal manually via a timer running in a web worker
-      automaticSilentRenew: false
-    }
+      automaticSilentRenew: false,
+      loadUserInfo: false,
 
-    if (options.configStore.isOIDC) {
-      Object.assign(openIdConfig, {
-        scope: 'openid profile',
-        loadUserInfo: false,
-        ...options.configStore.openIdConnect,
-        ...(options.configStore.openIdConnect.metadata_url && {
-          metadataUrl: options.configStore.openIdConnect.metadata_url
-        })
-      })
-    } else if (options.configStore.isOAuth2) {
-      const oAuth2 = options.configStore.oAuth2
-      Object.assign(openIdConfig, {
-        authority: oAuth2.url,
-        client_id: oAuth2.clientId,
-        ...(oAuth2.clientSecret && {
-          client_authentication: 'client_secret_basic',
-          client_secret: oAuth2.clientSecret
-        }),
-
-        scope: 'profile',
-        loadUserInfo: false,
-        metadata: {
-          issuer: oAuth2.url,
-          authorization_endpoint: oAuth2.authUrl,
-          token_endpoint: oAuth2.url,
-          userinfo_endpoint: ''
-        }
-      })
+      // pass through options from the web config
+      ...options.configStore.openIdConnect,
+      // authority, client_id and scope come from the webfinger discovery process, overwriting the web config
+      ...options.webfingerDiscoveryData
     }
 
     Log.setLogger(console)
