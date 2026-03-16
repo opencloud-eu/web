@@ -1,17 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`The app provider extension > should be able to load an iFrame via get 1`] = `
-"<!--v-if-->
+exports[`The app provider extension > collabora > should set the oc theme colors in the css_variables hidden field 1`] = `"<input name="css_variables" type="hidden" value="--color-main-text=#111111;--co-body-bg=undefined;--co-color-main-text=undefined;--co-color-background-light=#444444;--co-primary-element=#777777;--color-background-dark=#555555;--color-background-darker=#666666;--color-primary-lighter=undefined;--color-canvas=#666666;--color-border=#999999;--co-border-radius=5px">"`;
 
-<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen="" allow="clipboard-read *; clipboard-write *"></iframe>
+exports[`The app provider extension > should be able to load an iFrame via get 1`] = `
+"<iframe src="https://example.test/d12ab86/loe009157-MzBw" class="size-full" title="&quot;example-app&quot; app content area" allowfullscreen="" allow="clipboard-read *; clipboard-write *"></iframe>
 
 <!--v-if-->"
 `;
 
 exports[`The app provider extension > should be able to load an iFrame via post 1`] = `
 "<!--v-if-->
-
-<!--v-if-->
 
 <div class="size-full">
   <form action="https://example.test/d12ab86/loe009157-MzBw" target="app-iframe" method="post"><input type="submit" class="hidden" value="[object Object]">
@@ -24,9 +22,7 @@ exports[`The app provider extension > should be able to load an iFrame via post 
 `;
 
 exports[`The app provider extension > should fail for unauthenticated users 1`] = `
-"<!--v-if-->
-
-<div class="size-full flex justify-center items-center">
+"<div class="size-full flex justify-center items-center">
   <oc-spinner-stub size="large"></oc-spinner-stub>
 </div>
 
