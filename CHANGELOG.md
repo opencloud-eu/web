@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
 
 ### 📈 Enhancement
 
+- Added draft state handling [[#1956](https://github.com/opencloud-eu/web/pull/1956)]
 - feat: use oc colors in collabora [[#2144](https://github.com/opencloud-eu/web/pull/2144)]
 - feat: polish input fields [[#2127](https://github.com/opencloud-eu/web/pull/2127)]
 - feat(runtime): add dynamic extension points for sidebar-nav [[#2134](https://github.com/opencloud-eu/web/pull/2134)]
