@@ -41,6 +41,7 @@ import { compareVersions } from '../utils'
 const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
 const updatesStore = useUpdatesStore()
+const { setHasError } = updatesStore
 
 const checkForUpdates = capabilityStore.capabilities.core['check-for-updates']
 const { updates, isLoading, hasError } = storeToRefs(updatesStore)
@@ -62,10 +63,15 @@ watch(
     if (!unref(updates)) {
       return
     }
-    const newestVersion = unref(updates).channels[serverEdition].current_version
-    if (compareVersions(newestVersion, currentServerVersionSanitized) > 0) {
-      updateAvailable.value = true
-      updateData.value = unref(updates).channels[serverEdition]
+    try {
+      const newestVersion = unref(updates).channels[serverEdition].current_version
+      if (compareVersions(newestVersion, currentServerVersionSanitized) > 0) {
+        updateAvailable.value = true
+        updateData.value = unref(updates).channels[serverEdition]
+      }
+    } catch (e) {
+      console.error(e)
+      setHasError(true)
     }
   },
   { immediate: true, deep: true }
