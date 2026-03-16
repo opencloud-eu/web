@@ -10,7 +10,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
             <!--v-if-->
           </label>
           <div class="relative">
-            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0" value="">
+            <!--v-if--> <input id="trash-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="">
             <!--v-if-->
           </div>
           <!--v-if-->

@@ -27,7 +27,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0">
+                <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0">
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -71,7 +71,7 @@ exports[`Users view > list view > renders list initially 1`] = `
                 <!--v-if-->
               </label>
               <div class="relative">
-                <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input" type="text" teleport-id="v-0">
+                <!--v-if--> <input id="users-filter" modelmodifiers="[object Object]" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0">
                 <!--v-if-->
               </div>
               <!--v-if-->
