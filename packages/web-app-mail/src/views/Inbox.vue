@@ -29,6 +29,7 @@
         <MailDetails :key="currentMail?.id" />
       </div>
     </div>
+    <MailWidget v-if="showCompose" :model-value="true" @close="onCloseCompose" />
   </template>
 </template>
 
@@ -37,6 +38,7 @@ import { ref, unref, onMounted, ComponentPublicInstance, useTemplateRef } from '
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
 import MailboxTree from '../components/MailboxTree.vue'
+import MailWidget from '../components/MailWidget.vue'
 import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
@@ -70,8 +72,14 @@ const currentAccountIdQuery = useRouteQuery('accountId')
 const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
 
+const showCompose = ref(false)
+
 const onComposeMail = () => {
-  mailListRef.value?.openCompose()
+  showCompose.value = true
+}
+
+const onCloseCompose = () => {
+  showCompose.value = false
 }
 
 onMounted(async () => {
