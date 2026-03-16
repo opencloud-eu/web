@@ -1,7 +1,6 @@
 import { join, resolve } from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
-import dts from 'vite-plugin-dts'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
@@ -42,7 +41,6 @@ export default defineConfig({
     vue(),
     nodePolyfills({
       exclude: ['crypto']
-    }),
-    dts({ exclude: ['**/tests'], entryRoot: 'src', outDir: 'dist/src' })
+    })
   ]
 })

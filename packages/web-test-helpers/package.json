@@ -33,6 +33,7 @@
   },
   "scripts": {
     "vite": "vite",
+    "build": "vite build && vue-tsc --project tsconfig.build.json",
     "prepublishOnly": "rm -rf ./package && clean-publish && find package && cat package/package.json",
     "postpublish": "rm -rf ./package"
   },
@@ -42,9 +43,9 @@
     "vue": "^3.5.10"
   },
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "@vitejs/plugin-vue": "6.0.5",
     "clean-publish": "^6.0.0",
-    "vite-plugin-dts": "^4.2.3",
     "vite": "^8.0.0"
   },
   "dependencies": {
