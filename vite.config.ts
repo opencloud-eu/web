@@ -11,7 +11,6 @@ import EnvironmentPlugin from 'vite-plugin-environment'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
 import visualizer from 'rollup-plugin-visualizer'
-import compression from 'rollup-plugin-gzip'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
@@ -359,7 +358,6 @@ export default defineConfig(({ mode, command }) => {
           }
         },
         ...(command === 'serve' ? historyModePlugins() : []),
-        compression(),
         process.env.REPORT !== 'true'
           ? null
           : visualizer({

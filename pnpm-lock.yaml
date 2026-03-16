@@ -109,9 +109,6 @@ importers:
       requirejs:
         specifier: 2.3.8
         version: 2.3.8
-      rollup-plugin-gzip:
-        specifier: ^4.0.0
-        version: 4.1.1(rollup@4.59.0)
       rollup-plugin-visualizer:
         specifier: 7.0.1
         version: 7.0.1(rolldown@1.0.0-rc.9)(rollup@4.59.0)
@@ -5268,12 +5265,6 @@ packages:
     resolution: {integrity: sha512-9EbgWge7ZH+yqb4d2EnELAntgPTWbfL8ajiTW+SyhJEC4qhBbkCKbqFV4Ge4zmu5ziQuVbWxb/XwLZ+RIO7E8Q==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
-
-  rollup-plugin-gzip@4.1.1:
-    resolution: {integrity: sha512-yyhAAn4/bqo/EZlfpKqPu3+675u2KRYy3AVYeEPpU+ej+fEuhXA7lL1+UfmDw4MlH1593LQQOEQ8+1itw02L6A==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      rollup: '>=2.0.0'
 
   rollup-plugin-visualizer@7.0.1:
     resolution: {integrity: sha512-UJUT4+1Ho4OcWmPYU3sYXgUqI8B8Ayfe06MX7y0qCJ1K8aGoKtR/NDd/2nZqM7ADkrzny+I99Ul7GgyoiVNAgg==}
@@ -10618,10 +10609,6 @@ snapshots:
       '@rolldown/binding-wasm32-wasi': 1.0.0-rc.9
       '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.9
       '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.9
-
-  rollup-plugin-gzip@4.1.1(rollup@4.59.0):
-    dependencies:
-      rollup: 4.59.0
 
   rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.9)(rollup@4.59.0):
     dependencies:
