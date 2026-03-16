@@ -10,7 +10,6 @@ import vue from '@vitejs/plugin-vue'
 import EnvironmentPlugin from 'vite-plugin-environment'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
-import visualizer from 'rollup-plugin-visualizer'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
@@ -357,12 +356,7 @@ export default defineConfig(({ mode, command }) => {
             }
           }
         },
-        ...(command === 'serve' ? historyModePlugins() : []),
-        process.env.REPORT !== 'true'
-          ? null
-          : visualizer({
-              filename: join('dist', 'report.html')
-            })
+        ...(command === 'serve' ? historyModePlugins() : [])
       ] as Plugin[]
     },
     config
