@@ -6,8 +6,19 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann
 
+### 🐛 Bug Fixes
+
+- fix: files with name e.G. .space won't be shown when 'show file extens… [[#2149](https://github.com/opencloud-eu/web/pull/2149)]
+- fix: account settings on mobile view [[#2148](https://github.com/opencloud-eu/web/pull/2148)]
+- fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
+- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
+- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
+- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
+
 ### 📈 Enhancement
 
+- feat: polish input fields [[#2127](https://github.com/opencloud-eu/web/pull/2127)]
 - feat(runtime): add dynamic extension points for sidebar-nav [[#2134](https://github.com/opencloud-eu/web/pull/2134)]
 - feat: polish drop menus [[#2133](https://github.com/opencloud-eu/web/pull/2133)]
 - feat: polish filters [[#2124](https://github.com/opencloud-eu/web/pull/2124)]
@@ -15,14 +26,6 @@
 - feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
 - feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
 - feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
-
-### 🐛 Bug Fixes
-
-- fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
-- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
-- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
-- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
-- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ### ✅ Tests
 
