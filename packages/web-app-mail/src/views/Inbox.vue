@@ -11,7 +11,7 @@
         <MailList ref="mailListRef" />
       </div>
       <div
-        class="overflow-y-auto min-w-0 w-full md:w-2/4 px-4 pt-4 md:pt-0"
+        class="overflow-y-auto min-w-0 w-full md:w-3/4 px-4 pt-4 md:pt-0"
         :class="{
           'hidden md:block': !currentMail
         }"
