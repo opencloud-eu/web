@@ -2,7 +2,17 @@ import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import type { DraftEmailPayload, DraftEmailResponse, MailDraftApi } from './useSaveAsDraft'
 
-export const useMailDraftConnector = (): MailDraftApi => {
+type MailConnectorApi = MailDraftApi & {
+  sendDraft: (
+    accountId: string,
+    emailId: string,
+    identityId: string,
+    draftMailboxId: string,
+    sentMailboxId: string
+  ) => Promise<void>
+}
+
+export const useMailDraftConnector = (): MailConnectorApi => {
   const configStore = useConfigStore()
   const clientService = useClientService()
 
@@ -41,6 +51,32 @@ export const useMailDraftConnector = (): MailDraftApi => {
           'emails',
           encodeURIComponent(emailId)
         )
+      )
+    },
+
+    async sendDraft(
+      accountId: string,
+      emailId: string,
+      identityId: string,
+      draftMailboxId: string,
+      sentMailboxId: string
+    ) {
+      await http.post(
+        urlJoin(
+          baseUrl,
+          'accounts',
+          encodeURIComponent(accountId),
+          'emails',
+          encodeURIComponent(emailId)
+        ),
+        null,
+        {
+          params: {
+            identity: identityId,
+            'move-from': draftMailboxId,
+            'move-to': sentMailboxId
+          }
+        }
       )
     }
   }
