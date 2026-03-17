@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useAccountsStore, useRouteQuery } from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import MailBodyEditor from './MailBodyEditor.vue'
 import MailAttachmentList from './MailAttachmentList.vue'
@@ -111,7 +111,7 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { accounts } = storeToRefs(accountsStore)
 
 const selectedAccountIdQuery = useRouteQuery('accountId')

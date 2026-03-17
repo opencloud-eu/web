@@ -64,7 +64,7 @@ import {
   AppLoadingSpinner,
   NoContentMessage,
   AccountsSwitch,
-  useAccountsStore
+  useGroupwareAccountsStore
 } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
@@ -78,7 +78,7 @@ const emit = defineEmits<{
 }>()
 
 const mailboxesStore = useMailboxesStore()
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
 const { currentAccount } = storeToRefs(accountsStore)

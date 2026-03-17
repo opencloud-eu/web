@@ -2,8 +2,8 @@ import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useClientService } from '../clientService'
 import { useConfigStore } from '../piniaStores/config'
-import { useAccountsStore } from '../piniaStores/groupware/accounts'
-import { AccountSchema } from '../piniaStores/groupwareConfig'
+import { useGroupwareAccountsStore } from '../piniaStores/groupware/accounts'
+import { AccountSchema } from '../piniaStores/groupware'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { z } from 'zod'
 
@@ -13,7 +13,7 @@ const isLoading = computed(() => loadAccountsTask?.isRunning ?? false)
 export const useLoadAccounts = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
-  const { setAccounts } = useAccountsStore()
+  const { setAccounts } = useGroupwareAccountsStore()
 
   if (!loadAccountsTask) {
     loadAccountsTask = useTask(function* (signal) {

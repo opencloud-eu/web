@@ -54,9 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import type { GroupwareAccount } from '../../../composables/piniaStores/groupwareConfig'
+import type { GroupwareAccount } from '../../../composables/piniaStores/groupware'
 import { useLoadAccounts } from '../../../composables/groupware/useLoadAccounts'
-import { useAccountsStore } from '../../../composables/piniaStores/groupware/accounts'
+import { useGroupwareAccountsStore } from '../../../composables/piniaStores/groupware/accounts'
 import { storeToRefs } from 'pinia'
 import AppLoadingSpinner from '../../../components/AppLoadingSpinner.vue'
 
@@ -64,7 +64,7 @@ const emit = defineEmits<{
   (e: 'select', account: GroupwareAccount): void
 }>()
 
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { accounts, currentAccount } = storeToRefs(accountsStore)
 const { setCurrentAccount } = accountsStore
 const { isLoading } = useLoadAccounts()

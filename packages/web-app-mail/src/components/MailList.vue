@@ -63,7 +63,11 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner, NoContentMessage, useAccountsStore } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  NoContentMessage,
+  useGroupwareAccountsStore
+} from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
@@ -75,7 +79,7 @@ import { ref, unref } from 'vue'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
 
