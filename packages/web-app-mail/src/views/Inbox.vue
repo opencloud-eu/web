@@ -19,7 +19,7 @@
         <MailDetails :key="currentMail?.id" />
       </div>
     </div>
-    <MailWidget v-if="showCompose" :model-value="true" @close="onCloseCompose" />
+    <MailWidget v-if="showCompose" @close="onCloseCompose" />
   </template>
 </template>
 

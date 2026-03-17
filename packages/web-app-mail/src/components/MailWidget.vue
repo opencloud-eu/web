@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isOpen && !isExpanded"
+    v-if="!isExpanded"
     class="z-50 transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
@@ -67,7 +67,7 @@
   </div>
 
   <oc-modal
-    v-if="isOpen && isExpanded"
+    v-if="isExpanded"
     :title="$gettext('New message')"
     :hide-actions="true"
     hide-cancel-button
@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, unref } from 'vue'
+import { ref, computed, unref, onUnmounted } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
@@ -152,9 +152,7 @@ const { dispatchModal } = useModals()
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
 
-const props = defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
 }>()
 
@@ -191,16 +189,6 @@ const createEmptyComposeState = (): ComposeFormState => ({
 })
 
 const composeState = ref<ComposeFormState>(createEmptyComposeState())
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => {
-    emit('update:modelValue', value)
-    if (!value) {
-      emit('close')
-    }
-  }
-})
 
 const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
@@ -280,7 +268,7 @@ const resetCompose = async () => {
 
 const doClose = () => {
   isExpanded.value = false
-  isOpen.value = false
+  emit('close')
 }
 
 const requestClose = () => {
@@ -320,17 +308,10 @@ const onDiscardAndClose = async () => {
 }
 
 const canAutoSaveNow = computed(() => {
-  return (
-    unref(isOpen) &&
-    unref(canSaveDraft) &&
-    unref(hasMeaningfulChanges) &&
-    unref(isDirty) &&
-    !unref(isSaving)
-  )
+  return unref(canSaveDraft) && unref(hasMeaningfulChanges) && unref(isDirty) && !unref(isSaving)
 })
 
 useAutoSaveDraft({
-  isOpen,
   canAutoSaveNow,
   intervalMs: AUTO_SAVE_INTERVAL_MS,
   save: saveAsDraft,
@@ -342,10 +323,8 @@ useAutoSaveDraft({
   }
 })
 
-watch(isOpen, async (open) => {
-  if (!open) {
-    await resetCompose()
-  }
+onUnmounted(() => {
+  resetCompose()
 })
 </script>
 
