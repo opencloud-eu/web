@@ -33,7 +33,7 @@ export default defineConfig({
       name: 'web-pkg',
       fileName: 'web-pkg'
     },
-    rollupOptions: {
+    rolldownOptions: {
       external
     }
   },

@@ -43,7 +43,7 @@ export default defineConfig({
         'design-system/helpers': resolve(__dirname, 'src/helpers/index.ts')
       }
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [
         ...Object.keys(pkg.dependencies).filter(
           (dep) =>
