@@ -1,17 +1,6 @@
 <template>
   <div class="mailbox-tree h-full px-1 flex flex-col">
     <div>
-      <div class="px-2 py-4">
-        <oc-button
-          id="new-email-menu-btn"
-          class="w-full hidden md:flex"
-          appearance="filled"
-          @click="$emit('composeMail')"
-        >
-          <oc-icon name="edit-box" fill-type="line" />
-          <span v-text="$gettext('Write new Email')" />
-        </oc-button>
-      </div>
       <app-loading-spinner v-if="isLoading" />
       <template v-else>
         <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
@@ -51,19 +40,14 @@
         </div>
       </template>
     </div>
-    <div class="w-full self-end mt-auto px-2 py-4">
-      <AccountsSwitch @select="onSelectAccount" />
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Mailbox } from '../types'
-import type { GroupwareAccount } from '@opencloud-eu/web-pkg'
 import {
   AppLoadingSpinner,
   NoContentMessage,
-  AccountsSwitch,
   useGroupwareAccountsStore
 } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
@@ -73,10 +57,6 @@ import { useMailsStore } from '../composables/piniaStores/mails'
 import { useLoadMails } from '../composables/useLoadMails'
 import { unref } from 'vue'
 
-const emit = defineEmits<{
-  (e: 'composeMail'): void
-}>()
-
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useGroupwareAccountsStore()
 const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
@@ -84,19 +64,11 @@ const { setCurrentMailbox } = mailboxesStore
 const { currentAccount } = storeToRefs(accountsStore)
 const { setCurrentMail } = useMailsStore()
 const { loadMails } = useLoadMails()
-const { loadMailboxes } = useLoadMailboxes()
 const { isLoading } = useLoadMailboxes()
 
 const onSelectMailbox = async (mailbox: Mailbox) => {
   setCurrentMailbox(mailbox)
   setCurrentMail(null)
   await loadMails(unref(currentAccount).accountId, mailbox.id)
-}
-
-const onSelectAccount = async (account: GroupwareAccount) => {
-  setCurrentMail(null)
-  await loadMailboxes(account.accountId)
-  setCurrentMailbox(unref(mailboxes)[0])
-  await loadMails(account.accountId, unref(currentMailbox).id)
 }
 </script>

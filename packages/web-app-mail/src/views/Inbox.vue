@@ -3,16 +3,6 @@
   <template v-else>
     <div class="flex h-full">
       <div
-        class="w-full md:w-1/4 flex flex-row"
-        :class="{
-          'hidden md:flex': currentMailbox
-        }"
-      >
-        <div class="overflow-y-auto md:border-r-2 bg-role-surface-container w-full">
-          <MailboxTree @compose-mail="onComposeMail" />
-        </div>
-      </div>
-      <div
         class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4 px-4 md:px-0"
         :class="{
           'hidden md:block': currentMail || !currentMailbox
@@ -34,12 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, onMounted, ComponentPublicInstance, useTemplateRef } from 'vue'
+import { ref, unref, onMounted, onUnmounted } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
-import MailboxTree from '../components/MailboxTree.vue'
 import MailWidget from '../components/MailWidget.vue'
-import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, queryItemAsString, useEventBus } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { useGroupwareAccountsStore, useLoadAccounts } from '@opencloud-eu/web-pkg'
@@ -52,6 +41,7 @@ import { useLoadMail } from '../composables/useLoadMail'
 const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const mailsStore = useMailsStore()
+const eventBus = useEventBus()
 
 const { accounts, currentAccount } = storeToRefs(accountsStore)
 const { setCurrentAccount } = accountsStore
@@ -63,14 +53,15 @@ const { loadAccounts } = useLoadAccounts()
 const { loadMailboxes } = useLoadMailboxes()
 const { loadMails } = useLoadMails()
 const { loadMail } = useLoadMail()
+const { setCurrentMail } = mailsStore
 
 const isLoading = ref<boolean>(true)
-const mailListRef = useTemplateRef<ComponentPublicInstance<typeof MailList>>('mailListRef')
 
 const currentAccountIdQuery = useRouteQuery('accountId')
 const currentMailboxIdQuery = useRouteQuery('mailboxId')
 const currentMailIdQuery = useRouteQuery('mailId')
 
+let mailComposeEventToken: string
 const showCompose = ref(false)
 
 const onComposeMail = () => {
@@ -81,7 +72,17 @@ const onCloseCompose = () => {
   showCompose.value = false
 }
 
+accountsStore.$onAction(async ({ name }) => {
+  if (name === 'setCurrentAccount' && unref(currentAccount)) {
+    setCurrentMail(null)
+    await loadMailboxes(unref(currentAccount).accountId)
+    setCurrentMailbox(unref(mailboxes)[0])
+    await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
+  }
+})
+
 onMounted(async () => {
+  mailComposeEventToken = eventBus.subscribe('app.mail.show-compose-mail', onComposeMail)
   await loadAccounts()
   if (unref(currentAccountIdQuery)) {
     setCurrentAccount(
@@ -109,5 +110,9 @@ onMounted(async () => {
   }
 
   isLoading.value = false
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe('app.mail.show-compose-mail', mailComposeEventToken)
 })
 </script>

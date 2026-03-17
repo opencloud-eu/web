@@ -70,6 +70,7 @@
     v-if="isOpen && isExpanded"
     :title="$gettext('New message')"
     :hide-actions="true"
+    hide-cancel-button
     element-class="mail-compose-modal"
   >
     <template #headerActions>
