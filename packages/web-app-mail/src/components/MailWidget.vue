@@ -148,6 +148,7 @@ type ComposeAttachment = ComposeFormState['attachments'][number]
 
 const { $gettext } = useGettext()
 const { dispatchModal } = useModals()
+const appliedDraftId = ref<string | null>(null)
 
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
@@ -330,6 +331,7 @@ const applyDraftMail = async (mail: Mail) => {
     composeState.value = createComposeStateFromDraft(mail)
     clearSavedHint()
     resetDraft(mail.id)
+    appliedDraftId.value = mail.id
   })
 }
 
@@ -399,18 +401,28 @@ useAutoSaveDraft({
 
 watch(isOpen, async (open) => {
   if (!open) {
+    appliedDraftId.value = null
     await resetCompose()
   }
 })
 
 watch(
-  () => [unref(isOpen), props.draftMail] as const,
-  async ([open, draftMail]) => {
-    if (!open || !draftMail) {
+  () => [unref(isOpen), props.draftMail?.id] as const,
+  async ([open, draftId]) => {
+    if (!open || !draftId || !props.draftMail) {
       return
     }
 
-    await applyDraftMail(draftMail)
+    if (draftId === appliedDraftId.value) {
+      return
+    }
+
+    if (unref(isDirty) || unref(hasMeaningfulChanges)) {
+      return
+    }
+
+    await applyDraftMail(props.draftMail)
+    appliedDraftId.value = props.draftMail.id
   },
   { immediate: true }
 )
