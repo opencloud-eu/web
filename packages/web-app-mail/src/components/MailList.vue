@@ -81,7 +81,6 @@ import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
 import { unref } from 'vue'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailCompose } from '../composables/useMailCompose'
 import MailWidget from './MailWidget.vue'
 
