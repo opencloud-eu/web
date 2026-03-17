@@ -67,9 +67,8 @@
 <script setup lang="ts">
 import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useRouteQuery } from '@opencloud-eu/web-pkg'
+import { useAccountsStore, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 import MailBodyEditor from './MailBodyEditor.vue'
 import MailAttachmentList from './MailAttachmentList.vue'
 

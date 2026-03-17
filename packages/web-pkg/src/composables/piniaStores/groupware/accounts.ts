@@ -1,23 +1,23 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
-import { MailAccount } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { type GroupwareAccount } from './types'
+import { useRouteQuery } from '../../router'
 
 export const useAccountsStore = defineStore('accounts', () => {
   const currentAccountIdQuery = useRouteQuery('accountId')
 
-  const accounts = ref<MailAccount[]>([])
+  const accounts = ref<GroupwareAccount[]>([])
   const currentAccountId = ref<string>()
 
   const currentAccount = computed(() =>
     unref(accounts).find((account) => account.accountId === unref(currentAccountId))
   )
 
-  const setAccounts = (data: MailAccount[]) => {
+  const setAccounts = (data: GroupwareAccount[]) => {
     accounts.value = data
   }
 
-  const upsertAccount = (data: MailAccount) => {
+  const upsertAccount = (data: GroupwareAccount) => {
     const existing = unref(accounts).find(({ accountId }) => accountId === data.accountId)
     if (existing) {
       Object.assign(existing, data)
@@ -26,7 +26,7 @@ export const useAccountsStore = defineStore('accounts', () => {
     unref(accounts).push(data)
   }
 
-  const removeAccounts = (values: MailAccount[]) => {
+  const removeAccounts = (values: GroupwareAccount[]) => {
     accounts.value = unref(accounts).filter(
       (account) => !values.find(({ accountId }) => accountId === account.accountId)
     )
@@ -37,12 +37,12 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
   }
 
-  const setCurrentAccount = (data: MailAccount) => {
+  const setCurrentAccount = (data: GroupwareAccount) => {
     currentAccountId.value = data.accountId
     currentAccountIdQuery.value = data?.accountId
   }
 
-  const updateAccountField = <T extends MailAccount>({
+  const updateAccountField = <T extends GroupwareAccount>({
     id,
     field,
     value
