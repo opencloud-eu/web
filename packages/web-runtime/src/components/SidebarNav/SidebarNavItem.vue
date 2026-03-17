@@ -29,7 +29,7 @@
       <span class="flex">
         <oc-icon :name="icon" :fill-type="fillType" />
         <span
-          class="ml-4 text font-bold"
+          class="ml-4 font-bold"
           :class="{ 'text-invisible opacity-0': collapsed }"
           v-text="name"
         />

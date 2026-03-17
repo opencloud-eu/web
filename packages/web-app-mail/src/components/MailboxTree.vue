@@ -10,25 +10,38 @@
       <oc-list v-else>
         <li v-for="mailbox in mailboxes" :key="mailbox.id" class="pb-1 px-2">
           <oc-button
-            class="w-full p-2 hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest"
-            :class="{ '!bg-role-secondary-container': currentMailbox?.id === mailbox.id }"
-            no-hover
+            :class="[
+              'sidebar-mailbox-item',
+              'relative',
+              'w-full',
+              'whitespace-nowrap',
+              'px-2',
+              'py-3',
+              'select-none',
+              'rounded-xl',
+              { 'active overflow-hidden outline': currentMailbox?.id === mailbox.id },
+              {
+                'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest':
+                  currentMailbox?.id !== mailbox.id
+              }
+            ]"
+            :appearance="currentMailbox?.id === mailbox.id ? 'filled' : 'raw-inverse'"
+            color-role="surface"
             justify-content="left"
-            appearance="raw"
-            size="small"
             @click="onSelectMailbox(mailbox)"
           >
             <div class="flex items-center justify-between w-full">
               <div class="flex items-center truncate">
                 <oc-icon name="folder" class="mr-2" fill-type="line" />
-                <span class="truncate" v-text="mailbox.name" />
+                <span class="truncate font-bold" v-text="mailbox.name" />
               </div>
               <oc-tag
                 v-if="mailbox.unreadEmails"
                 v-oc-tooltip="$gettext('Unread emails')"
+                :rounded="true"
                 class="ml-2"
                 appearance="filled"
-                :rounded="true"
+                size="small"
                 ><span v-text="mailbox.unreadEmails"
               /></oc-tag>
             </div>
@@ -68,3 +81,16 @@ const onSelectMailbox = async (mailbox: Mailbox) => {
   await loadMails(unref(currentAccount).accountId, mailbox.id)
 }
 </script>
+
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .sidebar-mailbox-item:is(.active) {
+    outline-color: var(--oc-role-surface-container-highest);
+  }
+  .sidebar-mailbox-item:not(.active) {
+    color: var(--oc-role-on-surface-variant);
+  }
+}
+</style>
