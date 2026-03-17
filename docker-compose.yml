@@ -87,7 +87,9 @@ services:
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
-      OC_ADD_RUN_SERVICES: groupware
+      OC_ADD_RUN_SERVICES: auth-api,groupware
+      GROUPWARE_JMAP_MASTER_USERNAME: master
+      GROUPWARE_JMAP_MASTER_PASSWORD: admin
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
       OCM_WEBAPP_TEMPLATE: https://host.docker.internal:9201/o/{{.Token}}/{relative-path-to-shared-resource}
       # make the registry available to the app provider containers
