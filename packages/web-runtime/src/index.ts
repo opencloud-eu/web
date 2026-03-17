@@ -8,7 +8,6 @@ import {
   announceConfiguration,
   initializeApplications,
   announceApplicationsReady,
-  announceAuthClient,
   announceDefaults,
   announceClientService,
   announceTheme,
@@ -109,7 +108,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       authStore
     })
     announcePasswordPolicyService({ app })
-    await announceAuthClient(configStore)
 
     const applicationsPromise = initializeApplications({
       app,

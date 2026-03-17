@@ -6,6 +6,7 @@ const CustomTranslationSchema = z.object({
 
 export type CustomTranslation = z.infer<typeof CustomTranslationSchema>
 
+/** @deprecated */
 const OAuth2ConfigSchema = z.object({
   apiUrl: z.string().optional(),
   authUrl: z.string().optional(),
@@ -16,20 +17,12 @@ const OAuth2ConfigSchema = z.object({
   url: z.string().optional()
 })
 
+/** @deprecated */
 export type OAuth2Config = z.infer<typeof OAuth2ConfigSchema>
 
-const OpenIdConnectConfigSchema = z
-  .object({
-    authority: z.string().optional(),
-    client_id: z.string().optional(),
-    client_secret: z.string().optional(),
-    dynamic: z.string().optional(),
-    metadata_url: z.string().optional(),
-    post_logout_redirect_uri: z.string().optional(),
-    response_type: z.string().optional(),
-    scope: z.string().optional()
-  })
-  .passthrough()
+// loose object to allow passing through any properties for the oidc-client lib.
+// see https://authts.github.io/oidc-client-ts/interfaces/OidcClientSettings.html
+const OpenIdConnectConfigSchema = z.looseObject({})
 
 export type OpenIdConnectConfig = z.infer<typeof OpenIdConnectConfigSchema>
 

@@ -23,9 +23,11 @@ export const AccountCapabilitiesSchema = z.object({
 
 export const IdentitySchema = z.object({
   id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  mayDelete: z.boolean()
+  name: z.string().optional().nullable(),
+  email: z.string().optional(),
+  textSignature: z.string().optional().default(''),
+  htmlSignature: z.string().optional().default(''),
+  mayDelete: z.boolean().optional()
 })
 
 export const AccountSchema = z.object({
@@ -33,9 +35,12 @@ export const AccountSchema = z.object({
   name: z.string(),
   isPersonal: z.boolean(),
   isReadOnly: z.boolean(),
-  capabilities: AccountCapabilitiesSchema,
+  capabilities: AccountCapabilitiesSchema.optional(),
+  accountCapabilities: z.record(z.string(), z.object({})).optional(),
   identities: z.array(IdentitySchema)
 })
+
+export type GroupwareAccount = z.infer<typeof AccountSchema>
 
 export const LimitsSchema = z.object({
   maxSizeUpload: z.number(),

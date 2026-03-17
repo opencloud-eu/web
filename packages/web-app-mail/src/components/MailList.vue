@@ -31,8 +31,7 @@
       <no-content-message
         v-if="!mails || !mails.length"
         class="mail-list-empty"
-        icon="mail-forbid"
-        icon-fill-type="line"
+        img-src="/images/empty-states/empty-mails.svg"
       >
         <template #message>
           <span v-text="$gettext('No mails in this mailbox')" />
@@ -69,7 +68,11 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  NoContentMessage,
+  useGroupwareAccountsStore
+} from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
@@ -84,7 +87,7 @@ import MailWidget from './MailWidget.vue'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
 

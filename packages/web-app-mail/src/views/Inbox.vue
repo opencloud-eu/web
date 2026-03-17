@@ -42,15 +42,14 @@ import MailWidget from '../components/MailWidget.vue'
 import { AppLoadingSpinner, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
+import { useGroupwareAccountsStore, useLoadAccounts } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
-import { useLoadAccounts } from '../composables/useLoadAccounts'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useLoadMails } from '../composables/useLoadMails'
 import { useLoadMail } from '../composables/useLoadMail'
 
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const mailsStore = useMailsStore()
 
