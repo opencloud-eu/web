@@ -3,7 +3,7 @@ import { useTask } from 'vue-concurrency'
 import { useClientService } from '../clientService'
 import { useConfigStore } from '../piniaStores/config'
 import { useAccountsStore } from '../piniaStores/groupware/accounts'
-import { GroupwareAccountSchema } from '../piniaStores/groupware/types'
+import { AccountSchema } from '../piniaStores/groupwareConfig'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { z } from 'zod'
 
@@ -21,7 +21,7 @@ export const useLoadAccounts = () => {
         const { data } = yield clientService.httpAuthenticated.get(
           urlJoin(configStore.groupwareUrl, `accounts`)
         )
-        const accounts = z.array(GroupwareAccountSchema).parse(data)
+        const accounts = z.array(AccountSchema).parse(data)
         setAccounts(accounts)
         console.info('Loaded accounts:', accounts)
         return accounts

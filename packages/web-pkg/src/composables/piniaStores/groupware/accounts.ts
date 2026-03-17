@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
-import { type GroupwareAccount } from './types'
+import { GroupwareAccount } from './../groupwareConfig'
 import { useRouteQuery } from '../../router'
 
 export const useAccountsStore = defineStore('accounts', () => {

@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GroupwareAccount } from '../../../composables/piniaStores/groupware/types'
+import type { GroupwareAccount } from '../../../composables/piniaStores/groupwareConfig'
 import { useLoadAccounts } from '../../../composables/groupware/useLoadAccounts'
 import { useAccountsStore } from '../../../composables/piniaStores/groupware/accounts'
 import { storeToRefs } from 'pinia'
