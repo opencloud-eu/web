@@ -1,45 +1,41 @@
 <template>
-  <div class="mailbox-tree h-full px-1 flex flex-col">
-    <div>
-      <app-loading-spinner v-if="isLoading" />
-      <template v-else>
-        <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
-          <template #message>
-            <span v-text="$gettext('No mailboxes found')" />
-          </template>
-        </no-content-message>
-        <div v-else>
-          <oc-list class="mailbox-tree mt-1">
-            <li v-for="mailbox in mailboxes" :key="mailbox.id" class="pb-1 px-2">
-              <oc-button
-                class="w-full p-2 hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest"
-                :class="{ '!bg-role-secondary-container': currentMailbox?.id === mailbox.id }"
-                no-hover
-                justify-content="left"
-                appearance="raw"
-                size="small"
-                @click="onSelectMailbox(mailbox)"
-              >
-                <div class="flex items-center justify-between w-full">
-                  <div class="flex items-center truncate">
-                    <oc-icon name="folder" class="mr-2" fill-type="line" />
-                    <span class="truncate" v-text="mailbox.name" />
-                  </div>
-                  <oc-tag
-                    v-if="mailbox.unreadEmails"
-                    v-oc-tooltip="$gettext('Unread emails')"
-                    class="ml-2"
-                    appearance="filled"
-                    :rounded="true"
-                    ><span v-text="mailbox.unreadEmails"
-                  /></oc-tag>
-                </div>
-              </oc-button>
-            </li>
-          </oc-list>
-        </div>
-      </template>
-    </div>
+  <div class="mailbox-tree px-1 flex flex-col">
+    <app-loading-spinner v-if="isLoading" />
+    <template v-else>
+      <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
+        <template #message>
+          <span v-text="$gettext('No mailboxes found')" />
+        </template>
+      </no-content-message>
+      <oc-list v-else>
+        <li v-for="mailbox in mailboxes" :key="mailbox.id" class="pb-1 px-2">
+          <oc-button
+            class="w-full p-2 hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest"
+            :class="{ '!bg-role-secondary-container': currentMailbox?.id === mailbox.id }"
+            no-hover
+            justify-content="left"
+            appearance="raw"
+            size="small"
+            @click="onSelectMailbox(mailbox)"
+          >
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center truncate">
+                <oc-icon name="folder" class="mr-2" fill-type="line" />
+                <span class="truncate" v-text="mailbox.name" />
+              </div>
+              <oc-tag
+                v-if="mailbox.unreadEmails"
+                v-oc-tooltip="$gettext('Unread emails')"
+                class="ml-2"
+                appearance="filled"
+                :rounded="true"
+                ><span v-text="mailbox.unreadEmails"
+              /></oc-tag>
+            </div>
+          </oc-button>
+        </li>
+      </oc-list>
+    </template>
   </div>
 </template>
 
