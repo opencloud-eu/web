@@ -35,8 +35,8 @@ export const extensions = (appInfo: ApplicationInformation) => {
     id: `com.github.opencloud-eu.web.${appInfo.id}.floating-action-button`,
     extensionPointIds: [`app.${appInfo.id}.floating-action-button`],
     type: 'floatingActionButton',
-    icon: 'edit-box',
-    label: () => $gettext('Write new Email'),
+    icon: 'add',
+    label: () => $gettext('New'),
     mode: () => 'handler',
     handler: () => {
       eventBus.publish('app.mail.show-compose-mail')
