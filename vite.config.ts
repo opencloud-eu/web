@@ -22,19 +22,7 @@ import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
 
-// @ts-ignore
-import ejs from 'ejs'
-
 const dist = process.env.DIST_DIR || 'dist'
-
-const buildConfig = {
-  requirejs: {},
-  cdn: process.env.CDN === 'true',
-  documentation_url: process.env.DOCUMENTATION_URL,
-  ...(process.env.REQUIRE_TIMEOUT && {
-    requirejs: { waitSeconds: parseInt(process.env.REQUIRE_TIMEOUT) }
-  })
-}
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
 const { version } = packageJson
@@ -294,22 +282,18 @@ export default defineConfig(({ mode, command }) => {
           }
         },
         {
-          name: 'ejs',
+          name: 'html-transform',
           transformIndexHtml: {
             order: 'pre',
             handler(html, { filename }) {
               if (basename(filename) !== 'index.html') {
                 return
               }
-              return ejs.render(html, {
-                data: {
-                  buildConfig,
 
-                  title: process.env.TITLE || 'OpenCloud',
-                  compilationTimestamp: new Date().getTime(),
-                  supportedBrowsersRegex: supportedBrowsersRegex
-                }
-              })
+              return html
+                .replace(/__TITLE__/g, process.env.TITLE || 'OpenCloud')
+                .replace(/__COMPILATION_TIMESTAMP__/g, Date.now().toString())
+                .replace(/__SUPPORTED_BROWSERS__/g, supportedBrowsersRegex.toString())
             }
           }
         },

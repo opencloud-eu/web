@@ -6,19 +6,10 @@
     <meta name="theme-color" content="#375f7E" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
 
-    <title><%= data.title %></title>
+    <title>__TITLE__</title>
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
     <link rel="icon" href="img/favicon.svg" />
-    <% if (data.buildConfig.cdn) { %>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
-    <script>
-      if (typeof requirejs === 'undefined') {
-        document.write('<script src="js/require.js?<%= data.compilationTimestamp %>">\x3C/script>')
-      }
-    </script>
-    <% } else { %>
-    <script src="js/require.js?<%= data.compilationTimestamp %>"></script>
-    <% } %>
+    <script src="js/require.js?__COMPILATION_TIMESTAMP__"></script>
     <script type="module" src="./packages/web-runtime/src/index.ts"></script>
     <script type="module">
       // Fix Buffer usage in production (!)
@@ -101,13 +92,6 @@
       >
         I want to continue anyway
       </button>
-      <% if (data.buildConfig.documentation_url) { %>
-      <p>
-        <a href="<%= data.buildConfig.documentation_url %>" target="_blank"
-          >Click here to know more</a
-        >
-      </p>
-      <% } %>
     </div>
     <div id="splash-loading" class="splash-banner splash-hide">
       <div id="loading" class="inline-block"></div>
@@ -163,7 +147,7 @@
         }
       }
 
-      const supportedBrowsers = <%= data.supportedBrowsersRegex %>
+      const supportedBrowsers = __SUPPORTED_BROWSERS__
       const forceAllowOldBrowser = localStorage.getItem("forceAllowOldBrowser") || false
       const validForceAllowOldBrowser = forceAllowOldBrowser && JSON.parse(localStorage.getItem("forceAllowOldBrowser")).expiry > new Date().getTime()
 
