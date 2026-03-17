@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!currentMail" icon="mail" icon-fill-type="line">
+    <no-content-message v-if="!currentMail" img-src="/images/empty-states/empty-mails.svg">
       <template #message>
         <span v-text="$gettext('No mail selected')" />
       </template>
