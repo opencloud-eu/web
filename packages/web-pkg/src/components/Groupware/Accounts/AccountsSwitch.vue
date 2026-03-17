@@ -54,33 +54,23 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import type { MailAccount } from '../types'
-import { useLoadAccounts } from '../composables/useLoadAccounts'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
+import type { GroupwareAccount } from '../../../composables/piniaStores/groupware'
+import { useLoadAccounts } from '../../../composables/groupware/useLoadAccounts'
+import { useGroupwareAccountsStore } from '../../../composables/piniaStores/groupware/accounts'
 import { storeToRefs } from 'pinia'
-import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
-import { useLoadMailboxes } from '../composables/useLoadMailboxes'
-import { unref } from 'vue'
-import { useLoadMails } from '../composables/useLoadMails'
-import { useMailsStore } from '../composables/piniaStores/mails'
+import AppLoadingSpinner from '../../../components/AppLoadingSpinner.vue'
 
-const accountsStore = useAccountsStore()
+const emit = defineEmits<{
+  (e: 'select', account: GroupwareAccount): void
+}>()
+
+const accountsStore = useGroupwareAccountsStore()
 const { accounts, currentAccount } = storeToRefs(accountsStore)
 const { setCurrentAccount } = accountsStore
-const mailboxesStore = useMailboxesStore()
-const { mailboxes, currentMailbox } = storeToRefs(mailboxesStore)
-const { setCurrentMailbox } = mailboxesStore
-const { loadMailboxes } = useLoadMailboxes()
-const { loadMails } = useLoadMails()
-const { setCurrentMail } = useMailsStore()
 const { isLoading } = useLoadAccounts()
 
-const onSelectAccount = async (account: MailAccount) => {
+const onSelectAccount = (account: GroupwareAccount) => {
   setCurrentAccount(account)
-  setCurrentMail(null)
-  await loadMailboxes(unref(currentAccount).accountId)
-  setCurrentMailbox(unref(mailboxes)[0])
-  await loadMails(unref(currentAccount).accountId, unref(currentMailbox).id)
+  emit('select', account)
 }
 </script>

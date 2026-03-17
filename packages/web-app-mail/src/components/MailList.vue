@@ -63,7 +63,11 @@
 </template>
 
 <script setup lang="ts">
-import { AppLoadingSpinner, NoContentMessage } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  NoContentMessage,
+  useGroupwareAccountsStore
+} from '@opencloud-eu/web-pkg'
 import MailListItem from './MailListItem.vue'
 import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
@@ -72,11 +76,10 @@ import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
 import { ref, unref } from 'vue'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
 

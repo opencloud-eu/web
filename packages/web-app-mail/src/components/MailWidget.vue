@@ -129,13 +129,12 @@
 import { ref, computed, watch, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { useModals } from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
 import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 import MailSavedHint from './MailSavedHint.vue'
 import { useSaveAsDraft } from '../composables/useSaveAsDraft'
 import { useMailDraftConnector } from '../composables/useMailDraftConnector'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { useSavedHint } from '../composables/useSavedHint'
 import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
@@ -158,7 +157,7 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const connector = useMailDraftConnector()
 

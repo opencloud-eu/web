@@ -109,31 +109,12 @@ export const MailboxSchema = z.object({
   isSubscribed: z.boolean().optional()
 })
 
-export const IdentitySchema = z.object({
-  id: z.string(),
-  name: z.string().optional().nullable(),
-  email: z.string().optional(),
-  textSignature: z.string().optional().default(''),
-  htmlSignature: z.string().optional().default(''),
-  mayDelete: z.boolean().optional()
-})
-
-export const MailAccountSchema = z.object({
-  accountId: z.string().optional(),
-  name: z.string().optional(),
-  isPersonal: z.boolean().optional(),
-  isReadOnly: z.boolean().optional(),
-  accountCapabilities: z.record(z.string(), z.object({})).optional(),
-  identities: z.array(IdentitySchema).optional().default([])
-})
-
 export const AttachmentBlobUploadResponseSchema = z.object({
   blobId: z.string(),
   size: z.number().optional(),
   type: z.string().optional()
 })
 
-export type MailAccount = z.infer<typeof MailAccountSchema>
 export type Mail = z.infer<typeof MailSchema>
 export type MailAddress = z.infer<typeof MailAddressSchema>
 export type MailboxIds = z.infer<typeof MailboxIdsSchema>

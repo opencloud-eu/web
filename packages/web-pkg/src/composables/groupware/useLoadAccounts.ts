@@ -1,8 +1,9 @@
 import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
-import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { useAccountsStore } from './piniaStores/accounts'
-import { MailAccountSchema } from '../types'
+import { useClientService } from '../clientService'
+import { useConfigStore } from '../piniaStores/config'
+import { useGroupwareAccountsStore } from '../piniaStores/groupware/accounts'
+import { AccountSchema } from '../piniaStores/groupware'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { z } from 'zod'
 
@@ -12,7 +13,7 @@ const isLoading = computed(() => loadAccountsTask?.isRunning ?? false)
 export const useLoadAccounts = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
-  const { setAccounts } = useAccountsStore()
+  const { setAccounts } = useGroupwareAccountsStore()
 
   if (!loadAccountsTask) {
     loadAccountsTask = useTask(function* (signal) {
@@ -20,7 +21,7 @@ export const useLoadAccounts = () => {
         const { data } = yield clientService.httpAuthenticated.get(
           urlJoin(configStore.groupwareUrl, `accounts`)
         )
-        const accounts = z.array(MailAccountSchema).parse(data)
+        const accounts = z.array(AccountSchema).parse(data)
         setAccounts(accounts)
         console.info('Loaded accounts:', accounts)
         return accounts
