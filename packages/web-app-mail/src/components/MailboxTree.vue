@@ -2,7 +2,7 @@
   <div class="mailbox-tree px-1 flex flex-col">
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
-      <no-content-message v-if="!mailboxes?.length" icon="folder-reduce" icon-fill-type="line">
+      <no-content-message v-if="!mailboxes?.length" img-src="/images/empty-states/empty-mails.svg">
         <template #message>
           <span v-text="$gettext('No mailboxes found')" />
         </template>
