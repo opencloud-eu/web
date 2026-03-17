@@ -14,11 +14,12 @@ import {
   useActiveLocation,
   useCapabilityStore,
   useExtensionRegistry,
-  MobileNav
+  MobileNav,
+  AccountExtension
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
-import { computed, onUnmounted, unref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { useRoute } from 'vue-router'
@@ -27,7 +28,8 @@ const extensionRegistry = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
 
 const { supportRadicale } = storeToRefs(capabilityStore)
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext } = useGettext()
+const preferencesPanelExtensions = ref<AccountExtension[]>([])
 const route = useRoute()
 
 const isAccountInformationActive = useActiveLocation(isLocationAccountActive, 'account-information')
@@ -36,11 +38,7 @@ const isAccountExtensionsActive = useActiveLocation(isLocationAccountActive, 'ac
 const isAccountCalendarActive = useActiveLocation(isLocationAccountActive, 'account-calendar')
 const isAccountGdprActive = useActiveLocation(isLocationAccountActive, 'account-gdpr')
 
-const preferencesPanelExtensions = computed(() => {
-  return extensionRegistry.requestExtensions(preferencesPanelExtensionPoint)
-})
-
-const getNavItems = () => {
+const navItems = computed(() => {
   const baseItems = [
     {
       name: $gettext('Profile'),
@@ -101,19 +99,17 @@ const getNavItems = () => {
       navItem
     }
   })
-}
-
-onUnmounted(() => {
-  const navItems = getNavItems()
-  extensionRegistry.unregisterExtensions(navItems.map((item) => item.id))
 })
 
-watch(
-  () => currentLanguage,
-  () => {
-    const navItems = getNavItems()
-    extensionRegistry.registerExtensions(computed(() => navItems))
-  },
-  { immediate: true }
-)
+extensionRegistry.registerExtensions(navItems)
+
+onMounted(() => {
+  preferencesPanelExtensions.value = extensionRegistry.requestExtensions(
+    preferencesPanelExtensionPoint
+  )
+})
+
+onUnmounted(() => {
+  extensionRegistry.unregisterExtensions(['com.github.opencloud-eu.web.account.navItems'])
+})
 </script>
