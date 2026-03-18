@@ -1,8 +1,8 @@
 <template>
   <div class="contacts-list-item flex items-center gap-3 px-4 py-3">
-    <oc-avatar :user-name="avatarName" :width="36" />
+    <oc-avatar :user-name="avatarName" />
     <div class="flex-1">
-      <div class="truncate font-semibold" v-text="displayName" />
+      <div class="truncate font-bold text-lg" v-text="displayName" />
       <div class="truncate text-sm text-role-on-surface-variant" v-text="displayEmail" />
     </div>
   </div>
