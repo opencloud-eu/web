@@ -9,15 +9,16 @@ import {
   useUserStore,
   Extension
 } from '@opencloud-eu/web-pkg'
-import { $gettext } from '@opencloud-eu/web-pkg/src/router/utils'
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import AddressBooksList from './components/AddressBooksList.vue'
+import { useGettext } from 'vue3-gettext'
 
 export const extensions = (appInfo: ApplicationInformation) => {
   const capabilityStore = useCapabilityStore()
   const userStore = useUserStore()
   const { user } = storeToRefs(userStore)
+  const { $gettext } = useGettext()
 
   const menuItemExtension: AppMenuItemExtension = {
     id: `app.${appInfo.id}.menuItem`,

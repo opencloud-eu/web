@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
 import { AddressBook } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
 export const useAddressBooksStore = defineStore('addressBooks', () => {
   const currentAddressBookIdQuery = useRouteQuery('addressBookId')

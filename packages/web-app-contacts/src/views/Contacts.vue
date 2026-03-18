@@ -20,7 +20,7 @@ import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useLoadAddressBooks } from '../composables/useLoadAddressbooks'
 import { AddressBook } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg/src'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import ContactsList from './ContactsList.vue'
 
 const { httpAuthenticated } = useClientService()

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
 import { Contact } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
 export const useContactsStore = defineStore('contacts', () => {
   const currentContactIdQuery = useRouteQuery('contactId')

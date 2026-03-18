@@ -11,25 +11,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Contact } from '../types'
+import { getContactNameParts } from '../helpers/contactName'
 
 const { contact } = defineProps<{
   contact: Contact
 }>()
 
 const displayName = computed(() => {
-  const nameParts =
-    contact.name?.components
-      ?.map((component) => component.value?.trim())
-      .filter((value): value is string => Boolean(value)) || []
-
-  return nameParts.join(' ')
+  const nameParts = getContactNameParts(contact)
+  return `${nameParts.givenName} ${nameParts.surname}`
 })
 
 const displayEmail = computed(() => {
-  return Object.values(contact.emails || {}).find((entry) => entry?.address)?.address || ''
+  return Object.values(contact.emails || {}).find((entry) => entry?.address)?.address
 })
 
 const avatarName = computed(() => {
-  return displayName.value || displayEmail.value || contact.id
+  return displayName.value || displayEmail.value
 })
 </script>
