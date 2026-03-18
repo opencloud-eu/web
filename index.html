@@ -108,11 +108,11 @@
 
       var loaderTimer = setTimeout(function () {
         loader.classList.remove('splash-hide')
-      }, 500);
+      }, 500)
 
       function displayError() {
         loader.classList.remove('splash-hide')
-        loader.innerHTML = "<h3>Oops. Something went wrong.</h3>"
+        loader.innerHTML = '<h3>Oops. Something went wrong.</h3>'
       }
 
       function displayBrowserError() {
@@ -122,7 +122,10 @@
       }
 
       function forceOldBrowser() {
-        localStorage.setItem("forceAllowOldBrowser", JSON.stringify({expiry: new Date().getTime() + 30*24*60*60*1000}))
+        localStorage.setItem(
+          'forceAllowOldBrowser',
+          JSON.stringify({ expiry: new Date().getTime() + 30 * 24 * 60 * 60 * 1000 })
+        )
         browserError.classList.add('splash-hide')
         init()
       }
@@ -137,7 +140,7 @@
         if (typeof requirejs === 'undefined') {
           displayError()
         } else {
-          window.runtimeLoaded = function(runtime) {
+          window.runtimeLoaded = function (runtime) {
             clearTimeout(loaderTimer)
             runtime.bootstrapApp('config.json', removeLoadingSpinner).catch((error) => {
               removeLoadingSpinner()
@@ -148,11 +151,13 @@
       }
 
       const supportedBrowsers = __SUPPORTED_BROWSERS__
-      const forceAllowOldBrowser = localStorage.getItem("forceAllowOldBrowser") || false
-      const validForceAllowOldBrowser = forceAllowOldBrowser && JSON.parse(localStorage.getItem("forceAllowOldBrowser")).expiry > new Date().getTime()
+      const forceAllowOldBrowser = localStorage.getItem('forceAllowOldBrowser') || false
+      const validForceAllowOldBrowser =
+        forceAllowOldBrowser &&
+        JSON.parse(localStorage.getItem('forceAllowOldBrowser')).expiry > new Date().getTime()
 
       if (forceAllowOldBrowser && !validForceAllowOldBrowser)
-        localStorage.removeItem("forceAllowOldBrowser")
+        localStorage.removeItem('forceAllowOldBrowser')
 
       if (!validForceAllowOldBrowser && !supportedBrowsers.test(navigator.userAgent)) {
         displayBrowserError()
