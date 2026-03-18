@@ -21,6 +21,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
       type: 'folderView',
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
+        folderViewsFavoritesExtensionPoint.id,
         folderViewsTrashExtensionPoint.id,
         folderViewsTrashOverviewExtensionPoint.id,
         folderViewsProjectSpacesExtensionPoint.id,

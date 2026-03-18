@@ -88,7 +88,7 @@
     "vue3-gettext": "^4.0.0-beta.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "packageManager": "pnpm@10.28.1",
   "volta": {
