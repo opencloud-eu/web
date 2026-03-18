@@ -42,7 +42,7 @@ export const AddressSchema = z.object({
 })
 
 export const PartialDateSchema = z.object({
-  '@type': z.literal('PartialDate'),
+  '@type': z.string().optional(),
   day: z.number().optional(),
   month: z.number().optional(),
   year: z.number().optional()
@@ -72,7 +72,7 @@ export const NameComponentSchema = z.object({
 })
 
 export const NameSchema = z.object({
-  '@type': z.literal('Name'),
+  '@type': z.string().optional(),
   components: z.array(NameComponentSchema).optional(),
   defaultSeparator: z.string().optional(),
   isOrdered: z.boolean().optional()
@@ -94,8 +94,8 @@ export const NoteSchema = z.object({
 })
 
 export const OnlineServiceSchema = z.object({
-  service: z.string(),
-  user: z.string(),
+  service: z.string().optional(),
+  user: z.string().optional(),
   contexts: ContextsSchema.optional()
 })
 
@@ -137,7 +137,7 @@ export const TitleSchema = z.object({
 })
 
 export const ContactSchema = z.object({
-  '@type': z.literal('Card'),
+  '@type': z.string().optional(),
   id: z.string(),
   uid: z.string().optional(),
   version: z.string().optional(),

@@ -34,7 +34,6 @@ export const extensions = (appInfo: ApplicationInformation) => {
     extensionPointIds: [`app.${appInfo.id}.floating-action-button`],
     type: 'floatingActionButton',
     icon: 'add',
-    isDisabled: () => true,
     label: () => $gettext('New'),
     mode: () => 'handler',
     handler: () => {
