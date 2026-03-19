@@ -1,20 +1,21 @@
-import { urlJoin } from '../utils'
-import { WebDavOptions } from './types'
 import { DAV, DAVRequestOptions } from './client'
 import { DavProperties, DavPropertyValue } from './constants'
 
-export const ListFavoriteFilesFactory = (dav: DAV, options: WebDavOptions) => {
+export const ListFavoriteFilesFactory = (dav: DAV) => {
   return {
-    listFavoriteFiles({
+    async listFavoriteFiles({
       davProperties = DavProperties.Default,
-      username = '',
       ...opts
-    }: { davProperties?: DavPropertyValue[]; username?: string } & DAVRequestOptions = {}) {
-      return dav.report(urlJoin('files', username), {
+    }: { davProperties?: DavPropertyValue[] } & DAVRequestOptions = {}) {
+      const path = '/spaces/'
+
+      const { results } = await dav.report(path, {
+        pattern: 'is:favorite',
         properties: davProperties,
-        filterRules: { favorite: 1 },
         ...opts
       })
+
+      return results
     }
   }
 }

@@ -78,7 +78,7 @@ export const webdav = (baseURI: string, headers?: () => Headers): WebDAV => {
 
   const { search } = SearchFactory(dav, options)
 
-  const { listFavoriteFiles } = ListFavoriteFilesFactory(dav, options)
+  const { listFavoriteFiles } = ListFavoriteFilesFactory(dav)
   const { setFavorite } = SetFavoriteFactory(dav, options)
 
   return {
