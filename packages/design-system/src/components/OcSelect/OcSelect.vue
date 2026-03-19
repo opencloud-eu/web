@@ -631,8 +631,7 @@ export default { components: { VueSelect } }
   &:focus-within {
     .vs__dropdown-menu,
     .vs__dropdown-toggle {
-      border: 1px solid var(--oc-role-outline-variant);
-      outline: 1px solid var(--oc-role-outline);
+      border: 1px solid var(--oc-role-outline);
     }
   }
 }
