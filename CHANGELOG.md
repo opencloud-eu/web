@@ -41,6 +41,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.20.4 [[#2151](https://github.com/opencloud-eu/web/pull/2151)]
 - chore(deps): update devdependencies (non-major) [[#2150](https://github.com/opencloud-eu/web/pull/2150)]
 - fix(deps): update dependency @sentry/vue to v10.44.0 [[#2168](https://github.com/opencloud-eu/web/pull/2168)]
 - chore(deps): update typescript-eslint monorepo to v8.57.1 [[#2154](https://github.com/opencloud-eu/web/pull/2154)]
