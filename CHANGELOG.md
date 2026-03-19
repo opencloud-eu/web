@@ -1,13 +1,15 @@
 # Changelog
 
-## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-16
+## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-19
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @tammi-23
 
 ### 📈 Enhancement
 
+- feat: add no content images for mail app [[#2165](https://github.com/opencloud-eu/web/pull/2165)]
+- feat: webfinger oidc discovery [[#2152](https://github.com/opencloud-eu/web/pull/2152)]
 - Added draft state handling [[#1956](https://github.com/opencloud-eu/web/pull/1956)]
 - feat: use oc colors in collabora [[#2144](https://github.com/opencloud-eu/web/pull/2144)]
 - feat: polish input fields [[#2127](https://github.com/opencloud-eu/web/pull/2127)]
@@ -21,6 +23,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: version check in conjunction with dev docker image leads to left… [[#2156](https://github.com/opencloud-eu/web/pull/2156)]
+- fix: sidebar top margin too low when no FAB is present [[#2147](https://github.com/opencloud-eu/web/pull/2147)]
 - fix: files with name e.G. .space won't be shown when 'show file extens… [[#2149](https://github.com/opencloud-eu/web/pull/2149)]
 - fix: account settings on mobile view [[#2148](https://github.com/opencloud-eu/web/pull/2148)]
 - fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
@@ -35,6 +39,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.44.0 [[#2168](https://github.com/opencloud-eu/web/pull/2168)]
+- chore(deps): update typescript-eslint monorepo to v8.57.1 [[#2154](https://github.com/opencloud-eu/web/pull/2154)]
 - chore(deps): update dependency fast-xml-parser to v5.5.6 [[#2145](https://github.com/opencloud-eu/web/pull/2145)]
 - chore(deps): update dependency vite-plugin-static-copy to v3.3.0 [[#2142](https://github.com/opencloud-eu/web/pull/2142)]
 - chore(deps): update dependency @codemirror/view to v6.40.0 [[#2131](https://github.com/opencloud-eu/web/pull/2131)]
