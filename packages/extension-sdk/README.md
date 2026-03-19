@@ -29,7 +29,7 @@ export default defineConfig({
     port: 9700
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         entryFileNames: 'your-app.js'
       }

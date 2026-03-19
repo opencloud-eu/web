@@ -7,11 +7,8 @@ import {
   ViteDevServer
 } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import EnvironmentPlugin from 'vite-plugin-environment'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
-import visualizer from 'rollup-plugin-visualizer'
-import compression from 'rollup-plugin-gzip'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
@@ -25,19 +22,7 @@ import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
 
-// @ts-ignore
-import ejs from 'ejs'
-
 const dist = process.env.DIST_DIR || 'dist'
-
-const buildConfig = {
-  requirejs: {},
-  cdn: process.env.CDN === 'true',
-  documentation_url: process.env.DOCUMENTATION_URL,
-  ...(process.env.REQUIRE_TIMEOUT && {
-    requirejs: { waitSeconds: parseInt(process.env.REQUIRE_TIMEOUT) }
-  })
-}
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
 const { version } = packageJson
@@ -82,6 +67,65 @@ type ConfigJsonResponseBody = {
 
 const getConfigJson = async (url: string) => {
   return (await getJson(url)) as ConfigJsonResponseBody
+}
+
+/**
+ * Ensures Tailwind CSS content appears at the very beginning of the bundled CSS output.
+ *
+ * This is critical because Tailwind CSS v4 uses CSS cascade layers (@layer), and the layer
+ * order declaration must come before any other styles for correct cascade behavior.
+ *
+ * Uses 3 sub-plugins:
+ * 1. A 'pre' plugin that runs after @tailwindcss/vite, captures the compiled Tailwind CSS,
+ *    and removes it from its natural position in the CSS pipeline.
+ * 2. A 'post' plugin that prepends the captured CSS to the final CSS asset in generateBundle.
+ * 3. A 'pre' plugin for development that injects a link tag to the Tailwind CSS file in
+ *    index.html, ensuring correct order during development as well.
+ */
+function ensureTailwindCssOrder(): Plugin[] {
+  let tailwindCss = ''
+
+  return [
+    {
+      name: 'ensure-tailwind-css-order:capture',
+      enforce: 'pre',
+      apply: 'build',
+      transform(code, id) {
+        if (!/design-system\/src\/styles\/tailwind\.css/.test(id)) {
+          return
+        }
+        tailwindCss = code
+        return ''
+      }
+    },
+    {
+      name: 'ensure-tailwind-css-order:prepend',
+      enforce: 'post',
+      apply: 'build',
+      generateBundle(_, bundle) {
+        if (!tailwindCss) {
+          return
+        }
+        for (const chunk of Object.values(bundle)) {
+          if (chunk.type === 'asset' && chunk.fileName.endsWith('.css')) {
+            chunk.source = tailwindCss + '\n' + chunk.source
+            break
+          }
+        }
+      }
+    },
+    {
+      name: 'ensure-tailwind-css-order:dev',
+      enforce: 'pre',
+      apply: 'serve',
+      transformIndexHtml(html) {
+        return html.replace(
+          '<head>',
+          '<head>\n    <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />'
+        )
+      }
+    }
+  ]
 }
 
 export const historyModePlugins = () =>
@@ -148,12 +192,8 @@ export default defineConfig(({ mode, command }) => {
       base: '',
       publicDir: 'packages/web-container',
       build: {
-        // TODO: Vue3: We currently cannot inline styles of components because @vite/plugin-vue2 does not support it
-        // c.f. https://github.com/vitejs/vite-plugin-vue2/issues/18
-        // That's why we need to put all styles of our monorepo apps into a monolithic css file for now
-        // Once the above issue is resolved or we switch to @vitejs/plugin-vue, we can remove the `cssCodeSplit` setting here
         cssCodeSplit: false,
-        rollupOptions: {
+        rolldownOptions: {
           preserveEntrySignatures: 'strict',
           input,
           output: {
@@ -180,6 +220,9 @@ export default defineConfig(({ mode, command }) => {
           }
         }
       },
+      define: {
+        'process.env.PACKAGE_VERSION': JSON.stringify(version)
+      },
       resolve: {
         dedupe: ['vue3-gettext'],
         alias: {
@@ -188,6 +231,7 @@ export default defineConfig(({ mode, command }) => {
       },
       plugins: [
         tailwindcss(),
+        ensureTailwindCssOrder(),
         nodePolyfills({
           exclude: ['crypto']
         }),
@@ -195,9 +239,6 @@ export default defineConfig(({ mode, command }) => {
         // We need to "undefine" `define` which is set by requirejs loaded in index.html
         treatAsCommonjs(),
 
-        EnvironmentPlugin({
-          PACKAGE_VERSION: version
-        }),
         vue({
           template: {
             compilerOptions
@@ -241,22 +282,18 @@ export default defineConfig(({ mode, command }) => {
           }
         },
         {
-          name: 'ejs',
+          name: 'html-transform',
           transformIndexHtml: {
             order: 'pre',
             handler(html, { filename }) {
               if (basename(filename) !== 'index.html') {
                 return
               }
-              return ejs.render(html, {
-                data: {
-                  buildConfig,
 
-                  title: process.env.TITLE || 'OpenCloud',
-                  compilationTimestamp: new Date().getTime(),
-                  supportedBrowsersRegex: supportedBrowsersRegex
-                }
-              })
+              return html
+                .replace(/__TITLE__/g, process.env.TITLE || 'OpenCloud')
+                .replace(/__COMPILATION_TIMESTAMP__/g, Date.now().toString())
+                .replace(/__SUPPORTED_BROWSERS__/g, supportedBrowsersRegex.toString())
             }
           }
         },
@@ -302,29 +339,7 @@ export default defineConfig(({ mode, command }) => {
             }
           }
         },
-        {
-          name: 'inject-tailwind-for-dev-server',
-          enforce: 'pre',
-          transformIndexHtml(html) {
-            if (production) {
-              return html
-            }
-            // In development mode, we need to include the Tailwind CSS file at the start
-            // to ensure layer styles are applied correctly. In production, this is being
-            // handled via the input rollup build option (see above).
-            return html.replace(
-              '<head>',
-              '<head>\n    <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />'
-            )
-          }
-        },
-        ...(command === 'serve' ? historyModePlugins() : []),
-        compression(),
-        process.env.REPORT !== 'true'
-          ? null
-          : visualizer({
-              filename: join('dist', 'report.html')
-            })
+        ...(command === 'serve' ? historyModePlugins() : [])
       ] as Plugin[]
     },
     config

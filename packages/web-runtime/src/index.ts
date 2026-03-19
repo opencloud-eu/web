@@ -1,6 +1,6 @@
 import { loadDesignSystem, pages, loadTranslations, supportedLanguages } from './defaults'
 import { router } from './router'
-import { createHead } from '@vueuse/head'
+import { createHead } from '@unhead/vue/client'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 

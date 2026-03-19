@@ -1,20 +1,21 @@
 <template>
   <oc-button
     id="account-list-toggle"
-    class="w-full"
+    class="w-auto m-2"
     appearance="filled"
     color-role="surface"
     justify-content="space-between"
     no-hover
   >
-    <app-loading-spinner v-if="isLoading" />
+    <oc-spinner v-if="isLoading" :aria-label="$gettext('Loading accounts')" />
     <div v-else class="flex justify-between items-center w-full">
       <div class="flex items-center truncate">
-        <oc-avatar :user-name="currentAccount.name" />
+        <oc-avatar :user-name="currentAccount?.name || ''" />
         <div class="flex flex-col items-start ml-5 truncate">
-          <span class="font-bold" v-text="currentAccount.name" />
+          <span class="font-bold" v-text="currentAccount?.name || ''" />
           <span
-            v-if="currentAccount.identities?.[0]?.email"
+            v-if="currentAccount?.identities?.[0]?.email"
+            class="max-w-full truncate"
             v-text="currentAccount.identities[0].email"
           />
         </div>
@@ -55,22 +56,14 @@
 
 <script setup lang="ts">
 import type { GroupwareAccount } from '../../../composables/piniaStores/groupware'
-import { useLoadAccounts } from '../../../composables/groupware/useLoadAccounts'
 import { useGroupwareAccountsStore } from '../../../composables/piniaStores/groupware/accounts'
 import { storeToRefs } from 'pinia'
-import AppLoadingSpinner from '../../../components/AppLoadingSpinner.vue'
-
-const emit = defineEmits<{
-  (e: 'select', account: GroupwareAccount): void
-}>()
 
 const accountsStore = useGroupwareAccountsStore()
-const { accounts, currentAccount } = storeToRefs(accountsStore)
+const { accounts, currentAccount, isLoading } = storeToRefs(accountsStore)
 const { setCurrentAccount } = accountsStore
-const { isLoading } = useLoadAccounts()
 
 const onSelectAccount = (account: GroupwareAccount) => {
   setCurrentAccount(account)
-  emit('select', account)
 }
 </script>

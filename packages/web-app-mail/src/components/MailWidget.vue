@@ -1,7 +1,7 @@
 <template>
   <div
-    v-if="isOpen && !isExpanded"
-    class="z-50 transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
+    v-if="!isExpanded"
+    class="z-[var(--z-index-modal)] transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
       class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]"
@@ -67,9 +67,10 @@
   </div>
 
   <oc-modal
-    v-if="isOpen && isExpanded"
+    v-if="isExpanded"
     :title="$gettext('New message')"
     :hide-actions="true"
+    hide-cancel-button
     element-class="mail-compose-modal"
   >
     <template #headerActions>
@@ -126,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, unref } from 'vue'
+import { ref, computed, unref, onUnmounted } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
@@ -158,7 +159,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
 }>()
 
@@ -239,15 +239,7 @@ const createComposeStateFromDraft = (mail: Mail): ComposeFormState => {
   }
 }
 
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => {
-    emit('update:modelValue', value)
-    if (!value) {
-      emit('close')
-    }
-  }
-})
+const isOpen = computed(() => !!props.modelValue)
 
 const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
@@ -336,7 +328,7 @@ const applyDraftMail = async (mail: Mail) => {
 
 const doClose = () => {
   isExpanded.value = false
-  isOpen.value = false
+  emit('close')
 }
 
 const requestClose = () => {
@@ -376,17 +368,10 @@ const onDiscardAndClose = async () => {
 }
 
 const canAutoSaveNow = computed(() => {
-  return (
-    unref(isOpen) &&
-    unref(canSaveDraft) &&
-    unref(hasMeaningfulChanges) &&
-    unref(isDirty) &&
-    !unref(isSaving)
-  )
+  return unref(canSaveDraft) && unref(hasMeaningfulChanges) && unref(isDirty) && !unref(isSaving)
 })
 
 useAutoSaveDraft({
-  isOpen,
   canAutoSaveNow,
   intervalMs: AUTO_SAVE_INTERVAL_MS,
   save: saveAsDraft,
@@ -397,12 +382,9 @@ useAutoSaveDraft({
     console.error('Failed to auto-save draft:', error)
   }
 })
-
-watch(isOpen, async (open) => {
-  if (!open) {
-    appliedDraftId.value = null
-    await resetCompose()
-  }
+  
+  onUnmounted(() => {
+  resetCompose()
 })
 
 watch(

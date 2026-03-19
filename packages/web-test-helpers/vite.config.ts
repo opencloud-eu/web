@@ -11,7 +11,7 @@ export default defineConfig({
       name: 'web-test-helpers',
       fileName: (format) => `web-test-helpers.${format}.js`
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)]
     }
   },

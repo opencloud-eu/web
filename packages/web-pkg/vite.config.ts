@@ -1,4 +1,5 @@
 import { join, resolve } from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
 import dts from 'vite-plugin-dts'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -32,11 +33,12 @@ export default defineConfig({
       name: 'web-pkg',
       fileName: 'web-pkg'
     },
-    rollupOptions: {
+    rolldownOptions: {
       external
     }
   },
   plugins: [
+    tailwindcss(),
     vue(),
     nodePolyfills({
       exclude: ['crypto']

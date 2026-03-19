@@ -1,14 +1,12 @@
-import { watch, onBeforeUnmount, type Ref, unref } from 'vue'
+import { onBeforeUnmount, type Ref, unref, onMounted } from 'vue'
 
 export const useAutoSaveDraft = <T>({
-  isOpen,
   canAutoSaveNow,
   intervalMs,
   save,
   onSaved,
   onError
 }: {
-  isOpen: Ref<boolean>
   canAutoSaveNow: Ref<boolean>
   intervalMs: number
   save: () => Promise<T | null | undefined>
@@ -62,17 +60,9 @@ export const useAutoSaveDraft = <T>({
     scheduleNext()
   }
 
-  watch(
-    () => unref(isOpen),
-    (open) => {
-      if (open) {
-        start()
-      } else {
-        stop()
-      }
-    },
-    { immediate: true }
-  )
+  onMounted(() => {
+    start()
+  })
 
   onBeforeUnmount(() => {
     stop()
