@@ -1,10 +1,11 @@
 <template>
   <div
-    class="oc-text-input-password-wrapper flex flex-row border rounded-sm border-role-outline-variant"
+    class="oc-text-input-password-wrapper flex flex-row border rounded-sm"
     :class="{
       'oc-text-input-password-wrapper-danger text-role-error focus:text-role-error border-role-error':
         hasError,
-      'outline outline-role-outline': hasFocus
+      'border border-role-outline': hasFocus,
+      'border-role-outline-variant': !hasFocus
     }"
   >
     <input

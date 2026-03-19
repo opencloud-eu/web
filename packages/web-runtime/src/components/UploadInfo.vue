@@ -2,7 +2,7 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="rounded-xl shadow-md/20 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:pl-1"
+    class="rounded-xl shadow-md/20 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:pl-1 border"
   >
     <div class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-xl">
       <p v-oc-tooltip="uploadDetails" class="my-1 font-bold" v-text="uploadInfoTitle" />
@@ -11,7 +11,6 @@
         id="close-upload-info-btn"
         :aria-label="$gettext('Close')"
         appearance="raw"
-        class="p-1 raw-hover-surface"
         @click="closeInfo"
       >
         <oc-icon name="close" />

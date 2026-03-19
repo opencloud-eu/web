@@ -371,7 +371,7 @@ watch(
   }
 
   .oc-input:focus {
-    @apply border border-role-outline-variant outline-1 outline-role-outline;
+    @apply border border-role-outline;
   }
 
   .oc-input:disabled {
