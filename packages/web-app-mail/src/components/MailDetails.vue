@@ -25,7 +25,7 @@
           <oc-avatar :user-name="currentMail.from[0]?.name || currentMail.sender[0]?.name" />
         </div>
         <div class="mail-details-userinfo flex-1 min-w-0 ml-4">
-          <div class="font-bold text-xl truncate flex-1" v-text="fromName" />
+          <div class="font-bold text-lg truncate flex-1" v-text="fromName" />
           <div class="truncate" v-text="fromEmail" />
         </div>
         <span class="mail-details-received-at shrink-0 ml-2" v-text="receivedAtRelativeDate" />
