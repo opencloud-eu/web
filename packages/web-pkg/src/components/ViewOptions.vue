@@ -27,21 +27,27 @@
             <oc-button
               :appearance="viewModeQuery === viewMode.name ? 'filled' : 'raw'"
               :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
+              :no-hover="viewModeQuery === viewMode.name"
               :class="[viewMode.name]"
               justify-content="left"
+              class="p-2"
               @click="setViewMode(viewMode)"
             >
               <div class="flex justify-between w-full">
-                <span class="flex items-center">
+                <span class="flex items-center gap-2">
                   <oc-icon
                     :name="viewMode.icon.name"
                     :fill-type="viewMode.icon.fillType"
                     size="medium"
-                    class="mr-1"
                   />
                   <span v-text="viewMode.label" />
                 </span>
-                <oc-icon v-if="viewModeQuery === viewMode.name" name="check" size="medium" />
+                <oc-icon
+                  v-if="viewModeQuery === viewMode.name"
+                  name="check"
+                  size="medium"
+                  class="ml-1"
+                />
               </div>
             </oc-button>
           </li>
@@ -148,7 +154,6 @@ import {
   useRouteQuery,
   useRouteQueryPersisted,
   useRouter,
-  useSideBar,
   useViewSizeMax
 } from '../composables'
 import { FolderView } from '../ui/types'
@@ -181,8 +186,6 @@ const {
 const router = useRouter()
 const currentRoute = useRoute()
 const { $gettext } = useGettext()
-const sidebarStore = useSideBar()
-const { isSideBarOpen } = storeToRefs(sidebarStore)
 
 const resourcesStore = useResourcesStore()
 const {
