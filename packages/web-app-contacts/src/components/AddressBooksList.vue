@@ -1,6 +1,8 @@
 <template>
-  <div class="address-books-list px-1 flex flex-col">
-    <app-loading-spinner v-if="isLoading" />
+  <div class="address-books-list px-1 flex flex-col h-full">
+    <div v-if="isLoading" class="flex h-full items-center justify-center">
+      <oc-spinner :aria-label="$gettext('Loading address books')" />
+    </div>
     <oc-list v-else>
       <li v-for="addressBook in addressBooks" :key="addressBook.id" class="pb-1 px-2">
         <oc-button
@@ -41,7 +43,7 @@ import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { storeToRefs } from 'pinia'
 import { AddressBook } from '../types'
 import { useLoadAddressBooks } from '../composables/useLoadAddressbooks'
-import { AppLoadingSpinner, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import { useLoadContacts } from '../composables/useLoadContacts'
 import { unref } from 'vue'
 import { useContactsStore } from '../composables/piniaStores/contacts'
@@ -63,7 +65,7 @@ const onSelectAddressBook = async (addressBook: AddressBook) => {
 }
 </script>
 
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
