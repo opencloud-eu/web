@@ -30,12 +30,7 @@ import {
   announceGroupware
 } from './container/bootstrap'
 import { applicationStore } from './container/store'
-import {
-  buildPublicSpaceResource,
-  isPersonalSpaceResource,
-  isPublicSpaceResource,
-  PublicSpaceResource
-} from '@opencloud-eu/web-client'
+import { PublicSpaceResource } from '@opencloud-eu/web-client'
 import { loadCustomTranslations } from './helpers/customTranslations'
 import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
@@ -219,7 +214,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       }
 
       sharesStore.setGraphRoles(graphRoleDefinitions as UnifiedRoleDefinition[])
-      const personalSpace = spacesStore.spaces.find(isPersonalSpaceResource)
+      const personalSpace = spacesStore.spaces.find((s) => s.driveType === 'personal')
       if (personalSpace) {
         spacesStore.updateSpaceField({
           id: personalSpace.id,
@@ -235,7 +230,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   )
   watch(
     () => authStore.publicLinkContextReady,
-    (publicLinkContextReady) => {
+    async (publicLinkContextReady) => {
       if (!publicLinkContextReady) {
         return
       }
@@ -248,6 +243,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
           ? app.config.globalProperties.$gettext('OCM share')
           : app.config.globalProperties.$gettext('Public files')
 
+      const { buildPublicSpaceResource } = await import('@opencloud-eu/web-client')
       const space = buildPublicSpaceResource({
         id: publicLinkToken,
         name: publicLinkName,
@@ -270,7 +266,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     (publicLinkPassword: string | undefined) => {
       const publicLinkToken = authStore.publicLinkToken
       const space = spacesStore.spaces.find((space) => {
-        return isPublicSpaceResource(space) && space.id === publicLinkToken
+        return space.driveType === 'public' && space.id === publicLinkToken
       })
       if (!space) {
         return

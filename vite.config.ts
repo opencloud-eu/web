@@ -12,8 +12,6 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
 import { existsSync, readdirSync, readFileSync } from 'fs'
-
-// build config
 import packageJson from './package.json'
 import { compilerOptions } from './vite.config.common'
 import { getUserAgentRegex } from 'browserslist-useragent-regexp'
@@ -135,6 +133,7 @@ export default defineConfig(({ mode, command }) => {
       publicDir: 'packages/web-container',
       build: {
         cssCodeSplit: false,
+        chunkSizeWarningLimit: 750,
         rolldownOptions: {
           preserveEntrySignatures: 'strict',
           input,
@@ -149,6 +148,14 @@ export default defineConfig(({ mode, command }) => {
                   test: /tailwind|packages\/design-system\/src\/components/,
                   // tailwind needs to come first to ensure correct CSS layer cascade
                   priority: 10000
+                },
+                {
+                  name: 'pkg-translations',
+                  test: /packages\/web-pkg\/l10n.*/
+                },
+                {
+                  name: 'zod',
+                  test: /node_modules\/zod/
                 }
               ]
             }
