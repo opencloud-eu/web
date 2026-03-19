@@ -16,7 +16,7 @@
     <div class="mail-list-item-content ml-5 min-w-0 w-full">
       <div class="mail-list-item-header">
         <div class="mail-list-item-sender flex items-center justify-between gap-2">
-          <span class="font-bold text-xl truncate flex-1" v-text="fromText"></span>
+          <span class="font-bold text-lg truncate flex-1" v-text="fromText"></span>
           <span class="mail-list-item-received-at" v-text="receivedAtRelativeDate" />
         </div>
       </div>
