@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, unref, onUnmounted } from 'vue'
+import { ref, computed, unref, watch, onUnmounted } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
@@ -382,8 +382,8 @@ useAutoSaveDraft({
     console.error('Failed to auto-save draft:', error)
   }
 })
-  
-  onUnmounted(() => {
+
+onUnmounted(() => {
   resetCompose()
 })
 
