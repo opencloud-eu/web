@@ -11,6 +11,7 @@
         :filter-label="$gettext('Location filter')"
         :selected-item-names="[currentSelectionTitle]"
         class="oc-search-bar-filter [&_button]:items-center [&_.oc-drop]:w-45"
+        size="small"
         :has-active-state="false"
         raw
         close-on-click

@@ -14,6 +14,7 @@
       :appearance="buttonAppearance"
       :color-role="buttonColorRole"
       :no-hover="filterActive || !hasActiveState"
+      :size="size"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
@@ -110,6 +111,11 @@ export interface Props {
    * @docs The names of the selected items.
    */
   selectedItemNames?: string[]
+  /**
+   * @docs The size of the filter chip.
+   * @default medium
+   */
+  size?: 'small' | 'medium' | 'large'
 }
 
 export interface Emits {
@@ -146,7 +152,8 @@ const {
   isToggleActive = false,
   raw = false,
   hasActiveState = true,
-  selectedItemNames = []
+  selectedItemNames = [],
+  size = 'medium'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
