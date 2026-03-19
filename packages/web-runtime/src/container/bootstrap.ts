@@ -1,4 +1,3 @@
-import { registerClient } from '../services/clientRegistration'
 import { buildApplication, loadApplication, NextApplication } from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
@@ -194,26 +193,6 @@ export const announceConfiguration = async ({
   }
 
   configStore.loadConfig(rawConfig)
-}
-
-/**
- * announce auth client to the runtime, currently only openIdConnect is supported here
- *
- * @remarks
- * if config does not ship any options for openIdConnect this step get skipped
- *
- * @param configStore
- */
-export const announceAuthClient = async (configStore: ConfigStore): Promise<void> => {
-  const openIdConnect = configStore.openIdConnect || {}
-
-  if (!openIdConnect.dynamic) {
-    return
-  }
-
-  const { client_id: clientId, client_secret: clientSecret } = await registerClient(openIdConnect)
-  openIdConnect.client_id = clientId
-  openIdConnect.client_secret = clientSecret
 }
 
 /**

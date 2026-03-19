@@ -52,7 +52,7 @@ export const useConfigStore = defineStore('config', () => {
   const apps = ref<RawConfig['apps']>([])
   const externalApps = ref<RawConfig['external_apps']>([])
   const customTranslations = ref<RawConfig['customTranslations']>([])
-  const oAuth2 = ref<RawConfig['auth']>()
+  const oAuth2 = ref<RawConfig['auth']>({})
   const openIdConnect = ref<RawConfig['openIdConnect']>()
   const sentry = ref<RawConfig['sentry']>()
   const scripts = ref<RawConfig['scripts']>([])
@@ -65,8 +65,8 @@ export const useConfigStore = defineStore('config', () => {
     urlJoin(unref(serverUrl), 'groupware', { trailingSlash: true })
   )
 
-  const isOAuth2 = computed(() => !!unref(oAuth2))
-  const isOIDC = computed(() => !!unref(openIdConnect))
+  const isOAuth2 = computed(() => false)
+  const isOIDC = computed(() => true)
 
   const loadConfig = (data: RawConfig) => {
     if (data.server) {
@@ -75,7 +75,6 @@ export const useConfigStore = defineStore('config', () => {
 
     apps.value = data.apps || []
     customTranslations.value = data.customTranslations || []
-    oAuth2.value = data.auth
     openIdConnect.value = data.openIdConnect
     sentry.value = data.sentry
     scripts.value = data.scripts || []
@@ -101,10 +100,7 @@ export const useConfigStore = defineStore('config', () => {
 
   return {
     options,
-    oAuth2,
     openIdConnect,
-    isOAuth2,
-    isOIDC,
     customTranslations,
     apps,
     externalApps,
@@ -114,7 +110,13 @@ export const useConfigStore = defineStore('config', () => {
     styles,
     serverUrl,
     groupwareUrl,
-    loadConfig
+    loadConfig,
+    /** @deprecated this is always true */
+    isOIDC,
+    /** @deprecated there is no oauth2 config anymore */
+    oAuth2,
+    /** @deprecated this is always false */
+    isOAuth2
   }
 })
 

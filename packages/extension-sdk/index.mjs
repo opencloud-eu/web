@@ -102,7 +102,7 @@ export const defineConfig = (overrides = {}) => {
           cssCodeSplit: true,
           minify: isProduction,
           outDir: distDir,
-          rollupOptions: {
+          rolldownOptions: {
             // keep in sync with packages/web-runtime/src/container/application/index.ts
             external: [
               'vue',

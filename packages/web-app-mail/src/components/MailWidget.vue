@@ -1,7 +1,7 @@
 <template>
   <div
-    v-if="isOpen && !isExpanded"
-    class="z-50 transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
+    v-if="!isExpanded"
+    class="z-[var(--z-index-modal)] transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
       class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]"
@@ -67,9 +67,10 @@
   </div>
 
   <oc-modal
-    v-if="isOpen && isExpanded"
+    v-if="isExpanded"
     :title="$gettext('New message')"
     :hide-actions="true"
+    hide-cancel-button
     element-class="mail-compose-modal"
   >
     <template #headerActions>
@@ -126,16 +127,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, unref } from 'vue'
+import { ref, computed, unref, onUnmounted } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { useModals } from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
 import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 import MailSavedHint from './MailSavedHint.vue'
 import { useSaveAsDraft } from '../composables/useSaveAsDraft'
 import { useMailDraftConnector } from '../composables/useMailDraftConnector'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { useSavedHint } from '../composables/useSavedHint'
 import { useAutoSaveDraft } from '../composables/useAutoSaveDraft'
@@ -152,13 +152,11 @@ const { dispatchModal } = useModals()
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
 
-const props = defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
 }>()
 
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const connector = useMailDraftConnector()
 
@@ -191,16 +189,6 @@ const createEmptyComposeState = (): ComposeFormState => ({
 })
 
 const composeState = ref<ComposeFormState>(createEmptyComposeState())
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => {
-    emit('update:modelValue', value)
-    if (!value) {
-      emit('close')
-    }
-  }
-})
 
 const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
@@ -280,7 +268,7 @@ const resetCompose = async () => {
 
 const doClose = () => {
   isExpanded.value = false
-  isOpen.value = false
+  emit('close')
 }
 
 const requestClose = () => {
@@ -320,17 +308,10 @@ const onDiscardAndClose = async () => {
 }
 
 const canAutoSaveNow = computed(() => {
-  return (
-    unref(isOpen) &&
-    unref(canSaveDraft) &&
-    unref(hasMeaningfulChanges) &&
-    unref(isDirty) &&
-    !unref(isSaving)
-  )
+  return unref(canSaveDraft) && unref(hasMeaningfulChanges) && unref(isDirty) && !unref(isSaving)
 })
 
 useAutoSaveDraft({
-  isOpen,
   canAutoSaveNow,
   intervalMs: AUTO_SAVE_INTERVAL_MS,
   save: saveAsDraft,
@@ -342,10 +323,8 @@ useAutoSaveDraft({
   }
 })
 
-watch(isOpen, async (open) => {
-  if (!open) {
-    await resetCompose()
-  }
+onUnmounted(() => {
+  resetCompose()
 })
 </script>
 

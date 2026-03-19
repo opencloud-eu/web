@@ -1,28 +1,16 @@
 import translations from '../l10n/translations.json'
 import { useGettext } from 'vue3-gettext'
-import { computed, unref } from 'vue'
 import Inbox from './views/Inbox.vue'
 import LayoutContainer from './LayoutContainer.vue'
 import EmptyLayoutContainer from './EmptyLayoutContainer.vue'
-
-import {
-  AppMenuItemExtension,
-  defineWebApplication,
-  Extension,
-  useCapabilityStore,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { defineWebApplication } from '@opencloud-eu/web-pkg'
 import { APPID } from './appid'
 import { RouteRecordRaw } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import { extensions } from './extensions'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
-    const capabilityStore = useCapabilityStore()
-    const userStore = useUserStore()
-    const { user } = storeToRefs(userStore)
 
     const appInfo = {
       name: $gettext('Mail'),
@@ -68,30 +56,11 @@ export default defineWebApplication({
       }
     ]
 
-    const menuItemExtension: AppMenuItemExtension = {
-      id: `app.${appInfo.id}.menuItem`,
-      type: 'appMenuItem',
-      label: () => appInfo.name,
-      color: appInfo.color,
-      icon: appInfo.icon,
-      priority: 30,
-      path: urlJoin(appInfo.id)
-    }
-    const extensions = computed(() => {
-      const result: Extension[] = []
-
-      if (unref(user) && capabilityStore.capabilities.groupware?.enabled) {
-        result.push(menuItemExtension)
-      }
-
-      return result
-    })
-
     return {
       appInfo,
       routes,
       translations,
-      extensions
+      extensions: extensions(appInfo)
     }
   }
 })

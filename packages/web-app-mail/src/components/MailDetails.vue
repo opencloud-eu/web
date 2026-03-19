@@ -1,7 +1,7 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!currentMail" icon="mail" icon-fill-type="line">
+    <no-content-message v-if="!currentMail" img-src="/images/empty-states/empty-mails.svg">
       <template #message>
         <span v-text="$gettext('No mail selected')" />
       </template>
@@ -57,16 +57,15 @@ import { useGettext } from 'vue3-gettext'
 import { buildMailBody } from '../helpers'
 import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import MailAppointmentList from './MailAppointmentList.vue'
 import { useLoadMail } from '../composables/useLoadMail'
-import { useAccountsStore } from '../composables/piniaStores/accounts'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { storeToRefs } from 'pinia'
 
 const { isLoading } = useLoadMail()
 const { current: currentLanguage } = useGettext()
-const accountsStore = useAccountsStore()
+const accountsStore = useGroupwareAccountsStore()
 const mailsStore = useMailsStore()
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail } = storeToRefs(mailsStore)

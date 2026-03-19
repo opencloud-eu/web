@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { RawGroupwareConfig } from './types'
+import type { RawGroupwareConfig } from './types'
 import { ref } from 'vue'
 
 export const useGroupwareConfigStore = defineStore('groupwareConfig', () => {

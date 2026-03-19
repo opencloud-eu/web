@@ -72,21 +72,21 @@ exports[`account information page > header section > edit url button > should be
 "<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
   <!--v-if-->
   <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/edit-fill.svg" transform-source="(svg) => {
-      if (__props.accessibleLabel !== &quot;&quot;) {
-        const title = document.createElement(&quot;title&quot;);
-        title.setAttribute(&quot;id&quot;, svgTitleId.value);
-        title.appendChild(document.createTextNode(__props.accessibleLabel));
-        svg.insertBefore(title, svg.firstChild);
-      };
-      return svg;
-    }" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span>Edit</span>
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span>Edit</span>
 </a>"
 `;
 
 exports[`account information page > public link context > should render a limited view 1`] = `
 "<div id="account-information">
   <div class="flex justify-between items-center w-full">
-    <h1 class="mt-1 text-lg">Account Information</h1>
+    <h1 class="mt-2 text-lg">Account Information</h1>
     <!--v-if-->
   </div>
   <div class="account-table account-page-info mt-6">
