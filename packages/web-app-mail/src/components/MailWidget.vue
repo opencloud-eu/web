@@ -154,7 +154,6 @@ const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
 
 const props = defineProps<{
-  modelValue?: boolean
   draftMail?: Mail | null
 }>()
 
@@ -238,8 +237,6 @@ const createComposeStateFromDraft = (mail: Mail): ComposeFormState => {
     attachments: getDraftAttachments(mail)
   }
 }
-
-const isOpen = computed(() => !!props.modelValue)
 
 const toggleCollapseExpand = () => {
   isExpanded.value = !isExpanded.value
@@ -388,9 +385,9 @@ onUnmounted(() => {
 })
 
 watch(
-  () => [unref(isOpen), props.draftMail?.id] as const,
-  async ([open, draftId]) => {
-    if (!open || !draftId || !props.draftMail) {
+  () => props.draftMail?.id,
+  async (draftId) => {
+    if (!draftId || !props.draftMail) {
       return
     }
 

@@ -59,12 +59,6 @@
       </oc-list>
     </template>
   </template>
-  <MailWidget
-    v-if="showCompose"
-    :model-value="showCompose"
-    :draft-mail="draftMail"
-    @close="closeCompose"
-  />
 </template>
 
 <script setup lang="ts">
@@ -82,25 +76,19 @@ import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
 import { unref } from 'vue'
 import { useMailCompose } from '../composables/useMailCompose'
-import MailWidget from './MailWidget.vue'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
+const { openNewCompose } = useMailCompose()
 
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail, mails } = storeToRefs(mailsStore)
 const { updateMailField, setCurrentMail } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
 const { setCurrentMailbox } = mailboxesStore
-
-const { isOpen: showCompose, draftMail, openNewCompose, closeCompose } = useMailCompose()
-
-defineExpose({
-  openCompose: openNewCompose
-})
 
 const onNavigateBack = () => {
   setCurrentMailbox(null)
