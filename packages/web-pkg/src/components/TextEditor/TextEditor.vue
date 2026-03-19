@@ -55,11 +55,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref, ref } from 'vue'
+<script setup lang="ts">
+import { computed, unref, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 
-import { config, MdEditor, MdPreview, XSSPlugin, NormalToolbar } from 'md-editor-v3'
+import { config, MdEditor, MdPreview, XSSPlugin, NormalToolbar, ToolbarNames } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 
 import { languages, languageUserDefined } from './l18n'
@@ -69,162 +69,144 @@ import { useThemeStore } from '../../composables'
 import { AppConfigObject } from '../../apps'
 
 import screenfull from 'screenfull'
-
 import Cropper from 'cropperjs'
 import { lineNumbers } from '@codemirror/view'
 import 'cropperjs/dist/cropper.css'
 
-export default defineComponent({
-  name: 'TextEditor',
-  // type casts are needed to ensure type inference works correctly when building web-pkg
-  components: {
-    MdEditor: MdEditor as any,
-    MdPreview: MdPreview as any,
-    NormalToolbar: NormalToolbar as any
+const {
+  applicationConfig = undefined,
+  currentContent,
+  markdownMode = false,
+  isReadOnly = false,
+  resource = undefined
+} = defineProps<{
+  applicationConfig?: AppConfigObject
+  currentContent: string
+  markdownMode?: boolean
+  isReadOnly?: boolean
+  resource?: Resource
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:currentContent', value: string): void
+}>()
+
+const language = useGettext()
+const { currentTheme } = useThemeStore()
+const showLineNumbers = ref(true)
+
+const editorConfig = computed(() => {
+  const { showPreviewOnlyMd = true } = applicationConfig
+  return { showPreviewOnlyMd }
+})
+
+const isMarkdown = computed(() => {
+  return (
+    markdownMode ||
+    ['md', 'markdown'].includes(resource?.extension) ||
+    !unref(editorConfig).showPreviewOnlyMd
+  )
+})
+
+const theme = computed(() => (unref(currentTheme).isDark ? 'dark' : 'light'))
+
+const toolbars = computed<ToolbarNames[]>(() => {
+  if (!unref(isMarkdown)) {
+    return ['revoke', 'next', '=', 0]
+  }
+  return [
+    'bold',
+    'underline',
+    'italic',
+    '-',
+    'title',
+    'strikeThrough',
+    'sub',
+    'sup',
+    'quote',
+    'unorderedList',
+    'orderedList',
+    'task',
+    '-',
+    'codeRow',
+    'code',
+    'link',
+    'image',
+    'table',
+    '-',
+    'revoke',
+    'next',
+    '=',
+    0,
+    'preview',
+    'previewOnly'
+  ]
+})
+
+config({
+  editorConfig: {
+    languageUserDefined
   },
-  props: {
-    applicationConfig: { type: Object as PropType<AppConfigObject>, required: false },
-    currentContent: {
-      type: String,
-      required: true
+  editorExtensions: {
+    screenfull: {
+      instance: screenfull
     },
-    markdownMode: { type: Boolean, required: false, default: false },
-    isReadOnly: { type: Boolean, required: false, default: false },
-    resource: { type: Object as PropType<Resource>, required: false }
+    cropper: {
+      instance: Cropper
+    }
   },
-  emits: ['update:currentContent'],
-  setup(props, { emit }) {
-    const language = useGettext()
-    const { currentTheme } = useThemeStore()
-    const showLineNumbers = ref(true)
-
-    const editorConfig = computed(() => {
-      // TODO: Remove typecasting once vue-tsc has figured it out
-      const { showPreviewOnlyMd = true } = props.applicationConfig as AppConfigObject
-      return { showPreviewOnlyMd }
-    })
-
-    const isMarkdown = computed(() => {
-      return (
-        props.markdownMode ||
-        ['md', 'markdown'].includes(props.resource?.extension) ||
-        !unref(editorConfig).showPreviewOnlyMd
-      )
-    })
-
-    const theme = computed(() => (unref(currentTheme).isDark ? 'dark' : 'light'))
-
-    const toolbars = computed(() => {
-      if (!unref(isMarkdown)) {
-        return ['revoke', 'next', '=', 0]
+  markdownItPlugins(plugins) {
+    return [
+      ...plugins,
+      {
+        type: 'xss',
+        plugin: XSSPlugin,
+        options: {}
       }
-      return [
-        'bold',
-        'underline',
-        'italic',
-        '-',
-        'title',
-        'strikeThrough',
-        'sub',
-        'sup',
-        'quote',
-        'unorderedList',
-        'orderedList',
-        'task',
-        '-',
-        'codeRow',
-        'code',
-        'link',
-        'image',
-        'table',
-        '-',
-        'revoke',
-        'next',
-        '=',
-        0,
-        'preview',
-        'previewOnly'
-      ]
-    })
-
-    config({
-      editorConfig: {
-        languageUserDefined
-      },
-      editorExtensions: {
-        screenfull: {
-          instance: screenfull
-        },
-        cropper: {
-          instance: Cropper
-        }
-      },
-      markdownItPlugins(plugins) {
-        return [
-          ...plugins,
-          {
-            type: 'xss',
-            plugin: XSSPlugin,
-            options: {}
-          }
-        ]
-      },
-      codeMirrorExtensions(extensions) {
-        const combinedExtensions = [
-          ...extensions,
-          {
-            type: 'lineNumbers',
-            extension: lineNumbers()
-          }
-        ]
-
-        const linkShortener = combinedExtensions.find(
-          (extension) => extension.type === 'linkShortener'
-        )
-        if (linkShortener) {
-          linkShortener.options.maxLength = 120
-        }
-
-        if (!unref(isMarkdown)) {
-          return combinedExtensions.filter((extension) =>
-            ['lineWrapping', 'keymap', 'floatingToolbar', 'lineNumbers'].includes(extension.type)
-          )
-        }
-
-        return combinedExtensions
+    ]
+  },
+  codeMirrorExtensions(extensions) {
+    const combinedExtensions = [
+      ...extensions,
+      {
+        type: 'lineNumbers',
+        extension: lineNumbers()
       }
-    })
+    ]
 
-    const onUploadImg = async (files: File[]) => {
-      const uploadedImages = await Promise.all(
-        [...files].map(
-          (file) =>
-            new Promise((resolve, reject) => {
-              const reader = new FileReader()
-              reader.onload = () => resolve(reader.result)
-              reader.onerror = reject
-              reader.readAsDataURL(file)
-            })
-        )
-      )
-
-      const markdownImages = uploadedImages.map((b64) => `![image](${b64})`)
-      const updatedContent = `${unref(props.currentContent)}\n${markdownImages.join('\n\n')}\n`
-
-      emit('update:currentContent', updatedContent)
+    const linkShortener = combinedExtensions.find((extension) => extension.type === 'linkShortener')
+    if (linkShortener) {
+      linkShortener.options.maxLength = 120
     }
 
-    return {
-      isMarkdown,
-      theme,
-      toolbars,
-      language,
-      languages,
-      onUploadImg,
-      showLineNumbers
+    if (!unref(isMarkdown)) {
+      return combinedExtensions.filter((extension) =>
+        ['lineWrapping', 'keymap', 'floatingToolbar', 'lineNumbers'].includes(extension.type)
+      )
     }
+
+    return combinedExtensions
   }
 })
+
+const onUploadImg = async (files: File[]) => {
+  const uploadedImages = await Promise.all(
+    [...files].map(
+      (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+    )
+  )
+
+  const markdownImages = uploadedImages.map((b64) => `![image](${b64})`)
+  const updatedContent = `${currentContent}\n${markdownImages.join('\n\n')}\n`
+
+  emit('update:currentContent', updatedContent)
+}
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
