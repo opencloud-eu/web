@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: small UI improvements/fixes [[#2177](https://github.com/opencloud-eu/web/pull/2177)]
 - feat: add no content images for mail app [[#2165](https://github.com/opencloud-eu/web/pull/2165)]
 - feat: webfinger oidc discovery [[#2152](https://github.com/opencloud-eu/web/pull/2152)]
 - Added draft state handling [[#1956](https://github.com/opencloud-eu/web/pull/1956)]
@@ -39,6 +40,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2150](https://github.com/opencloud-eu/web/pull/2150)]
 - fix(deps): update dependency @sentry/vue to v10.44.0 [[#2168](https://github.com/opencloud-eu/web/pull/2168)]
 - chore(deps): update typescript-eslint monorepo to v8.57.1 [[#2154](https://github.com/opencloud-eu/web/pull/2154)]
 - chore(deps): update dependency fast-xml-parser to v5.5.6 [[#2145](https://github.com/opencloud-eu/web/pull/2145)]
