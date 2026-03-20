@@ -6,13 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @saw-jan, @tammi-23
 
-### ✅ Tests
-
-- [full-ci] test(e2e): fix share type label check [[#2191](https://github.com/opencloud-eu/web/pull/2191)]
-- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
-
 ### 📈 Enhancement
 
+- Feat/1959 [[#2125](https://github.com/opencloud-eu/web/pull/2125)]
 - feat: contacts support full name and name components [[#2187](https://github.com/opencloud-eu/web/pull/2187)]
 - feat: add contacts app skeleton [[#2155](https://github.com/opencloud-eu/web/pull/2155)]
 - feat: small UI improvements/fixes [[#2177](https://github.com/opencloud-eu/web/pull/2177)]
@@ -28,6 +24,11 @@
 - feat: polish left sidebar [[#2118](https://github.com/opencloud-eu/web/pull/2118)]
 - feat: polish space enabled/disabled status indicators [[#2113](https://github.com/opencloud-eu/web/pull/2113)]
 - feat: show icon of the current view mode in view mode switch [[#2105](https://github.com/opencloud-eu/web/pull/2105)]
+
+### ✅ Tests
+
+- [full-ci] test(e2e): fix share type label check [[#2191](https://github.com/opencloud-eu/web/pull/2191)]
+- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
 
 ### 🐛 Bug Fixes
 
