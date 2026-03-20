@@ -49,6 +49,7 @@ interface TextEditorOptions {
   contentType: ContentType
   modelValue?: string
   readonly?: boolean
+  onUpdate?: (content: string) => void  // serialized in source format, debounced internally
 }
 
 interface TextEditorInstance {
@@ -107,7 +108,7 @@ const { editor } = useTextEditor({
 </TextEditorProvider>
 ```
 
-**Update handling:** An explicit `onUpdate` callback rather than v-model, since serialization cost (especially markdown) should not fire on every keystroke.
+**Update handling:** An explicit `onUpdate` callback in `TextEditorOptions` rather than v-model. The callback receives the serialized content string in the source format and is debounced internally to avoid serialization cost on every keystroke. Consumers can also pull content on demand via `getContent()`.
 
 ## Content Type Strategy Pattern
 
