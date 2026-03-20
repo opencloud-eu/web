@@ -241,6 +241,64 @@ importers:
         version: 2.8.2
     publishDirectory: package
 
+  packages/editor:
+    dependencies:
+      '@opencloud-eu/design-system':
+        specifier: workspace:^
+        version: link:../design-system
+      '@tiptap/core':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/pm@3.20.4)
+      '@tiptap/extension-image':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))
+      '@tiptap/extension-link':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+      '@tiptap/extension-table':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+      '@tiptap/extension-table-cell':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))
+      '@tiptap/extension-table-header':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))
+      '@tiptap/extension-table-row':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))
+      '@tiptap/extension-task-item':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/extension-list@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))
+      '@tiptap/extension-task-list':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/extension-list@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))
+      '@tiptap/extension-underline':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))
+      '@tiptap/markdown':
+        specifier: ^3.20.4
+        version: 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+      '@tiptap/pm':
+        specifier: ^3.20.4
+        version: 3.20.4
+      '@tiptap/starter-kit':
+        specifier: ^3.20.4
+        version: 3.20.4
+      '@tiptap/vue-3':
+        specifier: ^3.20.4
+        version: 3.20.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)(vue@3.5.30(typescript@5.9.3))
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.30(typescript@5.9.3)
+      vue3-gettext:
+        specifier: ^4.0.0-beta.1
+        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.30)(vue@3.5.30(typescript@5.9.3))
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
+
   packages/eslint-config:
     dependencies:
       '@typescript-eslint/parser':
@@ -2590,6 +2648,37 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.20.4
 
+  '@tiptap/extension-table-cell@3.20.4':
+    resolution: {integrity: sha512-R+AKOPKCq2NwETa4/nsidXnYe7UP8CxdbvJI1r6DMYipdj4ksQI24ij91hkwDLkeAhJyNGKub4soEMRdLgcQyQ==}
+    peerDependencies:
+      '@tiptap/extension-table': ^3.20.4
+
+  '@tiptap/extension-table-header@3.20.4':
+    resolution: {integrity: sha512-f8xlcNfmh2MD+fzPYXhy1zvao5DlWf+Sdd7eQ4G3baui/PdgBpJEroVCPYZIOazVRHL43MFxtvPeSJ5RN6J+bw==}
+    peerDependencies:
+      '@tiptap/extension-table': ^3.20.4
+
+  '@tiptap/extension-table-row@3.20.4':
+    resolution: {integrity: sha512-bW9pXTMpNmDoZrLVPYylkfhiSwPxTYpubFduW3cjsiSJK046kSw5zOlvlv4+9vZI1TSlA+BFykPeW34YqLbr6Q==}
+    peerDependencies:
+      '@tiptap/extension-table': ^3.20.4
+
+  '@tiptap/extension-table@3.20.4':
+    resolution: {integrity: sha512-vEHXRL9k9G02pp3P+DyUnN4YRaRAHGfTBC6gck0s9TpsCM9NIchL0qI1fb/u46Bu6UaoMMk58DGr7xaJ29g7KQ==}
+    peerDependencies:
+      '@tiptap/core': ^3.20.4
+      '@tiptap/pm': ^3.20.4
+
+  '@tiptap/extension-task-item@3.20.4':
+    resolution: {integrity: sha512-mEWyAtZ61USZnKyLDxi2DtnSREfW0yUFXDOFWstNg1i6hva197BuAy6VRQMQxTOq+cFAgAt1MEZKanW0Obsa+g==}
+    peerDependencies:
+      '@tiptap/extension-list': ^3.20.4
+
+  '@tiptap/extension-task-list@3.20.4':
+    resolution: {integrity: sha512-QvLrpffkxkr7TTgMmk6fnPAE34HYrUosHiuZJpRK008MuJDOoANblS221M4lLuRE73w3KI7hd/fi2CliBcCC4A==}
+    peerDependencies:
+      '@tiptap/extension-list': ^3.20.4
+
   '@tiptap/extension-text@3.20.4':
     resolution: {integrity: sha512-jchJcBZixDEO2J66Zx5dchsI2mA6IYsROqF8P1poxL4ienH7RVQRCTsBNnSfIeOtREKKWeOU/tEs5fcpvvGwIQ==}
     peerDependencies:
@@ -2602,6 +2691,12 @@ packages:
 
   '@tiptap/extensions@3.20.4':
     resolution: {integrity: sha512-8p6hVT65DjuQjtEdlH6ewX9SOJHlVQAOee3sWIJQmeJNRnZNvqPIBLleebUqDiljNTpxBv6s6QWkSTKgf3btwg==}
+    peerDependencies:
+      '@tiptap/core': ^3.20.4
+      '@tiptap/pm': ^3.20.4
+
+  '@tiptap/markdown@3.20.4':
+    resolution: {integrity: sha512-1ARtZzJ1skQCZi4LyVSmImgg6JIIMP5dEs0FvHXS3a7M3O+uMOUvY1sWeggVZExg8DXoVyHd7BjRIpm7uNRuSw==}
     peerDependencies:
       '@tiptap/core': ^3.20.4
       '@tiptap/pm': ^3.20.4
@@ -4492,6 +4587,11 @@ packages:
 
   markdown-it@14.1.1:
     resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
+    hasBin: true
+
+  marked@17.0.4:
+    resolution: {integrity: sha512-NOmVMM+KAokHMvjWmC5N/ZOvgmSWuqJB8FoYI019j4ogb/PeRMKoKIjReZ2w3376kkA8dSJIP8uD993Kxc0iRQ==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   marks-pane@1.0.9:
@@ -7462,6 +7562,31 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.20.4(@tiptap/pm@3.20.4)
 
+  '@tiptap/extension-table-cell@3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))':
+    dependencies:
+      '@tiptap/extension-table': 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+
+  '@tiptap/extension-table-header@3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))':
+    dependencies:
+      '@tiptap/extension-table': 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+
+  '@tiptap/extension-table-row@3.20.4(@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))':
+    dependencies:
+      '@tiptap/extension-table': 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+
+  '@tiptap/extension-table@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)':
+    dependencies:
+      '@tiptap/core': 3.20.4(@tiptap/pm@3.20.4)
+      '@tiptap/pm': 3.20.4
+
+  '@tiptap/extension-task-item@3.20.4(@tiptap/extension-list@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))':
+    dependencies:
+      '@tiptap/extension-list': 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+
+  '@tiptap/extension-task-list@3.20.4(@tiptap/extension-list@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4))':
+    dependencies:
+      '@tiptap/extension-list': 3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)
+
   '@tiptap/extension-text@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))':
     dependencies:
       '@tiptap/core': 3.20.4(@tiptap/pm@3.20.4)
@@ -7474,6 +7599,12 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.20.4(@tiptap/pm@3.20.4)
       '@tiptap/pm': 3.20.4
+
+  '@tiptap/markdown@3.20.4(@tiptap/core@3.20.4(@tiptap/pm@3.20.4))(@tiptap/pm@3.20.4)':
+    dependencies:
+      '@tiptap/core': 3.20.4(@tiptap/pm@3.20.4)
+      '@tiptap/pm': 3.20.4
+      marked: 17.0.4
 
   '@tiptap/pm@3.20.4':
     dependencies:
@@ -9548,6 +9679,8 @@ snapshots:
       mdurl: 2.0.0
       punycode.js: 2.3.1
       uc.micro: 2.1.0
+
+  marked@17.0.4: {}
 
   marks-pane@1.0.9: {}
 
