@@ -43,6 +43,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.0.4 [[#2186](https://github.com/opencloud-eu/web/pull/2186)]
 - fix(deps): update dependency @sentry/vue to v10.45.0 [[#2181](https://github.com/opencloud-eu/web/pull/2181)]
 - chore(deps): update dependency fast-xml-parser to v5.5.7 [security] [[#2190](https://github.com/opencloud-eu/web/pull/2190)]
 - chore(deps): update traefik docker tag to v3.6.11 [[#2189](https://github.com/opencloud-eu/web/pull/2189)]
