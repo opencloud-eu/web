@@ -34,6 +34,7 @@
   "scripts": {
     "vite": "vite",
     "build": "vite build && vue-tsc --project tsconfig.build.json",
+    "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json",
     "prepublishOnly": "rm -rf ./package && clean-publish && find package && cat package/package.json",
     "postpublish": "rm -rf ./package"
   },

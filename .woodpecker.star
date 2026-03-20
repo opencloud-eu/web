@@ -49,6 +49,7 @@ config = {
     ],
     "pnpmlint": True,
     "pnpmformat": True,
+    "check-types": True,
     "e2e": {
         "1": {
             "earlyFail": True,
@@ -265,7 +266,8 @@ def beforePipelines(ctx):
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
+           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx)) + \
+           pipelinesDependsOn(pnpmTypeCheck(ctx), pnpmCache(ctx))
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -386,6 +388,40 @@ def pnpmlint(ctx, lintType):
                 "event": "pull_request",
                 "path": {
                     "exclude": skipIfUnchanged(ctx, "lint"),
+                },
+            },
+        ],
+    }
+
+    pipelines.append(result)
+
+    return pipelines
+
+def pnpmTypeCheck(ctx):
+    pipelines = []
+    if "check-types" not in config:
+        return pipelines
+
+    if type(config["check-types"]) == "bool":
+        if not config["check-types"]:
+            return pipelines
+
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + typeCheck()
+    result = {
+        "name": "check-types",
+        "workspace": web_workspace,
+        "steps": steps,
+        "when": [
+            event["tag"],
+            event["cron"],
+            {
+                "event": ["push", "manual"],
+                "branch": config["branches"],
+            },
+            {
+                "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "typecheck"),
                 },
             },
         ],
@@ -718,6 +754,15 @@ def installBrowsers():
             "pnpm exec playwright install",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
+        ],
+    }]
+
+def typeCheck():
+    return [{
+        "name": "type-check",
+        "image": OC_CI_NODEJS_ALPINE,
+        "commands": [
+            "pnpm check:types",
         ],
     }]
 
@@ -1168,7 +1213,7 @@ def skipIfUnchanged(ctx, type):
     ]
 
     skip = []
-    if type == "e2e-tests" or type == "lint":
+    if type == "e2e-tests" or type == "lint" or type == "typecheck":
         skip = base + unit
     elif type == "unit-tests":
         skip = base + e2e
