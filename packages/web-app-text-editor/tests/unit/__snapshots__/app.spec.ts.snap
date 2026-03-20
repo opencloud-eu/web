@@ -1,7 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Text editor app > shows the editor 1`] = `
-"<div class="oc-text-editor size-full">
-  <!---->
+"<div class="oc-text-editor size-full" applicationconfig="[object Object]">
+  <div class="text-editor-provider">
+    <!--v-if-->
+    <!--v-if-->
+  </div>
 </div>"
 `;

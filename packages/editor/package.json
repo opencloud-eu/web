@@ -4,6 +4,8 @@
   "private": true,
   "description": "Content-type-aware rich text editor built on Tiptap",
   "license": "AGPL-3.0",
+  "main": "src/index.ts",
+  "type": "module",
   "dependencies": {
     "@tiptap/core": "^3.20.4",
     "@tiptap/extension-document": "^3.20.4",

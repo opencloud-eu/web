@@ -440,6 +440,9 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
+      '@opencloud-eu/editor':
+        specifier: workspace:*
+        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -573,6 +576,9 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
+      '@opencloud-eu/editor':
+        specifier: workspace:*
+        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
