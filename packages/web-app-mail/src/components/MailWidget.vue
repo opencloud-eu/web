@@ -41,7 +41,12 @@
 
         <div class="px-4 pt-3 pb-2">
           <div class="flex items-center justify-start gap-3">
-            <oc-button appearance="filled" class="min-w-[120px]">
+            <oc-button
+              appearance="filled"
+              class="min-w-[120px]"
+              :disabled="isSaving"
+              @click="onSend"
+            >
               <span v-text="$gettext('Send')" />
             </oc-button>
             <MailComposeAttachmentButton
@@ -98,7 +103,12 @@
 
         <div class="px-4 pt-3">
           <div class="flex items-center justify-start gap-3">
-            <oc-button appearance="filled" class="min-w-[120px]">
+            <oc-button
+              appearance="filled"
+              class="min-w-[120px]"
+              :disabled="isSaving"
+              @click="onSend"
+            >
               <span v-text="$gettext('Send')" />
             </oc-button>
             <MailComposeAttachmentButton
@@ -172,6 +182,14 @@ const currentAccountId = computed(() => unref(currentAccount).accountId || '')
 
 const draftsMailboxId = computed(() => {
   return (unref(mailboxes) || []).find((mailbox: Mailbox) => mailbox.role === 'drafts')?.id
+})
+
+const sentMailboxId = computed(() => {
+  return (unref(mailboxes) || []).find((mailbox: Mailbox) => mailbox.role === 'sent')?.id
+})
+
+const selectedIdentityId = computed(() => {
+  return unref(currentAccount)?.identities?.[0]?.id || ''
 })
 
 const isExpanded = ref(false)
@@ -263,43 +281,71 @@ const hasMeaningfulChanges = computed(() => {
   )
 })
 
-const { isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } = useSaveAsDraft({
-  accountId: currentAccountId,
-  draftMailboxId: draftsMailboxId,
-  api: connector,
-  getDraftPayload: () => {
-    const state = unref(composeState)
+const { draftId, isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } =
+  useSaveAsDraft({
+    accountId: currentAccountId,
+    draftMailboxId: draftsMailboxId,
+    api: connector,
+    getDraftPayload: () => {
+      const state = unref(composeState)
 
-    const bodyHtml = state.body ?? ''
-    const bodyPlain = plainTextFromHtml(bodyHtml)
+      const bodyHtml = state.body ?? ''
+      const bodyPlain = plainTextFromHtml(bodyHtml)
 
-    const hasText = bodyPlain.length > 0
-    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
+      const hasText = bodyPlain.length > 0
+      const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
 
-    return {
-      from: state.from ? [{ email: state.from.email, name: state.from.name }] : [],
-      to: parseRecipients(state.to),
-      cc: parseRecipients(state.cc),
-      bcc: parseRecipients(state.bcc),
-      subject: state.subject ?? '',
+      return {
+        from: state.from ? [{ email: state.from.email, name: state.from.name }] : [],
+        to: parseRecipients(state.to),
+        cc: parseRecipients(state.cc),
+        bcc: parseRecipients(state.bcc),
+        subject: state.subject ?? '',
 
-      textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
-      htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
+        textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
+        htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
 
-      bodyValues: {
-        ...(hasText ? { t: { value: bodyPlain } } : {}),
-        ...(hasHtml ? { h: { value: bodyHtml } } : {})
-      },
+        bodyValues: {
+          ...(hasText ? { t: { value: bodyPlain } } : {}),
+          ...(hasHtml ? { h: { value: bodyHtml } } : {})
+        },
 
-      attachments: (state.attachments || []).map((attachment: ComposeAttachment) => ({
-        blobId: attachment.blobId,
-        name: attachment.name,
-        type: attachment.type,
-        disposition: 'attachment' as const
-      }))
+        attachments: (state.attachments || []).map((attachment: ComposeAttachment) => ({
+          blobId: attachment.blobId,
+          name: attachment.name,
+          type: attachment.type,
+          disposition: 'attachment' as const
+        }))
+      }
     }
+  })
+
+const onSend = async () => {
+  if (
+    !unref(currentAccountId) ||
+    !unref(draftsMailboxId) ||
+    !unref(sentMailboxId) ||
+    !unref(selectedIdentityId)
+  ) {
+    return
   }
-})
+
+  const emailId = unref(draftId) || (await saveAsDraft())?.id
+  if (!emailId) {
+    return
+  }
+
+  await connector.sendDraft(
+    unref(currentAccountId),
+    emailId,
+    unref(selectedIdentityId),
+    unref(draftsMailboxId),
+    unref(sentMailboxId)
+  )
+
+  await resetCompose()
+  doClose()
+}
 
 const { runWithResetGuard } = useComposeDirtyTracking(composeState, () => {
   markDirty()
