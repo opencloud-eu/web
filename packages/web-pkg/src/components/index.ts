@@ -8,7 +8,6 @@ export * from './Modals'
 export * from './SideBar'
 export * from './Search'
 export * from './Spaces'
-export * from './TextEditor'
 export * from './Avatars'
 
 export { default as AppLoadingSpinner } from './AppLoadingSpinner.vue'
