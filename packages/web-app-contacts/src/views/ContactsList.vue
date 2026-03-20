@@ -33,7 +33,7 @@ import { useLoadContacts } from '../composables/useLoadContacts'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { storeToRefs } from 'pinia'
 import ContactsListItem from '../components/ContactsListItem.vue'
-import { getContactNameParts } from '../helpers/contactName'
+import { getContactDisplayName } from '../helpers'
 import { computed } from 'vue'
 
 const { isLoading } = useLoadContacts()
@@ -43,26 +43,10 @@ const { contacts } = storeToRefs(contactsStore)
 
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
-    const aNameParts = getContactNameParts(a)
-    const bNameParts = getContactNameParts(b)
+    const aSortName = getContactDisplayName(a)
+    const bSortName = getContactDisplayName(b)
 
-    const byGiven = aNameParts.givenName.localeCompare(bNameParts.givenName, undefined, {
-      sensitivity: 'base'
-    })
-
-    if (byGiven !== 0) {
-      return byGiven
-    }
-
-    const bySurname = aNameParts.surname.localeCompare(bNameParts.surname, undefined, {
-      sensitivity: 'base'
-    })
-
-    if (bySurname !== 0) {
-      return bySurname
-    }
-
-    return a.id.localeCompare(b.id, undefined, { sensitivity: 'base' })
+    return aSortName.localeCompare(bSortName, undefined, { sensitivity: 'base' })
   })
 })
 </script>

@@ -73,6 +73,7 @@ export const NameComponentSchema = z.object({
 
 export const NameSchema = z.object({
   '@type': z.string().optional(),
+  full: z.string().optional(),
   components: z.array(NameComponentSchema).optional(),
   defaultSeparator: z.string().optional(),
   isOrdered: z.boolean().optional()
