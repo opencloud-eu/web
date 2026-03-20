@@ -54,5 +54,12 @@
     "description": "The names of the selected items.",
     "default": "",
     "type": "string[]"
+  },
+  {
+    "name": "size",
+    "required": false,
+    "description": "The size of the filter chip.",
+    "default": "medium",
+    "type": "'small' | 'medium' | 'large'"
   }
 ]
