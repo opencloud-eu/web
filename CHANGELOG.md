@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Implement sending a draft  [[#2193](https://github.com/opencloud-eu/web/pull/2193)]
 - Feat/1959 [[#2125](https://github.com/opencloud-eu/web/pull/2125)]
 - feat: contacts support full name and name components [[#2187](https://github.com/opencloud-eu/web/pull/2187)]
 - feat: add contacts app skeleton [[#2155](https://github.com/opencloud-eu/web/pull/2155)]
