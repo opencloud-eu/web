@@ -55,7 +55,7 @@ export const useFileActionsFavorite = () => {
           : $gettext('Failed to change favorite state of %{count} items', {
               count: errors.length.toString()
             })
-      showErrorMessage({ title, errors: errors.map((e) => e.error) })
+      showErrorMessage({ title, errors: errors.map((e) => e.error as Error) })
     }
   }
 

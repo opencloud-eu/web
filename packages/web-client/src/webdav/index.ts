@@ -20,7 +20,6 @@ import { DAV } from './client/dav'
 import { ListFileVersionsFactory } from './listFileVersions'
 import { SetFavoriteFactory } from './setFavorite'
 
-
 export * from './constants'
 export * from './types'
 
