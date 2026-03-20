@@ -8,6 +8,7 @@
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
+    "@opencloud-eu/editor": "workspace:*",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",

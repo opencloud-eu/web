@@ -45,7 +45,6 @@
   "dependencies": {
     "@casl/ability": "^6.8.0",
     "@casl/vue": "^2.2.6",
-    "@codemirror/view": "^6.40.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
@@ -54,7 +53,6 @@
     "@uppy/tus": "^5.1.1",
     "@uppy/utils": "^7.2.0",
     "@uppy/xhr-upload": "^5.2.0",
-    "@vavt/cm-extension": "^1.11.2",
     "@vue/shared": "^3.5.31",
     "@vueuse/core": "^14.2.1",
     "axios": "^1.13.6",
@@ -66,7 +64,6 @@
     "lodash-es": "^4.17.23",
     "luxon": "^3.7.2",
     "mark.js": "^8.11.1",
-    "md-editor-v3": "^6.4.1",
     "oidc-client-ts": "^3.5.0",
     "p-queue": "^9.1.0",
     "password-sheriff": "^2.0.0",

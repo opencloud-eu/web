@@ -33,10 +33,7 @@
 
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm
-            v-model="composeState"
-            :show-formatting-toolbar="showFormattingToolbar"
-          />
+          <MailComposeForm v-model="composeState" />
         </div>
 
         <div class="px-4 pt-3 pb-2">
@@ -53,15 +50,6 @@
               v-model="composeState.attachments"
               :account-id="currentAccountId"
             />
-            <oc-button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
-              :aria-pressed="showFormattingToolbar ? 'true' : 'false'"
-              :title="$gettext('Toggle text formatting toolbar')"
-              @click="showFormattingToolbar = !showFormattingToolbar"
-            >
-              <oc-icon name="text" fill-type="none" class="text-base text-role-on-surface" />
-            </oc-button>
             <div class="ml-auto flex items-center min-w-0">
               <MailSavedHint v-if="showSavedHint" />
             </div>
@@ -95,10 +83,7 @@
     <template #content>
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm
-            v-model="composeState"
-            :show-formatting-toolbar="showFormattingToolbar"
-          />
+          <MailComposeForm v-model="composeState" />
         </div>
 
         <div class="px-4 pt-3">
@@ -115,17 +100,6 @@
               v-model="composeState.attachments"
               :account-id="currentAccountId"
             />
-            <oc-button
-              type="button"
-              appearance="raw"
-              class="flex !h-9 !w-9 items-center justify-center rounded-full border border-role-outline-variant bg-role-surface hover:bg-role-surface-variant transition"
-              :class="{ 'bg-role-surface-variant': showFormattingToolbar }"
-              :aria-pressed="showFormattingToolbar ? 'true' : 'false'"
-              :title="$gettext('Toggle text formatting toolbar')"
-              @click="showFormattingToolbar = !showFormattingToolbar"
-            >
-              <oc-icon name="text" fill-type="none" />
-            </oc-button>
             <div class="ml-auto flex items-center min-w-0">
               <MailSavedHint v-if="showSavedHint" />
             </div>
@@ -193,7 +167,6 @@ const selectedIdentityId = computed(() => {
 })
 
 const isExpanded = ref(false)
-const showFormattingToolbar = ref(false)
 
 const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
 
@@ -354,7 +327,6 @@ const { runWithResetGuard } = useComposeDirtyTracking(composeState, () => {
 const resetCompose = async () => {
   await runWithResetGuard(() => {
     composeState.value = createEmptyComposeState()
-    showFormattingToolbar.value = false
     clearSavedHint()
     resetDraft(null)
   })
