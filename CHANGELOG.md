@@ -4,7 +4,12 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @saw-jan, @tammi-23
+
+### ✅ Tests
+
+- [full-ci] test(e2e): fix share type label check [[#2191](https://github.com/opencloud-eu/web/pull/2191)]
+- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
 
 ### 📈 Enhancement
 
@@ -35,10 +40,6 @@
 - fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
 - fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
 - fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
-
-### ✅ Tests
-
-- [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
 
 ### 📦️ Dependencies
 
