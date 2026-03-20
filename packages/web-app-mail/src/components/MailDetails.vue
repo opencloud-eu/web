@@ -16,6 +16,7 @@
       >
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
+      <MailActionBar :mail="currentMail" @edit-draft="onEditDraft" />
       <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
         <h3 class="text-lg block truncate" v-text="currentMail.subject" />
         <MailIndicators :mail="currentMail" />
@@ -59,6 +60,8 @@ import MailAttachmentList from './MailAttachmentList.vue'
 import MailIndicators from './MailIndicators.vue'
 import { AppLoadingSpinner, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import MailAppointmentList from './MailAppointmentList.vue'
+import MailActionBar from './MailActionBar.vue'
+import { useMailCompose } from '../composables/useMailCompose'
 import { useLoadMail } from '../composables/useLoadMail'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { storeToRefs } from 'pinia'
@@ -70,6 +73,7 @@ const mailsStore = useMailsStore()
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail } = storeToRefs(mailsStore)
 const { setCurrentMail } = mailsStore
+const { openDraftCompose } = useMailCompose()
 
 const fromEmail = computed(() => {
   return unref(currentMail)?.from[0]?.email || unref(currentMail)?.sender[0]?.email
@@ -97,6 +101,14 @@ const receivedAtRelativeDate = computed(() => {
 const appointments = computed(() => {
   return unref(currentMail).attachments?.filter((attachment) => attachment.type === 'text/calendar')
 })
+
+const onEditDraft = () => {
+  if (!unref(currentMail)) {
+    return
+  }
+
+  openDraftCompose(unref(currentMail))
+}
 
 const onNavigateBack = () => {
   setCurrentMail(null)
