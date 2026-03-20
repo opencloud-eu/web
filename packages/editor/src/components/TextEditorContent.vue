@@ -9,3 +9,7 @@ import type { TextEditorInstance } from '../types'
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
 </script>
+
+<style>
+@import '../styles/content.css';
+</style>
