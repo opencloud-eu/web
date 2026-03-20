@@ -69,14 +69,12 @@ import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
 import { unref } from 'vue'
-import { useMailCompose } from '../composables/useMailCompose'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
-const { openNewCompose } = useMailCompose()
 
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail, mails } = storeToRefs(mailsStore)
