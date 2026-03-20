@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: contacts support full name and name components [[#2187](https://github.com/opencloud-eu/web/pull/2187)]
 - feat: add contacts app skeleton [[#2155](https://github.com/opencloud-eu/web/pull/2155)]
 - feat: small UI improvements/fixes [[#2177](https://github.com/opencloud-eu/web/pull/2177)]
 - feat: add no content images for mail app [[#2165](https://github.com/opencloud-eu/web/pull/2165)]
