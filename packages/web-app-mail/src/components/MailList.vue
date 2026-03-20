@@ -1,12 +1,6 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <oc-floating-action-button
-      class="md:hidden"
-      mode="action"
-      :aria-label="$gettext('Write new Email')"
-      @click="openNewCompose"
-    />
     <no-content-message v-if="!currentMailbox" icon="folder" icon-fill-type="line">
       <template #message>
         <span v-text="$gettext('No mailbox selected')" />
