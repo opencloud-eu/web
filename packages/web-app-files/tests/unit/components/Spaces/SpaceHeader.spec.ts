@@ -16,8 +16,25 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   }),
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn(() => 'blob:image')
+  })
+}))
+
+vi.mock('@opencloud-eu/editor', () => ({
+  useTextEditor: vi.fn().mockReturnValue({
+    editor: { value: null },
+    contentType: { value: 'markdown' },
+    readonly: { value: true },
+    toolbarItems: [],
+    getContent: vi.fn().mockReturnValue(''),
+    setContent: vi.fn(),
+    isEmpty: { value: true },
+    isFocused: { value: false },
+    focus: vi.fn(),
+    blur: vi.fn(),
+    destroy: vi.fn()
   }),
-  TextEditor: vi.fn()
+  TextEditorProvider: { template: '<div><slot /></div>' },
+  TextEditorContent: { template: '<div />' }
 }))
 
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
@@ -152,7 +169,8 @@ function getWrapper({
       provide: { ...mocks },
       stubs: {
         'space-context-actions': true,
-        TextEditor: true
+        TextEditorProvider: true,
+        TextEditorContent: true
       }
     }
   })
