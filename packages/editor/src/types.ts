@@ -1,5 +1,6 @@
 import type { ShallowRef, Ref, ComputedRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
+import type { ToolbarGroup } from './toolbar/types'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
@@ -16,8 +17,7 @@ export interface TextEditorInstance {
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
   readonly: Ref<boolean>
-  // TODO: Replace `any[]` with proper `ToolbarGroup[]` type from ./toolbar/types once Task 2 creates it
-  toolbarItems: any[]
+  toolbarItems: ToolbarGroup[]
   getContent(): string
   setContent(value: string): void
   isEmpty: ComputedRef<boolean>
