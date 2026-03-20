@@ -55,6 +55,10 @@ export class MarkdownStrategy implements ContentTypeStrategy {
     ]
   }
 
+  editorContentType(): string {
+    return 'markdown'
+  }
+
   serialize(editor: Editor): string {
     return (editor as any).getMarkdown()
   }

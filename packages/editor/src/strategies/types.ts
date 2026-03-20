@@ -7,4 +7,6 @@ export interface ContentTypeStrategy {
   toolbarItems(): ToolbarGroup[]
   serialize(editor: Editor): string
   deserialize(content: string): Record<string, unknown> | string
+  /** Optional tiptap contentType option for initial content parsing (e.g. 'markdown') */
+  editorContentType?(): string
 }

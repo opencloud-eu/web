@@ -36,10 +36,18 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
 
   // useEditor returns ShallowRef<Editor | undefined>; we cast to ShallowRef<Editor | null>
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
-  const editor = useEditor({
+  const editorOptions: Record<string, any> = {
     extensions: strategy.extensions(),
     content: options.modelValue ? strategy.deserialize(options.modelValue) : '',
     editable: !readonly.value,
+  }
+
+  if (strategy.editorContentType) {
+    editorOptions.contentType = strategy.editorContentType()
+  }
+
+  const editor = useEditor({
+    ...editorOptions,
     onUpdate({ editor: e }) {
       if (!options.onUpdate) return
       if (debounceTimer) clearTimeout(debounceTimer)
@@ -61,7 +69,11 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const setContent = (value: string): void => {
     if (!editor.value) return
     const content = strategy.deserialize(value)
-    editor.value.commands.setContent(content, { emitUpdate: false })
+    const setContentOptions: Record<string, any> = { emitUpdate: false }
+    if (strategy.editorContentType) {
+      setContentOptions.contentType = strategy.editorContentType()
+    }
+    editor.value.commands.setContent(content, setContentOptions)
   }
 
   const isEmpty = computed(() => editor.value?.isEmpty ?? true)
