@@ -120,12 +120,15 @@ export interface TextEditorOptions {
   modelValue?: string
   readonly?: boolean
   onUpdate?: (content: string) => void
+  onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
+  onRequestImageUrl?: () => Promise<string | null>
 }
 
 export interface TextEditorInstance {
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
   readonly: Ref<boolean>
+  toolbarItems: ToolbarGroup[]
   getContent(): string
   setContent(value: string): void
   isEmpty: ComputedRef<boolean>
@@ -135,6 +138,8 @@ export interface TextEditorInstance {
   destroy(): void
 }
 ```
+
+Note: `ToolbarGroup` is imported from `./toolbar/types` which doesn't exist yet at this point. The import will resolve after Task 2 creates the toolbar types. Alternatively, the implementer can use `any[]` temporarily and update in Task 2.
 
 - [ ] **Step 4: Create `packages/editor/src/index.ts`** (empty shell, will be filled as we build)
 
@@ -1048,6 +1053,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor: editor as TextEditorInstance['editor'],
     contentType,
     readonly,
+    toolbarItems: strategy.toolbarItems(),
     getContent,
     setContent,
     isEmpty,
@@ -1130,64 +1136,9 @@ const textEditor = inject<TextEditorInstance>('textEditor')!
 </script>
 ```
 
-- [ ] **Step 3: Update `types.ts` to include `toolbarItems` on `TextEditorInstance`**
+- [ ] **Step 3: Implement `TextEditorToolbar.vue`**
 
-The toolbar component needs access to the strategy's toolbar items. Expose them on the instance so the toolbar can read them via inject.
-
-Update `packages/editor/src/types.ts` — add `toolbarItems` to `TextEditorInstance`:
-
-```ts
-import type { ShallowRef, Ref, ComputedRef } from 'vue'
-import type { Editor } from '@tiptap/vue-3'
-import type { ToolbarGroup } from './toolbar/types'
-
-export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
-
-export interface TextEditorOptions {
-  contentType: ContentType
-  modelValue?: string
-  readonly?: boolean
-  onUpdate?: (content: string) => void
-  onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
-  onRequestImageUrl?: () => Promise<string | null>
-}
-
-export interface TextEditorInstance {
-  editor: ShallowRef<Editor | null>
-  contentType: Ref<ContentType>
-  readonly: Ref<boolean>
-  toolbarItems: ToolbarGroup[]
-  getContent(): string
-  setContent(value: string): void
-  isEmpty: ComputedRef<boolean>
-  isFocused: ComputedRef<boolean>
-  focus(): void
-  blur(): void
-  destroy(): void
-}
-```
-
-- [ ] **Step 4: Update `useTextEditor.ts` to return `toolbarItems`**
-
-Add `toolbarItems: strategy.toolbarItems()` to the return object in `packages/editor/src/composables/useTextEditor.ts`:
-
-```ts
-  return {
-    editor: editor as TextEditorInstance['editor'],
-    contentType,
-    readonly,
-    toolbarItems: strategy.toolbarItems(),
-    getContent,
-    setContent,
-    isEmpty,
-    isFocused,
-    focus,
-    blur,
-    destroy
-  }
-```
-
-- [ ] **Step 5: Implement `TextEditorToolbar.vue`**
+Note: `toolbarItems` and callback fields are already defined in `types.ts` (Task 1) and returned by `useTextEditor` (Task 8).
 
 ```vue
 <template>
