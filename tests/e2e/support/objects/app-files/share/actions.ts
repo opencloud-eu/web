@@ -30,7 +30,7 @@ const userTypeFilter = '.invite-form-share-role-type'
 const userTypeFilterDropdown = '.invite-form-share-role-type ul.oc-list'
 const userTypeSelector = '.invite-form-share-role-type-item'
 const selectedUserTypeLabel =
-  '//div[contains(@class,"invite-form-share-role-type")]//span[contains(@class,"oc-filter-chip-label") and text()="%s"]'
+  '//div[contains(@class,"invite-form-share-role-type")]//span[contains(@class,"oc-filter-chip-label")]'
 
 export interface ShareArgs {
   page: Page
@@ -101,7 +101,7 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
     }
     await page.locator(userTypeFilterDropdown).waitFor()
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
-    await page.locator(util.format(selectedUserTypeLabel, 'External users')).waitFor()
+    await page.locator(selectedUserTypeLabel).filter({ hasText: federatedShare }).waitFor()
   }
   await Collaborator.inviteCollaborators({ page, collaborators: recipients })
   await sidebar.close({ page })
