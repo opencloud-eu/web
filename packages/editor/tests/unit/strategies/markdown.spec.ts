@@ -29,11 +29,12 @@ describe('MarkdownStrategy', () => {
   })
 
   describe('serialize', () => {
-    it('calls getMarkdown on editor storage', () => {
+    it('calls getMarkdown on editor', () => {
       const mockEditor = {
-        storage: { markdown: { getMarkdown: vi.fn().mockReturnValue('# Hello') } }
+        getMarkdown: vi.fn().mockReturnValue('# Hello')
       } as any
       expect(strategy.serialize(mockEditor)).toBe('# Hello')
+      expect(mockEditor.getMarkdown).toHaveBeenCalled()
     })
   })
 
