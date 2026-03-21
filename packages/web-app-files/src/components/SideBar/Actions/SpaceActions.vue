@@ -40,7 +40,8 @@ import {
   useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsSetIcon
+  useSpaceActionsSetIcon,
+  useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsUploadImage } from '../../../composables'
 
@@ -67,6 +68,7 @@ const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
 const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
 const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
 const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
+const { actions: favoriteActions } = useFileActionsFavorite()
 
 const actions = computed(() =>
   [
@@ -82,7 +84,8 @@ const actions = computed(() =>
     ...unref(restoreActions),
     ...unref(deleteActions),
     ...unref(disableActions),
-    ...unref(navigateToTrashActions)
+    ...unref(navigateToTrashActions),
+    ...unref(favoriteActions)
   ].filter((item) => item.isVisible(unref(actionOptions)))
 )
 </script>

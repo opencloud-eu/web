@@ -73,6 +73,7 @@ export const useFileActionsFavorite = () => {
       isVisible: ({ resources }) => {
         if (
           unref(isFilesAppActive) &&
+          !isLocationSpacesActive(router, 'files-spaces-projects') &&
           !isLocationSpacesActive(router, 'files-spaces-generic') &&
           !isLocationCommonActive(router, 'files-common-favorites') &&
           !isLocationCommonActive(router, 'files-common-search')
