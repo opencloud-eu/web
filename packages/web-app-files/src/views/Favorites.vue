@@ -4,9 +4,16 @@
       <app-bar :view-modes="viewModes" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
+        <no-content-message
+          v-if="isEmpty"
+          id="files-favorites-empty"
+          img-src="/images/empty-states/empty-folder.svg"
+        >
           <template #message>
-            <span v-text="$gettext('There are no resources marked as favorite')" />
+            <span v-text="$gettext('Nothing marked as favorite, yet')" />
+          </template>
+          <template #callToAction>
+            <span v-text="$gettext('All your favorites will show up here')" />
           </template>
         </no-content-message>
         <component
