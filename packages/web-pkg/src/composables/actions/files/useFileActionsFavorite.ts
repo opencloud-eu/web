@@ -84,6 +84,11 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
+        // Only show the batch action if all resources have the same favorite state.
+        if (!resources.every((r) => r.starred === resources[0].starred)) {
+          return false
+        }
+
         return capabilityStore.filesFavorites && ability.can('create', 'Favorite')
       },
       class: 'oc-files-actions-favorite-trigger'
