@@ -213,7 +213,7 @@ export const useResourceIndicators = () => {
       icon: 'star',
       category: 'system',
       type: 'resource-favorite',
-      fillType: 'fill'
+      fillType: 'line'
     }
   }
 
