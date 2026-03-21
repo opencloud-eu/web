@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" />
+      <app-bar :view-modes="viewModes" :has-bulk-actions="true" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message
