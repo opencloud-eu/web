@@ -32,7 +32,10 @@ export const useFileRouteReplace = (options: FileRouteReplaceOptions = {}) => {
     }
 
     const routeOptions = createFileRouteOptions(space, resource, { configStore })
-    router.replace(routeOptions)
+    router.replace({
+      ...routeOptions,
+      query: { ...router.currentRoute.value.query, ...routeOptions.query }
+    })
     return true
   }
 
