@@ -139,6 +139,19 @@ const getContextRoute = (router: Router, to: RouteLocation): RouteRecordNormaliz
   return router.getRoutes().find((r) => r.name === to.query[contextRouteNameKey])
 }
 
+/**
+ * Splits a URL string into separate path and query parts for use with router.push().
+ * Vue Router's resolve() silently drops query params embedded in the path string,
+ * so they need to be passed via the query field explicitly.
+ */
+export const parsePathQuery = (url: string): { path: string; query?: Record<string, string> } => {
+  if (!url.includes('?')) {
+    return { path: url }
+  }
+  const [path, queryString] = url.split('?')
+  return { path, query: Object.fromEntries(new URLSearchParams(queryString)) }
+}
+
 const getRouteMeta = (to: RouteLocation): WebRouteMeta => {
   if (!to.meta) {
     return {
