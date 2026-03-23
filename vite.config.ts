@@ -7,7 +7,7 @@ import {
   ViteDevServer
 } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { Target, viteStaticCopy } from 'vite-plugin-static-copy'
 import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
@@ -246,18 +246,23 @@ export default defineConfig(({ mode, command }) => {
         }),
         viteStaticCopy({
           targets: (() => {
-            const targets = [
-              ...['icons', 'images'].map((name) => ({
+            return [
+              ...['icons', 'images'].map<Target>((name) => ({
                 src: `packages/design-system/src/assets/${name}/*`,
-                dest: `${name}`
+                dest: `${name}`,
+                rename: { stripBase: 5 }
               })),
               {
+                src: `packages/design-system/src/assets/images/empty-states/*`,
+                dest: 'images/empty-states',
+                rename: { stripBase: 6 }
+              },
+              {
                 src: 'node_modules/requirejs/require.js',
-                dest: 'js'
+                dest: 'js',
+                rename: { stripBase: 2 }
               }
             ]
-
-            return targets
           })()
         }),
         {
@@ -341,7 +346,7 @@ export default defineConfig(({ mode, command }) => {
         },
         ...(command === 'serve' ? historyModePlugins() : [])
       ] as Plugin[]
-    },
+    } as UserConfig,
     config
   )
 })
