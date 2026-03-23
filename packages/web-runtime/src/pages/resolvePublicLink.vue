@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { DavHttpError, PublicLinkType, SharePermissionBit } from '@opencloud-eu/web-client'
 import { authService } from '../services/auth'
+import { parsePathQuery } from '../router/helpers'
 
 import {
   queryItemAsString,
@@ -189,7 +190,7 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
 
   const url = queryItemAsString(unref(redirectUrl))
   if (url) {
-    router.push({ path: url })
+    router.push(parsePathQuery(url))
     return
   }
 
