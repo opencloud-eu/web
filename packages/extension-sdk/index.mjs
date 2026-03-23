@@ -163,10 +163,12 @@ export const defineConfig = (overrides = {}) => {
               format: 'umd',
               name,
               // only used to avoid the MISSING_GLOBAL_NAME warning
-              globals: Object.fromEntries(external.map((e) => [
-                e,
-                e.replace(/^@/, '').replace(/[/-](\w)/g, (_, c) => c.toUpperCase())
-              ])),
+              globals: Object.fromEntries(
+                external.map((e) => [
+                  e,
+                  e.replace(/^@/, '').replace(/[/-](\w)/g, (_, c) => c.toUpperCase())
+                ])
+              ),
               entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}.js`)
             }
           }
