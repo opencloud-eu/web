@@ -7,6 +7,7 @@ import { useClientService } from '../../clientService'
 import { useAbility } from '../../ability'
 import { useMessages, useCapabilityStore, useResourcesStore } from '../../piniaStores'
 import { useEventBus } from '../../eventBus'
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsFavorite = () => {
   const { showErrorMessage } = useMessages()
@@ -71,6 +72,11 @@ export const useFileActionsFavorite = () => {
         return $gettext('Add to favorites')
       },
       isVisible: ({ resources }) => {
+        //FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
+        if (resources.find((r) => isProjectSpaceResource(r))) {
+          return false
+        }
+
         if (
           unref(isFilesAppActive) &&
           !isLocationSpacesActive(router, 'files-spaces-projects') &&
@@ -85,7 +91,7 @@ export const useFileActionsFavorite = () => {
         }
 
         // Only show the batch action if all resources have the same favorite state.
-        if (!resources.every((r) => r.starred === resources[0].starred)) {
+        if (resources.length > 1 && !resources.every((r) => r.starred === resources[0].starred)) {
           return false
         }
 
