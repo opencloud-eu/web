@@ -70,19 +70,23 @@ export default defineConfig({
         return [
           {
             src: './src/assets/icons/*',
-            dest: 'icons'
+            dest: 'icons',
+            rename: { stripBase: 3 }
           },
           {
             src: './l10n/translations.json',
-            dest: '.'
+            dest: '.',
+            rename: { stripBase: 2 }
           },
           {
             src: './src/styles/tailwind.css',
-            dest: '.'
+            dest: '.',
+            rename: { stripBase: 3 }
           },
           {
             src: './src/styles/defaults.css',
-            dest: '.'
+            dest: '.',
+            rename: { stripBase: 3 }
           }
         ]
       })()
