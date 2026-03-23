@@ -4,7 +4,20 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @saw-jan, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @pascalwengerter, @saw-jan, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: preserve query params on public link redirect [[#2199](https://github.com/opencloud-eu/web/pull/2199)]
+- fix: version check in conjunction with dev docker image leads to left… [[#2156](https://github.com/opencloud-eu/web/pull/2156)]
+- fix: sidebar top margin too low when no FAB is present [[#2147](https://github.com/opencloud-eu/web/pull/2147)]
+- fix: files with name e.G. .space won't be shown when 'show file extens… [[#2149](https://github.com/opencloud-eu/web/pull/2149)]
+- fix: account settings on mobile view [[#2148](https://github.com/opencloud-eu/web/pull/2148)]
+- fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
+- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
+- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
+- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
+- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ### 📈 Enhancement
 
@@ -30,18 +43,6 @@
 
 - [full-ci] test(e2e): fix share type label check [[#2191](https://github.com/opencloud-eu/web/pull/2191)]
 - [with-tracing] fix: e2e-test public deletes folders [[#2130](https://github.com/opencloud-eu/web/pull/2130)]
-
-### 🐛 Bug Fixes
-
-- fix: version check in conjunction with dev docker image leads to left… [[#2156](https://github.com/opencloud-eu/web/pull/2156)]
-- fix: sidebar top margin too low when no FAB is present [[#2147](https://github.com/opencloud-eu/web/pull/2147)]
-- fix: files with name e.G. .space won't be shown when 'show file extens… [[#2149](https://github.com/opencloud-eu/web/pull/2149)]
-- fix: account settings on mobile view [[#2148](https://github.com/opencloud-eu/web/pull/2148)]
-- fix: app top bar gets removed, even if unsaved changes modal appears [[#2141](https://github.com/opencloud-eu/web/pull/2141)]
-- fix: oc-drop a11y and overflow issues [[#2100](https://github.com/opencloud-eu/web/pull/2100)]
-- fix: search bar disappears when entering account preferences [[#2122](https://github.com/opencloud-eu/web/pull/2122)]
-- fix: bring back disabled space indicator in tiles view [[#2110](https://github.com/opencloud-eu/web/pull/2110)]
-- fix: focus ring for upload buttons [[#2111](https://github.com/opencloud-eu/web/pull/2111)]
 
 ### 📦️ Dependencies
 
