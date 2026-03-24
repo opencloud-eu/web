@@ -44,7 +44,6 @@ const input = readdirSync('packages').reduce(
     return acc
   },
   {
-    'tailwind.ts': 'packages/web-runtime/src/tailwind.ts',
     'index.html': 'index.html',
     'oidc-silent-redirect.html': 'oidc-silent-redirect.html',
     'oidc-callback.html': 'oidc-callback.html'
@@ -67,65 +66,6 @@ type ConfigJsonResponseBody = {
 
 const getConfigJson = async (url: string) => {
   return (await getJson(url)) as ConfigJsonResponseBody
-}
-
-/**
- * Ensures Tailwind CSS content appears at the very beginning of the bundled CSS output.
- *
- * This is critical because Tailwind CSS v4 uses CSS cascade layers (@layer), and the layer
- * order declaration must come before any other styles for correct cascade behavior.
- *
- * Uses 3 sub-plugins:
- * 1. A 'pre' plugin that runs after @tailwindcss/vite, captures the compiled Tailwind CSS,
- *    and removes it from its natural position in the CSS pipeline.
- * 2. A 'post' plugin that prepends the captured CSS to the final CSS asset in generateBundle.
- * 3. A 'pre' plugin for development that injects a link tag to the Tailwind CSS file in
- *    index.html, ensuring correct order during development as well.
- */
-function ensureTailwindCssOrder(): Plugin[] {
-  let tailwindCss = ''
-
-  return [
-    {
-      name: 'ensure-tailwind-css-order:capture',
-      enforce: 'pre',
-      apply: 'build',
-      transform(code, id) {
-        if (!/design-system\/src\/styles\/tailwind\.css/.test(id)) {
-          return
-        }
-        tailwindCss = code
-        return ''
-      }
-    },
-    {
-      name: 'ensure-tailwind-css-order:prepend',
-      enforce: 'post',
-      apply: 'build',
-      generateBundle(_, bundle) {
-        if (!tailwindCss) {
-          return
-        }
-        for (const chunk of Object.values(bundle)) {
-          if (chunk.type === 'asset' && chunk.fileName.endsWith('.css')) {
-            chunk.source = tailwindCss + '\n' + chunk.source
-            break
-          }
-        }
-      }
-    },
-    {
-      name: 'ensure-tailwind-css-order:dev',
-      enforce: 'pre',
-      apply: 'serve',
-      transformIndexHtml(html) {
-        return html.replace(
-          '<head>',
-          '<head>\n    <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />'
-        )
-      }
-    }
-  ]
 }
 
 export const historyModePlugins = () =>
@@ -199,7 +139,17 @@ export default defineConfig(({ mode, command }) => {
           output: {
             dir: dist,
             chunkFileNames: join('js', 'chunks', `[name]-[hash].mjs`),
-            entryFileNames: join('js', '[name]-[hash].mjs')
+            entryFileNames: join('js', '[name]-[hash].mjs'),
+            codeSplitting: {
+              groups: [
+                {
+                  name: 'design-system-components',
+                  test: /tailwind|packages\/design-system\/src\/components/,
+                  // tailwind needs to come first to ensure correct CSS layer cascade
+                  priority: 10000
+                }
+              ]
+            }
           }
         },
         target: browserslistToEsbuild()
@@ -231,7 +181,6 @@ export default defineConfig(({ mode, command }) => {
       },
       plugins: [
         tailwindcss(),
-        ensureTailwindCssOrder(),
         nodePolyfills({
           exclude: ['crypto']
         }),

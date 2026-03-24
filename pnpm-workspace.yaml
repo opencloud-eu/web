@@ -2,3 +2,10 @@ prefer-workspace-packages: true
 packages:
   - 'packages/*'
   - 'tests/*'
+
+# ensure platform-specific bindings (e.g. rolldown) resolve for all Linux libc variants in CI
+supportedArchitectures:
+  libc:
+    - current
+    - glibc
+    - musl
