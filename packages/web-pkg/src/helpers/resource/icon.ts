@@ -110,6 +110,10 @@ const fileIcon = {
       'yml'
     ]
   },
+  html: {
+    icon: { name: 'resource-type-html', color: 'var(--oc-color-icon-surface)' },
+    extensions: ['htm', 'html']
+  },
   default: {
     icon: { name: 'resource-type-file', color: 'var(--oc-role-on-surface)' },
     extensions: ['accdb', 'rss', 'swf']
@@ -210,7 +214,7 @@ const fileIcon = {
     extensions: ['mov', 'mp4', 'webm', 'wmv']
   },
   epub: {
-    icon: { name: 'resource-type-book', color: 'var(--oc-color-icon-epub)' },
+    icon: { name: 'resource-type-epub', color: 'var(--oc-color-icon-epub)' },
     extensions: ['epub']
   },
   board: {

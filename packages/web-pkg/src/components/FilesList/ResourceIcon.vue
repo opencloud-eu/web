@@ -9,8 +9,7 @@
       'inline-flex',
       'items-center',
       {
-        'opacity-80 grayscale': hasDisabledSpaceIcon,
-        '[&_svg]:h-[70%]': !hasSpaceIcon && !hasFolderIcon
+        'opacity-80 grayscale': hasDisabledSpaceIcon
       }
     ]"
   />
