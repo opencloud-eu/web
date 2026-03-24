@@ -27,7 +27,7 @@ describe('buildUrl', () => {
       document.getElementsByTagName('head')[0].appendChild(baseElement)
     }
 
-    const { buildUrl } = await import('@opencloud-eu/web-pkg/src/helpers/router/buildUrl')
+    const { buildUrl } = await import('@opencloud-eu/web-pkg')
     vi.resetModules()
 
     // hide warnings for non-existent routes

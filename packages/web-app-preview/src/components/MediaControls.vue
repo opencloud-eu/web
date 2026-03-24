@@ -125,7 +125,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isMacOs } from '@opencloud-eu/web-pkg/src'
+import { isMacOs } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 
 export default defineComponent({

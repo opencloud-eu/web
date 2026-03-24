@@ -87,7 +87,7 @@ import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import { NoContentMessage } from '@opencloud-eu/web-pkg/src'
+import { NoContentMessage } from '@opencloud-eu/web-pkg'
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { dispatchModal } = useModals()

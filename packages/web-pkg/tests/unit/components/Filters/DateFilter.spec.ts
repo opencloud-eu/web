@@ -7,7 +7,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../../src/composables/appDefaults'
 import { DateTime } from 'luxon'
-import { ocDropStub } from '@opencloud-eu/web-test-helpers/src/mocks/ocDropStub'
+import { ocDropStub } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('../../../../src/composables/appDefaults')
 
