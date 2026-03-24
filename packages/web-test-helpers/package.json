@@ -26,6 +26,11 @@
       }
     }
   },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
   "scripts": {
     "vite": "vite",
     "prepublishOnly": "rm -rf ./package && clean-publish && find package && cat package/package.json",

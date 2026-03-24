@@ -8,7 +8,7 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
 import PhotoRollItem from '../../../src/components/PhotoRollItem.vue'
-import { useLoadPreview } from '@opencloud-eu/web-pkg/src'
+import { useLoadPreview } from '@opencloud-eu/web-pkg'
 
 let mockItemsInViewPort = Infinity
 let observerCount = 0

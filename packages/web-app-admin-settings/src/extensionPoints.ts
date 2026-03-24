@@ -1,4 +1,4 @@
-import { ExtensionPoint, FloatingActionButtonExtension } from '@opencloud-eu/web-pkg/src'
+import { ExtensionPoint, FloatingActionButtonExtension } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 
 export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonExtension> = {
