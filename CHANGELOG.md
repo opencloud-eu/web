@@ -46,6 +46,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.32.1 [[#1875](https://github.com/opencloud-eu/web/pull/1875)]
 - chore(deps): update dependency vite-plugin-static-copy to v4 [[#2198](https://github.com/opencloud-eu/web/pull/2198)]
 - chore(deps): update dependency fast-xml-parser to v5.5.8 [[#2182](https://github.com/opencloud-eu/web/pull/2182)]
 - chore(deps): update dependency md-editor-v3 to v6.4.1 [[#2197](https://github.com/opencloud-eu/web/pull/2197)]
