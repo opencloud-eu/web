@@ -20,7 +20,8 @@ export default defineConfig({
         'web-client/ocs': resolve(__dirname, 'src/ocs/index.ts'),
         'web-client/sse': resolve(__dirname, 'src/sse/index.ts'),
         'web-client/webdav': resolve(__dirname, 'src/webdav/index.ts')
-      }
+      },
+      formats: ['es']
     }
   },
   plugins: [

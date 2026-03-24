@@ -22,8 +22,7 @@
     "linkDirectory": false,
     "exports": {
       ".": {
-        "import": "./dist/web-pkg.js",
-        "require": "./dist/web-pkg.umd.cjs",
+        "default": "./dist/web-pkg.js",
         "types": "./dist/src/index.d.ts"
       }
     }

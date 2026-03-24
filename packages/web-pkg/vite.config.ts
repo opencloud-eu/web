@@ -30,8 +30,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'web-pkg',
-      fileName: 'web-pkg'
+      fileName: 'web-pkg',
+      formats: ['es']
     },
     rolldownOptions: {
       external
