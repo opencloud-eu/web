@@ -204,6 +204,19 @@ export const useResourceIndicators = () => {
     }
   }
 
+  const getFavoriteIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
+    return {
+      id: `resource-favorite-${resource.getDomSelector()}`,
+      kind: 'icon',
+      accessibleDescription: $gettext('This item is marked as favorite'),
+      label: $gettext('Favorite'),
+      icon: 'star',
+      category: 'system',
+      type: 'resource-favorite',
+      fillType: 'line'
+    }
+  }
+
   const getIndicators = ({
     space,
     resource
@@ -212,6 +225,10 @@ export const useResourceIndicators = () => {
     resource: Resource
   }): ResourceIndicator[] => {
     const indicators: ResourceIndicator[] = []
+
+    if (resource.starred) {
+      indicators.push(getFavoriteIndicator({ resource }))
+    }
 
     if (resource.locked) {
       indicators.push(getLockedIndicator({ resource }))

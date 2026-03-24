@@ -39,6 +39,15 @@ export const DriveItemsFactory = ({
       await driveItemApiFactory.deleteDriveItem(driveId, itemId, requestOptions)
     },
 
+    async followDriveItem(itemId, requestOptions) {
+      const { data } = await meDriveApiFactory.followDriveItem(itemId, requestOptions)
+      return data
+    },
+
+    async unfollowDriveItem(itemId, requestOptions) {
+      await meDriveApiFactory.unfollowDriveItem(itemId, requestOptions)
+    },
+
     async listSharedByMe(options, requestOptions) {
       const { data } = await meDriveApiFactory.listSharedByMe(options?.expand, requestOptions)
       return data?.value || []

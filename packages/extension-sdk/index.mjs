@@ -12,6 +12,38 @@ import vue from '@vitejs/plugin-vue'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
+/**
+ * Capture `document.currentScript` before the UMD factory is called.
+ *
+ * Vite's UMD URL resolution uses `document.currentScript` to resolve relative
+ * asset paths. However, `document.currentScript` is only set by the browser
+ * during synchronous script execution. When a module loader like RequireJS
+ * calls the UMD factory callback asynchronously, `document.currentScript` is
+ * `null`, causing a fallback to `document.baseURI` and incorrect URL resolution.
+ *
+ * This plugin captures `document.currentScript` at the top of the script
+ * (while it's still valid) and replaces references inside with the captured
+ * value.
+ *
+ * Upstreamed to Vite: https://github.com/dschmidt/vite/tree/fix/umd-current-script-polyfill
+ */
+const completeUmdCurrentScriptPlugin = () => {
+  return {
+    name: 'vite:complete-umd-current-script',
+    renderChunk(code, _chunk, opts) {
+      if (opts.format !== 'umd') return
+      if (!code.includes('document.currentScript')) return
+
+      return {
+        code:
+          'var __vite_currentScript = typeof document !== "undefined" ? document.currentScript : null;' +
+          code.replaceAll('document.currentScript', '__vite_currentScript'),
+        map: null
+      }
+    }
+  }
+}
+
 const certsDir = process.env.OPENCLOUD_CERTS_DIR
 const defaultHttps = () =>
   certsDir && {
@@ -95,6 +127,24 @@ export const defineConfig = (overrides = {}) => {
     const { https = defaultHttps(), port = 9210 } = overrides?.server || {}
     const isHttps = !!https
 
+    // keep in sync with packages/web-runtime/src/container/application/index.ts
+    const external = [
+      'vue',
+      'luxon',
+      'pinia',
+      'vue3-gettext',
+
+      '@opencloud-eu/web-client',
+      '@opencloud-eu/web-client/graph',
+      '@opencloud-eu/web-client/graph/generated',
+      '@opencloud-eu/web-client/ocs',
+      '@opencloud-eu/web-client/sse',
+      '@opencloud-eu/web-client/webdav',
+      '@opencloud-eu/web-pkg',
+      'web-client',
+      'web-pkg'
+    ]
+
     return mergeConfig(
       {
         base: './', // make asset paths relative so imports work from wherever the extension is loaded
@@ -102,31 +152,23 @@ export const defineConfig = (overrides = {}) => {
           cssCodeSplit: true,
           minify: isProduction,
           outDir: distDir,
-          rolldownOptions: {
-            // keep in sync with packages/web-runtime/src/container/application/index.ts
-            external: [
-              'vue',
-              'luxon',
-              'pinia',
-              'vue3-gettext',
-
-              '@opencloud-eu/web-client',
-              '@opencloud-eu/web-client/graph',
-              '@opencloud-eu/web-client/graph/generated',
-              '@opencloud-eu/web-client/ocs',
-              '@opencloud-eu/web-client/sse',
-              '@opencloud-eu/web-client/webdav',
-              '@opencloud-eu/web-pkg',
-              'web-client',
-              'web-pkg'
-            ],
+          // use rollupOptions instead of rolldownOptions as long as we support vite 7
+          rollupOptions: {
+            external,
             preserveEntrySignatures: 'strict',
             input: {
               [name]: './src/index.ts'
             },
             output: {
-              format: 'amd',
-              chunkFileNames: join('js', 'chunks', '[name]-[hash].mjs'),
+              format: 'umd',
+              name,
+              // only used to avoid the MISSING_GLOBAL_NAME warning
+              globals: Object.fromEntries(
+                external.map((e) => [
+                  e,
+                  e.replace(/^@/, '').replace(/[/-](\w)/g, (_, c) => c.toUpperCase())
+                ])
+              ),
               entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}.js`)
             }
           }
@@ -138,6 +180,7 @@ export const defineConfig = (overrides = {}) => {
             ...(isTesting && { template: { compilerOptions: { whitespace: 'preserve' } } })
           }),
           manifestPlugin(),
+          completeUmdCurrentScriptPlugin(),
           tailwindcss()
         ],
         server: {

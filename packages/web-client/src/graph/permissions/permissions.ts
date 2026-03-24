@@ -10,8 +10,7 @@ import {
   DrivesPermissionsApiFactory,
   DrivesRootApiFactory,
   Permission,
-  RoleManagementApiFactory,
-  UnifiedRoleDefinition
+  RoleManagementApiFactory
 } from './../generated'
 import type { GraphFactoryOptions, GraphRequestOptions } from './../types'
 import type { GraphPermissions } from './types'
@@ -239,8 +238,7 @@ export const PermissionsFactory = ({
     async listRoleDefinitions(requestOptions) {
       const { data } = await roleManagementApiFactory.listPermissionRoleDefinitions(requestOptions)
 
-      // FIXME: graph type is wrong
-      return data as Promise<UnifiedRoleDefinition[]>
+      return data
     }
   }
 }
