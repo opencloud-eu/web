@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
 import { Mail } from '../../types'
-import { useRouteQuery } from '@opencloud-eu/web-pkg/src'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
 export const useMailsStore = defineStore('mails', () => {
   const currentMailIdQuery = useRouteQuery('mailId')

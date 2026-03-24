@@ -41,7 +41,8 @@ export default defineConfig({
         'design-system/components': resolve(__dirname, 'src/components/index.ts'),
         'design-system/composables': resolve(__dirname, 'src/composables/index.ts'),
         'design-system/helpers': resolve(__dirname, 'src/helpers/index.ts')
-      }
+      },
+      formats: ['es']
     },
     rolldownOptions: {
       external: [
@@ -54,12 +55,7 @@ export default defineConfig({
         '**/*.spec.ts',
         'vue',
         'pinia'
-      ],
-      output: {
-        globals: {
-          vue: 'Vue'
-        }
-      }
+      ]
     }
   },
   plugins: [

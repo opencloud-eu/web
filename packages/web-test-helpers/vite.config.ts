@@ -8,8 +8,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'web-test-helpers',
-      fileName: (format) => `web-test-helpers.${format}.js`
+      fileName: 'web-test-helpers',
+      formats: ['es']
     },
     rolldownOptions: {
       external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)]

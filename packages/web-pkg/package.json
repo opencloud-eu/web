@@ -22,10 +22,17 @@
     "linkDirectory": false,
     "exports": {
       ".": {
-        "import": "./dist/web-pkg.js",
-        "require": "./dist/web-pkg.umd.cjs",
+        "default": "./dist/web-pkg.js",
         "types": "./dist/src/index.d.ts"
       }
+    }
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./l10n": {
+      "import": "./l10n/translations.json"
     }
   },
   "scripts": {
