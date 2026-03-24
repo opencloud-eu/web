@@ -153,7 +153,7 @@ export function buildResource(
       ? resource.props[DavProperty.ContentSize]?.toString() || '0'
       : resource.props[DavProperty.ContentLength]?.toString() || '0',
     permissions: resource.props[DavProperty.Permissions] || '',
-    starred: resource.props[DavProperty.IsFavorite] !== 0,
+    starred: resource.props[DavProperty.IsFavorite] === 1,
     etag: resource.props[DavProperty.ETag],
     shareTypes,
     privateLink: resource.props[DavProperty.PrivateLink],

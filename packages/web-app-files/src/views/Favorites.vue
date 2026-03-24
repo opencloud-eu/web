@@ -1,12 +1,19 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" />
+      <app-bar :view-modes="viewModes" :has-bulk-actions="true" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message v-if="isEmpty" id="files-favorites-empty" icon="star">
+        <no-content-message
+          v-if="isEmpty"
+          id="files-favorites-empty"
+          img-src="/images/empty-states/empty-folder.svg"
+        >
           <template #message>
-            <span v-text="$gettext('There are no resources marked as favorite')" />
+            <span v-text="$gettext('Nothing marked as favorite, yet')" />
+          </template>
+          <template #callToAction>
+            <span v-text="$gettext('All your favorites will show up here')" />
           </template>
         </no-content-message>
         <component
@@ -15,9 +22,12 @@
           v-model:selected-ids="selectedResourcesIds"
           :are-paths-displayed="true"
           :resources="paginatedResources"
+          :view-mode="viewMode"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
+          :sort-fields="sortFields"
+          :view-size="viewSize"
           v-bind="folderView.componentAttrs?.()"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"

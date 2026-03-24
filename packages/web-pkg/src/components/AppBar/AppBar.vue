@@ -86,6 +86,7 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
+  useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsRestore,
   useSpaceActionsDuplicate
@@ -180,6 +181,7 @@ export default defineComponent({
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
+    const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: deleteSpaceActions } = useSpaceActionsDelete()
     const { actions: disableSpaceActions } = useSpaceActionsDisable()
     const { actions: editSpaceQuotaActions } = useSpaceActionsEditQuota()
@@ -202,7 +204,8 @@ export default defineComponent({
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(deleteActions),
-        ...unref(restoreActions)
+        ...unref(restoreActions),
+        ...unref(favoriteActions)
       ]
 
       /**

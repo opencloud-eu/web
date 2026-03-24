@@ -41,7 +41,8 @@ import {
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
-  useSpaceActionsShowMembers
+  useSpaceActionsShowMembers,
+  useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsUploadImage } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
@@ -81,6 +82,7 @@ export default defineComponent({
     const { actions: showMembersActions } = useSpaceActionsShowMembers()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
+    const { actions: favoriteActions } = useFileActionsFavorite()
 
     const spaceImageInput: VNodeRef = ref(null)
     const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
@@ -127,8 +129,8 @@ export default defineComponent({
       return [...fileHandlers].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
-    const menuItemsSidebar = computed(() => {
-      const fileHandlers = [...unref(showDetailsActions)]
+    const menuItemsTertiaryActions = computed(() => {
+      const fileHandlers = [...unref(favoriteActions), ...unref(showDetailsActions)]
       return [...fileHandlers].filter((item) =>
         // HACK: showDetails provides FileAction[] but we have SpaceActionOptions, so we need to cast them to FileActionOptions
         item.isVisible(unref(actionOptions) as unknown as FileActionOptions)
@@ -163,10 +165,10 @@ export default defineComponent({
           items: unref(menuItemsSecondaryActions)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsTertiaryActions).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'tertiaryAction s',
+          items: unref(menuItemsTertiaryActions)
         })
       }
 

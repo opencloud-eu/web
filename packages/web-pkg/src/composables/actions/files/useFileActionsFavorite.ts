@@ -7,6 +7,7 @@ import { useClientService } from '../../clientService'
 import { useAbility } from '../../ability'
 import { useMessages, useCapabilityStore, useResourcesStore } from '../../piniaStores'
 import { useEventBus } from '../../eventBus'
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsFavorite = () => {
   const { showErrorMessage } = useMessages()
@@ -19,20 +20,43 @@ export const useFileActionsFavorite = () => {
   const resourcesStore = useResourcesStore()
   const eventBus = useEventBus()
 
-  const handler = async ({ space, resources }: FileActionOptions) => {
-    try {
-      const newValue = !resources[0].starred
-      await clientService.webdav.setFavorite(space, resources[0], newValue)
+  const handler = async ({ resources }: FileActionOptions) => {
+    const errors: { resource: string; error: unknown }[] = []
 
-      resourcesStore.updateResourceField({ id: resources[0].id, field: 'starred', value: newValue })
-      if (!newValue) {
-        eventBus.publish('app.files.list.removeFromFavorites', resources[0].id)
+    for (const resource of resources) {
+      const newValue = !resource.starred
+      try {
+        if (newValue) {
+          await clientService.graphAuthenticated.driveItems.followDriveItem(resource.fileId)
+        } else {
+          await clientService.graphAuthenticated.driveItems.unfollowDriveItem(resource.fileId)
+        }
+
+        resourcesStore.updateResourceField({ id: resource.id, field: 'starred', value: newValue })
+        if (!newValue) {
+          eventBus.publish('app.files.list.removeFromFavorites', resource.id)
+        }
+      } catch (error) {
+        // rollback optimistic update on failure
+        resourcesStore.updateResourceField({
+          id: resource.id,
+          field: 'starred',
+          value: !newValue
+        })
+        errors.push({ resource: resource.name, error })
       }
-    } catch (error) {
-      const title = $gettext('Failed to change favorite state of "%{file}"', {
-        file: resources[0].name
-      })
-      showErrorMessage({ title, errors: [error] })
+    }
+
+    if (errors.length) {
+      const title =
+        errors.length === 1
+          ? $gettext('Failed to change favorite state of "%{file}"', {
+              file: errors[0].resource
+            })
+          : $gettext('Failed to change favorite state of %{count} items', {
+              count: errors.length.toString()
+            })
+      showErrorMessage({ title, errors: errors.map((e) => e.error as Error) })
     }
   }
 
@@ -42,20 +66,32 @@ export const useFileActionsFavorite = () => {
       icon: 'star',
       handler,
       label: ({ resources }) => {
-        if (resources[0].starred) {
+        if (resources.every((r) => r.starred)) {
           return $gettext('Remove from favorites')
         }
         return $gettext('Add to favorites')
       },
       isVisible: ({ resources }) => {
+        //FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
+        if (resources.find((r) => isProjectSpaceResource(r))) {
+          return false
+        }
+
         if (
           unref(isFilesAppActive) &&
+          !isLocationSpacesActive(router, 'files-spaces-projects') &&
           !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationCommonActive(router, 'files-common-favorites')
+          !isLocationCommonActive(router, 'files-common-favorites') &&
+          !isLocationCommonActive(router, 'files-common-search')
         ) {
           return false
         }
-        if (resources.length !== 1) {
+        if (resources.length === 0) {
+          return false
+        }
+
+        // Only show the batch action if all resources have the same favorite state.
+        if (resources.length > 1 && !resources.every((r) => r.starred === resources[0].starred)) {
           return false
         }
 

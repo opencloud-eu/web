@@ -1,7 +1,6 @@
 import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
 import { Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
-import { buildResource } from '@opencloud-eu/web-client'
 import { isLocationCommonActive } from '../../../router'
 import { unref } from 'vue'
 
@@ -19,19 +18,17 @@ export class FolderLoaderFavorites implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const { resourcesStore, clientService, userStore } = context
+    const { resourcesStore, clientService } = context
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return useTask(function* (signal1, signal2) {
       resourcesStore.clearResourceList()
       resourcesStore.setAncestorMetaData({})
 
-      let resources = yield clientService.webdav.listFavoriteFiles({
-        username: userStore.user?.onPremisesSamAccountName,
+      const { resources } = yield clientService.webdav.search('is:favorite', {
         signal: signal1
       })
 
-      resources = resources.map(buildResource)
       resourcesStore.initResourceList({ currentFolder: null, resources })
     })
   }
