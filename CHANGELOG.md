@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add empty state icon for favorites [[#2211](https://github.com/opencloud-eu/web/pull/2211)]
 - Use favorites from graph api [[#2171](https://github.com/opencloud-eu/web/pull/2171)]
 - Implement sending a draft  [[#2193](https://github.com/opencloud-eu/web/pull/2193)]
 - Feat/1959 [[#2125](https://github.com/opencloud-eu/web/pull/2125)]
