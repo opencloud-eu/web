@@ -62,6 +62,7 @@ const getJson = async (url: string) => {
 
 type ConfigJsonResponseBody = {
   options: Record<string, any>
+  external_apps?: Array<{ id: string; path: string; config?: Record<string, unknown> }>
 }
 
 const getConfigJson = async (url: string) => {
@@ -87,6 +88,10 @@ export const historyModePlugins = () =>
       }
     }
   ] as const
+
+// Dev-only: in-memory registry of remote extension dev servers.
+// Populated via /_dev/apps REST API, merged into /config.json responses.
+const devRemotes = new Map<string, { id: string; path: string; config?: Record<string, unknown> }>()
 
 export default defineConfig(({ mode, command }) => {
   const production = mode === 'production'
@@ -218,12 +223,96 @@ export default defineConfig(({ mode, command }) => {
           })()
         }),
         {
+          name: '@opencloud-eu/vite-plugin-dev-remotes',
+          apply: 'serve',
+          configureServer(server: ViteDevServer) {
+            // Health check: periodically verify registered remotes are still reachable
+            const healthCheckInterval = setInterval(async () => {
+              for (const [id, remote] of devRemotes) {
+                try {
+                  await fetch(remote.path, {
+                    agent: new Agent({ rejectUnauthorized: false }),
+                    signal: AbortSignal.timeout(3000)
+                  })
+                } catch {
+                  devRemotes.delete(id)
+                  console.log(`[dev-remotes] Health check failed, unregistered: ${id}`)
+                  server.environments.client.hot.send({ type: 'full-reload', path: '*' })
+                }
+              }
+            }, 10_000)
+            server.httpServer?.on('close', () => clearInterval(healthCheckInterval))
+
+            server.middlewares.use(async (request, response, next) => {
+              // POST /_dev/apps — register a remote
+              if (request.url === '/_dev/apps' && request.method === 'POST') {
+                let body = ''
+                request.on('data', (chunk: Buffer) => (body += chunk))
+                request.on('end', () => {
+                  try {
+                    const { id, path, config } = JSON.parse(body)
+                    if (!id || !path) {
+                      response.statusCode = 400
+                      response.end(JSON.stringify({ error: 'id and path required' }))
+                      return
+                    }
+                    devRemotes.set(id, { id, path, ...(config && { config }) })
+                    console.log(`[dev-remotes] Registered: ${id} -> ${path}`)
+                    response.statusCode = 200
+                    response.setHeader('Content-Type', 'application/json')
+                    response.end(JSON.stringify({ ok: true }))
+                    server.environments.client.hot.send({ type: 'full-reload', path: '*' })
+                  } catch {
+                    response.statusCode = 400
+                    response.end(JSON.stringify({ error: 'invalid JSON' }))
+                  }
+                })
+                return
+              }
+
+              // DELETE /_dev/apps/:id — unregister a remote
+              const deleteMatch = request.url?.match(/^\/_dev\/apps\/(.+)$/)
+              if (deleteMatch && request.method === 'DELETE') {
+                const id = decodeURIComponent(deleteMatch[1])
+                devRemotes.delete(id)
+                console.log(`[dev-remotes] Unregistered: ${id}`)
+                response.statusCode = 200
+                response.setHeader('Content-Type', 'application/json')
+                response.end(JSON.stringify({ ok: true }))
+                server.environments.client.hot.send({ type: 'full-reload', path: '*' })
+                return
+              }
+
+              // GET /_dev/apps — list registered remotes (for debugging)
+              if (request.url === '/_dev/apps' && request.method === 'GET') {
+                response.statusCode = 200
+                response.setHeader('Content-Type', 'application/json')
+                response.end(JSON.stringify(Array.from(devRemotes.values())))
+                return
+              }
+
+              next()
+            })
+          }
+        },
+        {
           name: '@opencloud-eu/vite-plugin-runtime-config',
           configureServer(server: ViteDevServer) {
             server.middlewares.use(async (request, response, next) => {
               if (request.url === '/config.json') {
                 try {
                   const configJson = await getConfigJson(configUrl)
+
+                  // Merge dynamically registered dev remotes into external_apps
+                  if (devRemotes.size > 0) {
+                    const devApps = Array.from(devRemotes.values())
+                    const devIds = new Set(devApps.map((a) => a.id))
+                    configJson.external_apps = [
+                      ...(configJson.external_apps || []).filter((a) => !devIds.has(a.id)),
+                      ...devApps
+                    ]
+                  }
+
                   response.statusCode = 200
                   response.setHeader('Content-Type', 'application/json')
                   response.end(JSON.stringify(configJson))
