@@ -6,6 +6,8 @@ directives:
     - 'blob:'
     - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
     - 'https://update.opencloud.eu/'
+    - 'https://host.docker.internal:*'
+    - 'wss://host.docker.internal:*'
   default-src:
     - '''none'''
   font-src:
@@ -39,6 +41,8 @@ directives:
     - '''self'''
     - '''unsafe-inline'''
     - 'https://www.gstatic.com/'
+    - 'https://host.docker.internal:*'
   style-src:
     - '''self'''
     - '''unsafe-inline'''
+    - 'https://host.docker.internal:*'

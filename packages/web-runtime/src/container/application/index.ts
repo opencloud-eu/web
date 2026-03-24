@@ -18,21 +18,22 @@ import * as webClientOcs from '@opencloud-eu/web-client/ocs'
 import * as webClientSse from '@opencloud-eu/web-client/sse'
 import * as webClientWebdav from '@opencloud-eu/web-client/webdav'
 
+import type { ModuleFederation } from '@module-federation/runtime'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { App } from 'vue'
 import { AppConfigObject, ClassicApplicationScript } from '@opencloud-eu/web-pkg'
 
 export { NextApplication } from './next'
 
-// shim requirejs, trust me it's there... :
+// shim requirejs, trust me it's there...
 const { requirejs, define } = window as any
 
-// register modules with requirejs to provide them to applications
-// keep in sync with packages/extension-sdk/index.mjs
-const injectionMap = {
+// Shared modules provided to external apps via RequireJS (legacy AMD) and Module Federation.
+// Must match externalModules in packages/extension-sdk/externalModules.mjs — verified by unit test.
+export const sharedModules: Record<string, unknown> = {
+  vue,
   luxon,
   pinia,
-  vue,
   'vue3-gettext': vueGettext,
   '@opencloud-eu/web-pkg': webPkg,
   '@opencloud-eu/web-client': webClient,
@@ -40,17 +41,46 @@ const injectionMap = {
   '@opencloud-eu/web-client/graph/generated': webClientGraphGenerated,
   '@opencloud-eu/web-client/ocs': webClientOcs,
   '@opencloud-eu/web-client/sse': webClientSse,
-  '@opencloud-eu/web-client/webdav': webClientWebdav,
-  'web-pkg': webPkg,
-  'web-client': webClient
+  '@opencloud-eu/web-client/webdav': webClientWebdav
 }
 
-for (const [key, value] of Object.entries(injectionMap)) {
-  define(key, () => value)
+/**
+ * Register shared modules with RequireJS (legacy AMD) and Module Federation.
+ * Called once during bootstrap before any applications are loaded.
+ */
+export function registerSharedModules(federation: ModuleFederation) {
+  // RequireJS (legacy AMD apps)
+  const { define } = window as any
+  for (const [key, value] of Object.entries(sharedModules)) {
+    define(key, () => value)
+  }
+
+  // Module Federation
+  const shared: Record<
+    string,
+    { version: string; scope: string[]; get: () => Promise<() => unknown> }
+  > = {}
+  for (const [key, value] of Object.entries(sharedModules)) {
+    shared[key] = {
+      version: '0.0.0',
+      scope: ['default'],
+      get: () => Promise.resolve(() => value)
+    }
+  }
+  federation.registerShared(shared)
 }
 
 const loadScriptDynamicImport = async <T>(moduleUri: string) => {
   return ((await import(/* @vite-ignore */ moduleUri)) as any).default as T
+}
+
+const loadScriptModuleFederation = async <T>(
+  federation: ModuleFederation,
+  remoteUrl: string
+): Promise<T> => {
+  federation.registerRemotes([{ name: remoteUrl, entry: remoteUrl, type: 'module' }])
+  const module = await federation.loadRemote(remoteUrl)
+  return (module as any).default as T
 }
 
 const loadScriptRequireJS = <T>(moduleUri: string) => {
@@ -64,12 +94,14 @@ const loadScriptRequireJS = <T>(moduleUri: string) => {
 }
 
 export const loadApplication = async ({
+  federation,
   appName,
   applicationKey,
   applicationPath,
   applicationConfig,
   configStore
 }: {
+  federation: ModuleFederation
   appName?: string
   applicationKey: string
   applicationPath: string
@@ -97,8 +129,11 @@ export const loadApplication = async ({
         applicationPath = urlJoin(configStore.serverUrl, applicationPath)
       }
 
-      if (applicationPath.endsWith('.mjs') || applicationPath.endsWith('.ts')) {
-        applicationScript = await loadScriptDynamicImport<ClassicApplicationScript>(applicationPath)
+      if (applicationPath.endsWith('.mjs')) {
+        applicationScript = await loadScriptModuleFederation<ClassicApplicationScript>(
+          federation,
+          applicationPath
+        )
       } else {
         applicationScript = await loadScriptRequireJS<ClassicApplicationScript>(applicationPath)
       }
