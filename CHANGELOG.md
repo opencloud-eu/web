@@ -47,6 +47,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.57.2 [[#2206](https://github.com/opencloud-eu/web/pull/2206)]
+- chore(deps): update dependency fast-xml-parser to v5.5.9 [[#2203](https://github.com/opencloud-eu/web/pull/2203)]
 - chore(deps): update devdependencies (non-major) [[#2196](https://github.com/opencloud-eu/web/pull/2196)]
 - chore(deps): update apache/tika docker tag to v3.3.0.0 [[#2207](https://github.com/opencloud-eu/web/pull/2207)]
 - chore(deps): update pnpm to v10.32.1 [[#1875](https://github.com/opencloud-eu/web/pull/1875)]
