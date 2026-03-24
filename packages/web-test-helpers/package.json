@@ -21,8 +21,7 @@
     "linkDirectory": false,
     "exports": {
       ".": {
-        "import": "./dist/web-test-helpers.es.js",
-        "require": "./dist/web-test-helpers.umd.cjs",
+        "default": "./dist/web-test-helpers.js",
         "types": "./dist/src/index.d.ts"
       }
     }
