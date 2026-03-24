@@ -28,6 +28,14 @@
       }
     }
   },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./l10n": {
+      "import": "./l10n/translations.json"
+    }
+  },
   "scripts": {
     "vite": "vite",
     "prepublishOnly": "rm -rf ./package && clean-publish && rm -rf package/dist/tests package/dist/*.css && find package && cat package/package.json",
