@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { customRef, computed, ref, unref } from 'vue'
+import { customRef, computed, ref, unref, Ref } from 'vue'
 import { useIsVisible } from '../../composables'
 import OcTd from '../OcTableTd/OcTableTd.vue'
 
@@ -50,7 +50,7 @@ const observerTarget = customRef((track, trigger) => {
       return $el
     },
     set(value) {
-      $el = value
+      $el = value as HTMLElement
       trigger()
     }
   }
@@ -63,7 +63,7 @@ const lazyColspan = computed(() => {
 const { isVisible } = lazy
   ? useIsVisible({
       ...lazy,
-      target: observerTarget,
+      target: observerTarget as Ref<HTMLElement>,
       onVisibleCallback: () => emit('itemVisible')
     })
   : { isVisible: ref(true) }

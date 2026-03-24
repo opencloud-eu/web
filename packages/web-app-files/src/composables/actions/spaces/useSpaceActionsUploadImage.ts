@@ -24,7 +24,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
     unref(spaceImageInput)?.click()
   }
 
-  const showModalImageSpace = (event: InputEvent) => {
+  const showModalImageSpace = (event: Event) => {
     const file = (event.currentTarget as HTMLInputElement).files[0]
     ;(event.currentTarget as HTMLInputElement).value = ''
 
