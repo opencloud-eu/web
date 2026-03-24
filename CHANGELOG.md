@@ -46,6 +46,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update apache/tika docker tag to v3.3.0.0 [[#2207](https://github.com/opencloud-eu/web/pull/2207)]
 - chore(deps): update pnpm to v10.32.1 [[#1875](https://github.com/opencloud-eu/web/pull/1875)]
 - chore(deps): update dependency vite-plugin-static-copy to v4 [[#2198](https://github.com/opencloud-eu/web/pull/2198)]
 - chore(deps): update dependency fast-xml-parser to v5.5.8 [[#2182](https://github.com/opencloud-eu/web/pull/2182)]
