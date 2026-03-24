@@ -7,7 +7,7 @@
         <no-content-message
           v-if="isEmpty"
           id="files-favorites-empty"
-          img-src="/images/empty-states/empty-folder.svg"
+          img-src="/images/empty-states/empty-favorites.svg"
         >
           <template #message>
             <span v-text="$gettext('Nothing marked as favorite, yet')" />
