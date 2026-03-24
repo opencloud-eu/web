@@ -131,7 +131,6 @@
     "vite": "^8.0.0",
     "vite-plugin-dts": "^4.2.3",
     "vite-plugin-node-polyfills": "^0.25.0",
-    "vitepress": "^1.6.3",
-    "yaml": "^2.3.4"
+    "vitepress": "^1.6.3"
   }
 }
