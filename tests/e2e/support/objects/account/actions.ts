@@ -12,7 +12,7 @@ const downloadExportButton = '[data-testid="download-export-btn"]'
 const languageInput = '[data-testid="language"] .vs__search'
 const languageValueDropDown = `.vs__dropdown-menu :text-is("%s")`
 const languageValue = '[data-testid="language"] .vs__selected'
-const accountPageTitle = '//main[@id="account"]//h1[1]'
+const accountPageTitle = '//main[@id="account"]//nav[@id="files-breadcrumb"]'
 const confirmButton = '.oc-modal-body-actions-confirm'
 const topbarProfileAvatarImg = '.oc-topbar-personal-avatar .avatarImg'
 const accountProfileAvatarImg = '.account-table .oc-avatar .avatarImg'
@@ -133,7 +133,7 @@ export const changeLanguage = async (args: {
 
 export const getTitle = (args: { page: Page }): Promise<string> => {
   const { page } = args
-  return page.locator(accountPageTitle).textContent()
+  return page.locator(accountPageTitle).innerText()
 }
 
 export const uploadProfileImage = async (path: string, page: Page): Promise<void> => {
