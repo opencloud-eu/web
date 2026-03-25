@@ -7,6 +7,7 @@ import { useAppsStore } from '../apps'
 
 const defaultOptions = {
   cernFeatures: false,
+  openFilesInNewTab: false,
   concurrentRequests: {
     resourceBatchActions: 4,
     shares: {
