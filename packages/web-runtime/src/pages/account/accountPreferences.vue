@@ -1,6 +1,5 @@
 <template>
   <div id="account-preferences">
-    <h1 class="text-lg mt-1" v-text="$gettext('Preferences')" />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <account-table

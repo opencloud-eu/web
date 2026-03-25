@@ -1,6 +1,5 @@
 <template>
   <div id="account-extensions">
-    <h1 class="text-lg mt-1" v-text="$gettext('Extensions')" />
     <no-content-message
       v-if="!extensionPointsWithUserPreferences.length"
       id="account-extensions-empty"

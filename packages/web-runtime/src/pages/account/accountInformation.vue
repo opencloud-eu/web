@@ -1,7 +1,6 @@
 <template>
   <div id="account-information">
     <div class="flex justify-between items-center w-full">
-      <h1 class="mt-2 text-lg" v-text="$gettext('Account Information')" />
       <oc-button
         v-if="accountEditLink"
         type="a"

@@ -4,8 +4,11 @@
     class="flex justify-center p-4 overflow-auto app-content border w-full bg-role-surface rounded-l-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
   >
     <div class="w-full lg:w-3/4 xl:w-1/2">
-      <mobile-nav class="py-2" />
-      <router-view />
+      <mobile-nav class="px-4 pb-4" />
+      <app-bar v-if="!isMobile" :breadcrumbs="breadcrumbs" :has-view-options="false" />
+      <div class="px-4">
+        <router-view />
+      </div>
     </div>
   </main>
 </template>
@@ -15,7 +18,8 @@ import {
   useCapabilityStore,
   useExtensionRegistry,
   MobileNav,
-  AccountExtension
+  AccountExtension,
+  AppBar
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { isLocationAccountActive } from '../../router'
@@ -23,6 +27,8 @@ import { computed, onMounted, onUnmounted, ref, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { useRoute } from 'vue-router'
+import { v4 as uuidV4 } from 'uuid'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const extensionRegistry = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
@@ -31,6 +37,7 @@ const { supportRadicale } = storeToRefs(capabilityStore)
 const { $gettext } = useGettext()
 const preferencesPanelExtensions = ref<AccountExtension[]>([])
 const route = useRoute()
+const { isMobile } = useIsMobile()
 
 const isAccountInformationActive = useActiveLocation(isLocationAccountActive, 'account-information')
 const isAccountPreferencesActive = useActiveLocation(isLocationAccountActive, 'account-preferences')
@@ -91,7 +98,11 @@ const navItems = computed(() => {
     active: route.path === '/account/extension' && route.query?.['extension-id'] === ext.id
   }))
 
-  return [...baseItems, ...extensionItems].map((navItem) => {
+  return [...baseItems, ...extensionItems]
+})
+
+const navItemExtensions = computed(() => {
+  return unref(navItems).map((navItem) => {
     return {
       id: 'com.github.opencloud-eu.web.account.navItems',
       type: 'sidebarNav',
@@ -101,7 +112,24 @@ const navItems = computed(() => {
   })
 })
 
-extensionRegistry.registerExtensions(navItems)
+const breadcrumbs = computed(() => {
+  const activeNavItem = unref(navItems).find((navItem) => navItem.active)
+
+  if (!activeNavItem) {
+    return []
+  }
+
+  return [
+    {
+      id: uuidV4(),
+      text: activeNavItem.name,
+      to: activeNavItem.route,
+      isStaticNav: true
+    }
+  ]
+})
+
+extensionRegistry.registerExtensions(navItemExtensions)
 
 onMounted(() => {
   preferencesPanelExtensions.value = extensionRegistry.requestExtensions(
