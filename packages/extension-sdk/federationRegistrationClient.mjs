@@ -88,9 +88,7 @@ export function federationRegistrationClient({
         const address = server.httpServer.address()
         const port = typeof address === 'object' ? address?.port : address
         const hostname =
-          typeof server.config.server.host === 'string'
-            ? server.config.server.host
-            : 'localhost'
+          typeof server.config.server.host === 'string' ? server.config.server.host : 'localhost'
         entryPointUrl = `https://${hostname}:${port}/${entryPoint}`
 
         register()
