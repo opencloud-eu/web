@@ -5,14 +5,13 @@
 import { mergeConfig, searchForWorkspaceRoot } from 'vite'
 import { join } from 'path'
 import { cwd } from 'process'
-import { readFileSync, existsSync, watch } from 'fs'
-import https from 'https'
-import http from 'http'
+import { readFileSync, existsSync } from 'fs'
 import tailwindcss from '@tailwindcss/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import vue from '@vitejs/plugin-vue'
 import { federation } from '@module-federation/vite'
 import { externalModules } from './externalModules.mjs'
+import { federationRegistrationClient } from './federationRegistrationClient.mjs'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
@@ -44,26 +43,6 @@ function deepMerge(target, source) {
     }
   }
   return result
-}
-
-// Minimal fetch helper that accepts self-signed certificates (no extra deps).
-function devFetch(url, { method = 'GET', body } = {}) {
-  return new Promise((resolve, reject) => {
-    const mod = new URL(url).protocol === 'https:' ? https : http
-    const req = mod.request(url, { method, rejectUnauthorized: false }, (res) => {
-      let data = ''
-      res.on('data', (chunk) => (data += chunk))
-      res.on('end', () =>
-        resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data })
-      )
-    })
-    req.on('error', reject)
-    if (body) {
-      req.setHeader('Content-Type', 'application/json')
-      req.write(body)
-    }
-    req.end()
-  })
 }
 
 const manifestFile = 'manifest.json'
@@ -150,6 +129,30 @@ export const defineConfig = (overrides = {}) => {
       process.env.OPENCLOUD_WEB_HOST_URL ||
       'https://host.docker.internal:9201'
 
+    // Read merged metadata: manifest.json defaults + config.json overrides
+    function readAppConfig() {
+      let config = {}
+      if (existsSync(manifestPath)) {
+        try {
+          const manifest = JSON.parse(readFileSync(manifestPath).toString())
+          if (manifest.config) {
+            config = manifest.config
+          }
+        } catch {
+          // ignore malformed manifest
+        }
+      }
+      if (existsSync(appConfigPath)) {
+        try {
+          const overrides = JSON.parse(readFileSync(appConfigPath).toString())
+          config = deepMerge(config, overrides)
+        } catch {
+          // ignore malformed config
+        }
+      }
+      return Object.keys(config).length > 0 ? config : undefined
+    }
+
     return mergeConfig(
       {
         base: './', // make asset paths relative so imports work from wherever the extension is loaded
@@ -201,91 +204,13 @@ export const defineConfig = (overrides = {}) => {
           }),
           tailwindcss(),
           manifestPlugin(),
-          ...(!isProduction && !isTesting
-            ? [
-                {
-                  name: 'opencloud-dev-remote-registration',
-                  apply: 'serve',
-                  configureServer(server) {
-                    let remoteEntryUrl = ''
-
-                    // Read merged config: manifest.json defaults + config.json overrides
-                    function readAppConfig() {
-                      let config = {}
-                      if (existsSync(manifestPath)) {
-                        try {
-                          const manifest = JSON.parse(readFileSync(manifestPath).toString())
-                          if (manifest.config) {
-                            config = manifest.config
-                          }
-                        } catch {
-                          // ignore malformed manifest
-                        }
-                      }
-                      if (existsSync(appConfigPath)) {
-                        try {
-                          const overrides = JSON.parse(readFileSync(appConfigPath).toString())
-                          config = deepMerge(config, overrides)
-                        } catch {
-                          // ignore malformed config
-                        }
-                      }
-                      return Object.keys(config).length > 0 ? config : undefined
-                    }
-
-                    async function register() {
-                      const config = readAppConfig()
-                      try {
-                        const res = await devFetch(`${hostUrl}/_dev/apps`, {
-                          method: 'POST',
-                          body: JSON.stringify({
-                            id: name,
-                            path: remoteEntryUrl,
-                            ...(config && { config })
-                          })
-                        })
-                        if (res.ok) {
-                          console.log(`[dev-remote] Registered with host at ${hostUrl}`)
-                        } else {
-                          console.warn(`[dev-remote] Registration failed: ${res.status}`)
-                        }
-                      } catch (e) {
-                        console.warn(
-                          `[dev-remote] Could not register with host at ${hostUrl}: ${e.message}`
-                        )
-                        console.warn('[dev-remote] Is the host dev server running?')
-                      }
-                    }
-
-                    server.httpServer?.on('listening', () => {
-                      const address = server.httpServer.address()
-                      const actualPort = typeof address === 'object' ? address.port : port
-                      const hostname =
-                        typeof server.config.server.host === 'string'
-                          ? server.config.server.host
-                          : 'localhost'
-                      remoteEntryUrl = `https://${hostname}:${actualPort}/${remoteEntryName}${remoteEntryExt}`
-                      register()
-
-                      // Watch manifest.json and config.json — re-register on change
-                      for (const filePath of [manifestPath, appConfigPath]) {
-                        try {
-                          watch(filePath, { persistent: false }, () => {
-                            console.log(`[dev-remote] ${filePath} changed, re-registering...`)
-                            register()
-                          })
-                        } catch {
-                          // File may not exist yet — that's fine
-                        }
-                      }
-                    })
-                  }
-                  // TODO: unregister on shutdown. Neither SIGINT/SIGTERM handlers nor Vite's
-                  // buildEnd hook complete before the process exits. The host's health check
-                  // will clean up stale remotes within 10 seconds anyway.
-                }
-              ]
-            : [])
+          federationRegistrationClient({
+            hostUrl,
+            name,
+            entryPoint: `${remoteEntryName}${remoteEntryExt}`,
+            getMetadata: readAppConfig,
+            metadataWatchFiles: [manifestPath, appConfigPath]
+          })
         ],
         server: {
           origin: `https://host.docker.internal:${port}`,
