@@ -34,7 +34,7 @@
                   />
                 </div>
               </div>
-              <div v-if="showAppBar" class="flex items-center mt-1 min-h-12">
+              <div class="flex items-center mt-1 min-h-12">
                 <slot
                   name="topbarActions"
                   :limited-screen-space="limitedScreenSpace"

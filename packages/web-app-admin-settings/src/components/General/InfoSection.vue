@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h2 class="py-2" v-text="$gettext('Info')" />
     <div class="flex items-center">
       <div
         class="flex items-center justify-center bg-role-chrome w-[80px] h-[80px] rounded-full overflow-hidden mr-8"
@@ -27,14 +26,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useCapabilityStore, useThemeStore, VersionCheck } from '@opencloud-eu/web-pkg'
-import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'InfoSection',
   components: { VersionCheck },
   setup() {
     const capabilityStore = useCapabilityStore()
-    const { $gettext } = useGettext()
     const { currentTheme } = useThemeStore()
 
     let backendProductName = ''
