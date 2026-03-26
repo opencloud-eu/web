@@ -1,6 +1,5 @@
 import { join, resolve } from 'path'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
-import dts from 'vite-plugin-dts'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const projectRootDir = searchForWorkspaceRoot(process.cwd())
@@ -27,7 +26,6 @@ export default defineConfig({
   plugins: [
     nodePolyfills({
       exclude: ['crypto']
-    }),
-    dts()
+    })
   ]
 })

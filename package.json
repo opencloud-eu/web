@@ -26,7 +26,7 @@
     "licenses:csv": "license-checker-rseidelsohn --relativeLicensePath --csv --out ./third-party-licenses/third-party-licenses.csv",
     "licenses:save": "license-checker-rseidelsohn --relativeLicensePath --out /dev/null --files ./third-party-licenses/third-party-licenses",
     "vite": "vite",
-    "check:types": "vue-tsc --noEmit",
+    "check:types": "vue-tsc --noEmit && pnpm -r --parallel check:types",
     "check:all": "pnpm check:types && pnpm lint --fix && pnpm format:write && pnpm test:unit",
     "check:unused-steps": "TS_NODE_PROJECT=./tests/e2e/cucumber/tsconfig.json cucumber-js --profile=e2e --format usage --dry-run tests/e2e/cucumber/features/*/*.feature"
   },

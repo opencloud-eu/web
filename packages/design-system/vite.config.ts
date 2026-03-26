@@ -1,6 +1,5 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
@@ -83,10 +82,13 @@ export default defineConfig({
             src: './src/styles/defaults.css',
             dest: '.',
             rename: { stripBase: 3 }
+          },
+          {
+            src: './types.d.ts',
+            dest: '.'
           }
         ]
       })()
-    }),
-    dts({ copyDtsFiles: true, exclude: ['**/tests', '**/*.spec.ts'] })
+    })
   ]
 })
