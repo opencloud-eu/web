@@ -46,19 +46,19 @@
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@vitejs/plugin-vue": "6.0.5",
-    "clean-publish": "^6.0.0",
-    "vite": "^8.0.0"
+    "clean-publish": "^6.0.4",
+    "vite": "^8.0.3"
   },
   "dependencies": {
-    "@casl/ability": "^6.7.1",
-    "@casl/vue": "^2.2.2",
+    "@casl/ability": "^6.8.0",
+    "@casl/vue": "^2.2.6",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
-    "@pinia/testing": "^1.0.0",
-    "axios": "^1.7.9",
-    "pinia": "^3.0.0",
-    "vitest-mock-extended": "^3.0.0",
-    "vue-router": "^5.0.0",
-    "vue3-gettext": "^4.0.0-beta.1"
+    "@pinia/testing": "^1.0.3",
+    "axios": "^1.13.6",
+    "pinia": "^3.0.4",
+    "vitest-mock-extended": "^3.1.0",
+    "vue-router": "^5.0.4",
+    "vue3-gettext": "4.0.0-beta.1"
   }
 }
