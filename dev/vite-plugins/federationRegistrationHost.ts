@@ -3,6 +3,7 @@
 // tracks them with TTL-based cleanup, and exposes them via plugin API.
 
 import type { Plugin, ViteDevServer } from 'vite'
+import { isEqual } from 'lodash-es'
 
 interface FederationRemote {
   id: string
@@ -21,24 +22,6 @@ interface FederationRegistrationHostOptions {
   onRemoteAdded?: (remote: FederationRemote, ctx: { server: ViteDevServer }) => void
   onRemoteUpdated?: (remote: FederationRemote, ctx: { server: ViteDevServer }) => void
   onRemoteRemoved?: (id: string, ctx: { server: ViteDevServer }) => void
-}
-
-function deepEqual(a: unknown, b: unknown): boolean {
-  if (a === b) return true
-  if (a == null || b == null) return false
-  if (typeof a !== typeof b) return false
-  if (typeof a !== 'object') return false
-  if (Array.isArray(a) !== Array.isArray(b)) return false
-
-  const keysA = Object.keys(a as Record<string, unknown>)
-  const keysB = Object.keys(b as Record<string, unknown>)
-  if (keysA.length !== keysB.length) return false
-
-  for (const key of keysA) {
-    if (!deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]))
-      return false
-  }
-  return true
 }
 
 export function federationRegistrationHost({
@@ -134,7 +117,7 @@ export function federationRegistrationHost({
                 }
                 existing.lastSeen = Date.now()
 
-                if (!deepEqual(existingData, newData)) {
+                if (!isEqual(existingData, newData)) {
                   remotes.set(id, { ...newData, lastSeen: Date.now() })
                   console.log(`[federation-registration] Updated: ${id} -> ${remotePath}`)
                   if (onRemoteUpdated) {
