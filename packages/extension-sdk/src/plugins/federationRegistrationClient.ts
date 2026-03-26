@@ -1,24 +1,32 @@
-// Vite plugin: remote-side periodic registration with a host dev server.
-// Sends registration data at a fixed interval so the host always knows
-// about this remote, even after the host restarts.
-
+import type { Plugin, ViteDevServer } from 'vite'
 import https from 'https'
 import http from 'http'
-import { watch } from 'fs'
+import { watch, type FSWatcher } from 'fs'
+
+interface DevFetchResponse {
+  ok: boolean
+  status: number | undefined
+  data: string
+}
 
 /**
  * Minimal fetch helper that accepts self-signed certificates (no extra deps).
- * @param {string} url
- * @param {{ method?: string, body?: string }} [options]
  */
-function devFetch(url, { method = 'GET', body } = {}) {
+function devFetch(
+  url: string,
+  { method = 'GET', body }: { method?: string; body?: string } = {}
+): Promise<DevFetchResponse> {
   return new Promise((resolve, reject) => {
     const mod = new URL(url).protocol === 'https:' ? https : http
     const req = mod.request(url, { method, rejectUnauthorized: false }, (res) => {
       let data = ''
-      res.on('data', (chunk) => (data += chunk))
+      res.on('data', (chunk: string) => (data += chunk))
       res.on('end', () =>
-        resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data })
+        resolve({
+          ok: res.statusCode! >= 200 && res.statusCode! < 300,
+          status: res.statusCode,
+          data
+        })
       )
     })
     req.on('error', reject)
@@ -30,15 +38,27 @@ function devFetch(url, { method = 'GET', body } = {}) {
   })
 }
 
+interface FederationRegistrationClientOptions {
+  /** Host dev server URL (e.g. 'https://host.docker.internal:9201') */
+  hostUrl: string
+  /** Remote ID used for registration */
+  name: string
+  /** Remote entry filename (e.g. 'remoteEntry.mjs'), combined with the server address to form the full URL */
+  entryPoint: string
+  /** Returns optional metadata to send with registration */
+  getMetadata?: () => Record<string, unknown> | undefined
+  /** Re-registration interval in ms (default: 5000) */
+  interval?: number
+  /** Host endpoint path (default: '/_dev/remotes') */
+  path?: string
+  /** File paths to watch for immediate re-registration on metadata change */
+  metadataWatchFiles?: string[]
+}
+
 /**
- * @param {object} options
- * @param {string} options.hostUrl - Host dev server URL (e.g. 'https://host.docker.internal:9201')
- * @param {string} options.name - Remote ID used for registration
- * @param {string} options.entryPoint - Remote entry filename (e.g. 'remoteEntry.mjs'), combined with the server address to form the full URL
- * @param {() => Record<string, unknown> | undefined} [options.getMetadata] - Returns optional metadata to send with registration
- * @param {number} [options.interval] - Re-registration interval in ms (default: 5000)
- * @param {string} [options.path] - Host endpoint path (default: '/_dev/remotes')
- * @param {string[]} [options.metadataWatchFiles] - File paths to watch for immediate re-registration on metadata change
+ * Vite plugin: remote-side periodic registration with a host dev server.
+ * Sends registration data at a fixed interval so the host always knows
+ * about this remote, even after the host restarts.
  */
 export function federationRegistrationClient({
   hostUrl,
@@ -48,19 +68,18 @@ export function federationRegistrationClient({
   interval = 5_000,
   path = '/_dev/remotes',
   metadataWatchFiles = []
-}) {
+}: FederationRegistrationClientOptions): Plugin {
   return {
     name: 'federation-registration-client',
     apply: 'serve',
 
-    /** @param {import('vite').ViteDevServer} server */
-    configureServer(server) {
+    configureServer(server: ViteDevServer) {
       // Skip registration during test runs (Vitest uses serve mode internally)
       if (server.config.mode === 'test') return
 
-      let registrationInterval = null
+      let registrationInterval: ReturnType<typeof setInterval> | null = null
       let entryPointUrl = ''
-      const watchers = []
+      const watchers: FSWatcher[] = []
 
       async function register() {
         if (!entryPointUrl) return
@@ -118,5 +137,5 @@ export function federationRegistrationClient({
         }
       })
     }
-  }
+  } satisfies Plugin
 }

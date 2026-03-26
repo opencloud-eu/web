@@ -1,17 +1,16 @@
-// ATTENTION: this is a .mjs (instead of a .ts) file on purpose,
-// because we don't want to transpile it before publishing
-// c.f. https://github.com/vitejs/vite/issues/5370
-
-import { mergeConfig, searchForWorkspaceRoot } from 'vite'
+import { mergeConfig, searchForWorkspaceRoot, ViteDevServer } from 'vite'
 import { join } from 'path'
 import { cwd } from 'process'
 import { readFileSync, existsSync } from 'fs'
+import type { IncomingMessage, ServerResponse } from 'http'
 import tailwindcss from '@tailwindcss/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import vue from '@vitejs/plugin-vue'
+import { ViteUserConfig } from 'vitest/config'
 import { federation } from '@module-federation/vite'
-import { externalModules } from './externalModules.mjs'
-import { federationRegistrationClient } from './federationRegistrationClient.mjs'
+import { externalModules } from './externalModules'
+import { federationRegistrationClient, manifestPlugin, manifestPath } from './plugins'
+import { deepMerge } from './utils'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
@@ -23,95 +22,19 @@ const customHttps = certsDir
     }
   : null
 
-// Deep merge objects, replace arrays (matches mergo.WithOverride behavior on the Go side).
-function deepMerge(target, source) {
-  const result = { ...target }
-  for (const key of Object.keys(source)) {
-    const tv = target[key]
-    const sv = source[key]
-    if (
-      sv &&
-      typeof sv === 'object' &&
-      !Array.isArray(sv) &&
-      tv &&
-      typeof tv === 'object' &&
-      !Array.isArray(tv)
-    ) {
-      result[key] = deepMerge(tv, sv)
-    } else {
-      result[key] = sv
-    }
-  }
-  return result
-}
-
-const manifestFile = 'manifest.json'
-const manifestPath = join('./src/', manifestFile)
 const appConfigPath = join('./src/', 'config.json')
 const remoteEntryName = 'remoteEntry'
 const remoteEntryExt = '.mjs'
 
-// Generates manifest.json for OpenCloud app discovery.
-const manifestPlugin = () => {
-  let outputDir
-
-  return {
-    name: 'manifest',
-    apply: 'build',
-    configResolved(config) {
-      outputDir = config.build.outDir
-    },
-    buildStart() {
-      this.addWatchFile(manifestPath)
-    },
-    generateBundle(options, bundle) {
-      const generatedManifestPath = join(outputDir, manifestFile)
-      if (existsSync(generatedManifestPath)) {
-        this.warn(
-          `${generatedManifestPath} already exists in output directory (likely from public/), skipping generation\n` +
-            `Consider using --emptyOutDir if outDir is outside of project root.`
-        )
-        return
-      }
-
-      // Find the remote entry chunk (emitted by the federation plugin)
-      const entryChunk = Object.values(bundle).find(
-        (chunk) => chunk.type === 'chunk' && chunk.name === remoteEntryName
-      )
-
-      if (!entryChunk) {
-        this.error('No entry chunk found')
-        return
-      }
-
-      let manifest = {}
-      if (existsSync(manifestPath)) {
-        try {
-          manifest = JSON.parse(readFileSync(manifestPath).toString())
-        } catch (err) {
-          this.error(
-            `Failed to parse manifest.json at ${manifestPath}: ${err.message}\n` +
-              `Please ensure manifest.json contains a valid JSON object.`
-          )
-          return
-        }
-      }
-
-      // set entryPoint
-      manifest.entrypoint = entryChunk.fileName
-
-      // Add manifest.json to the bundle
-      this.emitFile({
-        type: 'asset',
-        fileName: manifestFile,
-        source: JSON.stringify(manifest, null, 2)
-      })
-    }
-  }
+export interface ExtensionConfigOverrides extends ViteUserConfig {
+  /** Name of the extension, defaults to the package name */
+  name?: string
+  /** URL of the OpenCloud host web dev server, defaults to 'https://host.docker.internal:9201' */
+  opencloudWebHostUrl?: string
 }
 
-export const defineConfig = (overrides = {}) => {
-  return ({ mode }) => {
+export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
+  return ({ mode }: { mode: string }) => {
     const isProduction = mode === 'production'
     const isTesting = mode === 'test'
 
@@ -130,8 +53,8 @@ export const defineConfig = (overrides = {}) => {
       'https://host.docker.internal:9201'
 
     // Read merged metadata: manifest.json defaults + config.json overrides
-    function readAppConfig() {
-      let config = {}
+    function readAppConfig(): Record<string, unknown> | undefined {
+      let config: Record<string, unknown> = {}
       if (existsSync(manifestPath)) {
         try {
           const manifest = JSON.parse(readFileSync(manifestPath).toString())
@@ -178,18 +101,20 @@ export const defineConfig = (overrides = {}) => {
           ...(customHttps ? [] : [basicSsl({ name: 'opencloud' })]),
           {
             name: 'fix-sec-fetch-dest',
-            configureServer(server) {
-              server.middlewares.use((req, res, next) => {
-                // Vite skips its transform middleware for requests with sec-fetch-dest: document,
-                // which breaks direct browser navigation to JS files like remoteEntry.js.
-                if (
-                  (req.url?.endsWith('.js') || req.url?.endsWith('.mjs')) &&
-                  req.headers['sec-fetch-dest'] === 'document'
-                ) {
-                  req.headers['sec-fetch-dest'] = 'script'
+            configureServer(server: ViteDevServer) {
+              server.middlewares.use(
+                (req: IncomingMessage, _res: ServerResponse, next: () => void) => {
+                  // Vite skips its transform middleware for requests with sec-fetch-dest: document,
+                  // which breaks direct browser navigation to JS files like remoteEntry.js.
+                  if (
+                    (req.url?.endsWith('.js') || req.url?.endsWith('.mjs')) &&
+                    req.headers['sec-fetch-dest'] === 'document'
+                  ) {
+                    req.headers['sec-fetch-dest'] = 'script'
+                  }
+                  next()
                 }
-                next()
-              })
+              )
             }
           },
           ...(!isTesting
@@ -207,7 +132,7 @@ export const defineConfig = (overrides = {}) => {
               ]
             : []),
           tailwindcss(),
-          manifestPlugin(),
+          manifestPlugin(remoteEntryName),
           federationRegistrationClient({
             hostUrl,
             name,
@@ -243,7 +168,7 @@ export const defineConfig = (overrides = {}) => {
             reporter: 'lcov'
           }
         }
-      },
+      } satisfies ViteUserConfig,
       overrides
     )
   }
