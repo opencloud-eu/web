@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: breadcrumb in admin settings info section not clickable [[#2237](https://github.com/opencloud-eu/web/pull/2237)]
 - fix: metadataUrl in user manager [[#2239](https://github.com/opencloud-eu/web/pull/2239)]
 - fix: remove redundant header in admin settings info section [[#2236](https://github.com/opencloud-eu/web/pull/2236)]
 - fix: admin settings user avatar take too much space and divergend fro… [[#2222](https://github.com/opencloud-eu/web/pull/2222)]
