@@ -1,5 +1,5 @@
 <template>
-  <oc-avatar :user-name="userName" :src="avatarSrc" :width="36" />
+  <oc-avatar :user-name="userName" :src="avatarSrc" :width="width" />
 </template>
 
 <script setup lang="ts">
@@ -7,9 +7,14 @@ import { computed, onMounted, unref } from 'vue'
 import { useAvatarsStore, useLoadAvatars } from '../../composables'
 import { storeToRefs } from 'pinia'
 
-const { userId } = defineProps<{
+const {
+  userId,
+  userName,
+  width = 36
+} = defineProps<{
   userId: string
   userName: string
+  width?: number
 }>()
 
 const avatarsStore = useAvatarsStore()

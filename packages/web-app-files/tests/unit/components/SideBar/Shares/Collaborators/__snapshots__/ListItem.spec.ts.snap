@@ -5,7 +5,7 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
   <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
     <div class="flex items-center">
       <div>
-        <user-avatar-stub userid="3" username="einstein" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
+        <user-avatar-stub userid="3" username="einstein" width="36" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
       <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
         <div class="truncate"><span aria-hidden="true" class="files-collaborators-collaborator-name">einstein</span> <span class="sr-only">Share receiver name: einstein</span>
