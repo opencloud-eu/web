@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Fix password modal can be confirmed even if the password is empty [[#2219](https://github.com/opencloud-eu/web/pull/2219)]
 - fix: context menu does not close when favorite item [[#2212](https://github.com/opencloud-eu/web/pull/2212)]
 - fix: preserve query params on public link redirect [[#2199](https://github.com/opencloud-eu/web/pull/2199)]
 - fix: version check in conjunction with dev docker image leads to left… [[#2156](https://github.com/opencloud-eu/web/pull/2156)]
