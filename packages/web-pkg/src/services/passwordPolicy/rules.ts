@@ -26,7 +26,7 @@ export interface PasswordPolicyRule {
 }
 
 export class MustNotBeEmptyRule implements PasswordPolicyRule {
-  protected $gettext
+  protected $gettext: Language['$gettext']
 
   constructor({ $gettext }: Language) {
     this.$gettext = $gettext
@@ -55,7 +55,7 @@ export class MustNotBeEmptyRule implements PasswordPolicyRule {
 }
 
 export class MustContainRule implements PasswordPolicyRule {
-  protected $gettext
+  protected $gettext: Language['$gettext']
 
   constructor({ $gettext }: Language) {
     this.$gettext = $gettext
@@ -103,7 +103,7 @@ export class MustContainRule implements PasswordPolicyRule {
 }
 
 export class AtLeastBaseRule implements PasswordPolicyRule {
-  protected $gettext
+  protected $gettext: Language['$gettext']
 
   constructor({ $gettext }: Language) {
     this.$gettext = $gettext

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/src",
+    "types": ["node", "vite/client", "vitest/globals"]
+  },
+  "exclude": ["node_modules", "vite.config.ts"]
+}
