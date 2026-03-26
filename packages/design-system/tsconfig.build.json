@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist"
+  },
+  "exclude": ["node_modules", "vite.config.ts", "**/docs", "README.md", "**/tests", "**/*.spec.ts"]
+}

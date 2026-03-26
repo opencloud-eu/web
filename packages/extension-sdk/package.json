@@ -14,8 +14,10 @@
     "directory": "packages/extension-sdk"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-vue": "^6.0.0"
+    "@module-federation/vite": "^1.13.5",
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-vue": "^6.0.5"
   },
   "peerDependencies": {
     "vite": "^7.2.0 || ^8.0.0"

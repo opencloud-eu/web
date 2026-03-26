@@ -47,7 +47,7 @@
         <span class="sr-only">{{ $gettext('Avatar') }}</span>
       </template>
       <template #avatar="{ item }">
-        <user-avatar :user-id="item.id" :user-name="item.displayName" />
+        <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
       </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>

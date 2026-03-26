@@ -1,3 +1,5 @@
+import { ComponentPublicInstance } from 'vue'
+
 // can be used to stub oc-drop in tests
 export const ocDropStub = {
   name: 'OcDropStub',
@@ -6,4 +8,4 @@ export const ocDropStub = {
     hide: vi.fn(),
     show: vi.fn()
   }
-}
+} as ComponentPublicInstance<any>

@@ -78,7 +78,10 @@ export class UserManager extends OidcUserManager {
 
       post_logout_redirect_uri: buildUrl(options.router, '/'),
       accessTokenExpiringNotificationTimeInSeconds: options.accessTokenExpiryThreshold,
-      metadataUrl: urlJoin(options.configStore.serverUrl, '.well-known/openid-configuration'),
+      metadataUrl: urlJoin(
+        options.webfingerDiscoveryData.authority,
+        '.well-known/openid-configuration'
+      ),
 
       // we trigger the token renewal manually via a timer running in a web worker
       automaticSilentRenew: false,

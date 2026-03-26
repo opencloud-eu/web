@@ -3,10 +3,10 @@
     ref="template"
     :breadcrumbs="[
       {
-        text: $gettext('General')
+        text: $gettext('General'),
+        to: { name: 'admin-settings-general' }
       }
     ]"
-    :show-app-bar="false"
     :side-bar-available-panels="sideBarAvailablePanels"
   >
     <template #mainContent>

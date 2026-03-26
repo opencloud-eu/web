@@ -49,6 +49,7 @@ config = {
     ],
     "pnpmlint": True,
     "pnpmformat": True,
+    "check-types": True,
     "e2e": {
         "1": {
             "earlyFail": True,
@@ -239,7 +240,8 @@ def main(ctx):
         return translation_sync(ctx)
     is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
     if is_release_pr:
-        return licenseCheck()
+        license = licenseCheck()
+        return license + pipelinesDependsOn(notifyMatrixCheckSteps(), license)
 
     release = readyReleaseGo()
 
@@ -264,7 +266,8 @@ def beforePipelines(ctx):
            cacheOpenCloudPipeline(ctx) + \
            pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
            pipelinesDependsOn(pnpmlint(ctx, "lint"), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx))
+           pipelinesDependsOn(pnpmlint(ctx, "format"), pnpmCache(ctx)) + \
+           pipelinesDependsOn(pnpmTypeCheck(ctx), pnpmCache(ctx))
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -279,7 +282,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrix(), stagePipelines(ctx))
+    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrixCheckSteps(), stagePipelines(ctx))
 
 def translation_sync(ctx):
     return [{
@@ -385,6 +388,40 @@ def pnpmlint(ctx, lintType):
                 "event": "pull_request",
                 "path": {
                     "exclude": skipIfUnchanged(ctx, "lint"),
+                },
+            },
+        ],
+    }
+
+    pipelines.append(result)
+
+    return pipelines
+
+def pnpmTypeCheck(ctx):
+    pipelines = []
+    if "check-types" not in config:
+        return pipelines
+
+    if type(config["check-types"]) == "bool":
+        if not config["check-types"]:
+            return pipelines
+
+    steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + installPnpm() + typeCheck()
+    result = {
+        "name": "check-types",
+        "workspace": web_workspace,
+        "steps": steps,
+        "when": [
+            event["tag"],
+            event["cron"],
+            {
+                "event": ["push", "manual"],
+                "branch": config["branches"],
+            },
+            {
+                "event": "pull_request",
+                "path": {
+                    "exclude": skipIfUnchanged(ctx, "typecheck"),
                 },
             },
         ],
@@ -637,11 +674,11 @@ def e2eTests(ctx):
 
     return pipelines
 
-def notifyMatrix():
+def notifyMatrixCheckSteps():
     pipelines = []
 
     result = {
-        "name": "chat-notifications",
+        "name": "all-checks-finished",
         "skip_clone": True,
         "runs_on": ["success", "failure"],
         "steps": [
@@ -717,6 +754,15 @@ def installBrowsers():
             "pnpm exec playwright install",
             "pnpm exec playwright install --list",
             "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
+        ],
+    }]
+
+def typeCheck():
+    return [{
+        "name": "type-check",
+        "image": OC_CI_NODEJS_ALPINE,
+        "commands": [
+            "pnpm check:types",
         ],
     }]
 
@@ -826,10 +872,10 @@ def buildAndPublishRelease(ctx):
                     "git clean -fd",
                     "git diff",
                     "git status",
-                    "bash -c '[ \"%s\" == \"design-system\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
-                    "bash -c '[ \"%s\" == \"web-client\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
-                    "bash -c '[ \"%s\" == \"web-pkg\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
-                    "bash -c '[ \"%s\" == \"web-test-helpers\" ] && pnpm --filter \"%s\" vite build || true'" % (package, full_package_name),
+                    "bash -c '[ \"%s\" == \"design-system\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
+                    "bash -c '[ \"%s\" == \"web-client\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
+                    "bash -c '[ \"%s\" == \"web-pkg\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
+                    "bash -c '[ \"%s\" == \"web-test-helpers\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
                     # until https://github.com/pnpm/pnpm/issues/5775 is resolved, we print pnpm whoami because that fails when the npm_token is invalid
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm whoami",
                     "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm publish --no-git-checks --filter %s --access public --tag latest" % full_package_name,
@@ -1167,7 +1213,7 @@ def skipIfUnchanged(ctx, type):
     ]
 
     skip = []
-    if type == "e2e-tests" or type == "lint":
+    if type == "e2e-tests" or type == "lint" or type == "typecheck":
         skip = base + unit
     elif type == "unit-tests":
         skip = base + e2e

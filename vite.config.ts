@@ -21,6 +21,7 @@ import { getUserAgentRegex } from 'browserslist-useragent-regexp'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
+import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost'
 
 const dist = process.env.DIST_DIR || 'dist'
 
@@ -62,6 +63,7 @@ const getJson = async (url: string) => {
 
 type ConfigJsonResponseBody = {
   options: Record<string, any>
+  external_apps?: Array<{ id: string; path: string; config?: Record<string, unknown> }>
 }
 
 const getConfigJson = async (url: string) => {
@@ -127,6 +129,8 @@ export default defineConfig(({ mode, command }) => {
     })
   }
 
+  const registrationHost = federationRegistrationHost()
+
   return mergeConfig(
     {
       base: '',
@@ -185,6 +189,9 @@ export default defineConfig(({ mode, command }) => {
           exclude: ['crypto']
         }),
 
+        // Module Federation shared deps are registered at runtime in bootstrap.ts.
+        // The @module-federation/vite plugin is only used on the remote (extension-sdk) side.
+
         // We need to "undefine" `define` which is set by requirejs loaded in index.html
         treatAsCommonjs(),
 
@@ -214,6 +221,7 @@ export default defineConfig(({ mode, command }) => {
             ]
           })()
         }),
+        registrationHost,
         {
           name: '@opencloud-eu/vite-plugin-runtime-config',
           configureServer(server: ViteDevServer) {
@@ -221,13 +229,30 @@ export default defineConfig(({ mode, command }) => {
               if (request.url === '/config.json') {
                 try {
                   const configJson = await getConfigJson(configUrl)
+
+                  // Merge dynamically registered dev remotes into external_apps
+                  const devRemotes = registrationHost.api.getRemotes()
+                  if (devRemotes.size > 0) {
+                    const devApps = Array.from(devRemotes.values(), ({ metadata, ...rest }) => ({
+                      ...rest,
+                      ...(metadata && { config: metadata })
+                    }))
+                    const devIds = new Set(devApps.map((a) => a.id))
+                    configJson.external_apps = [
+                      ...(configJson.external_apps || []).filter((a) => !devIds.has(a.id)),
+                      ...devApps
+                    ]
+                  }
+
                   response.statusCode = 200
                   response.setHeader('Content-Type', 'application/json')
                   response.end(JSON.stringify(configJson))
                 } catch (e) {
                   response.statusCode = 502
                   response.setHeader('Content-Type', 'application/json')
-                  response.end(JSON.stringify(e))
+                  response.end(
+                    JSON.stringify({ error: e instanceof Error ? e.message : String(e) })
+                  )
                 }
                 return
               }

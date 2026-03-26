@@ -1,33 +1,38 @@
 <template>
   <div>
-    <h2 class="py-2" v-text="$gettext('Info')" />
-    <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
-      <template v-if="backendEdition">
-        <dt v-text="$gettext('Edition')" />
-        <dd v-text="backendEdition" />
-      </template>
-      <dt class="flex items-start" v-text="$gettext('Version')" />
-      <dd>
-        <div class="flex flex-col">
-          <span v-text="backendVersion" />
-          <version-check />
-        </div>
-      </dd>
-    </dl>
+    <div class="flex items-center">
+      <div
+        class="flex items-center justify-center bg-role-chrome w-[80px] h-[80px] rounded-full overflow-hidden mr-8"
+      >
+        <img :src="currentTheme.logo" class="px-2" alt="OpenCloud logo" />
+      </div>
+      <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
+        <template v-if="backendEdition">
+          <dt v-text="$gettext('Edition')" />
+          <dd v-text="backendEdition" />
+        </template>
+        <dt class="flex items-start" v-text="$gettext('Version')" />
+        <dd>
+          <div class="flex flex-col">
+            <span v-text="backendVersion" />
+            <version-check />
+          </div>
+        </dd>
+      </dl>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useCapabilityStore, VersionCheck } from '@opencloud-eu/web-pkg'
-import { useGettext } from 'vue3-gettext'
+import { useCapabilityStore, useThemeStore, VersionCheck } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'InfoSection',
   components: { VersionCheck },
   setup() {
     const capabilityStore = useCapabilityStore()
-    const { $gettext } = useGettext()
+    const { currentTheme } = useThemeStore()
 
     let backendProductName = ''
     let backendVersion = ''
@@ -44,7 +49,8 @@ export default defineComponent({
     return {
       backendProductName,
       backendVersion,
-      backendEdition
+      backendEdition,
+      currentTheme
     }
   }
 })

@@ -42,7 +42,7 @@ export default defineComponent({
     }
   },
   emits: ['confirm', 'update:confirmDisabled'],
-  setup(props, { expose }) {
+  setup(props, { emit, expose }) {
     const { showMessage, showErrorMessage } = useMessages()
     const clientService = useClientService()
     const passwordPolicyService = usePasswordPolicyService()
@@ -52,9 +52,15 @@ export default defineComponent({
     const password = ref('')
     const errorMessage = ref<string>()
 
+    emit('update:confirmDisabled', true)
+
     const onInput = (value: string) => {
       password.value = value
       errorMessage.value = undefined
+
+      if (!value) {
+        emit('update:confirmDisabled', true)
+      }
     }
 
     const onConfirm = async () => {

@@ -151,10 +151,7 @@ export default defineComponent({
 
     const menuItemsSidebar = computed(() => {
       return [
-        ...unref(favoriteActions).map((action) => {
-          action.keepOpen = true
-          return action
-        }),
+        ...unref(favoriteActions),
         ...unref(showDetailsActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
       ].filter((item) => item.isVisible(unref(actionOptions)))

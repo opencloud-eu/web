@@ -1,4 +1,10 @@
-import { buildApplication, loadApplication, NextApplication } from './application'
+import { ModuleFederation } from '@module-federation/runtime'
+import {
+  buildApplication,
+  loadApplication,
+  NextApplication,
+  registerSharedModules
+} from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
 import { loadTheme } from '../helpers/theme'
@@ -226,6 +232,9 @@ export const initializeApplications = async ({
     applicationScript: ClassicApplicationScript
   }
 
+  const federation = new ModuleFederation({ name: 'opencloud-web', remotes: [] })
+  registerSharedModules(federation)
+
   let applicationKeys: string[] = []
   let applicationResponses: PromiseSettledResult<ApplicationResponse>[] = []
   if (appProviderApps) {
@@ -233,6 +242,7 @@ export const initializeApplications = async ({
     applicationResponses = await Promise.allSettled(
       appProviderService.appNames.map((appName) =>
         loadApplication({
+          federation,
           appName,
           applicationKey: `web-app-external-${appName}`,
           applicationPath: 'web-app-external',
@@ -248,13 +258,15 @@ export const initializeApplications = async ({
       })),
       ...configStore.externalApps
     ]
+
     applicationKeys = rawApplications.map((rawApplication) => rawApplication.path)
     applicationResponses = await Promise.allSettled(
-      rawApplications.map((rawApplications) =>
+      rawApplications.map((rawApplication) =>
         loadApplication({
-          applicationKey: rawApplications.path,
-          applicationPath: rawApplications.path,
-          applicationConfig: rawApplications.config || {},
+          federation,
+          applicationKey: rawApplication.path,
+          applicationPath: rawApplication.path,
+          applicationConfig: rawApplication.config || {},
           configStore
         })
       )
