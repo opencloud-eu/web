@@ -233,10 +233,10 @@ export default defineConfig(({ mode, command }) => {
                   // Merge dynamically registered dev remotes into external_apps
                   const devRemotes = registrationHost.api.getRemotes()
                   if (devRemotes.size > 0) {
-                    const devApps = Array.from(
-                      devRemotes.values(),
-                      ({ metadata, ...rest }) => ({ ...rest, ...(metadata && { config: metadata }) })
-                    )
+                    const devApps = Array.from(devRemotes.values(), ({ metadata, ...rest }) => ({
+                      ...rest,
+                      ...(metadata && { config: metadata })
+                    }))
                     const devIds = new Set(devApps.map((a) => a.id))
                     configJson.external_apps = [
                       ...(configJson.external_apps || []).filter((a) => !devIds.has(a.id)),
@@ -250,7 +250,9 @@ export default defineConfig(({ mode, command }) => {
                 } catch (e) {
                   response.statusCode = 502
                   response.setHeader('Content-Type', 'application/json')
-                  response.end(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }))
+                  response.end(
+                    JSON.stringify({ error: e instanceof Error ? e.message : String(e) })
+                  )
                 }
                 return
               }

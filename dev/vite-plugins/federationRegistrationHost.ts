@@ -3,7 +3,6 @@
 // tracks them with TTL-based cleanup, and exposes them via plugin API.
 
 import type { Plugin, ViteDevServer } from 'vite'
-import { isEqual } from 'lodash-es'
 
 interface FederationRemote {
   id: string
@@ -24,6 +23,10 @@ interface FederationRegistrationHostOptions {
   onRemoteRemoved?: (id: string, ctx: { server: ViteDevServer }) => void
 }
 
+function isEqual(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
 export function federationRegistrationHost({
   path = '/_dev/remotes',
   ttl = 15_000,
@@ -39,16 +42,8 @@ export function federationRegistrationHost({
     apply: 'serve',
 
     api: {
-      getRemotes(): Map<string, FederationRemote> {
-        const result = new Map<string, FederationRemote>()
-        for (const [id, entry] of remotes) {
-          result.set(id, {
-            id: entry.id,
-            path: entry.path,
-            ...(entry.metadata && { metadata: entry.metadata })
-          })
-        }
-        return result
+      getRemotes() {
+        return remotes
       }
     },
 
@@ -143,9 +138,7 @@ export function federationRegistrationHost({
         if (request.url === path && request.method === 'GET') {
           response.statusCode = 200
           response.setHeader('Content-Type', 'application/json')
-          response.end(
-            JSON.stringify(Array.from(remotes.values(), ({ lastSeen, ...rest }) => rest))
-          )
+          response.end(JSON.stringify([...remotes.values()]))
           return
         }
 
