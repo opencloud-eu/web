@@ -185,6 +185,9 @@ export default defineConfig(({ mode, command }) => {
           exclude: ['crypto']
         }),
 
+        // Module Federation shared deps are registered at runtime in bootstrap.ts.
+        // The @module-federation/vite plugin is only used on the remote (extension-sdk) side.
+
         // We need to "undefine" `define` which is set by requirejs loaded in index.html
         treatAsCommonjs(),
 

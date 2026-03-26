@@ -7,52 +7,27 @@ import { join } from 'path'
 import { cwd } from 'process'
 import { readFileSync, existsSync } from 'fs'
 import tailwindcss from '@tailwindcss/vite'
-
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import vue from '@vitejs/plugin-vue'
+import { federation } from '@module-federation/vite'
+import { externalModules } from './externalModules.mjs'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
-/**
- * Capture `document.currentScript` before the UMD factory is called.
- *
- * Vite's UMD URL resolution uses `document.currentScript` to resolve relative
- * asset paths. However, `document.currentScript` is only set by the browser
- * during synchronous script execution. When a module loader like RequireJS
- * calls the UMD factory callback asynchronously, `document.currentScript` is
- * `null`, causing a fallback to `document.baseURI` and incorrect URL resolution.
- *
- * This plugin captures `document.currentScript` at the top of the script
- * (while it's still valid) and replaces references inside with the captured
- * value.
- *
- * Upstreamed to Vite: https://github.com/dschmidt/vite/tree/fix/umd-current-script-polyfill
- */
-const completeUmdCurrentScriptPlugin = () => {
-  return {
-    name: 'vite:complete-umd-current-script',
-    renderChunk(code, _chunk, opts) {
-      if (opts.format !== 'umd') return
-      if (!code.includes('document.currentScript')) return
-
-      return {
-        code:
-          'var __vite_currentScript = typeof document !== "undefined" ? document.currentScript : null;' +
-          code.replaceAll('document.currentScript', '__vite_currentScript'),
-        map: null
-      }
-    }
-  }
-}
-
 const certsDir = process.env.OPENCLOUD_CERTS_DIR
-const defaultHttps = () =>
-  certsDir && {
-    key: readFileSync(join(certsDir, 'server.key')),
-    cert: readFileSync(join(certsDir, 'server.crt'))
-  }
+const customHttps = certsDir
+  ? {
+      key: readFileSync(join(certsDir, 'server.key')),
+      cert: readFileSync(join(certsDir, 'server.crt'))
+    }
+  : null
 
 const manifestFile = 'manifest.json'
 const manifestPath = join('./src/', manifestFile)
+const remoteEntryName = 'remoteEntry'
+const remoteEntryExt = '.mjs'
+
+// Generates manifest.json for OpenCloud app discovery.
 const manifestPlugin = () => {
   let outputDir
 
@@ -75,9 +50,9 @@ const manifestPlugin = () => {
         return
       }
 
-      // Find the entry chunk
+      // Find the remote entry chunk (emitted by the federation plugin)
       const entryChunk = Object.values(bundle).find(
-        (chunk) => chunk.type === 'chunk' && chunk.isEntry
+        (chunk) => chunk.type === 'chunk' && chunk.name === remoteEntryName
       )
 
       if (!entryChunk) {
@@ -104,7 +79,7 @@ const manifestPlugin = () => {
       // Add manifest.json to the bundle
       this.emitFile({
         type: 'asset',
-        fileName: 'manifest.json',
+        fileName: manifestFile,
         source: JSON.stringify(manifest, null, 2)
       })
     }
@@ -124,26 +99,7 @@ export const defineConfig = (overrides = {}) => {
     const name = overrides.name || packageJson.name
 
     // set default config
-    const { https = defaultHttps(), port = 9210 } = overrides?.server || {}
-    const isHttps = !!https
-
-    // keep in sync with packages/web-runtime/src/container/application/index.ts
-    const external = [
-      'vue',
-      'luxon',
-      'pinia',
-      'vue3-gettext',
-
-      '@opencloud-eu/web-client',
-      '@opencloud-eu/web-client/graph',
-      '@opencloud-eu/web-client/graph/generated',
-      '@opencloud-eu/web-client/ocs',
-      '@opencloud-eu/web-client/sse',
-      '@opencloud-eu/web-client/webdav',
-      '@opencloud-eu/web-pkg',
-      'web-client',
-      'web-pkg'
-    ]
+    const { port = 9210 } = overrides?.server || {}
 
     return mergeConfig(
       {
@@ -152,41 +108,58 @@ export const defineConfig = (overrides = {}) => {
           cssCodeSplit: true,
           minify: isProduction,
           outDir: distDir,
-          // use rollupOptions instead of rolldownOptions as long as we support vite 7
           rollupOptions: {
-            external,
-            preserveEntrySignatures: 'strict',
             input: {
               [name]: './src/index.ts'
             },
             output: {
-              format: 'umd',
-              name,
-              // only used to avoid the MISSING_GLOBAL_NAME warning
-              globals: Object.fromEntries(
-                external.map((e) => [
-                  e,
-                  e.replace(/^@/, '').replace(/[/-](\w)/g, (_, c) => c.toUpperCase())
-                ])
-              ),
-              entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}.js`)
+              entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}${remoteEntryExt}`),
+              chunkFileNames: join('js', `[name]-[hash]${remoteEntryExt}`)
             }
           }
         },
         plugins: [
           vue({
-            // set to true when switching to esm
             customElement: false,
             ...(isTesting && { template: { compilerOptions: { whitespace: 'preserve' } } })
           }),
-          manifestPlugin(),
-          completeUmdCurrentScriptPlugin(),
-          tailwindcss()
+          ...(customHttps ? [] : [basicSsl({ name: 'opencloud' })]),
+          {
+            name: 'fix-sec-fetch-dest',
+            configureServer(server) {
+              server.middlewares.use((req, res, next) => {
+                // Vite skips its transform middleware for requests with sec-fetch-dest: document,
+                // which breaks direct browser navigation to JS files like remoteEntry.js.
+                if (
+                  (req.url?.endsWith('.js') || req.url?.endsWith('.mjs')) &&
+                  req.headers['sec-fetch-dest'] === 'document'
+                ) {
+                  req.headers['sec-fetch-dest'] = 'script'
+                }
+                next()
+              })
+            }
+          },
+          federation({
+            name,
+            exposes: { '.': './src/index.ts' },
+            filename: `${remoteEntryName}${isProduction ? '-[hash]' : ''}${remoteEntryExt}`,
+            shared: Object.fromEntries(
+              externalModules.map((pkg) => [pkg, { singleton: true, import: false }])
+            ),
+            manifest: false,
+            dts: false
+          }),
+          tailwindcss(),
+          manifestPlugin()
         ],
         server: {
+          origin: `https://host.docker.internal:${port}`,
+          host: 'host.docker.internal',
           port,
           strictPort: true,
-          ...(isHttps && https)
+          cors: true,
+          ...(customHttps && { https: customHttps })
         },
         test: {
           globals: true,
