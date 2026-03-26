@@ -18,23 +18,13 @@ $ yarn add @opencloud-eu/extension-sdk --dev
 
 ## Usage
 
-You can use the OpenCloud vite config via the `defineConfig` method provided by this package. The following example showcases how your `vite.config.ts` file could look like:
+You can use the OpenCloud vite config via the `defineConfig` method provided by this package. The following example showcases what your `vite.config.ts` file could look like:
 
 ```ts
 import { defineConfig } from '@opencloud-eu/extension-sdk'
 
 export default defineConfig({
-  name: 'your-app',
-  server: {
-    port: 9700
-  },
-  build: {
-    rolldownOptions: {
-      output: {
-        entryFileNames: 'your-app.js'
-      }
-    }
-  }
+  name: 'your-app'
 })
 ```
 
