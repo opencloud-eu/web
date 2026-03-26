@@ -2,9 +2,9 @@
   "type": "module",
   "devDependencies": {
     "@ai-zen/node-fetch-event-source": "^2.1.4",
-    "fast-xml-parser": "^5.0.0",
+    "fast-xml-parser": "^5.5.9",
     "lodash-es": "4.17.23",
-    "luxon": "^3.5.0",
-    "uuid": "^11.0.0"
+    "luxon": "^3.7.2",
+    "uuid": "^13.0.0"
   }
 }
