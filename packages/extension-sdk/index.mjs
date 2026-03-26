@@ -125,7 +125,7 @@ export const defineConfig = (overrides = {}) => {
     // set default config
     const { port = 9210 } = overrides?.server || {}
     const hostUrl =
-      overrides?.hostUrl ||
+      overrides?.opencloudWebHostUrl ||
       process.env.OPENCLOUD_WEB_HOST_URL ||
       'https://host.docker.internal:9201'
 
