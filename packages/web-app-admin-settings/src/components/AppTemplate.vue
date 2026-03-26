@@ -148,11 +148,6 @@ export default defineComponent({
       type: Array as PropType<Action[]>,
       required: false,
       default: (): Action[] => []
-    },
-    showAppBar: {
-      type: Boolean,
-      required: false,
-      default: true
     }
   },
   setup() {
