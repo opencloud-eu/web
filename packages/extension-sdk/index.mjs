@@ -11,6 +11,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 import vue from '@vitejs/plugin-vue'
 import { federation } from '@module-federation/vite'
 import { externalModules } from './externalModules.mjs'
+import { federationRegistrationClient } from './federationRegistrationClient.mjs'
 
 const distDir = process.env.OPENCLOUD_EXTENSION_DIST_DIR || 'dist'
 
@@ -22,8 +23,31 @@ const customHttps = certsDir
     }
   : null
 
+// Deep merge objects, replace arrays (matches mergo.WithOverride behavior on the Go side).
+function deepMerge(target, source) {
+  const result = { ...target }
+  for (const key of Object.keys(source)) {
+    const tv = target[key]
+    const sv = source[key]
+    if (
+      sv &&
+      typeof sv === 'object' &&
+      !Array.isArray(sv) &&
+      tv &&
+      typeof tv === 'object' &&
+      !Array.isArray(tv)
+    ) {
+      result[key] = deepMerge(tv, sv)
+    } else {
+      result[key] = sv
+    }
+  }
+  return result
+}
+
 const manifestFile = 'manifest.json'
 const manifestPath = join('./src/', manifestFile)
+const appConfigPath = join('./src/', 'config.json')
 const remoteEntryName = 'remoteEntry'
 const remoteEntryExt = '.mjs'
 
@@ -100,6 +124,34 @@ export const defineConfig = (overrides = {}) => {
 
     // set default config
     const { port = 9210 } = overrides?.server || {}
+    const hostUrl =
+      overrides?.opencloudWebHostUrl ||
+      process.env.OPENCLOUD_WEB_HOST_URL ||
+      'https://host.docker.internal:9201'
+
+    // Read merged metadata: manifest.json defaults + config.json overrides
+    function readAppConfig() {
+      let config = {}
+      if (existsSync(manifestPath)) {
+        try {
+          const manifest = JSON.parse(readFileSync(manifestPath).toString())
+          if (manifest.config) {
+            config = manifest.config
+          }
+        } catch {
+          // ignore malformed manifest
+        }
+      }
+      if (existsSync(appConfigPath)) {
+        try {
+          const overrides = JSON.parse(readFileSync(appConfigPath).toString())
+          config = deepMerge(config, overrides)
+        } catch {
+          // ignore malformed config
+        }
+      }
+      return Object.keys(config).length > 0 ? config : undefined
+    }
 
     return mergeConfig(
       {
@@ -151,13 +203,19 @@ export const defineConfig = (overrides = {}) => {
             dts: false
           }),
           tailwindcss(),
-          manifestPlugin()
+          manifestPlugin(),
+          federationRegistrationClient({
+            hostUrl,
+            name,
+            entryPoint: `${remoteEntryName}${remoteEntryExt}`,
+            getMetadata: readAppConfig,
+            metadataWatchFiles: [manifestPath, appConfigPath]
+          })
         ],
         server: {
           origin: `https://host.docker.internal:${port}`,
           host: 'host.docker.internal',
           port,
-          strictPort: true,
           cors: true,
           ...(customHttps && { https: customHttps })
         },
