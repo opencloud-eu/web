@@ -10,6 +10,21 @@ describe('SetLinkPasswordModal', () => {
 
     expect(wrapper.find('oc-text-input-stub').exists()).toBeTruthy()
   })
+  it('should disable the confirm button on mount', () => {
+    const { wrapper } = getWrapper()
+
+    expect(wrapper.emitted('update:confirmDisabled')).toBeTruthy()
+    expect(wrapper.emitted('update:confirmDisabled')![0]).toEqual([true])
+  })
+  it('should disable the confirm button when the password is cleared', async () => {
+    const { wrapper } = getWrapper()
+
+    wrapper.vm.onInput('somepassword')
+    wrapper.vm.onInput('')
+
+    const emitted = wrapper.emitted('update:confirmDisabled')!
+    expect(emitted[emitted.length - 1]).toEqual([true])
+  })
   describe('method "onConfirm"', () => {
     it('updates the link', async () => {
       const { wrapper } = getWrapper()
