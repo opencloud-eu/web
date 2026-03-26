@@ -6,7 +6,6 @@
         text: $gettext('General')
       }
     ]"
-    :show-app-bar="false"
     :side-bar-available-panels="sideBarAvailablePanels"
   >
     <template #mainContent>
