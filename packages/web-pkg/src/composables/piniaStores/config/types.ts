@@ -45,6 +45,7 @@ export type ScriptConfig = z.infer<typeof ScriptConfigSchema>
 
 const OptionsConfigSchema = z.object({
   cernFeatures: z.boolean().optional(),
+  openFilesInNewTab: z.boolean().optional(),
   concurrentRequests: z
     .object({
       resourceBatchActions: z.number().optional(),

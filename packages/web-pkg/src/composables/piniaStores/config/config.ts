@@ -7,6 +7,7 @@ import { useAppsStore } from '../apps'
 
 const defaultOptions = {
   cernFeatures: false,
+  openFilesInNewTab: false,
   concurrentRequests: {
     resourceBatchActions: 4,
     shares: {
@@ -88,6 +89,9 @@ export const useConfigStore = defineStore('config', () => {
       // routing will not be loaded from config, but set based on cernFeatures option
       unref(options).routing.idBased = !unref(options).cernFeatures
       unref(options).routing.fullShareOwnerPaths = unref(options).cernFeatures
+      // openFilesInNewTab can be set independently or derived from cernFeatures
+      unref(options).openFilesInNewTab =
+        unref(options).openFilesInNewTab || unref(options).cernFeatures
     }
 
     if (data.external_apps) {
