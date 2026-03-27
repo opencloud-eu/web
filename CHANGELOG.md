@@ -61,6 +61,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.20.6 [[#2214](https://github.com/opencloud-eu/web/pull/2214)]
 - chore(deps): update dependency happy-dom to v20.8.9 [[#2242](https://github.com/opencloud-eu/web/pull/2242)]
 - chore(deps): update pnpm to v10.33.0 [[#2215](https://github.com/opencloud-eu/web/pull/2215)]
 - chore(deps): update node.js to v24.14.1 [[#2216](https://github.com/opencloud-eu/web/pull/2216)]
