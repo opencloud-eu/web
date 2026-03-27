@@ -1,6 +1,7 @@
 import { unref } from 'vue'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
+import { Router } from 'vue-router'
 import {
   AuthServiceInterface,
   WebWorker,
@@ -86,7 +87,10 @@ function getWrapper({
 }) {
   return {
     wrapper: getComposableWrapper(() => {
-      const instance = useTokenTimerWorker({ authService: mock<AuthServiceInterface>() })
+      const instance = useTokenTimerWorker({
+        authService: mock<AuthServiceInterface>(),
+        router: mock<Router>()
+      })
 
       const webWorkersStore = useWebWorkersStore()
 
