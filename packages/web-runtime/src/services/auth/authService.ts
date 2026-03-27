@@ -121,7 +121,7 @@ export class AuthService implements AuthServiceInterface {
         const { options } = this.configStore
 
         if (!options.embed?.enabled || !options.embed?.delegateAuthentication) {
-          this.tokenTimerWorker = useTokenTimerWorker({ authService: this })
+          this.tokenTimerWorker = useTokenTimerWorker({ authService: this, router: this.router })
           this.tokenTimerWorker.startWorker()
         }
       }
@@ -144,13 +144,8 @@ export class AuthService implements AuthServiceInterface {
 
       if (!this.userManager.areEventHandlersRegistered) {
         this.userManager.events.addAccessTokenExpired((): void => {
-          const handleExpirationError = () => {
-            console.error('AccessToken Expired')
-            this.handleAuthError(unref(this.router.currentRoute), { forceLogout: true })
-          }
-
-          // retry silent signin once, force logout if it fails
-          this.userManager.signinSilent().catch(handleExpirationError)
+          console.debug('AccessToken Expired')
+          // error (+ potential retry) is handled by the token timer worker
         })
 
         this.userManager.events.addAccessTokenExpiring(() => {
@@ -162,6 +157,10 @@ export class AuthService implements AuthServiceInterface {
             expiry: user.expires_in,
             expiryThreshold: this.accessTokenExpiryThreshold
           })
+
+          if (!this.tokenTimerInitialized) {
+            this.tokenTimerInitialized = true
+          }
 
           console.debug(`New User Loaded`)
           try {
@@ -186,7 +185,7 @@ export class AuthService implements AuthServiceInterface {
           }
         })
         this.userManager.events.addSilentRenewError(async (error) => {
-          console.error('Silent Renew Error：', error)
+          console.error('Silent Renew Error:', error)
           await this.handleAuthError(unref(this.router.currentRoute))
         })
 
@@ -290,10 +289,7 @@ export class AuthService implements AuthServiceInterface {
     return '/?' + new URLSearchParams(currentQuery as Record<string, string>).toString()
   }
 
-  public async handleAuthError(
-    route: RouteLocation,
-    { forceLogout = false }: { forceLogout?: boolean } = {}
-  ) {
+  public async handleAuthError(route: RouteLocation) {
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
@@ -304,20 +300,22 @@ export class AuthService implements AuthServiceInterface {
       })
     }
     if (isUserContextRequired(this.router, route) || isIdpContextRequired(this.router, route)) {
-      if (forceLogout) {
+      const throwAuthError = async () => {
+        await this.userManager.removeUser('authError')
         this.tokenTimerWorker?.resetTokenTimer()
-        await this.logoutUser()
-        return
       }
-
       const user = await this.userManager.getUser()
-      if (user?.expires_in !== undefined && user.expires_in < 0) {
-        // token expired, simply return and let the regular auth flow do its thing
+      if (user?.expired === true) {
+        // token expired, attempt an immediate silent signin
+        try {
+          await this.userManager.signinSilent()
+        } catch {
+          await throwAuthError()
+        }
         return
       }
 
-      await this.userManager.removeUser('authError')
-      this.tokenTimerWorker?.resetTokenTimer()
+      await throwAuthError()
       return
     }
     // authGuard is taking care of redirecting the user to the
