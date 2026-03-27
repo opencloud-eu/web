@@ -56,7 +56,7 @@ export default defineComponent({
       } catch (e) {
         console.error(e)
         if (e.response?.status === 401) {
-          return authService.handleAuthError(unref(route), { forceLogout: true })
+          return authService.handleAuthError(unref(route))
         }
         hasError.value = true
       }
