@@ -132,7 +132,7 @@ export default defineComponent({
           href: props.action.href(props.actionOptions)
         }),
         ...(['router-link', 'a'].includes(unref(componentType)) && {
-          target: options.value.cernFeatures ? ('_blank' as const) : ('_self' as const)
+          target: options.value.openFilesInNewTab ? ('_blank' as const) : ('_self' as const)
         })
       }
     })

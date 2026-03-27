@@ -238,7 +238,7 @@ export const useFileActions = () => {
     const routeName = appFileExtension.routeName || appFileExtension.app
     const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
 
-    if (unref(options).cernFeatures) {
+    if (unref(options).openFilesInNewTab) {
       const path = router.resolve(routeOpts).href
       const target = `${appFileExtension.routeName}-${resource.path}`
 
