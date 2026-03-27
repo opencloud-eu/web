@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: idp logout on network errors [[#2230](https://github.com/opencloud-eu/web/pull/2230)]
 - fix: breadcrumb in admin settings info section not clickable [[#2237](https://github.com/opencloud-eu/web/pull/2237)]
 - fix: metadataUrl in user manager [[#2239](https://github.com/opencloud-eu/web/pull/2239)]
 - fix: remove redundant header in admin settings info section [[#2236](https://github.com/opencloud-eu/web/pull/2236)]
