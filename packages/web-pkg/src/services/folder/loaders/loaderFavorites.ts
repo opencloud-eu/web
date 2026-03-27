@@ -26,6 +26,7 @@ export class FolderLoaderFavorites implements FolderLoader {
       resourcesStore.setAncestorMetaData({})
 
       const { resources } = yield clientService.webdav.search('is:favorite', {
+        searchLimit: null,
         signal: signal1
       })
 
