@@ -57,6 +57,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2217](https://github.com/opencloud-eu/web/pull/2217)]
+- fix(deps): update dependency @sentry/vue to v10.46.0 [[#2225](https://github.com/opencloud-eu/web/pull/2225)]
+- chore(deps): update traefik docker tag to v3.6.12 [[#2240](https://github.com/opencloud-eu/web/pull/2240)]
+- chore(deps): update dependency happy-dom to v20.8.8 [security] [[#2241](https://github.com/opencloud-eu/web/pull/2241)]
 - Dependency bumps across packages [[#2233](https://github.com/opencloud-eu/web/pull/2233)]
 - chore(deps): update typescript-eslint monorepo to v8.57.2 [[#2206](https://github.com/opencloud-eu/web/pull/2206)]
 - chore(deps): update dependency fast-xml-parser to v5.5.9 [[#2203](https://github.com/opencloud-eu/web/pull/2203)]
