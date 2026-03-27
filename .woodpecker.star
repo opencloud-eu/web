@@ -239,7 +239,8 @@ def main(ctx):
         return translation_sync(ctx)
     is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
     if is_release_pr:
-        return licenseCheck()
+        license = licenseCheck()
+        return license + pipelinesDependsOn(notifyMatrixCheckSteps(), license)
 
     release = readyReleaseGo()
 
@@ -279,7 +280,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrix(), stagePipelines(ctx))
+    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrixCheckSteps(), stagePipelines(ctx))
 
 def translation_sync(ctx):
     return [{
@@ -662,11 +663,11 @@ def e2eTests(ctx):
 
     return pipelines
 
-def notifyMatrix():
+def notifyMatrixCheckSteps():
     pipelines = []
 
     result = {
-        "name": "chat-notifications",
+        "name": "all-checks-finished",
         "skip_clone": True,
         "runs_on": ["success", "failure"],
         "steps": [
