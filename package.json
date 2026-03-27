@@ -68,7 +68,7 @@
     "commander": "14.0.3",
     "eslint": "10.1.0",
     "franc-min": "^6.2.0",
-    "happy-dom": "20.8.8",
+    "happy-dom": "20.8.9",
     "license-checker-rseidelsohn": "4.4.2",
     "node-fetch": "3.3.2",
     "pino": "10.3.1",
