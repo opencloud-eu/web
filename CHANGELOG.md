@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: add missing breadcrumb in favorites view [[#2243](https://github.com/opencloud-eu/web/pull/2243)]
 - fix: idp logout on network errors [[#2230](https://github.com/opencloud-eu/web/pull/2230)]
 - fix: breadcrumb in admin settings info section not clickable [[#2237](https://github.com/opencloud-eu/web/pull/2237)]
 - fix: metadataUrl in user manager [[#2239](https://github.com/opencloud-eu/web/pull/2239)]
