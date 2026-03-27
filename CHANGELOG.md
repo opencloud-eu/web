@@ -57,6 +57,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency happy-dom to v20.8.9 [[#2242](https://github.com/opencloud-eu/web/pull/2242)]
+- chore(deps): update pnpm to v10.33.0 [[#2215](https://github.com/opencloud-eu/web/pull/2215)]
+- chore(deps): update node.js to v24.14.1 [[#2216](https://github.com/opencloud-eu/web/pull/2216)]
 - chore(deps): update devdependencies (non-major) [[#2217](https://github.com/opencloud-eu/web/pull/2217)]
 - fix(deps): update dependency @sentry/vue to v10.46.0 [[#2225](https://github.com/opencloud-eu/web/pull/2225)]
 - chore(deps): update traefik docker tag to v3.6.12 [[#2240](https://github.com/opencloud-eu/web/pull/2240)]
