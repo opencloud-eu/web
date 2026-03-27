@@ -91,7 +91,7 @@ export const useConfigStore = defineStore('config', () => {
       unref(options).routing.fullShareOwnerPaths = unref(options).cernFeatures
       // openFilesInNewTab can be set independently or derived from cernFeatures
       unref(options).openFilesInNewTab =
-          unref(options).openFilesInNewTab || unref(options).cernFeatures
+        unref(options).openFilesInNewTab || unref(options).cernFeatures
     }
 
     if (data.external_apps) {
