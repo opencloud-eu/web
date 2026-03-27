@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" :has-bulk-actions="true" />
+      <app-bar :view-modes="viewModes" :has-bulk-actions="true" :breadcrumbs="breadcrumbs" />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message
@@ -54,9 +54,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
-import { useConfigStore, useResourcesStore, useLoadPreview } from '@opencloud-eu/web-pkg'
+import {
+  useConfigStore,
+  useResourcesStore,
+  useLoadPreview,
+  createLocationCommon
+} from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { FileSideBar, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -73,6 +78,8 @@ import { useResourcesViewDefaults } from '../composables'
 import { useFileActions } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { folderViewsFavoritesExtensionPoint } from '../extensionPoints'
+import { useGettext } from 'vue3-gettext'
+import { v4 as uuidV4 } from 'uuid'
 
 export default defineComponent({
   components: {
@@ -91,6 +98,7 @@ export default defineComponent({
   setup() {
     const { getMatchingSpace } = useGetMatchingSpace()
     const configStore = useConfigStore()
+    const { $gettext } = useGettext()
     const { options: configOptions } = storeToRefs(configStore)
 
     const resourcesStore = useResourcesStore()
@@ -99,6 +107,17 @@ export default defineComponent({
       folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
     })
     const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
+
+    const breadcrumbs = computed(() => {
+      return [
+        {
+          id: uuidV4(),
+          text: $gettext('Favorites'),
+          to: createLocationCommon('files-common-favorites'),
+          isStaticNav: true
+        }
+      ]
+    })
 
     let loadResourcesEventToken: string
     onMounted(() => {
@@ -119,7 +138,8 @@ export default defineComponent({
       ...resourcesViewDefaults,
       configOptions,
       getMatchingSpace,
-      loadPreview
+      loadPreview,
+      breadcrumbs
     }
   },
 
