@@ -2,6 +2,7 @@ import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom'
 import { DirectiveBinding } from 'vue'
 
 interface TooltipData {
+  content: string
   tooltipEl: HTMLElement | null
   showHandler: () => void
   hideHandler: () => void
@@ -11,7 +12,7 @@ interface TooltipData {
 
 const tooltipMap = new WeakMap<HTMLElement, TooltipData>()
 
-const showTooltip = async (el: HTMLElement, content: string) => {
+const showTooltip = async (el: HTMLElement) => {
   const data = tooltipMap.get(el)
   if (!data || data.tooltipEl) {
     return
@@ -19,7 +20,11 @@ const showTooltip = async (el: HTMLElement, content: string) => {
 
   const tooltipEl = document.createElement('div')
   tooltipEl.setAttribute('role', 'tooltip')
-  tooltipEl.textContent = content
+
+  const textEl = document.createElement('span')
+  textEl.classList.add('oc-tooltip-content')
+  textEl.textContent = data.content
+  tooltipEl.appendChild(textEl)
 
   const arrowEl = document.createElement('div')
   arrowEl.classList.add('arrow')
@@ -94,15 +99,18 @@ const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
   }
 
   const existingTooltip = tooltipMap.get(el)
-  if (existingTooltip && existingTooltip.tooltipEl) {
-    const contentEl = existingTooltip.tooltipEl
-    if (contentEl) {
-      contentEl.textContent = value
+  if (existingTooltip) {
+    existingTooltip.content = value
+    if (existingTooltip.tooltipEl) {
+      const contentEl = existingTooltip.tooltipEl.querySelector('.oc-tooltip-content')
+      if (contentEl) {
+        contentEl.textContent = value
+      }
     }
     return
   }
 
-  const showHandler = () => showTooltip(el, value)
+  const showHandler = () => showTooltip(el)
   const hideHandler = () => hideTooltip(el)
   const clickHandler = () => hideTooltip(el)
   const escapeHandler = (e: KeyboardEvent) => {
@@ -112,6 +120,7 @@ const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
   }
 
   tooltipMap.set(el, {
+    content: value,
     tooltipEl: null,
     showHandler,
     hideHandler,
