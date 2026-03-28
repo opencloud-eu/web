@@ -1,7 +1,12 @@
 import { computed, unref } from 'vue'
 import { isLocationCommonActive, isLocationSpacesActive } from '../../../router'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions, useIsFilesAppActive } from '../../actions'
+import {
+  FileAction,
+  FileActionOptions,
+  SpaceActionOptions,
+  useIsFilesAppActive
+} from '../../actions'
 import { useRouter } from '../../router'
 import { useClientService } from '../../clientService'
 import { useAbility } from '../../ability'
@@ -63,7 +68,12 @@ export const useFileActionsFavorite = () => {
   const actions = computed((): FileAction[] => [
     {
       name: 'favorite',
-      icon: 'star',
+      icon: ({ resources }: SpaceActionOptions) => {
+        if (resources.every((r) => r.starred)) {
+          return 'star-off'
+        }
+        return 'star'
+      },
       handler,
       label: ({ resources }) => {
         if (resources.every((r) => r.starred)) {
