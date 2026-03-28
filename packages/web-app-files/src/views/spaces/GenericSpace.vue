@@ -1,6 +1,5 @@
 <template>
   <div class="flex w-full">
-    <whitespace-context-menu :space="space" />
     <files-view-wrapper>
       <app-bar
         :breadcrumbs="breadcrumbs"
@@ -156,7 +155,6 @@ import QuickActions from '../../components/FilesList/QuickActions.vue'
 import ResourceDetails from '../../components/FilesList/ResourceDetails.vue'
 import { ResourceTiles } from '@opencloud-eu/web-pkg'
 import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
-import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
@@ -189,7 +187,6 @@ export default defineComponent({
     ResourceTable,
     ResourceTiles,
     SpaceHeader,
-    WhitespaceContextMenu,
     ListHeader
   },
   props: {
