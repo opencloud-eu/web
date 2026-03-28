@@ -64,6 +64,7 @@
         :is-folder-loading="isFolderLoading"
         :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
         :show-delete-button="isDeleteButtonVisible"
+        :show-favorite-button="isFavoriteButtonVisible"
         :current-image-rotation="currentImageRotation"
         :photo-roll-enabled="photoRollEnabled"
         @set-rotation-right="imageRotateRight"
@@ -75,6 +76,9 @@
         @toggle-previous="goToPrev"
         @toggle-next="goToNext"
         @delete-resource="$emit('delete:resource')"
+        @favorite-resource="
+          favoriteFileActions[0].handler({ space, resources: [activeMediaFile.resource] })
+        "
         @toggle-photo-roll="photoRollEnabled = !photoRollEnabled"
       />
     </div>
@@ -108,6 +112,7 @@ import {
   sortHelper,
   useAppNavigation,
   useFileActionsDelete,
+  useFileActionsFavorite,
   useGetMatchingSpace,
   useKeyboardActions,
   usePreviewService,
@@ -166,6 +171,7 @@ const { getMatchingSpace } = useGetMatchingSpace()
 const { closeApp } = useAppNavigation({ router, currentFileContext })
 const { bindKeyAction, removeKeyAction } = useKeyboardActions()
 const { actions: deleteFileActions } = useFileActionsDelete()
+const { actions: favoriteFileActions } = useFileActionsFavorite()
 const {
   currentImageRotation,
   imageShrink,
@@ -197,6 +203,16 @@ const isDeleteButtonVisible = computed(() => {
     return false
   }
   return unref(deleteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [unref(activeMediaFile).resource]
+  })
+})
+
+const isFavoriteButtonVisible = computed(() => {
+  if (!unref(space)) {
+    return false
+  }
+  return unref(favoriteFileActions)[0]?.isVisible({
     space: unref(space),
     resources: [unref(activeMediaFile).resource]
   })
