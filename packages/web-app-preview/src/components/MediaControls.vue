@@ -11,7 +11,7 @@
         class="preview-controls-previous raw-hover-surface"
         appearance="raw"
         :aria-label="previousDescription"
-        @click="$emit('togglePrevious')"
+        @click="emit('togglePrevious')"
       >
         <oc-icon size="large" name="arrow-drop-left" />
       </oc-button>
@@ -24,7 +24,7 @@
         class="preview-controls-next raw-hover-surface"
         appearance="raw"
         :aria-label="nextDescription"
-        @click="$emit('toggleNext')"
+        @click="emit('toggleNext')"
       >
         <oc-icon size="large" name="arrow-drop-right" />
       </oc-button>
@@ -34,7 +34,7 @@
         data-testid="toggle-photo-roll"
         appearance="raw"
         :aria-label="togglePhotoRollDescription"
-        @click="$emit('togglePhotoRoll')"
+        @click="emit('togglePhotoRoll')"
       >
         <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
       </oc-button>
@@ -48,7 +48,7 @@
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          @click="$emit('toggleFullScreen')"
+          @click="emit('toggleFullScreen')"
         >
           <oc-icon
             fill-type="line"
@@ -63,7 +63,7 @@
             class="preview-controls-image-shrink raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageShrinkDescription"
-            @click="$emit('setShrink')"
+            @click="emit('setShrink')"
           >
             <oc-icon fill-type="line" name="zoom-out" />
           </oc-button>
@@ -72,7 +72,7 @@
             class="preview-controls-image-zoom raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageZoomDescription"
-            @click="$emit('setZoom')"
+            @click="emit('setZoom')"
           >
             <oc-icon fill-type="line" name="zoom-in" />
           </oc-button>
@@ -83,7 +83,7 @@
             class="preview-controls-rotate-left raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateLeftDescription"
-            @click="$emit('setRotationLeft')"
+            @click="emit('setRotationLeft')"
           >
             <oc-icon fill-type="line" name="anticlockwise" />
           </oc-button>
@@ -92,7 +92,7 @@
             class="preview-controls-rotate-right raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageRotateRightDescription"
-            @click="$emit('setRotationRight')"
+            @click="emit('setRotationRight')"
           >
             <oc-icon fill-type="line" name="clockwise" />
           </oc-button>
@@ -103,123 +103,156 @@
             class="preview-controls-image-reset raw-hover-surface p-1"
             appearance="raw"
             :aria-label="imageResetDescription"
-            @click="$emit('resetImage')"
+            @click="emit('resetImage')"
           >
             <oc-icon fill-type="line" name="reset-left" />
           </oc-button>
         </div>
       </div>
       <oc-button
+        v-if="showFavoriteButton"
+        v-oc-tooltip="resourceFavoriteIconDescription"
+        class="preview-controls-favorite raw-hover-surface p-1"
+        appearance="raw"
+        :aria-label="resourceFavoriteIconDescription"
+        @click="favoriteFileActions[0].handler({ space, resources: [files[activeIndex].resource] })"
+      >
+        <oc-icon fill-type="line" :name="resourceFavoriteIcon" />
+      </oc-button>
+      <oc-button
         v-if="showDeleteButton"
         v-oc-tooltip="resourceDeleteDescription"
         class="preview-controls-delete raw-hover-surface p-1"
         appearance="raw"
         :aria-label="resourceDeleteDescription"
-        @click="$emit('deleteResource')"
+        @click="emit('deleteResource')"
       >
-        <oc-icon fill-type="line" name="delete-bin" />
+        <oc-icon fill-type="line" :name="resourceDeleteIcon" />
       </oc-button>
     </div>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isMacOs } from '@opencloud-eu/web-pkg'
+import {
+  ActionOptions,
+  isMacOs,
+  useFileActionsDelete,
+  useFileActionsFavorite,
+  useGetMatchingSpace
+} from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 
-export default defineComponent({
-  name: 'MediaControls',
-  props: {
-    files: {
-      type: Array as PropType<MediaFile[]>,
-      required: true
-    },
-    activeIndex: {
-      type: Number,
-      default: 0
-    },
-    isFullScreenModeActivated: {
-      type: Boolean,
-      default: false
-    },
-    isFolderLoading: {
-      type: Boolean,
-      default: false
-    },
-    showImageControls: {
-      type: Boolean,
-      default: false
-    },
-    showDeleteButton: {
-      type: Boolean,
-      default: true
-    },
-    currentImageRotation: {
-      type: Number,
-      default: 0
-    },
-    photoRollEnabled: {
-      type: Boolean,
-      default: true
-    }
-  },
-  emits: [
-    'setRotationLeft',
-    'setRotationRight',
-    'setShrink',
-    'setZoom',
-    'toggleFullScreen',
-    'toggleNext',
-    'togglePrevious',
-    'resetImage',
-    'deleteResource',
-    'togglePhotoRoll'
-  ],
-  setup(props) {
-    const { $gettext } = useGettext()
+const {
+  files,
+  activeIndex = 0,
+  photoRollEnabled = true,
+  isFullScreenModeActivated = false,
+  isFolderLoading = false,
+  showImageControls = false,
+  currentImageRotation = 0
+} = defineProps<{
+  files: MediaFile[]
+  activeIndex?: number
+  isFullScreenModeActivated?: boolean
+  isFolderLoading?: boolean
+  showImageControls?: boolean
+  currentImageRotation?: number
+  photoRollEnabled?: boolean
+}>()
 
-    const ariaHiddenFileCount = computed(() => {
-      return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
-        displayIndex: (props.activeIndex + 1).toString(),
-        availableMediaFiles: props.files.length.toString()
-      })
-    })
-    const screenreaderFileCount = computed(() => {
-      return $gettext('Media file %{ displayIndex } of %{ availableMediaFiles }', {
-        displayIndex: (props.activeIndex + 1).toString(),
-        availableMediaFiles: props.files.length.toString()
-      })
-    })
+void currentImageRotation
 
-    const resourceDeleteDescription = computed(() => {
-      return $gettext('Delete (%{key})', {
-        key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
-      })
-    })
+const emit = defineEmits<{
+  (e: 'setRotationLeft'): void
+  (e: 'setRotationRight'): void
+  (e: 'setShrink'): void
+  (e: 'setZoom'): void
+  (e: 'toggleFullScreen'): void
+  (e: 'toggleNext'): void
+  (e: 'togglePrevious'): void
+  (e: 'resetImage'): void
+  (e: 'deleteResource'): void
+  (e: 'togglePhotoRoll'): void
+}>()
 
-    const togglePhotoRollDescription = computed(() => {
-      if (props.photoRollEnabled) {
-        return $gettext('Hide photo roll')
-      }
-      return $gettext('Show photo roll')
-    })
+const { $gettext } = useGettext()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { actions: favoriteFileActions } = useFileActionsFavorite()
+const { actions: deleteFileActions } = useFileActionsDelete()
 
-    return {
-      screenreaderFileCount,
-      ariaHiddenFileCount,
-      resourceDeleteDescription,
-      togglePhotoRollDescription,
-      enterFullScreenDescription: $gettext('Enter full screen mode'),
-      exitFullScreenDescription: $gettext('Exit full screen mode'),
-      imageShrinkDescription: $gettext('Shrink the image (⇧ + Mouse wheel)'),
-      imageZoomDescription: $gettext('Enlarge the image (⇧ + Mouse wheel)'),
-      imageResetDescription: $gettext('Reset'),
-      imageRotateLeftDescription: $gettext('Rotate the image 90 degrees to the left'),
-      imageRotateRightDescription: $gettext('Rotate the image 90 degrees to the right'),
-      previousDescription: $gettext('Show previous media file in folder'),
-      nextDescription: $gettext('Show next media file in folder')
-    }
-  }
+const space = computed(() => getMatchingSpace(files[activeIndex].resource))
+
+const ariaHiddenFileCount = computed(() => {
+  return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
+    displayIndex: (activeIndex + 1).toString(),
+    availableMediaFiles: files.length.toString()
+  })
 })
+const screenreaderFileCount = computed(() => {
+  return $gettext('Media file %{ displayIndex } of %{ availableMediaFiles }', {
+    displayIndex: (activeIndex + 1).toString(),
+    availableMediaFiles: files.length.toString()
+  })
+})
+
+const togglePhotoRollDescription = computed(() => {
+  if (photoRollEnabled) {
+    return $gettext('Hide photo roll')
+  }
+  return $gettext('Show photo roll')
+})
+
+const showDeleteButton = computed(() => {
+  return unref(deleteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const showFavoriteButton = computed(() => {
+  return unref(favoriteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const resourceDeleteIcon = computed(() => {
+  return unref(deleteFileActions)[0].icon as string
+})
+
+const resourceDeleteDescription = computed(() => {
+  return $gettext('Delete (%{key})', {
+    key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
+  })
+})
+
+const resourceFavoriteIcon = computed(() => {
+  return (unref(favoriteFileActions)[0].icon as (options: ActionOptions) => string)({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const resourceFavoriteIconDescription = computed(() => {
+  return unref(favoriteFileActions)[0].label({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const enterFullScreenDescription = computed(() => $gettext('Enter full screen mode'))
+const exitFullScreenDescription = computed(() => $gettext('Exit full screen mode'))
+const imageShrinkDescription = computed(() => $gettext('Shrink the image (⇧ + Mouse wheel)'))
+const imageZoomDescription = computed(() => $gettext('Enlarge the image (⇧ + Mouse wheel)'))
+const imageResetDescription = computed(() => $gettext('Reset'))
+const imageRotateLeftDescription = computed(() =>
+  $gettext('Rotate the image 90 degrees to the left')
+)
+const imageRotateRightDescription = computed(() =>
+  $gettext('Rotate the image 90 degrees to the right')
+)
+const previousDescription = computed(() => $gettext('Show previous media file in folder'))
+const nextDescription = computed(() => $gettext('Show next media file in folder'))
 </script>

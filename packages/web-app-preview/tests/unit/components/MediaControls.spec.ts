@@ -1,7 +1,13 @@
 import MediaControls from '../../../src/components/MediaControls.vue'
-import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  PartialComponentProps,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const selectors = {
   controlsPrevious: '.preview-controls-previous',
@@ -124,15 +130,32 @@ describe('MediaControls component', () => {
 })
 
 function getWrapper(props: PartialComponentProps<typeof MediaControls> = {}) {
+  const mocks = defaultComponentMocks()
+
+  const spaces = [
+    mock<SpaceResource>({
+      id: '1',
+      fileId: '1',
+      driveType: 'personal',
+      getDriveAliasAndItem: () => 'personal/admin'
+    })
+  ]
+
   return {
     wrapper: shallowMount(MediaControls, {
       props: {
-        files: [mock<MediaFile>()],
+        files: [
+          mock<MediaFile>({
+            resource: mock<Resource>({ storageId: '1', canBeDeleted: () => true })
+          })
+        ],
         activeIndex: 0,
         ...props
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
+        mocks,
+        provide: mocks
       }
     })
   }

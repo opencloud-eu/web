@@ -63,7 +63,6 @@
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
         :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
-        :show-delete-button="isDeleteButtonVisible"
         :current-image-rotation="currentImageRotation"
         :photo-roll-enabled="photoRollEnabled"
         @set-rotation-right="imageRotateRight"
@@ -107,7 +106,6 @@ import {
   queryItemAsString,
   sortHelper,
   useAppNavigation,
-  useFileActionsDelete,
   useGetMatchingSpace,
   useKeyboardActions,
   usePreviewService,
@@ -165,7 +163,6 @@ const { dimensions } = usePreviewDimensions()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { closeApp } = useAppNavigation({ router, currentFileContext })
 const { bindKeyAction, removeKeyAction } = useKeyboardActions()
-const { actions: deleteFileActions } = useFileActionsDelete()
 const {
   currentImageRotation,
   imageShrink,
@@ -190,16 +187,6 @@ const space = computed(() => {
     return null
   }
   return getMatchingSpace(unref(activeMediaFile).resource)
-})
-
-const isDeleteButtonVisible = computed(() => {
-  if (!unref(space)) {
-    return false
-  }
-  return unref(deleteFileActions)[0]?.isVisible({
-    space: unref(space),
-    resources: [unref(activeMediaFile).resource]
-  })
 })
 
 const sortBy = computed(() => {
