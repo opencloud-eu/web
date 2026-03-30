@@ -115,7 +115,7 @@
         class="preview-controls-favorite raw-hover-surface p-1"
         appearance="raw"
         :aria-label="resourceFavoriteIconDescription"
-        @click="emit('favoriteResource')"
+        @click="favoriteFileActions[0].handler({ space, resources: [files[activeIndex].resource] })"
       >
         <oc-icon fill-type="line" :name="resourceFavoriteIcon" />
       </oc-button>
@@ -127,15 +127,20 @@
         :aria-label="resourceDeleteDescription"
         @click="emit('deleteResource')"
       >
-        <oc-icon fill-type="line" name="delete-bin" />
+        <oc-icon fill-type="line" :name="resourceDeleteIcon" />
       </oc-button>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isMacOs } from '@opencloud-eu/web-pkg'
+import {
+  isMacOs,
+  useFileActionsDelete,
+  useFileActionsFavorite,
+  useGetMatchingSpace
+} from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 
 const {
@@ -145,8 +150,6 @@ const {
   isFullScreenModeActivated = false,
   isFolderLoading = false,
   showImageControls = false,
-  showDeleteButton = true,
-  showFavoriteButton = true,
   currentImageRotation = 0
 } = defineProps<{
   files: MediaFile[]
@@ -154,8 +157,6 @@ const {
   isFullScreenModeActivated?: boolean
   isFolderLoading?: boolean
   showImageControls?: boolean
-  showDeleteButton?: boolean
-  showFavoriteButton?: boolean
   currentImageRotation?: number
   photoRollEnabled?: boolean
 }>()
@@ -172,11 +173,15 @@ const emit = defineEmits<{
   (e: 'togglePrevious'): void
   (e: 'resetImage'): void
   (e: 'deleteResource'): void
-  (e: 'favoriteResource'): void
   (e: 'togglePhotoRoll'): void
 }>()
 
 const { $gettext } = useGettext()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { actions: favoriteFileActions } = useFileActionsFavorite()
+const { actions: deleteFileActions } = useFileActionsDelete()
+
+const space = computed(() => getMatchingSpace(files[activeIndex].resource))
 
 const ariaHiddenFileCount = computed(() => {
   return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
@@ -191,12 +196,6 @@ const screenreaderFileCount = computed(() => {
   })
 })
 
-const resourceDeleteDescription = computed(() => {
-  return $gettext('Delete (%{key})', {
-    key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
-  })
-})
-
 const togglePhotoRollDescription = computed(() => {
   if (photoRollEnabled) {
     return $gettext('Hide photo roll')
@@ -204,11 +203,44 @@ const togglePhotoRollDescription = computed(() => {
   return $gettext('Show photo roll')
 })
 
-const resourceFavoriteIcon = computed(() => {
-  return files[activeIndex].resource.starred ? 'star' : 'star-off'
+const showDeleteButton = computed(() => {
+  return unref(deleteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
 })
 
-const resourceFavoriteIconDescription = computed(() => $gettext('Add or remove from favorites'))
+const showFavoriteButton = computed(() => {
+  return unref(favoriteFileActions)[0]?.isVisible({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const resourceDeleteIcon = computed(() => {
+  return unref(deleteFileActions)[0].icon as string
+})
+
+const resourceDeleteDescription = computed(() => {
+  return $gettext('Delete (%{key})', {
+    key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
+  })
+})
+
+const resourceFavoriteIcon = computed(() => {
+  return unref(favoriteFileActions)[0].icon({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
+const resourceFavoriteIconDescription = computed(() => {
+  return unref(favoriteFileActions)[0].label({
+    space: unref(space),
+    resources: [files[activeIndex].resource]
+  })
+})
+
 const enterFullScreenDescription = computed(() => $gettext('Enter full screen mode'))
 const exitFullScreenDescription = computed(() => $gettext('Exit full screen mode'))
 const imageShrinkDescription = computed(() => $gettext('Shrink the image (⇧ + Mouse wheel)'))
