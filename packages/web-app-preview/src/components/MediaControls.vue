@@ -136,6 +136,7 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  ActionOptions,
   isMacOs,
   useFileActionsDelete,
   useFileActionsFavorite,
@@ -228,7 +229,7 @@ const resourceDeleteDescription = computed(() => {
 })
 
 const resourceFavoriteIcon = computed(() => {
-  return unref(favoriteFileActions)[0].icon({
+  return (unref(favoriteFileActions)[0].icon as (options: ActionOptions) => string)({
     space: unref(space),
     resources: [files[activeIndex].resource]
   })
