@@ -52,6 +52,7 @@
           :full-path="resource.path"
           :is-path-displayed="isPathDisplayed"
           :is-extension-displayed="isExtensionDisplayed"
+          :is-favorite="resource.starred"
         />
       </resource-link>
       <div class="flex">

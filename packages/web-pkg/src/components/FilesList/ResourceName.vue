@@ -1,8 +1,7 @@
 <template>
   <span
     v-oc-tooltip="pathTooltip"
-    class="oc-resource-name flex min-w-0"
-    :class="[{ 'inline-block': !truncateName }]"
+    class="oc-resource-name flex items-center min-w-0"
     :data-test-resource-path="fullPath"
     :data-test-resource-name="fullName"
     :data-test-resource-type="type"
@@ -20,6 +19,7 @@
       class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
       v-text="displayExtension"
     />
+    <oc-icon v-if="isFavorite" name="star" fill-type="line" class="oc-resource-favorite ml-1" />
   </span>
 </template>
 
@@ -35,7 +35,8 @@ const {
   extension = '',
   isPathDisplayed = false,
   isExtensionDisplayed = true,
-  truncateName = true
+  truncateName = true,
+  isFavorite = false
 } = defineProps<{
   name: string
   type: string
@@ -45,6 +46,7 @@ const {
   isPathDisplayed?: boolean
   isExtensionDisplayed?: boolean
   truncateName?: boolean
+  isFavorite?: boolean
 }>()
 
 const displayName = computed(() => {
@@ -105,3 +107,14 @@ const fullName = computed(() => {
   return (unref(displayPath) || '') + name
 })
 </script>
+
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer components {
+  .oc-resource-favorite,
+  .oc-resource-favorite svg {
+    @apply !w-[14px] !h-[14px];
+  }
+}
+</style>
