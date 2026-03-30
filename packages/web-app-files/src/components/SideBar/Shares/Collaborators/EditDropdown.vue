@@ -253,7 +253,7 @@ export default defineComponent({
         }),
         onConfirm: (expirationDateTime: DateTime) => {
           this.$emit('expirationDateChanged', {
-            expirationDateTime
+            expirationDateTime: expirationDateTime?.toISO() ?? null
           })
         }
       })
