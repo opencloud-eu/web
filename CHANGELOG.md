@@ -2,6 +2,10 @@
 
 ## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-30
 
+### ⚠️ Deprecation
+
+- The AMD format for external apps is now deprecated. External apps need to be built with the latest `extension-sdk` to use the new ESM format. Support for the AMD format will be removed in an upcoming version. [[#2213](https://github.com/opencloud-eu/web/pull/2213)]
+
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @kulmann, @pascalwengerter, @saw-jan, @smoothscholar, @tammi-23
