@@ -2,6 +2,14 @@
 
 ## [6.1.1](https://github.com/opencloud-eu/web/releases/tag/v6.1.1) - 2026-03-30
 
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear
+
+### 🐛 Bug Fixes
+
+- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+
 ### 📦️ Dependencies
 
 - chore(deps): update devdependencies (non-major) [[#2257](https://github.com/opencloud-eu/web/pull/2257)]
