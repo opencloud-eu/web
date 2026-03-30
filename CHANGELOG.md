@@ -1,10 +1,14 @@
 # Changelog
 
-## [6.1.1](https://github.com/opencloud-eu/web/releases/tag/v6.1.1) - 2026-03-30
+## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-03-30
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear
+
+### 📈 Enhancement
+
+- feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
 
 ### 🐛 Bug Fixes
 
