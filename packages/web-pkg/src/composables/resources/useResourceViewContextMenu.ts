@@ -66,7 +66,7 @@ export const useResourceViewContextMenu = ({
       emitSelect([item.id])
     }
 
-    drop?.show({ event, useMouseAnchor: true })
+    drop?.show({ event, useMouseAnchor: true, noFocus: true })
   }
 
   return {
