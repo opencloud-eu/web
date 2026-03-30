@@ -24,6 +24,7 @@
       name="star"
       fill-type="line"
       class="oc-resource-favorite ml-1"
+      :accessible-label="$gettext('Favorite')"
     />
   </span>
 </template>
