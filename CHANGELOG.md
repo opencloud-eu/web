@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.1.1](https://github.com/opencloud-eu/web/releases/tag/v6.1.1) - 2026-03-30
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#2257](https://github.com/opencloud-eu/web/pull/2257)]
+
 ## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-30
 
 ### ⚠️ Deprecation
