@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="files.length"
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
@@ -182,13 +183,7 @@ const { getMatchingSpace } = useGetMatchingSpace()
 const { actions: favoriteFileActions } = useFileActionsFavorite()
 const { actions: deleteFileActions } = useFileActionsDelete()
 
-const space = computed(() => {
-  if (!files[activeIndex]) {
-    return
-  }
-
-  return getMatchingSpace(files[activeIndex].resource)
-})
+const space = computed(() => getMatchingSpace(files[activeIndex].resource))
 
 const ariaHiddenFileCount = computed(() => {
   return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
@@ -211,10 +206,6 @@ const togglePhotoRollDescription = computed(() => {
 })
 
 const showDeleteButton = computed(() => {
-  if (!unref(space)) {
-    return
-  }
-
   return unref(deleteFileActions)[0]?.isVisible({
     space: unref(space),
     resources: [files[activeIndex].resource]
@@ -222,10 +213,6 @@ const showDeleteButton = computed(() => {
 })
 
 const showFavoriteButton = computed(() => {
-  if (!unref(space)) {
-    return
-  }
-
   return unref(favoriteFileActions)[0]?.isVisible({
     space: unref(space),
     resources: [files[activeIndex].resource]
@@ -233,10 +220,6 @@ const showFavoriteButton = computed(() => {
 })
 
 const resourceDeleteIcon = computed(() => {
-  if (!unref(space)) {
-    return
-  }
-
   return unref(deleteFileActions)[0].icon as string
 })
 
@@ -247,10 +230,6 @@ const resourceDeleteDescription = computed(() => {
 })
 
 const resourceFavoriteIcon = computed(() => {
-  if (!unref(space)) {
-    return
-  }
-
   return (unref(favoriteFileActions)[0].icon as (options: ActionOptions) => string)({
     space: unref(space),
     resources: [files[activeIndex].resource]
@@ -258,10 +237,6 @@ const resourceFavoriteIcon = computed(() => {
 })
 
 const resourceFavoriteIconDescription = computed(() => {
-  if (!unref(space)) {
-    return
-  }
-
   return unref(favoriteFileActions)[0].label({
     space: unref(space),
     resources: [files[activeIndex].resource]
