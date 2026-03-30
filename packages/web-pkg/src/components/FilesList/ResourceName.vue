@@ -19,7 +19,12 @@
       class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
       v-text="displayExtension"
     />
-    <oc-icon v-if="isFavorite" name="star" fill-type="line" class="oc-resource-favorite ml-1" />
+    <oc-icon
+      v-if="isFavoriteDisplayed && isFavorite"
+      name="star"
+      fill-type="line"
+      class="oc-resource-favorite ml-1"
+    />
   </span>
 </template>
 
@@ -35,6 +40,7 @@ const {
   extension = '',
   isPathDisplayed = false,
   isExtensionDisplayed = true,
+  isFavoriteDisplayed = true,
   truncateName = true,
   isFavorite = false
 } = defineProps<{
@@ -45,6 +51,7 @@ const {
   extension?: string
   isPathDisplayed?: boolean
   isExtensionDisplayed?: boolean
+  isFavoriteDisplayed?: boolean
   truncateName?: boolean
   isFavorite?: boolean
 }>()
