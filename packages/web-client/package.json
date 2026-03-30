@@ -90,8 +90,8 @@
   "devDependencies": {
     "@types/luxon": "3.7.1",
     "@types/node": "^25.5.0",
-    "clean-publish": "6.0.4",
+    "clean-publish": "6.0.5",
     "vite": "^8.0.3",
-    "vite-plugin-node-polyfills": "0.25.0"
+    "vite-plugin-node-polyfills": "0.26.0"
   }
 }
