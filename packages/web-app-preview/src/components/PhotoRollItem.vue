@@ -23,7 +23,17 @@
         <resource-icon class="aspect-video" :resource="iconResource" size="xlarge" />
       </div>
       <span class="w-full">
-        <span class="line-clamp-1 wrap-break-word text-sm" v-text="item.name" />
+        <resource-name
+          :name="item.resource.name"
+          :extension="item.resource.extension"
+          :type="item.resource.type"
+          :full-path="item.resource.webDavPath"
+          :is-extension-displayed="areFileExtensionsShown"
+          :is-path-displayed="false"
+          :truncate-name="false"
+          :is-favorite="item.resource.starred"
+          class="[&_span]:break-all justify-center"
+        />
       </span>
     </oc-button>
   </div>
@@ -32,7 +42,12 @@
 <script setup lang="ts">
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
-import { ResourceIcon, VisibilityObserver } from '@opencloud-eu/web-pkg'
+import {
+  ResourceIcon,
+  ResourceName,
+  useResourcesStore,
+  VisibilityObserver
+} from '@opencloud-eu/web-pkg'
 import { ref, computed, onMounted, onBeforeUnmount, useTemplateRef, unref } from 'vue'
 
 const visibilityObserver = new VisibilityObserver()
@@ -47,8 +62,11 @@ const emit = defineEmits<{
   (e: 'item-visible'): void
 }>()
 
+const resourcesStore = useResourcesStore()
 const itemRef = useTemplateRef<HTMLElement>('photoRollItem')
 const hasEmittedVisible = ref(false)
+
+const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
 const iconResource = computed(() => {
   return {

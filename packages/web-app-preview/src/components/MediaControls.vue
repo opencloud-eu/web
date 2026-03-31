@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="files.length"
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
