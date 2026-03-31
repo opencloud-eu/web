@@ -29,8 +29,8 @@ importers:
         specifier: 2.3.0
         version: 2.3.0(node-fetch@3.3.2)
       '@module-federation/vite':
-        specifier: 1.13.5
-        version: 1.13.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))
+        specifier: 1.13.6
+        version: 1.13.6(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))
       '@noble/hashes':
         specifier: 2.0.1
         version: 2.0.1
@@ -275,7 +275,7 @@ importers:
     dependencies:
       '@module-federation/vite':
         specifier: ^1.13.5
-        version: 1.13.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))
+        version: 1.13.6(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.2(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))
@@ -1909,8 +1909,8 @@ packages:
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
-  '@module-federation/dts-plugin@2.2.3':
-    resolution: {integrity: sha512-a7Rv2nPJGLufeeOFiLmgRNxw97peAB+SjyBZdpPa3g5ojOEdhZYxdpB15RYiyOtPUc7PhZsSvfYKgj4cEU8f1w==}
+  '@module-federation/dts-plugin@2.3.0':
+    resolution: {integrity: sha512-2Y11IjQNuMuIXhsOeW7Vd/Ui/RzRPhR+6XFzQaJKuxy6xNk6j/s9iIZVg66gxvSQlUtPzvlpeXEAc6NLPlg3Ew==}
     peerDependencies:
       typescript: ^4.9.0 || ^5.0.0
       vue-tsc: '>=1.0.24'
@@ -1918,34 +1918,17 @@ packages:
       vue-tsc:
         optional: true
 
-  '@module-federation/error-codes@2.2.3':
-    resolution: {integrity: sha512-3+qOylnuljh1XulzXd3iNhALXuVXPVGFUupz9qnUL1paWX48F89Wex3egu6psZhxi3F7y7TA7ykjfWpP0vlrjQ==}
-
   '@module-federation/error-codes@2.3.0':
     resolution: {integrity: sha512-O8jXi0Wv/dFc7BkJkFC0SlW8dT0OjOWvBHakVaOAKVlAKNuQBXfZzLe48bIYAvMhPe0lFppyWoN/SyuIfVBvkg==}
 
-  '@module-federation/managers@2.2.3':
-    resolution: {integrity: sha512-xBv2hg88K4QIPVYKNAYm+LnH5hRuTPGeFya2obSxalagnMb6lEw7Gko5QqXAZDgCK44dkuqslu8/YtMEXc3v7w==}
-
-  '@module-federation/runtime-core@2.2.3':
-    resolution: {integrity: sha512-muGMkv1AQIkCQy8mIa6lmgHu3qTasl/se+bZHERulD3gddK6ninM/Hc7mHyUVNO9rVhb+5Fv7QiCYahH4pRrIg==}
+  '@module-federation/managers@2.3.0':
+    resolution: {integrity: sha512-LDPzSJV4RvGDABkhwwNYUVWakbfHDySHDoEJIlc6KhvdwUlivtn90Ay7uNIdz9FhhGeb338io87IctfxquSqWQ==}
 
   '@module-federation/runtime-core@2.3.0':
     resolution: {integrity: sha512-OvBNIAGM7Xj0dUOBG5jx7zuZaRLDHb5Wcb7pstwqJo5WYqj7gzA9X+QmI+jsQ9jY74Nlfx9vrvW6LlHukIRH/A==}
 
-  '@module-federation/runtime@2.2.3':
-    resolution: {integrity: sha512-5xAIPhzNPLXL7J61ZJxNiM+kpKfKw2IKf4oAT1KFVxntZnnWZiZFAkzTeRiNlfIjwbgasKqBoARTLbu1GEaydA==}
-
   '@module-federation/runtime@2.3.0':
     resolution: {integrity: sha512-9vv0Ah8Tg3E5mBlj29n1boN0bPKbqhw7QBWZCDm2Mou0uXb8x/ycgFR1EPq937LCScBUl0LiFp53KSjeyT75aQ==}
-
-  '@module-federation/sdk@2.2.3':
-    resolution: {integrity: sha512-DUXqwxQRqxlBz7XWW5mEsdTvYEZPWVAgwfh9JtLW1fkxfdG+Czzzs1sXGz8MPF76H3PGzbRdzeCEfiANlANWiw==}
-    peerDependencies:
-      node-fetch: ^3.3.2
-    peerDependenciesMeta:
-      node-fetch:
-        optional: true
 
   '@module-federation/sdk@2.3.0':
     resolution: {integrity: sha512-xj90q4eILkFA1J30wVQYEIWAEh39tfLbCIw1dz3QXUL2TtD/h19H1rZlRkrtAyUxV6xKjp17EMkyGSHzstf1OA==}
@@ -1955,11 +1938,11 @@ packages:
       node-fetch:
         optional: true
 
-  '@module-federation/third-party-dts-extractor@2.2.3':
-    resolution: {integrity: sha512-PweNCC79K+fV/BxBjnkJnK1xrrSq9rWmqZat2CfmxStwPhO9yy5Q7XikZnwwUF7mb4p7WoniQRsz//h1aYUdqw==}
+  '@module-federation/third-party-dts-extractor@2.3.0':
+    resolution: {integrity: sha512-UMGujleD7+rsKqMz/If/8N2Pws219PuJmwz8E/frFUpUW7zo/4Txekhh6Jfz1HnbHdxr0vWqQMx1rqnpPlzeuQ==}
 
-  '@module-federation/vite@1.13.5':
-    resolution: {integrity: sha512-CZ/uJUxPgL3PoW+bOFQyWsgp2pIr1rLearKONHHo7SkMoZxPHB+6Hr6mgalucr2fxS4fCV8D0FTlayu9qwJTUQ==}
+  '@module-federation/vite@1.13.6':
+    resolution: {integrity: sha512-7w8xGdWDaZ4jo0gHb74vI/D6ivHlF1HjGTlWB+YVGX5rgootYpI8FHZliF9z8o4ptZuUnnQSKIWW857WHph/CA==}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
@@ -3531,10 +3514,6 @@ packages:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
     engines: {node: '>= 12'}
 
-  date-format@4.0.14:
-    resolution: {integrity: sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg==}
-    engines: {node: '>=4.0'}
-
   dateformat@4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
 
@@ -3945,10 +3924,6 @@ packages:
   franc-min@6.2.0:
     resolution: {integrity: sha512-1uDIEUSlUZgvJa2AKYR/dmJC66v/PvGQ9mWfI9nOr/kPpMFyvswK0gPXOwpYJYiYD008PpHLkGfG58SPjQJFxw==}
 
-  fs-extra@8.1.0:
-    resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
-    engines: {node: '>=6 <7 || >=8'}
-
   fs-extra@9.1.0:
     resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
     engines: {node: '>=10'}
@@ -4311,9 +4286,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  jsonfile@4.0.0:
-    resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
-
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
 
@@ -4490,10 +4462,6 @@ packages:
 
   lodash@4.17.23:
     resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
-
-  log4js@6.9.1:
-    resolution: {integrity: sha512-1somDdy9sChrr9/f4UlzhdaGfDR2c/SaD2a4T7qEkG4jTS57/B3qmnjLYePwQ8cqWnUHZI0iAKxMBpCZICiZ2g==}
-    engines: {node: '>=8.0'}
 
   long-timeout@0.1.1:
     resolution: {integrity: sha512-BFRuQUqc7x2NWxfJBCyUrN8iYUYznzL9JROmRz1gZ6KlOIgmoD+njPVbb+VNn2nGMKggMsK79iUNErillsrx7w==}
@@ -5382,10 +5350,6 @@ packages:
   stream-http@3.2.0:
     resolution: {integrity: sha512-Oq1bLqisTyK3TSCXpPbT4sdeYNdmyZJv1LxpEm2vu1ZhK89kSE5YXwZc3cWk0MagGaKriBh9mCFbVGtO+vY29A==}
 
-  streamroller@3.1.5:
-    resolution: {integrity: sha512-KFxaM7XT+irxvdqSP1LGLgNWbYN7ay5owZ3r/8t77p+EtSUAfUgtl7be3xtqtOmGUl9K9YPO2ca8133RlTjvKw==}
-    engines: {node: '>=8.0'}
-
   string-argv@0.3.1:
     resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}
     engines: {node: '>=0.6.19'}
@@ -5627,10 +5591,6 @@ packages:
 
   unist-util-visit@5.1.0:
     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
-
-  universalify@0.1.2:
-    resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
-    engines: {node: '>= 4.0.0'}
 
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
@@ -6961,12 +6921,12 @@ snapshots:
 
   '@microsoft/fetch-event-source@2.0.1': {}
 
-  '@module-federation/dts-plugin@2.2.3(node-fetch@3.3.2)(typescript@5.9.3)(vue-tsc@3.2.6(typescript@5.9.3))':
+  '@module-federation/dts-plugin@2.3.0(node-fetch@3.3.2)(typescript@5.9.3)(vue-tsc@3.2.6(typescript@5.9.3))':
     dependencies:
-      '@module-federation/error-codes': 2.2.3
-      '@module-federation/managers': 2.2.3(node-fetch@3.3.2)
-      '@module-federation/sdk': 2.2.3(node-fetch@3.3.2)
-      '@module-federation/third-party-dts-extractor': 2.2.3
+      '@module-federation/error-codes': 2.3.0
+      '@module-federation/managers': 2.3.0(node-fetch@3.3.2)
+      '@module-federation/sdk': 2.3.0(node-fetch@3.3.2)
+      '@module-federation/third-party-dts-extractor': 2.3.0
       adm-zip: 0.5.16
       ansi-colors: 4.1.3
       axios: 1.13.6
@@ -6974,7 +6934,6 @@ snapshots:
       fs-extra: 9.1.0
       isomorphic-ws: 5.0.0(ws@8.18.0)
       lodash.clonedeepwith: 4.5.0
-      log4js: 6.9.1
       node-schedule: 2.1.1
       rambda: 9.4.2
       typescript: 5.9.3
@@ -6985,25 +6944,15 @@ snapshots:
       - bufferutil
       - debug
       - node-fetch
-      - supports-color
       - utf-8-validate
-
-  '@module-federation/error-codes@2.2.3': {}
 
   '@module-federation/error-codes@2.3.0': {}
 
-  '@module-federation/managers@2.2.3(node-fetch@3.3.2)':
+  '@module-federation/managers@2.3.0(node-fetch@3.3.2)':
     dependencies:
-      '@module-federation/sdk': 2.2.3(node-fetch@3.3.2)
+      '@module-federation/sdk': 2.3.0(node-fetch@3.3.2)
       find-pkg: 2.0.0
       fs-extra: 9.1.0
-    transitivePeerDependencies:
-      - node-fetch
-
-  '@module-federation/runtime-core@2.2.3(node-fetch@3.3.2)':
-    dependencies:
-      '@module-federation/error-codes': 2.2.3
-      '@module-federation/sdk': 2.2.3(node-fetch@3.3.2)
     transitivePeerDependencies:
       - node-fetch
 
@@ -7011,14 +6960,6 @@ snapshots:
     dependencies:
       '@module-federation/error-codes': 2.3.0
       '@module-federation/sdk': 2.3.0(node-fetch@3.3.2)
-    transitivePeerDependencies:
-      - node-fetch
-
-  '@module-federation/runtime@2.2.3(node-fetch@3.3.2)':
-    dependencies:
-      '@module-federation/error-codes': 2.2.3
-      '@module-federation/runtime-core': 2.2.3(node-fetch@3.3.2)
-      '@module-federation/sdk': 2.2.3(node-fetch@3.3.2)
     transitivePeerDependencies:
       - node-fetch
 
@@ -7030,25 +6971,21 @@ snapshots:
     transitivePeerDependencies:
       - node-fetch
 
-  '@module-federation/sdk@2.2.3(node-fetch@3.3.2)':
-    optionalDependencies:
-      node-fetch: 3.3.2
-
   '@module-federation/sdk@2.3.0(node-fetch@3.3.2)':
     optionalDependencies:
       node-fetch: 3.3.2
 
-  '@module-federation/third-party-dts-extractor@2.2.3':
+  '@module-federation/third-party-dts-extractor@2.3.0':
     dependencies:
       find-pkg: 2.0.0
       fs-extra: 9.1.0
       resolve: 1.22.8
 
-  '@module-federation/vite@1.13.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))':
+  '@module-federation/vite@1.13.6(node-fetch@3.3.2)(rollup@4.60.0)(typescript@5.9.3)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@5.9.3))':
     dependencies:
-      '@module-federation/dts-plugin': 2.2.3(node-fetch@3.3.2)(typescript@5.9.3)(vue-tsc@3.2.6(typescript@5.9.3))
-      '@module-federation/runtime': 2.2.3(node-fetch@3.3.2)
-      '@module-federation/sdk': 2.2.3(node-fetch@3.3.2)
+      '@module-federation/dts-plugin': 2.3.0(node-fetch@3.3.2)(typescript@5.9.3)(vue-tsc@3.2.6(typescript@5.9.3))
+      '@module-federation/runtime': 2.3.0(node-fetch@3.3.2)
+      '@module-federation/sdk': 2.3.0(node-fetch@3.3.2)
       '@rollup/pluginutils': 5.3.0(rollup@4.60.0)
       defu: 6.1.4
       es-module-lexer: 2.0.0
@@ -7061,7 +6998,6 @@ snapshots:
       - debug
       - node-fetch
       - rollup
-      - supports-color
       - typescript
       - utf-8-validate
       - vue-tsc
@@ -8605,8 +8541,6 @@ snapshots:
 
   data-uri-to-buffer@4.0.1: {}
 
-  date-format@4.0.14: {}
-
   dateformat@4.6.3: {}
 
   debug@4.4.3(supports-color@8.1.1):
@@ -9071,12 +9005,6 @@ snapshots:
     dependencies:
       trigram-utils: 2.0.1
 
-  fs-extra@8.1.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 4.0.0
-      universalify: 0.1.2
-
   fs-extra@9.1.0:
     dependencies:
       at-least-node: 1.0.0
@@ -9426,10 +9354,6 @@ snapshots:
 
   json5@2.2.3: {}
 
-  jsonfile@4.0.0:
-    optionalDependencies:
-      graceful-fs: 4.2.11
-
   jsonfile@6.2.0:
     dependencies:
       universalify: 2.0.1
@@ -9596,16 +9520,6 @@ snapshots:
       lodash._baseuniq: 4.6.0
 
   lodash@4.17.23: {}
-
-  log4js@6.9.1:
-    dependencies:
-      date-format: 4.0.14
-      debug: 4.4.3(supports-color@8.1.1)
-      flatted: 3.4.2
-      rfdc: 1.4.1
-      streamroller: 3.1.5
-    transitivePeerDependencies:
-      - supports-color
 
   long-timeout@0.1.1: {}
 
@@ -10640,14 +10554,6 @@ snapshots:
       readable-stream: 3.6.2
       xtend: 4.0.2
 
-  streamroller@3.1.5:
-    dependencies:
-      date-format: 4.0.14
-      debug: 4.4.3(supports-color@8.1.1)
-      fs-extra: 8.1.0
-    transitivePeerDependencies:
-      - supports-color
-
   string-argv@0.3.1: {}
 
   string-width@4.2.3:
@@ -10876,8 +10782,6 @@ snapshots:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
-
-  universalify@0.1.2: {}
 
   universalify@2.0.1: {}
 
