@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
 - feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
 
 ### 🐛 Bug Fixes
