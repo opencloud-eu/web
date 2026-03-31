@@ -1,14 +1,19 @@
 <template>
-  <div id="oc-space-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="text-center">
-      <oc-spinner
-        v-if="imagesLoading.includes(resource.id)"
-        :aria-label="$gettext('Space image is loading')"
-      />
-      <div v-else-if="spaceImage" class="relative mb-2">
-        <img :src="spaceImage" alt="" class="size-full object-cover aspect-[16/9]" />
+  <div id="oc-space-details-sidebar" class="p-2">
+    <oc-spinner
+      v-if="imagesLoading.includes(resource.id)"
+      :aria-label="$gettext('Space image is loading')"
+    />
+    <div
+      v-else
+      class="bg-role-surface-container rounded-xl flex items-center justify-center p-4 mb-4"
+    >
+      <div v-if="spaceImage">
+        <img :src="spaceImage" alt="" class="h-[160px]" />
       </div>
-      <oc-icon v-else name="layout-grid" size="xxlarge" class="space-default-image px-4 py-4" />
+      <div v-else>
+        <oc-icon name="layout-grid" size="xxxlarge" class="space-default-image px-4 py-4" />
+      </div>
     </div>
     <div
       v-if="showShareIndicators && hasShares && !resource.disabled"
@@ -44,7 +49,7 @@
       </oc-button>
     </div>
     <dl
-      class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0"
+      class="details-list"
       :aria-label="$gettext('Overview of the information about the selected space')"
     >
       <dt>{{ $gettext('Last activity') }}</dt>

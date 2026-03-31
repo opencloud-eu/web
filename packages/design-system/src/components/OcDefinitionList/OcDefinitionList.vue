@@ -1,5 +1,5 @@
 <template>
-  <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
+  <dl class="details-list">
     <!-- eslint-disable-next-line vue/no-v-for-template-key -->
     <template v-for="item in items" :key="item.term">
       <dt>{{ item.term }}</dt>
@@ -29,15 +29,15 @@ const { items } = defineProps<Props>()
 @layer components {
   .details-list dt,
   .details-list dd {
-    @apply mb-2 flex items-center last-of-type:mb-0;
+    @apply flex items-center;
   }
 
   .details-list dd {
-    @apply ml-4 font-normal;
+    @apply font-semibold mb-2 last-of-type:mb-0;
   }
 
   .details-list dt {
-    @apply font-semibold whitespace-nowrap;
+    @apply whitespace-nowrap;
   }
 }
 </style>
