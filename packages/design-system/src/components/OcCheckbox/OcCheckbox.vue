@@ -5,13 +5,33 @@
       v-model="model"
       type="checkbox"
       name="checkbox"
-      class="oc-checkbox m-0.5 border-2 border-role-outline outline-0 focus-visible:outline outline-role-secondary rounded-sm checked:bg-white disabled:bg-role-surface-container-low indeterminate:bg-white bg-transparent inline-block overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-default bg-no-repeat bg-center appearance-none align-middle"
-      :class="{
-        'oc-checkbox-checked bg-white': isChecked,
-        'size-3': size === 'small',
-        'size-4': size === 'medium',
-        'size-5': size === 'large'
-      }"
+      :class="[
+        'oc-checkbox',
+        'relative',
+        'inline-block',
+        'align-middle',
+        'm-0.5',
+        'border-2',
+        'border-role-outline',
+        'outline-0',
+        'outline-role-secondary',
+        'focus-visible:outline',
+        'rounded-md',
+        'checked:bg-role-primary',
+        'checked:border-role-primary',
+        'indeterminate:bg-white',
+        'bg-transparent',
+        'overflow-hidden',
+        'cursor-pointer',
+        'disabled:opacity-40',
+        'disabled:cursor-default',
+        'disabled:bg-role-surface-container-low',
+        'appearance-none',
+        isChecked && 'oc-checkbox-checked bg-white',
+        size === 'small' && 'size-3',
+        size === 'medium' && 'size-4',
+        size === 'large' && 'size-5'
+      ]"
       :value="option"
       :disabled="disabled"
       :aria-label="labelHidden ? label : null"
@@ -96,49 +116,36 @@ const keydownEnter = (event: KeyboardEvent) => {
 }
 </script>
 
-<style lang="scss" scoped>
-.oc-checkbox {
-  $internal-form-checkbox-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22#000%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%20%2F%3E%0A%3C%2Fsvg%3E%0A' !default;
-  $internal-form-checkbox-indeterminate-image: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22#000%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%20%2F%3E%0A%3C%2Fsvg%3E' !default;
+<style scoped>
+.oc-checkbox::before {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+}
 
-  @function str-replace($string, $search, $replace: '') {
-    $index: string.index($string, $search);
+.oc-checkbox-checked::before,
+.oc-checkbox:checked::before {
+  background-color: var(--oc-role-on-primary);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4,12.5 9.5,18 20,6'/%3E%3C/svg%3E");
+  mask-size: 90%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
 
-    @if $index {
-      @return string.slice($string, 1, $index - 1) + $replace +
-        str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
-    }
+.oc-checkbox:indeterminate::before {
+  background-color: var(--oc-role-on-primary);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='6' y1='12' x2='18' y2='12'/%3E%3C/svg%3E");
+  mask-size: 90%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
 
-    @return $string;
-  }
+.oc-checkbox:disabled:checked::before {
+  background-color: var(--oc-role-on-surface-variant);
+}
 
-  @mixin svg-fill($src, $color-default, $color-new) {
-    $replace-src: str-replace($src, $color-default, $color-new) !default;
-    $replace-src: str-replace($replace-src, '#', '%23');
-    $replace-src: string.quote($replace-src);
-
-    background-image: url($replace-src);
-  }
-
-  &-checked,
-  :checked {
-    @include svg-fill($internal-form-checkbox-image, '#000', '#000');
-  }
-
-  &:indeterminate {
-    @include svg-fill($internal-form-checkbox-indeterminate-image, '#000', '#000');
-  }
-
-  &:disabled:checked {
-    @include svg-fill($internal-form-checkbox-image, '#000', var(--oc-role-on-surface-variant));
-  }
-
-  &:disabled:indeterminate {
-    @include svg-fill(
-      $internal-form-checkbox-indeterminate-image,
-      '#000',
-      var(--oc-role-on-surface-variant)
-    );
-  }
+.oc-checkbox:disabled:indeterminate::before {
+  background-color: var(--oc-role-on-surface-variant);
 }
 </style>
