@@ -52,6 +52,8 @@
           :full-path="resource.path"
           :is-path-displayed="isPathDisplayed"
           :is-extension-displayed="isExtensionDisplayed"
+          :is-favorite="resource.starred"
+          :is-favorite-displayed="isFavoriteDisplayed"
         />
       </resource-link>
       <div class="flex">
@@ -89,7 +91,8 @@ const {
   isExtensionDisplayed = true,
   isThumbnailDisplayed = true,
   isIconDisplayed = true,
-  isResourceClickable = true
+  isResourceClickable = true,
+  isFavoriteDisplayed = true
 } = defineProps<{
   resource: Resource
   pathPrefix?: string
@@ -102,6 +105,7 @@ const {
   isThumbnailDisplayed?: boolean
   isIconDisplayed?: boolean
   isResourceClickable?: boolean
+  isFavoriteDisplayed?: boolean
 }>()
 
 const emit = defineEmits<{

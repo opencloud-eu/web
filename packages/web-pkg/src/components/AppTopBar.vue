@@ -19,6 +19,7 @@
             getParentFolderLinkIconAdditionalAttributes(resource)
           "
           :is-path-displayed="isPathDisplayed"
+          :is-favorite-displayed="false"
           :is-resource-clickable="false"
         />
       </div>
