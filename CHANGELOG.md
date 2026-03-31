@@ -16,6 +16,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.58.0 [[#2265](https://github.com/opencloud-eu/web/pull/2265)]
 - chore(deps): update devdependencies (non-major) [[#2257](https://github.com/opencloud-eu/web/pull/2257)]
 
 ## [6.1.0](https://github.com/opencloud-eu/web/releases/tag/v6.1.0) - 2026-03-30
