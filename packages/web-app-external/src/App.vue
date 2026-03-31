@@ -361,6 +361,39 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
         }),
         focusTrapInitial: false
       })
+      return
+    }
+
+    if (message.MessageId === 'UI_InsertFile') {
+      const callback = message.Values?.callback
+      const mimeTypeFilter = message.Values?.mimeTypeFilter
+
+      dispatchModal({
+        elementClass: 'file-picker-modal',
+        title:
+          callback === 'Action_CompareDocuments'
+            ? $gettext('Select document to compare')
+            : $gettext('Insert file'),
+        customComponent: FilePickerModal,
+        hideActions: true,
+        customComponentAttrs: () => ({
+          parentFolderLink: getParentFolderLink(resource),
+          allowedFileTypes: mimeTypeFilter || [],
+          callbackFn: async ({ resource }: { resource: Resource }) => {
+            const { downloadURL: url } = await webdav.getFileInfo(space, resource, {
+              davProperties: [DavProperty.DownloadURL]
+            })
+
+            const values: Record<string, unknown> = { url }
+            if (callback === 'Action_CompareDocuments') {
+              values.filename = resource.name
+            }
+
+            postMessageToCollabora(callback, values)
+          }
+        }),
+        focusTrapInitial: false
+      })
     }
   } catch (e) {
     console.debug('Error parsing Collabora PostMessage', e)
