@@ -8,6 +8,7 @@
   >
     <oc-search-bar
       id="files-global-search-bar"
+      ref="searchInputRef"
       :model-value="term"
       :label="searchLabel"
       :type-ahead="true"
@@ -122,6 +123,8 @@
 
 <script lang="ts">
 import {
+  Key,
+  Modifier,
   SearchProvider,
   createLocationCommon,
   isLocationCommonActive,
@@ -130,6 +133,7 @@ import {
   useAuthStore,
   useCapabilityStore,
   useIsAppActive,
+  useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import Mark from 'mark.js'
@@ -152,6 +156,7 @@ import {
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
 import { useAvailableProviders } from '../composables'
+import { isEditableElement } from '../helpers/isEditableElement'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
@@ -175,6 +180,8 @@ export default defineComponent({
 
     const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
     const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
+    const searchInputRef = useTemplateRef<ComponentPublicInstance>('searchInputRef')
+    const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
     const activePreviewIndex = ref<number | null>(null)
     const term = ref('')
     const restoreSearchFromRoute = ref(false)
@@ -362,6 +369,25 @@ export default defineComponent({
       term.value = ''
     })
 
+    const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
+
+    const onSearchShortcut = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement
+      if (activeElement && isEditableElement(activeElement)) {
+        return
+      }
+
+      const inputElement = unref(searchBarRef)?.querySelector('input') as HTMLElement
+      inputElement?.focus()
+
+      event.preventDefault()
+    }
+
+    bindKeyAction({ primary: Key.S }, onSearchShortcut, { preventDefault: false })
+    bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut, {
+      preventDefault: false
+    })
+
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
     })
@@ -398,7 +424,8 @@ export default defineComponent({
       getSearchResultLocation,
       showDrop,
       isAppActive,
-      getFocusableElements
+      getFocusableElements,
+      onSearchShortcut
     }
   },
 

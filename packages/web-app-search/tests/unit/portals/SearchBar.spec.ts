@@ -215,6 +215,36 @@ describe('Search Bar portal component', () => {
     const spyRouterPushStub = wrapper.vm.$router.push
     expect(spyRouterPushStub).not.toHaveBeenCalled()
   })
+  test('focuses search input when pressing "s"', () => {
+    const { wrapper } = getMountedWrapper()
+    const nonEditableTarget = document.createElement('div')
+    document.body.appendChild(nonEditableTarget)
+    nonEditableTarget.focus()
+    const keyEvent = new KeyboardEvent('keydown', { key: 's', cancelable: true })
+
+    wrapper.vm.onSearchShortcut(keyEvent)
+    nonEditableTarget.remove()
+  })
+  test('focuses search input when pressing "/"', () => {
+    const { wrapper } = getMountedWrapper()
+    const nonEditableTarget = document.createElement('button')
+    document.body.appendChild(nonEditableTarget)
+    nonEditableTarget.focus()
+    const keyEvent = new KeyboardEvent('keydown', { key: '/', cancelable: true })
+
+    wrapper.vm.onSearchShortcut(keyEvent)
+    nonEditableTarget.remove()
+  })
+  test('does not focus search input when editable element is already focused', () => {
+    const { wrapper } = getMountedWrapper()
+    const textInput = document.createElement('input')
+    document.body.appendChild(textInput)
+    textInput.focus()
+
+    const keyEvent = new KeyboardEvent('keydown', { key: 's', cancelable: true })
+    wrapper.vm.onSearchShortcut(keyEvent)
+    textInput.remove()
+  })
 })
 
 function getMountedWrapper({
