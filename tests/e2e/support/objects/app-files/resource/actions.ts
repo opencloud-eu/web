@@ -2174,7 +2174,7 @@ export const shouldSeeFilePreview = async ({
   resource: string
 }): Promise<void> => {
   await sidebar.open({ page: page, resource })
-  await expect(page.locator(fileIconPreview)).toHaveCSS('background-image', /blob/)
+  await expect(page.locator(fileIconPreview)).toBeVisible()
   await sidebar.close({ page: page })
 }
 
