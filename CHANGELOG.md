@@ -16,6 +16,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @module-federation/vite to v1.13.6 [[#2264](https://github.com/opencloud-eu/web/pull/2264)]
 - chore(deps): update typescript-eslint monorepo to v8.58.0 [[#2265](https://github.com/opencloud-eu/web/pull/2265)]
 - chore(deps): update devdependencies (non-major) [[#2257](https://github.com/opencloud-eu/web/pull/2257)]
 
