@@ -189,7 +189,7 @@ describe('Search Bar portal component', () => {
     })
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
-      .vm.$emit('update:model-value', {
+      .vm.$emit('update:modelValue', {
         value: { id: SearchLocationFilterConstants.currentFolder }
       })
 
@@ -208,7 +208,7 @@ describe('Search Bar portal component', () => {
     const { wrapper } = getMountedWrapper()
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
-      .vm.$emit('update:model-value', {
+      .vm.$emit('update:modelValue', {
         value: { id: SearchLocationFilterConstants.currentFolder }
       })
 
