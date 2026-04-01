@@ -33,5 +33,12 @@
     "description": "Dark theme for the date picker.\nDark theme is only available for Chromium-like browsers and Safari, Firefox is not supported.",
     "default": "",
     "type": "boolean"
+  },
+  {
+    "name": "requiredMark",
+    "required": false,
+    "description": "Determines if a required mark (*) should be displayed next to the label.",
+    "default": "false",
+    "type": "boolean"
   }
 ]
