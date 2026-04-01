@@ -18,6 +18,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.47.0 [[#2269](https://github.com/opencloud-eu/web/pull/2269)]
 - chore(deps): update dependency filesize to v11.0.15 [[#2223](https://github.com/opencloud-eu/web/pull/2223)]
 - fix(deps): update dependency axios to v1.14.0 [[#2250](https://github.com/opencloud-eu/web/pull/2250)]
 - chore(deps): update dependency @module-federation/vite to v1.13.6 [[#2264](https://github.com/opencloud-eu/web/pull/2264)]
