@@ -1,22 +1,18 @@
 <template>
-  <div id="oc-file-details-sidebar" class="rounded-sm p-4 bg-role-surface-container">
+  <div id="oc-file-details-sidebar" class="p-2">
     <div v-if="hasContent">
-      <div
-        v-if="isPreviewLoading || preview"
-        key="file-thumbnail"
-        :style="{
-          'background-image': isPreviewLoading ? 'none' : `url(${preview})`
-        }"
-        class="details-preview flex items-center justify-center mb-4 p-2 h-[230px] bg-contain bg-no-repeat bg-center"
-        data-testid="preview"
-      >
-        <oc-spinner v-if="isPreviewLoading" />
-      </div>
-      <div
-        v-else
-        class="details-icon-wrapper w-full flex items-center justify-center mb-4 p-2 bg-contain bg-no-repeat bg-center"
-      >
-        <resource-icon class="details-icon" :resource="resource" size="xxxlarge" />
+      <div class="flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4">
+        <div v-if="preview || isPreviewLoading" data-testid="preview">
+          <oc-spinner v-if="isPreviewLoading" :aria-label="$gettext('Loading preview')" />
+          <img
+            v-else
+            key="file-thumbnail"
+            :src="preview"
+            class="details-preview h-[160px]"
+            alt=""
+          />
+        </div>
+        <resource-icon v-else class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
       <div
         v-if="!publicLinkContextReady && shareIndicators.length"
@@ -32,7 +28,7 @@
       </div>
       <dl
         v-else
-        class="details-list grid grid-cols-[auto_minmax(0,1fr)] m-0"
+        class="details-list"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
         <template v-if="hasDeletionDate">
