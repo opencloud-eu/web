@@ -27,17 +27,12 @@ const { items } = defineProps<Props>()
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer components {
-  .details-list dt,
-  .details-list dd {
-    @apply flex items-center;
-  }
-
   .details-list dd {
     @apply font-semibold mb-2 last-of-type:mb-0;
   }
 
   .details-list dt {
-    @apply whitespace-nowrap;
+    @apply whitespace-nowrap text-sm text-role-on-surface-variant;
   }
 }
 </style>
