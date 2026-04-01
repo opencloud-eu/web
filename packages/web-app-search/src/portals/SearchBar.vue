@@ -156,7 +156,6 @@ import {
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
 import { useAvailableProviders } from '../composables'
-import { isEditableElement } from '../helpers/isEditableElement'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
@@ -369,24 +368,16 @@ export default defineComponent({
       term.value = ''
     })
 
-    const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
+    const { bindKeyAction } = useKeyboardActions()
 
     const onSearchShortcut = (event: KeyboardEvent) => {
-      const activeElement = document.activeElement
-      if (activeElement && isEditableElement(activeElement)) {
-        return
-      }
-
       const inputElement = unref(searchBarRef)?.querySelector('input') as HTMLElement
       inputElement?.focus()
-
-      event.preventDefault()
     }
 
-    bindKeyAction({ primary: Key.S }, onSearchShortcut, { preventDefault: false })
-    bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut, {
-      preventDefault: false
-    })
+    bindKeyAction({ primary: Key.S }, onSearchShortcut)
+    bindKeyAction({ primary: Key.Slash }, onSearchShortcut)
+    bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut)
 
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
