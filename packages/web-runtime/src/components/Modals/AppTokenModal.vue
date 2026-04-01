@@ -12,6 +12,7 @@
       class="mt-2"
       type="date"
       :min-date="minDate"
+      required-mark
       @date-changed="onDateChanged"
     />
     <div class="link-modal-actions flex justify-end items-center mt-2">

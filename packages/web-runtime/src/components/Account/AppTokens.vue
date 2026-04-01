@@ -24,11 +24,14 @@
     />
     <no-content-message
       v-else-if="!appTokens.length"
-      icon="key-2"
+      img-src="/images/empty-states/empty-app-tokens.svg"
       data-testid="no-app-tokens-available"
     >
       <template #message>
-        <span v-text="$gettext('No app tokens available.')" />
+        <span v-text="$gettext('No app tokens found')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('Create a new app token and it will show up here')" />
       </template>
     </no-content-message>
     <div v-else>
