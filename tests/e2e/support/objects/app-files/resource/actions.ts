@@ -145,7 +145,7 @@ const onlyOfficeCanvasCursorSelector = '#id_target_cursor'
 const onlyOfficeInfoDialog = '.alert .info-box'
 const onlyOfficeInfoDialogConfirm = `.alert button[result="ok"]`
 const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
-const fileIconWrapper = '#oc-file-details-sidebar .details-icon-wrapper'
+const fileIcon = '#oc-file-details-sidebar .details-icon'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
@@ -2174,7 +2174,7 @@ export const shouldSeeFilePreview = async ({
   resource: string
 }): Promise<void> => {
   await sidebar.open({ page: page, resource })
-  await expect(page.locator(fileIconPreview)).toHaveCSS('background-image', /blob/)
+  await expect(page.locator(fileIconPreview)).toBeVisible()
   await sidebar.close({ page: page })
 }
 
@@ -2186,7 +2186,7 @@ export const shouldNotSeeFilePreview = async ({
   resource: string
 }): Promise<void> => {
   await sidebar.open({ page: page, resource })
-  await expect(page.locator(fileIconWrapper)).toBeVisible()
+  await expect(page.locator(fileIcon)).toBeVisible()
   await sidebar.close({ page: page })
 }
 

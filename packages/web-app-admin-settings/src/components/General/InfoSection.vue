@@ -6,7 +6,7 @@
       >
         <img :src="currentTheme.logo" class="px-2" alt="OpenCloud logo" />
       </div>
-      <dl class="details-list grid grid-cols-[auto_minmax(0,1fr)]">
+      <dl class="details-list">
         <template v-if="backendEdition">
           <dt v-text="$gettext('Edition')" />
           <dd v-text="backendEdition" />

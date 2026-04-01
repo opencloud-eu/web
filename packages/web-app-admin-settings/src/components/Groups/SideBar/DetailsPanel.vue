@@ -13,13 +13,13 @@
   </div>
   <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <GroupInfoBox :group="group" />
-    <p
-      class="table p-1"
+    <dl
+      class="details-list"
       :aria-label="$gettext('Overview of the information about the selected group')"
     >
-      <span class="pr-2 font-semibold" v-text="$gettext('Group name')" />
-      <span v-text="group.displayName" />
-    </p>
+      <dt>{{ $gettext('Group name') }}</dt>
+      <dd>{{ group.displayName }}</dd>
+    </dl>
   </div>
 </template>
 <script lang="ts">

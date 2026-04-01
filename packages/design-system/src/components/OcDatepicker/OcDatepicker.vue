@@ -11,6 +11,7 @@
     :clear-button-accessible-label="$gettext('Clear date')"
     class="oc-date-picker"
     :class="{ 'oc-date-picker-dark': isDark }"
+    :required-mark="requiredMark"
   />
 </template>
 
@@ -41,6 +42,11 @@ export interface Props {
    * Dark theme is only available for Chromium-like browsers and Safari, Firefox is not supported.
    */
   isDark?: boolean
+  /**
+   * @docs Determines if a required mark (*) should be displayed next to the label.
+   * @default false
+   */
+  requiredMark?: boolean
 }
 
 export interface Emits {
@@ -50,7 +56,14 @@ export interface Emits {
   (e: 'dateChanged', data: { date: DateTime | null; error: boolean }): void
 }
 
-const { label, currentDate, isClearable = true, minDate, isDark = false } = defineProps<Props>()
+const {
+  label,
+  currentDate,
+  isClearable = true,
+  minDate,
+  isDark = false,
+  requiredMark = false
+} = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 
