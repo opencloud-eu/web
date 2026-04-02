@@ -16,6 +16,7 @@ export enum Key {
   Plus = '+',
   Minus = '-',
   Space = ' ',
+  Slash = '/',
   ArrowUp = 'ArrowUp',
   ArrowDown = 'ArrowDown',
   ArrowLeft = 'ArrowLeft',

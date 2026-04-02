@@ -8,6 +8,7 @@
   >
     <oc-search-bar
       id="files-global-search-bar"
+      ref="searchInputRef"
       :model-value="term"
       :label="searchLabel"
       :type-ahead="true"
@@ -122,6 +123,8 @@
 
 <script lang="ts">
 import {
+  Key,
+  Modifier,
   SearchProvider,
   createLocationCommon,
   isLocationCommonActive,
@@ -130,6 +133,7 @@ import {
   useAuthStore,
   useCapabilityStore,
   useIsAppActive,
+  useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import Mark from 'mark.js'
@@ -175,6 +179,8 @@ export default defineComponent({
 
     const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
     const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
+    const searchInputRef = useTemplateRef<ComponentPublicInstance>('searchInputRef')
+    const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
     const activePreviewIndex = ref<number | null>(null)
     const term = ref('')
     const restoreSearchFromRoute = ref(false)
@@ -362,6 +368,17 @@ export default defineComponent({
       term.value = ''
     })
 
+    const { bindKeyAction } = useKeyboardActions()
+
+    const onSearchShortcut = (event: KeyboardEvent) => {
+      const inputElement = unref(searchBarRef)?.querySelector('input') as HTMLElement
+      inputElement?.focus()
+    }
+
+    bindKeyAction({ primary: Key.S }, onSearchShortcut)
+    bindKeyAction({ primary: Key.Slash }, onSearchShortcut)
+    bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut)
+
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
     })
@@ -398,7 +415,8 @@ export default defineComponent({
       getSearchResultLocation,
       showDrop,
       isAppActive,
-      getFocusableElements
+      getFocusableElements,
+      onSearchShortcut
     }
   },
 
