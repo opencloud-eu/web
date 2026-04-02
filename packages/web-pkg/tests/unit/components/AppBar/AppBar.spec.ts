@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed } from 'vue'
 import AppBar from '../../../../src/components/AppBar/AppBar.vue'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -13,6 +13,15 @@ import { ArchiverService } from '../../../../src/services'
 import { FolderView } from '../../../../src/ui/types'
 import { useExtensionRegistry, ViewOptions } from '../../../../src'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@opencloud-eu/design-system/composables')>()
+  return {
+    ...actual,
+    useIsMobile: vi.fn()
+  }
+})
 
 const selectors = {
   ocBreadcrumbStub: 'oc-breadcrumb-stub',
@@ -38,19 +47,19 @@ const breadCrumbItemWithContextActionAllowed = {
 
 describe('AppBar component', () => {
   describe('renders', () => {
-    it('by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle', () => {
+    it('by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle', async () => {
       const { wrapper } = getShallowWrapper()
       expect(wrapper.html()).toMatchSnapshot()
     })
     describe('breadcrumbs', () => {
-      it('if given, by default without breadcrumbsContextActionsItems', () => {
+      it('if given, by default without breadcrumbsContextActionsItems', async () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: breadcrumbItems })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeTruthy()
         expect(
           wrapper.findComponent<typeof OcBreadcrumb>(selectors.ocBreadcrumbStub).props('items')
         ).toEqual(breadcrumbItems)
       })
-      it('if given, with breadcrumbsContextActionsItems if allowed on last breadcrumb item', () => {
+      it('if given, with breadcrumbsContextActionsItems if allowed on last breadcrumb item', async () => {
         const { wrapper } = getShallowWrapper(
           [],
           {},
@@ -61,11 +70,11 @@ describe('AppBar component', () => {
           wrapper.findComponent<typeof OcBreadcrumb>(selectors.ocBreadcrumbStub).props('items')
         ).toEqual([...breadcrumbItems, breadCrumbItemWithContextActionAllowed])
       })
-      it('not if no breadcrumb items given', () => {
+      it('not if no breadcrumb items given', async () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: [] })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeFalsy()
       })
-      it('not if one breadcrumb item is given in mobile view', () => {
+      it('not if one breadcrumb item is given in mobile view', async () => {
         const { wrapper } = getShallowWrapper(
           [],
           {},
@@ -77,11 +86,11 @@ describe('AppBar component', () => {
       })
     })
     describe('bulkActions', () => {
-      it('if enabled', () => {
+      it('if enabled', async () => {
         const { wrapper } = getShallowWrapper(selectedFiles, {}, { hasBulkActions: true })
         expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
       })
-      it('if 1 file selected on trash routes', () => {
+      it('if 1 file selected on trash routes', async () => {
         const { wrapper } = getShallowWrapper(
           [selectedFiles[0]],
           {},
@@ -99,21 +108,21 @@ describe('AppBar component', () => {
         { items: [], shows: true },
         { items: [breadcrumbItems[0]], shows: true },
         { items: [breadcrumbItems[0], breadcrumbItems[1]], shows: false }
-      ])('if less than 2 breadcrumb items given', ({ items, shows }) => {
+      ])('if less than 2 breadcrumb items given', async ({ items, shows }) => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: items })
         expect(wrapper.find(selectors.mobileNavStub).exists()).toBe(shows)
       })
     })
     describe('viewoptions', () => {
-      it('show if options are available', () => {
+      it('show if options are available', async () => {
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: true })
         expect(wrapper.find(selectors.viewOptionsStub).exists()).toBeTruthy()
       })
-      it('hide if options are not available', () => {
+      it('hide if options are not available', async () => {
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: false })
         expect(wrapper.find(selectors.viewOptionsStub).exists()).toBeFalsy()
       })
-      it('passes viewModes array to ViewOptions', () => {
+      it('passes viewModes array to ViewOptions', async () => {
         const viewModes = [mock<FolderView>()]
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: true, viewModes })
         expect(
@@ -121,11 +130,11 @@ describe('AppBar component', () => {
         ).toEqual(viewModes)
       })
     })
-    it('if given, with content in the actions slot', () => {
+    it('if given, with content in the actions slot', async () => {
       const { wrapper } = getShallowWrapper([], { actions: actionSlot })
       expect(wrapper.html()).toMatchSnapshot()
     })
-    it('if given, with content in the content slot', () => {
+    it('if given, with content in the content slot', async () => {
       const { wrapper } = getShallowWrapper([], { content: contentSlot })
       expect(wrapper.html()).toMatchSnapshot()
     })
@@ -145,8 +154,10 @@ function getShallowWrapper(
     name: 'files-spaces-generic',
     path: '/files/spaces/personal/admin'
   }),
-  isMobileWidth = false
+  isMobile = false
 ) {
+  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
+
   const plugins = defaultPlugins({
     piniaOptions: {
       resourcesStore: { resources: selected, selectedIds: selected.map(({ id }) => id) }
@@ -170,7 +181,7 @@ function getShallowWrapper(
       slots,
       global: {
         plugins,
-        provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
+        provide: { ...mocks },
         mocks
       }
     })

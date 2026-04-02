@@ -278,7 +278,7 @@ function getMountedWrapper({
         ],
         mocks: localMocks,
         renderStubDefaultSlot: true,
-        provide: { ...localMocks, isMobileWidth: ref(false) },
+        provide: { ...localMocks },
         stubs: {
           'router-link': true,
           OcDrop: ocDropStub

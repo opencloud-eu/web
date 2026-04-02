@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import AppTemplate from '../../../src/components/AppTemplate.vue'
 import {
   defaultComponentMocks,
@@ -9,6 +9,7 @@ import {
 import { SideBar, useIsTopBarSticky, useSideBar } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const stubSelectors = {
   ocBreadcrumb: 'oc-breadcrumb-stub',
@@ -25,6 +26,14 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useIsTopBarSticky: vi.fn(),
   useAppDefaults: vi.fn(() => ({}))
 }))
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@opencloud-eu/design-system/composables')>()
+  return {
+    ...actual,
+    useIsMobile: vi.fn()
+  }
+})
 
 describe('AppTemplate', () => {
   describe('loading is true', () => {
@@ -76,7 +85,7 @@ describe('AppTemplate', () => {
         ).toEqual([{ text: 'Administration Settings' }, { text: 'Users' }])
       })
       it('does not show in mobile view', () => {
-        const { wrapper } = getWrapper({ isMobileWidth: true })
+        const { wrapper } = getWrapper({ isMobile: true })
         expect(wrapper.find(stubSelectors.ocBreadcrumb).exists()).toBeFalsy()
       })
     })
@@ -96,8 +105,9 @@ describe('AppTemplate', () => {
   })
 })
 
-function getWrapper({ props = {}, isMobileWidth = false, isSideBarOpen = true } = {}) {
+function getWrapper({ props = {}, isMobile = false, isSideBarOpen = true } = {}) {
   vi.mocked(useIsTopBarSticky).mockReturnValue({ isSticky: ref(true) })
+  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
 
   const plugins = [...defaultPlugins()]
   const sideBarStore = useSideBar()
@@ -113,7 +123,7 @@ function getWrapper({ props = {}, isMobileWidth = false, isSideBarOpen = true } 
       },
       global: {
         plugins,
-        provide: { isMobileWidth: ref(isMobileWidth) },
+        provide: {},
         stubs: {
           OcButton: false
         },
