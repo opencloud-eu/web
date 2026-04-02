@@ -19,10 +19,10 @@ describe('SDKProvider', () => {
   })
 
   describe('SDKProvider previewSearch', () => {
-    it('is not available on certain routes', () => {
+    it('is available on all routes', () => {
       ;[
         { route: 'foo', available: true },
-        { route: 'files-common-search' },
+        { route: 'files-common-search', available: true },
         { route: 'bar', available: true }
       ].forEach((v) => {
         const router = mock<Router>()
@@ -35,7 +35,7 @@ describe('SDKProvider', () => {
           mock<ConfigStore>()
         )
 
-        expect(!!search.previewSearch.available).toBe(!!v.available)
+        expect(search.previewSearch.available).toBe(true)
       })
     })
   })
