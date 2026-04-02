@@ -6,6 +6,11 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor
 
+### 🐛 Bug Fixes
+
+- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
+- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+
 ### 📈 Enhancement
 
 - feat: focus global search bar via keyboard shortcut [[#2274](https://github.com/opencloud-eu/web/pull/2274)]
@@ -13,10 +18,6 @@
 - feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
 - feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
 - feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
-
-### 🐛 Bug Fixes
-
-- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
 
 ### 📦️ Dependencies
 
