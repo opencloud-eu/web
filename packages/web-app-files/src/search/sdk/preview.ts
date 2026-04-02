@@ -23,6 +23,9 @@ export default class Preview implements SearchPreview {
   }
 
   public get available(): boolean {
-    return true
+    return (
+      unref(this.router.currentRoute).name !== 'files-common-search' &&
+      !this.configStore.options?.embed?.enabled
+    )
   }
 }
