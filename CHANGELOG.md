@@ -20,6 +20,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vitest-mock-extended to v3.1.1 [[#2289](https://github.com/opencloud-eu/web/pull/2289)]
 - fix(deps): update dependency lodash-es to v4.18.1 [security] [[#2282](https://github.com/opencloud-eu/web/pull/2282)]
 - chore(deps): update tiptap monorepo to v3.22.0 [[#2248](https://github.com/opencloud-eu/web/pull/2248)]
 - chore(deps): update dependency @playwright/test to v1.59.1 [[#2277](https://github.com/opencloud-eu/web/pull/2277)]
