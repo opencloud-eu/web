@@ -190,7 +190,8 @@ const inputClass = computed(() => {
     'p-4',
     'rounded-4xl',
     'disabled:cursor-not-allowed',
-    'focus:bg-none'
+    'focus:bg-none',
+    'focus:outline focus:outline-offset-2 focus:outline-white'
   ]
   if (!buttonHidden) {
     classes.push(...['oc-search-input-button', 'rounded-r-none'])
