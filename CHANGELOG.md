@@ -20,6 +20,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.22.0 [[#2248](https://github.com/opencloud-eu/web/pull/2248)]
+- chore(deps): update dependency @playwright/test to v1.59.1 [[#2277](https://github.com/opencloud-eu/web/pull/2277)]
+- fix(deps): update dependency p-queue to v9.1.1 [[#2278](https://github.com/opencloud-eu/web/pull/2278)]
 - chore(deps): update dependency @codemirror/view to v6.41.0 [[#2275](https://github.com/opencloud-eu/web/pull/2275)]
 - chore(deps): update devdependencies (non-major) [[#2268](https://github.com/opencloud-eu/web/pull/2268)]
 - fix(deps): update dependency @sentry/vue to v10.47.0 [[#2269](https://github.com/opencloud-eu/web/pull/2269)]
