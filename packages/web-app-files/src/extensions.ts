@@ -51,7 +51,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
       id: 'com.github.opencloud-eu.web.files.search',
       extensionPointIds: ['app.search.provider'],
       type: 'search',
-      searchProvider: new SDKSearch(capabilityStore, router, searchFunction, configStore)
+      searchProvider: new SDKSearch(capabilityStore, searchFunction, configStore)
     },
     {
       id: `com.github.opencloud-eu.web.${APPID}.floating-action-button`,

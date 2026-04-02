@@ -13,7 +13,7 @@ const getStore = (reports: string[] = []) => {
 
 describe('SDKProvider', () => {
   it('is only available if announced via capabilities', () => {
-    const search = new SDKSearch(getStore(), mock<Router>(), vi.fn(), mock<ConfigStore>())
+    const search = new SDKSearch(getStore(), vi.fn(), mock<ConfigStore>())
     expect(search.available).toBe(false)
   })
 
@@ -31,7 +31,6 @@ describe('SDKProvider', () => {
 
         const search = new SDKSearch(
           getStore(['search-files']),
-          mock<Router>(),
           vi.fn(),
           configStore
         )
