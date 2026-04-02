@@ -192,16 +192,20 @@ export const defineConfig = (overrides = {}) => {
               })
             }
           },
-          federation({
-            name,
-            exposes: { '.': './src/index.ts' },
-            filename: `${remoteEntryName}${isProduction ? '-[hash]' : ''}${remoteEntryExt}`,
-            shared: Object.fromEntries(
-              externalModules.map((pkg) => [pkg, { singleton: true, import: false }])
-            ),
-            manifest: false,
-            dts: false
-          }),
+          ...(!isTesting
+            ? [
+                federation({
+                  name,
+                  exposes: { '.': './src/index.ts' },
+                  filename: `${remoteEntryName}${isProduction ? '-[hash]' : ''}${remoteEntryExt}`,
+                  shared: Object.fromEntries(
+                    externalModules.map((pkg) => [pkg, { singleton: true, import: false }])
+                  ),
+                  manifest: false,
+                  dts: false
+                })
+              ]
+            : []),
           tailwindcss(),
           manifestPlugin(),
           federationRegistrationClient({
