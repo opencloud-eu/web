@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: focus global search bar via keyboard shortcut [[#2274](https://github.com/opencloud-eu/web/pull/2274)]
 - feat: redesign sidebar file/space details panel [[#2273](https://github.com/opencloud-eu/web/pull/2273)]
 - feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
 - feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
