@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-03-31
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-04-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- chore: bump lodash-es to v4.18.1 [[#2292](https://github.com/opencloud-eu/web/pull/2292)]
 - chore(deps): bump markdown-it to v4.1.1 [security] [[#1985](https://github.com/opencloud-eu/web/pull/1985)]
 - chore(deps): bump qs to v6.14.2 [security] [[#1986](https://github.com/opencloud-eu/web/pull/1986)]
 - chore(deps): update dependency fast-xml-parser to v5 [security] [[#1918](https://github.com/opencloud-eu/web/pull/1918)]
