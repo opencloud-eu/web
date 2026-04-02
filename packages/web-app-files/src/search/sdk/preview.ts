@@ -1,5 +1,5 @@
 import { ConfigStore, SearchFunction, SearchPreview, SearchResult } from '@opencloud-eu/web-pkg'
-import { Component, unref } from 'vue'
+import { Component } from 'vue'
 import { Router } from 'vue-router'
 import { ResourcePreview } from '@opencloud-eu/web-pkg'
 
@@ -23,9 +23,6 @@ export default class Preview implements SearchPreview {
   }
 
   public get available(): boolean {
-    return (
-      unref(this.router.currentRoute).name !== 'search-provider-list' &&
-      !this.configStore.options?.embed?.enabled
-    )
+    return !this.configStore.options?.embed?.enabled
   }
 }
