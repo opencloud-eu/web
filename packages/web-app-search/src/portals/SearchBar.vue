@@ -276,6 +276,10 @@ export default defineComponent({
         return
       }
 
+      if (isLocationCommonActive(router, 'files-common-search')) {
+        debouncedSearch.cancel()
+      }
+
       if (unref(optionsDrop)) {
         unref(optionsDrop)?.hide()
       }
