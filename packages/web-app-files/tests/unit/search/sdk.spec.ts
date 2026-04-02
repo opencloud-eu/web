@@ -1,5 +1,4 @@
 import { SDKSearch } from '../../../src/search'
-import { Router } from 'vue-router'
 import { mock } from 'vitest-mock-extended'
 import { createTestingPinia, writable } from '@opencloud-eu/web-test-helpers'
 import { ConfigStore, useCapabilityStore } from '@opencloud-eu/web-pkg'
@@ -29,11 +28,7 @@ describe('SDKProvider', () => {
         const configStore = mock<ConfigStore>()
         writable(configStore).options = v.options as any
 
-        const search = new SDKSearch(
-          getStore(['search-files']),
-          vi.fn(),
-          configStore
-        )
+        const search = new SDKSearch(getStore(['search-files']), vi.fn(), configStore)
 
         expect(search.previewSearch.available).toBe(v.available)
       })

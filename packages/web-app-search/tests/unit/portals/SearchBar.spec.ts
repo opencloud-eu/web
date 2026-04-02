@@ -58,7 +58,13 @@ const selectors = {
   searchFilters: '#files-global-search-filter'
 }
 
-vi.mock('lodash-es', () => ({ debounce: (fn: unknown) => fn, kebabCase: (fn: unknown) => fn }))
+vi.mock('lodash-es', () => ({
+  debounce: vi.fn((fn) => {
+    fn.cancel = vi.fn()
+    return fn
+  }),
+  kebabCase: (fn: unknown) => fn
+}))
 vi.mock('../../../src/composables/useAvailableProviders')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
