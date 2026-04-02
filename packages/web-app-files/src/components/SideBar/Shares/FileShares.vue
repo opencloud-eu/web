@@ -109,7 +109,6 @@ import {
   CollaboratorShare
 } from '@opencloud-eu/web-client'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
-import CopyPrivateLink from '../../Shares/CopyPrivateLink.vue'
 import {
   fileSideBarSharesPanelSharedWithTopExtensionPoint,
   fileSideBarSharesPanelSharedWithBottomExtensionPoint
@@ -118,7 +117,6 @@ import {
 export default defineComponent({
   name: 'FileShares',
   components: {
-    CopyPrivateLink,
     InviteCollaboratorForm,
     CollaboratorListItem,
     CustomComponentTarget
