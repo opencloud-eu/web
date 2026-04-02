@@ -22,7 +22,7 @@ describe('SDKProvider', () => {
     it('is not available on certain routes', () => {
       ;[
         { route: 'foo', available: true },
-        { route: 'files-common-search' },
+        { route: 'search-provider-list' },
         { route: 'bar', available: true }
       ].forEach((v) => {
         const router = mock<Router>()
