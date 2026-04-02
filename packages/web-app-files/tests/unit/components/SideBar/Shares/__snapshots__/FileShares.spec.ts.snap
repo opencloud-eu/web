@@ -1,20 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`FileShares > collaborators list > renders sharedWithLabel and sharee list 1`] = `
-"<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
-  <div class="flex justify-between items-center">
-    <div class="flex">
-      <h3 class="font-semibold text-base m-0">Share with people</h3>
-      <oc-contextual-helper-stub title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="pl-1"></oc-contextual-helper-stub>
-    </div>
-    <copy-private-link-stub resource="undefined"></copy-private-link-stub>
-  </div>
-  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="mt-2"></invite-collaborator-form-stub>
-  <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
+"<div id="oc-files-sharing-sidebar" class="relative">
+  <invite-collaborator-form-stub resource="undefined" savebuttonlabel="Share" label="Share with people" invitelabel="" contextualhelper="[object Object]" class="mt-2"></invite-collaborator-form-stub>
+  <div id="files-collaborators-headline" class="flex items-center justify-between mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
   <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
-  <ul id="files-collaborators-list" class="oc-list oc-list-divider m-0" aria-label="Share receivers">
+  <ul id="files-collaborators-list" class="oc-list m-0" aria-label="Share receivers">
     <li>
       <collaborator-list-item-stub share="[object Object]" modifiable="true" removable="true" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>
@@ -38,20 +31,13 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
 `;
 
 exports[`FileShares > current space > loads space members if a space is given and the current user is member 1`] = `
-"<div id="oc-files-sharing-sidebar" class="relative rounded-sm">
-  <div class="flex justify-between items-center">
-    <div class="flex">
-      <h3 class="font-semibold text-base m-0">Share with people</h3>
-      <oc-contextual-helper-stub title="Share with people" endtext="" list="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" readmorelink="https://docs.opencloud.eu/docs/user/sharing" text="Use the input field to search for users and groups. Select them to share the item." class="pl-1"></oc-contextual-helper-stub>
-    </div>
-    <copy-private-link-stub resource="undefined"></copy-private-link-stub>
-  </div>
-  <invite-collaborator-form-stub savebuttonlabel="Share" invitelabel="" class="mt-2"></invite-collaborator-form-stub>
-  <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
+"<div id="oc-files-sharing-sidebar" class="relative">
+  <invite-collaborator-form-stub resource="undefined" savebuttonlabel="Share" label="Share with people" invitelabel="" contextualhelper="[object Object]" class="mt-2"></invite-collaborator-form-stub>
+  <div id="files-collaborators-headline" class="flex items-center justify-between mt-2">
     <h4 class="font-semibold my-0">Shared with</h4>
   </div>
   <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
-  <ul id="files-collaborators-list" class="oc-list oc-list-divider mb-4" aria-label="Share receivers">
+  <ul id="files-collaborators-list" class="oc-list mb-4" aria-label="Share receivers">
     <li>
       <collaborator-list-item-stub share="[object Object]" modifiable="false" removable="false" resourcename="[Function]" islocked="[Function]" isspaceshare="false"></collaborator-list-item-stub>
     </li>

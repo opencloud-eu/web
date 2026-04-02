@@ -2,9 +2,22 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap"
+    class="[&_.vs\_\_actions]:!flex-nowrap mb-8"
   >
-    <div :class="['flex', 'w-full', { 'grid grid-cols-2': isRunningOnEos }]">
+    <div :class="[{ 'flex w-full grid grid-cols-2': isRunningOnEos }]">
+      <div class="flex justify-between mb-1">
+        <div class="flex items-center">
+          <label :aria-hidden="true" for="files-share-account-type-input" class="inline-block">
+            {{ label }}
+          </label>
+          <oc-contextual-helper
+            v-if="contextualHelper?.isEnabled"
+            v-bind="contextualHelper?.data"
+            class="pl-1"
+          />
+        </div>
+        <copy-private-link :resource="resource" />
+      </div>
       <oc-select
         v-if="isRunningOnEos"
         id="files-share-account-type-input"
@@ -24,16 +37,18 @@
         id="files-share-invite-input"
         ref="ocSharingAutocomplete"
         class="w-full"
+        :placeholder="selectedCollaboratorsPlaceholder"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
         :loading="searchInProgress"
         :multiple="true"
         :filter="filterRecipients"
-        :label="selectedCollaboratorsLabel"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
             open && search.length >= minSearchLength && !searchInProgress
         "
+        label=""
+        :label-hidden="true"
         @search:input="onSearch"
         @update:model-value="resetFocusOnInvite"
         @open="onOpen"
@@ -183,7 +198,18 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
-import { computed, defineComponent, inject, ref, unref, watch, onMounted, nextTick, Ref } from 'vue'
+import {
+  computed,
+  defineComponent,
+  inject,
+  ref,
+  unref,
+  watch,
+  onMounted,
+  nextTick,
+  Ref,
+  PropType
+} from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -192,6 +218,8 @@ import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
+import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
+import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
 
 // just a dummy function to trick gettext tools
 const $gettext = (str: string) => {
@@ -210,6 +238,7 @@ export type ShareRoleType = { id: string; label: string; longLabel: string }
 export default defineComponent({
   name: 'InviteCollaboratorForm',
   components: {
+    CopyPrivateLink,
     ExpirationDateIndicator,
     AutocompleteItem,
     RoleDropdown,
@@ -222,10 +251,24 @@ export default defineComponent({
       required: false,
       default: () => $gettext('Share')
     },
+    label: {
+      type: String,
+      required: false,
+      default: ''
+    },
     inviteLabel: {
       type: String,
       required: false,
       default: ''
+    },
+    contextualHelper: {
+      type: Object as PropType<ContextualHelper>,
+      required: false,
+      default: null
+    },
+    resource: {
+      type: Object as PropType<SpaceResource | Resource>,
+      required: true
     }
   },
 
@@ -548,7 +591,7 @@ export default defineComponent({
       return this.selectedCollaborators.length > 0
     },
 
-    selectedCollaboratorsLabel() {
+    selectedCollaboratorsPlaceholder() {
       return this.inviteLabel || this.$gettext('Search')
     }
   },
