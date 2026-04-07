@@ -377,7 +377,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     console.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
-    return this.userManager.updateContext(event.data.accesssToken, event.data.sessionId, false)
+    return this.userManager.updateContext(event.data.accessToken, event.data.sessionId, false)
   }
 
   // gets the authority, client_id and scope for OIDC authentication via webfinger discovery
