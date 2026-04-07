@@ -85,7 +85,7 @@
     "vite-plugin-static-copy": "^4.0.0",
     "vite-plugin-treat-umd-as-commonjs": "0.1.4",
     "vitest": "^4.1.2",
-    "vitest-mock-extended": "3.1.1",
+    "vitest-mock-extended": "4.0.0",
     "vue": "^3.5.31",
     "vue-tsc": "3.2.6",
     "vue3-gettext": "4.0.0-beta.1"
