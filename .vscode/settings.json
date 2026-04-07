@@ -14,14 +14,12 @@
   "editor.formatOnSave": true,
   "eslint.format.enable": true,
   "npm.packageManager": "pnpm",
-  "typescript.format.enable": false,
+  "js/ts.format.enabled": false,
   "editor.quickSuggestions": {
     "strings": true
   },
-  "cucumberautocomplete.steps": [
-    "tests/e2e/cucumber/steps/**/*.ts"
-  ],
+  "cucumberautocomplete.steps": ["tests/e2e/cucumber/steps/**/*.ts"],
   "cucumberautocomplete.strictGherkinCompletion": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "vue.server.includeLanguages": ["vue"]
 }

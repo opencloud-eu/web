@@ -3,9 +3,8 @@
 
   // necessary for building web-pkg standalone, otherwise we get errors with inferred types
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@vue/shared": ["node_modules/@vue/shared/"],
+      "@vue/shared": ["./node_modules/@vue/shared/"],
       "@codemirror/autocomplete": ["./node_modules/@codemirror/autocomplete"],
       "vue/jsx-runtime": ["./node_modules/vue/jsx-runtime"]
     }
