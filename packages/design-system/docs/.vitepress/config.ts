@@ -60,7 +60,7 @@ export default defineConfig({
           return [
             {
               src: `${projectRootDir}/packages/design-system/src/assets/icons/*`,
-              dest: `/components/icons`,
+              dest: `components/icons`,
               rename: { stripBase: 3 }
             }
           ]
