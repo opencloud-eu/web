@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed } from 'vue'
 import AppBar from '../../../../src/components/AppBar/AppBar.vue'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -13,6 +13,15 @@ import { ArchiverService } from '../../../../src/services'
 import { FolderView } from '../../../../src/ui/types'
 import { useExtensionRegistry, ViewOptions } from '../../../../src'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@opencloud-eu/design-system/composables')>()
+  return {
+    ...actual,
+    useIsMobile: vi.fn()
+  }
+})
 
 const selectors = {
   ocBreadcrumbStub: 'oc-breadcrumb-stub',
@@ -145,8 +154,10 @@ function getShallowWrapper(
     name: 'files-spaces-generic',
     path: '/files/spaces/personal/admin'
   }),
-  isMobileWidth = false
+  isMobile = false
 ) {
+  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
+
   const plugins = defaultPlugins({
     piniaOptions: {
       resourcesStore: { resources: selected, selectedIds: selected.map(({ id }) => id) }
@@ -170,7 +181,7 @@ function getShallowWrapper(
       slots,
       global: {
         plugins,
-        provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
+        provide: { ...mocks },
         mocks
       }
     })

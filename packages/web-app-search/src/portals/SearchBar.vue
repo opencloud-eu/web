@@ -145,8 +145,6 @@ import {
   ComponentPublicInstance,
   computed,
   defineComponent,
-  inject,
-  Ref,
   ref,
   onBeforeUnmount,
   unref,
@@ -158,6 +156,7 @@ import { SearchBarFilter } from '@opencloud-eu/web-pkg'
 import { useAvailableProviders } from '../composables'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 export default defineComponent({
   name: 'SearchBar',
@@ -166,7 +165,7 @@ export default defineComponent({
     const router = useRouter()
     const capabilityStore = useCapabilityStore()
     const showCancelButton = ref(false)
-    const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
+    const { isMobile } = useIsMobile()
     const scopeQueryValue = useRouteQuery('scope')
     const availableProviders = useAvailableProviders()
     const isAppActive = useIsAppActive()
@@ -204,7 +203,7 @@ export default defineComponent({
       () => unref(optionsDropRef)?.$refs.drop as HTMLElement
     )
 
-    watch(isMobileWidth, () => {
+    watch(isMobile, () => {
       const searchBarEl = document.getElementById('files-global-search-bar')
       if (!searchBarEl) {
         return
@@ -212,7 +211,7 @@ export default defineComponent({
 
       const optionDropVisible = !!document.querySelector('#files-global-search-options')
 
-      if (!unref(isMobileWidth)) {
+      if (!unref(isMobile)) {
         searchBarEl.style.visibility = 'visible'
         showCancelButton.value = false
       } else {

@@ -50,16 +50,15 @@ import {
   useActiveApp,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import TopBar from '../components/Topbar/TopBar.vue'
 import MessageBar from '../components/MessageBar.vue'
 import SidebarNav from '../components/SidebarNav/SidebarNav.vue'
 import UploadInfo from '../components/UploadInfo.vue'
 import { useRouteMeta, useSpacesLoading, useNavItems } from '@opencloud-eu/web-pkg'
-import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
+import { computed, nextTick, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { progressBarExtensionPoint } from '../extensionPoints'
-
-const MOBILE_BREAKPOINT = 640
 
 const { $gettext } = useGettext()
 const { navItems } = useNavItems()
@@ -75,12 +74,7 @@ const isLoading = computed(() => {
   return unref(areSpacesLoading)
 })
 
-const isMobileWidth = ref<boolean>(window.innerWidth < MOBILE_BREAKPOINT)
-provide('isMobileWidth', isMobileWidth)
-
-const onResize = () => {
-  isMobileWidth.value = window.innerWidth < MOBILE_BREAKPOINT
-}
+const { isMobile } = useIsMobile()
 
 const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({
@@ -106,7 +100,7 @@ const hasSidebarNavExtension = computed(() => {
 
 const isSidebarVisible = computed(() => {
   return (
-    !unref(isMobileWidth) &&
+    !unref(isMobile) &&
     (unref(navItems).length || unref(hasFloatingActionButton) || unref(hasSidebarNavExtension))
   )
 })
@@ -121,11 +115,5 @@ const ieDeprecationWarning = computed(() =>
 
 onMounted(async () => {
   await nextTick()
-  window.addEventListener('resize', onResize)
-  onResize()
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize)
 })
 </script>

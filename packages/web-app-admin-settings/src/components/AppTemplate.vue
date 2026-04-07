@@ -16,7 +16,7 @@
             >
               <div class="flex justify-between items-center h-12">
                 <oc-breadcrumb
-                  v-if="!isMobileWidth"
+                  v-if="!isMobile"
                   id="admin-settings-breadcrumb"
                   :items="breadcrumbs"
                   :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
@@ -78,17 +78,8 @@ import {
   useSideBar,
   MobileNav
 } from '@opencloud-eu/web-pkg'
-import {
-  defineComponent,
-  inject,
-  onBeforeUnmount,
-  PropType,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { defineComponent, onBeforeUnmount, PropType, ref, unref, useTemplateRef, watch } from 'vue'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useAppDefaults } from '@opencloud-eu/web-pkg'
 import { SideBarPanel } from '@opencloud-eu/web-pkg'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
@@ -156,6 +147,7 @@ export default defineComponent({
     const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
     const limitedScreenSpace = ref(false)
     const { isSticky } = useIsTopBarSticky()
+    const { isMobile } = useIsMobile()
 
     const onResize = () => {
       limitedScreenSpace.value = unref(isSideBarOpen)
@@ -181,7 +173,7 @@ export default defineComponent({
     })
 
     return {
-      isMobileWidth: inject<Ref<boolean>>('isMobileWidth'),
+      isMobile,
       appBarRef,
       limitedScreenSpace,
       isSideBarOpen,

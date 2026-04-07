@@ -60,7 +60,7 @@
         </oc-table-tr>
         <oc-table-tr v-if="showNotifications && !canConfigureSpecificNotifications">
           <oc-table-td>{{ $gettext('Notifications') }}</oc-table-td>
-          <oc-table-td v-if="!isMobileWidth">
+          <oc-table-td v-if="!isMobile">
             <span v-text="$gettext('Receive notification mails')" />
           </oc-table-td>
           <oc-table-td data-testid="notification-mails">
@@ -68,7 +68,7 @@
               :model-value="disableEmailNotificationsValue"
               size="large"
               :label="$gettext('Receive notification mails')"
-              :label-hidden="!isMobileWidth"
+              :label-hidden="!isMobile"
               data-testid="account-page-notification-mails-checkbox"
               @update:model-value="updateDisableEmailNotifications"
             />
@@ -76,7 +76,7 @@
         </oc-table-tr>
         <oc-table-tr v-if="showWebDavDetails" class="account-page-view-options">
           <oc-table-td>{{ $gettext('View options') }}</oc-table-td>
-          <oc-table-td v-if="!isMobileWidth">
+          <oc-table-td v-if="!isMobile">
             <span v-text="$gettext('Show WebDAV information in details view')" />
           </oc-table-td>
           <oc-table-td data-testid="view-options">
@@ -84,7 +84,7 @@
               :model-value="viewOptionWebDavDetailsValue"
               size="large"
               :label="$gettext('Show WebDAV information in details view')"
-              :label-hidden="!isMobileWidth"
+              :label-hidden="!isMobile"
               data-testid="account-page-webdav-details-checkbox"
               @update:model-value="updateViewOptionsWebDavDetails"
             />
@@ -99,7 +99,7 @@
             $gettext('Personalise your notification preferences about any file, folder, or Space.')
           "
         />
-        <account-table :fields="notificationsSettingsFields" :show-head="!isMobileWidth">
+        <account-table :fields="notificationsSettingsFields" :show-head="!isMobile">
           <oc-table-tr v-for="option in notificationsOptions" :key="option.id">
             <oc-table-td>{{ option.displayName }}</oc-table-td>
             <oc-table-td>{{ option.description }}</oc-table-td>
@@ -116,7 +116,7 @@
                     "
                     size="large"
                     :label="choice.displayValue"
-                    :label-hidden="!isMobileWidth"
+                    :label-hidden="!isMobile"
                     :disabled="choice.attribute === 'disabled'"
                     @update:model-value="
                       (value) => updateMultiChoiceSettingsValue(option.name, choice.key, value)
@@ -128,7 +128,7 @@
           </oc-table-tr>
         </account-table>
         <h2 class="mt-8" v-text="$gettext('Mail notification options')" />
-        <account-table :fields="emailNotificationsOptionsFields" :show-head="!isMobileWidth">
+        <account-table :fields="emailNotificationsOptionsFields" :show-head="!isMobile">
           <oc-table-tr v-for="option in emailNotificationsOptions" :key="option.id">
             <oc-table-td>{{ option.displayName }}</oc-table-td>
             <oc-table-td>{{ option.description }}</oc-table-td>
@@ -163,10 +163,11 @@ import {
   useResourcesStore,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import ThemeSwitcher from '../../components/Account/ThemeSwitcher.vue'
 import AccountTable from '../../components/Account/AccountTable.vue'
 import EditPasswordModal from '../../components/EditPasswordModal.vue'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onMounted, ref, unref } from 'vue'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../helpers/settings'
 import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
 import { User } from '@opencloud-eu/web-client/graph/generated'
@@ -176,8 +177,6 @@ import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
 import { useNotificationsSettings } from '../../composables/notificationsSettings'
 import { captureException } from '@sentry/vue'
-
-const MOBILE_BREAKPOINT = 800
 
 const { showMessage, showErrorMessage } = useMessages()
 const language = useGettext()
@@ -191,7 +190,7 @@ const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 
-const isMobileWidth = ref<boolean>(window.innerWidth < MOBILE_BREAKPOINT)
+const { isMobile } = useIsMobile()
 const disableEmailNotificationsValue = ref<boolean>()
 const viewOptionWebDavDetailsValue = ref<boolean>(resourcesStore.areWebDavDetailsShown)
 const selectedLanguageValue = ref<LanguageOption>()
@@ -244,10 +243,6 @@ const emailNotificationsOptionsFields = computed(() => [
   { label: $gettext('Option description'), hidden: true },
   { label: $gettext('Option value'), hidden: true }
 ])
-
-const onResize = () => {
-  isMobileWidth.value = window.innerWidth < MOBILE_BREAKPOINT
-}
 
 const showEditPasswordModal = () => {
   dispatchModal({
@@ -527,8 +522,6 @@ const updateSingleChoiceValue = async (
 }
 
 onMounted(async () => {
-  window.addEventListener('resize', onResize)
-
   await loadAccountBundleTask.perform()
   await loadValuesListTask.perform()
   await loadGraphUserTask.perform()
@@ -545,9 +538,5 @@ onMounted(async () => {
   disableEmailNotificationsValue.value = disableEmailNotificationsConfiguration
     ? !disableEmailNotificationsConfiguration.value?.boolValue
     : true
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize)
 })
 </script>

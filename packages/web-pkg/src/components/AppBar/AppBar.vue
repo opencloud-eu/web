@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import last from 'lodash-es/last'
-import { computed, defineComponent, inject, PropType, ref, Ref, unref, useSlots } from 'vue'
+import { computed, defineComponent, PropType, ref, unref, useSlots } from 'vue'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
@@ -74,6 +74,7 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import BatchActions from '../BatchActions.vue'
 import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
@@ -240,10 +241,10 @@ export default defineComponent({
       spacesStore.spaces.filter((s) => isPersonalSpaceResource(s) || isProjectSpaceResource(s))
     )
 
-    const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
+    const { isMobile } = useIsMobile()
     const isTrashLocation = useActiveLocation(isLocationTrashActive, 'files-trash-generic')
     const showBreadcrumb = computed(() => {
-      if (!unref(isMobileWidth) && props.breadcrumbs.length) {
+      if (!unref(isMobile) && props.breadcrumbs.length) {
         return true
       }
       if (unref(isTrashLocation) && unref(spaces).length === 1) {
