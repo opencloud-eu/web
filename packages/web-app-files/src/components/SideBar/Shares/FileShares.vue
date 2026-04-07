@@ -369,3 +369,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  #files-collaborators-list > li {
+    @apply pt-2;
+  }
+}
+</style>
