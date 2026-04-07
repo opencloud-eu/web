@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @pedropintosilva, @tiran133
+@AlexAndBear, @JammingBen, @ScharfViktor, @pascalwengerter, @pedropintosilva, @tiran133
 
 ### 🐛 Bug Fixes
 
+- Fix: #2262 accesssToken tripe S event [[#2271](https://github.com/opencloud-eu/web/pull/2271)]
 - fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
 - fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
 - fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
