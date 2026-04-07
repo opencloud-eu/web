@@ -295,7 +295,7 @@ const deleteLinkConfirmation = ({ link }: { link: LinkShare }) => {
   })
 }
 </script>
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
