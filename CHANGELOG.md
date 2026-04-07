@@ -21,6 +21,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @panzoom/panzoom to v4.6.2 [[#2295](https://github.com/opencloud-eu/web/pull/2295)]
+- chore(deps): update dependency fast-xml-parser to v5.5.10 [[#2299](https://github.com/opencloud-eu/web/pull/2299)]
+- chore(deps): update dependency md-editor-v3 to v6.4.2 [[#2304](https://github.com/opencloud-eu/web/pull/2304)]
 - chore(deps): update devdependencies (non-major) [[#2294](https://github.com/opencloud-eu/web/pull/2294)]
 - fix(deps): update dependency vitest-mock-extended to v4 [[#2306](https://github.com/opencloud-eu/web/pull/2306)]
 - chore(deps): update dependency vite to v8.0.5 [security] [[#2305](https://github.com/opencloud-eu/web/pull/2305)]
