@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: can't type letter s in text editor [[#2312](https://github.com/opencloud-eu/web/pull/2312)]
 - Fix: #2262 accesssToken tripe S event [[#2271](https://github.com/opencloud-eu/web/pull/2271)]
 - fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
 - fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
