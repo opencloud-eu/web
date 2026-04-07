@@ -1603,6 +1603,9 @@ export const searchResourceGlobalSearch = async (
     return
   }
 
+  // wait for tika indexing
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
   await Promise.all([
     page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'REPORT'),
     page.locator(globalSearchInput).fill(keyword)

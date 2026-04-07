@@ -1,19 +1,16 @@
 import { ConfigStore, SearchFunction, SearchPreview, SearchResult } from '@opencloud-eu/web-pkg'
-import { Component, unref } from 'vue'
-import { Router } from 'vue-router'
+import { Component } from 'vue'
 import { ResourcePreview } from '@opencloud-eu/web-pkg'
 
 export const previewSearchLimit = 8
 
 export default class Preview implements SearchPreview {
   public readonly component: Component
-  private readonly router: Router
   private readonly searchFunction: SearchFunction
   private readonly configStore: ConfigStore
 
-  constructor(router: Router, searchFunction: SearchFunction, configStore: ConfigStore) {
+  constructor(searchFunction: SearchFunction, configStore: ConfigStore) {
     this.component = ResourcePreview
-    this.router = router
     this.searchFunction = searchFunction
     this.configStore = configStore
   }
@@ -23,9 +20,6 @@ export default class Preview implements SearchPreview {
   }
 
   public get available(): boolean {
-    return (
-      unref(this.router.currentRoute).name !== 'search-provider-list' &&
-      !this.configStore.options?.embed?.enabled
-    )
+    return !this.configStore.options?.embed?.enabled
   }
 }

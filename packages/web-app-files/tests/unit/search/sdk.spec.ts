@@ -1,7 +1,5 @@
 import { SDKSearch } from '../../../src/search'
-import { RouteLocation, Router } from 'vue-router'
 import { mock } from 'vitest-mock-extended'
-import { computed } from 'vue'
 import { createTestingPinia, writable } from '@opencloud-eu/web-test-helpers'
 import { ConfigStore, useCapabilityStore } from '@opencloud-eu/web-pkg'
 
@@ -14,28 +12,25 @@ const getStore = (reports: string[] = []) => {
 
 describe('SDKProvider', () => {
   it('is only available if announced via capabilities', () => {
-    const search = new SDKSearch(getStore(), mock<Router>(), vi.fn(), mock<ConfigStore>())
+    const search = new SDKSearch(getStore(), vi.fn(), mock<ConfigStore>())
     expect(search.available).toBe(false)
   })
 
   describe('SDKProvider previewSearch', () => {
-    it('is not available on certain routes', () => {
+    it('is only available if not embedded', () => {
       ;[
-        { route: 'foo', available: true },
-        { route: 'search-provider-list' },
-        { route: 'bar', available: true }
+        { options: { embed: { enabled: true } }, available: false },
+        { options: { embed: { enabled: false } }, available: true },
+        { options: { embed: undefined }, available: true },
+        { options: {}, available: true },
+        { options: undefined, available: true }
       ].forEach((v) => {
-        const router = mock<Router>()
-        writable(router).currentRoute = computed(() => mock<RouteLocation>({ name: v.route }))
+        const configStore = mock<ConfigStore>()
+        writable(configStore).options = v.options as any
 
-        const search = new SDKSearch(
-          getStore(['search-files']),
-          router,
-          vi.fn(),
-          mock<ConfigStore>()
-        )
+        const search = new SDKSearch(getStore(['search-files']), vi.fn(), configStore)
 
-        expect(!!search.previewSearch.available).toBe(!!v.available)
+        expect(search.previewSearch.available).toBe(v.available)
       })
     })
   })

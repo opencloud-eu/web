@@ -37,6 +37,9 @@ export default defineComponent({
       try {
         searchResult.value = await unref(listSearch).search(term || '')
       } catch (e) {
+        if (e === 'cancel') {
+          return
+        }
         searchResult.value = {
           values: [],
           totalResults: null
