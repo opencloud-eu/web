@@ -1,10 +1,10 @@
 # Changelog
 
-## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-04-02
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-04-07
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @prashant-gurung899
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899
 
 ### 🔒 Security
 
