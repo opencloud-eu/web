@@ -17,67 +17,94 @@
         :key="index"
         :data-key="index"
         :data-item-id="item.id"
-        :aria-hidden="item.isTruncationPlaceholder"
         :class="[
           'oc-breadcrumb-list-item',
           'flex',
           'items-center',
-          { 'sr-only': isItemHidden(item) }
+          { 'sr-only': isItemHidden(item as BreadcrumbItem) }
         ]"
         @dragover.prevent
-        @dragenter.prevent="dropItemStyling(item, index, false, $event)"
-        @dragleave.prevent="dropItemStyling(item, index, true, $event)"
-        @mouseleave="dropItemStyling(item, index, true, $event as DragEvent)"
-        @drop="dropItemEvent(item, index)"
+        @dragenter.prevent="dropItemStyling(item as BreadcrumbItem, index, false, $event)"
+        @dragleave.prevent="dropItemStyling(item as BreadcrumbItem, index, true, $event)"
+        @mouseleave="dropItemStyling(item as BreadcrumbItem, index, true, $event as DragEvent)"
+        @drop="dropItemEvent(item as BreadcrumbItem, index)"
       >
-        <router-link
-          v-if="item.to && !item.isTruncationPlaceholder"
-          :aria-current="getAriaCurrent(index)"
-          :to="item.to"
-          class="first:text-base text-xl text-role-on-surface"
-        >
-          <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
-            item.text
-          }}</span>
-        </router-link>
-        <oc-button
-          v-else-if="item.onClick && !item.isTruncationPlaceholder"
-          :aria-current="getAriaCurrent(index)"
-          appearance="raw-inverse"
-          color-role="surface"
-          class="flex first:text-base text-xl"
-          no-hover
-          @click="item.onClick"
-        >
+        <template v-if="item.isTruncationPlaceholder">
+          <oc-button
+            id="oc-breadcrumb-contextmenu-truncation-trigger"
+            class="hover:underline"
+            appearance="raw-inverse"
+            color-role="surface"
+            no-hover
+            >...</oc-button
+          >
+          <oc-drop
+            :title="$gettext('Collapsed items')"
+            toggle="#oc-breadcrumb-contextmenu-truncation-trigger"
+            mode="click"
+            close-on-click
+            padding-size="small"
+          >
+            <div class="flex flex-col">
+              <oc-button
+                v-for="truncationItem in truncationItems"
+                :key="truncationItem.id"
+                :to="truncationItem.to as RouteLocationRaw"
+                type="router-link"
+                appearance="raw-inverse"
+                color-role="surface"
+                class="p-2"
+                justify-content="left"
+              >
+                <oc-icon name="folder" class="align-middle" fill-type="line" />
+                <span>{{ truncationItem.text }}</span>
+              </oc-button>
+            </div>
+          </oc-drop>
+        </template>
+        <template v-else>
+          <router-link
+            v-if="item.to"
+            :aria-current="getAriaCurrent(index)"
+            :to="item.to as RouteLocationRaw"
+            class="first:text-base text-xl text-role-on-surface"
+          >
+            <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
+              item.text
+            }}</span>
+          </router-link>
+          <oc-button
+            v-else-if="item.onClick"
+            :aria-current="getAriaCurrent(index)"
+            appearance="raw-inverse"
+            color-role="surface"
+            class="flex first:text-base text-xl"
+            no-hover
+            @click="item.onClick"
+          >
+            <span
+              :class="[
+                'hover:underline',
+                'align-sub',
+                'truncate',
+                'inline-block',
+                'leading-[1.2]',
+                'max-w-3xs',
+                {
+                  'oc-breadcrumb-item-text-last': index === displayItems.length - 1
+                }
+              ]"
+              v-text="item.text"
+            />
+          </oc-button>
           <span
-            :class="[
-              'hover:underline',
-              'align-sub',
-              'truncate',
-              'inline-block',
-              'leading-[1.2]',
-              'max-w-3xs',
-              {
-                'oc-breadcrumb-item-text-last': index === displayItems.length - 1
-              }
-            ]"
+            v-else
+            class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
+            :aria-current="getAriaCurrent(index)"
+            tabindex="-1"
             v-text="item.text"
           />
-        </oc-button>
-        <span
-          v-else-if="item.isTruncationPlaceholder"
-          class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
-          tabindex="-1"
-          aria-hidden="true"
-          v-text="item.text"
-        />
-        <span
-          v-else
-          class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
-          :aria-current="getAriaCurrent(index)"
-          tabindex="-1"
-          v-text="item.text"
-        />
+        </template>
         <oc-icon
           v-if="index !== displayItems.length - 1"
           color="var(--oc-role-on-surface)"
@@ -140,13 +167,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, Ref, ref, unref, watch } from 'vue'
+import { computed, nextTick, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { EVENT_ITEM_DROPPED_BREADCRUMB, uniqueId, BreadcrumbItem, SizeType } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcDrop from '../OcDrop/OcDrop.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
-import { RouteLocationPathRaw } from 'vue-router'
+import { RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
 
 export interface Props {
   /**
@@ -218,17 +245,13 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { $gettext } = useGettext()
-const visibleItems = ref<BreadcrumbItem[]>([])
-const hiddenItems = ref<BreadcrumbItem[]>([])
-
-// FIXME: setting this initially will cause vue-router type errors
-const displayItems: Ref<BreadcrumbItem[]> = ref([])
-displayItems.value = items
+const displayItems = ref<BreadcrumbItem[]>([])
+const truncationItems = ref<BreadcrumbItem[]>([])
 
 const isItemHidden = (item: BreadcrumbItem): boolean => {
   return (
-    hiddenItems.value.indexOf(item) !== -1 ||
-    (item.isTruncationPlaceholder && hiddenItems.value.length === 0)
+    truncationItems.value.indexOf(item) !== -1 ||
+    (item.isTruncationPlaceholder && truncationItems.value.length === 0)
   )
 }
 
@@ -258,7 +281,7 @@ const dropItemEvent = (item: BreadcrumbItem, index: number) => {
 
 const calculateTotalBreadcrumbWidth = () => {
   let totalBreadcrumbWidth = 100 // 100px margin to the right to avoid breadcrumb from getting too close to the controls
-  visibleItems.value.forEach((item) => {
+  displayItems.value.forEach((item) => {
     const breadcrumbElement = getBreadcrumbElement(item.id)
     const itemClientWidth = breadcrumbElement?.getBoundingClientRect()?.width || 0
     totalBreadcrumbWidth += itemClientWidth
@@ -274,30 +297,37 @@ const reduceBreadcrumb = (offsetIndex: number) => {
   const totalBreadcrumbWidth = calculateTotalBreadcrumbWidth()
 
   const isOverflowing = breadcrumbMaxWidth < totalBreadcrumbWidth
-  if (!isOverflowing || visibleItems.value.length <= truncationOffset + 1) {
+  if (!isOverflowing || displayItems.value.length <= truncationOffset + 1) {
     return
   }
   // Remove from the left side
-  const removed = visibleItems.value.splice(offsetIndex, 1)
+  const removed = displayItems.value.splice(offsetIndex, 1)
 
-  hiddenItems.value.push(removed[0])
+  truncationItems.value.push(removed[0])
   reduceBreadcrumb(offsetIndex)
 }
 
 const renderBreadcrumb = () => {
   displayItems.value = [...items]
-  if (displayItems.value.length > truncationOffset - 1) {
-    displayItems.value.splice(truncationOffset - 1, 0, {
+  truncationItems.value = []
+
+  if (displayItems.value.length > truncationOffset) {
+    const placeholder = {
+      id: uniqueId('oc-breadcrumb-truncation-'),
       text: '...',
-      allowContextActions: false,
-      to: {} as BreadcrumbItem['to'],
       isTruncationPlaceholder: true
-    })
+    }
+    displayItems.value.splice(truncationOffset - 1, 0, placeholder)
   }
-  visibleItems.value = [...displayItems.value]
-  hiddenItems.value = []
+
   nextTick(() => {
     reduceBreadcrumb(truncationOffset)
+    if (truncationItems.value.length === 0) {
+      const placeholderIndex = displayItems.value.findIndex((item) => item.isTruncationPlaceholder)
+      if (placeholderIndex !== -1) {
+        displayItems.value.splice(placeholderIndex, 1)
+      }
+    }
   })
 }
 
@@ -307,10 +337,10 @@ const currentFolder = computed<BreadcrumbItem>(() => {
   if (items.length === 0 || !items) {
     return undefined
   }
-  return [...items].reverse()[0]
+  return items[items.length - 1]
 })
 const parentFolderTo = computed(() => {
-  return [...items].reverse()[1]?.to
+  return items[items.length - 2]?.to
 })
 
 const contextMenuLabel = computed(() => {
