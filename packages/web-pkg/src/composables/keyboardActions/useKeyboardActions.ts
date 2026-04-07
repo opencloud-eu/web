@@ -52,14 +52,20 @@ export interface KeyboardAction {
 }
 
 const areCustomKeyBindingsDisabled = () => {
-  const activeElementTag = document.activeElement.tagName
-  const type = document.activeElement.getAttribute('type')
+  const activeElement = document.activeElement
+
   if (
-    ['textarea', 'input', 'select'].includes(activeElementTag.toLowerCase()) &&
-    type !== 'checkbox'
+    (activeElement instanceof HTMLInputElement && activeElement.type !== 'checkbox') ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement instanceof HTMLSelectElement
   ) {
     return true
   }
+
+  if (activeElement instanceof HTMLElement && activeElement.isContentEditable) {
+    return true
+  }
+
   const closestSelectionEl = document.activeElement
   if (!closestSelectionEl) {
     return false
