@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed } from 'vue'
 import SpaceHeader from '../../../../src/components/Spaces/SpaceHeader.vue'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { SpaceResource, Resource, buildSpaceImageResource } from '@opencloud-eu/web-client'
@@ -7,6 +7,7 @@ import { mock } from 'vitest-mock-extended'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { flushPromises } from '@vue/test-utils'
 import { useSideBar } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -23,6 +24,14 @@ vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   buildSpaceImageResource: vi.fn()
 }))
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@opencloud-eu/design-system/composables')>()
+  return {
+    ...actual,
+    useIsMobile: vi.fn()
+  }
+})
 
 const getSpaceMock = (spaceImageData: DriveItem = undefined) =>
   mock<SpaceResource>({
@@ -51,7 +60,7 @@ describe('SpaceHeader', () => {
     it('should take full width in mobile view', () => {
       const wrapper = getWrapper({
         space: getSpaceMock({ webDavUrl: '/' }),
-        isMobileWidth: true
+        isMobile: true
       })
       expect(wrapper.find('.space-header').attributes('class')).not.toContain('flex')
       expect(wrapper.find('.space-header-image').attributes('class')).toContain(
@@ -94,14 +103,14 @@ describe('SpaceHeader', () => {
 function getWrapper({
   space = {} as SpaceResource,
   isSideBarOpen = false,
-  isMobileWidth = false,
+  isMobile = false,
   imagesLoading = [],
   readmesLoading = [],
   memberCount = 0
 }: {
   space?: SpaceResource
   isSideBarOpen?: boolean
-  isMobileWidth?: boolean
+  isMobile?: boolean
   imagesLoading?: string[]
   readmesLoading?: string[]
   memberCount?: number
@@ -125,6 +134,8 @@ function getWrapper({
     ...defaultPlugins({ piniaOptions: { spacesState: { imagesLoading, readmesLoading } } })
   ]
 
+  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
+
   const sideBarStore = useSideBar()
   sideBarStore.isSideBarOpen = isSideBarOpen
 
@@ -135,7 +146,7 @@ function getWrapper({
     global: {
       mocks,
       plugins,
-      provide: { ...mocks, isMobileWidth: ref(isMobileWidth) },
+      provide: { ...mocks },
       stubs: {
         'space-context-actions': true,
         TextEditor: true

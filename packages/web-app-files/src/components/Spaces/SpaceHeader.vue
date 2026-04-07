@@ -1,13 +1,12 @@
 <template>
   <div
     class="space-header p-4"
-    :class="{ flex: !imageExpanded && !isMobileWidth, 'space-header-squashed': isSideBarOpen }"
+    :class="{ flex: !imageExpanded && !isMobile, 'space-header-squashed': isSideBarOpen }"
   >
     <div
       class="space-header-image mr-6 min-w-xs aspect-[16/9]"
       :class="{
-        'space-header-image-expanded w-full max-w-full max-h-full mb-4':
-          imageExpanded || isMobileWidth,
+        'space-header-image-expanded w-full max-w-full max-h-full mb-4': imageExpanded || isMobile,
         'w-xs max-h-40': !imageExpanded,
         'hidden lg:block': isSideBarOpen
       }"
@@ -104,11 +103,9 @@
 <script setup lang="ts">
 import {
   computed,
-  inject,
   nextTick,
   onBeforeUnmount,
   onMounted,
-  Ref,
   ref,
   unref,
   useTemplateRef,
@@ -126,6 +123,7 @@ import {
   useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
@@ -150,7 +148,7 @@ const { imagesLoading, readmesLoading } = storeToRefs(spacesStore)
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
 
-const isMobileWidth = inject<Ref<boolean>>('isMobileWidth')
+const { isMobile } = useIsMobile()
 
 const isDropOpen = ref(false)
 
