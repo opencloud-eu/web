@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @pedropintosilva, @tiran133
 
+### 🐛 Bug Fixes
+
+- fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
+- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
+- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+
 ### 📈 Enhancement
 
 - feat: handle UI_InsertFile postMessage from Collabora [[#2270](https://github.com/opencloud-eu/web/pull/2270)]
@@ -14,11 +20,6 @@
 - feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
 - feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
 - feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
-
-### 🐛 Bug Fixes
-
-- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
-- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
 
 ### 📦️ Dependencies
 
