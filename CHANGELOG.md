@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.2.2](https://github.com/opencloud-eu/web/releases/tag/v4.2.2) - 2026-04-07
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @prashant-gurung899
+
+### 🔒 Security
+
+- chore: bump lodash-es to v4.18.1 [[#2292](https://github.com/opencloud-eu/web/pull/2292)]
+- chore(deps): bump markdown-it to v4.1.1 [security] [[#1985](https://github.com/opencloud-eu/web/pull/1985)]
+- chore(deps): bump qs to v6.14.2 [security] [[#1986](https://github.com/opencloud-eu/web/pull/1986)]
+- chore(deps): update dependency fast-xml-parser to v5 [security] [[#1918](https://github.com/opencloud-eu/web/pull/1918)]
+- chore(deps): bump @isaacs/brace-expansion to v5.0.1 [security] [[#1930](https://github.com/opencloud-eu/web/pull/1930)]
+- fix(deps): update dependency lodash-es to v4.17.23 [security] [[#1858](https://github.com/opencloud-eu/web/pull/1858)]
+- chore(deps): bump preact to v10.28.2 [security] [[#1824](https://github.com/opencloud-eu/web/pull/1824)]
+- chore(deps): bump qs to v6.14.1 [security] [[#1813](https://github.com/opencloud-eu/web/pull/1813)]
+
+### 🐛 Bug Fixes
+
+- fix: faulty french translation for 'copy link and password' results i… [[#2061](https://github.com/opencloud-eu/web/pull/2061)]
+- [stable-4.2] fix: backchannel logout react to sid (#1969) [[#2060](https://github.com/opencloud-eu/web/pull/2060)]
+
+### ✅ Tests
+
+- port #2051 [[#2056](https://github.com/opencloud-eu/web/pull/2056)]
+- [stable-4.2] Port #1714, #1736 and #1700 [[#1738](https://github.com/opencloud-eu/web/pull/1738)]
+- [stable-4.2] e2e-tests. undo deleted resources (#1580) [[#1704](https://github.com/opencloud-eu/web/pull/1704)]
+
+### 📦️ Dependencies
+
+- [stable-4.2] update-playwright-1.57 (#1709) [[#1710](https://github.com/opencloud-eu/web/pull/1710)]
+
 ## [4.2.1](https://github.com/opencloud-eu/web/releases/tag/v4.2.1) - 2025-11-28
 
 ### ❤️ Thanks to all contributors! ❤️
