@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency p-queue to v9.1.2 [[#2308](https://github.com/opencloud-eu/web/pull/2308)]
 - fix(deps): update dependency typescript to v6 [[#2204](https://github.com/opencloud-eu/web/pull/2204)]
 - chore(deps): update dependency @unhead/vue to v2.1.13 [[#2303](https://github.com/opencloud-eu/web/pull/2303)]
 - fix(deps): update dependency fuse.js to v7.3.0 [[#2297](https://github.com/opencloud-eu/web/pull/2297)]
