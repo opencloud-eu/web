@@ -13,7 +13,7 @@
       @click="$emit('select')"
     >
       <img
-        v-if="item && item.isImage && item.resource.thumbnail"
+        v-if="item && item.resource.thumbnail"
         :src="item.resource.thumbnail"
         class="object-cover h-25 rounded-md aspect-video"
         :alt="item.name"
