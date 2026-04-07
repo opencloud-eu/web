@@ -4,23 +4,25 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor
-
-### 🐛 Bug Fixes
-
-- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
-- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+@AlexAndBear, @JammingBen, @ScharfViktor, @pedropintosilva, @tiran133
 
 ### 📈 Enhancement
 
+- feat: handle UI_InsertFile postMessage from Collabora [[#2270](https://github.com/opencloud-eu/web/pull/2270)]
 - feat: focus global search bar via keyboard shortcut [[#2274](https://github.com/opencloud-eu/web/pull/2274)]
 - feat: redesign sidebar file/space details panel [[#2273](https://github.com/opencloud-eu/web/pull/2273)]
 - feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
 - feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
 - feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
 
+### 🐛 Bug Fixes
+
+- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
+- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+
 ### 📦️ Dependencies
 
+- fix(deps): update dependency typescript to v6 [[#2204](https://github.com/opencloud-eu/web/pull/2204)]
 - chore(deps): update dependency @unhead/vue to v2.1.13 [[#2303](https://github.com/opencloud-eu/web/pull/2303)]
 - fix(deps): update dependency fuse.js to v7.3.0 [[#2297](https://github.com/opencloud-eu/web/pull/2297)]
 - chore(deps): update tiptap monorepo to v3.22.2 [[#2285](https://github.com/opencloud-eu/web/pull/2285)]
