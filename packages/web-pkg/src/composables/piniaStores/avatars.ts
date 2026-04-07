@@ -9,7 +9,7 @@ export const useAvatarsStore = defineStore('avatars', () => {
   const avatarMap = ref<Record<string, string>>({})
   const avatarsQueue = markRaw(
     new PQueue({ concurrency: configStore.options.concurrentRequests.avatars })
-  ) as { add: PQueue['add'] }
+  )
   const pendingAvatarsRequests = new Map<string, Promise<any>>()
 
   const addAvatar = (userId: string, avatar: string) => {
