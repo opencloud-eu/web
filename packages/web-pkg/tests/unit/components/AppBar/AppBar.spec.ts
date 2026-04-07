@@ -47,19 +47,19 @@ const breadCrumbItemWithContextActionAllowed = {
 
 describe('AppBar component', () => {
   describe('renders', () => {
-    it('by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle', async () => {
+    it('by default no breadcrumbs, no bulkactions, no sharesnavigation but viewoptions and sidebartoggle', () => {
       const { wrapper } = getShallowWrapper()
       expect(wrapper.html()).toMatchSnapshot()
     })
     describe('breadcrumbs', () => {
-      it('if given, by default without breadcrumbsContextActionsItems', async () => {
+      it('if given, by default without breadcrumbsContextActionsItems', () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: breadcrumbItems })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeTruthy()
         expect(
           wrapper.findComponent<typeof OcBreadcrumb>(selectors.ocBreadcrumbStub).props('items')
         ).toEqual(breadcrumbItems)
       })
-      it('if given, with breadcrumbsContextActionsItems if allowed on last breadcrumb item', async () => {
+      it('if given, with breadcrumbsContextActionsItems if allowed on last breadcrumb item', () => {
         const { wrapper } = getShallowWrapper(
           [],
           {},
@@ -70,11 +70,11 @@ describe('AppBar component', () => {
           wrapper.findComponent<typeof OcBreadcrumb>(selectors.ocBreadcrumbStub).props('items')
         ).toEqual([...breadcrumbItems, breadCrumbItemWithContextActionAllowed])
       })
-      it('not if no breadcrumb items given', async () => {
+      it('not if no breadcrumb items given', () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: [] })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeFalsy()
       })
-      it('not if one breadcrumb item is given in mobile view', async () => {
+      it('not if one breadcrumb item is given in mobile view', () => {
         const { wrapper } = getShallowWrapper(
           [],
           {},
@@ -86,11 +86,11 @@ describe('AppBar component', () => {
       })
     })
     describe('bulkActions', () => {
-      it('if enabled', async () => {
+      it('if enabled', () => {
         const { wrapper } = getShallowWrapper(selectedFiles, {}, { hasBulkActions: true })
         expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
       })
-      it('if 1 file selected on trash routes', async () => {
+      it('if 1 file selected on trash routes', () => {
         const { wrapper } = getShallowWrapper(
           [selectedFiles[0]],
           {},
@@ -108,21 +108,21 @@ describe('AppBar component', () => {
         { items: [], shows: true },
         { items: [breadcrumbItems[0]], shows: true },
         { items: [breadcrumbItems[0], breadcrumbItems[1]], shows: false }
-      ])('if less than 2 breadcrumb items given', async ({ items, shows }) => {
+      ])('if less than 2 breadcrumb items given', ({ items, shows }) => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: items })
         expect(wrapper.find(selectors.mobileNavStub).exists()).toBe(shows)
       })
     })
     describe('viewoptions', () => {
-      it('show if options are available', async () => {
+      it('show if options are available', () => {
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: true })
         expect(wrapper.find(selectors.viewOptionsStub).exists()).toBeTruthy()
       })
-      it('hide if options are not available', async () => {
+      it('hide if options are not available', () => {
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: false })
         expect(wrapper.find(selectors.viewOptionsStub).exists()).toBeFalsy()
       })
-      it('passes viewModes array to ViewOptions', async () => {
+      it('passes viewModes array to ViewOptions', () => {
         const viewModes = [mock<FolderView>()]
         const { wrapper } = getShallowWrapper([], {}, { hasViewOptions: true, viewModes })
         expect(
@@ -130,11 +130,11 @@ describe('AppBar component', () => {
         ).toEqual(viewModes)
       })
     })
-    it('if given, with content in the actions slot', async () => {
+    it('if given, with content in the actions slot', () => {
       const { wrapper } = getShallowWrapper([], { actions: actionSlot })
       expect(wrapper.html()).toMatchSnapshot()
     })
-    it('if given, with content in the content slot', async () => {
+    it('if given, with content in the content slot', () => {
       const { wrapper } = getShallowWrapper([], { content: contentSlot })
       expect(wrapper.html()).toMatchSnapshot()
     })
