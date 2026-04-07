@@ -1,20 +1,19 @@
 <template>
-  <div id="oc-files-sharing-sidebar" class="relative rounded-sm">
-    <div class="flex justify-between items-center">
-      <div class="flex">
-        <h3 class="font-semibold text-base m-0" v-text="$gettext('Share with people')" />
-        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="inviteCollaboratorHelp" />
-      </div>
-      <copy-private-link :resource="resource" />
-    </div>
+  <div id="oc-files-sharing-sidebar" class="relative">
     <invite-collaborator-form
       v-if="canShare({ resource, space })"
       key="new-collaborator"
+      :label="$gettext('Share with people')"
+      :contextual-helper="{
+        isEnabled: helpersEnabled,
+        data: inviteCollaboratorHelp
+      }"
+      :resource="resource"
       class="mt-2"
     />
     <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />
     <template v-if="hasSharees">
-      <div id="files-collaborators-headline" class="flex items-center justify-between h-10 mt-2">
+      <div id="files-collaborators-headline" class="flex items-center justify-between mt-2">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
       <custom-component-target
@@ -22,7 +21,7 @@
       />
       <ul
         id="files-collaborators-list"
-        class="oc-list oc-list-divider"
+        class="oc-list"
         :class="{ 'mb-4': showSpaceMembers, 'm-0': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
@@ -110,7 +109,6 @@ import {
   CollaboratorShare
 } from '@opencloud-eu/web-client'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
-import CopyPrivateLink from '../../Shares/CopyPrivateLink.vue'
 import {
   fileSideBarSharesPanelSharedWithTopExtensionPoint,
   fileSideBarSharesPanelSharedWithBottomExtensionPoint
@@ -119,7 +117,6 @@ import {
 export default defineComponent({
   name: 'FileShares',
   components: {
-    CopyPrivateLink,
     InviteCollaboratorForm,
     CollaboratorListItem,
     CustomComponentTarget
@@ -372,3 +369,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  #files-collaborators-list > li {
+    @apply pt-2;
+  }
+}
+</style>

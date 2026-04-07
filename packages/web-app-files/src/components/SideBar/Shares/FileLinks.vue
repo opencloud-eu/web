@@ -1,16 +1,22 @@
 <template>
   <div id="oc-files-file-link" class="relative rounded-sm">
-    <div class="flex items-center">
-      <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
-      <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
+        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
+      </div>
+      <oc-button
+        v-if="canCreateLinks"
+        id="files-file-link-add"
+        appearance="raw"
+        data-testid="files-link-add-btn"
+        @click="addNewLink"
+      >
+        <span v-text="$gettext('Add link')" />
+      </oc-button>
     </div>
-    <p v-if="!directLinks.length" class="files-links-empty mt-4" v-text="noLinksLabel" />
-    <ul
-      v-else
-      id="files-links-list"
-      class="oc-list oc-list-divider mt-4"
-      :aria-label="$gettext('Public links')"
-    >
+    <p v-if="!directLinks.length" class="files-links-empty" v-text="noLinksLabel" />
+    <ul v-else id="files-links-list" class="oc-list" :aria-label="$gettext('Public links')">
       <li v-for="link in displayLinks" :key="link.id">
         <list-item
           :can-rename="true"
@@ -33,17 +39,8 @@
       </oc-button>
     </div>
     <div class="mt-4">
-      <oc-button
-        v-if="canCreateLinks"
-        id="files-file-link-add"
-        appearance="raw"
-        data-testid="files-link-add-btn"
-        @click="addNewLink"
-      >
-        <span v-text="$gettext('Add link')"
-      /></oc-button>
       <p
-        v-else
+        v-if="!canCreateLinks"
         data-testid="files-links-no-share-permissions-message"
         class="mt-4"
         v-text="$gettext('You do not have permission to create public links.')"
@@ -62,7 +59,11 @@
           '[grid-template-rows:0fr]': indirectLinkListCollapsed
         }"
       >
-        <ul class="oc-list oc-list-divider overflow-hidden" :aria-label="$gettext('Public links')">
+        <ul
+          id="files-links-list"
+          class="oc-list overflow-hidden"
+          :aria-label="$gettext('Public links')"
+        >
           <li v-for="link in indirectLinks" :key="link.id">
             <list-item
               :is-folder-share="resource.isFolder"
@@ -294,3 +295,12 @@ const deleteLinkConfirmation = ({ link }: { link: LinkShare }) => {
   })
 }
 </script>
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+@layer utilities {
+  #files-links-list li {
+    @apply pt-2;
+  }
+}
+</style>
