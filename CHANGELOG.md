@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.22.2 [[#2285](https://github.com/opencloud-eu/web/pull/2285)]
 - chore(deps): update dependency @panzoom/panzoom to v4.6.2 [[#2295](https://github.com/opencloud-eu/web/pull/2295)]
 - chore(deps): update dependency fast-xml-parser to v5.5.10 [[#2299](https://github.com/opencloud-eu/web/pull/2299)]
 - chore(deps): update dependency md-editor-v3 to v6.4.2 [[#2304](https://github.com/opencloud-eu/web/pull/2304)]
