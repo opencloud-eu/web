@@ -21,6 +21,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @unhead/vue to v2.1.13 [[#2303](https://github.com/opencloud-eu/web/pull/2303)]
+- fix(deps): update dependency fuse.js to v7.3.0 [[#2297](https://github.com/opencloud-eu/web/pull/2297)]
 - chore(deps): update tiptap monorepo to v3.22.2 [[#2285](https://github.com/opencloud-eu/web/pull/2285)]
 - chore(deps): update dependency @panzoom/panzoom to v4.6.2 [[#2295](https://github.com/opencloud-eu/web/pull/2295)]
 - chore(deps): update dependency fast-xml-parser to v5.5.10 [[#2299](https://github.com/opencloud-eu/web/pull/2299)]
