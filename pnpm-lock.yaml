@@ -907,7 +907,7 @@ importers:
         version: 8.11.1
       md-editor-v3:
         specifier: ^6.4.1
-        version: 6.4.1(vue@3.5.32(typescript@5.9.3))
+        version: 6.4.2(vue@3.5.32(typescript@5.9.3))
       oidc-client-ts:
         specifier: ^3.5.0
         version: 3.5.0
@@ -4534,8 +4534,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  md-editor-v3@6.4.1:
-    resolution: {integrity: sha512-rVYCiA243Xm5zI8p7O4CztAtQ6eA7K5h4O6pilKKMgSfJJFtE7zFp9ivfia/+ITtXe4BWoty8ADjqcdzpp6zVw==}
+  md-editor-v3@6.4.2:
+    resolution: {integrity: sha512-Jz2eYHTWpcxjakU7+2I2E9soiintAJ1NAFkXbhZYNUD1W/y52RidsjdmQRyf1YQH2pGXZyVLsHJm/mW99kA7LA==}
     peerDependencies:
       vue: ^3.5.3
 
@@ -9585,7 +9585,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  md-editor-v3@6.4.1(vue@3.5.32(typescript@5.9.3)):
+  md-editor-v3@6.4.2(vue@3.5.32(typescript@5.9.3)):
     dependencies:
       '@codemirror/autocomplete': 6.20.1
       '@codemirror/commands': 6.10.3
@@ -9600,7 +9600,6 @@ snapshots:
       '@vavt/copy2clipboard': 1.0.3
       '@vavt/util': 2.1.2
       codemirror: 6.0.2
-      lru-cache: 11.2.7
       lucide-vue-next: 0.543.0(vue@3.5.32(typescript@5.9.3))
       markdown-it: 14.1.1
       markdown-it-image-figures: 2.1.1(markdown-it@14.1.1)
