@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "./dist/src",
+    "outDir": "./dist",
+    "rootDir": ".",
     "types": ["node", "vite/client", "vitest/globals"]
   },
   "exclude": ["node_modules", "vite.config.ts"]

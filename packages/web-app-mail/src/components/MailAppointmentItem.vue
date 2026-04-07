@@ -49,7 +49,7 @@
         <oc-list class="col-start-2">
           <li
             v-for="attendee in (attendees || []).slice(0, MAX_ATTENDEES_DISPLAY_COUNT)"
-            :key="attendee.email || attendee.name"
+            :key="attendee.email || (attendee.name as string)"
             class="text-sm mt-1"
           >
             <span v-text="attendee.email || attendee.name"></span>
