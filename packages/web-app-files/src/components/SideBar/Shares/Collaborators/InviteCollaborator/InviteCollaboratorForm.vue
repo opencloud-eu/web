@@ -125,7 +125,7 @@
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="ml-1 raw-hover-surface p-1"
+          class="ml-1 p-1"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >

@@ -248,9 +248,6 @@ watch(filterTerm, async () => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  #files-collaborators-list li {
-    @apply pt-2;
-  }
   .space-members-filter input:focus {
     @apply border border-role-outline outline-0 inset-ring-1 ring-role-outline;
   }

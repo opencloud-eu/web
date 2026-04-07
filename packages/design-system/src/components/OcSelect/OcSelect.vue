@@ -606,7 +606,6 @@ export default { components: { VueSelect } }
       padding: 0;
 
       > * {
-        padding: 0px 2px;
         margin: 2px 2px 2px 1px;
         color: var(--oc-role-on-surface);
       }
