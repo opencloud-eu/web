@@ -16,7 +16,11 @@ export { default as OcColorInput } from './OcColorInput/OcColorInput.vue'
 export { default as OcContextualHelper } from './OcContextualHelper/OcContextualHelper.vue'
 export { default as OcDatepicker } from './OcDatepicker/OcDatepicker.vue'
 export { default as OcDefinitionList } from './OcDefinitionList/OcDefinitionList.vue'
-export { default as OcDrop } from './OcDrop/OcDrop.vue'
+export {
+  default as OcDrop,
+  type Props as OcDropProps,
+  type Slots as OcDropSlots
+} from './OcDrop/OcDrop.vue'
 export { default as OcDropzone } from './OcDropzone/OcDropzone.vue'
 export { default as OcFileInput } from './OcFileInput/OcFileInput.vue'
 export { default as OcFilterChip } from './OcFilterChip/OcFilterChip.vue'
