@@ -14,6 +14,7 @@
         :aria-label="
           mode === 'create' ? $gettext('Select permission') : $gettext('Edit permission')
         "
+        no-hover
       >
         <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
         <span class="truncate" v-text="inviteLabel" />

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex items-center justify-between">
+  <div class="w-full flex items-center justify-between p-2 rounded-xl bg-role-surface-container">
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
       <div class="grid pl-2">

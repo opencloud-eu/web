@@ -4,7 +4,7 @@
       :id="buttonId"
       :aria-label="$gettext('Show more information')"
       appearance="raw"
-      class="align-middle"
+      class="flex items-center"
       no-hover
     >
       <oc-icon name="question" fill-type="line" size="small" />

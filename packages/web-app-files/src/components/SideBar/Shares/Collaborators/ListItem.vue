@@ -3,7 +3,7 @@
     :data-testid="`collaborator-${isAnyUserShareType ? 'user' : 'group'}-item-${
       share.sharedWith.displayName
     }`"
-    class="py-1"
+    class="p-2 bg-role-surface-container rounded-xl"
   >
     <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
       <div class="flex items-center">

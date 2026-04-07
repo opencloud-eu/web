@@ -1,23 +1,22 @@
 <template>
   <div id="oc-files-sharing-sidebar" class="relative rounded-sm">
-    <div class="flex">
-      <div v-if="canShare({ space: resource, resource })" class="flex">
-        <h3 class="font-semibold text-base m-0" v-text="$gettext('Add members')" />
-        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="spaceAddMemberHelp" />
-      </div>
-      <copy-private-link :resource="resource" class="ml-auto" />
-    </div>
     <invite-collaborator-form
       v-if="canShare({ space: resource, resource })"
       key="new-collaborator"
       :save-button-label="$gettext('Add')"
+      :label="$gettext('Add members')"
       :invite-label="$gettext('Search')"
+      :contextual-helper="{
+        isEnabled: helpersEnabled,
+        data: spaceAddMemberHelp
+      }"
+      :resource="resource"
       class="mt-2"
     />
     <template v-if="hasCollaborators">
       <div
         id="files-collaborators-headline"
-        class="flex items-center justify-between relative h-10 mt-2"
+        class="flex items-center justify-between relative mt-2"
       >
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
@@ -61,7 +60,7 @@
       <ul
         id="files-collaborators-list"
         ref="collaboratorList"
-        class="oc-list oc-list-divider m-0"
+        class="oc-list m-0"
         :aria-label="$gettext('Space members')"
       >
         <li v-for="collaborator in filteredSpaceMembers" :key="collaborator.id">
@@ -102,7 +101,6 @@ import { useClientService } from '@opencloud-eu/web-pkg'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
-import CopyPrivateLink from '../../Shares/CopyPrivateLink.vue'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 
@@ -172,7 +170,10 @@ const filteredSpaceMembers = computed(() => {
   return filter(unref(spaceMembers), unref(filterTerm))
 })
 const helpersEnabled = computed(() => {
-  return configStore.options.contextHelpers
+  return (
+    configStore.options.contextHelpers &&
+    canShare({ space: unref(resource), resource: unref(resource) })
+  )
 })
 const spaceAddMemberHelp = computed(() => {
   return shareSpaceAddMemberHelp({ configStore: configStore })
@@ -247,6 +248,9 @@ watch(filterTerm, async () => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  #files-collaborators-list > li {
+    @apply pt-2;
+  }
   .space-members-filter input:focus {
     @apply border border-role-outline outline-0 inset-ring-1 ring-role-outline;
   }

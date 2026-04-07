@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Collaborator ListItem component > share inheritance indicators > show when sharedParentRoute is given 1`] = `
-"<div data-testid="collaborator-user-item-einstein" class="py-1">
+"<div data-testid="collaborator-user-item-einstein" class="p-2 bg-role-surface-container rounded-xl">
   <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
     <div class="flex items-center">
       <div>

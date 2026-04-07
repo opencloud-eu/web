@@ -30,7 +30,7 @@
       </oc-list>
       <oc-list
         v-if="canRemove"
-        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove pt-2 mt-2 border-t"
+        class="collaborator-edit-dropdown-options-list collaborator-edit-dropdown-options-list-remove mt-2 pt-2 border-t"
       >
         <li>
           <context-menu-item :option="removeShareOption" />
