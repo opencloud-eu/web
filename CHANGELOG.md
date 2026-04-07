@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2294](https://github.com/opencloud-eu/web/pull/2294)]
 - fix(deps): update dependency vitest-mock-extended to v4 [[#2306](https://github.com/opencloud-eu/web/pull/2306)]
 - chore(deps): update dependency vite to v8.0.5 [security] [[#2305](https://github.com/opencloud-eu/web/pull/2305)]
 - chore(deps): update dependency vitest-mock-extended to v3.1.1 [[#2289](https://github.com/opencloud-eu/web/pull/2289)]
