@@ -1,9 +1,29 @@
 <template>
-  <div class="h-full overflow-y-auto">
-    <div v-if="isLoading" class="flex h-full justify-center items-center">
-      <oc-spinner :aria-label="$gettext('Loading contacts')" />
-    </div>
+  <app-loading-spinner v-if="isLoading" />
+  <template v-else>
+    <no-content-message v-if="!currentAddressBook" icon="folder" icon-fill-type="line">
+      <template #message>
+        <span v-text="$gettext('No contact folder selected')" />
+      </template>
+    </no-content-message>
     <template v-else>
+      <div class="md:hidden flex h-11 items-center px-4">
+        <oc-button
+          class="h-10 w-10 shrink-0 p-0"
+          appearance="raw"
+          no-hover
+          :aria-label="$gettext('Navigate back')"
+          @click="onNavigateBack"
+        >
+          <oc-icon name="arrow-left" fill-type="line" />
+        </oc-button>
+        <div class="min-w-0 flex-1">
+          <h2
+            class="truncate text-center text-lg font-bold leading-none"
+            v-text="currentAddressBook.name"
+          />
+        </div>
+      </div>
       <no-content-message
         v-if="!sortedContacts.length"
         id="contacts-empty"
@@ -17,29 +37,81 @@
         <li
           v-for="contact in sortedContacts"
           :key="contact.id"
-          class="border-b border-role-surface-container-highest last:border-b-0"
+          class="border-b-2 last:border-b-0"
+          :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
         >
-          <contacts-list-item :contact="contact" />
+          <div class="flex min-w-0 items-stretch">
+            <oc-button
+              class="min-w-0 flex-1 px-4 py-4 text-left"
+              justify-content="left"
+              appearance="raw"
+              gap-size="none"
+              no-hover
+              @click="onSelectContact(contact)"
+            >
+              <ContactsListItem :contact="contact" />
+            </oc-button>
+            <div class="flex items-center pr-2">
+              <oc-button
+                :id="getContactActionsToggleId(contact.id)"
+                class="h-10 w-10 shrink-0"
+                appearance="raw"
+                no-hover
+                :aria-label="$gettext('Open contact actions')"
+                @click.stop
+              >
+                <oc-icon name="more-2" fill-type="line" />
+              </oc-button>
+              <oc-drop
+                :drop-id="getContactActionsDropId(contact.id)"
+                :toggle="`#${getContactActionsToggleId(contact.id)}`"
+                :title="$gettext('Contact actions')"
+                position="bottom-end"
+                padding-size="small"
+                teleport="#app-runtime-drop"
+                close-on-click
+              >
+                <ContextActionMenu
+                  :menu-sections="getContactMenuSections(contact)"
+                  :action-options="actionOptions"
+                />
+              </oc-drop>
+            </div>
+          </div>
         </li>
       </oc-list>
     </template>
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  ContextActionMenu,
+  NoContentMessage,
+  ActionOptions,
+  MenuSection
+} from '@opencloud-eu/web-pkg'
+import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
 import { useContactsStore } from '../composables/piniaStores/contacts'
-import { storeToRefs } from 'pinia'
-import ContactsListItem from '../components/ContactsListItem.vue'
+import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { getContactDisplayName } from '../helpers'
-import { computed } from 'vue'
+import ContactsListItem from '../components/ContactsListItem.vue'
 
 const { isLoading } = useLoadContacts()
 const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
-const { contacts } = storeToRefs(contactsStore)
+const addressBooksStore = useAddressBooksStore()
+const { contacts, currentContact } = storeToRefs(contactsStore)
+const { currentAddressBook } = storeToRefs(addressBooksStore)
+const { setCurrentContact } = contactsStore
+const { setCurrentAddressBook } = addressBooksStore
+
+const actionOptions = {} as ActionOptions
 
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
@@ -49,4 +121,36 @@ const sortedContacts = computed(() => {
     return aSortName.localeCompare(bSortName, undefined, { sensitivity: 'base' })
   })
 })
+
+function onSelectContact(contact: Contact) {
+  setCurrentContact(contact)
+}
+
+function onNavigateBack() {
+  setCurrentAddressBook(null)
+}
+
+function getContactActionsToggleId(contactId: string) {
+  return `contact-actions-toggle-${contactId}`
+}
+
+function getContactActionsDropId(contactId: string) {
+  return `contact-actions-drop-${contactId}`
+}
+
+function getContactMenuSections(contact: Contact): MenuSection[] {
+  return [
+    {
+      name: 'default',
+      items: [
+        {
+          label: () => $gettext('Details'),
+          handler: () => {
+            setCurrentContact(contact)
+          }
+        }
+      ]
+    }
+  ]
+}
 </script>
