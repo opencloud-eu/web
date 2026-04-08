@@ -6,6 +6,18 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @pascalwengerter, @pedropintosilva, @tiran133
 
+### 📈 Enhancement
+
+- feat(design-system): add support for nuxt-link [[#2318](https://github.com/opencloud-eu/web/pull/2318)]
+- feat: add drop with truncated items to oc-breadcrumb [[#2309](https://github.com/opencloud-eu/web/pull/2309)]
+- feat: redesign share sidebar panel [[#2293](https://github.com/opencloud-eu/web/pull/2293)]
+- feat: handle UI_InsertFile postMessage from Collabora [[#2270](https://github.com/opencloud-eu/web/pull/2270)]
+- feat: focus global search bar via keyboard shortcut [[#2274](https://github.com/opencloud-eu/web/pull/2274)]
+- feat: redesign sidebar file/space details panel [[#2273](https://github.com/opencloud-eu/web/pull/2273)]
+- feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
+- feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
+- feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent accidental space reset on public links [[#2319](https://github.com/opencloud-eu/web/pull/2319)]
@@ -15,17 +27,6 @@
 - fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
 - fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
 - fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
-
-### 📈 Enhancement
-
-- feat: add drop with truncated items to oc-breadcrumb [[#2309](https://github.com/opencloud-eu/web/pull/2309)]
-- feat: redesign share sidebar panel [[#2293](https://github.com/opencloud-eu/web/pull/2293)]
-- feat: handle UI_InsertFile postMessage from Collabora [[#2270](https://github.com/opencloud-eu/web/pull/2270)]
-- feat: focus global search bar via keyboard shortcut [[#2274](https://github.com/opencloud-eu/web/pull/2274)]
-- feat: redesign sidebar file/space details panel [[#2273](https://github.com/opencloud-eu/web/pull/2273)]
-- feat(design-system): redesign checkbox active state [[#2266](https://github.com/opencloud-eu/web/pull/2266)]
-- feat: move favorite resource indicator to resource name [[#2261](https://github.com/opencloud-eu/web/pull/2261)]
-- feat: add to favorites in preview app [[#2251](https://github.com/opencloud-eu/web/pull/2251)]
 
 ### 📦️ Dependencies
 
