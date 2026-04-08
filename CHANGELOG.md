@@ -26,6 +26,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.6.13 [[#2316](https://github.com/opencloud-eu/web/pull/2316)]
+- chore(deps): update typescript-eslint monorepo to v8.58.1 [[#2317](https://github.com/opencloud-eu/web/pull/2317)]
+- chore(deps): update devdependencies (non-major) [[#2313](https://github.com/opencloud-eu/web/pull/2313)]
 - chore(deps): update devdependencies (non-major) [[#2307](https://github.com/opencloud-eu/web/pull/2307)]
 - fix(deps): update dependency p-queue to v9.1.2 [[#2308](https://github.com/opencloud-eu/web/pull/2308)]
 - fix(deps): update dependency typescript to v6 [[#2204](https://github.com/opencloud-eu/web/pull/2204)]
