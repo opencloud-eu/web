@@ -90,7 +90,8 @@ import {
   NoContentMessage,
   useDocumentTitle,
   useFileActionsEmptyTrashBin,
-  useUserStore
+  useUserStore,
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
@@ -105,6 +106,7 @@ const props = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
+const resourcesStore = useResourcesStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -196,5 +198,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
+  resourcesStore.setCurrentFolder(null)
 })
 </script>
