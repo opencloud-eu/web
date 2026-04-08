@@ -216,9 +216,12 @@ const onUploadImg = async (files: File[]) => {
     @apply break-keep;
   }
 
-  .md-editor-preview > ol,
+  .md-editor-preview > ol {
+    @apply !list-[decimal];
+  }
+
   .md-editor-preview > ul {
-    @apply !list-[auto];
+    @apply !list-[disc];
   }
 
   .md-editor-code-flag {
