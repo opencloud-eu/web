@@ -40,5 +40,12 @@
     "description": "The menu items of the floating action button element.",
     "default": "",
     "type": "{\n    icon: string\n    label: string\n    handler?: () => void\n    to?: RouteLocationRaw\n  }[]"
+  },
+  {
+    "name": "routerLinkComponent",
+    "required": false,
+    "description": "The component to use for router links.",
+    "default": "router-link",
+    "type": "'router-link' | 'nuxt-link'"
   }
 ]

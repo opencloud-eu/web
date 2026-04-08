@@ -42,6 +42,13 @@
     "type": "boolean"
   },
   {
+    "name": "routerLinkComponent",
+    "required": false,
+    "description": "The component to use for router links.",
+    "default": "router-link",
+    "type": "'router-link' | 'nuxt-link'"
+  },
+  {
     "name": "truncationOffset",
     "required": false,
     "description": "The number of items to show before truncating the breadcrumb.",

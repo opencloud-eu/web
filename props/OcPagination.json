@@ -26,5 +26,12 @@
     "description": "The maximum number of displayed pages.",
     "default": "",
     "type": "number"
+  },
+  {
+    "name": "routerLinkComponent",
+    "required": false,
+    "description": "The component to use for router links.",
+    "default": "router-link",
+    "type": "'router-link' | 'nuxt-link'"
   }
 ]
