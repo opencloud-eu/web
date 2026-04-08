@@ -144,7 +144,10 @@ function getContactMenuSections(contact: Contact): MenuSection[] {
       name: 'default',
       items: [
         {
+          name: 'details',
+          icon: 'information',
           label: () => $gettext('Details'),
+          isVisible: () => true,
           handler: () => {
             setCurrentContact(contact)
           }

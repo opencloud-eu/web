@@ -65,6 +65,18 @@ const props = defineProps<{
   contact: Contact
 }>()
 
+type DetailRow = {
+  label: string
+  value: string
+  secondary?: string
+}
+
+type DetailSection = {
+  key: string
+  title: string
+  rows: DetailRow[]
+}
+
 const collapsed = reactive<Record<string, boolean>>({
   basic: false,
   emails: false,
@@ -76,7 +88,7 @@ const collapsed = reactive<Record<string, boolean>>({
 const displayName = getContactDisplayName(props.contact) || ''
 const primaryEmail = getContactPrimaryEmail(props.contact) || ''
 
-const sections = computed(() => {
+const sections = computed<DetailSection[]>(() => {
   const birth = Object.values(props.contact.anniversaries || {}).find(
     (entry) => entry.kind === 'birth'
   )
@@ -106,34 +118,40 @@ const sections = computed(() => {
       key: 'emails',
       title: $gettext('Email addresses'),
       rows: Object.values(props.contact.emails || {})
-        .map((entry) => ({
-          label: $gettext('Email'),
-          value: entry.address
-        }))
+        .map(
+          (entry): DetailRow => ({
+            label: $gettext('Email'),
+            value: entry.address
+          })
+        )
         .filter((row) => row.value)
     },
     {
       key: 'phones',
       title: $gettext('Phone numbers'),
       rows: Object.values(props.contact.phones || {})
-        .map((entry) => ({
-          label: $gettext('Phone'),
-          value: entry.number
-        }))
+        .map(
+          (entry): DetailRow => ({
+            label: $gettext('Phone'),
+            value: entry.number
+          })
+        )
         .filter((row) => row.value)
     },
     {
       key: 'addresses',
       title: $gettext('Addresses'),
       rows: Object.values(props.contact.addresses || {})
-        .map((entry) => ({
-          label: $gettext('Address'),
-          value: (entry.components || [])
-            .map((component) => component.value)
-            .filter(Boolean)
-            .join(', '),
-          secondary: entry.countryCode || ''
-        }))
+        .map(
+          (entry): DetailRow => ({
+            label: $gettext('Address'),
+            value: (entry.components || [])
+              .map((component) => component.value)
+              .filter(Boolean)
+              .join(', '),
+            secondary: entry.countryCode || ''
+          })
+        )
         .filter((row) => row.value)
     },
     {
