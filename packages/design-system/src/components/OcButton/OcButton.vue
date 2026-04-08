@@ -107,7 +107,7 @@ export interface Props {
    * @docs The type of the button element.
    * @default button
    */
-  type?: 'button' | 'a' | 'router-link'
+  type?: 'button' | 'a' | 'router-link' | 'nuxt-link'
   /**
    * @docs Determines if the button should have no hover effect.
    * @default false
