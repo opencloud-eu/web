@@ -58,7 +58,11 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
   // clean up global state as the watchers aren't triggered anymore when navigating away
   onUnmounted(() => {
     const driveAliasAndItem = unref(options.driveAliasAndItem)
-    if (!driveAliasAndItem?.startsWith('personal/') && !driveAliasAndItem?.startsWith('project/')) {
+    if (
+      !driveAliasAndItem?.startsWith('personal/') &&
+      !driveAliasAndItem?.startsWith('project/') &&
+      !driveAliasAndItem?.startsWith('public/')
+    ) {
       spacesStore.setCurrentSpace(null)
     }
   })
