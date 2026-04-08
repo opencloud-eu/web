@@ -35,6 +35,7 @@
             class="hover:underline"
             appearance="raw-inverse"
             color-role="surface"
+            :aria-label="$gettext('Show collapsed breadcrumb items')"
             no-hover
             >...</oc-button
           >
