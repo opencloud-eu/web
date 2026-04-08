@@ -1,14 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcBreadcrumb > displays all items 1`] = `
-"<nav data-v-5914b352="" id="oc-breadcrumbs-2" class="oc-breadcrumb oc-breadcrumb-default overflow-visible" aria-label="Breadcrumbs">
+"<nav data-v-5914b352="" id="oc-breadcrumbs-4" class="oc-breadcrumb oc-breadcrumb-default overflow-visible" aria-label="Breadcrumbs">
   <ol data-v-5914b352="" class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap sm:flex">
     <li data-v-5914b352="" data-key="0" class="oc-breadcrumb-list-item flex items-center">
       <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1" aria-hidden="true">...</span>
+    <li data-v-5914b352="" data-key="1" data-item-id="oc-breadcrumb-truncation-5" class="oc-breadcrumb-list-item flex items-center sr-only">
+      <oc-button-stub data-v-5914b352="" arialabel="Show collapsed breadcrumb items" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" id="oc-breadcrumb-contextmenu-truncation-trigger" class="hover:underline">...</oc-button-stub>
+      <oc-drop-stub data-v-5914b352="" title="Collapsed items" closeonclick="true" dropid="oc-drop-6" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-breadcrumb-contextmenu-truncation-trigger" enforcedroponmobile="false" teleport="" ismenu="true">
+        <div data-v-5914b352="" class="flex flex-col"></div>
+      </oc-drop-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -43,7 +47,11 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="1" aria-hidden="true" class="oc-breadcrumb-list-item flex items-center sr-only"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1" aria-hidden="true">...</span>
+    <li data-v-5914b352="" data-key="1" data-item-id="oc-breadcrumb-truncation-2" class="oc-breadcrumb-list-item flex items-center sr-only">
+      <oc-button-stub data-v-5914b352="" arialabel="Show collapsed breadcrumb items" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" id="oc-breadcrumb-contextmenu-truncation-trigger" class="hover:underline">...</oc-button-stub>
+      <oc-drop-stub data-v-5914b352="" title="Collapsed items" closeonclick="true" dropid="oc-drop-3" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-breadcrumb-contextmenu-truncation-trigger" enforcedroponmobile="false" teleport="" ismenu="true">
+        <div data-v-5914b352="" class="flex flex-col"></div>
+      </oc-drop-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
