@@ -34,7 +34,7 @@ export interface Props {
    * @docs The type of the tag element.
    * @default span
    */
-  type?: 'span' | 'button' | 'router-link' | 'a'
+  type?: 'span' | 'button' | 'router-link' | 'a' | 'nuxt-link'
   /**
    * @docs The route to navigate to if the `type` is set to `router-link`.
    */

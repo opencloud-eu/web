@@ -455,6 +455,7 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
+      resourcesStore.setCurrentFolder(null)
     })
 
     const createNewFolderAction = computed(() => unref(createNewFolder)[0].handler)

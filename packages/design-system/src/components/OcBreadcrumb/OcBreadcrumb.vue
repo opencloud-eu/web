@@ -51,7 +51,7 @@
                 v-for="truncationItem in truncationItems"
                 :key="truncationItem.id"
                 :to="truncationItem.to as RouteLocationRaw"
-                type="router-link"
+                :type="routerLinkComponent"
                 appearance="raw-inverse"
                 color-role="surface"
                 class="p-2"
@@ -64,7 +64,8 @@
           </oc-drop>
         </template>
         <template v-else>
-          <router-link
+          <component
+            :is="routerLinkComponent"
             v-if="item.to"
             :aria-current="getAriaCurrent(index)"
             :to="item.to as RouteLocationRaw"
@@ -73,7 +74,7 @@
             <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
               item.text
             }}</span>
-          </router-link>
+          </component>
           <oc-button
             v-else-if="item.onClick"
             :aria-current="getAriaCurrent(index)"
@@ -140,7 +141,7 @@
     <oc-button
       v-if="parentFolderTo && displayItems.length > 1"
       appearance="raw"
-      type="router-link"
+      :type="routerLinkComponent"
       :aria-label="$gettext('Navigate one level up')"
       :to="parentFolderTo"
       class="oc-breadcrumb-mobile-navigation flex"
@@ -206,6 +207,11 @@ export interface Props {
    */
   showContextActions?: boolean
   /**
+   * @docs The component to use for router links.
+   * @default router-link
+   */
+  routerLinkComponent?: 'router-link' | 'nuxt-link'
+  /**
    * @docs The number of items to show before truncating the breadcrumb.
    * @default 2
    */
@@ -238,6 +244,7 @@ const {
   maxWidth = -1,
   mobileBreakpoint = 'sm',
   showContextActions = false,
+  routerLinkComponent = 'router-link',
   truncationOffset = 2,
   variation = 'default'
 } = defineProps<Props>()
