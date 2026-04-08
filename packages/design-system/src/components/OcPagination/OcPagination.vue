@@ -2,13 +2,14 @@
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
     <ol class="oc-pagination-list flex items-center flex-wrap m-0 gap-2">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
-        <router-link
+        <component
+          :is="routerLinkComponent"
           class="oc-pagination-list-item-prev flex mr-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
           <oc-icon name="arrow-drop-left" fill-type="line" color="var(--oc-role-on-surface)" />
-        </router-link>
+        </component>
       </li>
       <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
         <component
@@ -21,13 +22,14 @@
         </component>
       </li>
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
-        <router-link
+        <component
+          :is="routerLinkComponent"
           class="oc-pagination-list-item-next flex ml-2 rounded-sm hover:bg-role-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >
           <oc-icon name="arrow-drop-right" fill-type="line" color="var(--oc-role-on-surface)" />
-        </router-link>
+        </component>
       </li>
     </ol>
   </nav>
@@ -58,9 +60,20 @@ export interface Props {
    * @docs The maximum number of displayed pages.
    */
   maxDisplayed?: number
+  /**
+   * @docs The component to use for router links.
+   * @default router-link
+   */
+  routerLinkComponent?: 'router-link' | 'nuxt-link'
 }
 
-const { currentPage, currentRoute, pages, maxDisplayed } = defineProps<Props>()
+const {
+  currentPage,
+  currentRoute,
+  pages,
+  maxDisplayed,
+  routerLinkComponent = 'router-link'
+} = defineProps<Props>()
 
 const { $gettext } = useGettext()
 
@@ -113,7 +126,7 @@ const isCurrentPage = (page: Page) => {
 }
 
 const pageComponent = (page: Page) => {
-  return page === '...' || isCurrentPage(page) ? 'span' : 'router-link'
+  return page === '...' || isCurrentPage(page) ? 'span' : routerLinkComponent
 }
 
 const bindPageProps = (page: Page) => {

@@ -20,6 +20,7 @@ describe('OcButton', () => {
       type
       ${'a'}
       ${'router-link'}
+      ${'nuxt-link'}
     `('should not emit click event when type is $type', async ({ type }) => {
       const wrapper = getWrapperWithProps({ type: type })
       await wrapper.trigger('click')
@@ -42,16 +43,21 @@ describe('OcButton', () => {
   })
   describe('different types of button', () => {
     it.each`
-      type             | expectLink | expectButton | expectRouterLink
-      ${'a'}           | ${true}    | ${false}     | ${false}
-      ${'button'}      | ${false}   | ${true}      | ${false}
-      ${'router-link'} | ${false}   | ${false}     | ${true}
-    `('can behave as a $type', ({ type, expectLink, expectButton, expectRouterLink }) => {
-      const wrapper = getWrapperWithProps({ type: type })
-      expect(wrapper.find('a').exists()).toBe(expectLink)
-      expect(wrapper.find('button').exists()).toBe(expectButton)
-      expect(wrapper.find('router-link-stub').exists()).toBe(expectRouterLink)
-    })
+      type             | expectLink | expectButton | expectRouterLink | expectNuxtLink
+      ${'a'}           | ${true}    | ${false}     | ${false}         | ${false}
+      ${'button'}      | ${false}   | ${true}      | ${false}         | ${false}
+      ${'router-link'} | ${false}   | ${false}     | ${true}          | ${false}
+      ${'nuxt-link'}   | ${false}   | ${false}     | ${false}         | ${true}
+    `(
+      'can behave as a $type',
+      ({ type, expectLink, expectButton, expectRouterLink, expectNuxtLink }) => {
+        const wrapper = getWrapperWithProps({ type: type })
+        expect(wrapper.find('a').exists()).toBe(expectLink)
+        expect(wrapper.find('button').exists()).toBe(expectButton)
+        expect(wrapper.find('router-link-stub').exists()).toBe(expectRouterLink)
+        expect(wrapper.find('nuxt-link').exists()).toBe(expectNuxtLink)
+      }
+    )
   })
   describe('different sizes of button', () => {
     it.each`

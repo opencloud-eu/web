@@ -90,7 +90,7 @@ A click handler can be registered via the `@click` property.
 
 ### Links
 
-Use `type="a"` for external links, `type="router-link"` for internal navigation.
+Use `type="a"` for external links, `type="router-link"` for internal navigation (or `type="nuxt-link"` when using the design system in a Nuxt app).
 
 ::: livecode
 

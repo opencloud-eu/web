@@ -9,7 +9,7 @@
         class="mb-2 rounded-full"
         appearance="filled"
         color-role="primary"
-        :type="item.to ? 'router-link' : 'button'"
+        :type="item.to ? routerLinkComponent : 'button'"
         :to="item.to"
         @click="onChildButtonClicked(item)"
       >
@@ -23,7 +23,7 @@
       appearance="filled"
       color-role="primary"
       :aria-label="computedAriaLabel"
-      :type="mode === 'action' && to ? 'router-link' : 'button'"
+      :type="mode === 'action' && to ? routerLinkComponent : 'button'"
       :to="to"
       @click="onPrimaryButtonClicked"
     >
@@ -69,6 +69,11 @@ export interface Props {
     handler?: () => void
     to?: RouteLocationRaw
   }[]
+  /**
+   * @docs The component to use for router links.
+   * @default router-link
+   */
+  routerLinkComponent?: 'router-link' | 'nuxt-link'
 }
 
 const {
@@ -77,7 +82,8 @@ const {
   mode = 'menu',
   items = [],
   handler = null,
-  to = null
+  to = null,
+  routerLinkComponent = 'router-link'
 } = defineProps<Props>()
 
 const { $gettext } = useGettext()
