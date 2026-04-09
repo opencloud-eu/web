@@ -18,9 +18,15 @@ import SkipTo from './components/SkipTo.vue'
 import ModalWrapper from './components/ModalWrapper.vue'
 import AppFloatingActionButton from './components/AppFloatingActionButton.vue'
 import { useLayout } from './composables/layout'
-import { onMounted, ref, unref, watch } from 'vue'
+import { onMounted, ref, unref } from 'vue'
 import { additionalTranslations } from './helpers/additionalTranslations' // eslint-disable-line
-import { eventBus, useRouter, useSideBar, useThemeStore } from '@opencloud-eu/web-pkg'
+import {
+  eventBus,
+  isLocationSpacesActive,
+  useRouter,
+  useSideBar,
+  useThemeStore
+} from '@opencloud-eu/web-pkg'
 import { useHead } from './composables/head'
 import { RouteLocation, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -55,47 +61,41 @@ const extractPageTitleFromRoute = (route: RouteLocation) => {
   }
 }
 
-const announceRouteChange = (pageTitle: string) => {
-  announcement.value = $gettext('Navigated to %{ pageTitle }', { pageTitle })
+function announceRouteChange({
+  shortDocumentTitle,
+  fullDocumentTitle
+}: {
+  shortDocumentTitle: string
+  fullDocumentTitle: string
+}) {
+  document.title = fullDocumentTitle
+  announcement.value = $gettext('Navigated to %{ pageTitle }', { pageTitle: shortDocumentTitle })
+}
+
+function onPathChange() {
+  if (
+    isLocationSpacesActive(router, 'files-spaces-generic') &&
+    !isLocationSpacesActive(router, 'files-spaces-projects')
+  ) {
+    // generic space has its own logic to set the document title
+    return
+  }
+
+  const extracted = extractPageTitleFromRoute(unref(route))
+  if (extracted) {
+    announceRouteChange(extracted)
+  }
 }
 
 onMounted(() => {
-  eventBus.subscribe(
-    'runtime.documentTitle.changed',
-    ({
-      shortDocumentTitle,
-      fullDocumentTitle
-    }: {
-      shortDocumentTitle: string
-      fullDocumentTitle: string
-    }) => {
-      document.title = fullDocumentTitle
-      announceRouteChange(shortDocumentTitle)
+  eventBus.subscribe('runtime.router.path-chaged.after', onPathChange)
+  eventBus.subscribe('runtime.documentTitle.changed', announceRouteChange)
+
+  if (unref(layoutType) !== 'application') {
+    const loader = document.getElementById('splash-loading')
+    if (!loader?.classList.contains('splash-hide')) {
+      loader.classList.add('splash-hide')
     }
-  )
+  }
 })
-
-watch(
-  route,
-  () => {
-    /**
-     * Hide global loading spinner. It usually gets hidden after all apps
-     * have been loaded, but in some scenarios (plain layouts) we never load them.
-     */
-    if (unref(layoutType) !== 'application') {
-      const loader = document.getElementById('splash-loading')
-      if (!loader?.classList.contains('splash-hide')) {
-        loader.classList.add('splash-hide')
-      }
-    }
-
-    const extracted = extractPageTitleFromRoute(unref(route))
-    if (extracted) {
-      const { shortDocumentTitle, fullDocumentTitle } = extracted
-      announceRouteChange(shortDocumentTitle)
-      document.title = fullDocumentTitle
-    }
-  },
-  { immediate: true }
-)
 </script>
