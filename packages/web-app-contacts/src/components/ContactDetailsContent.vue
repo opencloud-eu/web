@@ -22,7 +22,7 @@
     >
       <div class="flex items-center px-4 py-4">
         <div class="flex items-center gap-2">
-          <oc-icon :name="section.icon" :fill-type="section.iconFillType" />
+          <oc-icon :name="section.icon" :fill-type="'line'" />
           <span class="font-bold" v-text="section.title" />
         </div>
         <oc-button
@@ -78,7 +78,6 @@ type DetailRow = {
 type DetailSection = {
   key: string
   icon: string
-  iconFillType: 'line' | 'fill'
   title: string
   rows: DetailRow[]
 }
@@ -109,7 +108,6 @@ const sections = computed<DetailSection[]>(() => {
     {
       key: 'basic',
       icon: 'account-circle',
-      iconFillType: 'line',
       title: $gettext('Basic information'),
       rows: [
         { label: $gettext('First name'), value: getNameComponent('given') },
@@ -125,7 +123,6 @@ const sections = computed<DetailSection[]>(() => {
     {
       key: 'emails',
       icon: 'mail',
-      iconFillType: 'fill',
       title: $gettext('Email addresses'),
       rows: Object.values(props.contact.emails || {})
         .map(
@@ -139,7 +136,6 @@ const sections = computed<DetailSection[]>(() => {
     {
       key: 'phones',
       icon: 'phone',
-      iconFillType: 'fill',
       title: $gettext('Phone numbers'),
       rows: Object.values(props.contact.phones || {})
         .map(
@@ -153,7 +149,6 @@ const sections = computed<DetailSection[]>(() => {
     {
       key: 'addresses',
       icon: 'home-2',
-      iconFillType: 'fill',
       title: $gettext('Addresses'),
       rows: Object.values(props.contact.addresses || {})
         .map(
@@ -171,7 +166,6 @@ const sections = computed<DetailSection[]>(() => {
     {
       key: 'organization',
       icon: 'briefcase-4',
-      iconFillType: 'fill',
       title: $gettext('Organization'),
       rows: [
         { label: $gettext('Organization'), value: firstOrganization?.name || '' },
