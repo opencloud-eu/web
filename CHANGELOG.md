@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2325](https://github.com/opencloud-eu/web/pull/2325)]
 - chore(deps): update traefik docker tag to v3.6.13 [[#2316](https://github.com/opencloud-eu/web/pull/2316)]
 - chore(deps): update typescript-eslint monorepo to v8.58.1 [[#2317](https://github.com/opencloud-eu/web/pull/2317)]
 - chore(deps): update devdependencies (non-major) [[#2313](https://github.com/opencloud-eu/web/pull/2313)]
