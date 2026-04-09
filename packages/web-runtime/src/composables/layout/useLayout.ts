@@ -20,7 +20,6 @@ export const useLayout = (options?: LayoutOptions) => {
       'login',
       'logout',
       'oidcCallback',
-      'oidcSilentRedirect',
       'resolvePublicLink',
       'accessDenied'
     ]

@@ -84,12 +84,6 @@ const routes: readonly RouteRecordRaw[] = [
     meta: { title: $gettext('OIDC callback'), authContext: 'anonymous' }
   },
   {
-    path: '/web-oidc-silent-redirect',
-    name: routeNames.oidcSilentRedirect,
-    component: OidcCallbackPage,
-    meta: { title: $gettext('OIDC redirect'), authContext: 'anonymous' }
-  },
-  {
     path: '/f/:fileId',
     name: routeNames.resolvePrivateLink,
     component: ResolvePrivateLinkPage,

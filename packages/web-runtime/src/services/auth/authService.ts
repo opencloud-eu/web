@@ -22,7 +22,6 @@ import { Ability, urlJoin } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { PublicLinkType } from '@opencloud-eu/web-client'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
-import { isSilentRedirectRoute } from '../../helpers/silentRedirect'
 import { webFingerResponseSchema } from './webfingerSchemas'
 
 export class AuthService implements AuthServiceInterface {
@@ -115,9 +114,7 @@ export class AuthService implements AuthServiceInterface {
         router: this.router
       })
 
-      // don't load worker in the silent redirect iframe
-      const isSilentRedirect = isSilentRedirectRoute()
-      if (!this.tokenTimerWorker && !isSilentRedirect) {
+      if (!this.tokenTimerWorker) {
         const { options } = this.configStore
 
         if (!options.embed?.enabled || !options.embed?.delegateAuthentication) {
@@ -268,17 +265,6 @@ export class AuthService implements AuthServiceInterface {
       console.warn('error during authentication:', e)
       return this.handleAuthError(unref(this.router.currentRoute))
     }
-  }
-
-  /**
-   * Sign in silent callback gets called with OIDC during access token renewal when no `refresh_token`
-   * is present (`refresh_token` exists when `offline_access` is present in scopes).
-   *
-   * The oidc-client lib emits a userLoaded event internally, which already handles the token update
-   * in web.
-   */
-  public async signInSilentCallback() {
-    await this.userManager.signinSilentCallback(this.buildSignInCallbackUrl())
   }
 
   /**

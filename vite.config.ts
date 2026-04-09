@@ -46,7 +46,6 @@ const input = readdirSync('packages').reduce(
   },
   {
     'index.html': 'index.html',
-    'oidc-silent-redirect.html': 'oidc-silent-redirect.html',
     'oidc-callback.html': 'oidc-callback.html'
   }
 )
@@ -217,6 +216,11 @@ export default defineConfig(({ mode, command }) => {
                 src: 'node_modules/requirejs/require.js',
                 dest: 'js',
                 rename: { stripBase: 2 }
+              },
+              {
+                src: 'oidc-silent-redirect.html',
+                dest: '.',
+                rename: { stripBase: 0 }
               }
             ]
           })()
