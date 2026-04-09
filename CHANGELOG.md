@@ -31,6 +31,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.5.11 [[#2324](https://github.com/opencloud-eu/web/pull/2324)]
+- fix(deps): update dependency axios to v1.15.0 [[#2330](https://github.com/opencloud-eu/web/pull/2330)]
 - chore(deps): update devdependencies (non-major) [[#2325](https://github.com/opencloud-eu/web/pull/2325)]
 - chore(deps): update traefik docker tag to v3.6.13 [[#2316](https://github.com/opencloud-eu/web/pull/2316)]
 - chore(deps): update typescript-eslint monorepo to v8.58.1 [[#2317](https://github.com/opencloud-eu/web/pull/2317)]
