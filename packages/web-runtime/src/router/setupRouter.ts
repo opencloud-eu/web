@@ -1,4 +1,4 @@
-import { useModals } from '@opencloud-eu/web-pkg'
+import { eventBus, useModals } from '@opencloud-eu/web-pkg'
 import { Router } from 'vue-router'
 
 export const setupRouterHooks = (router: Router) => {
@@ -13,6 +13,8 @@ export const setupRouterHooks = (router: Router) => {
     if (to.path === from.path) {
       return
     }
+
+    eventBus.publish('runtime.router.path-chaged.after')
 
     const event = new CustomEvent('pathchange', {
       detail: {
