@@ -122,23 +122,23 @@ const sortedContacts = computed(() => {
   })
 })
 
-function onSelectContact(contact: Contact) {
+const onSelectContact = (contact: Contact) => {
   setCurrentContact(contact)
 }
 
-function onNavigateBack() {
+const onNavigateBack = () => {
   setCurrentAddressBook(null)
 }
 
-function getContactActionsToggleId(contactId: string) {
+const getContactActionsToggleId = (contactId: string) => {
   return `contact-actions-toggle-${contactId}`
 }
 
-function getContactActionsDropId(contactId: string) {
+const getContactActionsDropId = (contactId: string) => {
   return `contact-actions-drop-${contactId}`
 }
 
-function getContactMenuSections(contact: Contact): MenuSection[] {
+const getContactMenuSections = (contact: Contact): MenuSection[] => {
   return [
     {
       name: 'default',

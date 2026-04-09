@@ -20,9 +20,13 @@
       header-class="hidden"
       :body-class="['rounded-2xl', 'bg-role-surface-container', 'p-0', 'overflow-hidden']"
     >
-      <div class="flex items-center justify-between px-4 py-4">
-        <span class="font-bold" v-text="section.title" />
+      <div class="flex items-center px-4 py-4">
+        <div class="flex items-center gap-2">
+          <oc-icon :name="section.icon" :fill-type="section.iconFillType" />
+          <span class="font-bold" v-text="section.title" />
+        </div>
         <oc-button
+          class="ml-auto"
           appearance="raw"
           no-hover
           :aria-label="collapsed[section.key] ? $gettext('Expand') : $gettext('Collapse')"
@@ -73,6 +77,8 @@ type DetailRow = {
 
 type DetailSection = {
   key: string
+  icon: string
+  iconFillType: 'line' | 'fill'
   title: string
   rows: DetailRow[]
 }
@@ -81,7 +87,7 @@ const collapsed = reactive<Record<string, boolean>>({
   basic: false,
   emails: false,
   phones: false,
-  addresses: true,
+  addresses: false,
   organization: true
 })
 
@@ -102,6 +108,8 @@ const sections = computed<DetailSection[]>(() => {
   return [
     {
       key: 'basic',
+      icon: 'account-circle',
+      iconFillType: 'line',
       title: $gettext('Basic information'),
       rows: [
         { label: $gettext('First name'), value: getNameComponent('given') },
@@ -116,6 +124,8 @@ const sections = computed<DetailSection[]>(() => {
     },
     {
       key: 'emails',
+      icon: 'mail',
+      iconFillType: 'fill',
       title: $gettext('Email addresses'),
       rows: Object.values(props.contact.emails || {})
         .map(
@@ -128,6 +138,8 @@ const sections = computed<DetailSection[]>(() => {
     },
     {
       key: 'phones',
+      icon: 'phone',
+      iconFillType: 'fill',
       title: $gettext('Phone numbers'),
       rows: Object.values(props.contact.phones || {})
         .map(
@@ -140,6 +152,8 @@ const sections = computed<DetailSection[]>(() => {
     },
     {
       key: 'addresses',
+      icon: 'home-2',
+      iconFillType: 'fill',
       title: $gettext('Addresses'),
       rows: Object.values(props.contact.addresses || {})
         .map(
@@ -156,6 +170,8 @@ const sections = computed<DetailSection[]>(() => {
     },
     {
       key: 'organization',
+      icon: 'briefcase-4',
+      iconFillType: 'fill',
       title: $gettext('Organization'),
       rows: [
         { label: $gettext('Organization'), value: firstOrganization?.name || '' },

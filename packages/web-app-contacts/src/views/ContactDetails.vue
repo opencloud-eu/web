@@ -4,7 +4,7 @@
       <span v-text="$gettext('No contact selected')" />
     </template>
   </no-content-message>
-  <div v-else class="contact-details pb-4 md:px-6 md:pb-6">
+  <div v-else class="contact-details pb-4 pt-4 md:px-6 md:pb-6">
     <div class="md:hidden flex h-11 items-center px-4">
       <oc-button
         class="h-10 w-10 shrink-0 p-0"
