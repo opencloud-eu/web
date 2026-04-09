@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2331](https://github.com/opencloud-eu/web/pull/2331)]
 - chore(deps): update dependency fast-xml-parser to v5.5.11 [[#2324](https://github.com/opencloud-eu/web/pull/2324)]
 - fix(deps): update dependency axios to v1.15.0 [[#2330](https://github.com/opencloud-eu/web/pull/2330)]
 - chore(deps): update devdependencies (non-major) [[#2325](https://github.com/opencloud-eu/web/pull/2325)]
