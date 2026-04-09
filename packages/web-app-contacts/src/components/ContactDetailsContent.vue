@@ -105,7 +105,7 @@ const sections = computed<DetailSection[]>(() => {
   const firstOrganization = Object.values(props.contact.organizations || {})[0]
   const firstTitle = Object.values(props.contact.titles || {})[0]
 
-  return [
+  const detailSections: DetailSection[] = [
     {
       key: 'basic',
       icon: 'account-circle',
@@ -182,7 +182,9 @@ const sections = computed<DetailSection[]>(() => {
         { label: $gettext('Job title'), value: firstTitle?.name || '' }
       ].filter((row) => row.value)
     }
-  ].filter((section) => section.rows.length)
+  ]
+
+  return detailSections.filter((section) => section.rows.length)
 })
 
 function getNameComponent(kind: string) {
