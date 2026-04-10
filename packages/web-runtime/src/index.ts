@@ -1,6 +1,5 @@
 import { loadDesignSystem, pages, loadTranslations, supportedLanguages } from './defaults'
 import { router } from './router'
-import { createHead } from '@unhead/vue/client'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 
@@ -148,7 +147,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   }
 
   app.use(router)
-  app.use(createHead())
 
   app.mount('#opencloud')
 

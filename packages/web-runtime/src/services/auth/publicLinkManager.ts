@@ -1,5 +1,6 @@
 import { AuthStore, CapabilityStore, ClientService } from '@opencloud-eu/web-pkg'
 import { PublicLinkType } from '@opencloud-eu/web-client'
+import { injectGeneratorMeta } from '../../helpers/meta'
 
 export interface PublicLinkManagerOptions {
   clientService: ClientService
@@ -121,5 +122,6 @@ export class PublicLinkManager {
     const client = this.clientService.ocs
     const response = await client.getCapabilities()
     this.capabilityStore.setCapabilities(response)
+    injectGeneratorMeta(this.capabilityStore)
   }
 }

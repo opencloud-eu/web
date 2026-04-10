@@ -27,7 +27,6 @@ import {
   useSideBar,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
-import { useHead } from './composables/head'
 import { RouteLocation, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
@@ -39,7 +38,6 @@ const { currentTheme } = storeToRefs(themeStore)
 
 const router = useRouter()
 const route = useRoute()
-useHead()
 const { layout, layoutType } = useLayout({ router })
 const { isMobile } = useIsMobile()
 

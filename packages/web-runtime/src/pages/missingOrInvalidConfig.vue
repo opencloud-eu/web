@@ -22,7 +22,6 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useThemeStore } from '@opencloud-eu/web-pkg'
-import { useHead } from '../composables/head'
 import { storeToRefs } from 'pinia'
 // import ods component because ods is not initialized in case of a missing or invalid config
 import { OcCard } from '@opencloud-eu/design-system/components'
@@ -32,6 +31,4 @@ const { currentTheme } = storeToRefs(themeStore)
 
 const logoImg = computed(() => unref(currentTheme)?.logo)
 const footerSlogan = computed(() => unref(currentTheme)?.slogan)
-
-useHead()
 </script>

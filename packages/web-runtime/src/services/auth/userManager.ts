@@ -18,6 +18,7 @@ import { User as OcUser } from '@opencloud-eu/web-client/graph/generated'
 import { SettingsBundle } from '../../helpers/settings'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
 import { Router } from 'vue-router'
+import { injectGeneratorMeta } from '../../helpers/meta'
 
 const postLoginRedirectUrlKey = 'oc.postLoginRedirectUrl'
 type UnloadReason = 'authError' | 'logout'
@@ -242,6 +243,7 @@ export class UserManager extends OidcUserManager {
     const capabilities = await this.clientService.ocs.getCapabilities()
 
     this.capabilityStore.setCapabilities(capabilities)
+    injectGeneratorMeta(this.capabilityStore)
   }
 
   // copied from upstream oidc-client-ts UserManager with CERN customization
