@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(extension-sdk): add missing color roles [[#2339](https://github.com/opencloud-eu/web/pull/2339)]
 - fix: optimize route change announcer [[#2328](https://github.com/opencloud-eu/web/pull/2328)]
 - fix: prevent accidental space reset on public links [[#2319](https://github.com/opencloud-eu/web/pull/2319)]
 - fix: markdown editor: incorrect rendering of unordered lists [[#2315](https://github.com/opencloud-eu/web/pull/2315)]
