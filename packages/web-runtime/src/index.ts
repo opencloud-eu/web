@@ -40,15 +40,12 @@ import { loadCustomTranslations } from './helpers/customTranslations'
 import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import { extensionPoints } from './extensionPoints'
-import { isSilentRedirectRoute } from './helpers/silentRedirect'
 import { extensions } from './extensions'
 import { UnifiedRoleDefinition } from '@opencloud-eu/web-client/graph/generated'
 
 export const bootstrapApp = async (configurationPath: string, appsReadyCallback: () => void) => {
-  const isSilentRedirect = isSilentRedirectRoute()
-
   const pinia = createPinia()
-  const app = createApp(isSilentRedirect ? pages.tokenRenewal : pages.success)
+  const app = createApp(pages.success)
   app.use(pinia)
 
   const {
@@ -88,71 +85,65 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     webWorkersStore
   })
 
-  if (!isSilentRedirect) {
-    const designSystem = await loadDesignSystem()
+  const designSystem = await loadDesignSystem()
 
-    announceUppyService({ app })
-    startSentry(configStore, app)
-    const appProviderService = announceAppProviderService({
-      app,
-      serverUrl: configStore.serverUrl,
-      clientService
-    })
-    announceArchiverService({ app, configStore, userStore, capabilityStore })
-    announceLoadingService({ app })
-    announcePreviewService({
-      app,
-      configStore,
-      userStore,
-      authStore
-    })
-    announcePasswordPolicyService({ app })
+  announceUppyService({ app })
+  startSentry(configStore, app)
+  const appProviderService = announceAppProviderService({
+    app,
+    serverUrl: configStore.serverUrl,
+    clientService
+  })
+  announceArchiverService({ app, configStore, userStore, capabilityStore })
+  announceLoadingService({ app })
+  announcePreviewService({
+    app,
+    configStore,
+    userStore,
+    authStore
+  })
+  announcePasswordPolicyService({ app })
 
-    const applicationsPromise = initializeApplications({
+  const applicationsPromise = initializeApplications({
+    app,
+    configStore,
+    router,
+    appProviderService
+  })
+  const translationsPromise = loadTranslations()
+  const customTranslationsPromise = loadCustomTranslations({ configStore })
+  const themePromise = announceTheme({ app, designSystem, configStore })
+  const [coreTranslations, customTranslations] = await Promise.all([
+    translationsPromise,
+    customTranslationsPromise,
+    applicationsPromise,
+    themePromise
+  ])
+
+  // Important: has to happen AFTER native applications are loaded.
+  // Reason: the `external` app serves as a blueprint for creating the app provider apps.
+  if (applicationStore.has('web-app-external')) {
+    await appProviderService.loadData()
+    await initializeApplications({
       app,
       configStore,
       router,
-      appProviderService
+      appProviderService,
+      appProviderApps: true
     })
-    const translationsPromise = loadTranslations()
-    const customTranslationsPromise = loadCustomTranslations({ configStore })
-    const themePromise = announceTheme({ app, designSystem, configStore })
-    const [coreTranslations, customTranslations] = await Promise.all([
-      translationsPromise,
-      customTranslationsPromise,
-      applicationsPromise,
-      themePromise
-    ])
-
-    // Important: has to happen AFTER native applications are loaded.
-    // Reason: the `external` app serves as a blueprint for creating the app provider apps.
-    if (applicationStore.has('web-app-external')) {
-      await appProviderService.loadData()
-      await initializeApplications({
-        app,
-        configStore,
-        router,
-        appProviderService,
-        appProviderApps: true
-      })
-    }
-
-    announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
-
-    announceCustomStyles({ configStore })
-    announceCustomScripts({ configStore })
-    announceDefaults({ appsStore, router, extensionRegistry, configStore })
-
-    extensionRegistry.registerExtensions(extensions())
   }
+
+  announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
+
+  announceCustomStyles({ configStore })
+  announceCustomScripts({ configStore })
+  announceDefaults({ appsStore, router, extensionRegistry, configStore })
+
+  extensionRegistry.registerExtensions(extensions())
 
   app.use(router)
 
   app.mount('#opencloud')
-
-  if (isSilentRedirect) {
-    return
-  }
 
   setViewOptions({ resourcesStore })
 

@@ -78,11 +78,7 @@ onMounted(() => {
     return
   }
 
-  if (unref(route).path === '/web-oidc-silent-redirect') {
-    authService.signInSilentCallback()
-  } else {
-    authService.signInCallback()
-  }
+  authService.signInCallback()
 })
 
 onBeforeUnmount(() => {
