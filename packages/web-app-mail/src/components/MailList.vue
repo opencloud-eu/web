@@ -105,13 +105,15 @@ const onSelectMail = async (mail: Mail) => {
 
 watch(
   [currentMail, isLoading],
-  async ([mail, loading]) => {
-    if (loading || !mail) {
+  async () => {
+    if (unref(isLoading) || !unref(currentMail)) {
       return
     }
 
     await nextTick()
-    document.getElementById(`mail-list-item-${mail.id}`)?.scrollIntoView({ block: 'nearest' })
+    document
+      .getElementById(`mail-list-item-${unref(currentMail).id}`)
+      ?.scrollIntoView({ block: 'nearest' })
   },
   { immediate: true }
 )
