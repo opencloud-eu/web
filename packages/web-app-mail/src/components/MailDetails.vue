@@ -64,12 +64,15 @@ import MailActionBar from './MailActionBar.vue'
 import { useMailCompose } from '../composables/useMailCompose'
 import { useLoadMail } from '../composables/useLoadMail'
 import { useMailsStore } from '../composables/piniaStores/mails'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 
 const { isLoading } = useLoadMail()
 const { current: currentLanguage } = useGettext()
 const accountsStore = useGroupwareAccountsStore()
 const mailsStore = useMailsStore()
+const currentMailIdQuery = useRouteQuery('mailId')
+
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail } = storeToRefs(mailsStore)
 const { setCurrentMail } = mailsStore
@@ -112,5 +115,6 @@ const onEditDraft = () => {
 
 const onNavigateBack = () => {
   setCurrentMail(null)
+  currentMailIdQuery.value = null
 }
 </script>

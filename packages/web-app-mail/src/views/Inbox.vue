@@ -66,7 +66,6 @@ const currentMailIdQuery = useRouteQuery('mailId')
 
 const loadMailboxesAndMails = async () => {
   isLoading.value = true
-  setCurrentMail(null)
 
   // load mailboxes
   await loadMailboxes(unref(currentAccount).accountId)
