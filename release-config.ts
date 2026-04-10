@@ -45,6 +45,7 @@ export default {
       weight: -1
     }
   ],
+  skipLabels: ['Type:Regression'],
   useVersionPrefixV: true,
   getLatestTag: ({ exec }: any) => {
     // the plugin uses the latest tag to determine the next version
