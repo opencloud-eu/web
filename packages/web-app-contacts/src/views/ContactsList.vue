@@ -36,6 +36,7 @@
       <oc-list v-else>
         <li
           v-for="contact in sortedContacts"
+          :id="`contact-list-item-${contact.id}`"
           :key="contact.id"
           class="border-b-2 last:border-b-0"
           :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
@@ -85,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -156,4 +157,17 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
     }
   ]
 }
+
+watch(
+  [() => currentContact.value?.id, () => isLoading.value],
+  async ([contactId, loading]) => {
+    if (loading || !contactId) {
+      return
+    }
+
+    await nextTick()
+    document.getElementById(`contact-list-item-${contactId}`)?.scrollIntoView({ block: 'nearest' })
+  },
+  { immediate: true }
+)
 </script>
