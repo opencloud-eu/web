@@ -159,14 +159,14 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
 }
 
 watch(
-  [() => currentContact.value?.id, () => isLoading.value],
-  async ([contactId, loading]) => {
-    if (loading || !contactId) {
+  [currentContact, isLoading],
+  async ([contact, loading]) => {
+    if (loading || !contact) {
       return
     }
 
     await nextTick()
-    document.getElementById(`contact-list-item-${contactId}`)?.scrollIntoView({ block: 'nearest' })
+    document.getElementById(`contact-list-item-${contact.id}`)?.scrollIntoView({ block: 'nearest' })
   },
   { immediate: true }
 )
