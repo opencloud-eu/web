@@ -204,6 +204,12 @@ export class AuthService implements AuthServiceInterface {
       const accessToken = user?.access_token
       const sessionId = user?.profile?.sid
 
+      if (user?.expired === true) {
+        // throw auth error, which will retry another silent signin
+        await this.handleAuthError(unref(this.router.currentRoute))
+        return
+      }
+
       if (accessToken) {
         console.debug('[authService:initializeContext] - updating context with saved access_token')
 
@@ -294,7 +300,7 @@ export class AuthService implements AuthServiceInterface {
       if (user?.expired === true) {
         // token expired, attempt an immediate silent signin
         try {
-          await this.userManager.signinSilent()
+          await this.userManager.signinSilent({ silentRequestTimeoutInSeconds: 2 })
         } catch {
           await throwAuthError()
         }
