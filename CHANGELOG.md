@@ -31,6 +31,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @types/node to v25.6.0 [[#2338](https://github.com/opencloud-eu/web/pull/2338)]
+- fix(deps): update dependency @unhead/vue to v3 [[#2337](https://github.com/opencloud-eu/web/pull/2337)]
 - fix(deps): update dependency @sentry/vue to v10.48.0 [[#2336](https://github.com/opencloud-eu/web/pull/2336)]
 - fix(deps): update dependency qs to v6.15.1 [[#2327](https://github.com/opencloud-eu/web/pull/2327)]
 - chore(deps): update devdependencies (non-major) [[#2331](https://github.com/opencloud-eu/web/pull/2331)]
