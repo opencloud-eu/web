@@ -1,13 +1,18 @@
 <template>
   <div class="oc-login h-screen" :style="backgroundImgStyle">
-    <h1 class="sr-only" v-text="pageTitle" />
-    <router-view class="relative z-1" />
-    <img
-      v-if="!backgroundImg && route.fullPath !== '/'"
-      alt="OpenCloud emblem"
-      src="/packages/design-system/src/assets/images/icon-lilac.svg"
-      class="hidden sm:block fixed w-3xs xs:w-xs md:w-md lg:w-lg bottom-[-40px] right-[-40px]"
-    />
+    <div v-if="pathIsRoot" class="flex items-center justify-center h-full bg-role-surface">
+      <oc-spinner size="large" :aria-label="$gettext('Loading')" />
+    </div>
+    <template v-else>
+      <h1 class="sr-only" v-text="pageTitle" />
+      <router-view class="relative z-1" />
+      <img
+        v-if="!backgroundImg && !pathIsRoot"
+        alt="OpenCloud emblem"
+        src="/packages/design-system/src/assets/images/icon-lilac.svg"
+        class="hidden sm:block fixed w-3xs xs:w-xs md:w-md lg:w-lg bottom-[-40px] right-[-40px]"
+      />
+    </template>
   </div>
 </template>
 
@@ -31,5 +36,9 @@ const pageTitle = computed(() => {
 const backgroundImg = computed(() => unref(currentTheme).background)
 const backgroundImgStyle = computed(() => {
   return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
+})
+
+const pathIsRoot = computed(() => {
+  return unref(route)?.fullPath === '/'
 })
 </script>
