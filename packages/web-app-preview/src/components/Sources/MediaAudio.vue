@@ -1,6 +1,12 @@
 <template>
   <div class="flex flex-col w-xs">
-    <audio :key="`media-audio-${file.id}`" controls preload="preload" :autoplay="isAutoPlayEnabled">
+    <audio
+      :key="`media-audio-${file.id}`"
+      controls
+      preload="preload"
+      :autoplay="isAutoPlayEnabled"
+      @ended="$emit('ended')"
+    >
       <source :src="file.url" :type="file.mimeType" />
     </audio>
     <p v-if="audioText" class="text-role-on-surface-variant text-sm" v-text="audioText"></p>
@@ -22,6 +28,7 @@ export default defineComponent({
       default: true
     }
   },
+  emits: ['ended'],
   setup(props) {
     const audioText = computed(() => {
       if (props.file.resource.audio?.artist && props.file.resource.audio?.title) {
