@@ -35,6 +35,7 @@
       <oc-list v-else class="mail-list">
         <li
           v-for="mail in mails"
+          :id="`mail-list-item-${mail.id}`"
           :key="mail.id"
           class="border-b-2"
           :class="{ 'bg-role-secondary-container': currentMail?.id === mail.id }"
@@ -66,15 +67,17 @@ import type { Mail } from '../types'
 import { useLoadMails } from '../composables/useLoadMails'
 import { useMailsStore } from '../composables/piniaStores/mails'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
+import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { useLoadMail } from '../composables/useLoadMail'
-import { unref } from 'vue'
+import { unref, watch, nextTick } from 'vue'
 
 const mailsStore = useMailsStore()
 const mailboxesStore = useMailboxesStore()
 const accountsStore = useGroupwareAccountsStore()
 const { loadMail } = useLoadMail()
 const { isLoading } = useLoadMails()
+const currentMailIdQuery = useRouteQuery('mailId')
 
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail, mails } = storeToRefs(mailsStore)
@@ -85,9 +88,12 @@ const { setCurrentMailbox } = mailboxesStore
 const onNavigateBack = () => {
   setCurrentMailbox(null)
   setCurrentMail(null)
+  currentMailIdQuery.value = null
 }
 
 const onSelectMail = async (mail: Mail) => {
+  currentMailIdQuery.value = mail.id
+
   await loadMail(unref(currentAccount).accountId, mail.id)
 
   updateMailField({
@@ -96,4 +102,19 @@ const onSelectMail = async (mail: Mail) => {
     value: { ...mail.keywords, ...{ $seen: true } }
   })
 }
+
+watch(
+  [() => unref(currentMail)?.id, isLoading],
+  async () => {
+    if (unref(isLoading) || !unref(currentMail)) {
+      return
+    }
+
+    await nextTick()
+    document
+      .getElementById(`mail-list-item-${unref(currentMail).id}`)
+      ?.scrollIntoView({ block: 'nearest' })
+  },
+  { immediate: true }
+)
 </script>
