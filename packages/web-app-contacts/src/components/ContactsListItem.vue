@@ -1,7 +1,7 @@
 <template>
-  <div class="contacts-list-item flex items-center gap-3 px-4 py-3">
+  <div class="contacts-list-item flex min-w-0 w-full items-center gap-3">
     <oc-avatar :user-name="getContactDisplayName(contact)" />
-    <div class="flex-1">
+    <div class="flex-1 min-w-0">
       <div class="truncate font-bold text-lg" v-text="getContactDisplayName(contact)" />
       <div
         class="truncate text-sm text-role-on-surface-variant"
