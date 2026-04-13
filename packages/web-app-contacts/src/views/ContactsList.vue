@@ -1,7 +1,11 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
-    <no-content-message v-if="!currentAddressBook" icon="folder" icon-fill-type="line">
+    <no-content-message
+      v-if="!currentAddressBook"
+      id="contacts-empty"
+      img-src="/images/empty-states/empty-contacts.svg"
+    >
       <template #message>
         <span v-text="$gettext('No contact folder selected')" />
       </template>
@@ -123,6 +127,8 @@ const sortedContacts = computed(() => {
   })
 })
 
+const currentContactId = computed(() => unref(currentContact)?.id)
+
 const onSelectContact = (contact: Contact) => {
   setCurrentContact(contact)
 }
@@ -159,15 +165,15 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
 }
 
 watch(
-  [currentContact, isLoading],
+  [currentContactId, isLoading],
   async () => {
-    if (unref(isLoading) || !unref(currentContact)) {
+    if (unref(isLoading) || !unref(currentContactId)) {
       return
     }
 
     await nextTick()
     document
-      .getElementById(`contact-list-item-${unref(currentContact).id}`)
+      .getElementById(`contact-list-item-${unref(currentContactId)}`)
       ?.scrollIntoView({ block: 'nearest' })
   },
   { immediate: true }
