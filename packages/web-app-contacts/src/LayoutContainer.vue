@@ -1,5 +1,5 @@
 <template>
-  <main id="contacts" class="h-full overflow-hidden p-4">
+  <main id="contacts" class="h-full overflow-hidden">
     <router-view data-testid="contacts-router-view" />
   </main>
 </template>
