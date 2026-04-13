@@ -59,7 +59,7 @@
             v-oc-tooltip="autoSaveTooltipText"
             :accessible-label="autoSaveTooltipText"
             name="refresh"
-            color="white"
+            color="var(--oc-role-on-chrome)"
             class="ox-p-xs mx-1"
           />
         </span>
