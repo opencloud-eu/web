@@ -17,6 +17,7 @@ jobs:
           count: 1
           labels: |
             Type:Bug
+            Type:Regression
             Type:Enhancement
             Type:Feature
             Type:Breaking-Change
