@@ -104,7 +104,7 @@ const onSelectMail = async (mail: Mail) => {
 }
 
 watch(
-  [currentMail, isLoading],
+  [() => currentMail?.id, isLoading],
   async () => {
     if (unref(isLoading) || !unref(currentMail)) {
       return
