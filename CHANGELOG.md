@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Scroll selected mail into view after reload [[#2341](https://github.com/opencloud-eu/web/pull/2341)]
 - Add contact details view [[#2322](https://github.com/opencloud-eu/web/pull/2322)]
 - perf: use standalone silent redirect instead of bootstrapping the app [[#2333](https://github.com/opencloud-eu/web/pull/2333)]
 - feat(design-system): add support for nuxt-link [[#2318](https://github.com/opencloud-eu/web/pull/2318)]
