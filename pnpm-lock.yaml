@@ -17,8 +17,8 @@ importers:
         specifier: ^4.11.1
         version: 4.11.1(playwright-core@1.59.1)
       '@cucumber/cucumber':
-        specifier: 12.7.0
-        version: 12.7.0
+        specifier: 12.8.0
+        version: 12.8.0
       '@cucumber/messages':
         specifier: 32.2.0
         version: 32.2.0
@@ -32,8 +32,8 @@ importers:
         specifier: 1.14.2
         version: 1.14.2(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.2)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.6(typescript@6.0.2))
       '@noble/hashes':
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.2.0
+        version: 2.2.0
       '@opencloud-eu/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
@@ -116,8 +116,8 @@ importers:
         specifier: 2.3.8
         version: 2.3.8
       simple-git:
-        specifier: 3.35.2
-        version: 3.35.2
+        specifier: 3.36.0
+        version: 3.36.0
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
@@ -1361,8 +1361,8 @@ packages:
   '@cucumber/cucumber-expressions@19.0.0':
     resolution: {integrity: sha512-4FKoOQh2Uf6F6/Ln+1OxuK8LkTg6PyAqekhf2Ix8zqV2M54sH+m7XNJNLhOFOAW/t9nxzRbw2CcvXbCLjcvHZg==}
 
-  '@cucumber/cucumber@12.7.0':
-    resolution: {integrity: sha512-7A/9CJpJDxv1SQ7hAZU0zPn2yRxx6XMR+LO4T94Enm3cYNWsEEj+RGX38NLX4INT+H6w5raX3Csb/qs4vUBsOA==}
+  '@cucumber/cucumber@12.8.0':
+    resolution: {integrity: sha512-sRG2QMAgCic4Uq1q+5LRzApEHiNGX5rhQY/GuOJZ9BIySrGPA9pevB0imJsZvdzt9scaWyIM3c7dIf4Dp1YQRA==}
     engines: {node: 20 || 22 || >=24}
     hasBin: true
 
@@ -1386,18 +1386,15 @@ packages:
     peerDependencies:
       '@cucumber/messages': '>=18'
 
-  '@cucumber/junit-xml-formatter@0.9.0':
-    resolution: {integrity: sha512-WF+A7pBaXpKMD1i7K59Nk5519zj4extxY4+4nSgv5XLsGXHDf1gJnb84BkLUzevNtp2o2QzMG0vWLwSm8V5blw==}
+  '@cucumber/junit-xml-formatter@0.13.2':
+    resolution: {integrity: sha512-worYkxjeOWJV+b7WkgJekWgFHlIhbuocnFK3hP+pMYXqZMmkXsxAorYPjeF8KyLnZXajw5fKHS2bM9rQIUI7Zw==}
     peerDependencies:
       '@cucumber/messages': '*'
 
-  '@cucumber/message-streams@4.0.1':
-    resolution: {integrity: sha512-Kxap9uP5jD8tHUZVjTWgzxemi/0uOsbGjd4LBOSxcJoOCRbESFwemUzilJuzNTB8pcTQUh8D5oudUyxfkJOKmA==}
+  '@cucumber/message-streams@4.1.1':
+    resolution: {integrity: sha512-QCAntLajesWMyX+mZKrj63YghVAts7yKFlZe46XprLbdJZN0ddB+f/Mr9OnyWKC2DHhJ18jzCfKIFCaqpAmUxg==}
     peerDependencies:
       '@cucumber/messages': '>=17.1.1'
-
-  '@cucumber/messages@32.0.1':
-    resolution: {integrity: sha512-1OSoW+GQvFUNAl6tdP2CTBexTXMNJF0094goVUcvugtQeXtJ0K8sCP0xbq7GGoiezs/eJAAOD03+zAPT64orHQ==}
 
   '@cucumber/messages@32.2.0':
     resolution: {integrity: sha512-oYp1dgL2TByYWL51Z+rNm+/mFtJhiPU9WS03goes9EALb8d9GFcXRbG1JluFLFaChF1YDqIzLac0kkC3tv1DjQ==}
@@ -1410,11 +1407,6 @@ packages:
 
   '@cucumber/pretty-formatter@3.2.0':
     resolution: {integrity: sha512-QN+UwKHMGs/PwDCu/CU6Q9F89SvMgS2Gh9GU05CFNDE/asJjhCYdh0IksfFZfwPcbJ/3WxcqXLuNzUws0npPgw==}
-    peerDependencies:
-      '@cucumber/messages': '*'
-
-  '@cucumber/query@14.7.0':
-    resolution: {integrity: sha512-fiqZ4gMEgYjmbuWproF/YeCdD5y+gD2BqgBIGbpihOsx6UlNsyzoDSfO+Tny0q65DxfK+pHo2UkPyEl7dO7wmQ==}
     peerDependencies:
       '@cucumber/messages': '*'
 
@@ -1949,8 +1941,8 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
-  '@noble/hashes@2.0.1':
-    resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
+  '@noble/hashes@2.2.0':
+    resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
     engines: {node: '>= 20.19.0'}
 
   '@npmcli/fs@3.1.1':
@@ -2396,11 +2388,11 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@simple-git/args-pathspec@1.0.2':
-    resolution: {integrity: sha512-nEFVejViHUoL8wU8GTcwqrvqfUG40S5ts6S4fr1u1Ki5CklXlRDYThPVA/qurTmCYFGnaX3XpVUmICLHdvhLaA==}
+  '@simple-git/args-pathspec@1.0.3':
+    resolution: {integrity: sha512-ngJMaHlsWDTfjyq9F3VIQ8b7NXbBLq5j9i5bJ6XLYtD6qlDXT7fdKY2KscWWUF8t18xx052Y/PUO1K1TRc9yKA==}
 
-  '@simple-git/argv-parser@1.0.3':
-    resolution: {integrity: sha512-NMKv9sJcSN2VvnPT9Ja7eKfGy8Q8mMFLwPTCcuZMtv3+mYcLIZflg31S/tp2XCCyiY7YAx6cgBHQ0fwA2fWHpQ==}
+  '@simple-git/argv-parser@1.1.0':
+    resolution: {integrity: sha512-sUKOu2lb5vGIWADNNLpscyj07DAeQZU3KLbnE2Tj53tW6BbDQKMly2CCfnR4oYzqtRELCPWfwaPg+Q0T8qfKBg==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -5275,8 +5267,8 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-git@3.35.2:
-    resolution: {integrity: sha512-ZMjl06lzTm1EScxEGuM6+mEX+NQd14h/B3x0vWU+YOXAMF8sicyi1K4cjTfj5is+35ChJEHDl1EjypzYFWH2FA==}
+  simple-git@3.36.0:
+    resolution: {integrity: sha512-cGQjLjK8bxJw4QuYT7gxHw3/IouVESbhahSsHrX97MzCL1gu2u7oy38W6L2ZIGECEfIBG4BabsWDPjBxJENv9Q==}
 
   slide@1.1.6:
     resolution: {integrity: sha512-NwrtjCg+lZoqhFU8fOwl4ay2ei8PaqCBOUV3/ektPY9trO1yQ1oXEfmHAhKArUVUr/hOHvy5f6AdP17dCM0zMw==}
@@ -6414,18 +6406,18 @@ snapshots:
     dependencies:
       regexp-match-indices: 1.0.2
 
-  '@cucumber/cucumber@12.7.0':
+  '@cucumber/cucumber@12.8.0':
     dependencies:
       '@cucumber/ci-environment': 13.0.0
       '@cucumber/cucumber-expressions': 19.0.0
       '@cucumber/gherkin': 38.0.0
-      '@cucumber/gherkin-streams': 6.0.0(@cucumber/gherkin@38.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@32.0.1))(@cucumber/messages@32.0.1)
+      '@cucumber/gherkin-streams': 6.0.0(@cucumber/gherkin@38.0.0)(@cucumber/message-streams@4.1.1(@cucumber/messages@32.2.0))(@cucumber/messages@32.2.0)
       '@cucumber/gherkin-utils': 11.0.0
-      '@cucumber/html-formatter': 23.0.0(@cucumber/messages@32.0.1)
-      '@cucumber/junit-xml-formatter': 0.9.0(@cucumber/messages@32.0.1)
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.2.0)
-      '@cucumber/messages': 32.0.1
-      '@cucumber/pretty-formatter': 1.0.1(@cucumber/cucumber@12.7.0)(@cucumber/messages@32.0.1)
+      '@cucumber/html-formatter': 23.0.0(@cucumber/messages@32.2.0)
+      '@cucumber/junit-xml-formatter': 0.13.2(@cucumber/messages@32.2.0)
+      '@cucumber/message-streams': 4.1.1(@cucumber/messages@32.2.0)
+      '@cucumber/messages': 32.2.0
+      '@cucumber/pretty-formatter': 1.0.1(@cucumber/cucumber@12.8.0)(@cucumber/messages@32.2.0)
       '@cucumber/tag-expressions': 9.1.0
       assertion-error-formatter: 3.0.0
       capital-case: 1.0.4
@@ -6444,7 +6436,6 @@ snapshots:
       lodash.merge: 4.6.2
       lodash.mergewith: 4.6.2
       luxon: 3.7.2
-      mime: 3.0.0
       mkdirp: 3.0.1
       mz: 2.7.0
       progress: 2.0.3
@@ -6457,11 +6448,11 @@ snapshots:
       yaml: 2.8.3
       yup: 1.7.1
 
-  '@cucumber/gherkin-streams@6.0.0(@cucumber/gherkin@38.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@32.0.1))(@cucumber/messages@32.0.1)':
+  '@cucumber/gherkin-streams@6.0.0(@cucumber/gherkin@38.0.0)(@cucumber/message-streams@4.1.1(@cucumber/messages@32.2.0))(@cucumber/messages@32.2.0)':
     dependencies:
       '@cucumber/gherkin': 38.0.0
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@32.2.0)
-      '@cucumber/messages': 32.0.1
+      '@cucumber/message-streams': 4.1.1(@cucumber/messages@32.2.0)
+      '@cucumber/messages': 32.2.0
       commander: 14.0.0
       source-map-support: 0.5.21
 
@@ -6477,36 +6468,32 @@ snapshots:
     dependencies:
       '@cucumber/messages': 32.2.0
 
-  '@cucumber/html-formatter@23.0.0(@cucumber/messages@32.0.1)':
+  '@cucumber/html-formatter@23.0.0(@cucumber/messages@32.2.0)':
     dependencies:
-      '@cucumber/messages': 32.0.1
+      '@cucumber/messages': 32.2.0
 
-  '@cucumber/junit-xml-formatter@0.9.0(@cucumber/messages@32.0.1)':
+  '@cucumber/junit-xml-formatter@0.13.2(@cucumber/messages@32.2.0)':
     dependencies:
-      '@cucumber/messages': 32.0.1
-      '@cucumber/query': 14.7.0(@cucumber/messages@32.0.1)
+      '@cucumber/messages': 32.2.0
+      '@cucumber/query': 15.0.1(@cucumber/messages@32.2.0)
       '@teppeis/multimaps': 3.0.0
       luxon: 3.7.2
       xmlbuilder: 15.1.1
 
-  '@cucumber/message-streams@4.0.1(@cucumber/messages@32.2.0)':
+  '@cucumber/message-streams@4.1.1(@cucumber/messages@32.2.0)':
     dependencies:
       '@cucumber/messages': 32.2.0
-
-  '@cucumber/messages@32.0.1':
-    dependencies:
-      class-transformer: 0.5.1
-      reflect-metadata: 0.2.2
+      mime: 3.0.0
 
   '@cucumber/messages@32.2.0':
     dependencies:
       class-transformer: 0.5.1
       reflect-metadata: 0.2.2
 
-  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@12.7.0)(@cucumber/messages@32.0.1)':
+  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@12.8.0)(@cucumber/messages@32.2.0)':
     dependencies:
-      '@cucumber/cucumber': 12.7.0
-      '@cucumber/messages': 32.0.1
+      '@cucumber/cucumber': 12.8.0
+      '@cucumber/messages': 32.2.0
       ansi-styles: 5.2.0
       cli-table3: 0.6.5
       figures: 3.2.0
@@ -6517,12 +6504,6 @@ snapshots:
       '@cucumber/messages': 32.2.0
       '@cucumber/query': 15.0.1(@cucumber/messages@32.2.0)
       luxon: 3.7.2
-
-  '@cucumber/query@14.7.0(@cucumber/messages@32.0.1)':
-    dependencies:
-      '@cucumber/messages': 32.0.1
-      '@teppeis/multimaps': 3.0.0
-      lodash.sortby: 4.7.0
 
   '@cucumber/query@15.0.1(@cucumber/messages@32.2.0)':
     dependencies:
@@ -7004,7 +6985,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@noble/hashes@2.0.1': {}
+  '@noble/hashes@2.2.0': {}
 
   '@npmcli/fs@3.1.1':
     dependencies:
@@ -7317,11 +7298,11 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@simple-git/args-pathspec@1.0.2': {}
+  '@simple-git/args-pathspec@1.0.3': {}
 
-  '@simple-git/argv-parser@1.0.3':
+  '@simple-git/argv-parser@1.1.0':
     dependencies:
-      '@simple-git/args-pathspec': 1.0.2
+      '@simple-git/args-pathspec': 1.0.3
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -10472,12 +10453,12 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-git@3.35.2:
+  simple-git@3.36.0:
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
-      '@simple-git/args-pathspec': 1.0.2
-      '@simple-git/argv-parser': 1.0.3
+      '@simple-git/args-pathspec': 1.0.3
+      '@simple-git/argv-parser': 1.1.0
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
