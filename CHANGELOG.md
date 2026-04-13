@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: mobile floating action button is too small [[#2353](https://github.com/opencloud-eu/web/pull/2353)]
 - fix(runtime): optimize auth flow with expired token [[#2346](https://github.com/opencloud-eu/web/pull/2346)]
 - fix(extension-sdk): add missing color roles [[#2339](https://github.com/opencloud-eu/web/pull/2339)]
 - fix: optimize route change announcer [[#2328](https://github.com/opencloud-eu/web/pull/2328)]
