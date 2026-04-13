@@ -127,8 +127,6 @@ const sortedContacts = computed(() => {
   })
 })
 
-const currentContactId = computed(() => unref(currentContact)?.id)
-
 const onSelectContact = (contact: Contact) => {
   setCurrentContact(contact)
 }
@@ -165,15 +163,15 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
 }
 
 watch(
-  [currentContactId, isLoading],
+  [() => unref(currentContact)?.id, isLoading],
   async () => {
-    if (unref(isLoading) || !unref(currentContactId)) {
+    if (unref(isLoading) || !unref(currentContact)?.id) {
       return
     }
 
     await nextTick()
     document
-      .getElementById(`contact-list-item-${unref(currentContactId)}`)
+      .getElementById(`contact-list-item-${unref(currentContact)?.id}`)
       ?.scrollIntoView({ block: 'nearest' })
   },
   { immediate: true }
