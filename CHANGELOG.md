@@ -33,6 +33,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.22.3 [[#2320](https://github.com/opencloud-eu/web/pull/2320)]
+- chore(deps): update dependency globals to v17.5.0 [[#2352](https://github.com/opencloud-eu/web/pull/2352)]
+- chore(deps): update dependency fast-xml-parser to v5.5.12 [[#2354](https://github.com/opencloud-eu/web/pull/2354)]
+- chore(deps): update devdependencies (non-major) [[#2350](https://github.com/opencloud-eu/web/pull/2350)]
 - chore(deps): update dependency @types/node to v25.6.0 [[#2338](https://github.com/opencloud-eu/web/pull/2338)]
 - fix(deps): update dependency @unhead/vue to v3 [[#2337](https://github.com/opencloud-eu/web/pull/2337)]
 - fix(deps): update dependency @sentry/vue to v10.48.0 [[#2336](https://github.com/opencloud-eu/web/pull/2336)]
