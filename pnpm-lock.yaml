@@ -4436,8 +4436,8 @@ packages:
   lodash.uniqby@4.5.0:
     resolution: {integrity: sha512-IRt7cfTtHy6f1aRVA5n7kT8rgN3N1nH6MOWLcHfpWG2SH19E3JksLK38MktLxZDhlAjCP9jpIXkOnRXlu6oByQ==}
 
-  lodash@4.17.23:
-    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   long-timeout@0.1.1:
     resolution: {integrity: sha512-BFRuQUqc7x2NWxfJBCyUrN8iYUYznzL9JROmRz1gZ6KlOIgmoD+njPVbb+VNn2nGMKggMsK79iUNErillsrx7w==}
@@ -7750,7 +7750,7 @@ snapshots:
       '@transloadit/prettier-bytes': 0.3.5
       '@uppy/store-default': 5.0.0
       '@uppy/utils': 7.2.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
       nanoid: 5.1.7
@@ -7767,7 +7767,7 @@ snapshots:
 
   '@uppy/utils@7.2.0':
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       preact: 10.29.0
 
   '@uppy/xhr-upload@5.2.0(@uppy/core@5.2.0)':
@@ -8633,7 +8633,7 @@ snapshots:
       event-emitter: 0.3.5
       jszip: 3.10.1
       localforage: 1.10.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       marks-pane: 1.0.9
       path-webpack: 0.0.3
 
@@ -9466,7 +9466,7 @@ snapshots:
       lodash._baseiteratee: 4.7.0
       lodash._baseuniq: 4.6.0
 
-  lodash@4.17.23: {}
+  lodash@4.18.1: {}
 
   long-timeout@0.1.1: {}
 
