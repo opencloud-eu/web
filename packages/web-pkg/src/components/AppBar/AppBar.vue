@@ -11,8 +11,8 @@
       <div
         class="flex items-center files-app-bar-controls min-h-12"
         :class="{
-          'justify-between': breadcrumbs.length || hasSharesNavigation,
-          'justify-end': !breadcrumbs.length && !hasSharesNavigation
+          'justify-between': showBreadcrumb || hasSharesNavigation,
+          'justify-end': !showBreadcrumb && !hasSharesNavigation
         }"
       >
         <oc-breadcrumb
@@ -32,7 +32,6 @@
             />
           </template>
         </oc-breadcrumb>
-        <mobile-nav v-if="showMobileNav" />
         <div v-if="hasViewOptions" id="files-app-bar-controls-right" class="flex">
           <view-options
             :view-modes="viewModes"
@@ -74,7 +73,6 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import BatchActions from '../BatchActions.vue'
 import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
@@ -115,15 +113,13 @@ import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
-import MobileNav from '../Navigation/MobileNav.vue'
 
 export default defineComponent({
   name: 'AppBar',
   components: {
     BatchActions,
     ContextActions,
-    ViewOptions,
-    MobileNav
+    ViewOptions
   },
   props: {
     viewModeDefault: {
@@ -241,16 +237,12 @@ export default defineComponent({
       spacesStore.spaces.filter((s) => isPersonalSpaceResource(s) || isProjectSpaceResource(s))
     )
 
-    const { isMobile } = useIsMobile()
     const isTrashLocation = useActiveLocation(isLocationTrashActive, 'files-trash-generic')
     const showBreadcrumb = computed(() => {
-      if (!unref(isMobile) && props.breadcrumbs.length) {
-        return true
-      }
       if (unref(isTrashLocation) && unref(spaces).length === 1) {
         return false
       }
-      return props.breadcrumbs.length > 1
+      return props.breadcrumbs.length
     })
     const showMobileNav = computed(() => {
       if (unref(isTrashLocation) && unref(spaces).length === 1) {

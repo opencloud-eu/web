@@ -1,21 +1,28 @@
 <template>
   <template v-if="floatingActionButton">
-    <div v-if="!isMobile" class="pb-3 px-2">
-      <oc-button
-        :id="getButtonId(floatingActionButton.id)"
-        :disabled="isDisabled"
-        appearance="filled"
-        class="oc-app-floating-action-button w-full"
-        @click="floatingActionButton.handler?.()"
-      >
-        <oc-icon :name="floatingActionButton.icon" />
-        <span v-text="floatingActionButton.label()" />
-      </oc-button>
-      <component
-        :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
-        :toggle="`#${getButtonId(floatingActionButton.id)}`"
-      />
+    <div v-if="!isMobile">
+      <teleport to="#web-nav-sidebar-floating-action-button">
+        <div class="pb-3 px-2">
+          <oc-button
+            :id="getButtonId(floatingActionButton.id)"
+            :disabled="isDisabled"
+            appearance="filled"
+            class="oc-app-floating-action-button w-full"
+            @click="floatingActionButton.handler?.()"
+          >
+            <oc-icon :name="floatingActionButton.icon" />
+            <span v-text="floatingActionButton.label()" />
+          </oc-button>
+          <template
+            v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
+          >
+            <component
+              :is="floatingActionButton.dropComponent"
+              :toggle="`#${getButtonId(floatingActionButton.id)}`"
+            />
+          </template>
+        </div>
+      </teleport>
     </div>
     <template v-else-if="!isDisabled">
       <oc-floating-action-button
@@ -24,11 +31,12 @@
         mode="action"
         :handler="floatingActionButton.handler"
       />
-      <component
-        :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
-        :toggle="`#${getButtonId(floatingActionButton.id)}`"
-      />
+      <template v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'">
+        <component
+          :is="floatingActionButton.dropComponent"
+          :toggle="`#${getButtonId(floatingActionButton.id)}`"
+        />
+      </template>
     </template>
   </template>
 </template>

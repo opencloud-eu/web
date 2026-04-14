@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col grow">
       <nav class="oc-sidebar-nav mt-3 px-1" :aria-label="$gettext('Sidebar navigation menu')">
-        <app-floating-action-button />
+        <div id="web-nav-sidebar-floating-action-button" />
         <oc-list class="relative">
           <sidebar-nav-item
             v-for="(link, index) in navItems"
@@ -34,7 +34,6 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
-import AppFloatingActionButton from '../AppFloatingActionButton.vue'
 import {
   useCapabilityStore,
   VersionCheck,

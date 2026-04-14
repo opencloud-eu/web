@@ -84,10 +84,6 @@ describe('AppTemplate', () => {
           wrapper.findComponent<typeof OcBreadcrumb>(stubSelectors.ocBreadcrumb).props().items
         ).toEqual([{ text: 'Administration Settings' }, { text: 'Users' }])
       })
-      it('does not show in mobile view', () => {
-        const { wrapper } = getWrapper({ isMobile: true })
-        expect(wrapper.find(stubSelectors.ocBreadcrumb).exists()).toBeFalsy()
-      })
     })
     describe('side bar component', () => {
       it('receives correct props', () => {

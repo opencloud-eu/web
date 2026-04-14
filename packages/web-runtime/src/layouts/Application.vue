@@ -19,6 +19,7 @@
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav v-if="isSidebarVisible" :nav-items="navItems" />
+          <app-floating-action-button />
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
@@ -59,6 +60,7 @@ import { useRouteMeta, useSpacesLoading, useNavItems } from '@opencloud-eu/web-p
 import { computed, nextTick, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { progressBarExtensionPoint } from '../extensionPoints'
+import AppFloatingActionButton from '../components/AppFloatingActionButton.vue'
 
 const { $gettext } = useGettext()
 const { navItems } = useNavItems()

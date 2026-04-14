@@ -16,12 +16,10 @@
             >
               <div class="flex justify-between items-center h-12">
                 <oc-breadcrumb
-                  v-if="!isMobile"
                   id="admin-settings-breadcrumb"
                   :items="breadcrumbs"
                   :mobile-breakpoint="isSideBarOpen ? 'md' : 'sm'"
                 />
-                <mobile-nav />
                 <div class="flex">
                   <view-options
                     v-if="showViewOptions"
@@ -75,8 +73,7 @@ import {
   SideBarPanelContext,
   Action,
   useIsTopBarSticky,
-  useSideBar,
-  MobileNav
+  useSideBar
 } from '@opencloud-eu/web-pkg'
 import { defineComponent, onBeforeUnmount, PropType, ref, unref, useTemplateRef, watch } from 'vue'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -92,8 +89,7 @@ export default defineComponent({
     SideBar,
     AppLoadingSpinner,
     BatchActions,
-    ViewOptions,
-    MobileNav
+    ViewOptions
   },
   props: {
     breadcrumbs: {

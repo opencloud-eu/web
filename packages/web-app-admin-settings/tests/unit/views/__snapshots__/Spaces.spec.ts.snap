@@ -8,7 +8,6 @@ exports[`Spaces view > loading states > should render spaces list after loading 
         <div id="admin-settings-app-bar" class="py-1 px-4 top-0 z-20 bg-role-surface sticky">
           <div class="flex justify-between items-center h-12">
             <oc-breadcrumb-stub items="[object Object]" contextmenupadding="medium" id="admin-settings-breadcrumb" maxwidth="-1" mobilebreakpoint="sm" showcontextactions="false" routerlinkcomponent="router-link" truncationoffset="2" variation="default"></oc-breadcrumb-stub>
-            <!--v-if-->
             <div class="flex">
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
