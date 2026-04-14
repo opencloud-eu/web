@@ -100,6 +100,9 @@
   "pnpm": {
     "patchedDependencies": {
       "caf@15.0.1": "patches/caf@15.0.1.patch"
+    },
+    "overrides": {
+      "epubjs>@xmldom/xmldom": "^0.9.9"
     }
   }
 }
