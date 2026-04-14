@@ -3,7 +3,8 @@
   "version": "6.1.0",
   "description": "OpenCloud Web Extension SDK",
   "license": "AGPL-3.0",
-  "main": "index.mjs",
+  "main": "dist/extension-sdk.js",
+  "types": "dist/src/index.d.ts",
   "type": "module",
   "private": false,
   "author": "OpenCloud GmbH <info@opencloud.eu>",
@@ -13,13 +14,31 @@
     "url": "https://github.com/opencloud-eu/web",
     "directory": "packages/extension-sdk"
   },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "default": "./dist/extension-sdk.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./tailwind.css": "./dist/tailwind.css"
+  },
+  "scripts": {
+    "build": "vite build && vue-tsc --project tsconfig.build.json",
+    "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json"
+  },
   "dependencies": {
     "@module-federation/vite": "^1.13.5",
     "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-vue": "^6.0.5"
   },
+  "devDependencies": {
+    "vite-plugin-static-copy": "^4.0.0"
+  },
   "peerDependencies": {
-    "vite": "^7.2.0 || ^8.0.0"
+    "vite": "^7.2.0 || ^8.0.0",
+    "vitest": "^4.0.0"
   }
 }

@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
-// @ts-expect-error — no type declaration for .mjs, not worth shipping one for a test
-import { externalModules } from '../../../../../extension-sdk/externalModules.mjs'
+import { externalModules } from '../../../../../extension-sdk/src/externalModules'
 import { sharedModules } from '../../../../src/container/application'
 
 describe('sharedModules', () => {
