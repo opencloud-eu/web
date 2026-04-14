@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2358](https://github.com/opencloud-eu/web/pull/2358)]
 - chore(deps): update tiptap monorepo to v3.22.3 [[#2320](https://github.com/opencloud-eu/web/pull/2320)]
 - chore(deps): update dependency globals to v17.5.0 [[#2352](https://github.com/opencloud-eu/web/pull/2352)]
 - chore(deps): update dependency fast-xml-parser to v5.5.12 [[#2354](https://github.com/opencloud-eu/web/pull/2354)]
