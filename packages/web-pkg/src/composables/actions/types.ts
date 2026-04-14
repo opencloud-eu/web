@@ -2,14 +2,26 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { RouteLocationRaw } from 'vue-router'
 import { IconFillType } from '../../helpers'
-import { StringUnionOrAnyString } from '../../utils'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
+type ActionCategory = 'actions' | 'context' | 'share' | 'sidebar'
+
 export interface Action<T = ActionOptions> {
   name: string
-  category?: StringUnionOrAnyString<'context' | 'share' | 'actions' | 'sidebar'>
+  /**
+   * Determines where an action will be displayed in the resource context menu.
+   *
+   * - actions: action will appear in the "actions" section of the resource context menu.
+   * - context: action will appear in the "Open with..."-menu of the resource context menu.
+   *   It will also be the default when no other action is available for the given file type.
+   * - share: action will appear in the "shares" section of the resource context menu.
+   * - sidebar: action will appear in the "sidebar" section of the resource context menu.
+   *
+   * @default actions
+   */
+  category?: ActionCategory
   icon: string | ((options?: ActionOptions) => string)
   iconFillType?: IconFillType
   appearance?: AppearanceType
