@@ -10,6 +10,7 @@
         id="files-file-link-add"
         appearance="raw"
         data-testid="files-link-add-btn"
+        no-hover
         @click="addNewLink"
       >
         <span v-text="$gettext('Add link')" />
