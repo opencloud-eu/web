@@ -1,0 +1,14 @@
+import { Page } from '@playwright/test'
+
+export class Favorites {
+  #page: Page
+
+  constructor({ page }: { page: Page }) {
+    this.#page = page
+  }
+
+  async navigate(): Promise<void> {
+    await this.#page.locator('a[data-nav-name="files-common-favorites"]').click()
+    await this.#page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
+  }
+}

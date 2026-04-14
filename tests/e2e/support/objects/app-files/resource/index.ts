@@ -438,4 +438,15 @@ export class Resource {
       folder: args.folder
     })
   }
+
+  async markAsFavorite(args: {
+    method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
+    resources: string[]
+  }): Promise<void> {
+    await po.markAsFavorite({
+      page: this.#page,
+      method: args.method,
+      resources: args.resources
+    })
+  }
 }

@@ -149,12 +149,12 @@ const fileIcon = '#oc-file-details-sidebar .details-icon'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
-const contextMenuAction = '//*[@id="oc-files-context-actions-context"]//span[text()="%s"]'
 const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
 const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
+const previewFavoriteButton = '.preview-controls-favorite'
 
 export const getResourceLocator = ({
   page,
@@ -2395,4 +2395,45 @@ export const deleteAndUndo = async ({
     await undoButton.first().click()
   }
   await responsePromise
+}
+
+export const markAsFavorite = async ({
+  page,
+  method,
+  resources
+}: {
+  page: Page
+  method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
+  resources: string[]
+}): Promise<void> => {
+  switch (method) {
+    case 'context menu':
+      for (const resource of resources) {
+        await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+        await page.locator(util.format(filesContextMenuAction, 'favorite')).click()
+      }
+      break
+
+    case 'sidebar panel':
+      for (const resource of resources) {
+        await sidebar.open({ page, resource })
+        await sidebar.openPanel({ page, name: 'actions' })
+        await page.locator(util.format(sideBarActionButton, 'Add to favorites')).click()
+      }
+      break
+
+    case 'batch action':
+      for (const resource of resources) {
+        await page.locator(util.format(checkBox, resource)).click()
+      }
+      await selectBatchAction(page, 'favorite')
+      break
+
+    case 'preview':
+      const favoriteBtn = page.locator(previewFavoriteButton)
+      await expect(favoriteBtn).toHaveAttribute('aria-label', 'Add to favorites')
+      await favoriteBtn.click()
+      await expect(favoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
+      break
+  }
 }
