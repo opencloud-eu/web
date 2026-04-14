@@ -13,40 +13,29 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useClipboard } from '@vueuse/core'
 import { useMessages } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  props: {
-    resource: {
-      type: Object as PropType<Resource>,
-      required: true
-    }
-  },
-  setup(props) {
-    const { $gettext } = useGettext()
-    const { showMessage } = useMessages()
-    const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 550 })
+const { resource } = defineProps<{ resource: Resource }>()
+const { $gettext } = useGettext()
+const { showMessage } = useMessages()
+const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 550 })
 
-    const copyLinkToClipboard = () => {
-      copy(props.resource.privateLink)
-      showMessage({
-        title: $gettext('Permanent link copied'),
-        desc: $gettext('The permanent link has been copied to your clipboard.')
-      })
-    }
+const copyLinkToClipboard = () => {
+  copy(resource.privateLink)
+  showMessage({
+    title: $gettext('Permanent link copied'),
+    desc: $gettext('The permanent link has been copied to your clipboard.')
+  })
+}
 
-    const tooltip = computed(() => {
-      return $gettext(
-        'Copy the link to point your team to this item. Works only for people with existing access.'
-      )
-    })
-
-    return { copied, tooltip, copyLinkToClipboard }
-  }
+const tooltip = computed(() => {
+  return $gettext(
+    'Copy the link to point your team to this item. Works only for people with existing access.'
+  )
 })
 </script>
