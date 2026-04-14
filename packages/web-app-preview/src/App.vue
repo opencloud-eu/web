@@ -434,12 +434,12 @@ watch(activeMediaFile, (newValue, oldValue) => {
   currentImageRotation.value = 0
 
   if (oldValue !== null) {
-      if (unref(isAutoAdvancing)) {
-        isAutoAdvancing.value = false
-      } else {
-        isAutoPlayEnabled.value = false
-      }
+    if (unref(isAutoAdvancing)) {
+      isAutoAdvancing.value = false
+    } else {
+      isAutoPlayEnabled.value = false
     }
+  }
 
   emit('update:resource', unref(activeMediaFile).resource)
 })
