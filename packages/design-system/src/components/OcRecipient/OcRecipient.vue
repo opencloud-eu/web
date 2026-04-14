@@ -46,7 +46,7 @@ defineSlots<Slots>()
 
 @layer components {
   .oc-recipient {
-    @apply p-1 w-auto gap-1;
+    @apply px-1 py-0 w-auto gap-1;
   }
 }
 </style>
