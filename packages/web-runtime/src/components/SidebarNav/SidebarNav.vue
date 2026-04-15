@@ -5,7 +5,26 @@
   >
     <div class="flex flex-col grow">
       <nav class="oc-sidebar-nav mt-3 px-1" :aria-label="$gettext('Sidebar navigation menu')">
-        <div id="web-nav-sidebar-floating-action-button" />
+        <div v-if="floatingActionButton" class="pb-3 px-2">
+          <oc-button
+            :id="getButtonId(floatingActionButton.id)"
+            :disabled="isFloatingActionButtonDisabled"
+            appearance="filled"
+            class="oc-app-floating-action-button w-full"
+            @click="floatingActionButton.handler?.()"
+          >
+            <oc-icon :name="floatingActionButton.icon" />
+            <span v-text="floatingActionButton.label()" />
+          </oc-button>
+          <template
+            v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
+          >
+            <component
+              :is="floatingActionButton.dropComponent"
+              :toggle="`#${getButtonId(floatingActionButton.id)}`"
+            />
+          </template>
+        </div>
         <oc-list class="relative">
           <sidebar-nav-item
             v-for="(link, index) in navItems"
@@ -32,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, onBeforeUnmount, ref, unref, watchEffect } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
 import {
   useCapabilityStore,
@@ -42,7 +61,9 @@ import {
   CustomComponentTarget,
   ExtensionPoint,
   CustomComponentExtension,
-  useActiveApp
+  useActiveApp,
+  useExtensionRegistry,
+  FloatingActionButtonExtension
 } from '@opencloud-eu/web-pkg'
 
 const { navItems } = defineProps<{ navItems: NavItem[] }>()
@@ -51,6 +72,8 @@ const capabilityStore = useCapabilityStore()
 const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
 
 const activeApp = useActiveApp()
+const { requestExtensions } = useExtensionRegistry()
+
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,
   extensionType: 'customComponent'
@@ -59,4 +82,37 @@ const dynamicExtensionPointBottom = computed<ExtensionPoint<CustomComponentExten
   id: `app.${unref(activeApp)}.sidebar-nav.bottom`,
   extensionType: 'customComponent'
 }))
+
+const isFloatingActionButtonDisabled = ref(true)
+
+const floatingActionButton = computed(() => {
+  return requestExtensions<FloatingActionButtonExtension>({
+    id: `app.${unref(activeApp)}.floating-action-button`,
+    extensionType: 'floatingActionButton'
+  }).find(({ isVisible }) => !isVisible || isVisible())
+})
+
+function getButtonId(extensionId: string): string {
+  return `app-floating-action-button-${extensionId.replace(/\./g, '-')}`
+}
+
+let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+// use a timeout to avoid flickering of the floating action button in case the isFloatingActionButtonDisabled state changes rapidly
+watchEffect(() => {
+  const disabled = unref(floatingActionButton)?.isDisabled?.() ?? false
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+  }
+  timeoutId = setTimeout(() => {
+    isFloatingActionButtonDisabled.value = disabled
+    timeoutId = null
+  }, 50)
+})
+
+onBeforeUnmount(() => {
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+  }
+})
 </script>
