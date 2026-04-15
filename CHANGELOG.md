@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: active state for navigation in sidebar [[#2374](https://github.com/opencloud-eu/web/pull/2374)]
 - Scroll selected mail into view after reload [[#2341](https://github.com/opencloud-eu/web/pull/2341)]
 - Add contact details view [[#2322](https://github.com/opencloud-eu/web/pull/2322)]
 - perf: use standalone silent redirect instead of bootstrapping the app [[#2333](https://github.com/opencloud-eu/web/pull/2333)]
