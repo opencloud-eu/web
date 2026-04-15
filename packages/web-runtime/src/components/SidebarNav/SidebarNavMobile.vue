@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="isMobile && navItems.length" id="mobile-nav">
+  <nav v-if="isVisible" id="mobile-nav">
     <oc-button
       id="mobile-nav-button"
       appearance="raw-inverse"
@@ -44,13 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, unref, watch } from 'vue'
-import { useNavItems } from '@opencloud-eu/web-pkg'
+import { computed, nextTick, ref, unref, watch } from 'vue'
+import {
+  CustomComponentExtension,
+  useActiveApp,
+  useExtensionRegistry,
+  useNavItems
+} from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SidebarNav from './SidebarNav.vue'
 
+const { requestExtensions } = useExtensionRegistry()
 const { isMobile } = useIsMobile()
 const { navItems } = useNavItems()
+const activeApp = useActiveApp()
 
 const isMenuOpen = ref(false)
 
@@ -67,6 +74,23 @@ function handleOverlayClick(event: MouseEvent) {
     isMenuOpen.value = false
   }
 }
+
+const isVisible = computed(() => {
+  const mainExtensionPoint = {
+    id: `app.${unref(activeApp)}.sidebar-nav.main`,
+    extensionType: 'customComponent'
+  }
+  const bottomExtensionPoint = {
+    id: `app.${unref(activeApp)}.sidebar-nav.bottom`,
+    extensionType: 'customComponent'
+  }
+  return (
+    (requestExtensions<CustomComponentExtension>(mainExtensionPoint).length > 0 ||
+      requestExtensions<CustomComponentExtension>(bottomExtensionPoint).length > 0 ||
+      unref(navItems).length > 0) &&
+    unref(isMobile)
+  )
+})
 
 watch(
   () => isMenuOpen.value,
