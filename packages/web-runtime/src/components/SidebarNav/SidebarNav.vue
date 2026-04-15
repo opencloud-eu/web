@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col grow">
       <nav class="oc-sidebar-nav mt-3 px-1" :aria-label="$gettext('Sidebar navigation menu')">
-        <div v-if="floatingActionButton" class="pb-3 px-2">
+        <div v-if="floatingActionButton && !isMobile" class="pb-3 px-2">
           <oc-button
             :id="getButtonId(floatingActionButton.id)"
             :disabled="isFloatingActionButtonDisabled"
@@ -65,6 +65,7 @@ import {
   useExtensionRegistry,
   FloatingActionButtonExtension
 } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { navItems } = defineProps<{ navItems: NavItem[] }>()
 
@@ -73,6 +74,8 @@ const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
 
 const activeApp = useActiveApp()
 const { requestExtensions } = useExtensionRegistry()
+
+const { isMobile } = useIsMobile()
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,
