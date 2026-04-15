@@ -30,7 +30,7 @@ import { APPID } from './appid'
 
 const appInfo: ApplicationInformation = {
   id: APPID,
-  icon: 'resource-type-folder',
+  icon: 'folder-6',
   color: 'var(--oc-role-secondary)',
   extensions: []
 }
@@ -47,7 +47,6 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
         return $gettext('Personal')
       },
       icon: appInfo.icon,
-      fillType: 'fill',
       route: {
         path: `/${appInfo.id}/spaces/personal`
       },
