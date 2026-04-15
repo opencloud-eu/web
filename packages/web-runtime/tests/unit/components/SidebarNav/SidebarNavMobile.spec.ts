@@ -22,7 +22,11 @@ vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
 })
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const original = await importOriginal<any>()
-  return { ...original, useNavItems: () => ({ navItems: mockNavItems }) }
+  return {
+    ...original,
+    useNavItems: () => ({ navItems: mockNavItems }),
+    useExtensionRegistry: () => ({ requestExtensions: vi.fn(() => []) })
+  }
 })
 
 describe('SidebarNavMobile component', () => {
@@ -55,6 +59,7 @@ function getWrapper({ isMobile = true, navItems: items = navItems } = {}) {
       global: {
         plugins: [...defaultPlugins()],
         mocks,
+        provide: mocks,
         stubs: {
           VersionCheck: true,
           SidebarNav: true,
