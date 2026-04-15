@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @cucumber/cucumber to v12.8.1 [[#2362](https://github.com/opencloud-eu/web/pull/2362)]
 - chore(deps): update dependency fast-xml-parser to v5.6.0 [[#2373](https://github.com/opencloud-eu/web/pull/2373)]
 - chore(deps): update dependency dompurify to v3.4.0 [[#2363](https://github.com/opencloud-eu/web/pull/2363)]
 - chore(deps): update typescript-eslint monorepo to v8.58.2 [[#2360](https://github.com/opencloud-eu/web/pull/2360)]
