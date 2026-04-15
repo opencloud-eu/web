@@ -182,7 +182,7 @@ const show = async ({
     // usually, opening the drop should also focus it to allow for keyboard navigation within the drop.
     // however, in certain situations (e.g. when typing opens a drop), this may be unwanted behavior.
     await nextTick()
-    unref(drop).focus()
+    unref(drop).focus({ preventScroll: true })
   }
 }
 const hide = () => {
@@ -444,7 +444,7 @@ const handleAnchorClick = async (event: Event) => {
   showDrop({ event })
   if (unref(isOpen)) {
     await nextTick()
-    unref(drop).focus()
+    unref(drop).focus({ preventScroll: true })
   }
 }
 
