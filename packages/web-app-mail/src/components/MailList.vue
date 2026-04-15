@@ -8,18 +8,8 @@
     </no-content-message>
 
     <template v-else>
-      <div class="flex w-full items-center justify-between md:justify-normal">
-        <oc-button
-          class="md:hidden block"
-          appearance="raw"
-          no-hover
-          :aria-label="$gettext('Navigate back')"
-          @click="onNavigateBack"
-        >
-          <oc-icon name="arrow-left" fill-type="line" />
-        </oc-button>
+      <div class="flex w-full items-center justify-center md:justify-normal">
         <h2 class="text-lg ml-4" v-text="currentMailbox.name" />
-        <div class="placeholder" />
       </div>
 
       <no-content-message
@@ -81,15 +71,8 @@ const currentMailIdQuery = useRouteQuery('mailId')
 
 const { currentAccount } = storeToRefs(accountsStore)
 const { currentMail, mails } = storeToRefs(mailsStore)
-const { updateMailField, setCurrentMail } = mailsStore
+const { updateMailField } = mailsStore
 const { currentMailbox } = storeToRefs(mailboxesStore)
-const { setCurrentMailbox } = mailboxesStore
-
-const onNavigateBack = () => {
-  setCurrentMailbox(null)
-  setCurrentMail(null)
-  currentMailIdQuery.value = null
-}
 
 const onSelectMail = async (mail: Mail) => {
   currentMailIdQuery.value = mail.id
