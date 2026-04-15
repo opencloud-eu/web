@@ -13,7 +13,7 @@
             :target="link.route"
             :active="link.active"
             :icon="link.icon"
-            :fill-type="link.fillType || 'line'"
+            :fill-type="link.active ? 'fill' : 'line'"
             :name="link.name"
             :handler="link.handler"
           />
