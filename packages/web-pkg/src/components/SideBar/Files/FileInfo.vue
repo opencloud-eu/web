@@ -1,14 +1,9 @@
 <template>
-  <div class="flex justify-between p-2">
-    <div class="flex items-center">
-      <resource-icon
-        v-if="isSubPanelActive"
-        :resource="resource"
-        size="large"
-        class="mr-2 relative"
-      />
-      <div>
-        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">
+  <div class="flex justify-between min-w-0 p-0">
+    <div class="flex items-center min-w-0">
+      <resource-icon :resource="resource" size="large" class="mr-2 relative shrink-0" />
+      <div class="min-w-0">
+        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base min-w-0">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -16,9 +11,9 @@
             :full-path="resource.webDavPath"
             :is-extension-displayed="areFileExtensionsShown"
             :is-path-displayed="false"
-            :truncate-name="false"
+            :truncate-name="true"
             :is-favorite="resource.starred"
-            class="[&_span]:break-all"
+            class="block min-w-0"
           />
         </h3>
       </div>
