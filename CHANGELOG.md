@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-04-14
+## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-04-15
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.0 [[#2363](https://github.com/opencloud-eu/web/pull/2363)]
 - chore(deps): update typescript-eslint monorepo to v8.58.2 [[#2360](https://github.com/opencloud-eu/web/pull/2360)]
 - chore(deps): update devdependencies (non-major) [[#2358](https://github.com/opencloud-eu/web/pull/2358)]
 - chore(deps): update tiptap monorepo to v3.22.3 [[#2320](https://github.com/opencloud-eu/web/pull/2320)]
