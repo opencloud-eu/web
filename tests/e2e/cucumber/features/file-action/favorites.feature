@@ -2,13 +2,11 @@ Feature: Favorites
   As a user
   I want to mark resources as favorites and find them in the favorites section
 
-
   Background:
     Given "Admin" creates following user using API
       | id    |
       | Alice |
       | Brian |
-
 
   Scenario: mark resources as favorites
     Given "Admin" assigns following roles to the users using API
@@ -47,13 +45,6 @@ Feature: Favorites
     When "Brian" marks the following resources as favorite using "context menu"
       | resource        |
       | testavatar.jpg  |
-    And "Brian" navigates to the favorites page
-    Then following resources should be displayed in the files list for user "Brian"
-      | resource       |
-      | testavatar.jpg |
-    But following resources should not be displayed in the files list for user "Brian"
-      | resource  |
-      | image.png |
     And "Brian" navigates to the project space "service-team"
     And "Brian" marks the following resources as favorite using "batch action"
       | resource     |
@@ -79,4 +70,16 @@ Feature: Favorites
       | lorem.txt      |
       | image.png      |
       | video.mp4      |
+    And "Brian" removes the following resources from favorites using "context menu"
+      | resource     |
+      | spaceFolder  |
+    And "Brian" removes the following resources from favorites using "batch action"
+      | resource  |
+      | lorem.txt |
+      | image.png |
+    And following resources should not be displayed in the files list for user "Brian"
+      | resource       |
+      | spaceFolder    |
+      | lorem.txt      |
+      | image.png      |
     And "Brian" logs out

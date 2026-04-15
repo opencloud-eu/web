@@ -2406,6 +2406,10 @@ export const markAsFavorite = async ({
   method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
   resources: string[]
 }): Promise<void> => {
+  const postPromise = page.waitForResponse(
+    (resp) =>
+      resp.status() === 201 && resp.request().method() === 'POST' && resp.url().endsWith('/follow')
+  )
   switch (method) {
     case 'context menu':
       for (const resource of resources) {
@@ -2436,4 +2440,40 @@ export const markAsFavorite = async ({
       await expect(favoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
       break
   }
+  await postPromise
+}
+
+export const unmarkAsFavorite = async ({
+  page,
+  method,
+  resources
+}: {
+  page: Page
+  method: 'context menu' | 'batch action'
+  resources: string[]
+}): Promise<void> => {
+  const deletePromise = page.waitForResponse(
+    (resp) =>
+      resp.status() === 204 &&
+      resp.request().method() === 'DELETE' &&
+      resp.url().includes('me/drive/following')
+  )
+  switch (method) {
+    case 'context menu':
+      for (const resource of resources) {
+        await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+        const removeFavoriteBtn = page.locator(util.format(filesContextMenuAction, 'favorite'))
+        await expect(removeFavoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
+        await removeFavoriteBtn.click()
+      }
+      break
+
+    case 'batch action':
+      for (const resource of resources) {
+        await page.locator(util.format(checkBox, resource)).click()
+      }
+      await selectBatchAction(page, 'favorite')
+      break
+  }
+  await deletePromise
 }

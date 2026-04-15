@@ -449,4 +449,15 @@ export class Resource {
       resources: args.resources
     })
   }
+
+  async unmarkAsFavorite(args: {
+    method: 'context menu' | 'batch action'
+    resources: string[]
+  }): Promise<void> {
+    await po.unmarkAsFavorite({
+      page: this.#page,
+      method: args.method,
+      resources: args.resources
+    })
+  }
 }
