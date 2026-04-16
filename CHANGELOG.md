@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @pedropintosilva, @tammi-23, @tiran133
 
+### ✅ Tests
+
+- e2e-tests: favorites [[#2370](https://github.com/opencloud-eu/web/pull/2370)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent scroll when opening resource context menu [[#2375](https://github.com/opencloud-eu/web/pull/2375)]
