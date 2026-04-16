@@ -74,16 +74,6 @@ describe('AppBar component', () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: [] })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeFalsy()
       })
-      it('not if one breadcrumb item is given in mobile view', () => {
-        const { wrapper } = getShallowWrapper(
-          [],
-          {},
-          { breadcrumbs: [breadcrumbItems[0]] },
-          mock<RouteLocation>({ name: '' }),
-          true
-        )
-        expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeFalsy()
-      })
     })
     describe('bulkActions', () => {
       it('if enabled', () => {
@@ -101,16 +91,6 @@ describe('AppBar component', () => {
           })
         )
         expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
-      })
-    })
-    describe('mobile navigation ', () => {
-      it.each([
-        { items: [], shows: true },
-        { items: [breadcrumbItems[0]], shows: true },
-        { items: [breadcrumbItems[0], breadcrumbItems[1]], shows: false }
-      ])('if less than 2 breadcrumb items given', ({ items, shows }) => {
-        const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: items })
-        expect(wrapper.find(selectors.mobileNavStub).exists()).toBe(shows)
       })
     })
     describe('viewoptions', () => {

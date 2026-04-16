@@ -1,32 +1,14 @@
 <template>
-  <template v-if="floatingActionButton">
-    <div v-if="!isMobile" class="pb-3 px-2">
-      <oc-button
-        :id="getButtonId(floatingActionButton.id)"
-        :disabled="isDisabled"
-        appearance="filled"
-        class="oc-app-floating-action-button w-full"
-        @click="floatingActionButton.handler?.()"
-      >
-        <oc-icon :name="floatingActionButton.icon" />
-        <span v-text="floatingActionButton.label()" />
-      </oc-button>
+  <template v-if="floatingActionButton && isMobile && !floatingActionButton?.isDisabled?.()">
+    <oc-floating-action-button
+      :button-id="getButtonId(floatingActionButton.id)"
+      class="oc-app-floating-action-button"
+      mode="action"
+      :handler="floatingActionButton.handler"
+    />
+    <template v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'">
       <component
         :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
-        :toggle="`#${getButtonId(floatingActionButton.id)}`"
-      />
-    </div>
-    <template v-else-if="!isDisabled">
-      <oc-floating-action-button
-        :button-id="getButtonId(floatingActionButton.id)"
-        class="oc-app-floating-action-button"
-        mode="action"
-        :handler="floatingActionButton.handler"
-      />
-      <component
-        :is="floatingActionButton.dropComponent"
-        v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
         :toggle="`#${getButtonId(floatingActionButton.id)}`"
       />
     </template>
@@ -34,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, unref, watchEffect } from 'vue'
+import { computed, ref, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
@@ -55,28 +37,7 @@ const floatingActionButton = computed(() => {
   }).find(({ isVisible }) => !isVisible || isVisible())
 })
 
-const getButtonId = (extensionId: string): string => {
-  const prefix = unref(isMobile) ? 'mobile-' : ''
-  return `${prefix}app-floating-action-button-${extensionId.replace(/\./g, '-')}`
+function getButtonId(extensionId: string): string {
+  return `mobile-app-floating-action-button-${extensionId.replace(/\./g, '-')}`
 }
-
-let timeoutId: ReturnType<typeof setTimeout> | null = null
-
-// use a timeout to avoid flickering of the button in case the isDisabled state changes rapidly
-watchEffect(() => {
-  const disabled = unref(floatingActionButton)?.isDisabled?.() ?? false
-  if (timeoutId) {
-    clearTimeout(timeoutId)
-  }
-  timeoutId = setTimeout(() => {
-    isDisabled.value = disabled
-    timeoutId = null
-  }, 50)
-})
-
-onBeforeUnmount(() => {
-  if (timeoutId) {
-    clearTimeout(timeoutId)
-  }
-})
 </script>

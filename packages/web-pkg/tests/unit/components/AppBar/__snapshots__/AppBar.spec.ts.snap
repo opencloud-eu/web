@@ -7,7 +7,6 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-12 justify-end">
       <!--v-if-->
-      <mobile-nav-stub></mobile-nav-stub>
       <div id="files-app-bar-controls-right" class="flex">
         <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>
@@ -29,7 +28,6 @@ exports[`AppBar component > renders > if given, with content in the actions slot
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-12 justify-end">
       <!--v-if-->
-      <mobile-nav-stub></mobile-nav-stub>
       <div id="files-app-bar-controls-right" class="flex">
         <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>
@@ -51,7 +49,6 @@ exports[`AppBar component > renders > if given, with content in the content slot
     <oc-hidden-announcer-stub announcement="No items selected." level="polite"></oc-hidden-announcer-stub>
     <div class="flex items-center files-app-bar-controls min-h-12 justify-end">
       <!--v-if-->
-      <mobile-nav-stub></mobile-nav-stub>
       <div id="files-app-bar-controls-right" class="flex">
         <view-options-stub perpagestorageprefix="files" hashiddenfiles="true" hasfileextensions="true" haspagination="true" paginationoptions="20,50,100,250,500" perpagequeryname="items-per-page" perpagedefault="100" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
       </div>

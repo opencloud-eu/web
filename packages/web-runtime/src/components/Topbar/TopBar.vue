@@ -5,10 +5,7 @@
     :aria-label="$gettext('Top bar')"
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
-      <applications-menu
-        v-if="appMenuExtensions.length && !isEmbedModeEnabled"
-        :menu-items="appMenuExtensions"
-      />
+      <sidebar-nav-mobile class="pt-1" />
       <router-link v-if="!hideLogo" :to="homeLink" class="w-full oc-logo-href">
         <picture>
           <source
@@ -36,6 +33,10 @@
           :disabled="isSideBarToggleDisabled"
           class="hidden sm:flex"
         />
+        <applications-menu
+          v-if="appMenuExtensions.length && !isEmbedModeEnabled"
+          :menu-items="appMenuExtensions"
+        />
         <user-menu />
       </template>
     </div>
@@ -46,7 +47,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
-import ApplicationsMenu from './ApplicationsMenu.vue'
 import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
 import FeedbackLink from './FeedbackLink.vue'
@@ -61,6 +61,7 @@ import {
   useRouter,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
+import SidebarNavMobile from '../SidebarNav/SidebarNavMobile.vue'
 import { routeNames } from '../../router/names'
 import {
   appMenuExtensionPoint,
@@ -70,6 +71,7 @@ import {
 } from '../../extensionPoints'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import ApplicationsMenu from './ApplicationsMenu.vue'
 
 const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
