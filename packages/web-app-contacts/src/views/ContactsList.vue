@@ -1,91 +1,71 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
+    <div class="md:hidden flex h-11 items-center px-4">
+      <div class="min-w-0 flex-1">
+        <h2
+          class="truncate text-center text-lg font-bold leading-none"
+          v-text="currentAddressBook.name"
+        />
+      </div>
+    </div>
     <no-content-message
-      v-if="!currentAddressBook"
+      v-if="!sortedContacts.length"
       id="contacts-empty"
       img-src="/images/empty-states/empty-contacts.svg"
     >
       <template #message>
-        <span v-text="$gettext('No contact folder selected')" />
+        <span v-text="$gettext('No contacts available yet.')" />
       </template>
     </no-content-message>
-    <template v-else>
-      <div class="md:hidden flex h-11 items-center px-4">
-        <oc-button
-          class="h-10 w-10 shrink-0 p-0"
-          appearance="raw"
-          no-hover
-          :aria-label="$gettext('Navigate back')"
-          @click="onNavigateBack"
-        >
-          <oc-icon name="arrow-left" fill-type="line" />
-        </oc-button>
-        <div class="min-w-0 flex-1">
-          <h2
-            class="truncate text-center text-lg font-bold leading-none"
-            v-text="currentAddressBook.name"
-          />
-        </div>
-      </div>
-      <no-content-message
-        v-if="!sortedContacts.length"
-        id="contacts-empty"
-        img-src="/images/empty-states/empty-contacts.svg"
+    <oc-list v-else>
+      <li
+        v-for="contact in sortedContacts"
+        :id="`contact-list-item-${contact.id}`"
+        :key="contact.id"
+        class="border-b-2 last:border-b-0"
+        :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
       >
-        <template #message>
-          <span v-text="$gettext('No contacts available yet.')" />
-        </template>
-      </no-content-message>
-      <oc-list v-else>
-        <li
-          v-for="contact in sortedContacts"
-          :id="`contact-list-item-${contact.id}`"
-          :key="contact.id"
-          class="border-b-2 last:border-b-0"
-          :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
-        >
-          <div class="flex min-w-0 items-stretch">
+        <div class="flex min-w-0 items-stretch">
+          <oc-button
+            class="min-w-0 flex-1 px-4 py-4 text-left"
+            justify-content="left"
+            appearance="raw"
+            gap-size="none"
+            no-hover
+            @click="onSelectContact(contact)"
+          >
+            <ContactsListItem :contact="contact" />
+          </oc-button>
+          <div class="flex items-center pr-2">
             <oc-button
-              class="min-w-0 flex-1 px-4 py-4 text-left"
-              justify-content="left"
+              :id="getContactActionsToggleId(contact.id)"
+              class="h-10 w-10 shrink-0"
               appearance="raw"
-              gap-size="none"
               no-hover
-              @click="onSelectContact(contact)"
+              :aria-label="$gettext('Open contact actions')"
+              @click.stop
             >
-              <ContactsListItem :contact="contact" />
+              <oc-icon name="more-2" fill-type="line" />
             </oc-button>
-            <div class="flex items-center pr-2">
-              <oc-button
-                :id="getContactActionsToggleId(contact.id)"
-                class="h-10 w-10 shrink-0"
-                appearance="raw"
-                no-hover
-                :aria-label="$gettext('Open contact actions')"
-                @click.stop
-              >
-                <oc-icon name="more-2" fill-type="line" />
-              </oc-button>
-              <oc-drop
-                :drop-id="getContactActionsDropId(contact.id)"
-                :toggle="`#${getContactActionsToggleId(contact.id)}`"
-                :title="$gettext('Contact actions')"
-                position="bottom-end"
-                padding-size="small"
-                teleport="#app-runtime-drop"
-                close-on-click
-              >
-                <ContextActionMenu
-                  :menu-sections="getContactMenuSections(contact)"
-                  :action-options="actionOptions"
-                />
-              </oc-drop>
-            </div>
+            <oc-drop
+              :drop-id="getContactActionsDropId(contact.id)"
+              :toggle="`#${getContactActionsToggleId(contact.id)}`"
+              :title="$gettext('Contact actions')"
+              position="bottom-end"
+              padding-size="small"
+              teleport="#app-runtime-drop"
+              close-on-click
+            >
+              <ContextActionMenu
+                :menu-sections="getContactMenuSections(contact)"
+                :action-options="actionOptions"
+              />
+            </oc-drop>
           </div>
-        </li>
-      </oc-list>
-    </template>
+        </div>
+      </li>
+    </oc-list>
   </template>
 </template>
 
@@ -129,10 +109,6 @@ const sortedContacts = computed(() => {
 
 const onSelectContact = (contact: Contact) => {
   setCurrentContact(contact)
-}
-
-const onNavigateBack = () => {
-  setCurrentAddressBook(null)
 }
 
 const getContactActionsToggleId = (contactId: string) => {
