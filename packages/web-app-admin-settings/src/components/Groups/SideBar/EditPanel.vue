@@ -1,5 +1,5 @@
 <template>
-  <div id="group-edit-panel" class="mt-12">
+  <div id="group-edit-panel" class="mt-2">
     <group-info-box :group="group" />
     <form
       id="group-edit-form"

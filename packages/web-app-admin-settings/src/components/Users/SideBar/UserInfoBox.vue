@@ -1,8 +1,18 @@
 <template>
-  <div class="flex flex-col items-center mb-6">
-    <user-avatar class="mb-4" :width="80" :user-id="user.id" :user-name="user.displayName" />
-    <span v-text="user.onPremisesSamAccountName"></span>
-    <span class="text-role-on-surface-variant text-2xl" v-text="user.displayName"></span>
+  <div class="flex items-center min-w-0 mb-2">
+    <user-avatar
+      class="mr-3 shrink-0"
+      :width="40"
+      :user-id="user.id"
+      :user-name="user.displayName"
+    />
+    <div class="min-w-0">
+      <h2 class="font-semibold m-0 text-base truncate" v-text="user.displayName"></h2>
+      <span
+        class="block text-role-on-surface-variant truncate"
+        v-text="user.onPremisesSamAccountName"
+      ></span>
+    </div>
   </div>
 </template>
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <div id="user-edit-panel" class="mt-12">
+  <div id="user-edit-panel" class="mt-2">
     <UserInfoBox :user="user" />
     <form id="user-edit-form" class="bg-role-surface-container p-4 rounded-sm" autocomplete="off">
       <div>
