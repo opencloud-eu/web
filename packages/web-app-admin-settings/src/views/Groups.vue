@@ -19,9 +19,13 @@
           :user-name="selectedGroups[0].displayName"
           background-color="var(--oc-role-secondary)"
         />
-        <span class="block min-w-0 flex-1 truncate" v-text="selectedGroups[0].displayName" />
+        <h2
+          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
+          v-text="selectedGroups[0].displayName"
+        />
       </div>
     </template>
+
     <template #mainContent>
       <app-loading-spinner v-if="isLoading" />
       <template v-else>
@@ -54,7 +58,6 @@ import AppTemplate from '../components/AppTemplate.vue'
 import ContextActions from '../components/Groups/ContextActions.vue'
 import DetailsPanel from '../components/Groups/SideBar/DetailsPanel.vue'
 import EditPanel from '../components/Groups/SideBar/EditPanel.vue'
-import GroupInfoBox from '../components/Groups/SideBar/GroupInfoBox.vue'
 import GroupsList from '../components/Groups/GroupsList.vue'
 import MembersPanel from '../components/Groups/SideBar/MembersPanel.vue'
 import { useGroupSettingsStore } from '../composables'
@@ -87,8 +90,7 @@ export default defineComponent({
     AppTemplate,
     GroupsList,
     NoContentMessage,
-    ContextActions,
-    GroupInfoBox
+    ContextActions
   },
   provide() {
     return {

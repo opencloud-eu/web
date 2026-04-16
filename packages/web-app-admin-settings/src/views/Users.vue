@@ -18,9 +18,13 @@
           :userid="selectedUsers[0].id"
           :user-name="selectedUsers[0].displayName"
         />
-        <span class="block min-w-0 flex-1 truncate" v-text="selectedUsers[0].displayName" />
+        <h2
+          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
+          v-text="selectedUsers[0].displayName"
+        />
       </div>
     </template>
+
     <template #mainContent>
       <users-list
         :is-loading="isLoading"
@@ -125,7 +129,6 @@ import UsersList from '../components/Users/UsersList.vue'
 import ContextActions from '../components/Users/ContextActions.vue'
 import DetailsPanel from '../components/Users/SideBar/DetailsPanel.vue'
 import EditPanel from '../components/Users/SideBar/EditPanel.vue'
-import UserInfoBox from '../components/Users/SideBar/UserInfoBox.vue'
 import {
   useUserActionsDelete,
   useUserActionsRemoveFromGroups,
@@ -178,8 +181,7 @@ export default defineComponent({
     AppTemplate,
     UsersList,
     ContextActions,
-    ItemFilter,
-    UserInfoBox
+    ItemFilter
   },
   setup() {
     const { $gettext } = useGettext()
