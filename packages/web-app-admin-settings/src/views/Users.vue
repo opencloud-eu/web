@@ -11,7 +11,15 @@
     :show-view-options="true"
   >
     <template #sideBarHeader>
-      <user-info-box v-if="selectedUsers.length === 1" :user="selectedUsers[0]" />
+      <div v-if="selectedUsers.length === 1" class="flex items-center min-w-0 pl-2">
+        <oc-avatar
+          class="mr-2 shrink-0"
+          :width="24"
+          :userid="selectedUsers[0].id"
+          :user-name="selectedUsers[0].displayName"
+        />
+        <span class="block min-w-0 flex-1 truncate" v-text="selectedUsers[0].displayName" />
+      </div>
     </template>
     <template #mainContent>
       <users-list

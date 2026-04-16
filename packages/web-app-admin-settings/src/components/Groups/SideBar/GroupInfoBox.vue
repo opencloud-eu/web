@@ -1,16 +1,14 @@
 <template>
-  <div class="flex items-center min-w-0 mb-2">
+  <div class="flex flex-col items-center mb-6">
     <OcAvatar
-      class="mr-3 shrink-0"
-      :width="40"
+      class="mb-4"
+      :width="80"
       :userid="group.id"
       :user-name="group.displayName"
       background-color="var(--oc-role-secondary)"
     />
-    <div class="min-w-0">
-      <h2 class="font-semibold m-0 text-base truncate" v-text="group.displayName"></h2>
-      <span class="block text-role-on-surface-variant truncate" v-text="groupMembersText"></span>
-    </div>
+    <span class="text-role-on-surface-variant text-2xl" v-text="group.displayName"></span>
+    <span class="text-role-on-surface-variant" v-text="groupMembersText"></span>
   </div>
 </template>
 <script lang="ts">

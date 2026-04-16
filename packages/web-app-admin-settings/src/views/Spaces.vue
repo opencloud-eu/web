@@ -11,7 +11,10 @@
     :show-view-options="true"
   >
     <template #sideBarHeader>
-      <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
+      <div v-if="selectedSpaces.length === 1" class="flex items-center min-w-0 pl-2">
+        <oc-icon name="layout-grid" size="small" class="mr-2 shrink-0" />
+        <span class="block min-w-0 flex-1 truncate" v-text="selectedSpaces[0].name" />
+      </div>
     </template>
     <template #mainContent>
       <app-loading-spinner v-if="isLoading" />

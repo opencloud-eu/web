@@ -12,6 +12,7 @@
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>
   <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <GroupInfoBox :group="group" />
     <dl
       class="details-list"
       :aria-label="$gettext('Overview of the information about the selected group')"

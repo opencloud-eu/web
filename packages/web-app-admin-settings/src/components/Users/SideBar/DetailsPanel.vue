@@ -16,6 +16,7 @@
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
   <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
+    <UserInfoBox :user="user" />
     <dl
       class="details-list"
       :aria-label="$gettext('Overview of the information about the selected user')"
@@ -78,6 +79,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'

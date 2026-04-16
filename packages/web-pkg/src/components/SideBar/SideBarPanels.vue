@@ -18,7 +18,7 @@
     >
       <div
         v-if="[activePanelName, oldPanelName].includes(panel.name)"
-        class="sidebar-panel__header header grid grid-cols-[1fr_auto] items-center pt-2 px-2"
+        class="sidebar-panel__header header grid grid-cols-[1fr_auto] items-center pt-2 px-2 pb-2"
       >
         <div class="sidebar-panel__header-info min-w-0">
           <slot v-if="panel.isRoot?.(panelContext)" name="rootHeader" />

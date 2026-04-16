@@ -1,5 +1,6 @@
 <template>
   <div id="group-edit-panel" class="mt-2">
+    <GroupInfoBox :group="group" />
     <form
       id="group-edit-form"
       class="bg-role-surface-container p-4 rounded-t-sm"
