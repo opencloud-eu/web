@@ -1172,3 +1172,19 @@ When(
     })
   }
 )
+
+When(
+  '{string} marks the following resources as favorite using {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview',
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resources = stepTable.hashes().map((row) => row.resource)
+
+    await resourceObject.markAsFavorite({ method, resources })
+  }
+)
