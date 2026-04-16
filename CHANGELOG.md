@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: adjust mobile nav bar [[#2372](https://github.com/opencloud-eu/web/pull/2372)]
 - feat(preview): play next audio file automatically after current track… [[#2351](https://github.com/opencloud-eu/web/pull/2351)]
 - feat: active state for navigation in sidebar [[#2374](https://github.com/opencloud-eu/web/pull/2374)]
 - Scroll selected mail into view after reload [[#2341](https://github.com/opencloud-eu/web/pull/2341)]
