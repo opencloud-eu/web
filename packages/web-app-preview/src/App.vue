@@ -54,6 +54,7 @@
           v-else-if="activeMediaFile.isAudio"
           :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
+          @ended="onAudioEnded"
         />
       </div>
       <media-controls
@@ -177,6 +178,7 @@ const activeIndex = ref<number>()
 const mediaFiles = ref<MediaFile[]>([])
 const folderLoaded = ref(false)
 const isAutoPlayEnabled = ref(true)
+const isAutoAdvancing = ref(false)
 const photoRollEnabled = ref(true)
 const preview = useTemplateRef<HTMLElement>('preview')
 const keyBindings: string[] = []
@@ -326,6 +328,15 @@ const goToPrev = () => {
   updateLocalHistory()
 }
 
+const onAudioEnded = () => {
+  if (unref(activeIndex) + 1 >= unref(mediaFiles).length) {
+    return
+  }
+  isAutoAdvancing.value = true
+  isAutoPlayEnabled.value = true
+  goToNext()
+}
+
 const onDeleteResourceCallback = async () => {
   await nextTick()
 
@@ -410,7 +421,11 @@ watch(activeMediaFile, (newValue, oldValue) => {
   currentImageRotation.value = 0
 
   if (oldValue !== null) {
-    isAutoPlayEnabled.value = false
+    if (unref(isAutoAdvancing)) {
+      isAutoAdvancing.value = false
+    } else {
+      isAutoPlayEnabled.value = false
+    }
   }
 
   emit('update:resource', unref(activeMediaFile).resource)
