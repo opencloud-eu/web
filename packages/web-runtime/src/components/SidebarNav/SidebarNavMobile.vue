@@ -23,9 +23,9 @@
           class="fixed inset-y-0 left-0 w-[95%] bg-role-surface-container transition-transform duration-200 -translate-x-full overflow-x-hidden"
           :class="{ '[&.active]:translate-x-0': isMenuOpen }"
         >
-          <div class="flex flex-col p-4 h-full">
-            <div class="flex items-center justify-between">
-              <h2 class="text-base" v-text="$gettext('Menu')" />
+          <div class="flex flex-col h-full">
+            <div class="flex items-center justify-between p-4">
+              <h2 class="text-base m-0" v-text="$gettext('Menu')" />
               <oc-button
                 appearance="raw"
                 :aria-label="$gettext('Close navigation menu')"
@@ -35,7 +35,7 @@
                 <oc-icon name="close" />
               </oc-button>
             </div>
-            <sidebar-nav class="mobile-nav-sidebar" :nav-items="navItems" @click="handleNavClick" />
+            <sidebar-nav class="!max-w-full h-full" :nav-items="navItems" @click="handleNavClick" />
           </div>
         </div>
       </dialog>
@@ -116,21 +116,3 @@ watch(isMobile, () => {
   }
 })
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .mobile-nav-sidebar {
-    @apply max-w-100 h-full;
-  }
-
-  .mobile-nav-sidebar .oc-sidebar-nav {
-    @apply !px-0;
-  }
-
-  .mobile-nav-sidebar .oc-sidebar-nav-item {
-    @apply !px-0;
-  }
-}
-</style>
