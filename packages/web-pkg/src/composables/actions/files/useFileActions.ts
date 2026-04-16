@@ -1,5 +1,4 @@
 import kebabCase from 'lodash-es/kebabCase'
-import isNil from 'lodash-es/isNil'
 import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
@@ -100,10 +99,7 @@ export const useFileActions = () => {
       }) || []
     )
       .map((e) => e.action)
-      .filter(
-        (action) =>
-          isNil(action.category) || action.category === 'context' || action.category === 'actions'
-      )
+      .filter((action) => action.category === 'context')
   })
 
   const editorActions = computed(() => {
