@@ -120,13 +120,5 @@ watch(
   .oc-date-picker input::-webkit-calendar-picker-indicator {
     @apply cursor-pointer;
   }
-
-  .oc-date-picker-dark input {
-    color-scheme: dark;
-  }
-
-  .oc-date-picker-dark input::-webkit-calendar-picker-indicator {
-    filter: invert(0);
-  }
 }
 </style>
