@@ -119,6 +119,7 @@ export const useThemeStore = defineStore('theme', () => {
       currentLocalStorageThemeName.value = unref(currentTheme).label
     }
 
+    document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }
