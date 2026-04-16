@@ -10,6 +10,9 @@
     :batch-action-items="selectedUsers"
     :show-view-options="true"
   >
+    <template #sideBarHeader>
+      <user-info-box v-if="selectedUsers.length === 1" :user="selectedUsers[0]" />
+    </template>
     <template #mainContent>
       <users-list
         :is-loading="isLoading"
@@ -114,6 +117,7 @@ import UsersList from '../components/Users/UsersList.vue'
 import ContextActions from '../components/Users/ContextActions.vue'
 import DetailsPanel from '../components/Users/SideBar/DetailsPanel.vue'
 import EditPanel from '../components/Users/SideBar/EditPanel.vue'
+import UserInfoBox from '../components/Users/SideBar/UserInfoBox.vue'
 import {
   useUserActionsDelete,
   useUserActionsRemoveFromGroups,
@@ -166,7 +170,8 @@ export default defineComponent({
     AppTemplate,
     UsersList,
     ContextActions,
-    ItemFilter
+    ItemFilter,
+    UserInfoBox
   },
   setup() {
     const { $gettext } = useGettext()

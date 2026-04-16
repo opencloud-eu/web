@@ -12,7 +12,6 @@
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>
   <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <GroupInfoBox :group="group" />
     <dl
       class="details-list"
       :aria-label="$gettext('Overview of the information about the selected group')"
@@ -24,12 +23,10 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import GroupInfoBox from './GroupInfoBox.vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
 export default defineComponent({
   name: 'DetailsPanel',
-  components: { GroupInfoBox },
   props: {
     groups: {
       type: Array as PropType<Group[]>,

@@ -58,7 +58,10 @@
         :panel-context="sideBarPanelContext"
         :loading="sideBarLoading"
       >
-        <template #header>
+        <template #rootHeader>
+          <slot name="sideBarHeader" />
+        </template>
+        <template #subHeader>
           <slot name="sideBarHeader" />
         </template>
       </side-bar>

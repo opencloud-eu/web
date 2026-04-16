@@ -1,6 +1,5 @@
 <template>
   <div id="group-edit-panel" class="mt-2">
-    <group-info-box :group="group" />
     <form
       id="group-edit-form"
       class="bg-role-surface-container p-4 rounded-t-sm"
@@ -32,14 +31,12 @@ import { defineComponent, PropType, ref } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { CompareSaveDialog, eventBus, useMessages } from '@opencloud-eu/web-pkg'
 import { MaybeRef, useClientService } from '@opencloud-eu/web-pkg'
-import GroupInfoBox from './GroupInfoBox.vue'
 import { useGroupSettingsStore } from '../../../composables'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
   name: 'EditPanel',
   components: {
-    GroupInfoBox,
     CompareSaveDialog
   },
   props: {

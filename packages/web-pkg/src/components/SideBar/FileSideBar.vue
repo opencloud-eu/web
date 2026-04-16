@@ -129,10 +129,17 @@ const isFileHeaderVisible = computed(() => {
     unref(panelContext).items?.length === 1 && !isProjectSpaceResource(unref(panelContext).items[0])
   )
 })
-const isSpaceHeaderVisible = computed(() => {
+const isSelectedProjectSpace = computed(() => {
   return (
     unref(panelContext).items?.length === 1 && isProjectSpaceResource(unref(panelContext).items[0])
   )
+})
+const isSpaceHeaderVisible = computed(() => {
+  if (unref(isSelectedProjectSpace)) {
+    return true
+  }
+
+  return unref(selectedResources).length === 0 && Boolean(space)
 })
 
 const isShareLocation = computed(() => {

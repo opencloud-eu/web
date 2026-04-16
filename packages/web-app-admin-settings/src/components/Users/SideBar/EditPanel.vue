@@ -1,6 +1,5 @@
 <template>
   <div id="user-edit-panel" class="mt-2">
-    <UserInfoBox :user="user" />
     <form id="user-edit-form" class="bg-role-surface-container p-4 rounded-sm" autocomplete="off">
       <div>
         <oc-text-input
@@ -118,7 +117,6 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, unref } from 'vue'
 import * as EmailValidator from 'email-validator'
-import UserInfoBox from './UserInfoBox.vue'
 import {
   CompareSaveDialog,
   QuotaSelect,
@@ -140,7 +138,6 @@ import { useGettext } from 'vue3-gettext'
 export default defineComponent({
   name: 'EditPanel',
   components: {
-    UserInfoBox,
     CompareSaveDialog,
     QuotaSelect,
     GroupSelect
