@@ -3,7 +3,7 @@
     <div class="flex items-center min-w-0">
       <resource-icon :resource="resource" size="large" class="mr-2 relative shrink-0" />
       <div class="min-w-0">
-        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base min-w-0">
+        <h2 data-testid="files-info-name" class="font-semibold m-0 text-base min-w-0">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -15,7 +15,7 @@
             :is-favorite="resource.starred"
             class="block min-w-0"
           />
-        </h3>
+        </h2>
       </div>
     </div>
   </div>
