@@ -6,6 +6,21 @@
 
 @AlexAndBear, @FrankM64, @JammingBen, @ScharfViktor, @kulmann, @pascalwengerter, @pedropintosilva, @tammi-23, @tiran133
 
+### 🐛 Bug Fixes
+
+- fix: extension action 'context' category  [[#2369](https://github.com/opencloud-eu/web/pull/2369)]
+- fix: prevent scroll when opening resource context menu [[#2375](https://github.com/opencloud-eu/web/pull/2375)]
+- fix: mobile floating action button is too small [[#2353](https://github.com/opencloud-eu/web/pull/2353)]
+- fix(runtime): optimize auth flow with expired token [[#2346](https://github.com/opencloud-eu/web/pull/2346)]
+- fix(extension-sdk): add missing color roles [[#2339](https://github.com/opencloud-eu/web/pull/2339)]
+- fix: optimize route change announcer [[#2328](https://github.com/opencloud-eu/web/pull/2328)]
+- fix: prevent accidental space reset on public links [[#2319](https://github.com/opencloud-eu/web/pull/2319)]
+- fix: markdown editor: incorrect rendering of unordered lists [[#2315](https://github.com/opencloud-eu/web/pull/2315)]
+- Fix: #2262 accesssToken tripe S event [[#2271](https://github.com/opencloud-eu/web/pull/2271)]
+- fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
+- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
+- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
+
 ### 📈 Enhancement
 
 - feat: set global color-scheme [[#2379](https://github.com/opencloud-eu/web/pull/2379)]
@@ -28,20 +43,6 @@
 ### ✅ Tests
 
 - e2e-tests: favorites [[#2370](https://github.com/opencloud-eu/web/pull/2370)]
-
-### 🐛 Bug Fixes
-
-- fix: prevent scroll when opening resource context menu [[#2375](https://github.com/opencloud-eu/web/pull/2375)]
-- fix: mobile floating action button is too small [[#2353](https://github.com/opencloud-eu/web/pull/2353)]
-- fix(runtime): optimize auth flow with expired token [[#2346](https://github.com/opencloud-eu/web/pull/2346)]
-- fix(extension-sdk): add missing color roles [[#2339](https://github.com/opencloud-eu/web/pull/2339)]
-- fix: optimize route change announcer [[#2328](https://github.com/opencloud-eu/web/pull/2328)]
-- fix: prevent accidental space reset on public links [[#2319](https://github.com/opencloud-eu/web/pull/2319)]
-- fix: markdown editor: incorrect rendering of unordered lists [[#2315](https://github.com/opencloud-eu/web/pull/2315)]
-- Fix: #2262 accesssToken tripe S event [[#2271](https://github.com/opencloud-eu/web/pull/2271)]
-- fix: preview app doesn't show video and mp3 meta data preview in phot… [[#2302](https://github.com/opencloud-eu/web/pull/2302)]
-- fix(extension-sdk): do not run federation plugin in test mode [[#2291](https://github.com/opencloud-eu/web/pull/2291)]
-- fix: v-oc-tooltip not reactive [[#2255](https://github.com/opencloud-eu/web/pull/2255)]
 
 ### 📦️ Dependencies
 
