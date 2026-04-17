@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: favorites list, undo delte doesn't return item to the favorites … [[#2382](https://github.com/opencloud-eu/web/pull/2382)]
 - fix: extension action 'context' category  [[#2369](https://github.com/opencloud-eu/web/pull/2369)]
 - fix: prevent scroll when opening resource context menu [[#2375](https://github.com/opencloud-eu/web/pull/2375)]
 - fix: mobile floating action button is too small [[#2353](https://github.com/opencloud-eu/web/pull/2353)]
