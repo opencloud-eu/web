@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- change: exhange icons [[#2385](https://github.com/opencloud-eu/web/pull/2385)]
 -  Merge header and file info in file sidebar [[#2377](https://github.com/opencloud-eu/web/pull/2377)]
 - feat: set global color-scheme [[#2379](https://github.com/opencloud-eu/web/pull/2379)]
 - feat: adjust mobile nav bar [[#2372](https://github.com/opencloud-eu/web/pull/2372)]
