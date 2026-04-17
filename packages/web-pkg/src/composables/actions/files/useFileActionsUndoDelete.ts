@@ -7,6 +7,8 @@ import { storeToRefs } from 'pinia'
 import { useCapabilityStore, useClientService } from '../../'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { isItemInCurrentFolder, isMacOs } from '../../../helpers'
+import { isLocationCommonActive } from '../../../router'
+import { useRouter } from 'vue-router'
 
 type UndoActionOptions = FileActionOptions & { callback?: () => void }
 
@@ -17,10 +19,24 @@ export const useFileActionsUndoDelete = () => {
   const capabilityStore = useCapabilityStore()
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
+  const router = useRouter()
 
   const { actions: restoreActions } = useFileActionsRestore({
     showSuccessMessage: false,
     onRestoreComplete: async ({ space, resources }) => {
+      const isFavoritesLocation = isLocationCommonActive(router, 'files-common-favorites')
+
+      if (isFavoritesLocation) {
+        const { resources: children } = await webdav.search('is:favorite', {
+          searchLimit: null
+        })
+
+        resourcesStore.upsertResources(
+          children.filter(({ id }) => resources.some((s) => s.id === transformToTrashId(id)))
+        )
+        return
+      }
+
       if (isItemInCurrentFolder({ resourcesStore, parentFolderId: resources[0].parentFolderId })) {
         // update local folder
         const { children } = await webdav.listFiles(space, { path: unref(currentFolder).path })
