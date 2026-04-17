@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentSpace" class="flex items-center min-w-0 p-0">
+  <div v-if="currentSpace" class="flex items-center min-w-0 ml-2">
     <oc-icon name="layout-grid" size="small" class="mr-2 shrink-0" />
     <h2
       data-testid="space-info-name"

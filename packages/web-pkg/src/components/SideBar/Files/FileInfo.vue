@@ -1,5 +1,5 @@
 <template>
-  <div v-if="resource" class="flex justify-between min-w-0 p-0">
+  <div v-if="resource" class="flex justify-between min-w-0 ml-2">
     <div class="flex items-center min-w-0">
       <resource-icon :resource="resource" size="large" class="mr-2 relative shrink-0" />
       <div class="min-w-0">
