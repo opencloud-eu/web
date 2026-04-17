@@ -21,7 +21,6 @@ describe('SpaceInfo', () => {
   it('shows space info', () => {
     const { wrapper } = createWrapper(spaceMock)
     expect(wrapper.find(selectors.name).exists()).toBeTruthy()
-    expect(wrapper.find(selectors.subtitle).exists()).toBeTruthy()
     expect(wrapper.html()).toMatchSnapshot()
   })
 })

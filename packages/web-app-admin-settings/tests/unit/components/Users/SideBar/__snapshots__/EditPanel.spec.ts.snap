@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`EditPanel > renders all available inputs 1`] = `
-"<div id="user-edit-panel" class="mt-12">
-  <user-info-box-stub user="[object Object]"></user-info-box-stub>
+"<div id="user-edit-panel">
+  <userinfobox user="[object Object]"></userinfobox>
   <form id="user-edit-form" class="bg-role-surface-container p-4 rounded-sm" autocomplete="off">
     <div>
       <oc-text-input-stub label="User name" errormessage="" id="userName-input" type="text" modelvalue="" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" inlinelabel="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="true" passwordpolicy="[object Object]" hasborder="true" class="mb-2"></oc-text-input-stub>
