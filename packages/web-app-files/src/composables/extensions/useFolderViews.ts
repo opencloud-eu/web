@@ -58,7 +58,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
         name: 'resource-table',
         label: $gettext('Default table view'),
         icon: {
-          name: 'menu-line',
+          name: 'list-unordered',
           fillType: 'none'
         },
         component: ResourceTable
