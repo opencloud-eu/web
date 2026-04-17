@@ -11,7 +11,7 @@
             :disabled="isFloatingActionButtonDisabled"
             appearance="filled"
             color-role="primary"
-            class="oc-app-floating-action-button w-full h-[48px] min-w-[100px] rounded-xl shadow-md"
+            class="oc-app-floating-action-button h-[48px] w-[100px] rounded-xl shadow-md"
             @click="floatingActionButton.handler?.()"
           >
             <oc-icon :name="floatingActionButton.icon" />
