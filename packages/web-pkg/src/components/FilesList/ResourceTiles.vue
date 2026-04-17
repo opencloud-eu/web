@@ -87,7 +87,7 @@
               :model-value="isResourceSelected(resource)"
               :data-test-selection-resource-name="resource.name"
               :data-test-selection-resource-path="resource.path"
-              @click.stop.prevent="fileCheckboxClicked({ resource, event: $event })"
+              @click.stop="fileCheckboxClicked({ resource, event: $event })"
             />
           </template>
           <template #imageField>
