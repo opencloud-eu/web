@@ -10,6 +10,22 @@
     :batch-action-items="selectedGroups"
     :show-view-options="true"
   >
+    <template #sideBarHeader>
+      <div v-if="selectedGroups.length === 1" class="flex items-center min-w-0">
+        <oc-avatar
+          class="mr-2 shrink-0"
+          :width="24"
+          :userid="selectedGroups[0].id"
+          :user-name="selectedGroups[0].displayName"
+          background-color="var(--oc-role-secondary)"
+        />
+        <h2
+          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
+          v-text="selectedGroups[0].displayName"
+        />
+      </div>
+    </template>
+
     <template #mainContent>
       <app-loading-spinner v-if="isLoading" />
       <template v-else>

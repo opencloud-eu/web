@@ -10,11 +10,11 @@
     data-custom-key-bindings-disabled="true"
   >
     <template #rootHeader>
-      <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="false" />
+      <file-info v-if="isFileHeaderVisible" :is-sub-panel-active="false" />
       <space-info v-else-if="isSpaceHeaderVisible" />
     </template>
     <template #subHeader>
-      <file-info v-if="isFileHeaderVisible" class="px-2 pt-2" :is-sub-panel-active="true" />
+      <file-info v-if="isFileHeaderVisible" :is-sub-panel-active="true" />
       <space-info v-else-if="isSpaceHeaderVisible" />
     </template>
   </InnerSideBar>

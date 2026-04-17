@@ -7,7 +7,7 @@
       :key="`panel-${panel.name}`"
       :data-testid="`sidebar-panel-${panel.name}`"
       :tabindex="activePanelName === panel.name ? -1 : null"
-      class="sidebar-panel absolute top-0 grid grid-rows-[auto_auto_1fr] bg-role-surface w-full size-full max-w-full max-h-full motion-reduce:transition-none"
+      class="sidebar-panel absolute top-0 grid grid-rows-[auto_1fr] bg-role-surface w-full size-full max-w-full max-h-full motion-reduce:transition-none"
       :inert="activePanelName !== panel.name"
       :class="{
         'is-root-panel transition-[right] duration-[0.4s,0s]': panel.isRoot?.(panelContext),
@@ -18,39 +18,37 @@
     >
       <div
         v-if="[activePanelName, oldPanelName].includes(panel.name)"
-        class="sidebar-panel__header header grid grid-cols-[auto_1fr_auto] items-center pt-2 px-2"
+        class="sidebar-panel__header header grid grid-cols-[1fr_auto] items-center pt-2 px-2 pb-2"
       >
-        <oc-button
-          v-if="!panel.isRoot?.(panelContext)"
-          v-oc-tooltip="accessibleLabelBack"
-          class="header__back col-start-1 p-1"
-          appearance="raw"
-          :aria-label="accessibleLabelBack"
-          @click="closePanel"
-        >
-          <oc-icon name="arrow-left-s" fill-type="line" />
-        </oc-button>
+        <div class="sidebar-panel__header-info min-w-0">
+          <slot v-if="panel.isRoot?.(panelContext)" name="rootHeader" />
+          <slot v-else name="subHeader" />
+        </div>
 
-        <h2 class="col-start-2 text-center my-0 text-lg">
-          {{ panel.title(panelContext) }}
-        </h2>
+        <div class="flex items-center gap-1 shrink-0">
+          <oc-button
+            v-if="!panel.isRoot?.(panelContext)"
+            v-oc-tooltip="accessibleLabelBack"
+            class="header__back p-1"
+            appearance="raw"
+            :aria-label="accessibleLabelBack"
+            @click="closePanel"
+          >
+            <oc-icon name="arrow-left-s" fill-type="line" />
+          </oc-button>
 
-        <oc-button
-          appearance="raw"
-          class="header__close col-start-3 p-1"
-          :aria-label="$gettext('Close file sidebar')"
-          @click="closeSidebar"
-        >
-          <oc-icon name="close" />
-        </oc-button>
-      </div>
-
-      <div>
-        <slot v-if="panel.isRoot?.(panelContext)" name="rootHeader" />
-        <slot v-else name="subHeader" />
+          <oc-button
+            appearance="raw"
+            class="header__close p-1"
+            :aria-label="$gettext('Close file sidebar')"
+            @click="closeSidebar"
+          >
+            <oc-icon name="close" />
+          </oc-button>
+        </div>
       </div>
       <div
-        class="sidebar-panel__body flex flex-col p-2 overflow-y-auto overflow-x-hidden"
+        class="sidebar-panel__body flex flex-col px-2 pb-2 pt-0 overflow-y-auto overflow-x-hidden"
         :class="[`sidebar-panel__body-${panel.name}`]"
       >
         <div
@@ -224,6 +222,14 @@ const closePanel = () => {
   }
   .sidebar-panel.is-root-panel {
     right: 100px;
+  }
+
+  .sidebar-panel__header-info :deep(*) {
+    min-width: 0;
+  }
+
+  .sidebar-panel__header-info :deep(.truncate) {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
   }
 }
 

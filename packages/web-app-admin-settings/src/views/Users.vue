@@ -10,6 +10,21 @@
     :batch-action-items="selectedUsers"
     :show-view-options="true"
   >
+    <template #sideBarHeader>
+      <div v-if="selectedUsers.length === 1" class="flex items-center min-w-0">
+        <oc-avatar
+          class="mr-2 shrink-0"
+          :width="24"
+          :userid="selectedUsers[0].id"
+          :user-name="selectedUsers[0].displayName"
+        />
+        <h2
+          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
+          v-text="selectedUsers[0].displayName"
+        />
+      </div>
+    </template>
+
     <template #mainContent>
       <users-list
         :is-loading="isLoading"
