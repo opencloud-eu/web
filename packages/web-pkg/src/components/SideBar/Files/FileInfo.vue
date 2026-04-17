@@ -1,14 +1,9 @@
 <template>
-  <div class="flex justify-between p-2">
-    <div class="flex items-center">
-      <resource-icon
-        v-if="isSubPanelActive"
-        :resource="resource"
-        size="large"
-        class="mr-2 relative"
-      />
-      <div>
-        <h3 data-testid="files-info-name" class="font-semibold m-0 text-base break-all">
+  <div v-if="resource" class="flex justify-between min-w-0 ml-2">
+    <div class="flex items-center min-w-0">
+      <resource-icon :resource="resource" size="large" class="mr-2 relative shrink-0" />
+      <div class="min-w-0">
+        <h2 data-testid="files-info-name" class="font-semibold m-0 text-base min-w-0">
           <resource-name
             :name="name"
             :extension="resource.extension"
@@ -16,35 +11,41 @@
             :full-path="resource.webDavPath"
             :is-extension-displayed="areFileExtensionsShown"
             :is-path-displayed="false"
-            :truncate-name="false"
+            :truncate-name="true"
             :is-favorite="resource.starred"
-            class="[&_span]:break-all"
+            class="block min-w-0"
           />
-        </h3>
+        </h2>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, unref } from 'vue'
+import { computed, inject, unref, type Ref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace, useResourcesStore } from '../../../composables'
 import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 import ResourceName from '../../FilesList/ResourceName.vue'
 
-const { isSubPanelActive = true } = defineProps<{
+defineProps<{
   isSubPanelActive?: boolean
 }>()
 
 const resourcesStore = useResourcesStore()
 const { isPersonalSpaceRoot } = useGetMatchingSpace()
 
-const resource = inject<Resource>('resource')
-const space = inject<SpaceResource>('space')
+const resource = inject<Ref<Resource | undefined> | undefined>('resource')
+const space = inject<Ref<SpaceResource | undefined> | undefined>('space')
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
 const name = computed(() => {
-  return isPersonalSpaceRoot(unref(resource)) ? unref(space).name : unref(resource).name
+  if (!unref(resource)) {
+    return ''
+  }
+
+  return isPersonalSpaceRoot(unref(resource))
+    ? unref(space)?.name || unref(resource).name
+    : unref(resource).name
 })
 </script>

@@ -1,12 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SpaceInfo > shows space info 1`] = `
-"<div class="grid items-center p-2">
-  <div class="flex items-center text-sm">
-    <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="medium" type="span" class="block mr-2"></oc-icon-stub>
-    <div>
-      <h3 data-testid="space-info-name" class="font-semibold m-0 text-base break-all"> space</h3> <span data-testid="space-info-subtitle"></span>
-    </div>
-  </div>
+"<div class="flex items-center min-w-0 ml-2">
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="small" type="span" class="mr-2 shrink-0"></oc-icon-stub>
+  <h2 data-testid="space-info-name" class="font-semibold m-0 text-base min-w-0 flex-1 truncate"> space</h2>
 </div>"
 `;
