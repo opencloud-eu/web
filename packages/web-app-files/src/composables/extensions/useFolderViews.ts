@@ -82,8 +82,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         name: 'resource-tiles',
         label: $gettext('Tiles view'),
         icon: {
-          name: 'apps-2',
-          fillType: 'line'
+          name: 'gallery-view-2',
+          fillType: 'none'
         },
         component: ResourceTiles
       }
