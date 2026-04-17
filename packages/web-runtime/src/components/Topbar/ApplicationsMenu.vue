@@ -9,7 +9,7 @@
       :aria-label="applicationSwitcherLabel"
       no-hover
     >
-      <oc-icon name="apps" class="flex" fill-type="fill" />
+      <oc-icon name="apps-3" class="flex" fill-type="fill" />
     </oc-button>
     <oc-drop
       :title="$gettext('Applications')"
