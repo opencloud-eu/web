@@ -18,6 +18,9 @@ export default defineWebApplication({
             applicationId: appId,
             fileContentOptions: {
               responseType: 'blob'
+            },
+            urlForResourceOptions: {
+              intent: 'preview'
             }
           })
         },

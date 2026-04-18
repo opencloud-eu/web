@@ -21,7 +21,8 @@ export default defineWebApplication({
         component: AppWrapperRoute(App, {
           applicationId: appId,
           urlForResourceOptions: {
-            disposition: 'inline'
+            disposition: 'inline',
+            intent: 'preview'
           }
         }),
         name: 'media',
