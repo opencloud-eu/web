@@ -281,7 +281,7 @@ const setDateRangeDate = (
   type: 'from' | 'to'
 ) => {
   if (error) {
-    console.error('date could not be set')
+    console.warn('date could not be set')
     return
   }
 
