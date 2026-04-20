@@ -13,7 +13,8 @@ const routes = [
     component: AppWrapperRoute(PdfViewer, {
       applicationId: 'pdf-viewer',
       urlForResourceOptions: {
-        disposition: 'inline'
+        disposition: 'inline',
+        intent: 'preview'
       }
     }),
     name: 'pdf-viewer',

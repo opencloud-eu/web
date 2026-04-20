@@ -28,7 +28,8 @@ export const useDownloadFile = (options?: DownloadFileOptions) => {
       }
       const url = await clientService.webdav.getFileUrl(space, file, {
         version,
-        username: userStore.user?.onPremisesSamAccountName
+        username: userStore.user?.onPremisesSamAccountName,
+        intent: 'download'
       })
       triggerDownloadWithFilename(url, file.name)
     } catch (e) {

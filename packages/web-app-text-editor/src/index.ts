@@ -93,7 +93,10 @@ export default defineWebApplication({
       {
         path: '/:driveAliasAndItem(.*)?',
         component: AppWrapperRoute(TextEditor, {
-          applicationId: appId
+          applicationId: appId,
+          fileContentOptions: {
+            intent: 'preview'
+          }
         }),
         name: 'text-editor',
         meta: {
