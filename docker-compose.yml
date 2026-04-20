@@ -251,6 +251,7 @@ services:
       - '--entrypoints.stalwart-tls.address=:443'
       - '--entrypoints.stalwart-tls.http.middlewares=https_config@docker'
       - '--entrypoints.stalwart-tls.http.tls.options=default'
+      - '--entrypoints.roundcube.address=:9443'
       - '--entrypoints.stalwart.address=:8180'
     labels:
       traefik.enable: true
@@ -276,6 +277,7 @@ services:
       - '10200:10200'
       - '9980:9980'
       - '8880:8880'
+      - '9443:9443'
       - '443:443'
     volumes:
       - './dev/docker/traefik/certificates:/certificates'
@@ -285,6 +287,35 @@ services:
       traefik:
         aliases:
           - ${STALWART_DOMAIN:-stalwart.opencloud.test}
+
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    container_name: web_roundcube
+    restart: unless-stopped
+    depends_on:
+      - stalwart
+    extra_hosts:
+      - host.docker.internal:${DOCKER_HOST:-host-gateway}
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: stalwart
+      ROUNDCUBEMAIL_DEFAULT_PORT: '143'
+      ROUNDCUBEMAIL_SMTP_SERVER: stalwart
+      ROUNDCUBEMAIL_SMTP_PORT: '25'
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+      ROUNDCUBEMAIL_SKIN: elastic
+    volumes:
+      - ./dev/docker/roundcube/config.inc.php:/var/roundcube/config/zzz-custom.php:ro
+      - ./dev/docker/roundcube/autologin.php:/var/www/html/public_html/autologin.php:ro
+      - roundcube-data:/var/roundcube/db
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.roundcube.tls: true
+      traefik.http.routers.roundcube.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
+      traefik.http.routers.roundcube.entrypoints: roundcube
+      traefik.http.services.roundcube.loadbalancer.server.port: 80
+    networks:
+      - traefik
 
   tika-service:
     image: dadarek/wait-for-dependencies:latest
@@ -355,6 +386,7 @@ volumes:
   opencloud-config:
   opencloud-federated-config:
   stalwart-data:
+  roundcube-data:
 
 networks:
   traefik:

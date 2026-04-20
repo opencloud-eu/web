@@ -112,3 +112,7 @@ tracer.console.level = "trace"
 tracer.console.lossy = false
 tracer.console.multiline = false
 tracer.console.type = "stdout"
+
+# Local-only delivery: prevent all outbound email
+queue.route.local.type = "local"
+queue.strategy.route = [ { else = "'local'" } ]
