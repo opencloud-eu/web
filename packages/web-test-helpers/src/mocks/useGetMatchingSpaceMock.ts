@@ -12,9 +12,6 @@ export const useGetMatchingSpaceMock = (
     getMatchingSpace() {
       return mock<SpaceResource>()
     },
-    isResourceAccessible() {
-      return false
-    },
     isPersonalSpaceRoot() {
       return false
     },

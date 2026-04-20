@@ -344,9 +344,8 @@ export default defineComponent({
         spaceBreadcrumbItem,
         ...breadcrumbsFromPath({
           route: unref(route),
-          space,
           resourcePath: props.item,
-          ...(configStore.options.routing.idBased && { ancestorMetaData })
+          ...ancestorMetaData
         })
       )
     })
@@ -554,15 +553,6 @@ export default defineComponent({
 
       if (isPublicSpaceResource(this.space) && !this.currentFolder?.fileId) {
         return true
-      }
-
-      if (this.configOptions.runningOnEos) {
-        if (
-          !this.currentFolder.fileId ||
-          this.currentFolder.path === this.paginatedResources[0].path
-        ) {
-          return true
-        }
       }
 
       return false

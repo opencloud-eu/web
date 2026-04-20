@@ -4,7 +4,7 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { getSharedDriveItem } from '../../../../src/helpers/share'
 import { ClientService } from '../../../../src/services'
-import { useSpacesStore } from '../../../../src/composables'
+import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
 describe('getSharedDriveItem', () => {
   beforeEach(() => {

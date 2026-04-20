@@ -44,7 +44,6 @@ const ScriptConfigSchema = z.object({
 export type ScriptConfig = z.infer<typeof ScriptConfigSchema>
 
 const OptionsConfigSchema = z.object({
-  cernFeatures: z.boolean().optional(),
   openFilesInNewTab: z.boolean().optional(),
   concurrentRequests: z
     .object({
@@ -95,21 +94,8 @@ const OptionsConfigSchema = z.object({
       href: z.string().optional()
     })
     .optional(),
-  isRunningOnEos: z.boolean().optional(),
   loginUrl: z.string().optional(),
   logoutUrl: z.string().optional(),
-  ocm: z
-    .object({
-      openRemotely: z.boolean().optional()
-    })
-    .optional(),
-  routing: z
-    .object({
-      fullShareOwnerPaths: z.boolean().optional(),
-      idBased: z.boolean().optional()
-    })
-    .optional(),
-  runningOnEos: z.boolean().optional(),
   tokenStorageLocal: z.boolean().optional(),
   upload: z
     .object({

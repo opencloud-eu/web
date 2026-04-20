@@ -3,23 +3,17 @@ import { RouteLocation } from 'vue-router'
 import omit from 'lodash-es/omit'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
-import { SpaceResource } from '@opencloud-eu/web-client'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useGetMatchingSpace } from '../spaces'
 import { Ref, ref, unref } from 'vue'
-import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
+import { AncestorMetaData } from '../../types'
 
 export const useBreadcrumbsFromPath = () => {
-  const { isResourceAccessible } = useGetMatchingSpace()
-
   const breadcrumbsFromPath = ({
     route,
-    space,
     resourcePath,
     ancestorMetaData = ref({})
   }: {
     route: RouteLocation
-    space: Ref<SpaceResource>
     resourcePath: string
     ancestorMetaData?: Ref<AncestorMetaData>
   }): BreadcrumbItem[] => {
@@ -29,27 +23,21 @@ export const useBreadcrumbsFromPath = () => {
 
     return resource.map((text, i) => {
       const relativePath = urlJoin(...resource.slice(0, i + 1), { leadingSlash: true })
-      const isAccessible = isResourceAccessible({ space: unref(space), path: relativePath })
 
-      let ancestor: AncestorMetaDataValue
-      if (isAccessible) {
-        // use ancestor to retrieve fileId
-        ancestor = unref(ancestorMetaData)[relativePath]
-      }
+      // use ancestor to retrieve fileId
+      const ancestor = unref(ancestorMetaData)[relativePath]
 
       return {
         id: uuidV4(),
         allowContextActions: true,
         text,
-        ...(isAccessible && {
-          to: {
-            path: '/' + [...current].splice(0, current.length - resource.length + i + 1).join('/'),
-            query: {
-              ...omit(route.query, 'page', 'fileId'),
-              ...(ancestor && { fileId: ancestor.id })
-            }
+        to: {
+          path: '/' + [...current].splice(0, current.length - resource.length + i + 1).join('/'),
+          query: {
+            ...omit(route.query, 'page', 'fileId'),
+            ...(ancestor && { fileId: ancestor.id })
           }
-        }),
+        },
         isStaticNav: false
       } as BreadcrumbItem
     })

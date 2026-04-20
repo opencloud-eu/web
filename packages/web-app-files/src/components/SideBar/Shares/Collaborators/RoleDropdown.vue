@@ -1,7 +1,6 @@
 <template>
   <div v-if="selectedRole" class="flex items-center">
     <span v-if="availableRoles.length === 1">
-      <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
       <span v-text="inviteLabel" />
     </span>
     <div v-else v-oc-tooltip="dropButtonTooltip" class="max-w-full">
@@ -16,7 +15,6 @@
         "
         no-hover
       >
-        <oc-icon v-if="showIcon" :name="selectedRole.icon" class="mr-2" />
         <span class="truncate" v-text="inviteLabel" />
         <oc-icon name="arrow-down-s" />
       </oc-button>
@@ -99,10 +97,6 @@ export default defineComponent({
       type: String,
       required: false,
       default: 'create'
-    },
-    showIcon: {
-      type: Boolean,
-      default: false
     },
     isLocked: {
       type: Boolean,

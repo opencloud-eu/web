@@ -97,10 +97,7 @@ import { textUtils } from '../../../helpers/textUtils'
 import { isShareSpaceResource, ShareTypes } from '@opencloud-eu/web-client'
 import InviteCollaboratorForm from './Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import CollaboratorListItem from './Collaborators/ListItem.vue'
-import {
-  shareInviteCollaboratorHelp,
-  shareInviteCollaboratorHelpCern
-} from '../../../helpers/contextualHelpers'
+import { shareInviteCollaboratorHelp } from '../../../helpers/contextualHelpers'
 import { computed, defineComponent, inject, ref, Ref, unref } from 'vue'
 import {
   isProjectSpaceResource,
@@ -221,17 +218,6 @@ export default defineComponent({
   },
   computed: {
     inviteCollaboratorHelp() {
-      const cernFeatures = this.configOptions.cernFeatures
-
-      if (cernFeatures) {
-        const options = {
-          configStore: this.configStore
-        }
-        const mergedHelp = shareInviteCollaboratorHelp(options)
-        mergedHelp.list = [...shareInviteCollaboratorHelpCern(options).list, ...mergedHelp.list]
-        return mergedHelp
-      }
-
       return shareInviteCollaboratorHelp({
         configStore: this.configStore
       })

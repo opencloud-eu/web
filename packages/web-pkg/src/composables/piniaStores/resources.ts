@@ -1,23 +1,13 @@
 import { defineStore } from 'pinia'
 import { Ref, computed, ref, unref } from 'vue'
-import {
-  extractStorageId,
-  isMountPointSpaceResource,
-  isProjectSpaceResource,
-  SpaceResource,
-  type Resource
-} from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SpaceResource, type Resource } from '@opencloud-eu/web-client'
 import { getParentPaths } from '../../helpers'
 import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
 import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
-import { useUserStore } from './user'
-import { useConfigStore } from './config'
 
 export const useResourcesStore = defineStore('resources', () => {
-  const configStore = useConfigStore()
   const spacesStore = useSpacesStore()
-  const userStore = useUserStore()
 
   const resources = ref<Resource[]>([]) as Ref<Resource[]>
   const currentFolder = ref<Resource>()
@@ -232,35 +222,12 @@ export const useResourcesStore = defineStore('resources', () => {
     const promises = []
     const davProperties = [DavProperty.FileId, DavProperty.ShareTypes, DavProperty.FileParent]
     const parentPaths = getParentPaths(folder.path)
-    const spaces = spacesStore.spaces
-
-    const getMountPoints = () =>
-      spaces.filter(
-        (s) =>
-          isMountPointSpaceResource(s) && extractStorageId(s.root.remoteItem.rootId) === space.id
-      )
-
-    let fullyAccessibleSpace = true
-    if (configStore.options.routing.fullShareOwnerPaths) {
-      // keep logic in sync with "isResourceAccessible" from useGetMatchingSpace
-      const projectSpace = spaces.some((s) => isProjectSpaceResource(s) && s.id === space.id)
-      fullyAccessibleSpace = space.isOwner(userStore.user) || projectSpace
-    }
 
     for (const path of parentPaths) {
       const cachedData = unref(ancestorMetaData)[path] ?? null
       if (cachedData?.spaceId === space.id) {
         data[path] = cachedData
         continue
-      }
-
-      // keep logic in sync with "isResourceAccessible" from useGetMatchingSpace
-      if (
-        !fullyAccessibleSpace &&
-        !getMountPoints().find((m) => path.startsWith(m.root.remoteItem.path))
-      ) {
-        // no access to the parent resource
-        break
       }
 
       promises.push(

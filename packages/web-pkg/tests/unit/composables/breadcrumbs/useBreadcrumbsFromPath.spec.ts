@@ -1,5 +1,4 @@
 import { mock } from 'vitest-mock-extended'
-import { SpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocation, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useBreadcrumbsFromPath } from '../../../../src/composables/breadcrumbs'
 import { ref } from 'vue'
@@ -12,7 +11,6 @@ describe('useBreadcrumbsFromPath', () => {
       const { breadcrumbsFromPath } = wrapper.vm as ReturnType<typeof useBreadcrumbsFromPath>
       const breadCrumbs = breadcrumbsFromPath({
         route: { path: '/files/spaces/personal/home/test' } as RouteLocation,
-        space: ref(mock<SpaceResource>()),
         resourcePath: '/test',
         ancestorMetaData: ref(mock<AncestorMetaData>())
       })
@@ -35,7 +33,6 @@ describe('useBreadcrumbsFromPath', () => {
       const initialBreadCrumbs = [{ text: 'Foo' }, { text: 'Bar' }]
       const breadCrumbsFromPath = breadcrumbsFromPath({
         route: { path: '/app/foo/bar?all=500' } as RouteLocation,
-        space: ref(mock<SpaceResource>()),
         resourcePath: '/bar',
         ancestorMetaData: ref(mock<AncestorMetaData>())
       })
