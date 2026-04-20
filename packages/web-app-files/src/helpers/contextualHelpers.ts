@@ -47,22 +47,6 @@ export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) =>
     options
   )
 
-export const shareInviteCollaboratorHelpCern = (options: ContextualHelperOptions) =>
-  filterContextHelper(
-    {
-      title: '',
-      list: [
-        { text: $gettext('Search for service or secondary Account'), headline: true },
-        {
-          text: $gettext(
-            'To search for service or secondary accounts prefix the username with "a:" (like "a:doe") and for guest accounts prefix the username with "l:" (like "l:doe").'
-          )
-        }
-      ]
-    },
-    options
-  )
-
 export const shareSpaceAddMemberHelp = (options: ContextualHelperOptions) =>
   filterContextHelper(
     {

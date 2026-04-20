@@ -83,8 +83,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
       },
       isActive: () => {
         const space = spacesStores.currentSpace
-        // last check is when fullShareOwnerPaths is enabled
-        return !space || isShareSpaceResource(space) || !space?.isOwner(userStore.user)
+        return !space || isShareSpaceResource(space)
       },
       activeFor: [
         { path: `/${appInfo.id}/spaces/share` },

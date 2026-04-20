@@ -162,28 +162,6 @@ describe('GenericSpace view', () => {
     })
   })
   describe('for a single file', () => {
-    describe('on EOS for single shared resources', () => {
-      it('renders the ResourceDetails component if no currentFolder id is present', () => {
-        const { wrapper } = getMountedWrapper({
-          currentFolder: mock<Resource>({ fileId: '' }),
-          files: [mock<Resource>({ name: 'file.txt', isFolder: false })],
-          runningOnEos: true
-        })
-        expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
-      })
-      it('renders the ResourceDetails component if currentFolder path matches single shared resource path', () => {
-        const path = 'foo'
-        const { wrapper } = getMountedWrapper({
-          currentFolder: {
-            ...mock<Resource>(),
-            path
-          },
-          files: [{ ...mock<Resource>({ name: 'file.txt' }), path }],
-          runningOnEos: true
-        })
-        expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
-      })
-    })
     describe('on public links', () => {
       it('renders the ResourceDetails component', () => {
         const { wrapper } = getMountedWrapper({
@@ -247,7 +225,6 @@ function getMountedWrapper({
   loading = false,
   currentRoute = { name: 'files-spaces-generic', path: '/' },
   currentFolder = mock<Resource>(),
-  runningOnEos = false,
   space = mock<SpaceResource>({
     id: '1',
     getDriveAliasAndItem: vi.fn(),
@@ -263,14 +240,12 @@ function getMountedWrapper({
   loading?: boolean
   currentRoute?: { name?: string; path?: string }
   currentFolder?: Resource
-  runningOnEos?: boolean
   space?: SpaceResource
   breadcrumbsFromPath?: BreadcrumbItem[]
   stubs?: any
 } = {}) {
   const plugins = defaultPlugins({
     piniaOptions: {
-      configState: { options: { runningOnEos } },
       resourcesStore: { currentFolder, resources: files }
     }
   })

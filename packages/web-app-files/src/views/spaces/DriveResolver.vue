@@ -1,5 +1,5 @@
 <template>
-  <app-loading-spinner v-if="isLoading" />
+  <app-loading-spinner v-if="loading" />
   <drive-redirect v-else-if="!space" :drive-alias-and-item="driveAliasAndItem" />
   <generic-trash v-else-if="isTrashRoute" :space="space" :item-id="itemId" />
   <generic-space v-else :space="space" :item="item" :item-id="itemId" />
@@ -15,7 +15,6 @@ import {
   queryItemAsString,
   useAuthStore,
   useClientService,
-  useConfigStore,
   useDriveResolver,
   useGetMatchingSpace,
   useRouteParam,
@@ -44,7 +43,6 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore()
-    const configStore = useConfigStore()
     const clientService = useClientService()
     const router = useRouter()
     const driveAliasAndItem = useRouteParam('driveAliasAndItem')
@@ -53,9 +51,6 @@ export default defineComponent({
     const { getInternalSpace } = useGetMatchingSpace()
 
     const loading = ref(true)
-    const isLoading = computed(() => {
-      return unref(loading) || unref(resolvedDrive.loading)
-    })
 
     const fileIdQueryItem = useRouteQuery('fileId')
     const fileId = computed(() => {
@@ -125,8 +120,7 @@ export default defineComponent({
 
       const space = unref(resolvedDrive.space)
       if (space && isPublicSpaceResource(space)) {
-        const isRunningOnEos = configStore.options.runningOnEos
-        if (authStore.userContextReady && unref(fileId) && !isRunningOnEos) {
+        if (authStore.userContextReady && unref(fileId)) {
           try {
             const path = await clientService.webdav.getPathForFileId(unref(fileId), {
               headers: { Authorization: `Bearer ${authStore.accessToken}` }
@@ -169,7 +163,7 @@ export default defineComponent({
       ...resolvedDrive,
       driveAliasAndItem,
       isTrashRoute,
-      isLoading,
+      loading,
       fileId
     }
   }

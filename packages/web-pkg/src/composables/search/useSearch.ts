@@ -1,20 +1,14 @@
 import { computed, unref } from 'vue'
 import { SearchResult } from '../../components'
 import { DavProperties } from '@opencloud-eu/web-client/webdav'
-import { call, urlJoin } from '@opencloud-eu/web-client'
+import { call } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import {
-  useCapabilityStore,
-  useConfigStore,
-  useResourcesStore,
-  useSpacesStore
-} from '../piniaStores'
+import { useCapabilityStore, useResourcesStore, useSpacesStore } from '../piniaStores'
 import { SearchResource } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 
 export const useSearch = () => {
-  const configStore = useConfigStore()
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
   const resourcesStore = useResourcesStore()
@@ -28,10 +22,6 @@ export const useSearch = () => {
   }
 
   const searchTask = useTask(function* (signal, term: string, searchLimit: number = null) {
-    if (configStore.options.routing.fullShareOwnerPaths) {
-      yield spacesStore.loadMountPoints({ graphClient: clientService.graphAuthenticated, signal })
-    }
-
     if (!term) {
       return {
         totalResults: null,
@@ -53,10 +43,6 @@ export const useSearch = () => {
         .map((resource) => {
           const matchingSpace = getProjectSpace(resource.parentFolderId)
           const data = (matchingSpace ? matchingSpace : resource) as SearchResource
-
-          if (configStore.options.routing.fullShareOwnerPaths && data.remoteItemPath) {
-            data.path = urlJoin(data.remoteItemPath, data.path)
-          }
 
           return { id: data.id, data }
         })

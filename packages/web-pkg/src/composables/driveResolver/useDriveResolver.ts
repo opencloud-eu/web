@@ -4,8 +4,7 @@ import { useRouteQuery } from '../router'
 import { useSpacesLoading } from './useSpacesLoading'
 import { queryItemAsString } from '../appDefaults'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useClientService } from '../clientService'
-import { useSpacesStore, useConfigStore } from '../piniaStores'
+import { useSpacesStore } from '../piniaStores'
 import { onUnmounted } from 'vue'
 
 interface DriveResolverOptions {
@@ -16,7 +15,6 @@ interface DriveResolverResult {
   space: Ref<SpaceResource>
   item: Ref<string>
   itemId: Ref<string>
-  loading: Ref<boolean>
 }
 
 export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResolverResult => {
@@ -27,13 +25,10 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
   const fileId = computed(() => {
     return queryItemAsString(unref(fileIdQueryItem))
   })
-  const configStore = useConfigStore()
 
-  const clientService = useClientService()
   const spaces = computed(() => spacesStore.spaces)
   const space = ref<SpaceResource>(null)
   const item: Ref<string> = ref(null)
-  const loading = ref(false)
 
   const getSpaceByDriveAliasAndItem = (driveAliasAndItem: string) => {
     const driveAliasAndItemSegments = driveAliasAndItem.split('/')
@@ -69,7 +64,7 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
 
   watch(
     [options.driveAliasAndItem, areSpacesLoading],
-    async ([driveAliasAndItem, areSpacesLoading], [driveAliasAndItemOld, areSpacesLoadingOld]) => {
+    ([driveAliasAndItem, areSpacesLoading], [driveAliasAndItemOld, areSpacesLoadingOld]) => {
       if (driveAliasAndItem === driveAliasAndItemOld && areSpacesLoading === areSpacesLoadingOld) {
         return
       }
@@ -127,14 +122,6 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
         }
 
         if (!matchingSpace) {
-          if (
-            !spacesStore.mountPointsInitialized &&
-            configStore.options.routing.fullShareOwnerPaths
-          ) {
-            loading.value = true
-            await spacesStore.loadMountPoints({ graphClient: clientService.graphAuthenticated })
-          }
-
           matchingSpace = getSpaceByDriveAliasAndItem(driveAliasAndItem)
         }
 
@@ -146,7 +133,6 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
       item.value = urlJoin(path, {
         leadingSlash: true
       })
-      loading.value = false
     },
     { immediate: true, deep: true }
   )
@@ -160,7 +146,6 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
   return {
     space,
     item,
-    itemId: fileId,
-    loading
+    itemId: fileId
   }
 }

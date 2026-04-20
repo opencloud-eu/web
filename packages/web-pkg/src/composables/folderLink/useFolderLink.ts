@@ -16,7 +16,7 @@ import { useCapabilityStore } from '../piniaStores'
 export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
   const capabilityStore = useCapabilityStore()
   const { $gettext } = useGettext()
-  const { getInternalSpace, getMatchingSpace, isResourceAccessible } = useGetMatchingSpace()
+  const { getInternalSpace, getMatchingSpace } = useGetMatchingSpace()
   const { createFolderLink } = useResourceRouteResolver(options)
 
   const getPathPrefix = (resource: Resource) => {
@@ -42,12 +42,7 @@ export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
   }
 
   const getParentFolderLink = (resource: Resource) => {
-    const space = unref(options.space) || getMatchingSpace(resource)
-    const parentFolderAccessible = isResourceAccessible({
-      space,
-      path: dirname(resource.path)
-    })
-    if ((resource.remoteItemId && resource.path === '/') || !parentFolderAccessible) {
+    if (resource.remoteItemId && resource.path === '/') {
       return createLocationShares('files-shares-with-me')
     }
     if (isProjectSpaceResource(resource)) {
@@ -63,15 +58,11 @@ export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
 
   const getParentFolderName = (resource: Resource) => {
     const space = unref(options.space) || getMatchingSpace(resource)
-    const parentFolderAccessible = isResourceAccessible({
-      space,
-      path: dirname(resource.path)
-    })
 
     //FIXME: As soon the backend exposes oc-share-root via webdav, only use isShareRoot fn
     const shareRoot =
       isShareRoot(resource) || (resource.id === space.id && isShareSpaceResource(space))
-    if (shareRoot || !parentFolderAccessible) {
+    if (shareRoot) {
       return $gettext('Shared with me')
     }
     const parentFolder = extractParentFolderName(resource)

@@ -2,16 +2,13 @@ import { useRouter } from './useRouter'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions } from '../../helpers/router'
 import { Router } from 'vue-router'
-import { ConfigStore, useConfigStore } from '../piniaStores'
 
 export interface FileRouteReplaceOptions {
   router?: Router
-  configStore?: ConfigStore
 }
 
 export const useFileRouteReplace = (options: FileRouteReplaceOptions = {}) => {
   const router = options.router || useRouter()
-  const configStore = options.configStore || useConfigStore()
 
   const replaceInvalidFileRoute = ({
     space,
@@ -24,14 +21,11 @@ export const useFileRouteReplace = (options: FileRouteReplaceOptions = {}) => {
     path: string
     fileId?: string | number
   }): boolean => {
-    if (!configStore.options.routing?.idBased) {
-      return false
-    }
     if (path === resource.path && fileId === resource.fileId) {
       return false
     }
 
-    const routeOptions = createFileRouteOptions(space, resource, { configStore })
+    const routeOptions = createFileRouteOptions(space, resource)
     router.replace({
       ...routeOptions,
       query: { ...router.currentRoute.value.query, ...routeOptions.query }

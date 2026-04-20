@@ -167,7 +167,7 @@ const wrongPassword = computed(() => {
 })
 
 const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boolean) {
-  if (unref(isOcmLink) && !configStore.options.ocm.openRemotely) {
+  if (unref(isOcmLink)) {
     throw new Error($gettext('Opening files from remote is disabled'))
   }
 

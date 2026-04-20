@@ -90,7 +90,6 @@
           :access-details="accessDetails"
           @expiration-date-changed="shareExpirationChanged"
           @remove-share="removeShare"
-          @notify-share="showNotifyShareModal"
         />
       </div>
     </div>
@@ -107,7 +106,6 @@ import { CollaboratorShare, ShareRole, ShareTypes } from '@opencloud-eu/web-clie
 import {
   queryItemAsString,
   useMessages,
-  useModals,
   useSpacesStore,
   useUserStore,
   useSharesStore
@@ -160,13 +158,12 @@ export default defineComponent({
     }
   },
   emits: ['onDelete'],
-  setup(props, { emit }) {
+  setup(props) {
     const { showMessage, showErrorMessage } = useMessages()
     const userStore = useUserStore()
     const clientService = useClientService()
     const language = useGettext()
     const { $gettext } = language
-    const { dispatchModal } = useModals()
 
     const sharesStore = useSharesStore()
     const { updateShare } = sharesStore
@@ -184,19 +181,6 @@ export default defineComponent({
 
     const isExternalShare = computed(() => props.share.shareType === ShareTypes.remote.value)
 
-    const showNotifyShareModal = () => {
-      dispatchModal({
-        title: $gettext('Send a reminder'),
-        confirmText: $gettext('Send'),
-        message: $gettext('Are you sure you want to send a reminder about this share?'),
-        onConfirm: notifyShare
-      })
-    }
-    const notifyShare = async () => {
-      // FIXME: cern code
-      // const response = await clientService.openCloudSdk.shares.notifyShare(props.share.id)
-    }
-
     const sharedViaTooltip = computed(() =>
       $gettext('Shared via the parent folder "%{sharedParentDir}"', {
         sharedParentDir: unref(sharedParentDir)
@@ -210,7 +194,6 @@ export default defineComponent({
       clientService,
       sharedParentDir,
       shareDate,
-      showNotifyShareModal,
       showMessage,
       showErrorMessage,
       upsertSpace,

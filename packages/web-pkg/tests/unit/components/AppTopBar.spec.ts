@@ -94,8 +94,7 @@ function getWrapper({
 
   vi.mocked(useGetMatchingSpace).mockImplementation(() =>
     useGetMatchingSpaceMock({
-      getInternalSpace: () => mock<SpaceResource>(),
-      isResourceAccessible: () => true
+      getInternalSpace: () => mock<SpaceResource>()
     })
   )
 

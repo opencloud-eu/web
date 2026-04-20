@@ -76,9 +76,6 @@ function getWrapper({
 } = {}) {
   vi.mocked(useGetMatchingSpace).mockImplementation(() =>
     useGetMatchingSpaceMock({
-      isResourceAccessible() {
-        return true
-      },
       getMatchingSpace() {
         return space
       }
