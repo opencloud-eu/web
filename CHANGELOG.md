@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v6.8.1 [[#2396](https://github.com/opencloud-eu/web/pull/2396)]
 - fix(deps): update dependency axios to v1.15.1 [[#2392](https://github.com/opencloud-eu/web/pull/2392)]
 - chore(deps): update dependency filesize to v11.0.16 [[#2395](https://github.com/opencloud-eu/web/pull/2395)]
 - chore(deps): update dependency fast-xml-parser to v5.7.1 [[#2388](https://github.com/opencloud-eu/web/pull/2388)]
