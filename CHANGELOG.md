@@ -49,6 +49,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2387](https://github.com/opencloud-eu/web/pull/2387)]
+- fix(deps): update dependency uuid to v14 [[#2393](https://github.com/opencloud-eu/web/pull/2393)]
 - chore(deps): update devdependencies (non-major) [[#2378](https://github.com/opencloud-eu/web/pull/2378)]
 - chore(deps): update dependency @cucumber/cucumber to v12.8.1 [[#2362](https://github.com/opencloud-eu/web/pull/2362)]
 - chore(deps): update dependency fast-xml-parser to v5.6.0 [[#2373](https://github.com/opencloud-eu/web/pull/2373)]
