@@ -1,10 +1,14 @@
 # Changelog
 
-## [6.3.0](https://github.com/opencloud-eu/web/releases/tag/v6.3.0) - 2026-04-20
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-04-20
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear
+@AlexAndBear, @JammingBen
+
+### 💥 Breaking changes
+
+- feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
 
 ### 📈 Enhancement
 
