@@ -26,6 +26,13 @@
         />
         <oc-icon name="refresh" size="xsmall" fill-type="line" />
       </oc-button>
+      <oc-tag
+        v-if="showCritical"
+        class="version-check-critical !bg-red-200 !text-red-900 border-0 ml-1"
+        size="small"
+      >
+        <span v-text="$gettext('Critical')" />
+      </oc-tag>
     </template>
   </div>
 </template>
@@ -34,12 +41,13 @@
 import { ref, watch, unref, computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { useCapabilityStore, useUpdatesStore } from '../composables'
+import { useAbility, useCapabilityStore, useUpdatesStore } from '../composables'
 import { UpdateChannel } from '../types'
 import { compareVersions } from '../utils'
 
 const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
+const ability = useAbility()
 const updatesStore = useUpdatesStore()
 const { setHasError } = updatesStore
 
@@ -57,6 +65,13 @@ const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
+const showCritical = computed(() => {
+  return (
+    unref(updateData)?.critical.includes(currentServerVersionSanitized) &&
+    ability.can('read-all', 'Setting')
+  )
+})
+
 watch(
   () => updates,
   () => {
@@ -64,10 +79,10 @@ watch(
       return
     }
     try {
+      updateData.value = unref(updates).channels[serverEdition]
       const newestVersion = unref(updates).channels[serverEdition].current_version
       if (compareVersions(newestVersion, currentServerVersionSanitized) > 0) {
         updateAvailable.value = true
-        updateData.value = unref(updates).channels[serverEdition]
       }
     } catch (e) {
       console.error(e)
