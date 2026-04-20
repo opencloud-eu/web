@@ -22,6 +22,7 @@ export type FederatedConnection = FederatedUser & {
 export interface UpdateChannel {
   current_version: string
   url: string
+  critical: string[]
 }
 
 export interface Updates {
