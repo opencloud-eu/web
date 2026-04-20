@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  epubjs>@xmldom/xmldom: ^0.9.9
+  epubjs>@xmldom/xmldom: ^0.9.10
 
 patchedDependencies:
   caf@15.0.1:
@@ -371,8 +371,8 @@ importers:
         specifier: 3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.32(typescript@6.0.3))
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.32(typescript@6.0.3))
@@ -498,8 +498,8 @@ importers:
         specifier: ^6.13.0
         version: 6.15.1
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.32(typescript@6.0.3))
@@ -562,8 +562,8 @@ importers:
         specifier: 6.15.1
         version: 6.15.1
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.32(typescript@6.0.3))
@@ -672,8 +672,8 @@ importers:
         specifier: 4.18.1
         version: 4.18.1
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.32(typescript@6.0.3))
@@ -818,8 +818,8 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^14.0.0
+        version: 14.0.0
       webdav:
         specifier: ^5.9.0
         version: 5.9.0
@@ -937,8 +937,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
       uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^14.0.0
+        version: 14.0.0
       vue-concurrency:
         specifier: ^5.0.3
         version: 5.0.3(vue@3.5.32(typescript@6.0.3))
@@ -1044,8 +1044,8 @@ importers:
         specifier: 6.15.1
         version: 6.15.1
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       vue:
         specifier: ^3.5.31
         version: 3.5.32(typescript@6.0.3)
@@ -1137,8 +1137,8 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^14.0.0
+        version: 14.0.0
 
 packages:
 
@@ -3062,8 +3062,8 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
-  '@xmldom/xmldom@0.9.9':
-    resolution: {integrity: sha512-qycIHAucxy/LXAYIjmLmtQ8q9GPnMbnjG1KXhWm9o5sCr6pOYDATkMPiTNa6/v8eELyqOQ2FsEqeoFYmgv/gJg==}
+  '@xmldom/xmldom@0.9.10':
+    resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
 
   abbrev@2.0.0:
@@ -5619,8 +5619,8 @@ packages:
   util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
-  uuid@13.0.0:
-    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -8036,7 +8036,7 @@ snapshots:
     dependencies:
       vue: 3.5.32(typescript@6.0.3)
 
-  '@xmldom/xmldom@0.9.9': {}
+  '@xmldom/xmldom@0.9.10': {}
 
   abbrev@2.0.0: {}
 
@@ -8642,7 +8642,7 @@ snapshots:
   epubjs@0.3.93:
     dependencies:
       '@types/localforage': 0.0.34
-      '@xmldom/xmldom': 0.9.9
+      '@xmldom/xmldom': 0.9.10
       core-js: 3.49.0
       event-emitter: 0.3.5
       jszip: 3.10.1
@@ -10791,7 +10791,7 @@ snapshots:
       is-typed-array: 1.1.15
       which-typed-array: 1.1.20
 
-  uuid@13.0.0: {}
+  uuid@14.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
