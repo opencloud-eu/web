@@ -16,7 +16,6 @@ import { useGettext } from 'vue3-gettext'
 import { FileAction, FileActionOptions } from '../types'
 import {
   useCapabilityStore,
-  useConfigStore,
   useMessages,
   useModals,
   useResourcesStore,
@@ -31,7 +30,6 @@ export const useFileActionsRename = () => {
   const router = useRouter()
   const { $gettext } = useGettext()
   const clientService = useClientService()
-  const configStore = useConfigStore()
   const { dispatchModal } = useModals()
   const userStore = useUserStore()
   const ability = useAbility()
@@ -179,9 +177,7 @@ export const useFileActionsRename = () => {
 
         // FIXME: Remove this check as soon as renaming shares works as expected.
         // Might be the case? Needs to be retested.
-        const rootShareIncluded = configStore.options.routing.fullShareOwnerPaths
-          ? resources.some((r) => r.remoteItemPath && r.path)
-          : resources.some((r) => r.remoteItemId && r.path === '/')
+        const rootShareIncluded = resources.some((r) => r.remoteItemId && r.path === '/')
         if (rootShareIncluded) {
           return false
         }

@@ -13,7 +13,7 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
         </div>
         <div>
           <div class="flex flex-nowrap items-center">
-            <role-dropdown-stub existingsharerole="undefined" existingsharepermissions="" domselector="1" mode="edit" showicon="false" islocked="false" isexternal="false" class="files-collaborators-collaborator-role max-w-full"></role-dropdown-stub>
+            <role-dropdown-stub existingsharerole="undefined" existingsharepermissions="" domselector="1" mode="edit" islocked="false" isexternal="false" class="files-collaborators-collaborator-role max-w-full"></role-dropdown-stub>
           </div>
         </div>
       </div>

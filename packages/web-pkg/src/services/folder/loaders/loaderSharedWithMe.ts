@@ -19,19 +19,12 @@ export class FolderLoaderSharedWithMe implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const { spacesStore, clientService, configStore, resourcesStore, sharesStore } = context
+    const { clientService, configStore, resourcesStore, sharesStore } = context
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return useTask(function* (signal1, signal2) {
       resourcesStore.clearResourceList()
       resourcesStore.setAncestorMetaData({})
-
-      if (configStore.options.routing.fullShareOwnerPaths) {
-        yield spacesStore.loadMountPoints({
-          graphClient: clientService.graphAuthenticated,
-          signal: signal1
-        })
-      }
 
       const value = yield* call(
         clientService.graphAuthenticated.driveItems.listSharedWithMe(

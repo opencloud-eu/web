@@ -6,7 +6,6 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { useAppsStore } from '../apps'
 
 const defaultOptions = {
-  cernFeatures: false,
   openFilesInNewTab: false,
   concurrentRequests: {
     resourceBatchActions: 4,
@@ -30,14 +29,6 @@ const defaultOptions = {
     enabled: false,
     target: 'resources'
   },
-  ocm: {
-    openRemotely: false
-  },
-  routing: {
-    idBased: true,
-    fullShareOwnerPaths: false
-  },
-  runningOnEos: false,
   tokenStorageLocal: true,
   userListRequiresFilter: false,
   hideLogo: false
@@ -84,14 +75,6 @@ export const useConfigStore = defineStore('config', () => {
 
     if (data.options) {
       options.value = merge({ ...defaultOptions }, data.options)
-      // ocm.openRemotely will not be loaded from config, but set based on cernFeatures option
-      unref(options).ocm.openRemotely = unref(options).cernFeatures
-      // routing will not be loaded from config, but set based on cernFeatures option
-      unref(options).routing.idBased = !unref(options).cernFeatures
-      unref(options).routing.fullShareOwnerPaths = unref(options).cernFeatures
-      // openFilesInNewTab can be set independently or derived from cernFeatures
-      unref(options).openFilesInNewTab =
-        unref(options).openFilesInNewTab || unref(options).cernFeatures
     }
 
     if (data.external_apps) {

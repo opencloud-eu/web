@@ -4,7 +4,7 @@
     data-testid="new-collaborators-form"
     class="[&_.vs\_\_actions]:!flex-nowrap mb-8"
   >
-    <div :class="[{ 'flex w-full grid grid-cols-2': isRunningOnEos }]">
+    <div>
       <div class="flex justify-between mb-1">
         <div class="flex items-center">
           <label :aria-hidden="true" for="files-share-account-type-input" class="inline-block">
@@ -18,21 +18,6 @@
         </div>
         <copy-private-link :resource="resource" />
       </div>
-      <oc-select
-        v-if="isRunningOnEos"
-        id="files-share-account-type-input"
-        v-model="accountType"
-        :options="accountTypes"
-        :label="$gettext('Account type')"
-        :reduce="(option: AccountType) => option.description"
-      >
-        <template #option="{ description }">
-          <span class="option text-xs" v-text="description" />
-        </template>
-        <template #selected-option="{ description }">
-          <span class="option text-xs" v-text="description" />
-        </template>
-      </oc-select>
       <oc-select
         id="files-share-invite-input"
         ref="ocSharingAutocomplete"
@@ -111,7 +96,6 @@
     <div class="flex justify-between flex-wrap mt-2">
       <role-dropdown
         mode="create"
-        :show-icon="isRunningOnEos"
         class="max-w-40"
         :is-external="isExternalShareRoleType"
         @option-change="collaboratorRoleChanged"
@@ -163,9 +147,6 @@
         >
           <span v-text="$gettext(saveButtonLabel)" />
         </oc-button>
-      </div>
-      <div v-if="isRunningOnEos" class="w-full mt-2">
-        <oc-checkbox v-model="notifyEnabled" :value="false" :label="$gettext('Notify via mail')" />
       </div>
     </div>
     <oc-hidden-announcer level="assertive" :announcement="announcement" />
@@ -224,11 +205,6 @@ import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
 // just a dummy function to trick gettext tools
 const $gettext = (str: string) => {
   return str
-}
-
-type AccountType = {
-  prefix: string
-  description: string
 }
 
 type DropDownShouldOpenOptions = { open: boolean; search: string[] }
@@ -293,7 +269,6 @@ export default defineComponent({
 
     const saving = ref(false)
     const savingDelayed = ref(false)
-    const notifyEnabled = ref(false)
     const expirationDate = ref<string>()
     const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>([])
     const announcement = ref<string>('')
@@ -353,15 +328,6 @@ export default defineComponent({
       await nextTick()
       markInstance = new Mark('.mark-element')
     })
-
-    const accountType = ref('standard')
-    const accountTypes: AccountType[] = [
-      { prefix: '', description: 'standard' },
-      { prefix: 'a:', description: 'secondary' },
-      { prefix: 'a:', description: 'service' },
-      { prefix: 'l:', description: 'guest' },
-      { prefix: 'sm:', description: 'federated' }
-    ]
 
     const createSharesConcurrentRequests = computed(() => {
       return configStore.options.concurrentRequests.shares.create
@@ -551,7 +517,6 @@ export default defineComponent({
 
     return {
       minSearchLength: capabilityRefs.sharingSearchMinLength,
-      isRunningOnEos: computed(() => configStore.options.runningOnEos),
       saving,
       savingDelayed,
       searchInProgress,
@@ -575,11 +540,6 @@ export default defineComponent({
       showShareTypeFilter,
       showMessage,
       showErrorMessage,
-
-      // CERN
-      accountType,
-      accountTypes,
-      notifyEnabled,
 
       // unit tests
       fetchRecipientsTask
@@ -611,14 +571,6 @@ export default defineComponent({
       }
 
       this.searchInProgress = true
-
-      // CERN
-      if (this.isRunningOnEos) {
-        const prefix =
-          this.accountTypes.find((t) => t.description === this.accountType)?.prefix || ''
-        query = `${prefix}${query}`
-      }
-
       this.fetchRecipients(query)
     },
 

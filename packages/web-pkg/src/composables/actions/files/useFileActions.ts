@@ -218,7 +218,7 @@ export const useFileActions = () => {
       },
       query: {
         ...(remoteItemId && { shareId: remoteItemId }),
-        ...(resource.fileId && unref(options).routing.idBased && { fileId: resource.fileId }),
+        ...(resource.fileId && { fileId: resource.fileId }),
         ...(templateId && { templateId }),
         ...routeToContextQuery(unref(router.currentRoute))
       }

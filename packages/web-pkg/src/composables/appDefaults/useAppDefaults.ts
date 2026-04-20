@@ -49,16 +49,12 @@ export function useAppDefaults(options: AppDefaultsOptions): AppDefaultsResult {
   const { publicLinkContextReady } = storeToRefs(authStore)
 
   const driveAliasAndItem = useRouteParam('driveAliasAndItem')
-  const { space, item, itemId, loading } = useDriveResolver({ driveAliasAndItem })
+  const { space, item, itemId } = useDriveResolver({ driveAliasAndItem })
   const currentFileContext = computed((): FileContext => {
-    if (unref(loading)) {
-      return null
-    }
     let path: string
     if (unref(space)) {
       path = urlJoin(unref(space).webDavPath, unref(item))
     } else {
-      // deprecated.
       path = urlJoin(queryItemAsString(unref(currentRoute).params.filePath))
     }
 

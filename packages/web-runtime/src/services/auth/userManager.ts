@@ -2,9 +2,7 @@ import {
   Log,
   WebStorageStateStore,
   UserManager as OidcUserManager,
-  UserManagerSettings,
-  User,
-  ErrorResponse
+  UserManagerSettings
 } from 'oidc-client-ts'
 import { buildUrl, useAppsStore } from '@opencloud-eu/web-pkg'
 import { getAbilities } from './abilities'
@@ -48,7 +46,6 @@ export interface WebfingerDiscoveryData {
 
 export class UserManager extends OidcUserManager {
   private clientService: ClientService
-  private configStore: ConfigStore
   private userStore: UserStore
   private authStore: AuthStore
   private webWorkersStore: WebWorkersStore
@@ -100,7 +97,6 @@ export class UserManager extends OidcUserManager {
     super(openIdConfig)
     this.browserStorage = browserStorage
     this.clientService = options.clientService
-    this.configStore = options.configStore
     this.ability = options.ability
     this.language = options.language
     this.userStore = options.userStore
@@ -244,52 +240,6 @@ export class UserManager extends OidcUserManager {
 
     this.capabilityStore.setCapabilities(capabilities)
     injectGeneratorMeta(this.capabilityStore)
-  }
-
-  // copied from upstream oidc-client-ts UserManager with CERN customization
-  protected async _signinEnd(url: string, verifySub?: string, ...args: any[]): Promise<User> {
-    if (!this.configStore.options.isRunningOnEos) {
-      return (super._signinEnd as any)(url, verifySub, ...args)
-    }
-
-    const logger = this._logger.create('_signinEnd')
-    const signinResponse = await this._client.processSigninResponse(url)
-    logger.debug('got signin response')
-
-    const user = new User(signinResponse)
-    if (verifySub) {
-      if (verifySub !== user.profile.sub) {
-        logger.debug(
-          'current user does not match user returned from signin. sub from signin:',
-          user.profile.sub
-        )
-        throw new ErrorResponse({ ...signinResponse, error: 'login_required' })
-      }
-      logger.debug('current user matches user returned from signin')
-    }
-
-    /* CERNBox customization
-     * Do a call to the backend, as this will reply with the internal reva token.
-     * Use that longer token in all calls to the backend (so, replace the default store token)
-     */
-    try {
-      console.log('CERNBox: login successful, exchange sso token with reva token')
-      const httpClient = this.clientService.httpAuthenticated
-      const revaTokenReq = await httpClient.get('/ocs/v1.php/cloud/user')
-      const revaToken = revaTokenReq.headers['x-access-token']
-      const claims = JSON.parse(atob(revaToken.split('.')[1]))
-      user.access_token = revaToken
-      user.expires_at = claims.exp
-    } catch (e) {
-      console.error('Failed to get reva token, continue with sso one', e)
-    }
-    // end
-
-    await this.storeUser(user)
-    logger.debug('user stored')
-    this._events.load(user)
-
-    return user
   }
 
   private async fetchPermissions({ user }: { user: OcUser }) {

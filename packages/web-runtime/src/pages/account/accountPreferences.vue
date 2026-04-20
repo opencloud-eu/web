@@ -220,10 +220,7 @@ const isLoading = computed(() => {
     !loadGraphUserTask.last
   )
 })
-const isSettingsServiceSupported = computed(() => !configStore.options.runningOnEos)
-const showNotifications = computed(
-  () => authStore.userContextReady && unref(isSettingsServiceSupported)
-)
+const showNotifications = computed(() => authStore.userContextReady)
 const showChangePassword = computed(() => {
   return authStore.userContextReady && !capabilityStore.graphUsersChangeSelfPasswordDisabled
 })
@@ -252,7 +249,7 @@ const showEditPasswordModal = () => {
 }
 
 const loadValuesListTask = useTask(function* (signal) {
-  if (!authStore.userContextReady || !unref(isSettingsServiceSupported)) {
+  if (!authStore.userContextReady) {
     return
   }
 
@@ -278,7 +275,7 @@ const loadValuesListTask = useTask(function* (signal) {
 }).restartable()
 
 const loadAccountBundleTask = useTask(function* (signal) {
-  if (!authStore.userContextReady || !unref(isSettingsServiceSupported)) {
+  if (!authStore.userContextReady) {
     return
   }
 
