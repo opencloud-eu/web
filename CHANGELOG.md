@@ -18,6 +18,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @codemirror/view to v6.41.1 [[#2390](https://github.com/opencloud-eu/web/pull/2390)]
 - chore(deps): update typescript-eslint monorepo to v8.59.0 [[#2406](https://github.com/opencloud-eu/web/pull/2406)]
 - chore(deps): update devdependencies (non-major) to v4.2.3 [[#2409](https://github.com/opencloud-eu/web/pull/2409)]
 
