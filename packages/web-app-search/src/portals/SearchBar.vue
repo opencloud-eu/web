@@ -518,7 +518,7 @@ export default defineComponent({
         this.updateTerm('')
         return
       }
-      const inputElement = document.getElementsByClassName('oc-search-input')[0] as HTMLElement
+      const inputElement = this.$el.getElementsByTagName('input')[0] as HTMLElement
       inputElement.blur()
     },
     getSearchResultForProvider(provider: SearchProvider) {
