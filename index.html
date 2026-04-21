@@ -9,7 +9,6 @@
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
     <link rel="icon" href="img/favicon.svg" />
     <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />
-    <script src="js/require.js?__COMPILATION_TIMESTAMP__"></script>
     <script type="module" src="./packages/web-runtime/src/index.ts"></script>
     <script type="module">
       // Fix Buffer usage in production (!)
@@ -137,16 +136,12 @@
       }
 
       function init() {
-        if (typeof requirejs === 'undefined') {
-          displayError()
-        } else {
-          window.runtimeLoaded = function (runtime) {
-            clearTimeout(loaderTimer)
-            runtime.bootstrapApp('config.json', removeLoadingSpinner).catch((error) => {
-              removeLoadingSpinner()
-              runtime.bootstrapErrorApp(error)
-            })
-          }
+        window.runtimeLoaded = function (runtime) {
+          clearTimeout(loaderTimer)
+          runtime.bootstrapApp('config.json', removeLoadingSpinner).catch((error) => {
+            removeLoadingSpinner()
+            runtime.bootstrapErrorApp(error)
+          })
         }
       }
 

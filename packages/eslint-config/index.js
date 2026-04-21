@@ -1,6 +1,5 @@
 import unusedImports from 'eslint-plugin-unused-imports'
 import tseslint from 'typescript-eslint'
-import globals from 'globals'
 import pluginVue from 'eslint-plugin-vue'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
@@ -20,12 +19,6 @@ export default [
   {
     languageOptions: {
       ecmaVersion: 2015,
-      globals: {
-        ...globals.browser,
-        ...globals.amd,
-        require: false,
-        requirejs: false
-      },
       parserOptions: {
         parser: {
           ts: '@typescript-eslint/parser',

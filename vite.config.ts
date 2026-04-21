@@ -8,7 +8,6 @@ import {
 } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { Target, viteStaticCopy } from 'vite-plugin-static-copy'
-import { treatAsCommonjs } from 'vite-plugin-treat-umd-as-commonjs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
@@ -191,9 +190,6 @@ export default defineConfig(({ mode, command }) => {
         // Module Federation shared deps are registered at runtime in bootstrap.ts.
         // The @module-federation/vite plugin is only used on the remote (extension-sdk) side.
 
-        // We need to "undefine" `define` which is set by requirejs loaded in index.html
-        treatAsCommonjs(),
-
         vue({
           template: {
             compilerOptions
@@ -211,11 +207,6 @@ export default defineConfig(({ mode, command }) => {
                 src: `packages/design-system/src/assets/images/empty-states/*`,
                 dest: 'images/empty-states',
                 rename: { stripBase: 6 }
-              },
-              {
-                src: 'node_modules/requirejs/require.js',
-                dest: 'js',
-                rename: { stripBase: 2 }
               },
               {
                 src: 'oidc-silent-redirect.html',
@@ -275,7 +266,6 @@ export default defineConfig(({ mode, command }) => {
 
               return html
                 .replace(/__TITLE__/g, process.env.TITLE || 'OpenCloud')
-                .replace(/__COMPILATION_TIMESTAMP__/g, Date.now().toString())
                 .replace(/__SUPPORTED_BROWSERS__/g, supportedBrowsersRegex.toString())
             }
           }
