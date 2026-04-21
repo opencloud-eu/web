@@ -1,5 +1,10 @@
 [
   {
+    "name": "preview",
+    "description": "Can be used to display a preview or showcase.",
+    "type": "(props: { color: string }) => unknown"
+  },
+  {
     "name": "label",
     "description": "Can be used to overwrite the default rendering of the label.",
     "type": "() => unknown"
