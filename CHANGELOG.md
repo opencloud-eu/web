@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
 - feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
 
 ### 📈 Enhancement
