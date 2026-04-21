@@ -1,6 +1,5 @@
 import { AuthStore, CapabilityStore, ClientService } from '@opencloud-eu/web-pkg'
 import { PublicLinkType } from '@opencloud-eu/web-client'
-import { injectGeneratorMeta } from '../../helpers/meta'
 
 export interface PublicLinkManagerOptions {
   clientService: ClientService
@@ -84,7 +83,7 @@ export class PublicLinkManager {
     }
   }
 
-  async updateContext(token: string) {
+  updateContext(token: string) {
     if (!this.isResolved(token)) {
       return
     }
@@ -92,15 +91,9 @@ export class PublicLinkManager {
       return
     }
 
-    let password
+    let password: string
     if (this.isPasswordRequired(token)) {
       password = this.getPassword(token)
-    }
-
-    try {
-      await this.fetchCapabilities()
-    } catch (e) {
-      console.error(e)
     }
 
     this.authStore.setPublicLinkContext({
@@ -113,15 +106,5 @@ export class PublicLinkManager {
 
   clearContext() {
     this.authStore.clearPublicLinkContext()
-  }
-
-  private async fetchCapabilities(): Promise<void> {
-    if (this.capabilityStore.isInitialized) {
-      return
-    }
-    const client = this.clientService.ocs
-    const response = await client.getCapabilities()
-    this.capabilityStore.setCapabilities(response)
-    injectGeneratorMeta(this.capabilityStore)
   }
 }

@@ -1,4 +1,4 @@
-import { UserManager, WebfingerDiscoveryData } from './userManager'
+import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
 import {
   AuthStore,
@@ -18,11 +18,10 @@ import {
   isUserContextRequired
 } from '../../router/helpers'
 import { unref } from 'vue'
-import { Ability, urlJoin } from '@opencloud-eu/web-client'
+import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { PublicLinkType } from '@opencloud-eu/web-client'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
-import { webFingerResponseSchema } from './webfingerSchemas'
 
 export class AuthService implements AuthServiceInterface {
   private clientService: ClientService
@@ -91,7 +90,7 @@ export class AuthService implements AuthServiceInterface {
     if (isPublicLinkContextRequired(this.router, to)) {
       const publicLinkToken = extractPublicLinkToken(to)
       if (publicLinkToken) {
-        await this.publicLinkManager.updateContext(publicLinkToken)
+        this.publicLinkManager.updateContext(publicLinkToken)
       }
     } else if (to.name !== 'resolvePublicLink') {
       // no need to clear public context if we're routing the to public link resolving page
@@ -99,9 +98,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     if (!this.userManager) {
-      const webfingerDiscoveryData = await this.getWebfingerDiscoveryData()
       this.userManager = new UserManager({
-        webfingerDiscoveryData,
         clientService: this.clientService,
         configStore: this.configStore,
         ability: this.ability,
@@ -316,7 +313,7 @@ export class AuthService implements AuthServiceInterface {
     this.hasAuthErrorOccurred = true
   }
 
-  public async resolvePublicLink(
+  public resolvePublicLink(
     token: string,
     passwordRequired: boolean,
     password: string,
@@ -327,7 +324,7 @@ export class AuthService implements AuthServiceInterface {
     this.publicLinkManager.setResolved(token, true)
     this.publicLinkManager.setType(token, type)
 
-    await this.publicLinkManager.updateContext(token)
+    this.publicLinkManager.updateContext(token)
   }
 
   public async logoutUser() {
@@ -370,33 +367,6 @@ export class AuthService implements AuthServiceInterface {
 
     console.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
     return this.userManager.updateContext(event.data.accessToken, event.data.sessionId, false)
-  }
-
-  // gets the authority, client_id and scope for OIDC authentication via webfinger discovery
-  private async getWebfingerDiscoveryData(): Promise<WebfingerDiscoveryData> {
-    const params = new URLSearchParams({
-      resource: this.configStore.serverUrl,
-      platform: 'web',
-      rel: 'http://openid.net/specs/connect/1.0/issuer'
-    })
-
-    try {
-      const response = await this.clientService.httpUnAuthenticated.get(
-        urlJoin(this.configStore.serverUrl, '.well-known/webfinger'),
-        { params }
-      )
-
-      const data = webFingerResponseSchema.parse(response.data)
-      const { links, properties } = data
-      const propKey = 'http://opencloud.eu/ns/oidc/'
-      return {
-        authority: links[0].href,
-        client_id: properties[`${propKey}client_id`] as string,
-        scope: (properties[`${propKey}scopes`] as string[]).join(' ')
-      }
-    } catch (e) {
-      throw new Error(`OIDC configuration could not be loaded via webfinger. ${e}`)
-    }
   }
 }
 

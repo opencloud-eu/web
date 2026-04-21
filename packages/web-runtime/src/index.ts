@@ -27,7 +27,8 @@ import {
   announceArchiverService,
   announceAppProviderService,
   announceUpdates,
-  announceGroupware
+  announceGroupware,
+  announceCapabilities
 } from './container/bootstrap'
 import { applicationStore } from './container/store'
 import { PublicSpaceResource } from '@opencloud-eu/web-client'
@@ -36,7 +37,6 @@ import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import { extensionPoints } from './extensionPoints'
 import { extensions } from './extensions'
-import { UnifiedRoleDefinition } from '@opencloud-eu/web-client/graph/generated'
 
 export const bootstrapApp = async (configurationPath: string, appsReadyCallback: () => void) => {
   const pinia = createPinia()
@@ -59,11 +59,12 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     groupwareConfigStore
   } = announcePiniaStores()
 
-  extensionRegistry.registerExtensionPoints(extensionPoints())
-
   app.provide('$router', router)
 
-  await announceConfiguration({ path: configurationPath, configStore })
+  const [designSystem] = await Promise.all([
+    loadDesignSystem(),
+    announceConfiguration({ path: configurationPath, configStore })
+  ])
 
   app.use(abilitiesPlugin, createMongoAbility([]), { useGlobalProperties: true })
 
@@ -80,45 +81,30 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     webWorkersStore
   })
 
-  const designSystem = await loadDesignSystem()
-
-  announceUppyService({ app })
-  startSentry(configStore, app)
   const appProviderService = announceAppProviderService({
     app,
     serverUrl: configStore.serverUrl,
     clientService
   })
-  announceArchiverService({ app, configStore, userStore, capabilityStore })
-  announceLoadingService({ app })
-  announcePreviewService({
-    app,
-    configStore,
-    userStore,
-    authStore
-  })
-  announcePasswordPolicyService({ app })
 
-  const applicationsPromise = initializeApplications({
-    app,
-    configStore,
-    router,
-    appProviderService
-  })
-  const translationsPromise = loadTranslations()
-  const customTranslationsPromise = loadCustomTranslations({ configStore })
-  const themePromise = announceTheme({ app, designSystem, configStore })
   const [coreTranslations, customTranslations] = await Promise.all([
-    translationsPromise,
-    customTranslationsPromise,
-    applicationsPromise,
-    themePromise
+    loadTranslations(),
+    loadCustomTranslations({ configStore }),
+    announceTheme({ app, designSystem, configStore }),
+    initializeApplications({
+      app,
+      configStore,
+      router,
+      appProviderService
+    }),
+    announceCapabilities({ capabilityStore, clientService }),
+    authStore.loadWebfingerDiscoveryData(configStore.serverUrl, clientService.httpUnAuthenticated),
+    ...(configStore.apps.includes('external') ? [appProviderService.loadData()] : [])
   ])
 
   // Important: has to happen AFTER native applications are loaded.
   // Reason: the `external` app serves as a blueprint for creating the app provider apps.
   if (applicationStore.has('web-app-external')) {
-    await appProviderService.loadData()
     await initializeApplications({
       app,
       configStore,
@@ -128,16 +114,26 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     })
   }
 
+  announceArchiverService({ app, configStore, userStore, capabilityStore })
+  announceLoadingService({ app })
+  announcePreviewService({
+    app,
+    configStore,
+    userStore,
+    authStore
+  })
+  announcePasswordPolicyService({ app })
+  announceUppyService({ app })
   announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
-
+  startSentry(configStore, app)
   announceCustomStyles({ configStore })
   announceCustomScripts({ configStore })
   announceDefaults({ appsStore, router, extensionRegistry, configStore })
 
+  extensionRegistry.registerExtensionPoints(extensionPoints())
   extensionRegistry.registerExtensions(extensions())
 
   app.use(router)
-
   app.mount('#opencloud')
 
   setViewOptions({ resourcesStore })
@@ -213,7 +209,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         })
       }
 
-      sharesStore.setGraphRoles(graphRoleDefinitions as UnifiedRoleDefinition[])
+      sharesStore.setGraphRoles(graphRoleDefinitions)
       const personalSpace = spacesStore.spaces.find((s) => s.driveType === 'personal')
       if (personalSpace) {
         spacesStore.updateSpaceField({

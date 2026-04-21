@@ -171,7 +171,7 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
     throw new Error($gettext('Opening files from remote is disabled'))
   }
 
-  yield authService.resolvePublicLink(
+  authService.resolvePublicLink(
     unref(token),
     passwordRequired,
     passwordRequired ? unref(password) : '',
