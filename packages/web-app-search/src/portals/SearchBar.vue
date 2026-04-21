@@ -24,7 +24,7 @@
       @update:model-value="updateTerm"
       @clear="onClear"
       @click="showPreview"
-      @keyup.esc="hideOptionsDrop"
+      @keyup.esc="onClear"
       @keyup.up="onKeyUpUp"
       @keyup.down="onKeyUpDown"
       @keyup.enter="onKeyUpEnter"
@@ -490,8 +490,7 @@ export default defineComponent({
 
   methods: {
     onClear() {
-      this.term = ''
-      this.optionsDrop.hide()
+      this.updateTerm('')
     },
     findNextPreviewIndex(previous = false) {
       const elements = this.getFocusableElements()

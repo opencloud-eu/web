@@ -251,6 +251,13 @@ describe('Search Bar portal component', () => {
     wrapper.vm.onSearchShortcut(keyEvent)
     textInput.remove()
   })
+  test('clears search term on key press esc while input has focus', async () => {
+    const { wrapper } = getMountedWrapper()
+    wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    wrapper.find(selectors.searchInput).trigger('keyup.esc')
+    expect(wrapper.vm.term).toBe('')
+  })
 })
 
 function getMountedWrapper({
