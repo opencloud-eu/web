@@ -25,10 +25,7 @@ import { AppConfigObject, ClassicApplicationScript } from '@opencloud-eu/web-pkg
 
 export { NextApplication } from './next'
 
-// shim requirejs, trust me it's there...
-const { requirejs, define } = window as any
-
-// Shared modules provided to external apps via RequireJS (legacy AMD) and Module Federation.
+// Shared modules provided to external apps via Module Federation.
 // Must match externalModules in packages/extension-sdk/externalModules.mjs — verified by unit test.
 export const sharedModules: Record<string, unknown> = {
   vue,
@@ -45,17 +42,10 @@ export const sharedModules: Record<string, unknown> = {
 }
 
 /**
- * Register shared modules with RequireJS (legacy AMD) and Module Federation.
+ * Register shared modules with Module Federation.
  * Called once during bootstrap before any applications are loaded.
  */
 export function registerSharedModules(federation: ModuleFederation) {
-  // RequireJS (legacy AMD apps)
-  const { define } = window as any
-  for (const [key, value] of Object.entries(sharedModules)) {
-    define(key, () => value)
-  }
-
-  // Module Federation
   const shared: Record<
     string,
     { version: string; scope: string[]; get: () => Promise<() => unknown> }
@@ -81,16 +71,6 @@ const loadScriptModuleFederation = async <T>(
   federation.registerRemotes([{ name: remoteUrl, entry: remoteUrl, type: 'module' }])
   const module = await federation.loadRemote(remoteUrl)
   return (module as any).default as T
-}
-
-const loadScriptRequireJS = <T>(moduleUri: string) => {
-  return new Promise<T>((resolve, reject) =>
-    requirejs(
-      [moduleUri],
-      (app: T) => resolve(app),
-      (err: Error) => reject(err)
-    )
-  )
 }
 
 export const loadApplication = async ({
@@ -135,7 +115,9 @@ export const loadApplication = async ({
           applicationPath
         )
       } else {
-        applicationScript = await loadScriptRequireJS<ClassicApplicationScript>(applicationPath)
+        throw new RuntimeError(
+          'cannot load application as applicationPath is not a valid module federation remote entry'
+        )
       }
     } else {
       const productionModule = window.WEB_APPS_MAP?.[applicationPath]
