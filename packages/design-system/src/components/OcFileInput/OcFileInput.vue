@@ -1,11 +1,5 @@
 <template>
   <div :class="$attrs.class">
-    <slot name="label">
-      <label class="inline-block mb-0.5" :for="id">
-        {{ label }}
-        <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
-      </label>
-    </slot>
     <div class="flex items-center">
       <input
         :id="id"
@@ -19,68 +13,109 @@
         @change="onChange"
         @focus="onFocus"
       />
-      <oc-button
-        ref="inputBtnRef"
-        :class="{
-          'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
-        }"
-        :disabled="disabled"
-        color-role="secondary"
-        appearance="outline"
-        class="oc-file-input-button oc-text-input-btn pr-2"
-        @click="addFiles"
+      <div
+        class="size-16 shrink-0 rounded-full bg-role-surface-container-highest flex items-center justify-center overflow-hidden mr-4"
       >
-        {{ $ngettext('Select file', 'Select files', multiple ? 2 : 1) }}
-      </oc-button>
-      <div class="oc-file-input-files rounded-sm ml-2 bg-role-surface-container">
-        <div v-if="fileNames" class="py-1 px-2 text-sm flex items-center">
+        <oc-image
+          v-if="hasImagePreview"
+          :src="imagePreviewUrl"
+          :alt="$gettext('Selected image preview')"
+          class="w-full h-full object-cover"
+        />
+        <oc-icon
+          v-else
+          :name="previewIcon"
+          fill-type="line"
+          size="large"
+          color="var(--oc-role-on-surface-variant)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <slot name="label">
+          <label class="inline-block mb-0.5 font-semibold" :for="id">
+            {{ label }}
+            <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
+          </label>
+        </slot>
+        <div
+          v-if="showMessageLine"
+          class="oc-file-input-message flex items-center text-sm mt-1 min-h-4.5"
+          :class="{
+            'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+            'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
+          }"
+        >
+          <oc-icon
+            v-if="!!errorMessage"
+            name="error-warning"
+            size="small"
+            class="mr-1"
+            fill-type="line"
+            aria-hidden="true"
+          />
+
+          <span
+            :id="messageId"
+            :class="{
+              'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
+              'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
+            }"
+            v-text="messageText"
+          />
+        </div>
+        <div
+          v-if="fileNames"
+          class="oc-file-input-files text-sm text-role-on-surface-variant truncate mt-1 mb-2"
+          :title="fileNames"
+        >
           {{ fileNames }}
+        </div>
+        <div :class="['flex items-center gap-2', { 'mt-2': !fileNames }]">
+          <oc-button
+            ref="inputBtnRef"
+            :class="{
+              'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
+            }"
+            :disabled="disabled"
+            color-role="secondary"
+            appearance="outline"
+            class="oc-file-input-button oc-text-input-btn"
+            @click="addFiles"
+          >
+            <oc-icon name="upload-cloud" fill-type="line" size="small" class="mr-1" />
+            {{ $ngettext('Upload file', 'Upload files', multiple ? 2 : 1) }}
+          </oc-button>
           <oc-button
             v-if="clearButtonEnabled && fileNames"
-            appearance="raw"
-            class="oc-file-input-clear raw-hover-surface p-1 ml-1"
+            appearance="outline"
+            class="oc-file-input-clear p-2"
             :aria-label="$gettext('Clear input')"
             @click="onClear"
           >
-            <oc-icon name="close" size="small" />
+            <oc-icon name="delete-bin" fill-type="line" size="small" />
           </oc-button>
         </div>
       </div>
-    </div>
-    <div
-      v-if="showMessageLine"
-      class="oc-file-input-message flex items-center text-sm mt-1 min-h-4.5"
-      :class="{
-        'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
-        'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
-      }"
-    >
-      <oc-icon
-        v-if="!!errorMessage"
-        name="error-warning"
-        size="small"
-        class="mr-1"
-        fill-type="line"
-        aria-hidden="true"
-      />
-
-      <span
-        :id="messageId"
-        :class="{
-          'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
-          'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
-        }"
-        v-text="messageText"
-      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, useAttrs, useTemplateRef, unref, HTMLAttributes } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  useAttrs,
+  useTemplateRef,
+  unref,
+  watch,
+  HTMLAttributes
+} from 'vue'
 import { uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
+import OcImage from '../OcImage/OcImage.vue'
 
 defineOptions({
   inheritAttrs: false
@@ -137,6 +172,11 @@ export interface Props {
    * @default false
    */
   requiredMark?: boolean
+  /**
+   * @docs The icon that should be shown as preview placeholder.
+   * @default file
+   */
+  previewIcon?: string
 }
 
 export interface Emits {
@@ -168,7 +208,8 @@ const {
   errorMessage = '',
   fixMessageLine = false,
   descriptionMessage = '',
-  requiredMark = false
+  requiredMark = false,
+  previewIcon = 'file'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -184,7 +225,7 @@ const tmpAttrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
   if (!!errorMessage || !!descriptionMessage) {
-    additionalAttrs['aria-describedby'] = messageId.value
+    additionalAttrs['aria-describedby'] = unref(messageId)
   }
 
   // note: we spread out the attrs we don't want to be present in the resulting object
@@ -205,13 +246,56 @@ const messageText = computed(() => {
 
 const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
 const inputBtnRef = useTemplateRef<HTMLElement>('inputBtnRef')
+const imagePreviewUrl = ref('')
 
 const fileNames = computed(() => {
-  if (unref(modelValue)) {
-    const files = Array.from(unref(inputRef).files)
+  if (modelValue) {
+    const files = Array.from(modelValue)
     return files.map((file) => file.name).join(', ')
   }
   return ''
+})
+
+const hasImagePreview = computed(() => unref(imagePreviewUrl).length > 0)
+
+const getFirstFile = (files: FileList | null | undefined) => {
+  if (!files) {
+    return null
+  }
+  return files[0] ?? files.item(0)
+}
+
+const isImageFile = (file: File | null) => {
+  if (!file) {
+    return false
+  }
+  return file.type.startsWith('image/')
+}
+
+const clearImagePreview = () => {
+  if (unref(imagePreviewUrl).length > 0) {
+    URL.revokeObjectURL(unref(imagePreviewUrl))
+    imagePreviewUrl.value = ''
+  }
+}
+
+watch(
+  () => modelValue,
+  (newModelValue) => {
+    const firstFile = getFirstFile(newModelValue)
+    if (!isImageFile(firstFile)) {
+      clearImagePreview()
+      return
+    }
+
+    clearImagePreview()
+    imagePreviewUrl.value = URL.createObjectURL(firstFile)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  clearImagePreview()
 })
 
 const addFiles = () => {
@@ -223,6 +307,7 @@ const addFiles = () => {
 const onClear = () => {
   emit('update:modelValue', null)
   unref(inputRef).value = null
+  clearImagePreview()
 }
 
 const onChange = () => {
