@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: reduce mobile sidebar width to make it easier to dismiss [[#2410](https://github.com/opencloud-eu/web/pull/2410)]
 - feat: add the ability to show critical badge to version check if CVE … [[#2397](https://github.com/opencloud-eu/web/pull/2397)]
 
 ## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-04-20
