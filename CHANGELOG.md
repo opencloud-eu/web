@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: redesign color picker [[#2407](https://github.com/opencloud-eu/web/pull/2407)]
 - feat: reduce mobile sidebar width to make it easier to dismiss [[#2410](https://github.com/opencloud-eu/web/pull/2410)]
 - feat: add the ability to show critical badge to version check if CVE … [[#2397](https://github.com/opencloud-eu/web/pull/2397)]
 
