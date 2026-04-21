@@ -24,7 +24,7 @@
           <div
             id="sidebar-nav-mobile-panel"
             tabindex="-1"
-            class="fixed inset-y-0 left-0 w-[95%] bg-role-surface-container overflow-x-hidden"
+            class="fixed inset-y-0 left-0 w-[85%] bg-role-surface-container overflow-x-hidden"
           >
             <div class="flex flex-col h-full">
               <div class="flex items-center justify-between p-4">
