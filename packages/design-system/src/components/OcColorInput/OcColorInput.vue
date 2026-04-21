@@ -140,7 +140,7 @@ export interface Slots {
   /**
    * @docs Can be used to display a preview or showcase.
    */
-  preview?: (color: string) => unknown
+  preview?: (props: { color: string }) => unknown
   /**
    * @docs Can be used to overwrite the default rendering of the label.
    */
