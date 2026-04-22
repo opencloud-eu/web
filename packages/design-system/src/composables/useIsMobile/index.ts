@@ -9,7 +9,6 @@ export const useIsMobile = ({ includeTablet = false } = {}) => {
 
   const isMobile = computed(() => {
     const breakpoint = includeTablet ? TABLET_BREAKPOINT : MOBILE_BREAKPOINT
-    console.log(breakpoint)
     return width.value <= breakpoint
   })
 
