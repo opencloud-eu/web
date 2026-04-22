@@ -11,6 +11,10 @@
 - feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
 - feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
 
+### ✅ Tests
+
+- fix-flaky: safari upload test [[#2417](https://github.com/opencloud-eu/web/pull/2417)]
+
 ### 📈 Enhancement
 
 - feat: redesign color picker [[#2407](https://github.com/opencloud-eu/web/pull/2407)]
