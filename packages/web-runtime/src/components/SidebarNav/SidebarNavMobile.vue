@@ -63,7 +63,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SidebarNav from './SidebarNav.vue'
 
 const { requestExtensions } = useExtensionRegistry()
-const { isMobile } = useIsMobile()
+const { isMobile } = useIsMobile({ includeTablet: true })
 const { navItems } = useNavItems()
 const activeApp = useActiveApp()
 

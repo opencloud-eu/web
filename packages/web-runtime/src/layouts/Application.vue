@@ -76,7 +76,7 @@ const isLoading = computed(() => {
   return unref(areSpacesLoading)
 })
 
-const { isMobile } = useIsMobile()
+const { isMobile } = useIsMobile({ includeTablet: true })
 
 const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({

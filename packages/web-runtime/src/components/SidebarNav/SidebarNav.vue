@@ -75,7 +75,7 @@ const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
 const activeApp = useActiveApp()
 const { requestExtensions } = useExtensionRegistry()
 
-const { isMobile } = useIsMobile()
+const { isMobile } = useIsMobile({ includeTablet: true })
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,

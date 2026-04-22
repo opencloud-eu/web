@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
@@ -25,10 +25,8 @@ import {
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { requestExtensions } = useExtensionRegistry()
-const { isMobile } = useIsMobile()
+const { isMobile } = useIsMobile({ includeTablet: true })
 const activeApp = useActiveApp()
-
-const isDisabled = ref(true)
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
