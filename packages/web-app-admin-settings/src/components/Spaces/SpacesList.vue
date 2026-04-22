@@ -80,8 +80,8 @@
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
     <template #indicators="{ item }">
       <oc-status-indicators
-        v-if="getIndicators({ resource: item }).length > 0"
-        :indicators="getIndicators({ resource: item })"
+        v-if="getIndicators({ space: item, resource: item }).length > 0"
+        :indicators="getIndicators({ space: item, resource: item })"
         :resource="item"
       />
     </template>
@@ -198,15 +198,7 @@ const filter = (spaces: SpaceResource[], filterTerm: string) => {
 
 const filteredSpaces = computed(() => filter(unref(spaces), unref(filterTerm)))
 
-const sortFields = [
-  ...translateSortFields(availableSortFields, language),
-  {
-    name: 'members',
-    prop: 'root.permissions',
-    sortable: (permissions: unknown[]) => permissions?.length || 1
-  }
-]
-
+const sortFields = translateSortFields(availableSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
   fields: sortFields
