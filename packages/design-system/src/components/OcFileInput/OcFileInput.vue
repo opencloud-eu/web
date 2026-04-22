@@ -25,7 +25,7 @@
         <oc-icon
           v-else
           :name="previewIcon"
-          fill-type="line"
+          :fill-type="previewIconFillType"
           size="large"
           color="var(--oc-role-on-surface-variant)"
         />
@@ -39,7 +39,7 @@
         </slot>
         <div
           v-if="showMessageLine"
-          class="oc-file-input-message flex items-center text-sm mt-1 min-h-4.5"
+          class="oc-file-input-message flex items-center text-sm min-h-4.5"
           :class="{
             'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
             'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage
@@ -177,6 +177,11 @@ export interface Props {
    * @default file
    */
   previewIcon?: string
+  /**
+   * @docs The fill type of the preview icon.
+   * @default line
+   */
+  previewIconFillType?: 'line' | 'fill'
 }
 
 export interface Emits {
@@ -209,7 +214,8 @@ const {
   fixMessageLine = false,
   descriptionMessage = '',
   requiredMark = false,
-  previewIcon = 'file'
+  previewIcon = 'file',
+  previewIconFillType = 'line'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
