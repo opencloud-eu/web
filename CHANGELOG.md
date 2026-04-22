@@ -19,6 +19,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2415](https://github.com/opencloud-eu/web/pull/2415)]
 - chore(deps): update tiptap monorepo to v3.22.4 [[#2389](https://github.com/opencloud-eu/web/pull/2389)]
 - chore(deps): update dependency @codemirror/view to v6.41.1 [[#2390](https://github.com/opencloud-eu/web/pull/2390)]
 - chore(deps): update typescript-eslint monorepo to v8.59.0 [[#2406](https://github.com/opencloud-eu/web/pull/2406)]
