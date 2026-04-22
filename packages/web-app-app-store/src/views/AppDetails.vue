@@ -23,12 +23,9 @@
       <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
-        <text-editor
-          class="my-2"
-          :is-read-only="true"
-          :markdown-mode="true"
-          :current-content="app.description"
-        />
+        <TextEditorProvider class="my-2" :editor="appDescriptionEditor">
+          <TextEditorContent />
+        </TextEditorProvider>
       </div>
       <div v-if="app.tags">
         <h3>{{ $gettext('Tags') }}</h3>
@@ -54,10 +51,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, unref } from 'vue'
+import { computed, defineComponent, unref, watch } from 'vue'
 import { App } from '../types'
 import { APPID } from '../appid'
-import { TextEditor, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/editor'
 import { useAppsStore } from '../piniaStores'
 import AppResources from '../components/AppResources.vue'
 import AppTags from '../components/AppTags.vue'
@@ -74,7 +72,8 @@ export default defineComponent({
     AppResources,
     AppTags,
     AppVersions,
-    TextEditor
+    TextEditorProvider,
+    TextEditorContent
   },
   setup() {
     const appIdRouteParam = useRouteParam('appId')
@@ -88,6 +87,19 @@ export default defineComponent({
       return appsStore.getById(unref(appId))
     })
 
+    const appDescriptionEditor = useTextEditor({
+      contentType: 'markdown',
+      modelValue: unref(app)?.description ?? '',
+      readonly: true
+    })
+
+    watch(
+      () => unref(app)?.description,
+      (description) => {
+        appDescriptionEditor.setContent(description ?? '')
+      }
+    )
+
     const onTagClicked = (tag: string) => {
       router.push({ name: `${APPID}-list`, query: { filter: tag } })
     }
@@ -95,6 +107,7 @@ export default defineComponent({
     return {
       app,
       APPID,
+      appDescriptionEditor,
       onTagClicked
     }
   }

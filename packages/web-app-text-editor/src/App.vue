@@ -1,37 +1,46 @@
 <template>
-  <div
-    class="oc-text-editor size-full"
-    :class="{
-      'p-4 overflow-auto': isReadOnly
-    }"
-  >
-    <text-editor-component
-      :resource="resource"
-      :application-config="applicationConfig"
-      :current-content="currentContent"
-      :is-read-only="isReadOnly"
-      @update:current-content="$emit('update:currentContent', $event)"
-    />
+  <div class="oc-text-editor size-full" :class="{ 'overflow-auto': isReadOnly }">
+    <TextEditorProvider :editor="textEditor">
+      <TextEditorToolbar v-if="!isReadOnly" />
+      <TextEditorContent />
+    </TextEditorProvider>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
-import { AppConfigObject, TextEditor as TextEditorComponent } from '@opencloud-eu/web-pkg'
+<script setup lang="ts">
+import { computed } from 'vue'
+import {
+  useTextEditor,
+  TextEditorProvider,
+  TextEditorContent,
+  TextEditorToolbar
+} from '@opencloud-eu/editor'
+import type { ContentType } from '@opencloud-eu/editor'
+import type { Resource } from '@opencloud-eu/web-client'
 
-export default defineComponent({
-  name: 'TextEditor',
-  components: { TextEditorComponent },
-  props: {
-    applicationConfig: { type: Object as PropType<AppConfigObject>, required: true },
-    currentContent: {
-      type: String,
-      required: true
-    },
-    isReadOnly: { type: Boolean, required: false },
-    resource: { type: Object as PropType<Resource>, required: true }
-  },
-  emits: ['update:currentContent']
+const props = defineProps<{
+  currentContent: string
+  isReadOnly?: boolean
+  resource: Resource
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:currentContent', value: string): void
+}>()
+
+const contentType = computed<ContentType>(() => {
+  const ext = props.resource?.extension?.toLowerCase()
+  if (ext === 'md' || ext === 'markdown') return 'markdown'
+  return 'plain-text'
+})
+
+// contentType.value is a snapshot — the editor is created once per component mount.
+// This is fine because the text-editor app remounts App.vue for each file.
+const textEditor = useTextEditor({
+  contentType: contentType.value,
+  modelValue: props.currentContent,
+  readonly: props.isReadOnly,
+  slashCommands: true,
+  onUpdate: (content) => emit('update:currentContent', content)
 })
 </script>

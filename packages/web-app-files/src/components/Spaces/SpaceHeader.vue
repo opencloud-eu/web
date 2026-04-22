@@ -82,11 +82,9 @@
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
         }"
       >
-        <text-editor
-          class="markdown-container-content w-full"
-          is-read-only
-          :current-content="markdownContent"
-        />
+        <TextEditorProvider class="markdown-container-content w-full" :editor="readmeEditor">
+          <TextEditorContent />
+        </TextEditorProvider>
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
@@ -115,7 +113,6 @@ import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/
 import {
   ImageDimension,
   ProcessorType,
-  TextEditor,
   useClientService,
   useLoadPreview,
   useResourcesStore,
@@ -123,6 +120,7 @@ import {
   useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'
@@ -151,6 +149,12 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const { isMobile } = useIsMobile()
 
 const isDropOpen = ref(false)
+
+const readmeEditor = useTextEditor({
+  contentType: 'markdown',
+  modelValue: '',
+  readonly: true
+})
 
 const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownContent = ref('')
@@ -220,6 +224,10 @@ onMounted(observeMarkdownContainerResize)
 onBeforeUnmount(() => {
   unobserveMarkdownContainerResize()
   spacesStore.purgeReadmesLoading()
+})
+
+watch(markdownContent, (content) => {
+  readmeEditor.setContent(content)
 })
 
 const loadReadmeContent = async () => {
