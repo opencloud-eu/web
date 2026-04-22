@@ -367,7 +367,7 @@ const getRemainingQuota = (space: SpaceResource) => {
   return formatFileSize(space.spaceQuota.remaining, language.current)
 }
 const getMemberCount = (space: SpaceResource) => {
-  return space?.root?.permissions?.length || 1
+  return space.root.permissions?.length || 1
 }
 
 const getSelectSpaceLabel = (space: SpaceResource) => {
