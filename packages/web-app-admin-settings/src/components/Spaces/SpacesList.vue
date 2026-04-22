@@ -78,7 +78,7 @@
     <template #totalQuota="{ item }"> {{ getTotalQuota(item) }}</template>
     <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
-    <template #status="{ item }">
+    <template #indicators="{ item }">
       <oc-status-indicators
         v-if="getIndicators({ resource: item }).length > 0"
         :indicators="getIndicators({ resource: item })"
@@ -165,7 +165,7 @@ import {
 } from '../../composables/keyboardActions'
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
-import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const router = useRouter()
@@ -198,7 +198,15 @@ const filter = (spaces: SpaceResource[], filterTerm: string) => {
 
 const filteredSpaces = computed(() => filter(unref(spaces), unref(filterTerm)))
 
-const sortFields = translateSortFields(availableSortFields, language)
+const sortFields = [
+  ...translateSortFields(availableSortFields, language),
+  {
+    name: 'members',
+    prop: 'root.permissions',
+    sortable: (permissions: unknown[]) => permissions?.length || 1
+  }
+]
+
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
   fields: sortFields
@@ -302,10 +310,12 @@ const fields = computed<FieldType[]>(() => [
     sortable: true
   },
   {
-    name: 'status',
+    name: 'indicators',
     title: $gettext('Status'),
     type: 'slot',
-    sortable: false
+    alignH: 'right',
+    wrap: 'nowrap',
+    width: 'shrink'
   },
   {
     name: 'mdate',
@@ -473,9 +483,9 @@ const selectSpaces = (spaces: SpaceResource[]) => {
     @apply whitespace-nowrap;
   }
 
-  /* Status, Members, Mdate: hidden by default, visible from md */
-  .oc-table-header-cell-status,
-  .oc-table-data-cell-status,
+  /* Indicators, Members, Mdate: hidden by default, visible from md */
+  .oc-table-header-cell-indicators,
+  .oc-table-data-cell-indicators,
   .oc-table-header-cell-members,
   .oc-table-data-cell-members,
   .oc-table-header-cell-mdate,
@@ -498,8 +508,8 @@ const selectSpaces = (spaces: SpaceResource[]) => {
   /* Squashed variant */
   .settings-spaces-table-squashed .oc-table-header-cell-manager,
   .settings-spaces-table-squashed .oc-table-data-cell-manager,
-  .settings-spaces-table-squashed .oc-table-header-cell-status,
-  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-indicators,
+  .settings-spaces-table-squashed .oc-table-data-cell-indicators,
   .settings-spaces-table-squashed .oc-table-header-cell-members,
   .settings-spaces-table-squashed .oc-table-data-cell-members,
   .settings-spaces-table-squashed .oc-table-header-cell-totalQuota,
@@ -509,11 +519,11 @@ const selectSpaces = (spaces: SpaceResource[]) => {
     @apply hidden;
   }
 
-  /* RemainingQuota, Status, Members, Mdate visible from xl */
+  /* RemainingQuota, Indicators, Members, Mdate visible from xl */
   .settings-spaces-table-squashed .oc-table-header-cell-remainingQuota,
   .settings-spaces-table-squashed .oc-table-data-cell-remainingQuota,
-  .settings-spaces-table-squashed .oc-table-header-cell-status,
-  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-indicators,
+  .settings-spaces-table-squashed .oc-table-data-cell-indicators,
   .settings-spaces-table-squashed .oc-table-header-cell-members,
   .settings-spaces-table-squashed .oc-table-data-cell-members,
   .settings-spaces-table-squashed .oc-table-header-cell-mdate,
