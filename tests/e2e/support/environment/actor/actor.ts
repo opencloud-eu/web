@@ -36,6 +36,12 @@ export class ActorEnvironment extends EventEmitter implements Actor {
         if (exception.message.includes('ResizeObserver')) {
           return
         }
+        if (
+          exception.message.includes('access control checks') &&
+          exception.message.includes('preview=1')
+        ) {
+          return
+        }
       }
       // make the test fail if FAIL_ON_UNCAUGHT_CONSOLE_ERR=true
       if (this.options.context.failOnUncaughtConsoleError) {

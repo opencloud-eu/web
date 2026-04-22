@@ -144,6 +144,7 @@ const onlyOfficeCanvasEditorSelector = '#id_viewer_overlay'
 const onlyOfficeCanvasCursorSelector = '#id_target_cursor'
 const onlyOfficeInfoDialog = '.alert .info-box'
 const onlyOfficeInfoDialogConfirm = `.alert button[result="ok"]`
+
 const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
 const fileIcon = '#oc-file-details-sidebar .details-icon'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
@@ -155,6 +156,7 @@ const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()
 const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
 const previewFavoriteButton = '.preview-controls-favorite'
+const uploadList = '#upload-list'
 
 export const getResourceLocator = ({
   page,
@@ -637,13 +639,13 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to })
   }
 
-  await page.locator(addNewResourceButton).click()
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
-  await expect(page.locator(folderUploadInput)).toBeAttached()
-
   let uploadAction: Promise<void> = page
     .locator(inputSelector)
     .setInputFiles(resources.map((file) => file.path))
+
+  await page.locator(addNewResourceButton).click()
+  await expect(page.locator(uploadList)).toBeVisible()
 
   if (option) {
     await uploadAction
