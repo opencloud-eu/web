@@ -1,45 +1,83 @@
 <template>
-  <div
-    :class="[
-      '[&_.cropper-crop-box]:!outline-1',
-      '[&_.cropper-crop-box]:!outline-role-outline',
-      '[&_.cropper-line]:!bg-role-outline',
-      '[&_.cropper-point]:!bg-role-outline'
-    ]"
-  >
-    <div v-if="imageUrl" class="max-h-[400px]">
-      <img ref="imageRef" :src="imageUrl" />
-      <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
-        <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
-        <span
-          v-text="
-            $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
-              zoomKeys: $gettext('+-'),
-              panKeys: $gettext('↑↓←→')
-            })
-          "
-        />
-      </div>
-    </div>
+  <cropper-canvas ref="cropperCanvasRef" background style="height: 400px" wheelable>
+    <cropper-image
+      ref="cropperImageRef"
+      :src="imageUrl"
+      rotatable
+      scalable
+      skewable
+      translatable
+      wheelable
+      @transform="onCropperImageTransform"
+    />
+    <cropper-shade hidden />
+    <cropper-handle action="select" plain />
+    <cropper-selection
+      id="space-image-modal-cropper-selection"
+      ref="cropperSelectionRef"
+      tabindex="0"
+      data-custom-key-bindings-disabled="true"
+      initial-coverage="0.8"
+      :aspect-ratio="16 / 9"
+      movable
+      resizable
+      outlined
+      class="focus:!ring-0 focus:!outline outline-role-outline focus:!outline-role-outline"
+      @change="onCropperSelectionChange"
+    >
+      <cropper-grid role="grid" bordered covered />
+      <cropper-crosshair centered />
+      <cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)" />
+      <cropper-handle theme-color="#70787c" action="n-resize" />
+      <cropper-handle theme-color="#70787c" action="e-resize" />
+      <cropper-handle theme-color="#70787c" action="s-resize" />
+      <cropper-handle theme-color="#70787c" action="w-resize" />
+      <cropper-handle theme-color="#70787c" action="ne-resize" />
+      <cropper-handle theme-color="#70787c" action="nw-resize" />
+      <cropper-handle theme-color="#70787c" action="se-resize" />
+      <cropper-handle theme-color="#70787c" action="sw-resize" />
+    </cropper-selection>
+  </cropper-canvas>
+  <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
+    <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
+    <span
+      v-text="
+        $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
+          zoomKeys: $gettext('+-'),
+          panKeys: $gettext('↑↓←→')
+        })
+      "
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { onMounted, ref, unref, watch } from 'vue'
 import {
   Modal,
   useClientService,
   useCreateSpace,
-  useCropperKeyboardActions,
   useMessages,
   useSpaceHelpers,
-  useSpacesStore
+  useSpacesStore,
+  useCropperKeyboardActions
 } from '../../composables'
-import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
+import 'cropperjs'
 import { eventBus } from '../../services'
 import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
+import type {
+  CropperSelection,
+  CropperImage as CropperImageType,
+  CropperCanvas as CropperCanvasType
+} from 'cropperjs'
+
+interface Selection {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 const { space, file } = defineProps<{
   modal: Modal
@@ -55,15 +93,17 @@ const { createDefaultMetaFolder } = useCreateSpace()
 const { getDefaultMetaFolder } = useSpaceHelpers()
 const { setCropperInstance } = useCropperKeyboardActions()
 
-const cropper = ref<Cropper | null>(null)
-const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
+const cropperCanvasRef = ref<CropperCanvasType | null>(null)
+const cropperImageRef = ref<CropperImageType | null>(null)
+const cropperSelectionRef = ref<CropperSelection | null>(null)
 const imageUrl = ref<string | null>(null)
 
 const onConfirm = async () => {
-  const canvas = unref(cropper)?.getCroppedCanvas({
-    imageSmoothingQuality: 'high'
-  })
+  if (!unref(cropperSelectionRef)) {
+    return
+  }
 
+  const canvas = await unref(cropperSelectionRef).$toCanvas()
   const content = await getArrayBufferFromCropper(canvas)
   await uploadSpaceImage(content)
 }
@@ -138,25 +178,69 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
   }
 }
 
-onMounted(async () => {
+const inSelection = (selection: Selection, maxSelection: Selection) => {
+  return (
+    selection.x >= maxSelection.x &&
+    selection.y >= maxSelection.y &&
+    selection.x + selection.width <= maxSelection.x + maxSelection.width &&
+    selection.y + selection.height <= maxSelection.y + maxSelection.height
+  )
+}
+
+const onCropperImageTransform = (event: CustomEvent) => {
+  const cropperCanvas = unref(cropperCanvasRef)
+  if (!cropperCanvas) {
+    return
+  }
+
+  const cropperSelection = unref(cropperSelectionRef)
+  if (!cropperSelection) {
+    return
+  }
+
+  const cropperCanvasRect = cropperCanvas.getBoundingClientRect()
+  const selection = cropperSelection as Selection
+  const maxSelection: Selection = {
+    x: 0,
+    y: 0,
+    width: cropperCanvasRect.width,
+    height: cropperCanvasRect.height
+  }
+
+  if (!inSelection(selection, maxSelection)) {
+    event.preventDefault()
+  }
+}
+
+const onCropperSelectionChange = (event: CustomEvent) => {
+  const cropperCanvas = unref(cropperCanvasRef)
+  if (!cropperCanvas) {
+    return
+  }
+
+  const cropperCanvasRect = cropperCanvas.getBoundingClientRect()
+  const selection = event.detail as Selection
+  const maxSelection: Selection = {
+    x: 0,
+    y: 0,
+    width: cropperCanvasRect.width,
+    height: cropperCanvasRect.height
+  }
+
+  if (!inSelection(selection, maxSelection)) {
+    event.preventDefault()
+  }
+}
+
+watch(cropperSelectionRef, (cropper) => {
+  if (cropper) {
+    setCropperInstance(cropperSelectionRef, cropperImageRef)
+  }
+})
+
+onMounted(() => {
   try {
     imageUrl.value = URL.createObjectURL(file)
-
-    if (unref(cropper)) {
-      unref(cropper)?.destroy()
-    }
-
-    await nextTick()
-
-    cropper.value = new Cropper(unref(imageRef), {
-      aspectRatio: 16 / 9,
-      viewMode: 1,
-      dragMode: 'move',
-      autoCropArea: 0.8,
-      responsive: true,
-      background: false
-    })
-    setCropperInstance(cropper)
   } catch (error) {
     showErrorMessage({
       title: $gettext('Failed to load space image'),
