@@ -258,7 +258,7 @@ describe('Search Bar portal component', () => {
     wrapper.find(selectors.searchInput).trigger('keyup.esc')
     expect(wrapper.vm.term).toBe('')
   })
-  test('unfocuses search input on key press esc when search term is empty', async () => {
+  test('unfocuses search input on key press esc when search term is empty', () => {
     const { wrapper } = getMountedWrapper()
     const blurSpy = vi.spyOn(
       wrapper.find(selectors.searchInput).element as HTMLInputElement,
