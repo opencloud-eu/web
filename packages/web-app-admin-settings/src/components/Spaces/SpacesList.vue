@@ -78,22 +78,19 @@
     <template #totalQuota="{ item }"> {{ getTotalQuota(item) }}</template>
     <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
+    <template #status="{ item }">
+      <oc-status-indicators
+        v-if="getIndicators({ resource: item }).length > 0"
+        :indicators="getIndicators({ resource: item })"
+        :resource="item"
+      />
+    </template>
     <template #mdate="{ item }">
       <span
         v-oc-tooltip="formatDate(item.mdate)"
         tabindex="0"
         v-text="formatDateRelative(item.mdate)"
       />
-    </template>
-    <template #status="{ item }">
-      <span class="flex items-center">
-        <oc-icon
-          v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
-          :name="item.disabled ? 'stop-circle' : 'play-circle'"
-          size="small"
-          fill-type="line"
-        />
-      </span>
     </template>
     <template #actions="{ item }">
       <div class="spaces-list-actions">
@@ -142,8 +139,10 @@ import {
   NoContentMessage,
   useSort,
   sortFields as availableSortFields,
-  translateSortFields
+  translateSortFields,
+  useResourceIndicators
 } from '@opencloud-eu/web-pkg'
+import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
@@ -186,6 +185,8 @@ const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+
+const { getIndicators } = useResourceIndicators()
 
 const filter = (spaces: SpaceResource[], filterTerm: string) => {
   if (!(filterTerm || '').trim()) {
@@ -272,12 +273,6 @@ const fields = computed<FieldType[]>(() => [
     width: 'expand'
   },
   {
-    name: 'status',
-    title: $gettext('Status'),
-    type: 'slot',
-    sortable: true
-  },
-  {
     name: 'manager',
     title: $gettext('Manager'),
     type: 'slot'
@@ -305,6 +300,12 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Remaining quota'),
     type: 'slot',
     sortable: true
+  },
+  {
+    name: 'status',
+    title: $gettext('Status'),
+    type: 'slot',
+    sortable: false
   },
   {
     name: 'mdate',
@@ -365,7 +366,7 @@ const getRemainingQuota = (space: SpaceResource) => {
   return formatFileSize(space.spaceQuota.remaining, language.current)
 }
 const getMemberCount = (space: SpaceResource) => {
-  return space.root.permissions?.length || 1
+  return space?.root?.permissions?.length || 1
 }
 
 const getSelectSpaceLabel = (space: SpaceResource) => {
