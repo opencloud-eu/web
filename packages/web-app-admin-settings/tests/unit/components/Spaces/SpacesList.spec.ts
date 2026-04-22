@@ -204,7 +204,8 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCheckbox: true
+          OcCheckbox: true,
+          OcStatusIndicators: true
         }
       }
     })

@@ -129,28 +129,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">0 B</td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1 GB</td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell whitespace-nowrap text-right align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-indicators">
-        <div class="oc-status-indicators flex items-center gap-0.5">
-          <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 oc-status-indicators-indicator" id="resource-locked-undefined" tabindex="-1" aria-describedby="oc-indicator-description-3" data-testid="resource-locked-undefined" data-test-indicator-type="resource-locked"><svg data-testid="inline-svg-stub" src="icons/lock-line.svg" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-labelledby="oc-icon-title-5" class="size-4"></svg></span>
-          <p id="oc-indicator-description-3" class="sr-only">Item locked</p>
-          <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 oc-status-indicators-indicator ml-1" id="resource-processing-undefined" tabindex="-1" aria-describedby="oc-indicator-description-4" data-testid="resource-processing-undefined" data-test-indicator-type="resource-processing"><svg data-testid="inline-svg-stub" src="icons/loop-right-line.svg" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-labelledby="oc-icon-title-6" class="size-4"></svg></span>
-          <p id="oc-indicator-description-4" class="sr-only">Item in processing</p>
-        </div>
+        <oc-status-indicators-stub indicators="[object Object],[object Object]" resource="undefined" disablehandler="false"></oc-status-indicators-stub>
       </td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
@@ -187,7 +166,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
     </tr>
     <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
-        <oc-checkbox-stub option="undefined" label="Select 2 Another space" disabled="false" id="oc-checkbox-7" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
+        <oc-checkbox-stub option="undefined" label="Select 2 Another space" disabled="false" id="oc-checkbox-3" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
       </td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
@@ -205,28 +184,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-usedQuota">500 MB</td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-remainingQuota">1.5 GB</td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell whitespace-nowrap text-right align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-indicators">
-        <div class="oc-status-indicators flex items-center gap-0.5">
-          <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 oc-status-indicators-indicator" id="resource-locked-undefined" tabindex="-1" aria-describedby="oc-indicator-description-8" data-testid="resource-locked-undefined" data-test-indicator-type="resource-locked"><svg data-testid="inline-svg-stub" src="icons/lock-line.svg" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-labelledby="oc-icon-title-10" class="size-4"></svg></span>
-          <p id="oc-indicator-description-8" class="sr-only">Item locked</p>
-          <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 oc-status-indicators-indicator ml-1" id="resource-processing-undefined" tabindex="-1" aria-describedby="oc-indicator-description-9" data-testid="resource-processing-undefined" data-test-indicator-type="resource-processing"><svg data-testid="inline-svg-stub" src="icons/loop-right-line.svg" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-labelledby="oc-icon-title-11" class="size-4"></svg></span>
-          <p id="oc-indicator-description-9" class="sr-only">Item in processing</p>
-        </div>
+        <oc-status-indicators-stub indicators="[object Object],[object Object]" resource="undefined" disablehandler="false"></oc-status-indicators-stub>
       </td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mdate"><span tabindex="0"></span></td>
       <td data-v-27e13406="" data-v-3c9ab66c="" class="oc-table-cell text-right align-middle oc-td oc-table-data-cell oc-table-data-cell-actions pr-4">
