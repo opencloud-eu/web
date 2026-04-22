@@ -80,7 +80,6 @@
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
     <template #indicators="{ item }">
       <oc-status-indicators
-        v-if="getIndicators({ space: item, resource: item }).length > 0"
         :indicators="getIndicators({ space: item, resource: item })"
         :resource="item"
       />
