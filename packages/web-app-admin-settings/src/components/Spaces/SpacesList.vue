@@ -139,7 +139,10 @@ import {
   useIsTopBarSticky,
   useSharesStore,
   useSideBar,
-  NoContentMessage
+  NoContentMessage,
+  useSort,
+  sortFields as availableSortFields,
+  translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
@@ -176,8 +179,6 @@ const { openSideBar } = useSideBar()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-const sortBy = ref('name')
-const sortDir = ref(SortDir.Asc)
 const filterTerm = ref('')
 
 const lastSelectedSpaceIndex = ref(0)
@@ -185,6 +186,22 @@ const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+
+const filter = (spaces: SpaceResource[], filterTerm: string) => {
+  if (!(filterTerm || '').trim()) {
+    return spaces
+  }
+  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(filterTerm).map((r) => r.item)
+}
+
+const filteredSpaces = computed(() => filter(unref(spaces), unref(filterTerm)))
+
+const sortFields = translateSortFields(availableSortFields, language)
+const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
+  items: filteredSpaces,
+  fields: sortFields
+})
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
 const footerTextTotal = computed(() => {
@@ -197,46 +214,6 @@ const footerTextFilter = computed(() => {
     spaceCount: unref(items).length.toString()
   })
 })
-
-const orderBy = (list: SpaceResource[], prop: string, desc: boolean) => {
-  return [...list].sort((s1, s2) => {
-    let a: string, b: string
-    const numeric = ['totalQuota', 'usedQuota', 'remainingQuota'].includes(prop)
-
-    switch (prop) {
-      case 'members':
-        a = getMemberCount(s1).toString()
-        b = getMemberCount(s2).toString()
-        break
-      case 'totalQuota':
-        a = (s1.spaceQuota.total || 0).toString()
-        b = (s2.spaceQuota.total || 0).toString()
-        break
-      case 'usedQuota':
-        a = (s1.spaceQuota.used || 0).toString()
-        b = (s2.spaceQuota.used || 0).toString()
-        break
-      case 'remainingQuota':
-        a = (s1.spaceQuota.remaining || 0).toString()
-        b = (s2.spaceQuota.remaining || 0).toString()
-        break
-      case 'status':
-        a = s1.disabled.toString()
-        b = s2.disabled.toString()
-        break
-      default:
-        a = s1[prop as keyof SpaceResource].toString() || ''
-        b = s2[prop as keyof SpaceResource].toString() || ''
-    }
-
-    return desc
-      ? b.localeCompare(a, undefined, { numeric })
-      : a.localeCompare(b, undefined, { numeric })
-  })
-}
-const items = computed(() =>
-  orderBy(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === SortDir.Desc)
-)
 const {
   items: paginatedItems,
   page: currentPage,
@@ -266,18 +243,6 @@ watch(currentPage, () => {
 const allSpacesSelected = computed(() => {
   return unref(paginatedItems).length === unref(selectedSpaces).length
 })
-
-const handleSort = (event: { sortBy: string; sortDir: SortDir }) => {
-  sortBy.value = event.sortBy
-  sortDir.value = event.sortDir
-}
-const filter = (spaces: SpaceResource[], filterTerm: string) => {
-  if (!(filterTerm || '').trim()) {
-    return spaces
-  }
-  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
-}
 const isSpaceSelected = (space: SpaceResource) => {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
