@@ -9,7 +9,6 @@ import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { nextTick } from 'vue'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
-import { OcTable } from '@opencloud-eu/design-system/components'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -91,35 +90,39 @@ describe('SpacesList', () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })
     expect(wrapper.html()).toMatchSnapshot()
   })
-  it.each(['name', 'members', 'totalQuota', 'usedQuota', 'remainingQuota', 'status'])(
+  it.each(['name', 'members', 'totalQuota', 'usedQuota', 'remainingQuota'])(
     'sorts by property "%s"',
     async (prop) => {
-      const { wrapper } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
-      ;(wrapper.vm as any).sortBy = prop
+      const { wrapper, mocks } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
+      ;(wrapper.vm as any).handleSort({ sortBy: prop, sortDir: SortDir.Asc })
       await wrapper.vm.$nextTick()
-      expect(
-        (
-          wrapper.findComponent<typeof OcTable>(selectors.ocTableStub).props()
-            .data[0] as SpaceResource
-        ).id
-      ).toBe(spaceMocks[0].id)
-      ;(wrapper.vm as any).sortDir = SortDir.Desc
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        query: expect.objectContaining({
+          'sort-by': prop,
+          'sort-dir': SortDir.Asc
+        })
+      })
+      ;(wrapper.vm as any).handleSort({ sortBy: prop, sortDir: SortDir.Desc })
       await wrapper.vm.$nextTick()
-      expect(
-        (
-          wrapper.findComponent<typeof OcTable>(selectors.ocTableStub).props()
-            .data[0] as SpaceResource
-        ).id
-      ).toBe(spaceMocks[1].id)
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        query: expect.objectContaining({
+          'sort-by': prop,
+          'sort-dir': SortDir.Desc
+        })
+      })
     }
   )
   it('should set the sort parameters accordingly when calling "handleSort"', () => {
-    const { wrapper } = getWrapper({ spaces: [spaceMocks[0]] })
+    const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
     const sortBy = 'members'
     const sortDir = SortDir.Desc
     ;(wrapper.vm as any).handleSort({ sortBy, sortDir })
-    expect((wrapper.vm as any).sortBy).toEqual(sortBy)
-    expect((wrapper.vm as any).sortDir).toEqual(sortDir)
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      query: expect.objectContaining({
+        'sort-by': sortBy,
+        'sort-dir': sortDir
+      })
+    })
   })
   it('shows only filtered spaces if filter applied', async () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })
@@ -185,6 +188,7 @@ function getWrapper({
   const mocks = defaultComponentMocks()
 
   return {
+    mocks,
     wrapper: mountType(SpacesList, {
       props: {
         headerPosition: 0
@@ -200,7 +204,8 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCheckbox: true
+          OcCheckbox: true,
+          OcStatusIndicators: true
         }
       }
     })

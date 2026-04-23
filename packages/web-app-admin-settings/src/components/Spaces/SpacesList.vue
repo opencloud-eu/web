@@ -78,22 +78,18 @@
     <template #totalQuota="{ item }"> {{ getTotalQuota(item) }}</template>
     <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
+    <template #indicators="{ item }">
+      <oc-status-indicators
+        :indicators="getIndicators({ space: item, resource: item })"
+        :resource="item"
+      />
+    </template>
     <template #mdate="{ item }">
       <span
         v-oc-tooltip="formatDate(item.mdate)"
         tabindex="0"
         v-text="formatDateRelative(item.mdate)"
       />
-    </template>
-    <template #status="{ item }">
-      <span class="flex items-center">
-        <oc-icon
-          v-oc-tooltip="item.disabled ? $gettext('Disabled') : $gettext('Enabled')"
-          :name="item.disabled ? 'stop-circle' : 'play-circle'"
-          size="small"
-          fill-type="line"
-        />
-      </span>
     </template>
     <template #actions="{ item }">
       <div class="spaces-list-actions">
@@ -139,8 +135,13 @@ import {
   useIsTopBarSticky,
   useSharesStore,
   useSideBar,
-  NoContentMessage
+  NoContentMessage,
+  useSort,
+  sortFields as availableSortFields,
+  translateSortFields,
+  useResourceIndicators
 } from '@opencloud-eu/web-pkg'
+import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Mark from 'mark.js'
@@ -163,7 +164,7 @@ import {
 } from '../../composables/keyboardActions'
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
-import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const router = useRouter()
@@ -176,8 +177,6 @@ const { openSideBar } = useSideBar()
 
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-const sortBy = ref('name')
-const sortDir = ref(SortDir.Asc)
 const filterTerm = ref('')
 
 const lastSelectedSpaceIndex = ref(0)
@@ -185,6 +184,24 @@ const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+
+const { getIndicators } = useResourceIndicators()
+
+const filter = (spaces: SpaceResource[], filterTerm: string) => {
+  if (!(filterTerm || '').trim()) {
+    return spaces
+  }
+  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(filterTerm).map((r) => r.item)
+}
+
+const filteredSpaces = computed(() => filter(unref(spaces), unref(filterTerm)))
+
+const sortFields = translateSortFields(availableSortFields, language)
+const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
+  items: filteredSpaces,
+  fields: sortFields
+})
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
 const footerTextTotal = computed(() => {
@@ -197,46 +214,6 @@ const footerTextFilter = computed(() => {
     spaceCount: unref(items).length.toString()
   })
 })
-
-const orderBy = (list: SpaceResource[], prop: string, desc: boolean) => {
-  return [...list].sort((s1, s2) => {
-    let a: string, b: string
-    const numeric = ['totalQuota', 'usedQuota', 'remainingQuota'].includes(prop)
-
-    switch (prop) {
-      case 'members':
-        a = getMemberCount(s1).toString()
-        b = getMemberCount(s2).toString()
-        break
-      case 'totalQuota':
-        a = (s1.spaceQuota.total || 0).toString()
-        b = (s2.spaceQuota.total || 0).toString()
-        break
-      case 'usedQuota':
-        a = (s1.spaceQuota.used || 0).toString()
-        b = (s2.spaceQuota.used || 0).toString()
-        break
-      case 'remainingQuota':
-        a = (s1.spaceQuota.remaining || 0).toString()
-        b = (s2.spaceQuota.remaining || 0).toString()
-        break
-      case 'status':
-        a = s1.disabled.toString()
-        b = s2.disabled.toString()
-        break
-      default:
-        a = s1[prop as keyof SpaceResource].toString() || ''
-        b = s2[prop as keyof SpaceResource].toString() || ''
-    }
-
-    return desc
-      ? b.localeCompare(a, undefined, { numeric })
-      : a.localeCompare(b, undefined, { numeric })
-  })
-}
-const items = computed(() =>
-  orderBy(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === SortDir.Desc)
-)
 const {
   items: paginatedItems,
   page: currentPage,
@@ -266,18 +243,6 @@ watch(currentPage, () => {
 const allSpacesSelected = computed(() => {
   return unref(paginatedItems).length === unref(selectedSpaces).length
 })
-
-const handleSort = (event: { sortBy: string; sortDir: SortDir }) => {
-  sortBy.value = event.sortBy
-  sortDir.value = event.sortDir
-}
-const filter = (spaces: SpaceResource[], filterTerm: string) => {
-  if (!(filterTerm || '').trim()) {
-    return spaces
-  }
-  const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
-}
 const isSpaceSelected = (space: SpaceResource) => {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
@@ -307,12 +272,6 @@ const fields = computed<FieldType[]>(() => [
     width: 'expand'
   },
   {
-    name: 'status',
-    title: $gettext('Status'),
-    type: 'slot',
-    sortable: true
-  },
-  {
     name: 'manager',
     title: $gettext('Manager'),
     type: 'slot'
@@ -340,6 +299,14 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Remaining quota'),
     type: 'slot',
     sortable: true
+  },
+  {
+    name: 'indicators',
+    title: $gettext('Status'),
+    type: 'slot',
+    alignH: 'right',
+    wrap: 'nowrap',
+    width: 'shrink'
   },
   {
     name: 'mdate',
@@ -507,9 +474,9 @@ const selectSpaces = (spaces: SpaceResource[]) => {
     @apply whitespace-nowrap;
   }
 
-  /* Status, Members, Mdate: hidden by default, visible from md */
-  .oc-table-header-cell-status,
-  .oc-table-data-cell-status,
+  /* Indicators, Members, Mdate: hidden by default, visible from md */
+  .oc-table-header-cell-indicators,
+  .oc-table-data-cell-indicators,
   .oc-table-header-cell-members,
   .oc-table-data-cell-members,
   .oc-table-header-cell-mdate,
@@ -532,8 +499,8 @@ const selectSpaces = (spaces: SpaceResource[]) => {
   /* Squashed variant */
   .settings-spaces-table-squashed .oc-table-header-cell-manager,
   .settings-spaces-table-squashed .oc-table-data-cell-manager,
-  .settings-spaces-table-squashed .oc-table-header-cell-status,
-  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-indicators,
+  .settings-spaces-table-squashed .oc-table-data-cell-indicators,
   .settings-spaces-table-squashed .oc-table-header-cell-members,
   .settings-spaces-table-squashed .oc-table-data-cell-members,
   .settings-spaces-table-squashed .oc-table-header-cell-totalQuota,
@@ -543,11 +510,11 @@ const selectSpaces = (spaces: SpaceResource[]) => {
     @apply hidden;
   }
 
-  /* RemainingQuota, Status, Members, Mdate visible from xl */
+  /* RemainingQuota, Indicators, Members, Mdate visible from xl */
   .settings-spaces-table-squashed .oc-table-header-cell-remainingQuota,
   .settings-spaces-table-squashed .oc-table-data-cell-remainingQuota,
-  .settings-spaces-table-squashed .oc-table-header-cell-status,
-  .settings-spaces-table-squashed .oc-table-data-cell-status,
+  .settings-spaces-table-squashed .oc-table-header-cell-indicators,
+  .settings-spaces-table-squashed .oc-table-data-cell-indicators,
   .settings-spaces-table-squashed .oc-table-header-cell-members,
   .settings-spaces-table-squashed .oc-table-data-cell-members,
   .settings-spaces-table-squashed .oc-table-header-cell-mdate,
