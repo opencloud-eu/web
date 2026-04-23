@@ -6,7 +6,9 @@ describe('OcFileInput', () => {
     inputField: '.oc-file-input',
     inputMessage: '.oc-file-input-message span',
     descriptionMessage: '.oc-file-input-description',
-    errorMessage: '.oc-file-input-danger'
+    errorMessage: '.oc-file-input-danger',
+    previewImage: 'oc-image-stub',
+    previewIcon: 'oc-icon-stub'
   }
 
   describe('id', () => {
@@ -42,6 +44,26 @@ describe('OcFileInput', () => {
       expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
     })
   })
+
+  describe('preview', () => {
+    it('should show the default preview icon', () => {
+      const wrapper = getWrapper()
+      expect(wrapper.find(selectors.previewIcon).attributes('name')).toBe('file')
+    })
+
+    it('should allow setting a custom preview icon', () => {
+      const wrapper = getWrapper({ previewIcon: 'image' })
+      expect(wrapper.find(selectors.previewIcon).attributes('name')).toBe('image')
+    })
+
+    it('should show an image preview for image files', () => {
+      const wrapper = getWrapper({
+        modelValue: createFileList([new File(['hello'], 'preview.png', { type: 'image/png' })])
+      })
+
+      expect(wrapper.find(selectors.previewImage).exists()).toBeTruthy()
+    })
+  })
 })
 
 const getWrapper = (props: PartialComponentProps<typeof OcFileInput> = {}) => {
@@ -53,4 +75,10 @@ const getWrapper = (props: PartialComponentProps<typeof OcFileInput> = {}) => {
     },
     global: { plugins: [...defaultPlugins()] }
   })
+}
+
+const createFileList = (files: File[]) => {
+  const typedFiles = files as File[] & { item: (index: number) => File | null }
+  typedFiles.item = (index: number) => files[index] ?? null
+  return typedFiles as unknown as FileList
 }
