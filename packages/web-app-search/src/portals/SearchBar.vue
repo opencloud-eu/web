@@ -24,7 +24,7 @@
       @update:model-value="updateTerm"
       @clear="onClear"
       @click="showPreview"
-      @keyup.esc="hideOptionsDrop"
+      @keyup.esc="onKeyUpEsc"
       @keyup.up="onKeyUpUp"
       @keyup.down="onKeyUpDown"
       @keyup.enter="onKeyUpEnter"
@@ -512,6 +512,14 @@ export default defineComponent({
     },
     onKeyUpDown() {
       this.activePreviewIndex = this.findNextPreviewIndex(false)
+    },
+    onKeyUpEsc() {
+      if (this.term) {
+        this.updateTerm('')
+        return
+      }
+      const inputElement = this.$el.getElementsByTagName('input')[0] as HTMLElement
+      inputElement.blur()
     },
     getSearchResultForProvider(provider: SearchProvider) {
       return this.searchResults.find(({ providerId }) => providerId === provider.id)?.result
