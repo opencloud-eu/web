@@ -29,7 +29,7 @@ export const useFileActionsSetImage = () => {
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
-      focusTrapInitial: '#space-image-modal-cropper-selection',
+      focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({ file, space: space })
     })
   }

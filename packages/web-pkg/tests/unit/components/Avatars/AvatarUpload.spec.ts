@@ -117,8 +117,8 @@ describe('AvatarUpload', () => {
 
       input.dispatchEvent(event)
       await nextTicks(2)
-      ;(wrapper.vm as any).cropperSelectionRef = {
-        $toCanvas: vi.fn(() =>
+      ;(wrapper.vm as any).imageCropperRef = {
+        getCroppedCanvas: vi.fn(() =>
           Promise.resolve({
             toBlob: vi.fn((cb) => cb(new Blob())),
             toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
@@ -153,8 +153,8 @@ describe('AvatarUpload', () => {
 
       input.dispatchEvent(event)
       await nextTicks(2)
-      ;(wrapper.vm as any).cropperSelectionRef = {
-        $toCanvas: vi.fn(() =>
+      ;(wrapper.vm as any).imageCropperRef = {
+        getCroppedCanvas: vi.fn(() =>
           Promise.resolve({
             toBlob: vi.fn((cb) => cb(new Blob())),
             toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
@@ -187,13 +187,7 @@ const getWrapper = ({ userHasAvatar = true } = {}) => {
         renderStubDefaultSlot: true,
         stubs: {
           FocusTrap: true,
-          'cropper-canvas': true,
-          'cropper-image': true,
-          'cropper-shade': true,
-          'cropper-handle': true,
-          'cropper-selection': true,
-          'cropper-grid': true,
-          'cropper-crosshair': true
+          ImageCropper: true
         },
         plugins: [
           ...defaultPlugins({

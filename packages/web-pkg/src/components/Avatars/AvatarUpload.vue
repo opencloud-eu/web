@@ -29,61 +29,17 @@
       :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!imageUrl"
-      focus-trap-initial="#avatar-upload-cropper-selection"
+      focus-trap-initial="#image-cropper-selection"
       @cancel="onCropModalCancel"
       @confirm="onCropModalConfirm"
     >
       <template #content>
-        <cropper-canvas ref="cropperCanvasRef" background style="height: 400px" wheelable>
-          <cropper-image
-            ref="cropperImageRef"
-            rotatable
-            scalable
-            skewable
-            translatable
-            wheelable
-            :src="imageUrl"
-            @transform="onCropperImageTransform"
-          />
-          <cropper-shade hidden />
-          <cropper-handle action="select" plain />
-          <cropper-selection
-            id="avatar-upload-cropper-selection"
-            ref="cropperSelectionRef"
-            tabindex="0"
-            data-custom-key-bindings-disabled="true"
-            initial-coverage="0.8"
-            aspect-ratio="1"
-            movable
-            resizable
-            outlined
-            class="rounded-full focus:!ring-0 focus:!outline outline-role-outline focus:!outline-role-outline"
-            @change="onCropperSelectionChange"
-          >
-            <cropper-grid role="grid" bordered covered />
-            <cropper-crosshair centered />
-            <cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)" />
-            <cropper-handle theme-color="#70787c" action="n-resize" />
-            <cropper-handle theme-color="#70787c" action="e-resize" />
-            <cropper-handle theme-color="#70787c" action="s-resize" />
-            <cropper-handle theme-color="#70787c" action="w-resize" />
-            <cropper-handle theme-color="#70787c" action="ne-resize" />
-            <cropper-handle theme-color="#70787c" action="nw-resize" />
-            <cropper-handle theme-color="#70787c" action="se-resize" />
-            <cropper-handle theme-color="#70787c" action="sw-resize" />
-          </cropper-selection>
-        </cropper-canvas>
-        <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
-          <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
-          <span
-            v-text="
-              $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
-                zoomKeys: $gettext('+-'),
-                panKeys: $gettext('↑↓←→')
-              })
-            "
-          />
-        </div>
+        <image-cropper
+          ref="imageCropperRef"
+          :image-url="imageUrl"
+          :aspect-ratio="1"
+          rounded-selection
+        />
       </template>
     </oc-modal>
     <oc-modal
@@ -99,31 +55,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
-import 'cropperjs'
+import { computed, ref, unref } from 'vue'
 import {
   useAvatarsStore,
   useClientService,
   useMessages,
-  useUserStore,
-  useCropperKeyboardActions
+  useUserStore
 } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
 import UserAvatar from './UserAvatar.vue'
-import type {
-  CropperSelection,
-  CropperImage as CropperImageType,
-  CropperCanvas as CropperCanvasType
-} from 'cropperjs'
-
-interface Selection {
-  x: number
-  y: number
-  width: number
-  height: number
-}
+import ImageCropper from '../ImageCropper.vue'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
@@ -133,12 +76,9 @@ const { user } = storeToRefs(userStore)
 const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
 const { graphAuthenticated } = useClientService()
-const { setCropperInstance } = useCropperKeyboardActions()
 
 const imageUrl = ref<string | null>(null)
-const cropperCanvasRef = ref<CropperCanvasType | null>(null)
-const cropperImageRef = ref<CropperImageType | null>(null)
-const cropperSelectionRef = ref<CropperSelection | null>(null)
+const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -170,13 +110,10 @@ const onFileChange = (event: Event) => {
 }
 
 const getCroppedImage = async () => {
-  if (!unref(cropperSelectionRef)) {
+  if (!unref(imageCropperRef)) {
     return null
   }
-  return await unref(cropperSelectionRef).$toCanvas({
-    width: 256,
-    height: 256
-  })
+  return await unref(imageCropperRef).getCroppedCanvas(256, 256)
 }
 
 const getCanvasBlob = async (canvas: HTMLCanvasElement): Promise<Blob> => {
@@ -244,64 +181,4 @@ const destroyCropper = () => {
 
   imageUrl.value = null
 }
-
-const inSelection = (selection: Selection, maxSelection: Selection) => {
-  return (
-    selection.x >= maxSelection.x &&
-    selection.y >= maxSelection.y &&
-    selection.x + selection.width <= maxSelection.x + maxSelection.width &&
-    selection.y + selection.height <= maxSelection.y + maxSelection.height
-  )
-}
-
-const onCropperImageTransform = (event: CustomEvent) => {
-  const cropperCanvas = unref(cropperCanvasRef)
-  if (!cropperCanvas) {
-    return
-  }
-
-  const cropperSelection = unref(cropperSelectionRef)
-  if (!cropperSelection) {
-    return
-  }
-
-  const cropperCanvasRect = cropperCanvas.getBoundingClientRect()
-  const selection = cropperSelection as Selection
-  const maxSelection: Selection = {
-    x: 0,
-    y: 0,
-    width: cropperCanvasRect.width,
-    height: cropperCanvasRect.height
-  }
-
-  if (!inSelection(selection, maxSelection)) {
-    event.preventDefault()
-  }
-}
-
-const onCropperSelectionChange = (event: CustomEvent) => {
-  const cropperCanvas = unref(cropperCanvasRef)
-  if (!cropperCanvas) {
-    return
-  }
-
-  const cropperCanvasRect = cropperCanvas.getBoundingClientRect()
-  const selection = event.detail as Selection
-  const maxSelection: Selection = {
-    x: 0,
-    y: 0,
-    width: cropperCanvasRect.width,
-    height: cropperCanvasRect.height
-  }
-
-  if (!inSelection(selection, maxSelection)) {
-    event.preventDefault()
-  }
-}
-
-watch(cropperSelectionRef, (cropper) => {
-  if (cropper) {
-    setCropperInstance(cropperSelectionRef, cropperImageRef)
-  }
-})
 </script>
