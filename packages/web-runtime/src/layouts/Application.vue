@@ -11,11 +11,9 @@
     </div>
     <div
       id="web-content-main"
-      class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2 overflow-y-hidden"
+      class="flex flex-col items-start justify-start grow shrink basis-auto overflow-y-hidden"
     >
-      <div
-        class="app-container flex bg-role-surface-container rounded-xl size-full overflow-hidden"
-      >
+      <div class="app-container flex bg-role-surface-container size-full overflow-hidden">
         <app-loading-spinner v-if="isLoading" />
         <template v-else>
           <sidebar-nav v-if="isSidebarVisible" :nav-items="navItems" />

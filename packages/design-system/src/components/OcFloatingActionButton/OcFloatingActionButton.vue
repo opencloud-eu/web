@@ -21,7 +21,7 @@
       :id="buttonId"
       class="rounded-full size-14"
       appearance="filled"
-      color-role="secondary"
+      color-role="primary"
       :aria-label="computedAriaLabel"
       :type="mode === 'action' && to ? routerLinkComponent : 'button'"
       :to="to"
