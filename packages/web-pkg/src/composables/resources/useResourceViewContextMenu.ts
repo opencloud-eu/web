@@ -5,6 +5,7 @@ import { useEventBus } from '../eventBus'
 import { useActiveLocation } from '../router'
 import { isLocationTrashActive } from '../../router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { createVirtualCursorElement } from '../../helpers'
 
 export const useResourceViewContextMenu = ({
   isResourceSelected,
@@ -66,7 +67,8 @@ export const useResourceViewContextMenu = ({
       emitSelect([item.id])
     }
 
-    drop?.show({ event, useMouseAnchor: true })
+    const anchorElement = createVirtualCursorElement(event as MouseEvent)
+    drop?.show({ anchorElement })
   }
 
   return {

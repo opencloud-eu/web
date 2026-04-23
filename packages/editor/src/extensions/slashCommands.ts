@@ -90,9 +90,6 @@ export const SlashCommands = TipTapExtension.create<SlashCommandsOptions>({
               renderer?.updateProps(props)
               getHandle()?.onUpdate(props)
             },
-            onKeyDown: (props) => {
-              return getHandle()?.onKeyDown(props) ?? false
-            },
             onExit: () => {
               renderer?.el?.remove()
               renderer?.destroy()

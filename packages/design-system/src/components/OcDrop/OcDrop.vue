@@ -114,10 +114,6 @@ export interface Props {
    * @default true
    */
   isMenu?: boolean
-  /**
-   * @docs Positioning anchor for the drop. Takes precedence over `toggle` when provided. Accepts an `HTMLElement`, a floating-ui `VirtualElement` (any object with a `getBoundingClientRect` method), or a getter returning one. Use this when the drop has no DOM button toggle, e.g. when anchoring to a caret position or to a programmatically chosen target.
-   */
-  anchor?: HTMLElement | VirtualElement | (() => HTMLElement | VirtualElement | null)
 }
 
 export interface Emits {
@@ -154,8 +150,7 @@ const {
   title = '',
   enforceDropOnMobile = false,
   teleport = '',
-  isMenu = true,
-  anchor
+  isMenu = true
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -170,29 +165,20 @@ const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
 const drop = useTemplateRef('drop')
 
-const resolvedAnchor = computed<HTMLElement | VirtualElement | null>(() => {
-  if (anchor) {
-    const resolved = typeof anchor === 'function' ? anchor() : anchor
-    if (resolved) {
-      return resolved
-    }
-  }
+const anchor = computed(() => {
   if (!toggle) {
     return null
   }
   return document.querySelector<HTMLButtonElement>(toggle)
 })
 
-const anchorElement = computed<HTMLElement | null>(() => {
-  const current = unref(resolvedAnchor)
-  return current instanceof HTMLElement ? current : null
-})
-
 const show = async ({
-  event,
-  useMouseAnchor,
+  anchorElement = undefined,
   noFocus = false
-}: { event?: Event; useMouseAnchor?: boolean; noFocus?: boolean } = {}) => {
+}: {
+  anchorElement?: HTMLElement | VirtualElement
+  noFocus?: boolean
+} = {}) => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).show()
     return
@@ -200,7 +186,7 @@ const show = async ({
   if (unref(isOpen)) {
     return
   }
-  showDrop({ event, useMouseAnchor })
+  showDrop({ anchorElement })
 
   if (!noFocus) {
     // usually, opening the drop should also focus it to allow for keyboard navigation within the drop.
@@ -217,11 +203,15 @@ const hide = () => {
   hideDrop()
 }
 
-const update = async () => {
+const update = async ({
+  anchorElement = undefined
+}: {
+  anchorElement?: HTMLElement | VirtualElement
+} = {}) => {
   if (!unref(isOpen) || !unref(drop)) {
     return
   }
-  const anchorEl = unref(resolvedAnchor)
+  const anchorEl = anchorElement || unref(anchor)
   if (!anchorEl) {
     return
   }
@@ -259,34 +249,14 @@ const onClick = (event: Event) => {
 const awaitAnimationFrame = () => new Promise((resolve) => requestAnimationFrame(resolve))
 
 const showDrop = async ({
-  event,
-  useMouseAnchor
-}: { event?: Event; useMouseAnchor?: boolean } = {}) => {
+  anchorElement
+}: { anchorElement?: HTMLElement | VirtualElement } = {}) => {
   if (unref(isOpen)) {
     hideDrop()
     return
   }
 
-  let anchorEl: HTMLElement | VirtualElement | null = unref(resolvedAnchor)
-  if (useMouseAnchor) {
-    // use mouse position as anchor element
-    const mouseEvent = event as MouseEvent
-    anchorEl = {
-      getBoundingClientRect() {
-        return {
-          width: 0,
-          height: 0,
-          x: mouseEvent.clientX,
-          y: mouseEvent.clientY,
-          top: mouseEvent.clientY,
-          left: mouseEvent.clientX,
-          right: mouseEvent.clientX,
-          bottom: mouseEvent.clientY
-        }
-      }
-    }
-  }
-
+  const anchorEl: HTMLElement | VirtualElement | null = anchorElement || unref(anchor)
   isOpen.value = true
   await nextTick()
   if (!anchorEl) {
@@ -332,7 +302,7 @@ const showDrop = async ({
   })
 
   Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
-  unref(anchorElement)?.setAttribute('aria-expanded', 'true')
+  unref(anchor)?.setAttribute('aria-expanded', 'true')
   emit('showDrop')
 
   registerEventListener(document, 'click', handleDropClickOutside, 'document', {
@@ -357,7 +327,7 @@ const showDrop = async ({
 const hideDrop = () => {
   unregisterEventListeners(['drop', 'document'])
   isOpen.value = false
-  unref(anchorElement)?.setAttribute('aria-expanded', 'false')
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
   emit('hideDrop')
 }
 
@@ -378,7 +348,7 @@ const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
   const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
   if (clickedOutsideDrop) {
-    const anchorEl = unref(anchorElement)
+    const anchorEl = unref(anchor)
     const clickedOnAnchor = anchorEl && anchorEl.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
@@ -396,7 +366,7 @@ const handleDropKeydown = (event: Event) => {
     // arrow left/right are used to open sub drops
     if (mode === 'hover') {
       hideDrop()
-      unref(anchorElement)?.focus()
+      unref(anchor)?.focus()
     }
     return
   }
@@ -405,7 +375,7 @@ const handleDropKeydown = (event: Event) => {
     // close drop on escape
     event.stopPropagation()
     hideDrop()
-    unref(anchorElement)?.focus()
+    unref(anchor)?.focus()
     return
   }
 
@@ -491,18 +461,18 @@ const handleDropMouseLeave = () => {
   hoverCloseTimeout = setTimeout(hideDrop, 100)
 }
 
-const handleAnchorClick = async (event: Event) => {
-  showDrop({ event })
+const handleAnchorClick = async () => {
+  showDrop({})
   if (unref(isOpen)) {
     await nextTick()
     unref(drop).focus({ preventScroll: true })
   }
 }
 
-const handleAnchorMouseEnter = (event: Event) => {
+const handleAnchorMouseEnter = () => {
   clearHoverTimeout()
   if (!unref(isOpen)) {
-    showDrop({ event })
+    showDrop({})
   }
 }
 
@@ -511,7 +481,7 @@ const handleAnchorMouseLeave = () => {
 }
 
 const setupAriaAttributes = () => {
-  const anchorEl = unref(anchorElement)
+  const anchorEl = unref(anchor)
   if (!anchorEl) {
     return
   }
@@ -520,7 +490,7 @@ const setupAriaAttributes = () => {
 }
 
 const setupAnchorEvents = () => {
-  const anchorEl = unref(anchorElement)
+  const anchorEl = unref(anchor)
   if (!anchorEl || unref(useBottomDrawer)) {
     return
   }
@@ -558,7 +528,7 @@ onBeforeUnmount(() => {
   clearHoverTimeout()
   unregisterEventListeners()
 
-  const anchorEl = unref(anchorElement)
+  const anchorEl = unref(anchor)
   anchorEl?.removeAttribute('aria-expanded')
   anchorEl?.removeAttribute('aria-haspopup')
 })

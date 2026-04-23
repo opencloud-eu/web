@@ -131,7 +131,8 @@ import {
   usePagination,
   useRouteQuery,
   UserAvatar,
-  useSideBar
+  useSideBar,
+  createVirtualCursorElement
 } from '@opencloud-eu/web-pkg'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
@@ -260,7 +261,8 @@ export default defineComponent({
       if (!isUserSelected(user)) {
         userSettingsStore.setSelectedUsers([user])
       }
-      unref(contextMenuDrops)[user.id]?.show({ event, useMouseAnchor: true })
+      const anchorElement = createVirtualCursorElement(event as MouseEvent)
+      unref(contextMenuDrops)[user.id]?.show({ anchorElement })
     }
 
     const getRoleDisplayNameByUser = (user: User) => {

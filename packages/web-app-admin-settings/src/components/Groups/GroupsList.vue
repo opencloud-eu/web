@@ -140,6 +140,7 @@ import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 import {
   ContextMenuQuickAction,
+  createVirtualCursorElement,
   defaultFuseOptions,
   eventBus,
   Pagination,
@@ -254,7 +255,8 @@ export default defineComponent({
       if (!isGroupSelected(group)) {
         groupSettingsStore.setSelectedGroups([group])
       }
-      unref(contextMenuDrops)[group.id]?.show({ event, useMouseAnchor: true })
+      const anchorElement = createVirtualCursorElement(event as MouseEvent)
+      unref(contextMenuDrops)[group.id]?.show({ anchorElement })
     }
 
     const showEditPanel = (group: Group) => {
