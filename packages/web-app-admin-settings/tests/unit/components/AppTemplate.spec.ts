@@ -103,7 +103,10 @@ describe('AppTemplate', () => {
 
 function getWrapper({ props = {}, isMobile = false, isSideBarOpen = true } = {}) {
   vi.mocked(useIsTopBarSticky).mockReturnValue({ isSticky: ref(true) })
-  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile), isTablet: computed(() => false) })
+  vi.mocked(useIsMobile).mockReturnValue({
+    isMobile: computed(() => isMobile),
+    isTablet: computed(() => false)
+  })
 
   const plugins = [...defaultPlugins()]
   const sideBarStore = useSideBar()

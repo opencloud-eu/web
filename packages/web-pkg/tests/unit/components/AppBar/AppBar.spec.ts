@@ -136,7 +136,10 @@ function getShallowWrapper(
   }),
   isMobile = false
 ) {
-  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile), isTablet: computed(() => false) })
+  vi.mocked(useIsMobile).mockReturnValue({
+    isMobile: computed(() => isMobile),
+    isTablet: computed(() => false)
+  })
 
   const plugins = defaultPlugins({
     piniaOptions: {
