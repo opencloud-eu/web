@@ -594,8 +594,8 @@ export default defineComponent({
       this.selectedRole = role
     },
 
-    collaboratorExpiryChanged({ expirationDate }: { expirationDate: string }) {
-      this.expirationDate = expirationDate
+    collaboratorExpiryChanged({ expirationDate }: { expirationDate: DateTime }) {
+      this.expirationDate = expirationDate?.toISO() ?? null
       ;(this.$refs.showMoreShareOptionsDropRef as InstanceType<typeof OcDrop>).hide()
     },
 
