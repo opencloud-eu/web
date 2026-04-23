@@ -1,5 +1,9 @@
 <template>
-  <oc-file-input v-model="files" label="Select file" />
+  <oc-file-input
+    v-model="files"
+    label="Select file"
+    description-message="Select an image to see a preview"
+  />
 </template>
 
 <script setup lang="ts">

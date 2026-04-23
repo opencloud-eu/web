@@ -65,6 +65,13 @@ export const sortFields: SortField[] = [
     prop: 'spaceQuota.used',
     sortable: true,
     sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Members'),
+    name: 'members',
+    prop: 'root.permissions',
+    sortable: (permissions: unknown[]) => permissions?.length || 1,
+    sortDir: SortDir.Desc
   }
 ]
 

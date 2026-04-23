@@ -22,7 +22,7 @@
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message
-          v-if="!spaces.length"
+          v-if="!runtimeSpaces.length"
           id="files-spaces-empty"
           img-src="/images/empty-states/empty-spaces.svg"
         >
@@ -186,7 +186,6 @@ import {
   useKeyboardFileMouseActions,
   useKeyboardFileActions
 } from '../../composables/keyboardActions'
-import { orderBy } from 'lodash-es'
 import { useResourcesViewDefaults } from '../../composables'
 import { folderViewsProjectSpacesExtensionPoint } from '../../extensionPoints'
 import { storeToRefs } from 'pinia'
@@ -212,7 +211,7 @@ const loadResourcesTask = useTask(function* (signal) {
     graphClient: clientService.graphAuthenticated,
     signal
   })
-  initResourceList({ currentFolder: null, resources: unref(spaces) })
+  initResourceList({ currentFolder: null, resources: unref(runtimeSpaces) })
 })
 
 const {
@@ -256,16 +255,6 @@ const tableDisplayFields = [
   'mdate'
 ]
 
-const sortFields = translateSortFields(availableSortFields, language)
-const {
-  sortBy,
-  sortDir,
-  items: spaces,
-  handleSort
-} = useSort<SpaceResource>({
-  items: runtimeSpaces,
-  fields: sortFields
-})
 const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
   if (!unref(areDisabledSpacesShown)) {
     spaces = spaces.filter((space) => space.disabled !== true)
@@ -278,17 +267,15 @@ const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
   return searchEngine.search(filterTerm).map((r) => r.item)
 }
-const items = computed(() => {
-  return orderBy(
-    filter(unref(spaces), unref(filterTerm)),
-    [
-      (item: SpaceResource) => {
-        const prop = item[unref(sortBy) as keyof SpaceResource]
-        return typeof prop === 'string' ? prop.toLowerCase() : prop
-      }
-    ],
-    unref(sortDir)
-  )
+
+const filteredSpaces = computed(() => {
+  return filter(unref(runtimeSpaces), unref(filterTerm))
+})
+
+const sortFields = translateSortFields(availableSortFields, language)
+const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
+  items: filteredSpaces,
+  fields: sortFields
 })
 
 const {
@@ -365,7 +352,7 @@ onMounted(async () => {
       loadPreview({ space, resource: space })
     }
   )
-  scrollToResourceFromRoute(unref(spaces), 'files-app-bar')
+  scrollToResourceFromRoute(unref(items), 'files-app-bar')
   nextTick(() => {
     markInstance = new Mark('.oc-resource-details')
   })
@@ -376,15 +363,15 @@ onBeforeUnmount(() => {
 })
 
 const footerTextTotal = computed(() => {
-  const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
+  const disabledSpaces = unref(runtimeSpaces).filter((space) => space.disabled === true)
 
   if (!disabledSpaces.length) {
     return $ngettext(
       '%{spaceCount} space in total',
       '%{spaceCount} spaces in total',
-      unref(spaces).length,
+      unref(runtimeSpaces).length,
       {
-        spaceCount: unref(spaces).length.toString()
+        spaceCount: unref(runtimeSpaces).length.toString()
       }
     )
   }
@@ -392,9 +379,9 @@ const footerTextTotal = computed(() => {
   return $ngettext(
     '%{spaceCount} space in total (including %{disabledSpaceCount} disabled)',
     '%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)',
-    unref(spaces).length,
+    unref(runtimeSpaces).length,
     {
-      spaceCount: unref(spaces).length.toString(),
+      spaceCount: unref(runtimeSpaces).length.toString(),
       disabledSpaceCount: disabledSpaces.length.toString()
     }
   )
