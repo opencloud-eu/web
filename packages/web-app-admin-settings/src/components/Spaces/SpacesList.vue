@@ -139,7 +139,8 @@ import {
   useIsTopBarSticky,
   useSharesStore,
   useSideBar,
-  NoContentMessage
+  NoContentMessage,
+  createVirtualCursorElement
 } from '@opencloud-eu/web-pkg'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
@@ -464,7 +465,8 @@ const showContextMenuOnRightClick = (event: MouseEvent, space: SpaceResource) =>
   if (!isSpaceSelected(space)) {
     spaceSettingsStore.setSelectedSpaces([space])
   }
-  unref(contextMenuDrops)[space.id]?.show({ event, useMouseAnchor: true })
+  const anchorElement = createVirtualCursorElement(event as MouseEvent)
+  unref(contextMenuDrops)[space.id]?.show({ anchorElement })
 }
 
 const spaceDetailsLabel = computed(() => {

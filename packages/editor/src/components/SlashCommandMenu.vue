@@ -1,12 +1,5 @@
 <template>
-  <oc-drop
-    ref="dropRef"
-    mode="manual"
-    :is-menu="true"
-    :anchor="anchorGetter"
-    padding-size="small"
-    title="Insert"
-  >
+  <oc-drop ref="dropRef" mode="manual" :is-menu="true" padding-size="small" title="Insert">
     <div class="text-editor-slash-menu" @mousedown.prevent>
       <template v-if="grouped.length">
         <div v-for="group in grouped" :key="group.id" class="text-editor-slash-menu__group">
@@ -16,9 +9,7 @@
               <oc-button
                 appearance="raw"
                 class="text-editor-slash-menu__item"
-                :class="{ 'is-selected': selectedIndex === entry.index }"
                 @click="runItem(entry.item)"
-                @mouseenter="selectedIndex = entry.index"
               >
                 <oc-icon
                   v-if="entry.item.icon"
@@ -48,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue'
-import type { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion'
+import { computed, nextTick, onMounted, useTemplateRef } from 'vue'
+import type { SuggestionProps } from '@tiptap/suggestion'
 import type { FlatSlashCommandItem } from '../extensions'
 
 interface VirtualElement {
@@ -57,9 +48,9 @@ interface VirtualElement {
 }
 
 interface OcDropHandle {
-  show: (opts?: { noFocus?: boolean }) => void
+  show: (opts?: { anchorElement?: VirtualElement }) => void
   hide: () => void
-  update: () => void
+  update: (opts?: { anchorElement?: VirtualElement }) => void
 }
 
 const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
@@ -67,17 +58,6 @@ const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
 const noResultsLabel = 'No matching commands'
 
 const dropRef = useTemplateRef<OcDropHandle>('dropRef')
-const selectedIndex = ref(0)
-
-const anchorGetter = (): VirtualElement | null => {
-  const rect = props.clientRect?.()
-  if (!rect) {
-    return null
-  }
-  return {
-    getBoundingClientRect: () => rect
-  }
-}
 
 interface RenderedEntry {
   item: FlatSlashCommandItem
@@ -106,57 +86,26 @@ const runItem = (item: FlatSlashCommandItem) => {
   props.command(item)
 }
 
-const runSelected = () => {
-  const item = props.items[selectedIndex.value]
-  if (item) {
-    runItem(item)
-  }
-}
-
 const onUpdate = (_props: SuggestionProps<FlatSlashCommandItem>) => {
-  // props are reactive through defineProps; we just need to clamp selection
-  // and re-position the drop against the (likely changed) clientRect.
-  if (selectedIndex.value >= props.items.length) {
-    selectedIndex.value = 0
-  }
-  dropRef.value?.update?.()
+  dropRef.value?.update?.({ anchorElement: anchorElement() })
 }
 
-const onKeyDown = ({ event }: SuggestionKeyDownProps): boolean => {
-  const total = props.items.length
-  if (event.key === 'ArrowDown') {
-    if (total === 0) return true
-    selectedIndex.value = (selectedIndex.value + 1) % total
-    return true
+const anchorElement = (): VirtualElement | null => {
+  const rect = props.clientRect?.()
+  if (!rect) {
+    return null
   }
-  if (event.key === 'ArrowUp') {
-    if (total === 0) return true
-    selectedIndex.value = (selectedIndex.value - 1 + total) % total
-    return true
+  return {
+    getBoundingClientRect: () => rect
   }
-  if (event.key === 'Enter' || event.key === 'Tab') {
-    if (total === 0) return false
-    runSelected()
-    return true
-  }
-  return false
 }
-
-watch(
-  () => props.items.length,
-  () => {
-    if (selectedIndex.value >= props.items.length) {
-      selectedIndex.value = 0
-    }
-  }
-)
 
 onMounted(async () => {
   await nextTick()
-  dropRef.value?.show?.({ noFocus: true })
+  dropRef.value?.show?.({ anchorElement: anchorElement() })
 })
 
-defineExpose({ onUpdate, onKeyDown })
+defineExpose({ onUpdate })
 </script>
 
 <style>
@@ -181,11 +130,6 @@ defineExpose({ onUpdate, onKeyDown })
 .text-editor-slash-menu__item {
   @apply w-full flex items-start justify-start gap-2 px-2 py-1.5 text-left rounded-md;
   @apply bg-transparent border-0 cursor-pointer;
-}
-
-.text-editor-slash-menu__item.is-selected,
-.text-editor-slash-menu__item:hover {
-  @apply bg-role-surface-variant;
 }
 
 .text-editor-slash-menu__item-icon {
