@@ -84,7 +84,7 @@ export abstract class RichTextStrategy implements ContentTypeStrategy {
         items.codeBlock('Code block'),
         items.horizontalRule('Horizontal rule')
       ],
-      [items.link('Link', linkCallback), items.image('Image', imageCallback)],
+      // [items.link('Link', linkCallback), items.image('Image', imageCallback)],
       [
         items.table('Table'),
         items.addRowBefore('Add row above'),

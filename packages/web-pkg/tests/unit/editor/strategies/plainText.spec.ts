@@ -1,4 +1,4 @@
-import { PlainTextStrategy } from '../../../src/strategies/plainText'
+import { PlainTextStrategy } from '../../../../src/editor/strategies/plainText'
 
 describe('PlainTextStrategy', () => {
   let strategy: PlainTextStrategy

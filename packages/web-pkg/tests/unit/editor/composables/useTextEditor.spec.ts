@@ -1,4 +1,4 @@
-import { useTextEditor } from '../../../src/composables/useTextEditor'
+import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
 
 function createEditor(options = {}) {

@@ -24,7 +24,6 @@
     "zod": "4.3.6"
   },
   "dependencies": {
-    "@opencloud-eu/editor": "workspace:*",
     "ical.js": "^2.2.1"
   }
 }

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import SlashCommandMenu from '../../../src/components/SlashCommandMenu.vue'
-import type { FlatSlashCommandItem } from '../../../src/extensions'
+import SlashCommandMenu from '../../../../src/editor/components/SlashCommandMenu.vue'
+import type { FlatSlashCommandItem } from '../../../../src/editor/extensions'
 
 const makeItem = (
   id: string,

@@ -1,4 +1,4 @@
-import { TiptapJsonStrategy } from '../../../src/strategies/tiptapJson'
+import { TiptapJsonStrategy } from '../../../../src/editor/strategies/tiptapJson'
 
 describe('TiptapJsonStrategy', () => {
   let strategy: TiptapJsonStrategy

@@ -1,5 +1,5 @@
-import { filterSlashCommandItems } from '../../../src/extensions/slashCommands'
-import type { SlashCommandGroup } from '../../../src/types'
+import { filterSlashCommandItems } from '../../../../src/editor/extensions/slashCommands'
+import type { SlashCommandGroup } from '../../../../src/editor/types'
 import type { Editor } from '@tiptap/vue-3'
 
 const groups: SlashCommandGroup[] = [

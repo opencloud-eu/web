@@ -1,6 +1,6 @@
 <template>
-  <oc-drop ref="dropRef" mode="manual" :is-menu="true" padding-size="small" title="Insert">
-    <div class="text-editor-slash-menu" @mousedown.prevent>
+  <oc-drop ref="dropRef" mode="manual" padding-size="small" class="z-10001" enforce-drop-on-mobile>
+    <div class="text-editor-slash-menu">
       <template v-if="grouped.length">
         <div v-for="group in grouped" :key="group.id" class="text-editor-slash-menu__group">
           <div class="text-editor-slash-menu__group-title" v-text="group.title" />
@@ -32,32 +32,25 @@
         </div>
       </template>
       <div v-else class="text-editor-slash-menu__empty">
-        {{ noResultsLabel }}
+        {{ $gettext('No matching commands') }}
       </div>
     </div>
   </oc-drop>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, useTemplateRef } from 'vue'
+import { ComponentPublicInstance, computed, nextTick, onMounted, useTemplateRef } from 'vue'
 import type { SuggestionProps } from '@tiptap/suggestion'
 import type { FlatSlashCommandItem } from '../extensions'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 interface VirtualElement {
   getBoundingClientRect: () => DOMRect
 }
 
-interface OcDropHandle {
-  show: (opts?: { anchorElement?: VirtualElement }) => void
-  hide: () => void
-  update: (opts?: { anchorElement?: VirtualElement }) => void
-}
-
 const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
 
-const noResultsLabel = 'No matching commands'
-
-const dropRef = useTemplateRef<OcDropHandle>('dropRef')
+const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
 
 interface RenderedEntry {
   item: FlatSlashCommandItem
@@ -86,7 +79,7 @@ const runItem = (item: FlatSlashCommandItem) => {
   props.command(item)
 }
 
-const onUpdate = (_props: SuggestionProps<FlatSlashCommandItem>) => {
+const onUpdate = () => {
   dropRef.value?.update?.({ anchorElement: anchorElement() })
 }
 

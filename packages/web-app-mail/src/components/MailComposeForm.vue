@@ -69,14 +69,16 @@
 <script setup lang="ts">
 import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGroupwareAccountsStore, useRouteQuery, useModals } from '@opencloud-eu/web-pkg'
-import { storeToRefs } from 'pinia'
 import {
+  useGroupwareAccountsStore,
+  useRouteQuery,
+  useModals,
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
   TextEditorToolbar
-} from '@opencloud-eu/editor'
+} from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
 import DOMPurify from 'dompurify'
 import MailAttachmentList from './MailAttachmentList.vue'
 

@@ -118,9 +118,11 @@ import {
   useResourcesStore,
   useSharesStore,
   useSideBar,
-  useSpacesStore
+  useSpacesStore,
+  useTextEditor,
+  TextEditorProvider,
+  TextEditorContent
 } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'

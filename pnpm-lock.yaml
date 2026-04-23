@@ -241,79 +241,6 @@ importers:
         version: 1.6.4(@algolia/client-search@5.50.0)(@types/node@25.6.0)(axios@1.15.1)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.10)(sass@1.99.0)(search-insights@2.17.3)(typescript@6.0.3)
     publishDirectory: package
 
-  packages/editor:
-    dependencies:
-      '@opencloud-eu/design-system':
-        specifier: workspace:^
-        version: link:../design-system
-      '@tiptap/core':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/pm@3.22.4)
-      '@tiptap/extension-document':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/extension-hard-break':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/extension-image':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/extension-link':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
-      '@tiptap/extension-paragraph':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/extension-table':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
-      '@tiptap/extension-table-cell':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
-      '@tiptap/extension-table-header':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
-      '@tiptap/extension-table-row':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
-      '@tiptap/extension-task-item':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/extension-list@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
-      '@tiptap/extension-task-list':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/extension-list@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
-      '@tiptap/extension-text':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/extension-underline':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
-      '@tiptap/markdown':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
-      '@tiptap/pm':
-        specifier: ^3.20.4
-        version: 3.22.4
-      '@tiptap/starter-kit':
-        specifier: ^3.20.4
-        version: 3.22.4
-      '@tiptap/suggestion':
-        specifier: ^3.20.4
-        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
-      '@tiptap/vue-3':
-        specifier: ^3.20.4
-        version: 3.22.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)(vue@3.5.32(typescript@6.0.3))
-      vue:
-        specifier: ^3.5.0
-        version: 3.5.32(typescript@6.0.3)
-      vue3-gettext:
-        specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.32)(vue@3.5.32(typescript@6.0.3))
-    devDependencies:
-      '@opencloud-eu/web-test-helpers':
-        specifier: workspace:*
-        version: link:../web-test-helpers
-
   packages/eslint-config:
     dependencies:
       '@typescript-eslint/parser':
@@ -453,9 +380,6 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
-      '@opencloud-eu/editor':
-        specifier: workspace:*
-        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -589,9 +513,6 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
-      '@opencloud-eu/editor':
-        specifier: workspace:*
-        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -656,9 +577,6 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
-      '@opencloud-eu/editor':
-        specifier: workspace:*
-        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -822,9 +740,6 @@ importers:
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
-      '@opencloud-eu/editor':
-        specifier: workspace:*
-        version: link:../editor
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
@@ -925,6 +840,63 @@ importers:
       '@sentry/vue':
         specifier: ^10.46.0
         version: 10.49.0(pinia@3.0.4(typescript@6.0.3)(vue@3.5.32(typescript@6.0.3)))(vue@3.5.32(typescript@6.0.3))
+      '@tiptap/core':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/pm@3.22.4)
+      '@tiptap/extension-document':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/extension-hard-break':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/extension-image':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/extension-link':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
+      '@tiptap/extension-paragraph':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/extension-table':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
+      '@tiptap/extension-table-cell':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
+      '@tiptap/extension-table-header':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
+      '@tiptap/extension-table-row':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/extension-table@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
+      '@tiptap/extension-task-item':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/extension-list@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
+      '@tiptap/extension-task-list':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/extension-list@3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4))
+      '@tiptap/extension-text':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/extension-underline':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))
+      '@tiptap/markdown':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
+      '@tiptap/pm':
+        specifier: ^3.20.4
+        version: 3.22.4
+      '@tiptap/starter-kit':
+        specifier: ^3.20.4
+        version: 3.22.4
+      '@tiptap/suggestion':
+        specifier: ^3.20.4
+        version: 3.22.4(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)
+      '@tiptap/vue-3':
+        specifier: ^3.20.4
+        version: 3.22.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)(vue@3.5.32(typescript@6.0.3))
       '@uppy/core':
         specifier: ^5.2.0
         version: 5.2.0

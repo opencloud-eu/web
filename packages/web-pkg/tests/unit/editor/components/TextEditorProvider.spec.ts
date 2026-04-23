@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import TextEditorProvider from '../../../src/components/TextEditorProvider.vue'
+import TextEditorProvider from '../../../../src/editor/components/TextEditorProvider.vue'
 
 describe('TextEditorProvider', () => {
   it('renders slot content', () => {

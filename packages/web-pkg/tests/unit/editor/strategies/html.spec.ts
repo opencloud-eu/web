@@ -1,4 +1,4 @@
-import { HtmlStrategy } from '../../../src/strategies/html'
+import { HtmlStrategy } from '../../../../src/editor/strategies/html'
 
 describe('HtmlStrategy', () => {
   let strategy: HtmlStrategy
