@@ -1,5 +1,5 @@
 <template>
-  <template v-if="floatingActionButton && isMobile && !floatingActionButton?.isDisabled?.()">
+  <template v-if="floatingActionButton && isTablet && !floatingActionButton?.isDisabled?.()">
     <oc-floating-action-button
       :button-id="getButtonId(floatingActionButton.id)"
       class="oc-app-floating-action-button"
@@ -25,7 +25,7 @@ import {
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { requestExtensions } = useExtensionRegistry()
-const { isMobile } = useIsMobile({ includeTablet: true })
+const { isTablet } = useIsMobile()
 const activeApp = useActiveApp()
 
 const floatingActionButton = computed(() => {
