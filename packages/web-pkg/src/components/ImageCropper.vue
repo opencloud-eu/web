@@ -32,14 +32,14 @@
         <cropper-grid role="grid" bordered covered />
         <cropper-crosshair centered />
         <cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)" />
-        <cropper-handle theme-color="#70787c" action="n-resize" />
-        <cropper-handle theme-color="#70787c" action="e-resize" />
-        <cropper-handle theme-color="#70787c" action="s-resize" />
-        <cropper-handle theme-color="#70787c" action="w-resize" />
-        <cropper-handle theme-color="#70787c" action="ne-resize" />
-        <cropper-handle theme-color="#70787c" action="nw-resize" />
-        <cropper-handle theme-color="#70787c" action="se-resize" />
-        <cropper-handle theme-color="#70787c" action="sw-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="n-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="e-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="s-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="w-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="ne-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="nw-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="se-resize" />
+        <cropper-handle theme-color="var(--color-role-outline)" action="sw-resize" />
       </cropper-selection>
     </cropper-canvas>
     <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
