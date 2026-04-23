@@ -134,7 +134,10 @@ function getWrapper({
     ...defaultPlugins({ piniaOptions: { spacesState: { imagesLoading, readmesLoading } } })
   ]
 
-  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
+  vi.mocked(useIsMobile).mockReturnValue({
+    isMobile: computed(() => isMobile),
+    isTablet: computed(() => false)
+  })
 
   const sideBarStore = useSideBar()
   sideBarStore.isSideBarOpen = isSideBarOpen

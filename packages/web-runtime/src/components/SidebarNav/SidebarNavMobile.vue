@@ -24,7 +24,7 @@
           <div
             id="sidebar-nav-mobile-panel"
             tabindex="-1"
-            class="fixed inset-y-0 left-0 w-[85%] bg-role-surface-container overflow-x-hidden"
+            class="fixed inset-y-0 left-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
           >
             <div class="flex flex-col h-full">
               <div class="flex items-center justify-between p-4">
@@ -63,7 +63,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SidebarNav from './SidebarNav.vue'
 
 const { requestExtensions } = useExtensionRegistry()
-const { isMobile } = useIsMobile()
+const { isTablet } = useIsMobile()
 const { navItems } = useNavItems()
 const activeApp = useActiveApp()
 
@@ -96,12 +96,12 @@ const isVisible = computed(() => {
     (requestExtensions<CustomComponentExtension>(mainExtensionPoint).length > 0 ||
       requestExtensions<CustomComponentExtension>(bottomExtensionPoint).length > 0 ||
       unref(navItems).length > 0) &&
-    unref(isMobile)
+    unref(isTablet)
   )
 })
 
-watch(isMobile, () => {
-  if (!unref(isMobile)) {
+watch(isTablet, () => {
+  if (!unref(isTablet)) {
     isMenuOpen.value = false
   }
 })

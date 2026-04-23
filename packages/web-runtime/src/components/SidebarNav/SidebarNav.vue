@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col grow">
       <nav class="oc-sidebar-nav mt-3 px-1" :aria-label="$gettext('Sidebar navigation menu')">
-        <div v-if="floatingActionButton && !isMobile" class="pb-3 px-2">
+        <div v-if="floatingActionButton && !isTablet" class="pb-3 px-2">
           <oc-button
             :id="getButtonId(floatingActionButton.id)"
             :disabled="isFloatingActionButtonDisabled"
@@ -75,7 +75,7 @@ const backendVersion = computed(() => getBackendVersion({ capabilityStore }))
 const activeApp = useActiveApp()
 const { requestExtensions } = useExtensionRegistry()
 
-const { isMobile } = useIsMobile()
+const { isTablet } = useIsMobile()
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,
