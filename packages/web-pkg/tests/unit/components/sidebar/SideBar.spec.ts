@@ -83,7 +83,7 @@ function createWrapper({
   const plugins = defaultPlugins()
   const mocks = defaultComponentMocks()
 
-  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile) })
+  vi.mocked(useIsMobile).mockReturnValue({ isMobile: computed(() => isMobile), isTablet: computed(() => false) })
 
   return {
     mocks,
