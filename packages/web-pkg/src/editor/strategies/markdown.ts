@@ -62,7 +62,7 @@ export class MarkdownStrategy implements ContentTypeStrategy {
         items.codeBlock('Code block'),
         items.horizontalRule('Horizontal rule')
       ],
-      [items.link('Link', linkCallback)],
+      // [items.link('Link', linkCallback)],
       [
         items.table('Table'),
         items.addRowBefore('Add row above'),

@@ -39,8 +39,12 @@ import {
   watch
 } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useClientService } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/editor'
+import {
+  useClientService,
+  useTextEditor,
+  TextEditorProvider,
+  TextEditorContent
+} from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 

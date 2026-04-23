@@ -10,12 +10,12 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import {
+  ContentType,
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
   TextEditorToolbar
-} from '@opencloud-eu/editor'
-import type { ContentType } from '@opencloud-eu/editor'
+} from '@opencloud-eu/web-pkg'
 import type { Resource } from '@opencloud-eu/web-client'
 
 const {

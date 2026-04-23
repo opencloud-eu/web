@@ -16,10 +16,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   }),
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn(() => 'blob:image')
-  })
-}))
-
-vi.mock('@opencloud-eu/editor', () => ({
+  }),
   useTextEditor: vi.fn().mockReturnValue({
     editor: { value: null },
     contentType: { value: 'markdown' },

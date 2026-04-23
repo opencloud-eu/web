@@ -9,7 +9,6 @@
   },
   "peerDependencies": {
     "@opencloud-eu/design-system": "workspace:^",
-    "@opencloud-eu/editor": "workspace:*",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "@uppy/core": "5.2.0",

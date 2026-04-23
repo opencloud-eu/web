@@ -1,4 +1,4 @@
-import { MarkdownStrategy } from '../../../src/strategies/markdown'
+import { MarkdownStrategy } from '../../../../src/editor/strategies/markdown'
 
 describe('MarkdownStrategy', () => {
   let strategy: MarkdownStrategy
