@@ -151,9 +151,7 @@ const getCroppedCanvas = async (width?: number, height?: number) => {
   if (!unref(cropperSelectionRef)) {
     return null
   }
-  return await unref(cropperSelectionRef).$toCanvas(
-    width && height ? { width, height } : undefined
-  )
+  return await unref(cropperSelectionRef).$toCanvas(width && height ? { width, height } : undefined)
 }
 
 watch(cropperSelectionRef, (cropper) => {

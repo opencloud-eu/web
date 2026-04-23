@@ -56,12 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
-import {
-  useAvatarsStore,
-  useClientService,
-  useMessages,
-  useUserStore
-} from '../../composables'
+import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
