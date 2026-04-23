@@ -37,7 +37,8 @@ const dom = ({
 describe('OcDrop', () => {
   beforeEach(() => {
     vi.mocked(useIsMobile).mockImplementation(() => ({
-      isMobile: computed(() => false)
+      isMobile: computed(() => false),
+      isTablet: computed(() => false)
     }))
   })
 
@@ -116,7 +117,8 @@ describe('OcDrop', () => {
   describe('Component "OcMobileDrop"', () => {
     it('renders on mobile device', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
-        isMobile: computed(() => true)
+        isMobile: computed(() => true),
+        isTablet: computed(() => false)
       }))
 
       const { wrapper } = dom()
@@ -125,7 +127,8 @@ describe('OcDrop', () => {
     })
     it('does not render on mobile device when "enforceDropOnMobile" is true', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
-        isMobile: computed(() => true)
+        isMobile: computed(() => true),
+        isTablet: computed(() => false)
       }))
 
       const { wrapper } = dom({ enforceDropOnMobile: true })

@@ -76,7 +76,7 @@ const isLoading = computed(() => {
   return unref(areSpacesLoading)
 })
 
-const { isMobile } = useIsMobile()
+const { isTablet } = useIsMobile()
 
 const hasFloatingActionButton = computed(() => {
   return !!requestExtensions<FloatingActionButtonExtension>({
@@ -102,7 +102,7 @@ const hasSidebarNavExtension = computed(() => {
 
 const isSidebarVisible = computed(() => {
   return (
-    !unref(isMobile) &&
+    !unref(isTablet) &&
     (unref(navItems).length || unref(hasFloatingActionButton) || unref(hasSidebarNavExtension))
   )
 })
