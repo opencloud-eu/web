@@ -1,5 +1,5 @@
 import { mergeConfig, searchForWorkspaceRoot, ViteDevServer } from 'vite'
-import { join } from 'path'
+import { join, posix as posixPath } from 'path'
 import { cwd } from 'process'
 import { readFileSync, existsSync } from 'fs'
 import type { IncomingMessage, ServerResponse } from 'http'
@@ -88,8 +88,11 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
               [name]: './src/index.ts'
             },
             output: {
-              entryFileNames: join('js', `[name]${isProduction ? '-[hash]' : ''}${remoteEntryExt}`),
-              chunkFileNames: join('js', `[name]-[hash]${remoteEntryExt}`)
+              entryFileNames: posixPath.join(
+                'js',
+                `[name]${isProduction ? '-[hash]' : ''}${remoteEntryExt}`
+              ),
+              chunkFileNames: posixPath.join('js', `[name]-[hash]${remoteEntryExt}`)
             }
           }
         },
