@@ -13,12 +13,12 @@ const navItems = [
   mock<NavItem>({ name: 'nav2', active: false })
 ]
 
-let mockIsMobile = true
+let mockIsTablet = true
 let mockNavItems = navItems
 
 vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
   const original = await importOriginal<any>()
-  return { ...original, useIsMobile: () => ({ isMobile: mockIsMobile }) }
+  return { ...original, useIsMobile: () => ({ isTablet: mockIsTablet }) }
 })
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const original = await importOriginal<any>()
@@ -35,8 +35,8 @@ describe('SidebarNavMobile component', () => {
     expect(wrapper.find(selectors.mobileNavBtn).exists()).toBe(true)
   })
 
-  it('does not render if not mobile', () => {
-    const { wrapper } = getWrapper({ isMobile: false })
+  it('does not render if not tablet', () => {
+    const { wrapper } = getWrapper({ isTablet: false })
     expect(wrapper.find('#mobile-nav').exists()).toBe(false)
   })
 
@@ -46,8 +46,8 @@ describe('SidebarNavMobile component', () => {
   })
 })
 
-function getWrapper({ isMobile = true, navItems: items = navItems } = {}) {
-  mockIsMobile = isMobile
+function getWrapper({ isTablet = true, navItems: items = navItems } = {}) {
+  mockIsTablet = isTablet
   mockNavItems = items
 
   const mocks = {
