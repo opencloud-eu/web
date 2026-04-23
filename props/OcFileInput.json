@@ -75,5 +75,19 @@
     "description": "Determines if a required mark (*) should be displayed next to the label.",
     "default": "false",
     "type": "boolean"
+  },
+  {
+    "name": "previewIcon",
+    "required": false,
+    "description": "The icon that should be shown as preview placeholder.",
+    "default": "file",
+    "type": "string"
+  },
+  {
+    "name": "previewIconFillType",
+    "required": false,
+    "description": "The fill type of the preview icon.",
+    "default": "line",
+    "type": "'line' | 'fill'"
   }
 ]
