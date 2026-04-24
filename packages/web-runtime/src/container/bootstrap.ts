@@ -92,6 +92,7 @@ import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
+import { injectGeneratorMeta } from '../helpers/meta'
 
 // Snapshot embed query params on first call so they survive Vue Router
 // navigations (the delegated-auth callback redirects to /files/spaces/…,
@@ -1104,5 +1105,22 @@ export const setViewOptions = ({ resourcesStore }: { resourcesStore: ResourcesSt
 
   if (areEmptyTrashesShownBoolean !== resourcesStore.areEmptyTrashesShown) {
     resourcesStore.setAreEmptyTrashesShown(areEmptyTrashesShownBoolean)
+  }
+}
+
+export const announceCapabilities = async ({
+  capabilityStore,
+  clientService
+}: {
+  capabilityStore: CapabilityStore
+  clientService: ClientService
+}) => {
+  try {
+    const capabilities = await clientService.ocs.getCapabilities()
+    capabilityStore.setCapabilities(capabilities)
+    injectGeneratorMeta(capabilityStore)
+  } catch (e) {
+    console.error(e)
+    throw Error('Failed to load capabilities')
   }
 }
