@@ -1,9 +1,13 @@
 <template>
-  <div v-if="visible" class="text-editor-toolbar inline-flex items-center gap-3">
+  <div
+    v-if="visible"
+    class="text-editor-toolbar flex items-center gap-3 border-b border-b-role-border overflow-x-auto"
+  >
     <div
       v-for="(group, groupIndex) in toolbarGroups"
       :key="groupIndex"
-      class="text-editor-toolbar-group inline-flex items-stretch rounded-lg overflow-hidden bg-role-surface-variant"
+      class="text-editor-toolbar-group inline-flex items-stretch"
+      :class="{ 'border-l border-l-role-border pl-3': groupIndex > 0 }"
     >
       <oc-button
         v-for="item in group"
