@@ -281,18 +281,17 @@ Then(
 )
 
 Then(
-  /^space image should match (\d+)\/(\d+) ratio for user "([^"]+)"$/,
+  'space image should match {int}\\/{int} ratio for user {string}',
   async function (
     this: World,
-    expectedWidth: string,
-    expectedHeight: string,
+    expectedWidth: number,
+    expectedHeight: number,
     stepUser: string
   ): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const spacesObject = new objects.applicationFiles.Spaces({ page })
     const { width, height } = await spacesObject.getSpaceImageRatio()
 
-    expect(parseInt(expectedWidth)).toBe(width / 10)
-    expect(parseInt(expectedHeight)).toBe(height / 10)
+    expect(width / height).toBeCloseTo(expectedWidth / expectedHeight)
   }
 )

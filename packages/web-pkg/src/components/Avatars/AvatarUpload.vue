@@ -1,14 +1,5 @@
 <template>
-  <div
-    :class="[
-      '[&_.cropper-crop-box]:!outline-1',
-      '[&_.cropper-crop-box]:!outline-role-outline',
-      '[&_.cropper-view-box]:!rounded-[50%]',
-      '[&_.cropper-crop-box]:!rounded-[50%]',
-      '[&_.cropper-line]:!bg-role-outline',
-      '[&_.cropper-point]:!bg-role-outline'
-    ]"
-  >
+  <div>
     <input
       ref="fileInputRef"
       class="invisible avatar-file-input"
@@ -18,20 +9,18 @@
     />
     <div class="flex flex-col items-center">
       <user-avatar class="mb-4" :width="128" :user-id="user.id" :user-name="user.displayName" />
-      <div>
-        <div class="oc-button-group">
-          <oc-button size="small" @click="triggerFileInput">
-            {{ $gettext('Upload') }}
-          </oc-button>
-          <oc-button
-            v-if="hasAvatar"
-            class="avatar-upload-remove-button"
-            size="small"
-            @click="showRemoveModal = true"
-          >
-            {{ $gettext('Remove') }}
-          </oc-button>
-        </div>
+      <div class="oc-button-group">
+        <oc-button size="small" @click="triggerFileInput">
+          {{ $gettext('Upload') }}
+        </oc-button>
+        <oc-button
+          v-if="hasAvatar"
+          class="avatar-upload-remove-button"
+          size="small"
+          @click="showRemoveModal = true"
+        >
+          {{ $gettext('Remove') }}
+        </oc-button>
       </div>
     </div>
     <oc-modal
@@ -39,26 +28,18 @@
       :title="$gettext('Crop your new profile picture')"
       :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
-      :button-confirm-disabled="!cropperReady"
-      :focus-trap-initial="false"
+      :button-confirm-disabled="!imageUrl"
+      focus-trap-initial="#image-cropper-selection"
       @cancel="onCropModalCancel"
       @confirm="onCropModalConfirm"
     >
       <template #content>
-        <div v-if="imageUrl">
-          <img ref="imageRef" class="max-h-[400px]" :src="imageUrl" />
-          <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
-            <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
-            <span
-              v-text="
-                $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
-                  zoomKeys: $gettext('+-'),
-                  panKeys: $gettext('↑↓←→')
-                })
-              "
-            />
-          </div>
-        </div>
+        <image-cropper
+          ref="imageCropperRef"
+          :image-url="imageUrl"
+          :aspect-ratio="1"
+          rounded-selection
+        />
       </template>
     </oc-modal>
     <oc-modal
@@ -74,20 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, unref, watch } from 'vue'
-import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
-import {
-  useAvatarsStore,
-  useClientService,
-  useCropperKeyboardActions,
-  useMessages,
-  useUserStore
-} from '../../composables'
+import { computed, ref, unref } from 'vue'
+import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
 import UserAvatar from './UserAvatar.vue'
+import ImageCropper from '../ImageCropper.vue'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
@@ -97,12 +71,9 @@ const { user } = storeToRefs(userStore)
 const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
 const { graphAuthenticated } = useClientService()
-const { setCropperInstance } = useCropperKeyboardActions()
 
 const imageUrl = ref<string | null>(null)
-const imageRef = ref<HTMLImageElement | null>(null)
-const cropper = ref<Cropper | null>(null)
-const cropperReady = ref(false)
+const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -116,7 +87,9 @@ const hasAvatar = computed(() => {
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  if (!file) return
+  if (!file) {
+    return
+  }
 
   if (file.size > maxFileSize) {
     showErrorMessage({
@@ -131,37 +104,11 @@ const onFileChange = (event: Event) => {
   showCropModal.value = true
 }
 
-watch(imageUrl, async (newVal) => {
-  if (!newVal) return
-
-  await nextTick()
-
-  if (cropper.value) {
-    cropper.value.destroy()
+const getCroppedImage = async () => {
+  if (!unref(imageCropperRef)) {
+    return null
   }
-
-  if (imageRef.value) {
-    cropper.value = new Cropper(imageRef.value, {
-      aspectRatio: 1,
-      viewMode: 1,
-      dragMode: 'move',
-      autoCropArea: 0.8,
-      responsive: true,
-      background: false,
-      ready() {
-        cropperReady.value = true
-      }
-    })
-    setCropperInstance(cropper)
-  }
-})
-
-const getCroppedImage = () => {
-  return cropper.value!.getCroppedCanvas({
-    width: 256,
-    height: 256,
-    imageSmoothingQuality: 'high'
-  })
+  return await unref(imageCropperRef).getCroppedCanvas(256, 256)
 }
 
 const getCanvasBlob = async (canvas: HTMLCanvasElement): Promise<Blob> => {
@@ -171,7 +118,7 @@ const getCanvasBlob = async (canvas: HTMLCanvasElement): Promise<Blob> => {
 }
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click()
+  unref(fileInputRef).click()
 }
 
 const onCropModalCancel = () => {
@@ -180,7 +127,11 @@ const onCropModalCancel = () => {
 }
 
 const onCropModalConfirm = async () => {
-  const croppedImage = getCroppedImage()
+  const croppedImage = await getCroppedImage()
+  if (!croppedImage) {
+    return
+  }
+
   const blob = await getCanvasBlob(croppedImage)
   const objectUrl = URL.createObjectURL(blob)
   const file = new File([blob], 'avatar.png', {
@@ -219,10 +170,7 @@ const onRemoveModalConfirm = async () => {
 }
 
 const destroyCropper = () => {
-  cropper.value?.destroy()
-  cropper.value = null
-
-  if (fileInputRef.value) {
+  if (unref(fileInputRef)) {
     fileInputRef.value.value = ''
   }
 

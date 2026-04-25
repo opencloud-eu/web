@@ -10,14 +10,28 @@ import { useMessages } from '../../../../src'
 import { describe } from 'vitest'
 
 vi.mock('cropperjs', () => {
+  const mockCanvas = {
+    toBlob: vi.fn((cb) => cb(new Blob())),
+    toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
+  }
+
+  const mockSelection = {
+    aspectRatio: 0,
+    initialCoverage: 0,
+    $toCanvas: vi.fn(() => Promise.resolve(mockCanvas))
+  }
+
+  const mockImage = {
+    $ready: vi.fn(() => Promise.resolve()),
+    $move: vi.fn(),
+    $scale: vi.fn()
+  }
+
   const Cropper = vi.fn(
     class {
-      getCroppedCanvas = vi.fn(() => ({
-        toBlob: vi.fn((cb) => cb(new Blob())),
-        toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
-      }))
+      getCropperSelection = vi.fn(() => mockSelection)
+      getCropperImage = vi.fn(() => mockImage)
       destroy = vi.fn()
-      ready = vi.fn(() => true)
     }
   )
   return { default: Cropper }
@@ -41,7 +55,7 @@ describe('AvatarUpload', () => {
       const { wrapper } = getWrapper({ userHasAvatar: false })
       expect(wrapper.find(selectors.removeAvatarButton).exists()).toBeFalsy()
     })
-    it('should show message on success', async () => {
+    it('should show message on successful removal', async () => {
       const { wrapper } = getWrapper()
       await wrapper.vm.$nextTick()
       await wrapper.find(selectors.removeAvatarButton).trigger('click')
@@ -53,7 +67,7 @@ describe('AvatarUpload', () => {
         })
       )
     })
-    it('should show error message on error', async () => {
+    it('should show error message on removal error', async () => {
       const { wrapper, mocks } = getWrapper()
       mocks.$clientService.graphAuthenticated.photos.deleteOwnUserPhoto.mockRejectedValueOnce(
         new Error('')
@@ -90,7 +104,7 @@ describe('AvatarUpload', () => {
       )
     })
 
-    it('should show message on success', async () => {
+    it('should show message on successful upload', async () => {
       const { wrapper } = getWrapper()
       const file = createMockFile('file.png', 9 * 1024 * 1024, 'image/png')
       const input = wrapper.find(selectors.avatarFileInput).element as HTMLInputElement
@@ -102,9 +116,18 @@ describe('AvatarUpload', () => {
       })
 
       input.dispatchEvent(event)
-      ;(wrapper.vm as any).cropperReady = true
       await nextTicks(2)
+      ;(wrapper.vm as any).imageCropperRef = {
+        getCroppedCanvas: vi.fn(() =>
+          Promise.resolve({
+            toBlob: vi.fn((cb) => cb(new Blob())),
+            toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
+          })
+        )
+      }
+
       await wrapper.find(selectors.modalConfirm).trigger('click')
+      await nextTicks(2)
 
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalledWith(
@@ -113,7 +136,7 @@ describe('AvatarUpload', () => {
         })
       )
     })
-    it('should show error message on error', async () => {
+    it('should show error message on upload error', async () => {
       const { wrapper, mocks } = getWrapper()
       mocks.$clientService.graphAuthenticated.photos.updateOwnUserPhotoPatch.mockRejectedValueOnce(
         new Error('')
@@ -129,9 +152,18 @@ describe('AvatarUpload', () => {
       })
 
       input.dispatchEvent(event)
-      ;(wrapper.vm as any).cropperReady = true
       await nextTicks(2)
+      ;(wrapper.vm as any).imageCropperRef = {
+        getCroppedCanvas: vi.fn(() =>
+          Promise.resolve({
+            toBlob: vi.fn((cb) => cb(new Blob())),
+            toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
+          })
+        )
+      }
+
       await wrapper.find(selectors.modalConfirm).trigger('click')
+      await nextTicks(2)
 
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalledWith(
@@ -154,7 +186,8 @@ const getWrapper = ({ userHasAvatar = true } = {}) => {
       global: {
         renderStubDefaultSlot: true,
         stubs: {
-          FocusTrap: true
+          FocusTrap: true,
+          ImageCropper: true
         },
         plugins: [
           ...defaultPlugins({
