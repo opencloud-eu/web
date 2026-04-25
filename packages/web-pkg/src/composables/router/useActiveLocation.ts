@@ -1,4 +1,4 @@
-import { ref, Ref, watch } from 'vue'
+import { ref, Ref, unref, watch } from 'vue'
 import { useRoute } from './useRoute'
 import { useRouter } from './useRouter'
 import { ActiveRouteDirectorFunc } from '../../router'
@@ -18,7 +18,7 @@ export const useActiveLocation = <T extends string>(
   const router = useRouter()
   const currentRoute = useRoute()
   watch(
-    currentRoute,
+    () => unref(currentRoute).name,
     () => {
       value.value = director(router, ...comparatives)
     },
