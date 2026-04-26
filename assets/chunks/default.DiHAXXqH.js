@@ -1,1 +1,0 @@
-import"./theme.JUB8IGpu.js";import{v as c,w as n,a2 as s,L as r,B as l,Z as m,Q as p,z as i,a0 as _}from"./framework.BvhY8WSK.js";const k=c({__name:"default",setup(u){const e=p(),t=o=>{e.value=o};return(o,d)=>{const a=_("oc-emoji-picker");return i(),n(m,null,[s(a,{onEmojiSelect:t}),r("p",null,"Selected emoji: "+l(e.value),1)],64)}}});export{k as default};
