@@ -1,5 +1,40 @@
 # Changelog
 
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-04-26
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor
+
+### 💥 Breaking changes
+
+- feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
+- feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
+
+### 📈 Enhancement
+
+- feat: show mobile sidebar and FAB on tablets in portrait mode [[#2433](https://github.com/opencloud-eu/web/pull/2433)]
+- feat: redesign file input [[#2416](https://github.com/opencloud-eu/web/pull/2416)]
+- feat: redesign color picker [[#2407](https://github.com/opencloud-eu/web/pull/2407)]
+- feat: reduce mobile sidebar width to make it easier to dismiss [[#2410](https://github.com/opencloud-eu/web/pull/2410)]
+- feat: add the ability to show critical badge to version check if CVE … [[#2397](https://github.com/opencloud-eu/web/pull/2397)]
+
+### 🐛 Bug Fixes
+
+- fix: sorting of spaces is faulty when space names contain numbers [[#2429](https://github.com/opencloud-eu/web/pull/2429)]
+
+### ✅ Tests
+
+- fix-flaky: safari upload test [[#2417](https://github.com/opencloud-eu/web/pull/2417)]
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#2415](https://github.com/opencloud-eu/web/pull/2415)]
+- chore(deps): update tiptap monorepo to v3.22.4 [[#2389](https://github.com/opencloud-eu/web/pull/2389)]
+- chore(deps): update dependency @codemirror/view to v6.41.1 [[#2390](https://github.com/opencloud-eu/web/pull/2390)]
+- chore(deps): update typescript-eslint monorepo to v8.59.0 [[#2406](https://github.com/opencloud-eu/web/pull/2406)]
+- chore(deps): update devdependencies (non-major) to v4.2.3 [[#2409](https://github.com/opencloud-eu/web/pull/2409)]
+
 ## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-04-20
 
 ### ❤️ Thanks to all contributors! ❤️
