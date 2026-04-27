@@ -32,7 +32,7 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
-      focusTrapInitial: false,
+      focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
     })
   }

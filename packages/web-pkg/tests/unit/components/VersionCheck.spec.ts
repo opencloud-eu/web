@@ -63,7 +63,6 @@ describe('VersionCheck component', () => {
         abilities: [{ action: 'read-all', subject: 'Setting' }]
       })
       await nextTick()
-      console.log(wrapper.html())
       expect(wrapper.find('.version-check-critical').exists()).toBe(true)
     })
   })
