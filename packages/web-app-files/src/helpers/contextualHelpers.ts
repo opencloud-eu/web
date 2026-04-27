@@ -1,18 +1,15 @@
 import { omit } from 'lodash-es'
 import { ContextualHelperData } from '@opencloud-eu/design-system/helpers'
 import { ConfigStore } from '@opencloud-eu/web-pkg'
-
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
+import { useGettext } from 'vue3-gettext'
 
 interface ContextualHelperOptions {
   configStore: ConfigStore
 }
 
-export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) =>
-  filterContextHelper(
+export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) => {
+  const { $gettext } = useGettext()
+  return filterContextHelper(
     {
       title: $gettext('Share with people'),
       text: $gettext(
@@ -35,10 +32,10 @@ export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) =>
         {
           text: $gettext('People you share resources with can not see who else has access.')
         },
-        { text: $gettext('“via folder”'), headline: true },
+        { text: $gettext('"via folder"'), headline: true },
         {
           text: $gettext(
-            'The “via folder” is shown next to a share, if access has already been given via a parent folder. Click on the “via folder” to edit the share on its parent folder.'
+            'The "via folder" is shown next to a share, if access has already been given via a parent folder. Click on the "via folder" to edit the share on its parent folder.'
           )
         }
       ],
@@ -46,9 +43,11 @@ export const shareInviteCollaboratorHelp = (options: ContextualHelperOptions) =>
     },
     options
   )
+}
 
-export const shareSpaceAddMemberHelp = (options: ContextualHelperOptions) =>
-  filterContextHelper(
+export const shareSpaceAddMemberHelp = (options: ContextualHelperOptions) => {
+  const { $gettext } = useGettext()
+  return filterContextHelper(
     {
       title: $gettext('Add members to this Space'),
       text: $gettext('Enter a name to add people or groups as members to this Space.'),
@@ -70,8 +69,10 @@ export const shareSpaceAddMemberHelp = (options: ContextualHelperOptions) =>
     },
     options
   )
-export const shareViaLinkHelp = (options: ContextualHelperOptions) =>
-  filterContextHelper(
+}
+export const shareViaLinkHelp = (options: ContextualHelperOptions) => {
+  const { $gettext } = useGettext()
+  return filterContextHelper(
     {
       title: $gettext('Choose how access is granted'),
       list: [
@@ -85,8 +86,10 @@ export const shareViaLinkHelp = (options: ContextualHelperOptions) =>
     },
     options
   )
-export const shareViaIndirectLinkHelp = (options: ContextualHelperOptions) =>
-  filterContextHelper(
+}
+export const shareViaIndirectLinkHelp = (options: ContextualHelperOptions) => {
+  const { $gettext } = useGettext()
+  return filterContextHelper(
     {
       title: $gettext('What are indirect links?'),
       text: $gettext('Indirect links are links giving access by a parent folder.'),
@@ -105,6 +108,7 @@ export const shareViaIndirectLinkHelp = (options: ContextualHelperOptions) =>
     },
     options
   )
+}
 
 const filterContextHelper = (
   data: ContextualHelperData,

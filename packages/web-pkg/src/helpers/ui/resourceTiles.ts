@@ -3,7 +3,6 @@ import { SortField } from '../../composables/sort'
 import { Language } from 'vue3-gettext'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 
-// just a dummy function to trick gettext tools
 function $gettext(msg: string) {
   return msg
 }

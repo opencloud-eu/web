@@ -1,11 +1,6 @@
 import translations from '../l10n/translations.json'
-import { AppWrapperRoute } from '@opencloud-eu/web-pkg'
+import { AppWrapperRoute, $gettext } from '@opencloud-eu/web-pkg'
 import PdfViewer from './App.vue'
-
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
 
 const routes = [
   {

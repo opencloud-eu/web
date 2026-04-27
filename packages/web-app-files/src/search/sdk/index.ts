@@ -6,12 +6,9 @@ import {
   SearchFunction,
   SearchList,
   SearchPreview,
-  SearchProvider
+  SearchProvider,
+  $gettext
 } from '@opencloud-eu/web-pkg'
-
-function $gettext(msg: string) {
-  return msg
-}
 
 export default class Provider implements SearchProvider {
   public readonly id: string
