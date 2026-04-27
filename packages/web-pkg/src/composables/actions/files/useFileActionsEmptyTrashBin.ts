@@ -11,7 +11,6 @@ import {
   useSpacesStore,
   useUserStore
 } from '../../piniaStores'
-import { useLoadingService } from '../../loadingService'
 
 export const useFileActionsEmptyTrashBin = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -22,7 +21,6 @@ export const useFileActionsEmptyTrashBin = () => {
   const { dispatchModal } = useModals()
   const resourcesStore = useResourcesStore()
   const spacesStore = useSpacesStore()
-  const loadingService = useLoadingService()
 
   const emptyTrashBin = async ({ space }: { space: SpaceResource }) => {
     try {
@@ -54,7 +52,7 @@ export const useFileActionsEmptyTrashBin = () => {
         }
       ),
       hasInput: false,
-      onConfirm: () => loadingService.addTask(() => emptyTrashBin({ space: resources[0] }))
+      onConfirm: () => emptyTrashBin({ space: resources[0] })
     })
   }
 

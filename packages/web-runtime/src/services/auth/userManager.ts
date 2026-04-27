@@ -16,13 +16,11 @@ import { User as OcUser } from '@opencloud-eu/web-client/graph/generated'
 import { SettingsBundle } from '../../helpers/settings'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
 import { Router } from 'vue-router'
-import { injectGeneratorMeta } from '../../helpers/meta'
 
 const postLoginRedirectUrlKey = 'oc.postLoginRedirectUrl'
 type UnloadReason = 'authError' | 'logout'
 
 export interface UserManagerOptions {
-  webfingerDiscoveryData: WebfingerDiscoveryData
   clientService: ClientService
   configStore: ConfigStore
   ability: Ability
@@ -35,13 +33,6 @@ export interface UserManagerOptions {
 
   // number of seconds before an access token is to expire to raise the accessTokenExpiring event
   accessTokenExpiryThreshold: number
-}
-
-// data that gets injected into the UserManager from the Webfinger discovery process
-export interface WebfingerDiscoveryData {
-  authority: string
-  client_id: string
-  scope: string
 }
 
 export class UserManager extends OidcUserManager {
@@ -77,7 +68,7 @@ export class UserManager extends OidcUserManager {
       post_logout_redirect_uri: buildUrl(options.router, '/'),
       accessTokenExpiringNotificationTimeInSeconds: options.accessTokenExpiryThreshold,
       metadataUrl: urlJoin(
-        options.webfingerDiscoveryData.authority,
+        options.authStore.webfingerDiscoveryData.authority,
         '.well-known/openid-configuration'
       ),
 
@@ -88,7 +79,7 @@ export class UserManager extends OidcUserManager {
       // pass through options from the web config
       ...options.configStore.openIdConnect,
       // authority, client_id and scope come from the webfinger discovery process, overwriting the web config
-      ...options.webfingerDiscoveryData
+      ...options.authStore.webfingerDiscoveryData
     }
 
     Log.setLogger(console)
@@ -159,7 +150,7 @@ export class UserManager extends OidcUserManager {
         return
       }
 
-      if (this.capabilityStore.supportSSE) {
+      if (this.capabilityStore.supportSSE && userKnown) {
         ;(this.clientService.sseAuthenticated as SSEAdapter).updateAccessToken(accessToken)
       }
 
@@ -167,7 +158,6 @@ export class UserManager extends OidcUserManager {
 
       if (!userKnown) {
         await this.fetchUserInfo()
-        await this.updateUserAbilities(this.userStore.user)
         this.authStore.setUserContextReady(true)
       }
     })()
@@ -175,11 +165,16 @@ export class UserManager extends OidcUserManager {
   }
 
   private async fetchUserInfo() {
-    await this.fetchCapabilities()
-
     const graphClient = this.clientService.graphAuthenticated
-    const [graphUser, roles] = await Promise.all([graphClient.users.getMe(), this.fetchRoles()])
-    const role = await this.fetchRole({ graphUser, roles })
+    // the first authenticated request needs to happen synchronously because it might
+    // provision a new user via its middleware, which must not run asynchronously
+    const graphUser = await graphClient.users.getMe()
+
+    const roles = await this.fetchRoles()
+    const [role, permissions] = await Promise.all([
+      this.fetchRole({ graphUser, roles }),
+      this.fetchPermissions({ user: graphUser })
+    ])
 
     this.userStore.setUser({
       id: graphUser.id,
@@ -190,6 +185,8 @@ export class UserManager extends OidcUserManager {
       appRoleAssignments: role ? [role as any] : [], // FIXME
       preferredLanguage: graphUser.preferredLanguage || ''
     })
+
+    this.updateUserAbilities(permissions)
 
     if (graphUser.preferredLanguage) {
       const appsStore = useAppsStore()
@@ -231,17 +228,6 @@ export class UserManager extends OidcUserManager {
     return roleAssignment ? roles.find((role) => role.id === roleAssignment.roleId) : null
   }
 
-  private async fetchCapabilities() {
-    if (this.capabilityStore.isInitialized) {
-      return
-    }
-
-    const capabilities = await this.clientService.ocs.getCapabilities()
-
-    this.capabilityStore.setCapabilities(capabilities)
-    injectGeneratorMeta(this.capabilityStore)
-  }
-
   private async fetchPermissions({ user }: { user: OcUser }) {
     const httpClient = this.clientService.httpAuthenticated
     try {
@@ -257,8 +243,7 @@ export class UserManager extends OidcUserManager {
     }
   }
 
-  private async updateUserAbilities(user: OcUser) {
-    const permissions = await this.fetchPermissions({ user })
+  private updateUserAbilities(permissions: string[]) {
     const abilities = getAbilities(permissions)
     this.ability.update(abilities)
   }
