@@ -225,7 +225,6 @@ export default defineComponent({
     }
   },
   computed: {
-
     helpersEnabled() {
       return this.configOptions.contextHelpers
     },
