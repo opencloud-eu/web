@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.1 [[#2418](https://github.com/opencloud-eu/web/pull/2418)]
 - fix(deps): update dependency axios to v1.15.2 [[#2419](https://github.com/opencloud-eu/web/pull/2419)]
 - chore(deps): update dependency eslint-plugin-vue to v10.9.0 [[#2421](https://github.com/opencloud-eu/web/pull/2421)]
 - chore(deps): update dependency fast-xml-parser to v5.7.2 [[#2440](https://github.com/opencloud-eu/web/pull/2440)]
