@@ -4,23 +4,23 @@
     class="text-editor-toolbar flex items-center gap-3 border-b border-b-role-border overflow-x-auto"
   >
     <div
-      v-for="(group, groupIndex) in toolbarGroups"
-      :key="groupIndex"
+      v-for="(group, groupIndex) in textEditor.actionGroups()"
+      :key="`toolbar-group-${group.id}`"
       class="text-editor-toolbar-group inline-flex items-stretch"
       :class="{ 'border-l border-l-role-border pl-3': groupIndex > 0 }"
     >
       <oc-button
-        v-for="item in group"
-        :key="item.id"
+        v-for="item in group.actions"
+        :key="`toolbar-item-${item.id}`"
         type="button"
         appearance="raw"
         class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center"
-        :class="{ 'text-editor-toolbar-btn--active': item.isActive(textEditor.editor.value!) }"
-        :aria-label="item.label"
+        :class="{ 'text-editor-toolbar-btn--active': item.isActive?.(textEditor.editor.value!) }"
+        :aria-label="item.title"
         :disabled="!isItemEnabled(item)"
-        @click.stop="item.action(textEditor.editor.value!)"
+        @click.stop="item.toolbarAction(textEditor.editor.value!)"
       >
-        <oc-icon :name="item.icon" fill-type="none" size="small" />
+        <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
       </oc-button>
     </div>
   </div>
@@ -63,10 +63,6 @@ watch(
 function updateEditorState() {
   editorStateKey.value++
 }
-
-const toolbarGroups = computed(() => {
-  return textEditor.toolbarItems.filter((group) => group.length > 0)
-})
 
 function isItemEnabled(item: any) {
   // Access editorStateKey to make this reactive to editor state changes

@@ -3,41 +3,21 @@ import { useEditor } from '@tiptap/vue-3'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance } from '../types'
-import { resolveStrategy } from '../strategies/resolveStrategy'
 import { SlashCommands } from '../extensions'
+import { useContentStrategy } from './useContentStrategy'
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
+  const { resolveStrategy } = useContentStrategy()
+
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
-  const strategy = resolveStrategy(options.contentType, {
-    onRequestLinkUrl: options.onRequestLinkUrl
-      ? (editor, currentUrl) => {
-          options.onRequestLinkUrl!(currentUrl).then((url) => {
-            if (url === null) return
-            if (url === '') {
-              editor.chain().focus().extendMarkRange('link').unsetLink().run()
-              return
-            }
-            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
-          })
-        }
-      : undefined,
-    onRequestImageUrl: options.onRequestImageUrl
-      ? (editor) => {
-          options.onRequestImageUrl!().then((url) => {
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
-            }
-          })
-        }
-      : undefined
-  })
+  const strategy = resolveStrategy(options.contentType)
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const extensions = strategy.extensions()
   if (options.slashCommands !== false) {
-    const resolvedGroups = options.slashCommandItems ?? strategy.defaultSlashCommandGroups()
+    const resolvedGroups = strategy.editorActionGroups()
     if (resolvedGroups.length > 0) {
       extensions.push(
         SlashCommands.configure({ getGroups: () => resolvedGroups }) as (typeof extensions)[number]
@@ -126,7 +106,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor,
     contentType,
     readonly,
-    toolbarItems: strategy.toolbarItems(),
+    actionGroups: strategy.editorActionGroups,
     getContent,
     setContent,
     isEmpty,

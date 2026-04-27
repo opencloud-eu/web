@@ -5,7 +5,7 @@
         <div v-for="group in grouped" :key="group.id" class="text-editor-slash-menu__group">
           <div class="text-editor-slash-menu__group-title" v-text="group.title" />
           <ul>
-            <li v-for="entry in group.entries" :key="entry.item.id">
+            <li v-for="entry in group.entries" :key="`slash-command-item-${entry.item.id}`">
               <oc-button
                 appearance="raw"
                 class="text-editor-slash-menu__item"
@@ -40,8 +40,8 @@
 
 <script setup lang="ts">
 import { ComponentPublicInstance, computed, nextTick, onMounted, useTemplateRef } from 'vue'
-import type { SuggestionProps } from '@tiptap/suggestion'
-import type { FlatSlashCommandItem } from '../extensions'
+import { SuggestionProps } from '@tiptap/suggestion'
+import { FlatSlashCommandItem } from '../extensions'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
 interface VirtualElement {

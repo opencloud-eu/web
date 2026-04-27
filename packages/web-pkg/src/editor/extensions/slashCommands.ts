@@ -1,17 +1,16 @@
-import { Extension as TipTapExtension, type Editor } from '@tiptap/core'
-import Suggestion from '@tiptap/suggestion'
-import type { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion'
+import { Extension as TipTapExtension, Editor } from '@tiptap/core'
+import Suggestion, { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion'
 import { VueRenderer } from '@tiptap/vue-3'
 import SlashCommandMenu from '../components/SlashCommandMenu.vue'
-import { SlashCommandGroup, SlashCommandItem } from '../actions'
+import { EditorAction, EditorActionGroup } from '../composables'
 
-export type FlatSlashCommandItem = SlashCommandItem & {
+export type FlatSlashCommandItem = EditorAction & {
   groupId: string
   groupTitle: string
 }
 
 export interface SlashCommandsOptions {
-  getGroups: () => SlashCommandGroup[]
+  getGroups: () => EditorActionGroup[]
 }
 
 export interface SlashCommandMenuHandle {
@@ -20,7 +19,7 @@ export interface SlashCommandMenuHandle {
 }
 
 export function filterSlashCommandItems(
-  groups: SlashCommandGroup[],
+  groups: EditorActionGroup[],
   query: string,
   editor: Editor
 ): FlatSlashCommandItem[] {
@@ -28,12 +27,10 @@ export function filterSlashCommandItems(
   const flat: FlatSlashCommandItem[] = []
 
   for (const group of groups) {
-    for (const item of group.items) {
-      // Skip items that don't match their isVisible condition
-      if (item.isVisible && !item.isVisible(editor)) {
+    for (const item of group.actions) {
+      if (item.showInSlashCommands === false || (item.isEnabled && !item.isEnabled(editor))) {
         continue
       }
-
       if (!normalized) {
         flat.push({ ...item, groupId: group.id, groupTitle: group.title })
         continue
@@ -68,7 +65,7 @@ export const SlashCommands = TipTapExtension.create<SlashCommandsOptions>({
           return filterSlashCommandItems(this.options.getGroups(), query, editor)
         },
         command: ({ editor, range, props }) => {
-          props.command({ editor, range })
+          props.slashCommandAction({ editor, range })
         },
         render: () => {
           let renderer: VueRenderer | null = null
