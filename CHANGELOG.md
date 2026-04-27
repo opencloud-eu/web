@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- perf: improve initial loading times [[#2414](https://github.com/opencloud-eu/web/pull/2414)]
 - feat: show mobile sidebar and FAB on tablets in portrait mode [[#2433](https://github.com/opencloud-eu/web/pull/2433)]
 - feat: redesign file input [[#2416](https://github.com/opencloud-eu/web/pull/2416)]
 - feat: redesign color picker [[#2407](https://github.com/opencloud-eu/web/pull/2407)]
@@ -29,6 +30,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v10.33.2 [[#2427](https://github.com/opencloud-eu/web/pull/2427)]
+- chore(deps): update devdependencies (non-major) [[#2425](https://github.com/opencloud-eu/web/pull/2425)]
 - chore(deps): update devdependencies (non-major) [[#2415](https://github.com/opencloud-eu/web/pull/2415)]
 - chore(deps): update tiptap monorepo to v3.22.4 [[#2389](https://github.com/opencloud-eu/web/pull/2389)]
 - chore(deps): update dependency @codemirror/view to v6.41.1 [[#2390](https://github.com/opencloud-eu/web/pull/2390)]
