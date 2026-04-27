@@ -71,7 +71,6 @@ import { AppConfigObject } from '../../apps'
 import screenfull from 'screenfull'
 import Cropper from 'cropperjs'
 import { lineNumbers } from '@codemirror/view'
-import 'cropperjs/dist/cropper.css'
 
 const {
   applicationConfig = undefined,

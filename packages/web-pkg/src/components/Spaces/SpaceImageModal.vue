@@ -1,45 +1,21 @@
 <template>
-  <div
-    :class="[
-      '[&_.cropper-crop-box]:!outline-1',
-      '[&_.cropper-crop-box]:!outline-role-outline',
-      '[&_.cropper-line]:!bg-role-outline',
-      '[&_.cropper-point]:!bg-role-outline'
-    ]"
-  >
-    <div v-if="imageUrl" class="max-h-[400px]">
-      <img ref="imageRef" :src="imageUrl" />
-      <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
-        <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
-        <span
-          v-text="
-            $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {
-              zoomKeys: $gettext('+-'),
-              panKeys: $gettext('↑↓←→')
-            })
-          "
-        />
-      </div>
-    </div>
-  </div>
+  <image-cropper ref="imageCropperRef" :image-url="imageUrl" :aspect-ratio="16 / 9" />
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { onMounted, ref, unref } from 'vue'
 import {
   Modal,
   useClientService,
   useCreateSpace,
-  useCropperKeyboardActions,
   useMessages,
   useSpaceHelpers,
   useSpacesStore
 } from '../../composables'
-import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
 import { eventBus } from '../../services'
 import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
+import ImageCropper from '../ImageCropper.vue'
 
 const { space, file } = defineProps<{
   modal: Modal
@@ -53,17 +29,19 @@ const clientService = useClientService()
 const spacesStore = useSpacesStore()
 const { createDefaultMetaFolder } = useCreateSpace()
 const { getDefaultMetaFolder } = useSpaceHelpers()
-const { setCropperInstance } = useCropperKeyboardActions()
 
-const cropper = ref<Cropper | null>(null)
-const imageRef = useTemplateRef<HTMLImageElement>('imageRef')
+const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const imageUrl = ref<string | null>(null)
 
 const onConfirm = async () => {
-  const canvas = unref(cropper)?.getCroppedCanvas({
-    imageSmoothingQuality: 'high'
-  })
+  if (!unref(imageCropperRef)) {
+    return
+  }
 
+  const canvas = await unref(imageCropperRef).getCroppedCanvas()
+  if (!canvas) {
+    return
+  }
   const content = await getArrayBufferFromCropper(canvas)
   await uploadSpaceImage(content)
 }
@@ -138,25 +116,9 @@ const uploadSpaceImage = async (content: ArrayBuffer) => {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   try {
     imageUrl.value = URL.createObjectURL(file)
-
-    if (unref(cropper)) {
-      unref(cropper)?.destroy()
-    }
-
-    await nextTick()
-
-    cropper.value = new Cropper(unref(imageRef), {
-      aspectRatio: 16 / 9,
-      viewMode: 1,
-      dragMode: 'move',
-      autoCropArea: 0.8,
-      responsive: true,
-      background: false
-    })
-    setCropperInstance(cropper)
   } catch (error) {
     showErrorMessage({
       title: $gettext('Failed to load space image'),
