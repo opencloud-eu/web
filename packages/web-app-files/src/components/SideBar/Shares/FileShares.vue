@@ -97,7 +97,7 @@ import { textUtils } from '../../../helpers/textUtils'
 import { isShareSpaceResource, ShareTypes } from '@opencloud-eu/web-client'
 import InviteCollaboratorForm from './Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import CollaboratorListItem from './Collaborators/ListItem.vue'
-import { shareInviteCollaboratorHelp } from '../../../helpers/contextualHelpers'
+import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { computed, defineComponent, inject, ref, Ref, unref } from 'vue'
 import {
   isProjectSpaceResource,
@@ -126,6 +126,7 @@ export default defineComponent({
     const { dispatchModal } = useModals()
     const { canShare } = useCanShare()
     const { showMessage, showErrorMessage } = useMessages()
+    const { shareInviteCollaboratorHelp } = useContextualHelpers()
 
     const resourcesStore = useResourcesStore()
     const { removeResources, getAncestorById } = resourcesStore
@@ -190,6 +191,12 @@ export default defineComponent({
       return unref(collaboratorShares).sort(collaboratorsComparator)
     })
 
+    const inviteCollaboratorHelp = computed(() =>
+      shareInviteCollaboratorHelp({
+        configStore
+      })
+    )
+
     return {
       addShare,
       deleteShare,
@@ -212,16 +219,12 @@ export default defineComponent({
       canShare,
       showMessage,
       showErrorMessage,
+      inviteCollaboratorHelp,
       fileSideBarSharesPanelSharedWithTopExtensionPoint,
       fileSideBarSharesPanelSharedWithBottomExtensionPoint
     }
   },
   computed: {
-    inviteCollaboratorHelp() {
-      return shareInviteCollaboratorHelp({
-        configStore: this.configStore
-      })
-    },
 
     helpersEnabled() {
       return this.configOptions.contextHelpers

@@ -95,7 +95,7 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { computed, inject, nextTick, ref, Ref, unref, useTemplateRef, watch } from 'vue'
-import { shareSpaceAddMemberHelp } from '../../../helpers/contextualHelpers'
+import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ProjectSpaceResource, CollaboratorShare } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import Fuse from 'fuse.js'
@@ -119,6 +119,7 @@ const { showMessage, showErrorMessage } = useMessages()
 const router = useRouter()
 const { $gettext } = useGettext()
 const configStore = useConfigStore()
+const { shareSpaceAddMemberHelp } = useContextualHelpers()
 
 const { user } = storeToRefs(userStore)
 
@@ -175,9 +176,7 @@ const helpersEnabled = computed(() => {
     canShare({ space: unref(resource), resource: unref(resource) })
   )
 })
-const spaceAddMemberHelp = computed(() => {
-  return shareSpaceAddMemberHelp({ configStore: configStore })
-})
+const spaceAddMemberHelp = computed(() => shareSpaceAddMemberHelp({ configStore }))
 const hasCollaborators = computed(() => {
   return unref(spaceMembers).length > 0
 })
