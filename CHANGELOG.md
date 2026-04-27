@@ -30,6 +30,12 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency axios to v1.15.2 [[#2419](https://github.com/opencloud-eu/web/pull/2419)]
+- chore(deps): update dependency eslint-plugin-vue to v10.9.0 [[#2421](https://github.com/opencloud-eu/web/pull/2421)]
+- chore(deps): update dependency fast-xml-parser to v5.7.2 [[#2440](https://github.com/opencloud-eu/web/pull/2440)]
+- fix(deps): update dependency p-queue to v9.2.0 [[#2442](https://github.com/opencloud-eu/web/pull/2442)]
+- chore(deps): update traefik docker tag to v3.6.14 [[#2431](https://github.com/opencloud-eu/web/pull/2431)]
+- fix(deps): update dependency vue-router to v5.0.6 [[#2432](https://github.com/opencloud-eu/web/pull/2432)]
 - chore(deps): update pnpm to v10.33.2 [[#2427](https://github.com/opencloud-eu/web/pull/2427)]
 - chore(deps): update devdependencies (non-major) [[#2425](https://github.com/opencloud-eu/web/pull/2425)]
 - chore(deps): update devdependencies (non-major) [[#2415](https://github.com/opencloud-eu/web/pull/2415)]
