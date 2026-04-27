@@ -9,19 +9,66 @@
       class="text-editor-toolbar-group inline-flex items-stretch"
       :class="{ 'border-l border-l-role-border pl-3': groupIndex > 0 }"
     >
-      <oc-button
-        v-for="item in group.actions"
-        :key="`toolbar-item-${item.id}`"
-        type="button"
-        appearance="raw"
-        class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center"
-        :class="{ 'text-editor-toolbar-btn--active': item.isActive?.(textEditor.editor.value!) }"
-        :aria-label="item.title"
-        :disabled="!isItemEnabled(item)"
-        @click.stop="item.toolbarAction(textEditor.editor.value!)"
-      >
-        <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
-      </oc-button>
+      <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
+        <template v-if="item.isDropdown && item.dropdownOptions">
+          <oc-button
+            :id="`toolbar-dropdown-trigger-${item.id}`"
+            type="button"
+            appearance="raw"
+            class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center gap-1"
+            :class="{
+              'text-editor-toolbar-btn--active': item.isActive?.(textEditor.editor.value!)
+            }"
+            :aria-label="item.title"
+            :disabled="!isItemEnabled(item)"
+          >
+            <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
+            <oc-icon name="arrow-down-s" fill-type="line" size="small" />
+          </oc-button>
+          <oc-drop
+            :drop-id="`toolbar-dropdown-${item.id}`"
+            :toggle="`#toolbar-dropdown-trigger-${item.id}`"
+            mode="click"
+            class="text-editor-toolbar-dropdown"
+            padding-size="small"
+          >
+            <ul class="oc-list">
+              <li
+                v-for="option in item.dropdownOptions"
+                :key="`${item.id}-${option.value}`"
+                class="oc-rounded oc-menu-item-hover"
+              >
+                <oc-button
+                  appearance="raw"
+                  justify-content="space-between"
+                  class="oc-width-1-1 oc-p-s"
+                  @click="item.toolbarAction?.(textEditor.editor.value!, option.value)"
+                >
+                  <oc-icon
+                    v-if="option.value === getCurrentValue(item)"
+                    name="check"
+                    fill-type="line"
+                    size="small"
+                  />
+                  <span>{{ option.label }}</span>
+                </oc-button>
+              </li>
+            </ul>
+          </oc-drop>
+        </template>
+        <oc-button
+          v-else
+          type="button"
+          appearance="raw"
+          class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center"
+          :class="{ 'text-editor-toolbar-btn--active': item.isActive?.(textEditor.editor.value!) }"
+          :aria-label="item.title"
+          :disabled="!isItemEnabled(item)"
+          @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
+        >
+          <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
+        </oc-button>
+      </template>
     </div>
   </div>
 </template>
@@ -77,5 +124,17 @@ function isItemEnabled(item: any) {
     return item.isEnabled(editor)
   }
   return true
+}
+
+function getCurrentValue(item: any) {
+  // Access editorStateKey to make this reactive to editor state changes
+  editorStateKey.value
+
+  const editor = unref(textEditor.editor)
+  if (!editor || !item.currentValue) {
+    return undefined
+  }
+
+  return item.currentValue(editor)
 }
 </script>

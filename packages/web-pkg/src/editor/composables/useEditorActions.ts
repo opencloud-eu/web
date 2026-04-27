@@ -17,16 +17,21 @@ export interface EditorAction {
   keywords?: string[]
 
   // Execution
-  toolbarAction?: (editor: Editor) => void
+  toolbarAction?: (editor: Editor, value?: string) => void
   slashCommandAction?: (ctx: { editor: Editor; range: Range }) => void
 
   // State management
+  currentValue?: (editor: Editor) => string | undefined
   isActive?: (editor: Editor) => boolean
   isEnabled?: (editor: Editor) => boolean
 
   // Visibility control
   showInToolbar?: boolean
   showInSlashCommands?: boolean
+
+  // Dropdown configuration
+  isDropdown?: boolean
+  dropdownOptions?: Array<{ value: string; label: string }>
 }
 
 export interface EditorActionGroup {
@@ -48,7 +53,139 @@ export interface ContentTypeActions {
 export function useEditorActions(options: MaybeRef<UseEditorActionsOptions> = {}) {
   const { $gettext } = useGettext()
 
+  // History actions
+  const undo = (): EditorAction => ({
+    id: 'undo',
+    title: $gettext('Undo'),
+    icon: 'arrow-go-back',
+    iconFillType: 'line',
+    toolbarAction: (editor) => editor.chain().focus().undo().run(),
+    isEnabled: (editor) => editor.can().undo(),
+    showInSlashCommands: false
+  })
+
+  const redo = (): EditorAction => ({
+    id: 'redo',
+    title: $gettext('Redo'),
+    icon: 'arrow-go-forward',
+    iconFillType: 'line',
+    toolbarAction: (editor) => editor.chain().focus().redo().run(),
+    isEnabled: (editor) => editor.can().redo(),
+    showInSlashCommands: false
+  })
+
   // Text formatting actions
+  const fontSize = (): EditorAction => ({
+    id: 'font-size',
+    title: $gettext('Font size'),
+    icon: 'font-size-2',
+    isDropdown: true,
+    dropdownOptions: [
+      { value: '12px', label: '12px' },
+      { value: '14px', label: '14px' },
+      { value: '16px', label: '16px' },
+      { value: '18px', label: '18px' },
+      { value: '20px', label: '20px' },
+      { value: '24px', label: '24px' },
+      { value: '28px', label: '28px' },
+      { value: '32px', label: '32px' }
+    ],
+    currentValue: (editor) => editor.getAttributes('textStyle').fontSize as string | undefined,
+    toolbarAction: (editor, value) => editor.chain().focus().setFontSize(value).run(),
+    showInSlashCommands: false
+  })
+
+  const fontFamily = (): EditorAction => ({
+    id: 'font-family',
+    title: $gettext('Font family'),
+    icon: 'font-family',
+    isDropdown: true,
+    dropdownOptions: [
+      { value: 'Arial', label: $gettext('Arial') },
+      { value: 'Courier New', label: $gettext('Courier New') },
+      { value: 'Georgia', label: $gettext('Georgia') },
+      { value: 'Times New Roman', label: $gettext('Times New Roman') },
+      { value: 'Trebuchet MS', label: $gettext('Trebuchet MS') },
+      { value: 'Verdana', label: $gettext('Verdana') }
+    ],
+    currentValue: (editor) => editor.getAttributes('textStyle').fontFamily as string | undefined,
+    toolbarAction: (editor, value) => editor.chain().focus().setFontFamily(value).run(),
+    showInSlashCommands: false
+  })
+
+  const lineHeight = (): EditorAction => ({
+    id: 'line-height',
+    title: $gettext('Line height'),
+    icon: 'line-height',
+    isDropdown: true,
+    dropdownOptions: [
+      { value: '1', label: '1' },
+      { value: '1.15', label: '1.15' },
+      { value: '1.5', label: '1.5' },
+      { value: '1.75', label: '1.75' },
+      { value: '2', label: '2' },
+      { value: '2.5', label: '2.5' },
+      { value: '3', label: '3' }
+    ],
+    currentValue: (editor) => editor.getAttributes('textStyle').lineHeight as string | undefined,
+    toolbarAction: (editor, value) => editor.chain().focus().setLineHeight(value).run(),
+    showInSlashCommands: false
+  })
+
+  const textColor = (): EditorAction => ({
+    id: 'text-color',
+    title: $gettext('Text color'),
+    icon: 'font-color',
+    isDropdown: true,
+    dropdownOptions: [
+      { value: '#000000', label: $gettext('Black') },
+      { value: '#e60000', label: $gettext('Red') },
+      { value: '#ff9900', label: $gettext('Orange') },
+      { value: '#ffff00', label: $gettext('Yellow') },
+      { value: '#008a00', label: $gettext('Green') },
+      { value: '#0066cc', label: $gettext('Blue') },
+      { value: '#9933ff', label: $gettext('Purple') },
+      { value: '#ffffff', label: $gettext('White') },
+      { value: '#facccc', label: $gettext('Light red') },
+      { value: '#ffebcc', label: $gettext('Light orange') },
+      { value: '#ffffcc', label: $gettext('Light yellow') },
+      { value: '#cce8cc', label: $gettext('Light green') },
+      { value: '#cce0f5', label: $gettext('Light blue') },
+      { value: '#ebd6ff', label: $gettext('Light purple') }
+    ],
+    currentValue: (editor) => editor.getAttributes('textStyle').color as string | undefined,
+    toolbarAction: (editor, value) => editor.chain().focus().setColor(value).run(),
+    showInSlashCommands: false
+  })
+
+  const backgroundColor = (): EditorAction => ({
+    id: 'background-color',
+    title: $gettext('Background color'),
+    icon: 'mark-pen',
+    iconFillType: 'line',
+    isDropdown: true,
+    dropdownOptions: [
+      { value: 'transparent', label: $gettext('None') },
+      { value: '#facccc', label: $gettext('Light red') },
+      { value: '#ffebcc', label: $gettext('Light orange') },
+      { value: '#ffffcc', label: $gettext('Light yellow') },
+      { value: '#cce8cc', label: $gettext('Light green') },
+      { value: '#cce0f5', label: $gettext('Light blue') },
+      { value: '#ebd6ff', label: $gettext('Light purple') },
+      { value: '#e60000', label: $gettext('Red') },
+      { value: '#ff9900', label: $gettext('Orange') },
+      { value: '#ffff00', label: $gettext('Yellow') },
+      { value: '#008a00', label: $gettext('Green') },
+      { value: '#0066cc', label: $gettext('Blue') },
+      { value: '#9933ff', label: $gettext('Purple') },
+      { value: '#000000', label: $gettext('Black') }
+    ],
+    currentValue: (editor) =>
+      editor.getAttributes('textStyle').backgroundColor as string | undefined,
+    toolbarAction: (editor, value) => editor.chain().focus().setBackgroundColor(value).run(),
+    showInSlashCommands: false
+  })
+
   const bold = (): EditorAction => ({
     id: 'bold',
     title: $gettext('Bold'),
@@ -366,7 +503,15 @@ export function useEditorActions(options: MaybeRef<UseEditorActionsOptions> = {}
   })
 
   return {
+    // History
+    undo,
+    redo,
     // Text formatting
+    fontSize,
+    fontFamily,
+    lineHeight,
+    textColor,
+    backgroundColor,
     bold,
     italic,
     underline,

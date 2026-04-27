@@ -6,13 +6,18 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
-import { Table } from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
+import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
+import {
+  BackgroundColor,
+  Color,
+  FontFamily,
+  FontSize,
+  LineHeight,
+  TextStyle
+} from '@tiptap/extension-text-style'
 
 export const useStrategyTiptapJson = (): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -32,7 +37,6 @@ export const useStrategyTiptapJson = (): ContentTypeStrategy => {
   const extensions = (): Extension[] => {
     return [
       StarterKit.configure({ link: false }),
-      Underline,
       Link.configure({
         openOnClick: true,
         autolink: true,
@@ -45,11 +49,25 @@ export const useStrategyTiptapJson = (): ContentTypeStrategy => {
       TableCell,
       TableHeader,
       TaskList,
-      TaskItem.configure({ nested: true })
+      TaskItem.configure({ nested: true }),
+      FontFamily,
+      TextStyle,
+      Underline,
+      Color,
+      BackgroundColor,
+      FontSize,
+      LineHeight
     ]
   }
 
   const {
+    undo,
+    redo,
+    fontFamily,
+    fontSize,
+    lineHeight,
+    backgroundColor,
+    textColor,
     bold,
     italic,
     underline,
@@ -75,9 +93,24 @@ export const useStrategyTiptapJson = (): ContentTypeStrategy => {
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
+        id: 'history',
+        title: $gettext('History'),
+        actions: [undo(), redo()]
+      },
+      {
         id: 'text',
         title: $gettext('Text'),
-        actions: [bold(), italic(), underline(), strikethrough()]
+        actions: [
+          fontFamily(),
+          fontSize(),
+          lineHeight(),
+          backgroundColor(),
+          textColor(),
+          bold(),
+          italic(),
+          underline(),
+          strikethrough()
+        ]
       },
       {
         id: 'basic-blocks',
