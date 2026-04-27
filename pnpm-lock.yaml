@@ -186,7 +186,7 @@ importers:
         version: 4.0.1(vue@3.5.33(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue-select:
         specifier: 4.0.0-beta.6
         version: 4.0.0-beta.6(vue@3.5.33(typescript@6.0.3))
@@ -232,7 +232,7 @@ importers:
         version: 0.26.0(rollup@4.60.0)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.50.0)(@types/node@25.6.0)(axios@1.15.1)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.12)(sass@1.99.0)(search-insights@2.17.3)(typescript@6.0.3)
+        version: 1.6.4(@algolia/client-search@5.50.0)(@types/node@25.6.0)(axios@1.15.2)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.12)(sass@1.99.0)(search-insights@2.17.3)(typescript@6.0.3)
     publishDirectory: package
 
   packages/eslint-config:
@@ -251,7 +251,7 @@ importers:
         version: 4.4.1(@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))
       eslint-plugin-vue:
         specifier: ^10.8.0
-        version: 10.8.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.2.1(jiti@2.6.1)))
+        version: 10.9.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.2.1(jiti@2.6.1)))
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -314,7 +314,7 @@ importers:
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.0
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -335,8 +335,8 @@ importers:
         specifier: workspace:^
         version: link:../web-pkg
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -362,8 +362,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -381,8 +381,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       fuse.js:
         specifier: 7.3.0
         version: 7.3.0
@@ -399,8 +399,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -433,8 +433,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -489,8 +489,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -520,8 +520,8 @@ importers:
         specifier: ^14.0.0
         version: 14.2.1(vue@3.5.33(typescript@6.0.3))
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -539,7 +539,7 @@ importers:
         version: 8.11.1
       p-queue:
         specifier: ^9.0.0
-        version: 9.1.2
+        version: 9.2.0
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3))
@@ -553,8 +553,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -593,8 +593,8 @@ importers:
         specifier: ^3.20.5
         version: 3.22.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.22.4(@tiptap/pm@3.22.4))(@tiptap/pm@3.22.4)(vue@3.5.33(typescript@6.0.3))
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       dompurify:
         specifier: ^3.2.3
         version: 3.4.0
@@ -620,8 +620,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -645,8 +645,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -663,8 +663,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -703,8 +703,8 @@ importers:
         specifier: ^4.17.21
         version: 4.18.1
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -734,8 +734,8 @@ importers:
         specifier: 3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -792,10 +792,10 @@ importers:
         version: 2.0.1
       axios:
         specifier: ^1.13.6
-        version: 1.15.1
+        version: 1.15.2
       fast-xml-parser:
         specifier: ^5.5.9
-        version: 5.7.1
+        version: 5.7.2
       lodash-es:
         specifier: ^4.17.23
         version: 4.18.1
@@ -875,7 +875,7 @@ importers:
         version: 14.2.1(vue@3.5.33(typescript@6.0.3))
       axios:
         specifier: ^1.13.6
-        version: 1.15.1
+        version: 1.15.2
       cropperjs:
         specifier: ^2.0.0
         version: 2.1.1
@@ -908,7 +908,7 @@ importers:
         version: 3.5.0
       p-queue:
         specifier: ^9.1.0
-        version: 9.1.2
+        version: 9.2.0
       password-sheriff:
         specifier: ^2.0.0
         version: 2.0.0
@@ -929,7 +929,7 @@ importers:
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: 4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -996,8 +996,8 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(vue@3.5.33(typescript@6.0.3))
       axios:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       deepmerge:
         specifier: 4.3.1
         version: 4.3.1
@@ -1020,8 +1020,8 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0
       p-queue:
-        specifier: 9.1.2
-        version: 9.1.2
+        specifier: 9.2.0
+        version: 9.2.0
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3))
@@ -1038,8 +1038,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.33(typescript@6.0.3))
       vue-router:
-        specifier: 5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        specifier: 5.0.6
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: 4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -1076,7 +1076,7 @@ importers:
         version: 2.4.8(@vue/compiler-dom@3.5.33)(@vue/server-renderer@3.5.33(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       axios:
         specifier: ^1.13.6
-        version: 1.15.1
+        version: 1.15.2
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3))
@@ -1088,7 +1088,7 @@ importers:
         version: 3.5.33(typescript@6.0.3)
       vue-router:
         specifier: ^5.0.4
-        version: 5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
+        version: 5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
       vue3-gettext:
         specifier: 4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -1114,7 +1114,7 @@ importers:
         version: 2.1.4
       fast-xml-parser:
         specifier: ^5.5.9
-        version: 5.7.1
+        version: 5.7.2
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
@@ -3192,8 +3192,8 @@ packages:
     resolution: {integrity: sha512-zBQouZixDTbo3jMGqHKyePxYxr1e5W8UdTmBQ7sNtaA9M2bE32daxxPLS/jojhKOHxQ7LWwPjfiwf/fhaJWzlg==}
     engines: {node: '>=4'}
 
-  axios@1.15.1:
-    resolution: {integrity: sha512-WOG+Jj8ZOvR0a3rAn+Tuf1UQJRxw5venr6DgdbJzngJE3qG7X0kL83CZGpdHMxEm+ZK3seAbvFsw4FfOfP9vxg==}
+  axios@1.15.2:
+    resolution: {integrity: sha512-wLrXxPtcrPTsNlJmKjkPnNPK2Ihe0hn0wGSaTEiHRPxwjvJwT3hKmXF4dpqxmPO9SoNb2FsYXj/xEo0gHN+D5A==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -3714,8 +3714,8 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
 
-  eslint-plugin-vue@10.8.0:
-    resolution: {integrity: sha512-f1J/tcbnrpgC8suPN5AtdJ5MQjuXbSU9pGRSSYAuF3SHoiYCOdEX6O22pLaRyLHXvDcOe+O5ENgc1owQ587agA==}
+  eslint-plugin-vue@10.9.0:
+    resolution: {integrity: sha512-EFNNzu4HqtTRb5DJINpyd+u3bDdzETWDMpCzG+UBHz1tpsnMDCeOcf61u4Wy/cbXnMymK+MT9bjH7KcG1fItSw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       '@stylistic/eslint-plugin': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
@@ -3825,8 +3825,8 @@ packages:
   fast-xml-builder@1.1.5:
     resolution: {integrity: sha512-4TJn/8FKLeslLAH3dnohXqE3QSoxkhvaMzepOIZytwJXZO69Bfz0HBdDHzOTOon6G59Zrk6VQ2bEiv1t61rfkA==}
 
-  fast-xml-parser@5.7.1:
-    resolution: {integrity: sha512-8Cc3f8GUGUULg34pBch/KGyPLglS+OFs05deyOlY7fL2MTagYPKrVQNmR1fLF/yJ9PH5ZSTd3YDF6pnmeZU+zA==}
+  fast-xml-parser@5.7.2:
+    resolution: {integrity: sha512-P7oW7tLbYnhOLQk/Gv7cZgzgMPP/XN03K02/Jy6Y/NHzyIAIpxuZIM/YqAkfiXFPxA2CTm7NtCijK9EDu09u2w==}
     hasBin: true
 
   fdir@6.5.0:
@@ -4772,8 +4772,8 @@ packages:
     resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
     engines: {node: '>=18'}
 
-  p-queue@9.1.2:
-    resolution: {integrity: sha512-ktsDOALzTYTWWF1PbkNVg2rOt+HaOaMWJMUnt7T3qf5tvZ1L8dBW3tObzprBcXNMKkwj+yFSLqHso0x+UFcJXw==}
+  p-queue@9.2.0:
+    resolution: {integrity: sha512-dWgLE8AH0HjQ9fe74pUkKkvzzYT18Inp4zra3lKHnnwqGvcfcUBrvF2EAVX+envufDNBOzpPq/IBUONDbI7+3g==}
     engines: {node: '>=20'}
 
   p-retry@6.2.1:
@@ -5772,8 +5772,8 @@ packages:
     peerDependencies:
       vue: ^3
 
-  vue-router@5.0.4:
-    resolution: {integrity: sha512-lCqDLCI2+fKVRl2OzXuzdSWmxXFLQRxQbmHugnRpTMyYiT+hNaycV0faqG5FBHDXoYrZ6MQcX87BvbY8mQ20Bg==}
+  vue-router@5.0.6:
+    resolution: {integrity: sha512-9+kmUTGbKMyW9Asoy98IXXYIzrTMT7JDAdpDDeEkorHvybpUvBI2wsrSM5jFOXrFydpzRFJ9vAh+80DN2PGu9w==}
     peerDependencies:
       '@pinia/colada': '>=0.21.2'
       '@vue/compiler-sfc': ^3.5.17
@@ -8004,13 +8004,13 @@ snapshots:
       '@vueuse/shared': 14.2.1(vue@3.5.33(typescript@6.0.3))
       vue: 3.5.33(typescript@6.0.3)
 
-  '@vueuse/integrations@12.8.2(axios@1.15.1)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)':
+  '@vueuse/integrations@12.8.2(axios@1.15.2)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@6.0.3)
       '@vueuse/shared': 12.8.2(typescript@6.0.3)
       vue: 3.5.33(typescript@6.0.3)
     optionalDependencies:
-      axios: 1.15.1
+      axios: 1.15.2
       focus-trap: 7.8.0
       fuse.js: 7.3.0
       jwt-decode: 4.0.0
@@ -8154,7 +8154,7 @@ snapshots:
 
   axe-core@4.11.3: {}
 
-  axios@1.15.1:
+  axios@1.15.2:
     dependencies:
       follow-redirects: 1.16.0
       form-data: 4.0.5
@@ -8760,7 +8760,7 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3)
 
-  eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.2.1(jiti@2.6.1))):
+  eslint-plugin-vue@10.9.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1(jiti@2.6.1))(typescript@6.0.3))(eslint@10.2.1(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.2.1(jiti@2.6.1))):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.2.1(jiti@2.6.1))
       eslint: 10.2.1(jiti@2.6.1)
@@ -8892,7 +8892,7 @@ snapshots:
     dependencies:
       path-expression-matcher: 1.5.0
 
-  fast-xml-parser@5.7.1:
+  fast-xml-parser@5.7.2:
     dependencies:
       '@nodable/entities': 2.1.0
       fast-xml-builder: 1.1.5
@@ -9829,7 +9829,7 @@ snapshots:
 
   p-map@7.0.4: {}
 
-  p-queue@9.1.2:
+  p-queue@9.2.0:
     dependencies:
       eventemitter3: 5.0.4
       p-timeout: 7.0.1
@@ -10802,7 +10802,7 @@ snapshots:
       sass: 1.99.0
       yaml: 2.8.3
 
-  vitepress@1.6.4(@algolia/client-search@5.50.0)(@types/node@25.6.0)(axios@1.15.1)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.12)(sass@1.99.0)(search-insights@2.17.3)(typescript@6.0.3):
+  vitepress@1.6.4(@algolia/client-search@5.50.0)(@types/node@25.6.0)(axios@1.15.2)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.12)(sass@1.99.0)(search-insights@2.17.3)(typescript@6.0.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.50.0)(search-insights@2.17.3)
@@ -10815,7 +10815,7 @@ snapshots:
       '@vue/devtools-api': 7.7.9
       '@vue/shared': 3.5.33
       '@vueuse/core': 12.8.2(typescript@6.0.3)
-      '@vueuse/integrations': 12.8.2(axios@1.15.1)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)
+      '@vueuse/integrations': 12.8.2(axios@1.15.2)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)
       focus-trap: 7.8.0
       mark.js: 8.11.1
       minisearch: 7.2.0
@@ -10913,7 +10913,7 @@ snapshots:
     dependencies:
       vue: 3.5.33(typescript@6.0.3)
 
-  vue-router@5.0.4(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3)):
+  vue-router@5.0.6(@vue/compiler-sfc@3.5.33)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3)):
     dependencies:
       '@babel/generator': 7.29.1
       '@vue-macros/common': 3.1.2(vue@3.5.33(typescript@6.0.3))
@@ -10984,7 +10984,7 @@ snapshots:
       base-64: 1.0.0
       byte-length: 1.0.2
       entities: 6.0.1
-      fast-xml-parser: 5.7.1
+      fast-xml-parser: 5.7.2
       hot-patcher: 2.0.1
       layerr: 3.0.0
       md5: 2.3.0

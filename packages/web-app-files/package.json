@@ -13,7 +13,7 @@
     "@opencloud-eu/web-pkg": "workspace:*",
     "@uppy/core": "5.2.0",
     "@vueuse/core": "^14.0.0",
-    "axios": "1.15.1",
+    "axios": "1.15.2",
     "email-validator": "^2.0.4",
     "fuse.js": "7.3.0",
     "lodash-es": "4.18.1",
@@ -24,7 +24,7 @@
     "qs": "6.15.1",
     "uuid": "14.0.0",
     "vue-concurrency": "5.0.3",
-    "vue-router": "5.0.4",
+    "vue-router": "5.0.6",
     "vue3-gettext": "^4.0.0-beta.1",
     "web-app-search": "workspace:*"
   }
