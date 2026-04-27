@@ -8,17 +8,21 @@
   </main>
 </template>
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, watch, ref } from 'vue'
+import { defineComponent, onBeforeUnmount, watch, ref, unref } from 'vue'
 import { useRoute, eventBus, useResourcesStore } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   setup() {
     const dragareaEnabled = ref(false)
     const { resetSelection } = useResourcesStore()
+    const route = useRoute()
 
-    watch(useRoute(), () => {
-      resetSelection()
-    })
+    watch(
+      () => unref(route).path,
+      () => {
+        resetSelection()
+      }
+    )
 
     const hideDropzone = () => {
       dragareaEnabled.value = false
