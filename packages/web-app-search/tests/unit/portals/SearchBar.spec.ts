@@ -258,13 +258,14 @@ describe('Search Bar portal component', () => {
     wrapper.find(selectors.searchInput).trigger('keyup.esc')
     expect(wrapper.vm.term).toBe('')
   })
-  test('clears search term on app.search.term.clear event', async () => {
+  test('clears search term and hides options on app.search.term.clear event', async () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     eventBus.publish('app.search.term.clear')
     await nextTick()
     expect(wrapper.vm.term).toBe('')
+    expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
 })
 

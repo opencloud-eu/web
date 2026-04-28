@@ -368,7 +368,7 @@ export default defineComponent({
     })
 
     const clearTermEvent = eventBus.subscribe('app.search.term.clear', () => {
-      term.value = ''
+      updateTerm('')
     })
 
     const { bindKeyAction } = useKeyboardActions()
