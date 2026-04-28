@@ -1,6 +1,7 @@
 import { RouteComponents } from './router'
 import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
-import { $gettext, createLocation, isLocationActiveDirector } from './utils'
+import { createLocation, isLocationActiveDirector } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 
 type trashTypes = 'files-trash-generic' | 'files-trash-overview'
 

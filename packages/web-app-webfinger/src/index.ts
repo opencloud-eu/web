@@ -1,42 +1,44 @@
+import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
+import { defineWebApplication } from '@opencloud-eu/web-pkg'
+import { RouteRecordRaw } from 'vue-router'
 import Resolve from './views/Resolve.vue'
 
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
+export default defineWebApplication({
+  setup() {
+    const { $gettext } = useGettext()
 
-const appInfo = {
-  name: $gettext('Webfinger'),
-  id: 'webfinger',
-  icon: 'fingerprint'
-}
+    const routes: RouteRecordRaw[] = [
+      {
+        name: 'webfinger-root',
+        path: '/',
+        redirect: () => {
+          return { name: 'webfinger-resolve' }
+        },
+        meta: {
+          authContext: 'anonymous'
+        }
+      },
+      {
+        path: '/resolve',
+        name: 'webfinger-resolve',
+        component: Resolve,
+        meta: {
+          authContext: 'idp',
+          title: $gettext('Resolve destination'),
+          entryPoint: true
+        }
+      }
+    ]
 
-const routes = () => [
-  {
-    name: 'webfinger-root',
-    path: '/',
-    redirect: () => {
-      return { name: 'webfinger-resolve' }
-    },
-    meta: {
-      authContext: 'anonymous'
-    }
-  },
-  {
-    path: '/resolve',
-    name: 'webfinger-resolve',
-    component: Resolve,
-    meta: {
-      authContext: 'idp',
-      title: $gettext('Resolve destination'),
-      entryPoint: true
+    return {
+      appInfo: {
+        name: $gettext('Webfinger'),
+        id: 'webfinger',
+        icon: 'fingerprint'
+      },
+      routes,
+      translations
     }
   }
-]
-
-export default {
-  appInfo,
-  routes,
-  translations
-}
+})

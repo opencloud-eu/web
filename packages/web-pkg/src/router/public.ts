@@ -1,6 +1,7 @@
 import { RouteComponents } from './router'
 import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
-import { createLocation, isLocationActiveDirector, $gettext } from './utils'
+import { createLocation, isLocationActiveDirector } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 
 type shareTypes = 'files-public-link' | 'files-public-upload'
 

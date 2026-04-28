@@ -1,6 +1,7 @@
 import { RouteComponents } from './router'
 import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
-import { createLocation, isLocationActiveDirector, $gettext } from './utils'
+import { createLocation, isLocationActiveDirector } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 
 export type RouteShareTypes =
   | 'files-shares'

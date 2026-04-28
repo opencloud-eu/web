@@ -70,14 +70,7 @@ export const isLocationActiveDirector = <T extends string>(
   }
 }
 
-/**
- * just a dummy function to trick gettext tools
- *
- * @param msg
- */
-export function $gettext(msg: string): string {
-  return msg
-}
+export { $gettext } from '../utils/dummyGettext'
 
 /**
  * create a location with attached default values

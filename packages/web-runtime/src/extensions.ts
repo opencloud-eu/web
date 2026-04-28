@@ -7,11 +7,10 @@ import {
   CustomComponentExtension,
   LoadingIndicator,
   useCapabilityStore,
-  useUserStore
+  useUserStore,
+  $gettext
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
-
-const $gettext = (str: string) => str
 
 export const extensions = () => {
   const capabilityStore = useCapabilityStore()

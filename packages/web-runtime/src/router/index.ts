@@ -24,16 +24,11 @@ import AccountPreferences from '../pages/account/accountPreferences.vue'
 import AccountInformation from '../pages/account/accountInformation.vue'
 import AccountLayout from '../pages/account/accountLayout.vue'
 import AccountGDPR from '../pages/account/accountGDPR.vue'
-import { createLocation, isLocationActiveDirector } from '@opencloud-eu/web-pkg'
+import { createLocation, isLocationActiveDirector, $gettext } from '@opencloud-eu/web-pkg'
 import AccountExtensionLayout from '../pages/account/accountExtensionLayout.vue'
 
 export * from './helpers'
 export { createRouter } from 'vue-router'
-
-// just a dummy function to trick gettext tools
-function $gettext(msg: string) {
-  return msg
-}
 
 export type RouteAccountTypes =
   | 'account-information'

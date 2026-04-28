@@ -3,11 +3,10 @@ import {
   AppMenuItemExtension,
   CustomComponentExtension,
   Extension,
-  ExtensionPoint
+  ExtensionPoint,
+  $gettext
 } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
-
-const $gettext = (str: string) => str
 
 export const appMenuExtensionPoint: ExtensionPoint<AppMenuItemExtension> = {
   id: 'app.runtime.header.app-menu',
