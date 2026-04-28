@@ -1,6 +1,7 @@
 import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
 import { RouteComponents } from './router'
-import { createLocation, isLocationActiveDirector, $gettext } from './utils'
+import { createLocation, isLocationActiveDirector } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 
 type spaceTypes = 'files-spaces-projects' | 'files-spaces-generic'
 

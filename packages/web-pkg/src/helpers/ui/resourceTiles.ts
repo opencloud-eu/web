@@ -2,10 +2,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import { SortField } from '../../composables/sort'
 import { Language } from 'vue3-gettext'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-
-function $gettext(msg: string) {
-  return msg
-}
+import { $gettext } from '../../utils/dummyGettext'
 
 export const sortFields: SortField[] = [
   {

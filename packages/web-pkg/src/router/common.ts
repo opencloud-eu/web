@@ -1,6 +1,7 @@
 import { RouteComponents } from './router'
 import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
-import { createLocation, $gettext, isLocationActiveDirector } from './utils'
+import { createLocation, isLocationActiveDirector } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 
 type commonTypes = 'files-common-favorites' | 'files-common-search'
 
