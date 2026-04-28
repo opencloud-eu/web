@@ -58,6 +58,7 @@
         </template>
         <oc-button
           v-else
+          v-oc-tooltip="item.title"
           type="button"
           appearance="raw"
           class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center"
