@@ -467,9 +467,17 @@ export function useEditorActions(
     description: $gettext('Remove current row'),
     icon: 'delete-row',
     keywords: ['table', 'row', 'remove'],
-    toolbarAction: (editor) => editor.chain().focus().deleteRow().run(),
+    toolbarAction: (editor) => {
+      const deleted = editor.chain().focus().deleteRow().run()
+      if (!deleted && editor.isActive('table')) {
+        editor.chain().focus().deleteTable().run()
+      }
+    },
     slashCommandAction: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).deleteRow().run()
+      const deleted = editor.chain().focus().deleteRange(range).deleteRow().run()
+      if (!deleted && editor.isActive('table')) {
+        editor.chain().focus().deleteTable().run()
+      }
     },
     isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
@@ -509,9 +517,17 @@ export function useEditorActions(
     description: $gettext('Remove current column'),
     icon: 'delete-column',
     keywords: ['table', 'column', 'remove'],
-    toolbarAction: (editor) => editor.chain().focus().deleteColumn().run(),
+    toolbarAction: (editor) => {
+      const deleted = editor.chain().focus().deleteColumn().run()
+      if (!deleted && editor.isActive('table')) {
+        editor.chain().focus().deleteTable().run()
+      }
+    },
     slashCommandAction: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).deleteColumn().run()
+      const deleted = editor.chain().focus().deleteRange(range).deleteColumn().run()
+      if (!deleted && editor.isActive('table')) {
+        editor.chain().focus().deleteTable().run()
+      }
     },
     isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
