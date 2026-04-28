@@ -1,0 +1,130 @@
+import {
+  isLocationCommonActive,
+  isLocationPublicActive,
+  isLocationSharesActive,
+  isLocationSpacesActive
+} from '@opencloud-eu/web-pkg'
+import { useIsFilesAppActive } from '@opencloud-eu/web-pkg'
+import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { computed, unref } from 'vue'
+import { useRouter } from '@opencloud-eu/web-pkg'
+
+import { FileAction, FileActionOptions } from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
+import { useArchiverService } from '@opencloud-eu/web-pkg'
+import { formatFileSize } from '@opencloud-eu/web-pkg'
+import { useAuthStore, useMessages } from '@opencloud-eu/web-pkg'
+
+export const useFileActionsDownloadArchive = () => {
+  const { showErrorMessage } = useMessages()
+  const router = useRouter()
+  const archiverService = useArchiverService()
+  const { $ngettext, $gettext, current } = useGettext()
+  const authStore = useAuthStore()
+  const isFilesAppActive = useIsFilesAppActive()
+
+  const handler = ({ space, resources }: FileActionOptions) => {
+    if (resources.length > 1) {
+      // the handler can be triggered successfully if project spaces are selected along with other files.
+      // but we must filter out the project spaces in such a case (only the other selected files are allowed for download).
+      resources = resources.filter((r) => r.canDownload() && !isProjectSpaceResource(r))
+    }
+
+    return archiverService
+      .triggerDownload({
+        fileIds: resources.map((resource) => resource.fileId),
+        ...(space &&
+          isPublicSpaceResource(space) && {
+            publicToken: space.id,
+            publicLinkPassword: authStore.publicLinkPassword
+          })
+      })
+      .catch((e) => {
+        console.error(e)
+        showErrorMessage({
+          title: $ngettext(
+            'Failed to download the selected folder.', // on single selection only available for folders
+            'Failed to download the selected files.', // on multi selection available for files+folders
+            resources.length
+          ),
+          errors: [e]
+        })
+      })
+  }
+
+  const areArchiverLimitsExceeded = (resources: Resource[]) => {
+    const archiverCapabilities = unref(archiverService.capability)
+    if (!archiverCapabilities) {
+      return
+    }
+
+    const selectedFilesSize = resources.reduce(
+      (accumulator, currentValue) => accumulator + parseInt(`${currentValue.size}`),
+      0
+    )
+
+    return selectedFilesSize > parseInt(archiverCapabilities.max_size)
+  }
+
+  const actions = computed((): FileAction[] => {
+    return [
+      {
+        name: 'download-archive',
+        icon: 'inbox-archive',
+        handler: (args) => {
+          handler(args)
+        },
+        label: () => $gettext('Download'),
+        disabledTooltip: ({ resources }) => {
+          return areArchiverLimitsExceeded(resources)
+            ? $gettext('The selection exceeds the allowed archive size (max. %{maxSize})', {
+                maxSize: formatFileSize(unref(archiverService.capability).max_size, current)
+              })
+            : ''
+        },
+        isDisabled: ({ resources }) => areArchiverLimitsExceeded(resources),
+        isVisible: ({ resources }) => {
+          if (
+            unref(isFilesAppActive) &&
+            !isLocationSpacesActive(router, 'files-spaces-generic') &&
+            !isLocationPublicActive(router, 'files-public-link') &&
+            !isLocationCommonActive(router, 'files-common-favorites') &&
+            !isLocationCommonActive(router, 'files-common-search') &&
+            !isLocationSharesActive(router, 'files-shares-with-me') &&
+            !isLocationSharesActive(router, 'files-shares-with-others') &&
+            !isLocationSharesActive(router, 'files-shares-via-link') &&
+            !isLocationCommonActive(router, 'files-common-search')
+          ) {
+            return false
+          }
+          if (!archiverService || !unref(archiverService.available)) {
+            return false
+          }
+
+          if (resources.length === 0) {
+            return false
+          }
+          if (resources.length === 1 && !resources[0].isFolder) {
+            return false
+          }
+          if (resources.length > 1 && resources.every((r) => isProjectSpaceResource(r))) {
+            return false
+          }
+          if (isProjectSpaceResource(resources[0]) && resources[0].disabled) {
+            return false
+          }
+
+          const downloadDisabled = resources.some((resource) => {
+            return !resource.canDownload()
+          })
+          return !downloadDisabled
+        },
+        class: 'oc-files-actions-download-archive-trigger'
+      }
+    ]
+  })
+
+  return {
+    actions
+  }
+}
