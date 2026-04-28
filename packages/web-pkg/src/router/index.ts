@@ -35,6 +35,7 @@ import {
   createLocationTrash
 } from './trash'
 import { isLocationActiveDirector, createLocation } from './utils'
+import { $gettext } from '../utils/dummyGettext'
 import type { ActiveRouteDirectorFunc } from './utils'
 
 const ROOT_ROUTE = {
@@ -74,7 +75,8 @@ export {
   locationSharesWithMe,
   locationSharesWithOthers,
   buildRoutes,
-  ActiveRouteDirectorFunc
+  ActiveRouteDirectorFunc,
+  $gettext
 }
 
 export type { RouteShareTypes }

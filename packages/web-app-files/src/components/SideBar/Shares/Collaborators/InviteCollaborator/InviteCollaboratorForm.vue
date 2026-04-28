@@ -176,7 +176,8 @@ import {
   useSpacesStore,
   useConfigStore,
   useSharesStore,
-  useUserStore
+  useUserStore,
+  $gettext
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -201,11 +202,6 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
-
-// just a dummy function to trick gettext tools
-const $gettext = (str: string) => {
-  return str
-}
 
 type DropDownShouldOpenOptions = { open: boolean; search: string[] }
 

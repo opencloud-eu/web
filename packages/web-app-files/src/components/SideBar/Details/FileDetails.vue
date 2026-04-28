@@ -146,7 +146,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { getSharedAncestorRoute } from '@opencloud-eu/web-pkg'
 import { ResourceIcon } from '@opencloud-eu/web-pkg'
-import { tagsHelper } from '../../../helpers/contextualHelpers'
+import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import TagsSelect from './TagsSelect.vue'
 import { WebDavDetails, CustomComponentTarget } from '@opencloud-eu/web-pkg'
@@ -165,6 +165,7 @@ const { resourceContentsText } = useResourceContents({ showSizeInformation: fals
 const { loadPreview, previewsLoading } = useLoadPreview()
 const { openSideBarPanel } = useSideBar()
 const { getIndicators } = useResourceIndicators()
+const { tagsHelper } = useContextualHelpers()
 
 const language = useGettext()
 const { $gettext, current: currentLanguage } = language

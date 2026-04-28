@@ -102,7 +102,7 @@ import {
   UpdateLinkOptions,
   useRouter
 } from '@opencloud-eu/web-pkg'
-import { shareViaLinkHelp, shareViaIndirectLinkHelp } from '../../../helpers/contextualHelpers'
+import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { isSpaceResource, LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import ListItem from './Links/ListItem.vue'
 import { isLocationSharesActive, useSharesStore } from '@opencloud-eu/web-pkg'
@@ -120,6 +120,7 @@ const { dispatchModal } = useModals()
 const { removeResources } = useResourcesStore()
 const { isPasswordEnforcedForLinkType } = useLinkTypes()
 const { canShare } = useCanShare()
+const { shareViaLinkHelp, shareViaIndirectLinkHelp } = useContextualHelpers()
 
 const canCreateLinks = computed(() => {
   if (!ability.can('create-all', 'PublicLink')) {

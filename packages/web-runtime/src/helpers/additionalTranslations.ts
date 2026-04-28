@@ -1,7 +1,4 @@
-// just a dummy function to trick gettext tools
-function $gettext(msg: string): string {
-  return msg
-}
+import { $gettext } from '@opencloud-eu/web-pkg'
 
 export const additionalTranslations = {
   admin: $gettext('Admin'),
