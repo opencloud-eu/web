@@ -40,7 +40,7 @@
 }
 
 .text-editor-provider .ProseMirror a {
-    color: var(--oc-color-role-primary);
+    color: var(--oc-role-primary);
     text-decoration: underline;
     cursor: pointer;
 }
@@ -74,7 +74,7 @@
 }
 
 .text-editor-provider .ProseMirror blockquote {
-    border-left: 2px solid var(--oc-color-role-outline-variant, #94a3b8);
+    border-left: 2px solid var(--oc-role-outline-variant);
     padding-left: 12px;
     margin: 4px 0 8px;
     font-style: italic;
@@ -109,7 +109,7 @@
 
 .text-editor-provider .ProseMirror th,
 .text-editor-provider .ProseMirror td {
-    border: 1px solid var(--oc-color-role-outline-variant, #e5e7eb);
+    border: 1px solid var(--oc-role-outline-variant);
     padding: 6px 10px;
     text-align: left;
 }
@@ -138,15 +138,19 @@
 /* Horizontal rule */
 .text-editor-provider .ProseMirror hr {
     border: none;
-    border-top: 1px solid var(--oc-color-role-outline-variant, #e5e7eb);
+    border-top: 1px solid var(--oc-role-outline-variant);
     margin: 12px 0;
 }
 
 /* Hide scrollbar in toolbar */
-.text-editor-toolbar {
+.text-editor-toolbar > div:first-child {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
 }
-.text-editor-toolbar::-webkit-scrollbar {
+.text-editor-toolbar > div:first-child::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
+}
+
+.text-editor-toolbar-btn--active {
+    background: var(--oc-role-secondary-container);
 }
