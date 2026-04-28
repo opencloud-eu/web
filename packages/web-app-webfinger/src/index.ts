@@ -1,13 +1,14 @@
 import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
 import { defineWebApplication } from '@opencloud-eu/web-pkg'
+import { RouteRecordRaw } from 'vue-router'
 import Resolve from './views/Resolve.vue'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
 
-    const routes = [
+    const routes: RouteRecordRaw[] = [
       {
         name: 'webfinger-root',
         path: '/',
