@@ -30,6 +30,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.59.1 [[#2446](https://github.com/opencloud-eu/web/pull/2446)]
+- chore(deps): update dependency filesize to v11.0.17 [[#2445](https://github.com/opencloud-eu/web/pull/2445)]
 - chore(deps): update dependency @vue/test-utils to v2.4.9 [[#2444](https://github.com/opencloud-eu/web/pull/2444)]
 - fix(deps): update dependency @sentry/vue to v10.50.0 [[#2436](https://github.com/opencloud-eu/web/pull/2436)]
 - chore(deps): update dependency dompurify to v3.4.1 [[#2418](https://github.com/opencloud-eu/web/pull/2418)]
