@@ -52,7 +52,6 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     bold,
     italic,
     strikethrough,
-    paragraph,
     heading1,
     heading2,
     heading3,
@@ -90,7 +89,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       {
         id: 'basic-blocks',
         title: $gettext('Basic blocks'),
-        actions: [paragraph(), heading1(), heading2(), heading3()]
+        actions: [heading1(), heading2(), heading3()]
       },
       {
         id: 'lists',
