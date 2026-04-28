@@ -1,5 +1,5 @@
 import { dirname } from 'path'
-import { isLocationTrashActive } from '../../../router'
+import { isLocationTrashActive } from '@opencloud-eu/web-pkg'
 
 import {
   Resource,
@@ -13,15 +13,15 @@ import {
   ResolveConflict,
   resolveFileNameDuplicate,
   ConflictDialog
-} from '../../../helpers/resource'
+} from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
+import { useClientService } from '@opencloud-eu/web-pkg'
+import { useRouter } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { FileAction, FileActionOptions } from '../types'
-import { useMessages, useSpacesStore, useUserStore, useResourcesStore } from '../../piniaStores'
-import { useRestoreWorker } from '../../webWorkers/restoreWorker'
+import type { FileAction, FileActionOptions } from '@opencloud-eu/web-pkg'
+import { useMessages, useSpacesStore, useUserStore, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { useRestoreWorker } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsRestore = ({
   showSuccessMessage = true,

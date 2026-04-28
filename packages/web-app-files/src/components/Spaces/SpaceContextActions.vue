@@ -27,8 +27,6 @@ import {
   FileActionOptions,
   isLocationSpacesActive,
   SpaceActionOptions,
-  useFileActionsDownloadArchive,
-  useFileActionsShowDetails,
   useRouter,
   useSpaceActionsDelete,
   useSpaceActionsDeleteImage,
@@ -41,10 +39,14 @@ import {
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
-  useSpaceActionsShowMembers,
-  useFileActionsFavorite
+  useSpaceActionsShowMembers
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../composables'
+import {
+  useFileActionsDownloadArchive,
+  useFileActionsShowDetails,
+  useFileActionsFavorite,
+  useSpaceActionsUploadImage
+} from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'

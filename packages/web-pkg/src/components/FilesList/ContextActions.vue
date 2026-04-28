@@ -10,24 +10,8 @@ import {
   FileActionOptions,
   useExtensionRegistry,
   useFileActions,
-  useFileActionsCopy,
   useFileActionsCopyPermanentLink,
-  useFileActionsCreateSpaceFromResource,
-  useFileActionsDelete,
-  useFileActionsDisableSync,
-  useFileActionsDownloadArchive,
-  useFileActionsDownloadFile,
-  useFileActionsEnableSync,
-  useFileActionsFavorite,
-  useFileActionsMove,
-  useFileActionsOpenWithDefault,
-  useFileActionsPaste,
-  useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsSetImage,
-  useFileActionsShowDetails,
-  useFileActionsShowShares,
-  useFileActionsToggleHideShare
+  useFileActionsShowShares
 } from '../../composables'
 import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
@@ -46,23 +30,7 @@ export default defineComponent({
     const { getAllOpenWithActions } = useFileActions()
     const { $gettext } = useGettext()
 
-    const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
-    const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
-    const { actions: copyActions } = useFileActionsCopy()
     const { actions: copyPermanentLinkActions } = useFileActionsCopyPermanentLink()
-    const { actions: disableSyncActions } = useFileActionsDisableSync()
-    const { actions: deleteActions } = useFileActionsDelete()
-    const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
-    const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: favoriteActions } = useFileActionsFavorite()
-    const { actions: moveActions } = useFileActionsMove()
-    const { actions: pasteActions } = useFileActionsPaste()
-    const { actions: renameActions } = useFileActionsRename()
-    const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: setSpaceImageActions } = useFileActionsSetImage()
-    const { actions: showDetailsActions } = useFileActionsShowDetails()
-    const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
     const { actions: showSharesActions } = useFileActionsShowShares()
 
     const extensionRegistry = useExtensionRegistry()
@@ -87,29 +55,18 @@ export default defineComponent({
     const actionOptions = toRef(props, 'actionOptions') as Ref<FileActionOptions>
 
     const menuItemsBatchActions = computed(() =>
-      [
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
-        ...unref(downloadArchiveActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
-        ...unref(deleteActions),
-        ...unref(restoreActions),
-        ...unref(createSpaceFromResourceActions),
-        ...unref(extensionsBatchActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+      unref(extensionsBatchActions)
+        .filter((a) => a.category === 'actions' || isNil(a.category))
+        .filter((item) => item.isVisible(unref(actionOptions)))
     )
     const menuItemsBatchSideBar = computed(() =>
-      [
-        ...unref(showDetailsActions),
-        ...unref(extensionsBatchActions).filter((a) => a.category === 'sidebar')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+      unref(extensionsBatchActions)
+        .filter((a) => a.category === 'sidebar')
+        .filter((item) => item.isVisible(unref(actionOptions)))
     )
 
     const menuItemsContext = computed(() => {
-      return unref(openWithDefaultActions)
+      return getAllOpenWithActions({ ...unref(actionOptions) })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
@@ -129,32 +86,15 @@ export default defineComponent({
     })
 
     const menuItemsActions = computed(() => {
-      return [
-        ...unref(downloadArchiveActions),
-        ...unref(downloadFileActions),
-        ...unref(deleteActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
-        ...unref(pasteActions),
-        ...unref(renameActions),
-        ...unref(createSpaceFromResourceActions),
-        ...unref(restoreActions),
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
-        ...unref(hideShareActions),
-        ...unref(setSpaceImageActions),
-        ...unref(extensionsContextActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+      return unref(extensionsContextActions)
+        .filter((a) => a.category === 'actions' || isNil(a.category))
+        .filter((item) => item.isVisible(unref(actionOptions)))
     })
 
     const menuItemsSidebar = computed(() => {
-      return [
-        ...unref(favoriteActions),
-        ...unref(showDetailsActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+      return unref(extensionsContextActions)
+        .filter((a) => a.category === 'sidebar')
+        .filter((item) => item.isVisible(unref(actionOptions)))
     })
 
     const menuSections = computed(() => {

@@ -35,9 +35,9 @@ import {
   useSpacesStore,
   useUserStore,
   useActiveLocation,
-  useFileActionsPaste,
   useClientService
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsPaste } from '../../composables'
 
 import { computed, onMounted, onBeforeUnmount, unref, watch } from 'vue'
 import { SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'

@@ -114,15 +114,12 @@
 </template>
 
 <script setup lang="ts">
+import { FileAction, useResourcesStore, useUserStore, useSpacesStore } from '@opencloud-eu/web-pkg'
 import {
-  FileAction,
   useFileActionsCreateNewShortcut,
-  useResourcesStore,
-  useUserStore,
   useFileActionsCreateNewFile,
-  useFileActionsCreateNewFolder,
-  useSpacesStore
-} from '@opencloud-eu/web-pkg'
+  useFileActionsCreateNewFolder
+} from '../composables'
 
 import { computed, unref, useId } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'

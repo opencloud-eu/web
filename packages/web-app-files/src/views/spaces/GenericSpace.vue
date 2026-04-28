@@ -123,7 +123,6 @@ import {
   TransferType,
   useConfigStore,
   useFileActions,
-  useFileActionsCreateNewFolder,
   useLoadPreview,
   usePasteWorker,
   useResourcesStore,
@@ -148,6 +147,7 @@ import {
   useRouteQuery,
   FolderLoaderOptions
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateNewFolder, useResourcesViewDefaults } from '../../composables'
 import CreateAndUpload from '../../components/AppBar/CreateAndUpload.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -158,7 +158,6 @@ import { ResourceTiles } from '@opencloud-eu/web-pkg'
 import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {

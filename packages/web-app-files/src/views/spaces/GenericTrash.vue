@@ -89,14 +89,12 @@ import {
   Pagination,
   NoContentMessage,
   useDocumentTitle,
-  useFileActionsEmptyTrashBin,
   useUserStore,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
-
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
-import { useResourcesViewDefaults } from '../../composables'
+import { useResourcesViewDefaults, useFileActionsEmptyTrashBin } from '../../composables'
 import { isProjectSpaceResource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
 import { folderViewsTrashExtensionPoint } from '../../extensionPoints'
 

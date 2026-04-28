@@ -9,26 +9,13 @@ import {
   FileAction,
   FileActionOptions,
   useFileActionFallbackToDownload,
+  useFileActionsNavigate,
+  useFileActionsDownloadFile,
   useIsFilesAppActive,
   useIsSearchActive,
   useWindowOpen
 } from '../../actions'
 
-import {
-  useFileActionsCopy,
-  useFileActionsCreateSpaceFromResource,
-  useFileActionsDelete,
-  useFileActionsDisableSync,
-  useFileActionsDownloadArchive,
-  useFileActionsDownloadFile,
-  useFileActionsEnableSync,
-  useFileActionsFavorite,
-  useFileActionsMove,
-  useFileActionsNavigate,
-  useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsToggleHideShare
-} from './index'
 import {
   ActionExtension,
   useAppsStore,
@@ -61,35 +48,11 @@ export const useFileActions = () => {
   const configStore = useConfigStore()
   const { options } = storeToRefs(configStore)
 
-  const { actions: enableSyncActions } = useFileActionsEnableSync()
-  const { actions: hideShareActions } = useFileActionsToggleHideShare()
-  const { actions: copyActions } = useFileActionsCopy()
-  const { actions: deleteActions } = useFileActionsDelete()
-  const { actions: disableSyncActions } = useFileActionsDisableSync()
-  const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
-  const { actions: downloadFileActions } = useFileActionsDownloadFile()
   const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
-  const { actions: favoriteActions } = useFileActionsFavorite()
-  const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
-  const { actions: renameActions } = useFileActionsRename()
-  const { actions: restoreActions } = useFileActionsRestore()
-  const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
+  const { actions: downloadFileActions } = useFileActionsDownloadFile()
 
-  const systemActions = computed<FileAction<any>[]>(() => [
-    ...unref(downloadArchiveActions),
-    ...unref(downloadFileActions),
-    ...unref(deleteActions),
-    ...unref(moveActions),
-    ...unref(copyActions),
-    ...unref(renameActions),
-    ...unref(createSpaceFromResource),
-    ...unref(restoreActions),
-    ...unref(enableSyncActions),
-    ...unref(hideShareActions),
-    ...unref(disableSyncActions),
-    ...unref(favoriteActions)
-  ])
+  const systemActions = computed<FileAction<any>[]>(() => [])
 
   const extensionsContextActions = computed(() => {
     return (

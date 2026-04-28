@@ -29,7 +29,6 @@ import {
   ActionMenuItem,
   FileActionOptions,
   SpaceActionOptions,
-  useFileActionsDownloadArchive,
   useSpaceActionsDelete,
   useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
@@ -40,10 +39,13 @@ import {
   useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsSetIcon,
-  useFileActionsFavorite
+  useSpaceActionsSetIcon
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../../composables'
+import {
+  useSpaceActionsUploadImage,
+  useFileActionsDownloadArchive,
+  useFileActionsFavorite
+} from '../../../composables'
 
 const resource = inject<Ref<SpaceResource>>('resource')
 const actionOptions = computed((): SpaceActionOptions & FileActionOptions<Resource> => ({

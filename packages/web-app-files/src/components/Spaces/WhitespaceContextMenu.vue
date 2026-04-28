@@ -27,12 +27,12 @@ import {
   unref,
   useTemplateRef
 } from 'vue'
+import { useResourcesStore } from '@opencloud-eu/web-pkg'
 import {
+  useFileActionsCreateNewFolder,
   useFileActionsPaste,
-  useFileActionsShowDetails,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
-import { useFileActionsCreateNewFolder } from '@opencloud-eu/web-pkg'
+  useFileActionsShowDetails
+} from '../../composables'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ActionMenuItem } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'

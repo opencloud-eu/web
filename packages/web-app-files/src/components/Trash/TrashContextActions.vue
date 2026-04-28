@@ -12,9 +12,9 @@ import {
   ContextActionMenu,
   MenuSection,
   SpaceActionOptions,
-  useFileActionsEmptyTrashBin,
   useSpaceActionsNavigateToTrash
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsEmptyTrashBin } from '../../composables/'
 import { computed, toRef, unref } from 'vue'
 
 const props = defineProps<{

@@ -4,6 +4,7 @@ export * from './router'
 export * from './share'
 export * from './spaces'
 export * from './ui'
+export * from './permissions'
 
 export * from './breadcrumbs'
 export * from './clipboardActions'

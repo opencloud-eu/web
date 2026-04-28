@@ -90,7 +90,6 @@
 import { computed, inject, ref, Ref, unref } from 'vue'
 import {
   useAbility,
-  useFileActionsCreateLink,
   FileAction,
   useClientService,
   useModals,
@@ -102,6 +101,7 @@ import {
   UpdateLinkOptions,
   useRouter
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateLink } from '../../../composables/'
 import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { isSpaceResource, LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import ListItem from './Links/ListItem.vue'

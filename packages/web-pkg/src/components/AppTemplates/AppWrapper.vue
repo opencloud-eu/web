@@ -43,15 +43,15 @@ import {
   useResourcesStore,
   FileContentOptions,
   useFileActionsCopyPermanentLink,
-  useFileActionsDownloadFile,
   useFileActionsShowDetails,
   useFileActionsShowShares,
+  useFileActionsDownloadFile,
+  useFileActionsDelete,
+  useFileActionsSaveAs,
   FileActionOptions,
   FileAction,
   useLoadingService,
-  useFileActionsSaveAs,
   useSharesStore,
-  useFileActionsDelete,
   useEventBus,
   Action,
   Modifier,
@@ -120,10 +120,11 @@ const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId
 })
 const { actions: copyPermanentLinkActions } = useFileActionsCopyPermanentLink()
-const { actions: downloadFileActions } = useFileActionsDownloadFile()
 const { actions: showDetailsActions } = useFileActionsShowDetails()
 const { actions: showSharesActions } = useFileActionsShowShares()
+const { actions: downloadFileActions } = useFileActionsDownloadFile()
 const { actions: deleteFileActions } = useFileActionsDelete()
+const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const noResourceLoading = computed(() => {
   // component has its own way to load the resource(s)
@@ -171,8 +172,6 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
 })
 
 registerExtensions(appBarExtension)
-
-const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
   return Boolean(wrappedComponent.emits?.includes('update:currentContent'))

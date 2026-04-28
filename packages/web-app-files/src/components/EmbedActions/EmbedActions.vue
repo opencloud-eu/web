@@ -62,11 +62,11 @@ import {
   FileAction,
   routeToContextQuery,
   useEmbedMode,
-  useFileActionsCreateLink,
   useResourcesStore,
   useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateLink } from '../../composables'
 import { extractNameWithoutExtension, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'

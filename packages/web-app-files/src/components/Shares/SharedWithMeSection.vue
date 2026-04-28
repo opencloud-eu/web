@@ -83,10 +83,10 @@ import {
   useCapabilityStore,
   useConfigStore,
   useFileActions,
-  useFileActionsToggleHideShare,
   useLoadPreview,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsToggleHideShare } from '../../composables'
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'

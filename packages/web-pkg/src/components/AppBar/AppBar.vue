@@ -78,18 +78,7 @@ import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
 import { isLocationCommonActive, isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
-import {
-  useFileActionsCopy,
-  useFileActionsDelete,
-  useFileActionsDisableSync,
-  useFileActionsDownloadArchive,
-  useFileActionsDownloadFile,
-  useFileActionsEnableSync,
-  useFileActionsFavorite,
-  useFileActionsMove,
-  useFileActionsRestore,
-  useSpaceActionsDuplicate
-} from '../../composables/actions'
+import { useSpaceActionsDuplicate } from '../../composables/actions'
 import {
   ActionExtension,
   FileAction,
@@ -97,7 +86,6 @@ import {
   useAbility,
   useActiveLocation,
   useExtensionRegistry,
-  useFileActionsToggleHideShare,
   useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
@@ -168,17 +156,7 @@ export default defineComponent({
 
     const space = computed(() => props.space)
 
-    const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
-    const { actions: copyActions } = useFileActionsCopy()
     const { actions: duplicateActions } = useSpaceActionsDuplicate()
-    const { actions: disableSyncActions } = useFileActionsDisableSync()
-    const { actions: deleteActions } = useFileActionsDelete()
-    const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
-    const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: moveActions } = useFileActionsMove()
-    const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: deleteSpaceActions } = useSpaceActionsDelete()
     const { actions: disableSpaceActions } = useSpaceActionsDisable()
     const { actions: editSpaceQuotaActions } = useSpaceActionsEditQuota()
@@ -192,18 +170,7 @@ export default defineComponent({
     )
 
     const batchActions = computed(() => {
-      let actions: FileAction[] = [
-        ...unref(hideShareActions),
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
-        ...unref(downloadArchiveActions),
-        ...unref(downloadFileActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
-        ...unref(deleteActions),
-        ...unref(restoreActions),
-        ...unref(favoriteActions)
-      ]
+      let actions: FileAction[] = []
 
       /**
        * We show mixed results in search result page, including resources like files and folders but also spaces.

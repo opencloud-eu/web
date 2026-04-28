@@ -11,8 +11,7 @@ import ContextActions from '../../../../src/components/FilesList/ContextActions.
 import {
   useFileActionsEnableSync,
   useFileActionsCopyPermanentLink,
-  useFileActionsRename,
-  useFileActionsCopy
+  useFileActionsRename
 } from '../../../../src/composables'
 import { computed } from 'vue'
 import { Action } from '../../../../src/composables/actions'
