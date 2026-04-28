@@ -1,4 +1,4 @@
-import type { ContentType } from '../types'
+import type { ContentType, TextEditorState } from '../types'
 import {
   ContentTypeStrategy,
   useStrategyHtml,
@@ -8,16 +8,19 @@ import {
 } from './strategies'
 
 export const useContentStrategy = () => {
-  const resolveStrategy = (contentType: ContentType): ContentTypeStrategy => {
+  const resolveStrategy = (
+    contentType: ContentType,
+    editorState: TextEditorState
+  ): ContentTypeStrategy => {
     switch (contentType) {
       case 'plain-text':
-        return useStrategyPlainText()
+        return useStrategyPlainText(editorState)
       case 'markdown':
-        return useStrategyMarkdown()
+        return useStrategyMarkdown(editorState)
       case 'html':
-        return useStrategyHtml()
+        return useStrategyHtml(editorState)
       case 'tiptap-json':
-        return useStrategyTiptapJson()
+        return useStrategyTiptapJson(editorState)
       default:
         throw new Error(`Unknown content type: ${contentType}`)
     }

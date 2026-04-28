@@ -6,8 +6,9 @@ import HardBreak from '@tiptap/extension-hard-break'
 import { Extension } from '@tiptap/core'
 import { EditorActionGroup } from '../useEditorActions'
 import { ContentTypeStrategy } from './types'
+import { TextEditorState } from '../../types'
 
-export const useStrategyPlainText = (): ContentTypeStrategy => {
+export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeStrategy => {
   const editorContentType = () => {
     return 'plainText'
   }

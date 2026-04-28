@@ -18,8 +18,9 @@ import {
   LineHeight
 } from '@tiptap/extension-text-style'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
+import { TextEditorState } from '../../types'
 
-export const useStrategyHtml = (): ContentTypeStrategy => {
+export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
 
   const editorContentType = () => {
@@ -89,7 +90,7 @@ export const useStrategyHtml = (): ContentTypeStrategy => {
     addColumnBefore,
     addColumnAfter,
     deleteColumn
-  } = useEditorActions()
+  } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {

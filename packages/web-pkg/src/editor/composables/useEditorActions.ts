@@ -2,6 +2,7 @@ import { unref } from 'vue'
 import type { MaybeRef } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import { useGettext } from 'vue3-gettext'
+import { TextEditorState } from '../types'
 
 export interface EditorAction {
   // Core identification
@@ -50,7 +51,10 @@ export interface ContentTypeActions {
   slashCommandGroups: EditorActionGroup[]
 }
 
-export function useEditorActions(options: MaybeRef<UseEditorActionsOptions> = {}) {
+export function useEditorActions(
+  state: TextEditorState,
+  options: MaybeRef<UseEditorActionsOptions> = {}
+) {
   const { $gettext } = useGettext()
 
   // History actions
@@ -71,6 +75,17 @@ export function useEditorActions(options: MaybeRef<UseEditorActionsOptions> = {}
     iconFillType: 'line',
     toolbarAction: (editor) => editor.chain().focus().redo().run(),
     isEnabled: (editor) => editor.can().redo(),
+    showInSlashCommands: false
+  })
+
+  // View options
+  const toggleSourceMode = (): EditorAction => ({
+    id: 'source-mode',
+    title: $gettext('Show source'),
+    icon: 'code-s-slash',
+    iconFillType: 'line',
+    toolbarAction: () => (state.sourceMode.value = !state.sourceMode.value),
+    isActive: () => state.sourceMode.value,
     showInSlashCommands: false
   })
 
@@ -506,6 +521,8 @@ export function useEditorActions(options: MaybeRef<UseEditorActionsOptions> = {}
     // History
     undo,
     redo,
+    // View options
+    toggleSourceMode,
     // Text formatting
     fontSize,
     fontFamily,

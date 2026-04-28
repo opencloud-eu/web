@@ -2,16 +2,19 @@ import { ref, computed, onBeforeUnmount, watch } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
-import type { TextEditorOptions, TextEditorInstance } from '../types'
+import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
+  const state: TextEditorState = {
+    sourceMode: ref(false)
+  }
 
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
-  const strategy = resolveStrategy(options.contentType)
+  const strategy = resolveStrategy(options.contentType, state)
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -103,6 +106,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   })
 
   return {
+    state,
     editor,
     contentType,
     readonly,

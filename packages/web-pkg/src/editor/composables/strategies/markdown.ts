@@ -9,8 +9,9 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
+import { TextEditorState } from '../../types'
 
-export const useStrategyMarkdown = (): ContentTypeStrategy => {
+export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
 
   const editorContentType = () => {
@@ -47,6 +48,7 @@ export const useStrategyMarkdown = (): ContentTypeStrategy => {
   const {
     undo,
     redo,
+    toggleSourceMode,
     bold,
     italic,
     strikethrough,
@@ -67,13 +69,18 @@ export const useStrategyMarkdown = (): ContentTypeStrategy => {
     addColumnBefore,
     addColumnAfter,
     deleteColumn
-  } = useEditorActions()
+  } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
         id: 'history',
         title: $gettext('History'),
         actions: [undo(), redo()]
+      },
+      {
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [toggleSourceMode()]
       },
       {
         id: 'text',

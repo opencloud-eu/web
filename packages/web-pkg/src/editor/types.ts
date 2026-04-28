@@ -14,7 +14,12 @@ export interface TextEditorOptions {
   onRequestImageUrl?: () => Promise<string | null>
 }
 
+export interface TextEditorState {
+  sourceMode: Ref<boolean>
+}
+
 export interface TextEditorInstance {
+  state: TextEditorState
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
   readonly: Ref<boolean>

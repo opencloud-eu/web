@@ -1,0 +1,128 @@
+.markdown-source-mode .ProseMirror h1::before,
+.markdown-source-mode .ProseMirror h2::before,
+.markdown-source-mode .ProseMirror h3::before,
+.markdown-source-mode .ProseMirror h4::before,
+.markdown-source-mode .ProseMirror h5::before,
+.markdown-source-mode .ProseMirror h6::before,
+.markdown-source-mode .ProseMirror strong::before,
+.markdown-source-mode .ProseMirror strong::after,
+.markdown-source-mode .ProseMirror em::before,
+.markdown-source-mode .ProseMirror em::after,
+.markdown-source-mode .ProseMirror del::before,
+.markdown-source-mode .ProseMirror del::after,
+.markdown-source-mode .ProseMirror code::before,
+.markdown-source-mode .ProseMirror code::after,
+.markdown-source-mode .ProseMirror a::before,
+.markdown-source-mode .ProseMirror a::after,
+.markdown-source-mode .ProseMirror blockquote > p::before,
+.markdown-source-mode .ProseMirror ul:not([data-type='taskList']) > li::before,
+.markdown-source-mode .ProseMirror ol > li::before,
+.markdown-source-mode .ProseMirror ul[data-type='taskList'] > li::before,
+.markdown-source-mode .ProseMirror pre::before,
+.markdown-source-mode .ProseMirror pre::after {
+  color: var(--oc-color-role-outline-variant, rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+  user-select: none;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  font-size: 0.85em;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Headings */
+.markdown-source-mode .ProseMirror h1::before {
+  content: '# ';
+}
+.markdown-source-mode .ProseMirror h2::before {
+  content: '## ';
+}
+.markdown-source-mode .ProseMirror h3::before {
+  content: '### ';
+}
+.markdown-source-mode .ProseMirror h4::before {
+  content: '#### ';
+}
+.markdown-source-mode .ProseMirror h5::before {
+  content: '##### ';
+}
+.markdown-source-mode .ProseMirror h6::before {
+  content: '###### ';
+}
+
+/* Bold */
+.markdown-source-mode .ProseMirror strong::before,
+.markdown-source-mode .ProseMirror strong::after {
+  content: '**';
+}
+
+/* Italic */
+.markdown-source-mode .ProseMirror em::before,
+.markdown-source-mode .ProseMirror em::after {
+  content: '*';
+}
+
+/* Strikethrough */
+.markdown-source-mode .ProseMirror del::before,
+.markdown-source-mode .ProseMirror del::after {
+  content: '~~';
+}
+
+/* Inline code */
+.markdown-source-mode .ProseMirror code::before,
+.markdown-source-mode .ProseMirror code::after {
+  content: '`';
+}
+
+/* Links */
+.markdown-source-mode .ProseMirror a::before {
+  content: '[';
+}
+.markdown-source-mode .ProseMirror a::after {
+  content: '](' attr(href) ')';
+}
+
+/* Blockquote */
+.markdown-source-mode .ProseMirror blockquote > p::before {
+  content: '> ';
+}
+
+/* Unordered list */
+.markdown-source-mode .ProseMirror ul:not([data-type='taskList']) {
+  list-style-type: none;
+}
+.markdown-source-mode .ProseMirror ul:not([data-type='taskList']) > li::before {
+  content: '- ';
+}
+
+/* Ordered list */
+.markdown-source-mode .ProseMirror ol {
+  list-style-type: none;
+}
+.markdown-source-mode .ProseMirror ol > li::before {
+  content: '1. ';
+}
+
+/* Task list */
+.markdown-source-mode .ProseMirror ul[data-type='taskList'] > li::before {
+  content: '- [ ] ';
+}
+.markdown-source-mode .ProseMirror ul[data-type='taskList'] > li[data-checked='true']::before {
+  content: '- [x] ';
+}
+.markdown-source-mode .ProseMirror ul[data-type='taskList'] > li label {
+  display: none;
+}
+
+/* Code block fences */
+.markdown-source-mode .ProseMirror pre::before {
+  content: '```';
+  display: block;
+  margin-bottom: 4px;
+}
+.markdown-source-mode .ProseMirror pre::after {
+  content: '```';
+  display: block;
+  margin-top: 4px;
+}
