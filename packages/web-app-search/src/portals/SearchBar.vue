@@ -528,13 +528,11 @@ export default defineComponent({
           return
         }
         const routeTerm = route?.query?.term
-        const input = this.$el.getElementsByTagName('input')[0]
-        if (!input || !routeTerm) {
+        if (!routeTerm) {
           return
         }
         this.restoreSearchFromRoute = initialLoad
         this.term = queryItemAsString(routeTerm)
-        input.value = queryItemAsString(routeTerm)
       })
     },
     getMoreResultsDetailsTextForProvider(provider: SearchProvider) {
