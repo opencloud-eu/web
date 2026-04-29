@@ -29,9 +29,7 @@ describe('useStrategyHtml', () => {
   describe('editorActionGroups', () => {
     it('includes formatting and structure actions', () => {
       const strategy = createStrategy()
-      const allIds = strategy
-        .editorActionGroups()
-        .flatMap((g) => g.actions.map((a) => a.id))
+      const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('underline')
       expect(allIds).toContain('bold')
       expect(allIds).toContain('table')

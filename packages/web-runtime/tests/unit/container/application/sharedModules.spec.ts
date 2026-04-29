@@ -4,8 +4,8 @@ import { sharedModules, lazySharedModules } from '../../../../src/container/appl
 
 describe('sharedModules', () => {
   it('matches externalModules from extension-sdk exactly', () => {
-    expect(
-      [...Object.keys(sharedModules), ...Object.keys(lazySharedModules)].sort()
-    ).toEqual(externalModules.sort())
+    expect([...Object.keys(sharedModules), ...Object.keys(lazySharedModules)].sort()).toEqual(
+      externalModules.sort()
+    )
   })
 })

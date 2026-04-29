@@ -69,11 +69,7 @@
 <script setup lang="ts">
 import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  useGroupwareAccountsStore,
-  useRouteQuery,
-  useModals
-} from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore, useRouteQuery, useModals } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
   TextEditorProvider,

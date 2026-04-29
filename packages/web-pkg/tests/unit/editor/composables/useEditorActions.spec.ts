@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
-import type { Editor, Range } from '@tiptap/core'
+import type { Range } from '@tiptap/core'
 import { createMockEditor } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
@@ -156,13 +156,17 @@ describe('useEditorActions', () => {
   })
 
   describe('block actions', () => {
-    const blockActions = [
+    const blockActions: ReadonlyArray<{
+      name: 'heading1' | 'heading2' | 'heading3' | 'blockquote' | 'codeBlock'
+      markName: string
+      markAttrs?: Record<string, unknown>
+    }> = [
       { name: 'heading1', markName: 'heading', markAttrs: { level: 1 } },
       { name: 'heading2', markName: 'heading', markAttrs: { level: 2 } },
       { name: 'heading3', markName: 'heading', markAttrs: { level: 3 } },
       { name: 'blockquote', markName: 'blockquote' },
       { name: 'codeBlock', markName: 'codeBlock' }
-    ] as const
+    ]
 
     for (const { name, markName, markAttrs } of blockActions) {
       describe(name, () => {

@@ -150,7 +150,11 @@ import {
   useFileListHeaderPosition,
   useRoute,
   useRouter,
-  usePagination
+  usePagination,
+  useResourceIndicators,
+  useSort,
+  sortFields as availableSortFields,
+  translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'

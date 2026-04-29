@@ -26,7 +26,7 @@ describe('useStrategyTiptapJson', () => {
   describe('serialize', () => {
     it('returns JSON string from editor', () => {
       const strategy = createStrategy()
-      const doc = { type: 'doc', content: [] }
+      const doc = { type: 'doc', content: [] as unknown[] }
       const mockEditor = { getJSON: vi.fn().mockReturnValue(doc) } as any
       expect(strategy.serialize(mockEditor)).toBe(JSON.stringify(doc))
     })

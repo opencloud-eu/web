@@ -137,7 +137,8 @@ describe('OcDrop', () => {
     })
     it('renders on mobile device without a toggle selector', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
-        isMobile: computed(() => true)
+        isMobile: computed(() => true),
+        isTablet: computed(() => false)
       }))
 
       const wrapper = shallowMount(Drop, {

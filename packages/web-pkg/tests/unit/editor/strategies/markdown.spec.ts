@@ -29,9 +29,7 @@ describe('useStrategyMarkdown', () => {
   describe('editorActionGroups', () => {
     it('does not include underline or image actions', () => {
       const strategy = createStrategy()
-      const allIds = strategy
-        .editorActionGroups()
-        .flatMap((g) => g.actions.map((a) => a.id))
+      const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('bold')
       expect(allIds).not.toContain('underline')
       expect(allIds).not.toContain('image')
@@ -39,9 +37,7 @@ describe('useStrategyMarkdown', () => {
 
     it('includes source mode toggle', () => {
       const strategy = createStrategy()
-      const allIds = strategy
-        .editorActionGroups()
-        .flatMap((g) => g.actions.map((a) => a.id))
+      const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('source-mode')
     })
 
