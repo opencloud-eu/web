@@ -93,7 +93,6 @@
     "password-sheriff": "^2.0.0",
     "pinia": "^3.0.4",
     "qs": "^6.15.0",
-    "screenfull": "^6.0.2",
     "uuid": "^14.0.0",
     "vue-concurrency": "^5.0.3",
     "vue-router": "^5.0.4",
