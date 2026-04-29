@@ -11,6 +11,6 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "vue-router": "5.0.4"
+    "vue-router": "5.0.6"
   }
 }
