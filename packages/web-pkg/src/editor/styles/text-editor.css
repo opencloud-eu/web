@@ -141,16 +141,3 @@
     border-top: 1px solid var(--oc-role-outline-variant);
     margin: 12px 0;
 }
-
-/* Hide scrollbar in toolbar */
-.text-editor-toolbar > div:first-child {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-.text-editor-toolbar > div:first-child::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-}
-
-.text-editor-toolbar-btn--active {
-    background: var(--oc-role-secondary-container);
-}

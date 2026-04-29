@@ -1,18 +1,15 @@
 <template>
-  <div
-    v-if="visible"
-    class="text-editor-toolbar relative flex items-center gap-3 border-b border-b-role-border overflow-x-auto"
-  >
+  <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
     <div
       ref="scrollContainer"
-      class="flex items-center gap-3 overflow-x-auto"
+      class="flex items-center gap-1 overflow-x-auto"
       @scroll="updateScrollState"
     >
       <div
         v-for="(group, groupIndex) in textEditor.actionGroups()"
         :key="`toolbar-group-${group.id}`"
         class="text-editor-toolbar-group inline-flex items-stretch"
-        :class="{ 'border-l border-l-role-border pl-3': groupIndex > 0 }"
+        :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
       >
         <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
           <template v-if="item.isDropdown && item.dropdownOptions">
@@ -20,9 +17,9 @@
               :id="`toolbar-dropdown-trigger-${item.id}`"
               type="button"
               appearance="raw"
-              class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center gap-1"
+              class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center"
               :class="{
-                'text-editor-toolbar-btn--active': item.isActive?.(textEditor.editor.value!)
+                'text-editor-toolbar-btn--active': isItemActive(item)
               }"
               :aria-label="item.title"
               :disabled="!isItemEnabled(item)"
@@ -46,7 +43,7 @@
                   <oc-button
                     appearance="raw"
                     justify-content="space-between"
-                    class="oc-width-1-1 oc-p-s"
+                    class="oc-width-1-1 oc-p-xs"
                     @click="item.toolbarAction?.(textEditor.editor.value!, option.value)"
                   >
                     <oc-icon
@@ -66,7 +63,7 @@
             v-oc-tooltip="item.title"
             type="button"
             appearance="raw"
-            class="text-editor-toolbar-btn min-w-[42px] h-[35px] px-[11px] inline-flex items-center justify-center"
+            class="text-editor-toolbar-btn min-w-[32px] inline-flex items-center justify-center"
             :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
             :aria-label="item.title"
             :disabled="!isItemEnabled(item)"
@@ -188,3 +185,24 @@ const getCurrentValue = (item: any) => {
   return item.currentValue(editor)
 }
 </script>
+
+<style scoped>
+@reference '@opencloud-eu/design-system/tailwind';
+
+/* Hide scrollbar in toolbar */
+.text-editor-toolbar > div:first-child {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.text-editor-toolbar > div:first-child::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.text-editor-toolbar-btn {
+  @apply h-[32px];
+  gap: 0 !important;
+}
+.text-editor-toolbar-btn--active {
+  @apply bg-role-secondary-container;
+}
+</style>
