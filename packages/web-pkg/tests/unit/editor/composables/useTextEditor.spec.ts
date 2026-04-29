@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
 
@@ -58,7 +59,7 @@ describe('useTextEditor', () => {
       expect(pluginNames).toContain('slashCommands')
     })
 
-    it('does not register the extension for plain-text with no override', () => {
+    it('does not register the extension for plain-text (no action groups)', () => {
       const { result } = createEditor({
         contentType: 'plain-text',
         modelValue: 'hi',
@@ -67,22 +68,68 @@ describe('useTextEditor', () => {
       const pluginNames = result.editor.value?.extensionManager.extensions.map((e) => e.name) ?? []
       expect(pluginNames).not.toContain('slashCommands')
     })
+  })
 
-    it('registers the extension for plain-text when slashCommandItems is provided', () => {
-      const { result } = createEditor({
-        contentType: 'plain-text',
-        modelValue: 'hi',
-        slashCommands: true,
-        slashCommandItems: [
-          {
-            id: 'custom',
-            title: 'Custom',
-            items: [{ id: 'greet', title: 'Greet', command: () => {} }]
-          }
-        ]
-      })
-      const pluginNames = result.editor.value?.extensionManager.extensions.map((e) => e.name) ?? []
-      expect(pluginNames).toContain('slashCommands')
+  describe('onUpdate debounce', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('calls onUpdate after 250ms debounce', () => {
+      const onUpdate = vi.fn()
+      const { result } = createEditor({ onUpdate })
+
+      result.editor.value!.commands.insertContent('x')
+      expect(onUpdate).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(250)
+      expect(onUpdate).toHaveBeenCalledTimes(1)
+    })
+
+    it('batches rapid updates — only fires once with latest content', () => {
+      const onUpdate = vi.fn()
+      const { result } = createEditor({ onUpdate })
+
+      result.editor.value!.commands.insertContent('a')
+      result.editor.value!.commands.insertContent('b')
+      result.editor.value!.commands.insertContent('c')
+
+      vi.advanceTimersByTime(250)
+      expect(onUpdate).toHaveBeenCalledTimes(1)
+      expect(onUpdate.mock.calls[0][0]).toContain('c')
+    })
+  })
+
+  describe('destroy flush', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('flushes pending debounce on destroy', () => {
+      const onUpdate = vi.fn()
+      const { result } = createEditor({ onUpdate })
+
+      result.editor.value!.commands.insertContent('pending')
+      expect(onUpdate).not.toHaveBeenCalled()
+
+      result.destroy()
+      expect(onUpdate).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not call onUpdate on destroy when no pending debounce', () => {
+      const onUpdate = vi.fn()
+      const { result } = createEditor({ onUpdate })
+
+      result.destroy()
+      expect(onUpdate).not.toHaveBeenCalled()
     })
   })
 })

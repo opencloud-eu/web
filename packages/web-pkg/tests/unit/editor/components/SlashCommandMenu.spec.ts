@@ -1,20 +1,23 @@
 import { mount } from '@vue/test-utils'
+import { createGettext } from 'vue3-gettext'
 import SlashCommandMenu from '../../../../src/editor/components/SlashCommandMenu.vue'
 import type { FlatSlashCommandItem } from '../../../../src/editor/extensions'
 
-const makeItem = (
+function makeItem(
   id: string,
   groupId: string,
   groupTitle: string,
   extras: Partial<FlatSlashCommandItem> = {}
-): FlatSlashCommandItem => ({
-  id,
-  title: `Item ${id}`,
-  groupId,
-  groupTitle,
-  command: vi.fn(),
-  ...extras
-})
+): FlatSlashCommandItem {
+  return {
+    id,
+    title: `Item ${id}`,
+    icon: 'test-icon',
+    groupId,
+    groupTitle,
+    ...extras
+  }
+}
 
 const defaultClientRect = () =>
   ({
@@ -42,12 +45,18 @@ function mountMenu(items: FlatSlashCommandItem[], command = vi.fn()) {
       clientRect: defaultClientRect
     },
     global: {
+      plugins: [createGettext({ translations: {}, silent: true })],
       stubs: {
         'oc-drop': { template: '<div><slot /></div>' },
+        'oc-button': { template: '<button v-bind="$attrs"><slot /></button>' },
         'oc-icon': true
       }
     }
   })
+}
+
+function keyEvent(key: string): KeyboardEvent {
+  return { key, preventDefault: vi.fn() } as unknown as KeyboardEvent
 }
 
 describe('SlashCommandMenu', () => {
@@ -82,51 +91,53 @@ describe('SlashCommandMenu', () => {
   it('ArrowDown moves selection forward with wrap-around', async () => {
     const items = [makeItem('a', 'g', 'G'), makeItem('b', 'g', 'G')]
     const wrapper = mountMenu(items)
-    expect(wrapper.vm.onKeyDown({ event: { key: 'ArrowDown' } as KeyboardEvent } as any)).toBe(true)
+
+    expect(wrapper.vm.onKeyDown(keyEvent('ArrowDown'))).toBe(true)
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('.text-editor-slash-menu__item')[1].classes()).toContain('is-selected')
-    wrapper.vm.onKeyDown({ event: { key: 'ArrowDown' } as KeyboardEvent } as any)
+    expect(wrapper.findAll('.text-editor-slash-menu__item')[1].classes()).toContain(
+      'text-editor-slash-menu__item--selected'
+    )
+
+    wrapper.vm.onKeyDown(keyEvent('ArrowDown'))
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('.text-editor-slash-menu__item')[0].classes()).toContain('is-selected')
+    expect(wrapper.findAll('.text-editor-slash-menu__item')[0].classes()).toContain(
+      'text-editor-slash-menu__item--selected'
+    )
   })
 
   it('ArrowUp moves selection backward with wrap-around', async () => {
     const items = [makeItem('a', 'g', 'G'), makeItem('b', 'g', 'G')]
     const wrapper = mountMenu(items)
-    wrapper.vm.onKeyDown({ event: { key: 'ArrowUp' } as KeyboardEvent } as any)
+
+    wrapper.vm.onKeyDown(keyEvent('ArrowUp'))
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('.text-editor-slash-menu__item')[1].classes()).toContain('is-selected')
+    expect(wrapper.findAll('.text-editor-slash-menu__item')[1].classes()).toContain(
+      'text-editor-slash-menu__item--selected'
+    )
   })
 
   it('Enter executes the selected item and returns true', () => {
     const command = vi.fn()
     const items = [makeItem('a', 'g', 'G'), makeItem('b', 'g', 'G')]
     const wrapper = mountMenu(items, command)
-    wrapper.vm.onKeyDown({ event: { key: 'ArrowDown' } as KeyboardEvent } as any)
-    const handled = wrapper.vm.onKeyDown({ event: { key: 'Enter' } as KeyboardEvent } as any)
+
+    wrapper.vm.onKeyDown(keyEvent('ArrowDown'))
+    const handled = wrapper.vm.onKeyDown(keyEvent('Enter'))
     expect(handled).toBe(true)
     expect(command).toHaveBeenCalledWith(items[1])
-  })
-
-  it('Tab executes the selected item', () => {
-    const command = vi.fn()
-    const items = [makeItem('a', 'g', 'G')]
-    const wrapper = mountMenu(items, command)
-    wrapper.vm.onKeyDown({ event: { key: 'Tab' } as KeyboardEvent } as any)
-    expect(command).toHaveBeenCalledWith(items[0])
   })
 
   it('Escape is not handled so the suggestion plugin can close itself', () => {
     const items = [makeItem('a', 'g', 'G')]
     const wrapper = mountMenu(items)
-    const handled = wrapper.vm.onKeyDown({ event: { key: 'Escape' } as KeyboardEvent } as any)
+    const handled = wrapper.vm.onKeyDown(keyEvent('Escape'))
     expect(handled).toBe(false)
   })
 
   it('Enter on an empty list returns false and does not call command', () => {
     const command = vi.fn()
     const wrapper = mountMenu([], command)
-    const handled = wrapper.vm.onKeyDown({ event: { key: 'Enter' } as KeyboardEvent } as any)
+    const handled = wrapper.vm.onKeyDown(keyEvent('Enter'))
     expect(handled).toBe(false)
     expect(command).not.toHaveBeenCalled()
   })

@@ -1,16 +1,18 @@
-import { PlainTextStrategy } from '../../../../src/editor/strategies/plainText'
+import { vi, describe, it, expect } from 'vitest'
+import { ref } from 'vue'
+import type { TextEditorState } from '../../../../src/editor/types'
+import { useStrategyPlainText } from '../../../../src/editor/composables/strategies/plainText'
 
-describe('PlainTextStrategy', () => {
-  let strategy: PlainTextStrategy
+function createStrategy() {
+  const state: TextEditorState = { sourceMode: ref(false) }
+  return useStrategyPlainText(state)
+}
 
-  beforeEach(() => {
-    strategy = new PlainTextStrategy()
-  })
-
+describe('useStrategyPlainText', () => {
   describe('extensions', () => {
     it('returns base extensions only', () => {
-      const extensions = strategy.extensions()
-      const names = extensions.map((e) => e.name)
+      const strategy = createStrategy()
+      const names = strategy.extensions().map((e) => e.name)
       expect(names).toContain('doc')
       expect(names).toContain('paragraph')
       expect(names).toContain('text')
@@ -20,20 +22,16 @@ describe('PlainTextStrategy', () => {
     })
   })
 
-  describe('toolbarItems', () => {
+  describe('editorActionGroups', () => {
     it('returns empty array', () => {
-      expect(strategy.toolbarItems()).toEqual([])
-    })
-  })
-
-  describe('defaultSlashCommandGroups', () => {
-    it('returns empty array (plain text has no default slash commands)', () => {
-      expect(strategy.defaultSlashCommandGroups()).toEqual([])
+      const strategy = createStrategy()
+      expect(strategy.editorActionGroups()).toEqual([])
     })
   })
 
   describe('serialize', () => {
     it('calls getText on editor', () => {
+      const strategy = createStrategy()
       const mockEditor = { getText: vi.fn().mockReturnValue('hello') } as any
       expect(strategy.serialize(mockEditor)).toBe('hello')
       expect(mockEditor.getText).toHaveBeenCalled()
@@ -41,7 +39,8 @@ describe('PlainTextStrategy', () => {
   })
 
   describe('deserialize', () => {
-    it('wraps text in paragraph nodes', () => {
+    it('wraps multiline text in paragraph nodes', () => {
+      const strategy = createStrategy()
       const result = strategy.deserialize('line1\nline2')
       expect(result).toEqual({
         type: 'doc',
@@ -53,10 +52,44 @@ describe('PlainTextStrategy', () => {
     })
 
     it('handles empty string', () => {
+      const strategy = createStrategy()
       const result = strategy.deserialize('')
       expect(result).toEqual({
         type: 'doc',
         content: [{ type: 'paragraph' }]
+      })
+    })
+
+    it('handles single-line content', () => {
+      const strategy = createStrategy()
+      const result = strategy.deserialize('just one line')
+      expect(result).toEqual({
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'just one line' }] }]
+      })
+    })
+
+    it('handles trailing newline', () => {
+      const strategy = createStrategy()
+      const result = strategy.deserialize('line1\n')
+      expect(result).toEqual({
+        type: 'doc',
+        content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'line1' }] },
+          { type: 'paragraph' }
+        ]
+      })
+    })
+
+    it('handles Windows line endings (\\r\\n) — trailing \\r remains', () => {
+      const strategy = createStrategy()
+      const result = strategy.deserialize('line1\r\nline2')
+      expect(result).toEqual({
+        type: 'doc',
+        content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'line1\r' }] },
+          { type: 'paragraph', content: [{ type: 'text', text: 'line2' }] }
+        ]
       })
     })
   })
