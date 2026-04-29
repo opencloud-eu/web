@@ -11,6 +11,7 @@ import * as luxon from 'luxon'
 import * as vueGettext from 'vue3-gettext'
 import * as pinia from 'pinia'
 import * as webPkg from '@opencloud-eu/web-pkg'
+import * as webPkgEditor from '@opencloud-eu/web-pkg/editor'
 import * as webClient from '@opencloud-eu/web-client'
 import * as webClientGraph from '@opencloud-eu/web-client/graph'
 import * as webClientGraphGenerated from '@opencloud-eu/web-client/graph/generated'
@@ -33,6 +34,7 @@ export const sharedModules: Record<string, unknown> = {
   pinia,
   'vue3-gettext': vueGettext,
   '@opencloud-eu/web-pkg': webPkg,
+  '@opencloud-eu/web-pkg/editor': webPkgEditor,
   '@opencloud-eu/web-client': webClient,
   '@opencloud-eu/web-client/graph': webClientGraph,
   '@opencloud-eu/web-client/graph/generated': webClientGraphGenerated,

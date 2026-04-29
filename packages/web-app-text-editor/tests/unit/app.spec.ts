@@ -2,6 +2,7 @@ import { PartialComponentProps, mount } from '@opencloud-eu/web-test-helpers'
 import App from '../../src/App.vue'
 
 vi.mock('@opencloud-eu/web-pkg')
+vi.mock('@opencloud-eu/web-pkg/editor')
 
 describe('Text editor app', () => {
   it('shows the editor', () => {

@@ -15,7 +15,7 @@ import {
   TextEditorProvider,
   TextEditorContent,
   TextEditorToolbar
-} from '@opencloud-eu/web-pkg'
+} from '@opencloud-eu/web-pkg/editor'
 import type { Resource } from '@opencloud-eu/web-client'
 
 const {

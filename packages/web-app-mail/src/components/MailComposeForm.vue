@@ -72,12 +72,14 @@ import { useGettext } from 'vue3-gettext'
 import {
   useGroupwareAccountsStore,
   useRouteQuery,
-  useModals,
+  useModals
+} from '@opencloud-eu/web-pkg'
+import {
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
   TextEditorToolbar
-} from '@opencloud-eu/web-pkg'
+} from '@opencloud-eu/web-pkg/editor'
 import { storeToRefs } from 'pinia'
 import DOMPurify from 'dompurify'
 import MailAttachmentList from './MailAttachmentList.vue'

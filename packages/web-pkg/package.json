@@ -24,12 +24,19 @@
       ".": {
         "default": "./dist/web-pkg.js",
         "types": "./dist/src/index.d.ts"
+      },
+      "./editor": {
+        "default": "./dist/web-pkg/editor.js",
+        "types": "./dist/src/editor/index.d.ts"
       }
     }
   },
   "exports": {
     ".": {
       "import": "./src/index.ts"
+    },
+    "./editor": {
+      "import": "./src/editor/index.ts"
     },
     "./l10n": {
       "import": "./l10n/translations.json"
