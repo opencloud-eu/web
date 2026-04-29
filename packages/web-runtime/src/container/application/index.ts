@@ -10,8 +10,6 @@ import * as vue from 'vue'
 import * as luxon from 'luxon'
 import * as vueGettext from 'vue3-gettext'
 import * as pinia from 'pinia'
-import * as webPkg from '@opencloud-eu/web-pkg'
-import * as webPkgEditor from '@opencloud-eu/web-pkg/editor'
 import * as webClient from '@opencloud-eu/web-client'
 import * as webClientGraph from '@opencloud-eu/web-client/graph'
 import * as webClientGraphGenerated from '@opencloud-eu/web-client/graph/generated'
@@ -33,14 +31,18 @@ export const sharedModules: Record<string, unknown> = {
   luxon,
   pinia,
   'vue3-gettext': vueGettext,
-  '@opencloud-eu/web-pkg': webPkg,
-  '@opencloud-eu/web-pkg/editor': webPkgEditor,
   '@opencloud-eu/web-client': webClient,
   '@opencloud-eu/web-client/graph': webClientGraph,
   '@opencloud-eu/web-client/graph/generated': webClientGraphGenerated,
   '@opencloud-eu/web-client/ocs': webClientOcs,
   '@opencloud-eu/web-client/sse': webClientSse,
   '@opencloud-eu/web-client/webdav': webClientWebdav
+}
+
+// Lazily loaded shared modules - not bundled in the initial chunks.
+export const lazySharedModules: Record<string, () => Promise<unknown>> = {
+  '@opencloud-eu/web-pkg': () => import('@opencloud-eu/web-pkg'),
+  '@opencloud-eu/web-pkg/editor': () => import('@opencloud-eu/web-pkg/editor')
 }
 
 /**
@@ -57,6 +59,13 @@ export function registerSharedModules(federation: ModuleFederation) {
       version: '0.0.0',
       scope: ['default'],
       get: () => Promise.resolve(() => value)
+    }
+  }
+  for (const [key, loader] of Object.entries(lazySharedModules)) {
+    shared[key] = {
+      version: '0.0.0',
+      scope: ['default'],
+      get: () => loader().then((m) => () => m)
     }
   }
   federation.registerShared(shared)
