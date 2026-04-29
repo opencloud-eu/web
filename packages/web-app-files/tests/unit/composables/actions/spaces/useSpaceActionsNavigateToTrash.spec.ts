@@ -1,12 +1,12 @@
-import { useSpaceActionsNavigateToTrash } from '../../../../../src'
 import { mock } from 'vitest-mock-extended'
+import { unref } from 'vue'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useSpaceActionsNavigateToTrash } from '../../../../../src/composables/actions/spaces'
 
 describe('navigateToSpace', () => {
   describe('isVisible property', () => {

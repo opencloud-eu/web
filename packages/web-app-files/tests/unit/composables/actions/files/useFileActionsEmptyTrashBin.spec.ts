@@ -1,26 +1,24 @@
-import {
-  SpaceActionOptions,
-  useFileActionsEmptyTrashBin
-} from '../../../../../src/composables/actions'
-import {
-  useMessages,
-  useModals,
-  useResourcesStore,
-  useSpacesStore
-} from '../../../../../src/composables/piniaStores'
 import { mock, mockDeep } from 'vitest-mock-extended'
+import { unref } from 'vue'
 import {
   defaultComponentMocks,
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { unref } from 'vue'
 import {
   ProjectSpaceResource,
   Resource,
   SpaceResource,
   TrashResource
 } from '@opencloud-eu/web-client'
+import {
+  SpaceActionOptions,
+  useMessages,
+  useModals,
+  useResourcesStore,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
+import { useFileActionsEmptyTrashBin } from '../../../../../src/composables/actions/files'
 
 describe('emptyTrashBin', () => {
   describe('isVisible property', () => {
@@ -32,6 +30,7 @@ describe('emptyTrashBin', () => {
         }
       })
     })
+
     it('should be false in a space trash bin with insufficient permissions', () => {
       getWrapper({
         driveType: 'project',
@@ -45,6 +44,7 @@ describe('emptyTrashBin', () => {
       })
     })
   })
+
   describe('isDisabled property', () => {
     it('should be false if space property "hasTrashedItems" is true ', () => {
       getWrapper({
@@ -58,6 +58,7 @@ describe('emptyTrashBin', () => {
         }
       })
     })
+
     it('should be true if space property "hasTrashedItems" is false ', () => {
       getWrapper({
         driveType: 'project',

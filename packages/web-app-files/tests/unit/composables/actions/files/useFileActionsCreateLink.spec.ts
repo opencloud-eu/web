@@ -1,17 +1,13 @@
 import { ref, unref } from 'vue'
-import { useFileActionsCreateLink } from '../../../../../src/composables/actions/files/useFileActionsCreateLink'
-import {
-  useModals,
-  CapabilityStore,
-  useSharesStore
-} from '../../../../../src/composables/piniaStores'
-import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
-import { useLinkTypes } from '../../../../../src/composables/links/useLinkTypes'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { CapabilityStore, useLinkTypes, useModals, useSharesStore } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateLink } from '../../../../../src/composables/actions/files'
 
-vi.mock('../../../../../src/composables/links/useLinkTypes', () => ({
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useLinkTypes: vi.fn()
 }))
 
@@ -24,6 +20,7 @@ describe('useFileActionsCreateLink', () => {
         }
       })
     })
+
     it('should return false if one resource can not be shared', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -32,6 +29,7 @@ describe('useFileActionsCreateLink', () => {
         }
       })
     })
+
     it('should return false if one resource is a disabled project space', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -42,6 +40,7 @@ describe('useFileActionsCreateLink', () => {
         }
       })
     })
+
     it('should return true if all files can be shared', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -54,6 +53,7 @@ describe('useFileActionsCreateLink', () => {
       })
     })
   })
+
   describe('handler', () => {
     it('calls the createLink method and shows messages', () => {
       getWrapper({
@@ -67,6 +67,7 @@ describe('useFileActionsCreateLink', () => {
         }
       })
     })
+
     it('shows a modal if enforced', () => {
       getWrapper({
         enforceModal: true,
@@ -98,7 +99,6 @@ function getWrapper({
   enforceModal?: boolean
   passwordEnforced?: boolean
   defaultLinkType?: SharingLinkType
-  showMessages?: boolean
 }) {
   vi.mocked(useLinkTypes).mockReturnValue(
     mock<ReturnType<typeof useLinkTypes>>({ defaultLinkType: ref(defaultLinkType) })

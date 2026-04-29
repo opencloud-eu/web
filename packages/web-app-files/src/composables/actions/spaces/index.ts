@@ -1,1 +1,6 @@
+export * from './useSpaceActionsDeleteImage'
+export * from './useSpaceActionsEditReadmeContent'
+export * from './useSpaceActionsNavigateToTrash'
+export * from './useSpaceActionsSetIcon'
+export * from './useSpaceActionsShowMembers'
 export * from './useSpaceActionsUploadImage'

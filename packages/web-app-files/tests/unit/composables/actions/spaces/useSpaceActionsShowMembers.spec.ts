@@ -1,7 +1,7 @@
 import { unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { useSpaceActionsShowMembers } from '../../../../../src/composables/actions'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { useSpaceActionsShowMembers } from '../../../../../src/composables/actions/spaces'
 
 describe('showMembers', () => {
   describe('isVisible property', () => {

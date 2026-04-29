@@ -1,20 +1,15 @@
-import {
-  useOpenWithDefaultApp,
-  useSpaceActionsEditReadmeContent
-} from '../../../../../src/composables/actions'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { ClientService } from '../../../../../src/services'
-import { useSpaceHelpers } from '../../../../../src/composables/spaces/useSpaceHelpers'
+import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { ClientService } from '@opencloud-eu/web-pkg'
+import { useOpenWithDefaultApp, useSpaceHelpers } from '@opencloud-eu/web-pkg'
+import { useSpaceActionsEditReadmeContent } from '../../../../../src/composables/actions/spaces'
 
-vi.mock('../../../../../src/composables/actions/useOpenWithDefaultApp', () => ({
-  useOpenWithDefaultApp: vi.fn()
-}))
-
-vi.mock('../../../../../src/composables/spaces/useSpaceHelpers', () => ({
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useOpenWithDefaultApp: vi.fn(),
   useSpaceHelpers: vi.fn()
 }))
 
@@ -84,7 +79,7 @@ function getWrapper({
 
   vi.mocked(useSpaceHelpers).mockReturnValue({
     getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
-  })
+  } as ReturnType<typeof useSpaceHelpers>)
 
   const mocks = { openWithDefaultApp }
 

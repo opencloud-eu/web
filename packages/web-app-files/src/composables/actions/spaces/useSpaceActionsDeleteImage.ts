@@ -1,10 +1,16 @@
+import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { SpaceAction, SpaceActionOptions } from '../types'
-import { useClientService } from '../../clientService'
-import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
-import { storeToRefs } from 'pinia'
+import {
+  SpaceAction,
+  SpaceActionOptions,
+  useClientService,
+  useMessages,
+  useModals,
+  useSpacesStore,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsDeleteImage = () => {
   const userStore = useUserStore()
@@ -84,7 +90,6 @@ export const useSpaceActionsDeleteImage = () => {
 
   return {
     actions,
-
     deleteSpaceImage
   }
 }

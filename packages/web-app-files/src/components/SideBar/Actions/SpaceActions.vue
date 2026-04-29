@@ -31,19 +31,21 @@ import {
   SpaceActionOptions,
   useFileActionsDownloadArchive,
   useSpaceActionsDelete,
-  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
-  useSpaceActionsEditReadmeContent,
-  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsSetIcon,
   useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../../composables'
+import {
+  useSpaceActionsDeleteImage,
+  useSpaceActionsEditReadmeContent,
+  useSpaceActionsNavigateToTrash,
+  useSpaceActionsSetIcon,
+  useSpaceActionsUploadImage
+} from '../../../composables'
 
 const resource = inject<Ref<SpaceResource>>('resource')
 const actionOptions = computed((): SpaceActionOptions & FileActionOptions<Resource> => ({

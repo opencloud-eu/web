@@ -43,12 +43,12 @@
       </li>
     </oc-list>
     <oc-list
-      v-if="extensionActions.length"
+      v-if="extraExtensionActions.length"
       id="extension-list"
       class="py-2 sm:first:pt-0 sm:last:pb-0 border-t"
     >
       <li
-        v-for="(action, key) in extensionActions"
+        v-for="(action, key) in extraExtensionActions"
         :key="`${key}-${useId()}`"
         v-oc-tooltip="
           isActionDisabled(action) && action.disabledTooltip ? action.disabledTooltip() : null
@@ -114,15 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  FileAction,
-  useFileActionsCreateNewShortcut,
-  useResourcesStore,
-  useUserStore,
-  useFileActionsCreateNewFile,
-  useFileActionsCreateNewFolder,
-  useSpacesStore
-} from '@opencloud-eu/web-pkg'
+import { FileAction, useResourcesStore, useUserStore, useSpacesStore } from '@opencloud-eu/web-pkg'
 
 import { computed, unref, useId } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
@@ -132,6 +124,11 @@ import { Action, ResourceIcon } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../extensionPoints'
 import ResourceUpload from './AppBar/Upload/ResourceUpload.vue'
+import {
+  useFileActionsCreateNewFile,
+  useFileActionsCreateNewFolder,
+  useFileActionsCreateNewShortcut
+} from '../composables'
 
 const { toggle } = defineProps<{
   toggle: string
@@ -154,14 +151,19 @@ const createNewFolderAction = () => {
   return unref(createNewFolder)[0].handler()
 }
 
-const { actions: createNewShortcut } = useFileActionsCreateNewShortcut({ space: currentSpace })
+const { actions: createNewShortcut } = useFileActionsCreateNewShortcut()
 const createNewShortcutAction = () => {
   return unref(createNewShortcut)[0].handler()
 }
 
 const { actions: createNewFileActions } = useFileActionsCreateNewFile({ space: currentSpace })
 
-const createFileActionsGroups = computed(() => {
+const extensionRegistry = useExtensionRegistry()
+const extensionActions = computed(() => {
+  return extensionRegistry.requestExtensions(uploadMenuExtensionPoint).map((e) => e.action)
+})
+
+const createFileActionsGroups = computed((): FileAction[][] => {
   const result: FileAction[][] = []
   const externalFileActions = unref(createNewFileActions).filter(({ isExternal }) => isExternal)
   if (externalFileActions.length) {
@@ -174,12 +176,15 @@ const createFileActionsGroups = computed(() => {
   return result
 })
 
-const extensionRegistry = useExtensionRegistry()
-const extensionActions = computed(() => {
-  return [
-    ...extensionRegistry.requestExtensions(uploadMenuExtensionPoint).map((e) => e.action)
-  ].filter((e) => e.isVisible())
-})
+const extraExtensionActions = computed(() =>
+  unref(extensionActions).filter(
+    (action) =>
+      action.name !== 'create-folder' &&
+      action.name !== 'create-shortcut' &&
+      action.name !== 'create-new-file' &&
+      action.isVisible()
+  )
+)
 
 const canUpload = computed(() => {
   return unref(currentFolder)?.canUpload({ user: userStore.user })

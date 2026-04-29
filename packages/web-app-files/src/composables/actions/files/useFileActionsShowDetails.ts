@@ -1,9 +1,12 @@
-import { isLocationTrashActive } from '../../../router'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useRouter } from '../../router'
-import { FileAction } from '../types'
-import { useResourcesStore, useSideBar } from '../../piniaStores'
+import {
+  FileAction,
+  isLocationTrashActive,
+  useResourcesStore,
+  useRouter,
+  useSideBar
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsShowDetails = () => {
   const router = useRouter()
@@ -15,6 +18,7 @@ export const useFileActionsShowDetails = () => {
     {
       name: 'show-details',
       icon: 'information',
+      category: 'sidebar',
       class: 'oc-files-actions-show-details-trigger',
       label: () => $gettext('Details'),
       // we don't have details in the trashbin, yet.

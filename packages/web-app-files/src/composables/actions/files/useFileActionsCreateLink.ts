@@ -1,13 +1,20 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../../actions'
-import CreateLinkModal from '../../../components/CreateLinkModal.vue'
-import { useAbility } from '../../ability'
 import { LinkShare, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { useCopyLink, useLinkTypes } from '../../links'
-import { useLoadingService } from '../../loadingService'
-import { useModals, useUserStore, useCapabilityStore, useSharesStore } from '../../piniaStores'
-import { useClientService } from '../../clientService'
+import {
+  CreateLinkModal,
+  FileAction,
+  FileActionOptions,
+  useAbility,
+  useCapabilityStore,
+  useClientService,
+  useCopyLink,
+  useLinkTypes,
+  useLoadingService,
+  useModals,
+  useSharesStore,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCreateLink = ({
   enforceModal = false
@@ -77,20 +84,18 @@ export const useFileActionsCreateLink = ({
     return true
   }
 
-  const actions = computed((): FileAction[] => {
-    return [
-      {
-        name: 'create-links',
-        icon: 'link',
-        handler,
-        label: () => {
-          return $gettext('Create links')
-        },
-        isVisible,
-        class: 'oc-files-actions-create-links'
-      }
-    ]
-  })
+  const actions = computed((): FileAction[] => [
+    {
+      name: 'create-links',
+      icon: 'link',
+      handler,
+      label: () => {
+        return $gettext('Create links')
+      },
+      isVisible,
+      class: 'oc-files-actions-create-links'
+    }
+  ])
 
   return {
     actions

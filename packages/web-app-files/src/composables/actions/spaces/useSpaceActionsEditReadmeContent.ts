@@ -1,16 +1,20 @@
-import { SpaceAction, SpaceActionOptions } from '../types'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-
-import { useOpenWithDefaultApp } from '../useOpenWithDefaultApp'
 import {
   getRelativeSpecialFolderSpacePath,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useSpacesStore, useUserStore } from '../../piniaStores'
-import { useCreateSpace, useSpaceHelpers } from '../../spaces'
+import {
+  SpaceAction,
+  SpaceActionOptions,
+  useClientService,
+  useCreateSpace,
+  useOpenWithDefaultApp,
+  useSpaceHelpers,
+  useSpacesStore,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsEditReadmeContent = () => {
   const clientService = useClientService()
@@ -22,7 +26,6 @@ export const useSpaceActionsEditReadmeContent = () => {
   const { getDefaultMetaFolder } = useSpaceHelpers()
 
   const createReadme = async (space: SpaceResource, metaFolder: Resource) => {
-    // FIXME: remove path as soon as we make the full switch to id-based dav requests
     const markdownResource = await clientService.webdav.putFileContents(space, {
       path: '.space/readme.md',
       parentFolderId: metaFolder.id,

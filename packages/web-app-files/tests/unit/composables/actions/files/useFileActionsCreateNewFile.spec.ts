@@ -1,20 +1,18 @@
 import { mock } from 'vitest-mock-extended'
 import { ref, unref } from 'vue'
-import { useFileActionsCreateNewFile } from '../../../../../src/composables/actions'
-import { useModals } from '../../../../../src/composables/piniaStores'
-import { SpaceResource } from '@opencloud-eu/web-client'
-import { Resource } from '@opencloud-eu/web-client'
-import { FileActionOptions } from '../../../../../src/composables/actions'
-import { useFileActions } from '../../../../../src/composables/actions/files/useFileActions'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { RouteLocation } from '@opencloud-eu/web-test-helpers'
+import { ApplicationFileExtension } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateNewFile } from '../../../../../src/composables/actions/files'
 import {
-  RouteLocation,
-  defaultComponentMocks,
-  getComposableWrapper
-} from '@opencloud-eu/web-test-helpers'
-import { ApplicationFileExtension } from '../../../../../types'
-import { useResourcesStore } from '../../../../../src/composables/piniaStores'
+  FileActionOptions,
+  useFileActions,
+  useModals,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../../src/composables/actions/files/useFileActions', async (importOriginal) => ({
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useFileActions: vi.fn(() => mock<ReturnType<typeof useFileActions>>())
 }))
@@ -34,6 +32,7 @@ describe('useFileActionsCreateNewFile', () => {
       })
     })
   })
+
   describe('createNewFileModal', () => {
     it('should show modal', () => {
       const space = mock<SpaceResource>({ id: '1' })

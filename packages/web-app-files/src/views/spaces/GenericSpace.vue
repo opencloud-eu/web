@@ -123,7 +123,6 @@ import {
   TransferType,
   useConfigStore,
   useFileActions,
-  useFileActionsCreateNewFolder,
   useLoadPreview,
   usePasteWorker,
   useResourcesStore,
@@ -166,6 +165,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileSpaceActions
 } from '../../composables/keyboardActions'
+import { useFileActionsCreateNewFolder } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'

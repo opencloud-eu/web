@@ -15,7 +15,10 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { AppBar, NoContentMessage, ResourceTable } from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../src/composables')
+vi.mock('../../../../src/composables', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useResourcesViewDefaults: vi.fn()
+}))
 
 describe('GenericTrash view', () => {
   it('appBar always present', () => {

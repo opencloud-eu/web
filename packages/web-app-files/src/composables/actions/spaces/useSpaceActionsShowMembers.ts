@@ -1,7 +1,11 @@
 import { computed } from 'vue'
-import { SpaceAction, SpaceActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
-import { useResourcesStore, useSideBar } from '../../piniaStores'
+import {
+  SpaceAction,
+  SpaceActionOptions,
+  useResourcesStore,
+  useSideBar
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsShowMembers = () => {
   const { $gettext } = useGettext()

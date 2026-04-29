@@ -1,14 +1,22 @@
-import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { SpaceAction, SpaceActionOptions } from '../types'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
 import { useGettext } from 'vue3-gettext'
-import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
-import { useCreateSpace, useSpaceHelpers } from '../../spaces'
-import { eventBus } from '../../../services'
-import { blobToArrayBuffer, canvasToBlob } from '../../../helpers'
-import EmojiPickerModal from '../../../components/Modals/EmojiPickerModal.vue'
+import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  EmojiPickerModal,
+  SpaceAction,
+  SpaceActionOptions,
+  blobToArrayBuffer,
+  canvasToBlob,
+  eventBus,
+  useClientService,
+  useCreateSpace,
+  useLoadingService,
+  useMessages,
+  useModals,
+  useSpaceHelpers,
+  useSpacesStore,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsSetIcon = () => {
   const userStore = useUserStore()
@@ -39,22 +47,19 @@ export const useSpaceActionsSetIcon = () => {
   const generateEmojiImage = async (emoji: string): Promise<ArrayBuffer | string> => {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
-    const aspectRatio = 16 / 9,
-      width = 720,
-      height = width / aspectRatio
+    const aspectRatio = 16 / 9
+    const width = 720
+    const height = width / aspectRatio
 
     canvas.width = width
     canvas.height = height
 
     const textSize = 0.4 * width
     context.font = `${textSize}px sans-serif`
-
     context.textBaseline = 'middle'
     context.textAlign = 'center'
 
-    // FIXME: This offset center the emoji vertical, try to do it programmatically
     const heightOffset = 15
-
     context.fillText(emoji, canvas.width / 2, canvas.height / 2 + heightOffset)
 
     const blob = await canvasToBlob(canvas)

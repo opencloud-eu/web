@@ -28,23 +28,25 @@ import {
   isLocationSpacesActive,
   SpaceActionOptions,
   useFileActionsDownloadArchive,
-  useFileActionsShowDetails,
   useRouter,
   useSpaceActionsDelete,
-  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
-  useSpaceActionsEditReadmeContent,
-  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsSetIcon,
-  useSpaceActionsShowMembers,
   useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../composables'
+import {
+  useSpaceActionsDeleteImage,
+  useSpaceActionsEditReadmeContent,
+  useSpaceActionsNavigateToTrash,
+  useSpaceActionsSetIcon,
+  useSpaceActionsShowMembers,
+  useSpaceActionsUploadImage
+} from '../../composables'
+import { useFileActionsShowDetails } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'

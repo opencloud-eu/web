@@ -1,23 +1,24 @@
 import { extractNameWithoutExtension, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, Ref, unref } from 'vue'
-import { useClientService } from '../../clientService'
-import { FileAction, FileActionOptions } from '../types'
-import { useGettext } from 'vue3-gettext'
-import { resolveFileNameDuplicate } from '../../../helpers/resource'
-import { join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { useFileActions } from './useFileActions'
+import { storeToRefs } from 'pinia'
+import { join } from 'path'
+import { computed, Ref, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import {
+  ApplicationFileExtension,
+  FileAction,
+  FileActionOptions,
+  resolveFileNameDuplicate,
   useAppsStore,
+  useClientService,
+  useEmbedMode,
+  useFileActions,
+  useIsResourceNameValid,
   useMessages,
   useModals,
   useResourcesStore,
   useUserStore
-} from '../../piniaStores'
-import { ApplicationFileExtension } from '../../../apps'
-import { storeToRefs } from 'pinia'
-import { useEmbedMode } from '../../embedMode'
-import { useIsResourceNameValid } from '../helpers'
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()

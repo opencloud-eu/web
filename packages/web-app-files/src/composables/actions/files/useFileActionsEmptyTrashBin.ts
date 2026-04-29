@@ -1,16 +1,17 @@
 import { isSpaceResource, isTrashResource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { useClientService } from '../../clientService'
 import { useGettext } from 'vue3-gettext'
-import { SpaceAction, SpaceActionOptions } from '../types'
 import {
+  SpaceAction,
+  SpaceActionOptions,
   useCapabilityStore,
+  useClientService,
   useMessages,
   useModals,
   useResourcesStore,
   useSpacesStore,
   useUserStore
-} from '../../piniaStores'
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsEmptyTrashBin = () => {
   const { showMessage, showErrorMessage } = useMessages()

@@ -1,11 +1,13 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction } from '../types'
-import { useClipboard } from '@vueuse/core'
-import { useMessages } from '../../piniaStores'
 import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
-import { useInterceptModifierClick } from '../../keyboardActions'
-import { FileActionOptionsWithEvent } from './useFileActions'
+import {
+  FileAction,
+  FileActionOptionsWithEvent,
+  useInterceptModifierClick,
+  useMessages
+} from '@opencloud-eu/web-pkg'
+import { useClipboard } from '@vueuse/core'
 
 export const useFileActionsCopyPermanentLink = () => {
   const { showMessage, showErrorMessage } = useMessages()

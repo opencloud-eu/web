@@ -1,13 +1,15 @@
-import { isLocationTrashActive } from '../../../router'
 import { ShareResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useRouter } from '../../router'
-import { FileAction } from '../types'
-import { FileActionOptionsWithEvent } from './useFileActions'
-import { useCanShare } from '../../shares'
-import { useSideBar } from '../../piniaStores'
-import { useInterceptModifierClick } from '../../keyboardActions'
+import {
+  FileAction,
+  FileActionOptionsWithEvent,
+  isLocationTrashActive,
+  useCanShare,
+  useInterceptModifierClick,
+  useRouter,
+  useSideBar
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsShowShares = () => {
   const router = useRouter()

@@ -90,7 +90,6 @@
 import { computed, inject, ref, Ref, unref } from 'vue'
 import {
   useAbility,
-  useFileActionsCreateLink,
   FileAction,
   useClientService,
   useModals,
@@ -109,6 +108,7 @@ import { isLocationSharesActive, useSharesStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
+import { useFileActionsCreateLink } from '../../../composables'
 
 const router = useRouter()
 const { showMessage, showErrorMessage } = useMessages()

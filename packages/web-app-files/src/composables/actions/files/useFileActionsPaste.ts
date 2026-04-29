@@ -1,19 +1,24 @@
-import {
-  isLocationCommonActive,
-  isLocationPublicActive,
-  isLocationSpacesActive
-} from '../../../router'
+import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGetMatchingSpace } from '../../spaces'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
-import { FileAction, FileActionOptions } from '../types'
 import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
-import { useClipboardStore, useResourcesStore } from '../../piniaStores'
-import { ClipboardActions, isMacOs, ResourceTransfer, TransferType } from '../../../helpers'
-import { storeToRefs } from 'pinia'
-import { usePasteWorker } from '../../webWorkers/pasteWorker'
+import {
+  ClipboardActions,
+  FileAction,
+  FileActionOptions,
+  ResourceTransfer,
+  TransferType,
+  isLocationCommonActive,
+  isLocationPublicActive,
+  isLocationSpacesActive,
+  isMacOs,
+  useClientService,
+  useClipboardStore,
+  useGetMatchingSpace,
+  usePasteWorker,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsPaste = () => {
   const router = useRouter()

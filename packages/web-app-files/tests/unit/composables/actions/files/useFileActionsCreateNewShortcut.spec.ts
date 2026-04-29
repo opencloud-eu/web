@@ -1,12 +1,13 @@
 import { mock } from 'vitest-mock-extended'
-import { ref, unref } from 'vue'
+import { unref } from 'vue'
 import {
   defaultComponentMocks,
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { useFileActionsCreateNewShortcut, useModals } from '../../../../../src/composables'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
+import { useModals } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateNewShortcut } from '../../../../../src/composables/actions/files'
 
 describe('createNewShortcut', () => {
   describe('computed property "actions"', () => {
@@ -29,6 +30,7 @@ describe('createNewShortcut', () => {
         })
       })
     })
+
     describe('method "handler"', () => {
       it('creates a modal', () => {
         getWrapper({
@@ -59,7 +61,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsCreateNewShortcut({ space: ref(mock<SpaceResource>()) })
+        const instance = useFileActionsCreateNewShortcut()
         setup(instance)
       },
       {

@@ -1,7 +1,8 @@
-import { useFileActionsShowDetails, useSideBar } from '../../../../../src'
-import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { useSideBar } from '@opencloud-eu/web-pkg'
+import { useFileActionsShowDetails } from '../../../../../src/composables/actions/files'
 
 describe('showDetails', () => {
   describe('handler', () => {

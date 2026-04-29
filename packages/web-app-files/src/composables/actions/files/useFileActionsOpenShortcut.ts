@@ -1,18 +1,18 @@
 import {
+  FileAction,
+  FileActionOptions,
   isLocationCommonActive,
   isLocationPublicActive,
   isLocationSharesActive,
-  isLocationSpacesActive
-} from '../../../router'
-import { useIsFilesAppActive } from '../helpers'
-import { useRouter } from '../../router'
-import { FileAction, FileActionOptions } from '../types'
-import { useIsSearchActive } from '../helpers'
+  isLocationSpacesActive,
+  useClientService,
+  useIsFilesAppActive,
+  useIsSearchActive,
+  useMessages,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useClientService } from '../../clientService'
-import DOMPurify from 'dompurify'
-import { useMessages } from '../../piniaStores'
 
 export const useFileActionsOpenShortcut = () => {
   const { showErrorMessage } = useMessages()
@@ -32,17 +32,15 @@ export const useFileActionsOpenShortcut = () => {
       throw new Error('unable to extract url')
     }
   }
+
   const handler = async ({ resources, space }: FileActionOptions) => {
     try {
       const webURL = new URL(window.location.href)
       const fileContents = (await clientService.webdav.getFileContents(space, resources[0])).body
       let url = extractUrl(fileContents)
 
-      // Add protocol if missing
       url = url.match(/^http[s]?:\/\//) ? url : `https://${url}`
-
-      // Omit possible xss code
-      url = DOMPurify.sanitize(url, { USE_PROFILES: { html: true } })
+      url = url.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, '')
 
       if (url.startsWith(webURL.origin)) {
         window.location.href = url
@@ -96,8 +94,6 @@ export const useFileActionsOpenShortcut = () => {
 
   return {
     actions,
-
-    // Hack for unit tests
     extractUrl
   }
 }

@@ -1,18 +1,13 @@
 import { mock } from 'vitest-mock-extended'
-import { computed, unref } from 'vue'
+import { unref } from 'vue'
 import {
   defaultComponentMocks,
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { useFileActionsOpenShortcut, useRoute } from '../../../../../src'
+import { useFileActionsOpenShortcut } from '../../../../../src/composables/actions/files'
 import { Resource } from '@opencloud-eu/web-client'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
-
-vi.mock('../../../../../src/composables/router', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  useRoute: vi.fn()
-}))
 
 window = Object.create(window)
 Object.defineProperty(window, 'location', {
@@ -52,6 +47,7 @@ describe('openShortcut', () => {
         })
       })
     })
+
     describe('method "handler"', () => {
       it('adds http(s) protocol if missing and opens the url in a new tab', () => {
         getWrapper({
@@ -65,6 +61,7 @@ describe('openShortcut', () => {
           }
         })
       })
+
       it('omits xss code and opens the url in a new tab', () => {
         getWrapper({
           getFileContentsValue:
@@ -78,6 +75,7 @@ describe('openShortcut', () => {
           }
         })
       })
+
       it('opens the url in the same window if url links to OpenCloud instance', () => {
         getWrapper({
           getFileContentsValue: '[InternetShortcut]\nURL=https://demo.opencloud.eu',
@@ -92,6 +90,7 @@ describe('openShortcut', () => {
       })
     })
   })
+
   describe('method "extractUrl"', () => {
     it('extracts url correctly', () => {
       getWrapper({
@@ -102,6 +101,7 @@ describe('openShortcut', () => {
         }
       })
     })
+
     it('throws error if url cannot be extracted', () => {
       getWrapper({
         setup: ({ extractUrl }) => {
@@ -121,7 +121,7 @@ function getWrapper({
 }) {
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
+      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic', path: '/files/' })
     })
   }
 
@@ -129,10 +129,6 @@ function getWrapper({
     mock<GetFileContentsResponse>({
       body: getFileContentsValue
     })
-  )
-
-  vi.mocked(useRoute).mockImplementation(() =>
-    computed(() => mock<RouteLocation>({ name: 'files-spaces-generic', path: '/files/' }))
   )
 
   return {

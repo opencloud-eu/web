@@ -35,7 +35,6 @@ import {
   useSpacesStore,
   useUserStore,
   useActiveLocation,
-  useFileActionsPaste,
   useClientService
 } from '@opencloud-eu/web-pkg'
 
@@ -45,6 +44,7 @@ import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/
 import { HandleUpload } from '../../HandleUpload'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { useFileActionsPaste } from '../../composables'
 
 const { space, limitedScreenSpace = false } = defineProps<{
   space: SpaceResource

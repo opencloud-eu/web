@@ -1,11 +1,5 @@
 import { mock } from 'vitest-mock-extended'
 import { nextTick, ref, unref } from 'vue'
-import { useFileActionsCreateNewFolder } from '../../../../../src/composables/actions'
-import {
-  useMessages,
-  useModals,
-  useResourcesStore
-} from '../../../../../src/composables/piniaStores'
 import {
   FolderResource,
   Resource,
@@ -18,9 +12,13 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { useScrollToMock } from '../../../../mocks/useScrollToMock'
-import { useScrollTo } from '../../../../../src/composables/scrollTo'
+import { useMessages, useModals, useResourcesStore, useScrollTo } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateNewFolder } from '../../../../../src/composables/actions/files'
 
-vi.mock('../../../../../src/composables/scrollTo')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useScrollTo: vi.fn()
+}))
 
 describe('useFileActionsCreateNewFolder', () => {
   describe('addNewFolder', () => {
@@ -37,11 +35,10 @@ describe('useFileActionsCreateNewFolder', () => {
 
           const { showMessage } = useMessages()
           expect(showMessage).toHaveBeenCalledWith({ title: '»myfolder« was created successfully' })
-
-          // expect scrolltoresource to have been called
         }
       })
     })
+
     it('show error message if createFolder fails', () => {
       const consoleErrorMock = vi.spyOn(console, 'error').mockReturnThis()
       const space = mock<SpaceResource>({ id: '1' })
@@ -61,6 +58,7 @@ describe('useFileActionsCreateNewFolder', () => {
         }
       })
     })
+
     it('adds the remoteItemId if the current space is a share space', () => {
       const space = mock<ShareSpaceResource>({ id: '1', driveType: 'share' })
       getWrapper({
@@ -76,6 +74,7 @@ describe('useFileActionsCreateNewFolder', () => {
       })
     })
   })
+
   describe('createNewFolderModal', () => {
     it('should show modal', () => {
       const space = mock<SpaceResource>({ id: '1' })

@@ -3,7 +3,8 @@ import ListItem from '../../../../../src/components/SideBar/Shares/Links/ListIte
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { LinkShare, ShareTypes, Resource, AbilityRule } from '@opencloud-eu/web-client'
-import { FileAction, useCanShare, useFileActionsCreateLink } from '@opencloud-eu/web-pkg'
+import { FileAction, useCanShare } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateLink } from '../../../../../src/composables/actions/files'
 import { computed } from 'vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 
@@ -36,8 +37,12 @@ const selectors = {
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActionsCreateLink: vi.fn(),
   useCanShare: vi.fn()
+}))
+
+vi.mock('../../../../../src/composables/actions/files', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useFileActionsCreateLink: vi.fn()
 }))
 
 describe('FileLinks', () => {

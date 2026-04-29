@@ -1,14 +1,18 @@
 import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, nextTick, Ref, unref } from 'vue'
-import { useClientService } from '../../clientService'
-import { FileAction } from '../types'
-import { useGettext } from 'vue3-gettext'
-import { resolveFileNameDuplicate } from '../../../helpers/resource'
-import { join } from 'path'
-import { useScrollTo } from '../../scrollTo'
-import { useMessages, useModals, useResourcesStore } from '../../../composables/piniaStores'
 import { storeToRefs } from 'pinia'
-import { useIsResourceNameValid } from '../helpers'
+import { join } from 'path'
+import { computed, nextTick, Ref, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import {
+  FileAction,
+  resolveFileNameDuplicate,
+  useClientService,
+  useIsResourceNameValid,
+  useMessages,
+  useModals,
+  useResourcesStore,
+  useScrollTo
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -76,22 +80,20 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
     })
   }
 
-  const actions = computed((): FileAction[] => {
-    return [
-      {
-        name: 'create-folder',
-        icon: 'folder',
-        handler,
-        label: () => {
-          return $gettext('New Folder')
-        },
-        isVisible: () => {
-          return unref(currentFolder)?.canCreate()
-        },
-        class: 'oc-files-actions-create-new-folder'
-      }
-    ]
-  })
+  const actions = computed((): FileAction[] => [
+    {
+      name: 'create-folder',
+      icon: 'folder',
+      handler,
+      label: () => {
+        return $gettext('New Folder')
+      },
+      isVisible: () => {
+        return unref(currentFolder)?.canCreate()
+      },
+      class: 'oc-files-actions-create-new-folder'
+    }
+  ])
 
   return {
     actions,

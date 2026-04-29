@@ -18,6 +18,7 @@ describe('useFileActionsCopyPermanentLink', () => {
         }
       })
     })
+
     it('should return false in public spaces', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -28,6 +29,7 @@ describe('useFileActionsCopyPermanentLink', () => {
         }
       })
     })
+
     it('should return false if trash resource', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -40,6 +42,7 @@ describe('useFileActionsCopyPermanentLink', () => {
         }
       })
     })
+
     it('should return true if one resource selected', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -50,6 +53,7 @@ describe('useFileActionsCopyPermanentLink', () => {
       })
     })
   })
+
   describe('handler', () => {
     it('calls the copyToClipboard method with the private link of the resource', () => {
       getWrapper({

@@ -42,10 +42,7 @@ import {
   useConfigStore,
   useResourcesStore,
   FileContentOptions,
-  useFileActionsCopyPermanentLink,
   useFileActionsDownloadFile,
-  useFileActionsShowDetails,
-  useFileActionsShowShares,
   FileActionOptions,
   FileAction,
   useLoadingService,
@@ -60,6 +57,7 @@ import {
   useGetResourceContext,
   useKeyboardActions,
   useExtensionRegistry,
+  ActionExtension,
   CustomComponentExtension
 } from '../../composables'
 import {
@@ -74,7 +72,7 @@ import {
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
 import { dirname } from 'path'
-import { useFileActionsOpenWithApp } from '../../composables/actions/files/useFileActionsOpenWithApp'
+import { useFileActionsOpenWithApp } from '../../composables'
 import { UnsavedChangesModal } from '../Modals'
 import { formatFileSize, getSharedDriveItem } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
@@ -119,10 +117,7 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId
 })
-const { actions: copyPermanentLinkActions } = useFileActionsCopyPermanentLink()
 const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: showDetailsActions } = useFileActionsShowDetails()
-const { actions: showSharesActions } = useFileActionsShowShares()
 const { actions: deleteFileActions } = useFileActionsDelete()
 
 const noResourceLoading = computed(() => {
@@ -142,7 +137,7 @@ const currentContent = ref<unknown>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
 
-const { registerExtensions, unregisterExtensions } = useExtensionRegistry()
+const { registerExtensions, unregisterExtensions, requestExtensions } = useExtensionRegistry()
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
   if (unref(loading) || unref(loadingError) || !unref(resource)) {
@@ -603,9 +598,15 @@ const menuItemsContext = computed(() => {
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
 const menuItemsShare = computed(() => {
-  return [...unref(showSharesActions), ...unref(copyPermanentLinkActions)].filter((item) =>
-    item.isVisible(unref(actionOptions))
+  return (
+    requestExtensions<ActionExtension>({
+      id: 'global.files.context-actions',
+      extensionType: 'action'
+    }) || []
   )
+    .map((e) => e.action)
+    .filter((action) => action.category === 'share')
+    .filter((item) => item.isVisible(unref(actionOptions)))
 })
 const menuItemsActions = computed(() => {
   return [
@@ -618,7 +619,15 @@ const menuItemsActions = computed(() => {
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
 const menuItemsSidebar = computed(() => {
-  return [...unref(showDetailsActions)].filter((item) => item.isVisible(unref(actionOptions)))
+  return (
+    requestExtensions<ActionExtension>({
+      id: 'global.files.context-actions',
+      extensionType: 'action'
+    }) || []
+  )
+    .map((e) => e.action)
+    .filter((action) => action.category === 'sidebar')
+    .filter((item) => item.isVisible(unref(actionOptions)))
 })
 const dropDownMenuSections = computed(() => {
   const sections = []
