@@ -17,7 +17,7 @@
               :id="`toolbar-dropdown-trigger-${item.id}`"
               type="button"
               appearance="raw"
-              class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center"
+              class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center"
               :class="{
                 'text-editor-toolbar-btn--active': isItemActive(item)
               }"
@@ -63,7 +63,7 @@
             v-oc-tooltip="item.title"
             type="button"
             appearance="raw"
-            class="text-editor-toolbar-btn min-w-[32px] inline-flex items-center justify-center"
+            class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center"
             :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
             :aria-label="item.title"
             :disabled="!isItemEnabled(item)"
@@ -199,7 +199,7 @@ const getCurrentValue = (item: any) => {
 }
 
 .text-editor-toolbar-btn {
-  @apply h-[32px];
+  @apply h-[42px];
   gap: 0 !important;
 }
 .text-editor-toolbar-btn--active {
