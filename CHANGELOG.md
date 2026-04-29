@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-04-28
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-04-29
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-router to v5.0.6 [[#2451](https://github.com/opencloud-eu/web/pull/2451)]
 - chore(deps): update typescript-eslint monorepo to v8.59.1 [[#2446](https://github.com/opencloud-eu/web/pull/2446)]
 - chore(deps): update dependency filesize to v11.0.17 [[#2445](https://github.com/opencloud-eu/web/pull/2445)]
 - chore(deps): update dependency @vue/test-utils to v2.4.9 [[#2444](https://github.com/opencloud-eu/web/pull/2444)]
