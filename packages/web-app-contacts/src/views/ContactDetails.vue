@@ -26,13 +26,17 @@
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { useContactsStore } from '../composables/piniaStores/contacts'
+import { useContactEditor } from '../composables/useContactEditor'
 import ContactDetailsContent from '../components/ContactDetailsContent.vue'
 
 const contactsStore = useContactsStore()
+const { runWithDiscardConfirmation } = useContactEditor()
 const { currentContact } = storeToRefs(contactsStore)
 const { setCurrentContact } = contactsStore
 
-const onNavigateBack = () => {
-  setCurrentContact(null)
+const onNavigateBack = async () => {
+  await runWithDiscardConfirmation(async () => {
+    setCurrentContact(null)
+  })
 }
 </script>

@@ -16,13 +16,19 @@ export const AddressBookSchema = z.object({
   myRights: AddressBookRightsSchema
 })
 
-export const AddressBooksResponseSchema = z.object({
-  addressbooks: z.array(AddressBookSchema)
+export const AddressBooksListResponseSchema = z.object({
+  accountId: z.string().optional(),
+  state: z.string().optional(),
+  list: z.array(AddressBookSchema),
+  notFound: z.array(z.string()).optional()
 })
 
+export const AddressBooksArrayResponseSchema = z.array(AddressBookSchema)
+
+export const AddressBook = AddressBookSchema
 export type AddressBook = z.infer<typeof AddressBookSchema>
 export type AddressBookRights = z.infer<typeof AddressBookRightsSchema>
-export type AddressBooksResponse = z.infer<typeof AddressBooksResponseSchema>
+export type AddressBooksListResponse = z.infer<typeof AddressBooksListResponseSchema>
 
 // Contact schemas
 export const AddressBookIdsSchema = z.record(z.string(), z.boolean())
@@ -165,6 +171,24 @@ export const ContactSchema = z.object({
   titles: z.record(z.string(), TitleSchema).optional()
 })
 
+export const ContactSearchResultsSchema = z.object({
+  results: z.array(ContactSchema),
+  canCalculateChanges: z.boolean().optional(),
+  position: z.number().optional(),
+  limit: z.number().optional(),
+  total: z.number().optional()
+})
+
+export const ContactListResponseSchema = z.object({
+  accountId: z.string().optional(),
+  state: z.string().optional(),
+  list: z.array(ContactSchema),
+  notFound: z.array(z.string()).optional()
+})
+
+export const ContactsArrayResponseSchema = z.array(ContactSchema)
+
+export const Contact = ContactSchema
 export type Contact = z.infer<typeof ContactSchema>
 export type ContactName = z.infer<typeof NameSchema>
 export type ContactEmail = z.infer<typeof EmailSchema>
@@ -172,3 +196,48 @@ export type ContactPhone = z.infer<typeof PhoneSchema>
 export type ContactAddress = z.infer<typeof AddressSchema>
 export type ContactOrganization = z.infer<typeof OrganizationSchema>
 export type ContactMedia = z.infer<typeof MediaSchema>
+export type ContactSearchResults = z.infer<typeof ContactSearchResultsSchema>
+export type ContactListResponse = z.infer<typeof ContactListResponseSchema>
+
+export const parseAddressBooksResponse = (data: unknown): AddressBook[] => {
+  const listResponse = AddressBooksListResponseSchema.safeParse(data)
+  if (listResponse.success) {
+    return listResponse.data.list
+  }
+
+  const arrayResponse = AddressBooksArrayResponseSchema.safeParse(data)
+  if (arrayResponse.success) {
+    return arrayResponse.data
+  }
+
+  const singleResponse = AddressBookSchema.safeParse(data)
+  if (singleResponse.success) {
+    return [singleResponse.data]
+  }
+
+  return AddressBooksListResponseSchema.parse(data).list
+}
+
+export const parseContactsResponse = (data: unknown): Contact[] => {
+  const searchResponse = ContactSearchResultsSchema.safeParse(data)
+  if (searchResponse.success) {
+    return searchResponse.data.results
+  }
+
+  const listResponse = ContactListResponseSchema.safeParse(data)
+  if (listResponse.success) {
+    return listResponse.data.list
+  }
+
+  const arrayResponse = ContactsArrayResponseSchema.safeParse(data)
+  if (arrayResponse.success) {
+    return arrayResponse.data
+  }
+
+  const singleResponse = ContactSchema.safeParse(data)
+  if (singleResponse.success) {
+    return [singleResponse.data]
+  }
+
+  return ContactSearchResultsSchema.parse(data).results
+}

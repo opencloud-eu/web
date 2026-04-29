@@ -84,6 +84,7 @@ import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
+import { useContactEditor } from '../composables/useContactEditor'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
 
@@ -91,15 +92,15 @@ const { isLoading } = useLoadContacts()
 const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
+const { runWithDiscardConfirmation } = useContactEditor()
 const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
-const { setCurrentAddressBook } = addressBooksStore
 
 const actionOptions = {} as ActionOptions
 
 const sortedContacts = computed(() => {
-  return [...contacts.value].sort((a, b) => {
+  return [...unref(contacts)].sort((a, b) => {
     const aSortName = getContactDisplayName(a)
     const bSortName = getContactDisplayName(b)
 
@@ -107,8 +108,10 @@ const sortedContacts = computed(() => {
   })
 })
 
-const onSelectContact = (contact: Contact) => {
-  setCurrentContact(contact)
+const onSelectContact = async (contact: Contact) => {
+  await runWithDiscardConfirmation(async () => {
+    setCurrentContact(contact)
+  })
 }
 
 const getContactActionsToggleId = (contactId: string) => {
@@ -130,7 +133,7 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
           label: () => $gettext('Details'),
           isVisible: () => true,
           handler: () => {
-            setCurrentContact(contact)
+            void onSelectContact(contact)
           }
         }
       ]
