@@ -15,7 +15,7 @@ export interface SlashCommandsOptions {
 
 export interface SlashCommandMenuHandle {
   onUpdate: (props: SuggestionProps<FlatSlashCommandItem>) => void
-  onKeyDown: (props: SuggestionKeyDownProps) => boolean
+  onKeyDown: (event: KeyboardEvent) => boolean
 }
 
 export function filterSlashCommandItems(
@@ -86,6 +86,9 @@ export const SlashCommands = TipTapExtension.create<SlashCommandsOptions>({
             onUpdate: (props) => {
               renderer?.updateProps(props)
               getHandle()?.onUpdate(props)
+            },
+            onKeyDown: (props: SuggestionKeyDownProps) => {
+              return getHandle()?.onKeyDown(props.event) ?? false
             },
             onExit: () => {
               renderer?.el?.remove()

@@ -9,6 +9,9 @@
               <oc-button
                 appearance="raw"
                 class="text-editor-slash-menu__item"
+                :class="{
+                  'text-editor-slash-menu__item--selected': entry.index === selectedIndex
+                }"
                 @click="runItem(entry.item)"
               >
                 <oc-icon
@@ -39,7 +42,15 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, nextTick, onMounted, useTemplateRef } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { SuggestionProps } from '@tiptap/suggestion'
 import { FlatSlashCommandItem } from '../extensions'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -51,6 +62,14 @@ interface VirtualElement {
 const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
 
 const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
+const selectedIndex = ref(0)
+
+watch(
+  () => props.items,
+  () => {
+    selectedIndex.value = 0
+  }
+)
 
 interface RenderedEntry {
   item: FlatSlashCommandItem
@@ -79,6 +98,36 @@ const runItem = (item: FlatSlashCommandItem) => {
   props.command(item)
 }
 
+const onKeyDown = (event: KeyboardEvent): boolean => {
+  const itemCount = props.items.length
+  if (itemCount === 0) {
+    return false
+  }
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault()
+      selectedIndex.value = (selectedIndex.value + 1) % itemCount
+      return true
+    case 'ArrowUp':
+      event.preventDefault()
+      selectedIndex.value = (selectedIndex.value - 1 + itemCount) % itemCount
+      return true
+    case 'Enter':
+      event.preventDefault()
+      runItem(props.items[selectedIndex.value])
+      return true
+    default:
+      return false
+  }
+}
+
+watch(selectedIndex, async () => {
+  await nextTick()
+  const el = dropRef.value?.$el?.querySelector('.text-editor-slash-menu__item--selected')
+  el?.scrollIntoView({ block: 'nearest' })
+})
+
 const onUpdate = () => {
   dropRef.value?.update?.({ anchorElement: anchorElement() })
 }
@@ -95,10 +144,10 @@ const anchorElement = (): VirtualElement | null => {
 
 onMounted(async () => {
   await nextTick()
-  dropRef.value?.show?.({ anchorElement: anchorElement() })
+  dropRef.value?.show?.({ anchorElement: anchorElement(), noFocus: true })
 })
 
-defineExpose({ onUpdate })
+defineExpose({ onUpdate, onKeyDown })
 </script>
 
 <style>
@@ -139,6 +188,10 @@ defineExpose({ onUpdate })
 
 .text-editor-slash-menu__item-description {
   @apply text-xs opacity-70;
+}
+
+.text-editor-slash-menu__item--selected {
+  @apply bg-role-secondary-container;
 }
 
 .text-editor-slash-menu__empty {
