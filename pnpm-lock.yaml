@@ -32,8 +32,8 @@ importers:
         specifier: 2.3.3
         version: 2.3.3(node-fetch@3.3.2)
       '@module-federation/vite':
-        specifier: 1.14.5
-        version: 1.14.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))
+        specifier: 1.15.1
+        version: 1.15.1(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))
       '@noble/hashes':
         specifier: 2.2.0
         version: 2.2.0
@@ -262,8 +262,8 @@ importers:
   packages/extension-sdk:
     dependencies:
       '@module-federation/vite':
-        specifier: ^1.13.5
-        version: 1.14.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))
+        specifier: ^1.15.1
+        version: 1.15.1(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.4(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))
@@ -1955,8 +1955,8 @@ packages:
   '@module-federation/third-party-dts-extractor@2.3.3':
     resolution: {integrity: sha512-rR94TjC1QVQLQPTazI0waLc76hI8dnv6aHTl+PUEIY9s5hXp8TA85XS0QJQqIf2KTjlPgZbWAwyFjOAJluTjaw==}
 
-  '@module-federation/vite@1.14.5':
-    resolution: {integrity: sha512-uTIPnW+ibZZCVcmj/A+hriP9rPQkPIEKwGWLYoedJJh/Hg4RyHnkWMqIuezzFNKtcyaoHFltAKR4RFbi+gNdGA==}
+  '@module-federation/vite@1.15.1':
+    resolution: {integrity: sha512-omp8UYFsKiGIWj9nTSIGF1GsybA+8A/Z8W0P7Y2PRdf4oL/GveXF3haQT6u0OFPm/v3veKYphC1LpvOZoDQBHQ==}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
@@ -6976,7 +6976,7 @@ snapshots:
       find-pkg: 2.0.0
       resolve: 1.22.8
 
-  '@module-federation/vite@1.14.5(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))':
+  '@module-federation/vite@1.15.1(node-fetch@3.3.2)(rollup@4.60.0)(typescript@6.0.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.99.0)(yaml@2.8.3))(vue-tsc@3.2.7(typescript@6.0.3))':
     dependencies:
       '@module-federation/dts-plugin': 2.3.3(node-fetch@3.3.2)(typescript@6.0.3)(vue-tsc@3.2.7(typescript@6.0.3))
       '@module-federation/runtime': 2.3.3(node-fetch@3.3.2)

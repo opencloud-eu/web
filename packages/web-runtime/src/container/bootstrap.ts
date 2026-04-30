@@ -1,10 +1,5 @@
 import { ModuleFederation } from '@module-federation/runtime'
-import {
-  buildApplication,
-  loadApplication,
-  NextApplication,
-  registerSharedModules
-} from './application'
+import { buildApplication, loadApplication, NextApplication } from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
 import { loadTheme } from '../helpers/theme'
@@ -209,12 +204,14 @@ export const announceConfiguration = async ({
  * - bulk initializes all applications
  */
 export const initializeApplications = async ({
+  federation,
   app,
   configStore,
   router,
   appProviderService,
   appProviderApps
 }: {
+  federation: ModuleFederation
   app: App
   configStore: ConfigStore
   router: Router
@@ -232,9 +229,6 @@ export const initializeApplications = async ({
     applicationConfig: AppConfigObject
     applicationScript: ClassicApplicationScript
   }
-
-  const federation = new ModuleFederation({ name: 'opencloud-web', remotes: [] })
-  registerSharedModules(federation)
 
   let applicationKeys: string[] = []
   let applicationResponses: PromiseSettledResult<ApplicationResponse>[] = []
