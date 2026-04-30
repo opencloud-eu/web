@@ -19,6 +19,7 @@ import {
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
 import { createTestingPinia, mockAxiosResolve } from '@opencloud-eu/web-test-helpers'
+import type { ModuleFederation } from '@module-federation/runtime'
 
 vi.mock('../../../src/container/application')
 
@@ -63,6 +64,7 @@ describe('initialize applications', () => {
     ]
 
     const applications = await initializeApplications({
+      federation: mock<ModuleFederation>(),
       app: createApp(defineComponent({})),
       configStore,
       router: undefined,

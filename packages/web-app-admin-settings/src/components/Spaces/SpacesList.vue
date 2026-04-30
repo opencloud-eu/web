@@ -136,10 +136,7 @@ import {
   useSharesStore,
   useSideBar,
   NoContentMessage,
-  useSort,
-  sortFields as availableSortFields,
-  translateSortFields,
-  useResourceIndicators
+  createVirtualCursorElement
 } from '@opencloud-eu/web-pkg'
 import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
@@ -153,7 +150,11 @@ import {
   useFileListHeaderPosition,
   useRoute,
   useRouter,
-  usePagination
+  usePagination,
+  useResourceIndicators,
+  useSort,
+  sortFields as availableSortFields,
+  translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
@@ -431,7 +432,8 @@ const showContextMenuOnRightClick = (event: MouseEvent, space: SpaceResource) =>
   if (!isSpaceSelected(space)) {
     spaceSettingsStore.setSelectedSpaces([space])
   }
-  unref(contextMenuDrops)[space.id]?.show({ event, useMouseAnchor: true })
+  const anchorElement = createVirtualCursorElement(event as MouseEvent)
+  unref(contextMenuDrops)[space.id]?.show({ anchorElement })
 }
 
 const spaceDetailsLabel = computed(() => {

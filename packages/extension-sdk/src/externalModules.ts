@@ -6,6 +6,7 @@ export const externalModules = [
   'pinia',
   'vue3-gettext',
   '@opencloud-eu/web-pkg',
+  '@opencloud-eu/web-pkg/editor',
   '@opencloud-eu/web-client',
   '@opencloud-eu/web-client/graph',
   '@opencloud-eu/web-client/graph/generated',

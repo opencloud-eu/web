@@ -1,37 +1,61 @@
 <template>
-  <div
-    class="oc-text-editor size-full"
-    :class="{
-      'p-4 overflow-auto': isReadOnly
-    }"
-  >
-    <text-editor-component
-      :resource="resource"
-      :application-config="applicationConfig"
-      :current-content="currentContent"
-      :is-read-only="isReadOnly"
-      @update:current-content="$emit('update:currentContent', $event)"
-    />
+  <div class="oc-text-editor size-full" :class="{ 'overflow-auto': isReadOnly }">
+    <TextEditorProvider :editor="textEditor">
+      <TextEditorToolbar v-if="!isReadOnly" />
+      <TextEditorContent />
+    </TextEditorProvider>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
-import { AppConfigObject, TextEditor as TextEditorComponent } from '@opencloud-eu/web-pkg'
+<script setup lang="ts">
+import { computed, toRef, unref } from 'vue'
+import {
+  ContentType,
+  useTextEditor,
+  TextEditorProvider,
+  TextEditorContent,
+  TextEditorToolbar
+} from '@opencloud-eu/web-pkg/editor'
+import type { Resource } from '@opencloud-eu/web-client'
 
-export default defineComponent({
-  name: 'TextEditor',
-  components: { TextEditorComponent },
-  props: {
-    applicationConfig: { type: Object as PropType<AppConfigObject>, required: true },
-    currentContent: {
-      type: String,
-      required: true
-    },
-    isReadOnly: { type: Boolean, required: false },
-    resource: { type: Object as PropType<Resource>, required: true }
-  },
-  emits: ['update:currentContent']
+const {
+  currentContent,
+  contentType = undefined,
+  isReadOnly = false,
+  resource
+} = defineProps<{
+  currentContent: string
+  contentType?: ContentType
+  isReadOnly?: boolean
+  resource: Resource
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:currentContent', value: string): void
+}>()
+
+const parsedContentType = computed<ContentType>(() => {
+  if (contentType !== undefined) {
+    return contentType
+  }
+  const ext = resource?.extension?.toLowerCase()
+  const mimeType = resource?.mimeType?.toLowerCase()
+  if (ext === 'md' || ext === 'markdown' || mimeType === 'text/markdown') {
+    return 'markdown'
+  }
+  if (ext === 'html' || ext === 'htm' || mimeType === 'text/html') {
+    return 'html'
+  }
+  if (ext === 'json' || mimeType === 'application/json') {
+    return 'tiptap-json'
+  }
+  return 'plain-text'
+})
+
+const textEditor = useTextEditor({
+  contentType: unref(parsedContentType),
+  modelValue: toRef(() => currentContent),
+  readonly: isReadOnly,
+  onUpdate: (content) => emit('update:currentContent', content)
 })
 </script>

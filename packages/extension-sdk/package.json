@@ -29,7 +29,7 @@
     "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json"
   },
   "dependencies": {
-    "@module-federation/vite": "^1.13.5",
+    "@module-federation/vite": "^1.15.1",
     "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-vue": "^6.0.5"

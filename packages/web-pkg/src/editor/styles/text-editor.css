@@ -1,0 +1,137 @@
+.text-editor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.text-editor-provider .ProseMirror {
+  max-width: 800px;
+}
+
+.text-editor-content .ProseMirror {
+  flex: 1;
+  min-height: 128px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  margin: 0 auto;
+  padding: 1rem;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.text-editor-content .ProseMirror:focus,
+.text-editor-content .ProseMirror:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.text-editor-content .ProseMirror p {
+  margin: 0 0 8px;
+}
+
+.text-editor-content .ProseMirror a {
+  color: var(--oc-role-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.text-editor-content .ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 4px 0 8px;
+}
+
+.text-editor-content .ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+  margin: 4px 0 8px;
+}
+
+.text-editor-content .ProseMirror li {
+  margin: 2px 0;
+}
+
+.text-editor-content .ProseMirror strong {
+  font-weight: 600;
+}
+
+.text-editor-content .ProseMirror em {
+  font-style: italic;
+}
+
+.text-editor-content .ProseMirror u {
+  text-decoration: underline;
+}
+
+.text-editor-content .ProseMirror blockquote {
+  border-left: 2px solid var(--oc-role-outline-variant);
+  padding-left: 12px;
+  margin: 4px 0 8px;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.text-editor-content .ProseMirror pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.12);
+  overflow-x: auto;
+}
+
+.text-editor-content .ProseMirror code {
+  font-family: inherit;
+  font-size: 0.875em;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+/* Table styles */
+.text-editor-content .ProseMirror table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
+}
+
+.text-editor-content .ProseMirror th,
+.text-editor-content .ProseMirror td {
+  border: 1px solid var(--oc-role-outline-variant);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.text-editor-content .ProseMirror th {
+  font-weight: 600;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+/* Task list styles */
+.text-editor-content .ProseMirror ul[data-type='taskList'] {
+  list-style-type: none;
+  padding-left: 4px;
+}
+
+.text-editor-content .ProseMirror ul[data-type='taskList'] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.text-editor-content .ProseMirror ul[data-type='taskList'] li label {
+  margin-top: 2px;
+}
+
+/* Horizontal rule */
+.text-editor-content .ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--oc-role-outline-variant);
+  margin: 12px 0;
+}

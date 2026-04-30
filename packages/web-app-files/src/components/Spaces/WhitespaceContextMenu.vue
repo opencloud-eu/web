@@ -28,6 +28,7 @@ import {
   useTemplateRef
 } from 'vue'
 import {
+  createVirtualCursorElement,
   useFileActionsPaste,
   useFileActionsShowDetails,
   useResourcesStore
@@ -62,21 +63,22 @@ const menuItemsActions = computed(() => {
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
 
-const hanldeContextMenu = (event: Event) => {
+const handleContextMenu = (event: Event) => {
   const { target } = event
   if ((target as HTMLElement).closest('.has-item-context-menu')) {
     return
   }
   event.preventDefault()
-  unref(drop)?.show({ event, useMouseAnchor: true })
+  const anchorElement = createVirtualCursorElement(event as MouseEvent)
+  unref(drop)?.show({ anchorElement })
 }
 
 let filesViewWrapper: Element | undefined
 onMounted(() => {
   filesViewWrapper = document.getElementsByClassName('files-view-wrapper')[0]
-  filesViewWrapper?.addEventListener('contextmenu', hanldeContextMenu)
+  filesViewWrapper?.addEventListener('contextmenu', handleContextMenu)
 })
 onBeforeUnmount(() => {
-  filesViewWrapper?.removeEventListener('contextmenu', hanldeContextMenu)
+  filesViewWrapper?.removeEventListener('contextmenu', handleContextMenu)
 })
 </script>

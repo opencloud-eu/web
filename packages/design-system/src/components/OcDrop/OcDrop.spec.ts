@@ -135,5 +135,18 @@ describe('OcDrop', () => {
       await nextTick()
       expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeFalsy()
     })
+    it('renders on mobile device without a toggle selector', async () => {
+      vi.mocked(useIsMobile).mockImplementation(() => ({
+        isMobile: computed(() => true),
+        isTablet: computed(() => false)
+      }))
+
+      const wrapper = shallowMount(Drop, {
+        props: { mode: 'manual' },
+        global: { plugins: defaultPlugins(), stubs: { OcMobileDrop: true } }
+      })
+      await nextTick()
+      expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeTruthy()
+    })
   })
 })

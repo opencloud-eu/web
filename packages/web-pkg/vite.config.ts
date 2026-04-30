@@ -28,8 +28,10 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      fileName: 'web-pkg',
+      entry: {
+        'web-pkg': resolve(__dirname, 'src/index.ts'),
+        'web-pkg/editor': resolve(__dirname, 'src/editor/index.ts')
+      },
       formats: ['es']
     },
     rolldownOptions: {
