@@ -1,9 +1,3 @@
-.text-editor-provider {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .text-editor-content {
   flex: 1;
   display: flex;
@@ -13,10 +7,13 @@
 }
 
 .text-editor-provider .ProseMirror {
+    max-width: 800px;
+}
+
+.text-editor-content .ProseMirror {
   flex: 1;
   min-height: 128px;
   width: 100%;
-  max-width: 800px;
   box-sizing: border-box;
   outline: none;
   border: none;
@@ -26,55 +23,51 @@
   line-height: 1.6;
 }
 
-.oc-text-editor .text-editor-provider .ProseMirror {
-  padding: 1rem;
-}
-
-.text-editor-provider .ProseMirror:focus,
-.text-editor-provider .ProseMirror:focus-visible {
+.text-editor-content .ProseMirror:focus,
+.text-editor-content .ProseMirror:focus-visible {
   outline: none;
   box-shadow: none;
 }
 
-.text-editor-provider .ProseMirror p {
+.text-editor-content .ProseMirror p {
   margin: 0 0 8px;
 }
 
-.text-editor-provider .ProseMirror a {
+.text-editor-content .ProseMirror a {
   color: var(--oc-role-primary);
   text-decoration: underline;
   cursor: pointer;
 }
 
-.text-editor-provider .ProseMirror ul {
+.text-editor-content .ProseMirror ul {
   list-style-type: disc;
   padding-left: 20px;
   margin: 4px 0 8px;
 }
 
-.text-editor-provider .ProseMirror ol {
+.text-editor-content .ProseMirror ol {
   list-style-type: decimal;
   padding-left: 20px;
   margin: 4px 0 8px;
 }
 
-.text-editor-provider .ProseMirror li {
+.text-editor-content .ProseMirror li {
   margin: 2px 0;
 }
 
-.text-editor-provider .ProseMirror strong {
+.text-editor-content .ProseMirror strong {
   font-weight: 600;
 }
 
-.text-editor-provider .ProseMirror em {
+.text-editor-content .ProseMirror em {
   font-style: italic;
 }
 
-.text-editor-provider .ProseMirror u {
+.text-editor-content .ProseMirror u {
   text-decoration: underline;
 }
 
-.text-editor-provider .ProseMirror blockquote {
+.text-editor-content .ProseMirror blockquote {
   border-left: 2px solid var(--oc-role-outline-variant);
   padding-left: 12px;
   margin: 4px 0 8px;
@@ -82,7 +75,7 @@
   opacity: 0.9;
 }
 
-.text-editor-provider .ProseMirror pre {
+.text-editor-content .ProseMirror pre {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
@@ -93,7 +86,7 @@
   overflow-x: auto;
 }
 
-.text-editor-provider .ProseMirror code {
+.text-editor-content .ProseMirror code {
   font-family: inherit;
   font-size: 0.875em;
   padding: 2px 4px;
@@ -102,42 +95,42 @@
 }
 
 /* Table styles */
-.text-editor-provider .ProseMirror table {
+.text-editor-content .ProseMirror table {
   border-collapse: collapse;
   margin: 8px 0;
   width: 100%;
 }
 
-.text-editor-provider .ProseMirror th,
-.text-editor-provider .ProseMirror td {
+.text-editor-content .ProseMirror th,
+.text-editor-content .ProseMirror td {
   border: 1px solid var(--oc-role-outline-variant);
   padding: 6px 10px;
   text-align: left;
 }
 
-.text-editor-provider .ProseMirror th {
+.text-editor-content .ProseMirror th {
   font-weight: 600;
   background: rgba(148, 163, 184, 0.08);
 }
 
 /* Task list styles */
-.text-editor-provider .ProseMirror ul[data-type='taskList'] {
+.text-editor-content .ProseMirror ul[data-type='taskList'] {
   list-style-type: none;
   padding-left: 4px;
 }
 
-.text-editor-provider .ProseMirror ul[data-type='taskList'] li {
+.text-editor-content .ProseMirror ul[data-type='taskList'] li {
   display: flex;
   align-items: flex-start;
   gap: 8px;
 }
 
-.text-editor-provider .ProseMirror ul[data-type='taskList'] li label {
+.text-editor-content .ProseMirror ul[data-type='taskList'] li label {
   margin-top: 2px;
 }
 
 /* Horizontal rule */
-.text-editor-provider .ProseMirror hr {
+.text-editor-content .ProseMirror hr {
   border: none;
   border-top: 1px solid var(--oc-role-outline-variant);
   margin: 12px 0;

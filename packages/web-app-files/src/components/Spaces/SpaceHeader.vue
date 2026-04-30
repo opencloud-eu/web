@@ -82,9 +82,7 @@
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
         }"
       >
-        <TextEditorProvider class="markdown-container-content w-full" :editor="readmeEditor">
-          <TextEditorContent />
-        </TextEditorProvider>
+        <TextEditorContent class="markdown-container-content w-full" :editor="readmeEditor" />
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
@@ -120,7 +118,7 @@ import {
   useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
+import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'

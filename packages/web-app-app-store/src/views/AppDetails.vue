@@ -23,9 +23,7 @@
       <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
-        <TextEditorProvider class="my-2" :editor="appDescriptionEditor">
-          <TextEditorContent />
-        </TextEditorProvider>
+        <TextEditorContent class="my-2" :editor="appDescriptionEditor" />
       </div>
       <div v-if="app.tags">
         <h3>{{ $gettext('Tags') }}</h3>

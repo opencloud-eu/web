@@ -12,7 +12,10 @@ import { computed, inject, unref } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import type { TextEditorInstance } from '../types'
 
-const textEditor = inject<TextEditorInstance>('textEditor')!
+const { editor = undefined } = defineProps<{
+  editor?: TextEditorInstance
+}>()
+const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 
 const isMarkdownSourceMode = computed(
   () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)

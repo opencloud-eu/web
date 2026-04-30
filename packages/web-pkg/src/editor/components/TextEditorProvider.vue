@@ -1,5 +1,5 @@
 <template>
-  <div class="text-editor-provider">
+  <div class="text-editor-provider h-full flex flex-col">
     <slot />
   </div>
 </template>
@@ -8,9 +8,9 @@
 import { provide } from 'vue'
 import type { TextEditorInstance } from '../types'
 
-const props = defineProps<{
+const { editor } = defineProps<{
   editor: TextEditorInstance
 }>()
 
-provide('textEditor', props.editor)
+provide('textEditor', editor)
 </script>

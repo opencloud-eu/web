@@ -15,9 +15,7 @@
         'mask-linear-[180deg,black,80%,transparent]': markdownCollapsed && showMarkdownCollapse
       }"
     >
-      <TextEditorProvider class="w-full" :editor="readmeEditor">
-        <TextEditorContent />
-      </TextEditorProvider>
+      <TextEditorContent class="w-full" :editor="readmeEditor" />
     </div>
     <div v-if="showMarkdownCollapse && markdownContent" class="markdown-collapse text-center mt-2">
       <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
@@ -31,7 +29,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
+import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 
