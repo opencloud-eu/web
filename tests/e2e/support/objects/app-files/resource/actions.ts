@@ -42,7 +42,7 @@ const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//s
 const createNewShortcutButton = '#new-shortcut-btn'
 const shortcutResorceInput = '#create-shortcut-modal-url-input'
 const saveTextFileInEditorButton = '#app-save-action:visible'
-const textEditorPlainTextInput = '#text-editor #text-editor-container .cm-content'
+const textEditorPlainTextInput = '.text-editor-provider .ProseMirror'
 const resourceNameInput = '.oc-modal input'
 const fileUploadInput = '#files-file-upload-input'
 const folderUploadInput = '#files-folder-upload-input'
@@ -129,7 +129,7 @@ const mobileViewmodeSwitchDropdown = '#viewmode-switch-drop'
 
 // file viewer
 const pdfViewerContainer = '#pdf-viewer object.pdf-viewer'
-const textEditorContainer = '#text-editor-container div.md-editor-content'
+const textEditorContainer = '.text-editor-provider .ProseMirror'
 
 // online office locators
 // Collabora

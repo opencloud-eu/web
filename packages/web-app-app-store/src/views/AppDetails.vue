@@ -53,7 +53,7 @@ import { computed, defineComponent, toRef, unref } from 'vue'
 import { App } from '../types'
 import { APPID } from '../appid'
 import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
+import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useAppsStore } from '../piniaStores'
 import AppResources from '../components/AppResources.vue'
 import AppTags from '../components/AppTags.vue'
@@ -70,7 +70,6 @@ export default defineComponent({
     AppResources,
     AppTags,
     AppVersions,
-    TextEditorProvider,
     TextEditorContent
   },
   setup() {

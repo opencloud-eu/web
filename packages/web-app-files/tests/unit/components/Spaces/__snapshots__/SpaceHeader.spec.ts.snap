@@ -81,9 +81,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
     </div>
     <!--v-if-->
     <div class="markdown-container flex min-h-0 [&amp;.collapsed]:max-h-[150px] [&amp;.collapsed]:overflow-hidden collapsed">
-      <div class="markdown-container-content w-full" editor="[object Object]">
-        <div></div>
-      </div>
+      <div class="markdown-container-content w-full" editor="[object Object]"></div>
     </div>
     <!--v-if-->
   </div>
