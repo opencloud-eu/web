@@ -8,8 +8,8 @@
   },
   {
     "name": "toggle",
-    "required": true,
-    "description": "The CSS selector for the element that toggles the bottom drawer.",
+    "required": false,
+    "description": "The CSS selector for the element that toggles the bottom drawer. Optional; when omitted, the drawer is controlled purely programmatically via `show`/`hide`.",
     "default": "",
     "type": "string"
   },
