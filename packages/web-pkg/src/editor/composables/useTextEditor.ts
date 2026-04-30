@@ -1,4 +1,4 @@
-import { ref, computed, onBeforeUnmount, watch, unref } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, unref, onMounted } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
@@ -86,7 +86,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const isFocused = computed(() => editor.value?.isFocused ?? false)
 
   const focus = (): void => {
-    editor.value?.commands.focus('end')
+    editor.value?.commands.focus('start')
   }
 
   const blur = (): void => {
@@ -104,6 +104,12 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor.value?.destroy()
     editor.value = null
   }
+
+  onMounted(() => {
+    if (!unref(readonly)) {
+      focus()
+    }
+  })
 
   onBeforeUnmount(() => {
     destroy()
