@@ -35,7 +35,15 @@
 </template>
 
 <script setup lang="ts">
-import { computePosition, offset as offsetFn, flip, Placement, shift, size } from '@floating-ui/dom'
+import {
+  computePosition,
+  offset as offsetFn,
+  flip,
+  Placement,
+  shift,
+  size,
+  VirtualElement
+} from '@floating-ui/dom'
 import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
 import {
   computed,
@@ -157,7 +165,7 @@ const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
 const drop = useTemplateRef('drop')
 
-const anchor = computed(() => {
+const anchor = computed<HTMLElement | null>(() => {
   if (!toggle) {
     return null
   }
@@ -165,10 +173,12 @@ const anchor = computed(() => {
 })
 
 const show = async ({
-  event,
-  useMouseAnchor,
+  anchorElement = undefined,
   noFocus = false
-}: { event?: Event; useMouseAnchor?: boolean; noFocus?: boolean } = {}) => {
+}: {
+  anchorElement?: HTMLElement | VirtualElement
+  noFocus?: boolean
+} = {}) => {
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).show()
     return
@@ -176,7 +186,7 @@ const show = async ({
   if (unref(isOpen)) {
     return
   }
-  showDrop({ event, useMouseAnchor })
+  showDrop({ anchorElement })
 
   if (!noFocus) {
     // usually, opening the drop should also focus it to allow for keyboard navigation within the drop.
@@ -193,7 +203,38 @@ const hide = () => {
   hideDrop()
 }
 
-defineExpose({ show, hide })
+const update = async ({
+  anchorElement = undefined
+}: {
+  anchorElement?: HTMLElement | VirtualElement
+} = {}) => {
+  if (!unref(isOpen) || !unref(drop)) {
+    return
+  }
+  const anchorEl = anchorElement || unref(anchor)
+  if (!anchorEl) {
+    return
+  }
+  const { x, y } = await computePosition(anchorEl, unref(drop), {
+    placement: position,
+    middleware: [
+      offsetFn(offset),
+      flip(),
+      shift({ padding: 5 }),
+      size({
+        apply({ availableWidth, availableHeight, elements }) {
+          Object.assign(elements.floating.style, {
+            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxHeight: `${Math.max(0, availableHeight - 10)}px`
+          })
+        }
+      })
+    ]
+  })
+  Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
+}
+
+defineExpose({ show, hide, update })
 
 const onClick = (event: Event) => {
   const isNestedDropToggle = (event.target as HTMLElement)
@@ -208,34 +249,14 @@ const onClick = (event: Event) => {
 const awaitAnimationFrame = () => new Promise((resolve) => requestAnimationFrame(resolve))
 
 const showDrop = async ({
-  event,
-  useMouseAnchor
-}: { event?: Event; useMouseAnchor?: boolean } = {}) => {
+  anchorElement
+}: { anchorElement?: HTMLElement | VirtualElement } = {}) => {
   if (unref(isOpen)) {
     hideDrop()
     return
   }
 
-  let anchorEl = unref(anchor)
-  if (useMouseAnchor) {
-    // use mouse position as anchor element
-    const mouseEvent = event as MouseEvent
-    anchorEl = {
-      getBoundingClientRect() {
-        return {
-          width: 0,
-          height: 0,
-          x: mouseEvent.clientX,
-          y: mouseEvent.clientY,
-          top: mouseEvent.clientY,
-          left: mouseEvent.clientX,
-          right: mouseEvent.clientX,
-          bottom: mouseEvent.clientY
-        }
-      }
-    } as HTMLButtonElement
-  }
-
+  const anchorEl: HTMLElement | VirtualElement | null = anchorElement || unref(anchor)
   isOpen.value = true
   await nextTick()
   if (!anchorEl) {
@@ -327,8 +348,8 @@ const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
   const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
   if (clickedOutsideDrop) {
-    const anchorElement = unref(anchor)
-    const clickedOnAnchor = anchorElement && anchorElement.contains(target)
+    const anchorEl = unref(anchor)
+    const clickedOnAnchor = anchorEl && anchorEl.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
       hideDrop()
@@ -440,18 +461,18 @@ const handleDropMouseLeave = () => {
   hoverCloseTimeout = setTimeout(hideDrop, 100)
 }
 
-const handleAnchorClick = async (event: Event) => {
-  showDrop({ event })
+const handleAnchorClick = async () => {
+  showDrop({})
   if (unref(isOpen)) {
     await nextTick()
     unref(drop).focus({ preventScroll: true })
   }
 }
 
-const handleAnchorMouseEnter = (event: Event) => {
+const handleAnchorMouseEnter = () => {
   clearHoverTimeout()
   if (!unref(isOpen)) {
-    showDrop({ event })
+    showDrop({})
   }
 }
 
@@ -460,29 +481,25 @@ const handleAnchorMouseLeave = () => {
 }
 
 const setupAriaAttributes = () => {
-  const anchorElement = unref(anchor)
-  if (!anchorElement) {
-    return
-  }
-  anchorElement.setAttribute('aria-haspopup', 'true')
-  anchorElement.setAttribute('aria-expanded', 'false')
+  unref(anchor)?.setAttribute('aria-haspopup', 'true')
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
 }
 
 const setupAnchorEvents = () => {
-  const anchorElement = unref(anchor)
-  if (!anchorElement || unref(useBottomDrawer)) {
+  const anchorEl = unref(anchor)
+  if (!anchorEl || unref(useBottomDrawer)) {
     return
   }
 
   switch (mode) {
     case 'click':
-      registerEventListener(anchorElement, 'click', handleAnchorClick, 'anchor')
-      registerEventListener(anchorElement, 'keydown', handleAnchorKeydown, 'anchor')
+      registerEventListener(anchorEl, 'click', handleAnchorClick, 'anchor')
+      registerEventListener(anchorEl, 'keydown', handleAnchorKeydown, 'anchor')
       break
     case 'hover':
-      registerEventListener(anchorElement, 'keydown', handleAnchorKeydown, 'anchor')
-      registerEventListener(anchorElement, 'mouseenter', handleAnchorMouseEnter, 'anchor')
-      registerEventListener(anchorElement, 'mouseleave', handleAnchorMouseLeave, 'anchor')
+      registerEventListener(anchorEl, 'keydown', handleAnchorKeydown, 'anchor')
+      registerEventListener(anchorEl, 'mouseenter', handleAnchorMouseEnter, 'anchor')
+      registerEventListener(anchorEl, 'mouseleave', handleAnchorMouseLeave, 'anchor')
       break
     case 'manual':
       break
@@ -507,9 +524,8 @@ onBeforeUnmount(() => {
   clearHoverTimeout()
   unregisterEventListeners()
 
-  const anchorEl = unref(anchor)
-  anchorEl?.removeAttribute('aria-expanded')
-  anchorEl?.removeAttribute('aria-haspopup')
+  unref(anchor)?.removeAttribute('aria-expanded')
+  unref(anchor)?.removeAttribute('aria-haspopup')
 })
 </script>
 <style>

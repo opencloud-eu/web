@@ -49,7 +49,7 @@ pnpm format:check      # Check formatting with Prettier
 pnpm format:write      # Auto-fix formatting with Prettier
 pnpm check:types       # TypeScript type checking via vue-tsc
 pnpm check:all         # Types + lint + format + unit tests (run before opening a PR)
-pnpm test:unit         # Run all unit tests with Vitest
+pnpm test:unit --run   # Run all unit tests with Vitest (--run prevents watch mode)
 pnpm test:e2e:cucumber # Run e2e tests (default browser)
 ```
 
@@ -95,7 +95,8 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 - **File naming:** `{originalFileName}.spec.ts` (e.g. `src/composables/foo.ts` → `tests/unit/composables/foo.spec.ts`).
 - **Helpers:** The `@opencloud-eu/web-test-helpers` package (`packages/web-test-helpers`) provides shared utilities for mounting components, mocking stores, etc. Use it instead of rolling your own helpers.
 - **Snapshots:** Avoid using snapshot tests, as they can be brittle and hard to maintain. Prefer explicit assertions that check specific behavior or output.
-- **Run:** `pnpm test:unit`
+- **Run:** `pnpm test:unit --run` (the `--run` flag is required to prevent Vitest from staying in watch mode)
+- **Run single file:** `pnpm test:unit --run packages/path/to/file.spec.ts`
 
 ### End-to-End Tests
 

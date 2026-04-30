@@ -82,11 +82,7 @@
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
         }"
       >
-        <text-editor
-          class="markdown-container-content w-full"
-          is-read-only
-          :current-content="markdownContent"
-        />
+        <TextEditorContent class="markdown-container-content w-full" :editor="readmeEditor" />
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
@@ -115,7 +111,6 @@ import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/
 import {
   ImageDimension,
   ProcessorType,
-  TextEditor,
   useClientService,
   useLoadPreview,
   useResourcesStore,
@@ -123,6 +118,7 @@ import {
   useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'
@@ -152,8 +148,14 @@ const { isMobile } = useIsMobile()
 
 const isDropOpen = ref(false)
 
-const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownContent = ref('')
+const readmeEditor = useTextEditor({
+  contentType: 'markdown',
+  modelValue: markdownContent,
+  readonly: true
+})
+
+const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownResource = ref<Resource>(null)
 const markdownCollapsed = ref(true)
 const showMarkdownCollapse = ref(false)

@@ -2,7 +2,7 @@ import { Locator, Page } from '@playwright/test'
 
 const closeTextEditorOrViewerButton = '#app-top-bar-close'
 const saveTextEditorOrViewerButton = '#app-save-action'
-const texEditor = '#text-editor'
+const texEditor = '.text-editor-provider'
 const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
 

@@ -15,7 +15,7 @@
         'mask-linear-[180deg,black,80%,transparent]': markdownCollapsed && showMarkdownCollapse
       }"
     >
-      <text-editor class="w-full" is-read-only :current-content="markdownContent" />
+      <TextEditorContent class="w-full" :editor="readmeEditor" />
     </div>
     <div v-if="showMarkdownCollapse && markdownContent" class="markdown-collapse text-center mt-2">
       <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
@@ -28,7 +28,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { TextEditor, useClientService } from '@opencloud-eu/web-pkg'
+import { useClientService } from '@opencloud-eu/web-pkg'
+import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 
@@ -41,8 +42,14 @@ const { $gettext } = useGettext()
 const clientService = useClientService()
 const { getFileContents } = clientService.webdav
 
-const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownContent = ref('')
+const readmeEditor = useTextEditor({
+  contentType: 'markdown',
+  modelValue: markdownContent,
+  readonly: true
+})
+
+const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownCollapsed = ref(true)
 const showMarkdownCollapse = ref(false)
 

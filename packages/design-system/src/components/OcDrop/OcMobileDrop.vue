@@ -55,9 +55,9 @@ export interface Props {
    */
   drawerId: string
   /**
-   * @docs The CSS selector for the element that toggles the bottom drawer.
+   * @docs The CSS selector for the element that toggles the bottom drawer. Optional; when omitted, the drawer is controlled purely programmatically via `show`/`hide`.
    */
-  toggle: string
+  toggle?: string
   /**
    * @docs Whether the bottom drawer should close when a child element is clicked.
    * @default false
@@ -76,7 +76,7 @@ export interface Props {
 
 const {
   drawerId,
-  toggle,
+  toggle = '',
   closeOnClick = false,
   title = '',
   registerClickHandler = true
