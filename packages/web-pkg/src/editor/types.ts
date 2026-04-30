@@ -6,7 +6,7 @@ export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
 export interface TextEditorOptions {
   contentType: ContentType
-  modelValue?: string
+  modelValue?: Ref<string>
   readonly?: boolean
   slashCommands?: boolean
   onUpdate?: (content: string) => void
@@ -25,7 +25,6 @@ export interface TextEditorInstance {
   readonly: Ref<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
-  setContent(value: string): void
   isEmpty: ComputedRef<boolean>
   isFocused: ComputedRef<boolean>
   focus(): void

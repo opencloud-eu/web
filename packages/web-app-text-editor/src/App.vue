@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, toRef, unref } from 'vue'
 import {
   ContentType,
   useTextEditor,
@@ -54,7 +54,7 @@ const parsedContentType = computed<ContentType>(() => {
 
 const textEditor = useTextEditor({
   contentType: unref(parsedContentType),
-  modelValue: currentContent,
+  modelValue: toRef(() => currentContent),
   readonly: isReadOnly,
   onUpdate: (content) => emit('update:currentContent', content)
 })

@@ -1,4 +1,4 @@
-import { ref, computed, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, unref } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
@@ -32,9 +32,13 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    content: options.modelValue ? strategy.deserialize(options.modelValue) : '',
+    content: unref(options.modelValue) ? strategy.deserialize(unref(options.modelValue)) : '',
     editable: !readonly.value
   }
+
+  watch(options.modelValue, (content) => {
+    setContent(content)
+  })
 
   if (strategy.editorContentType) {
     editorOptions.contentType = strategy.editorContentType()
@@ -112,7 +116,6 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     readonly,
     actionGroups: strategy.editorActionGroups,
     getContent,
-    setContent,
     isEmpty,
     isFocused,
     focus,

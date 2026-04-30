@@ -1,9 +1,10 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
+import { toRef } from 'vue'
 
 function createEditor(options = {}) {
-  const defaults = { contentType: 'html' as const, modelValue: '<p>hello</p>' }
+  const defaults = { contentType: 'html' as const, modelValue: toRef('<p>hello</p>') }
   return withSetup(() => useTextEditor({ ...defaults, ...options }))
 }
 
@@ -24,19 +25,13 @@ describe('useTextEditor', () => {
   })
 
   it('getContent serializes via strategy', () => {
-    const { result } = createEditor({ contentType: 'html', modelValue: '<p>test</p>' })
+    const { result } = createEditor({ contentType: 'html', modelValue: toRef('<p>test</p>') })
     const content = result.getContent()
     expect(content).toContain('test')
   })
 
-  it('setContent deserializes via strategy', () => {
-    const { result } = createEditor({ contentType: 'html' })
-    result.setContent('<p>new content</p>')
-    expect(result.getContent()).toContain('new content')
-  })
-
   it('isEmpty returns true for empty editor', () => {
-    const { result } = createEditor({ modelValue: '' })
+    const { result } = createEditor({ modelValue: toRef('') })
     expect(result.isEmpty.value).toBe(true)
   })
 
@@ -62,7 +57,7 @@ describe('useTextEditor', () => {
     it('does not register the extension for plain-text (no action groups)', () => {
       const { result } = createEditor({
         contentType: 'plain-text',
-        modelValue: 'hi',
+        modelValue: toRef('hi'),
         slashCommands: true
       })
       const pluginNames = result.editor.value?.extensionManager.extensions.map((e) => e.name) ?? []

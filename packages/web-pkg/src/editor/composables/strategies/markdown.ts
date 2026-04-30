@@ -19,7 +19,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   }
 
   const serialize = (editor: Editor): string => {
-    return (editor as any).getMarkdown()
+    return editor.getMarkdown()
   }
 
   const deserialize = (content: string): string => {

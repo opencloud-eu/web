@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, unref, watch } from 'vue'
+import { computed, defineComponent, toRef, unref } from 'vue'
 import { App } from '../types'
 import { APPID } from '../appid'
 import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
@@ -89,16 +89,9 @@ export default defineComponent({
 
     const appDescriptionEditor = useTextEditor({
       contentType: 'markdown',
-      modelValue: unref(app)?.description ?? '',
+      modelValue: toRef(() => unref(app)?.description ?? ''),
       readonly: true
     })
-
-    watch(
-      () => unref(app)?.description,
-      (description) => {
-        appDescriptionEditor.setContent(description ?? '')
-      }
-    )
 
     const onTagClicked = (tag: string) => {
       router.push({ name: `${APPID}-list`, query: { filter: tag } })

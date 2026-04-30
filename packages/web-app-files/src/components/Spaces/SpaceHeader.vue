@@ -150,14 +150,14 @@ const { isMobile } = useIsMobile()
 
 const isDropOpen = ref(false)
 
+const markdownContent = ref('')
 const readmeEditor = useTextEditor({
   contentType: 'markdown',
-  modelValue: '',
+  modelValue: markdownContent,
   readonly: true
 })
 
 const markdownContainerRef = useTemplateRef('markdownContainerRef')
-const markdownContent = ref('')
 const markdownResource = ref<Resource>(null)
 const markdownCollapsed = ref(true)
 const showMarkdownCollapse = ref(false)
@@ -224,10 +224,6 @@ onMounted(observeMarkdownContainerResize)
 onBeforeUnmount(() => {
   unobserveMarkdownContainerResize()
   spacesStore.purgeReadmesLoading()
-})
-
-watch(markdownContent, (content) => {
-  readmeEditor.setContent(content)
 })
 
 const loadReadmeContent = async () => {

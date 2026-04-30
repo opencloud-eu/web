@@ -26,7 +26,6 @@ vi.mock('@opencloud-eu/web-pkg/editor', () => ({
     readonly: { value: true },
     toolbarItems: [],
     getContent: vi.fn().mockReturnValue(''),
-    setContent: vi.fn(),
     isEmpty: { value: true },
     isFocused: { value: false },
     focus: vi.fn(),

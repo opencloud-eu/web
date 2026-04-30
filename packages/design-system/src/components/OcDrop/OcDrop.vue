@@ -114,10 +114,6 @@ export interface Props {
    * @default true
    */
   isMenu?: boolean
-  /**
-   * @docs An anchor element for positioning the drop. Can be an HTMLElement, a virtual element with a `getBoundingClientRect` method, or a getter function returning either. Takes precedence over the `toggle` selector.
-   */
-  anchor?: HTMLElement | VirtualElement | (() => HTMLElement | VirtualElement)
 }
 
 export interface Emits {
@@ -154,8 +150,7 @@ const {
   title = '',
   enforceDropOnMobile = false,
   teleport = '',
-  isMenu = true,
-  anchor: anchorProp = undefined
+  isMenu = true
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -170,20 +165,11 @@ const useBottomDrawer = computed(() => unref(isMobile) && !enforceDropOnMobile)
 const bottomDrawerRef = useTemplateRef<typeof OcMobileDrop>('bottomDrawerRef')
 const drop = useTemplateRef('drop')
 
-const anchor = computed<HTMLElement | VirtualElement | null>(() => {
-  if (anchorProp) {
-    return typeof anchorProp === 'function' ? anchorProp() : anchorProp
-  }
+const anchor = computed<HTMLElement | null>(() => {
   if (!toggle) {
     return null
   }
   return document.querySelector<HTMLButtonElement>(toggle)
-})
-
-const isHTMLElement = (el: unknown): el is HTMLElement => el instanceof HTMLElement
-const anchorAsHTMLElement = computed(() => {
-  const el = unref(anchor)
-  return isHTMLElement(el) ? el : null
 })
 
 const show = async ({
@@ -316,7 +302,7 @@ const showDrop = async ({
   })
 
   Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
-  unref(anchorAsHTMLElement)?.setAttribute('aria-expanded', 'true')
+  unref(anchor)?.setAttribute('aria-expanded', 'true')
   emit('showDrop')
 
   registerEventListener(document, 'click', handleDropClickOutside, 'document', {
@@ -341,7 +327,7 @@ const showDrop = async ({
 const hideDrop = () => {
   unregisterEventListeners(['drop', 'document'])
   isOpen.value = false
-  unref(anchorAsHTMLElement)?.setAttribute('aria-expanded', 'false')
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
   emit('hideDrop')
 }
 
@@ -362,7 +348,7 @@ const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
   const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
   if (clickedOutsideDrop) {
-    const anchorEl = unref(anchorAsHTMLElement)
+    const anchorEl = unref(anchor)
     const clickedOnAnchor = anchorEl && anchorEl.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
@@ -380,7 +366,7 @@ const handleDropKeydown = (event: Event) => {
     // arrow left/right are used to open sub drops
     if (mode === 'hover') {
       hideDrop()
-      unref(anchorAsHTMLElement)?.focus()
+      unref(anchor)?.focus()
     }
     return
   }
@@ -389,7 +375,7 @@ const handleDropKeydown = (event: Event) => {
     // close drop on escape
     event.stopPropagation()
     hideDrop()
-    unref(anchorAsHTMLElement)?.focus()
+    unref(anchor)?.focus()
     return
   }
 
@@ -495,16 +481,12 @@ const handleAnchorMouseLeave = () => {
 }
 
 const setupAriaAttributes = () => {
-  const anchorEl = unref(anchorAsHTMLElement)
-  if (!anchorEl) {
-    return
-  }
-  anchorEl.setAttribute('aria-haspopup', 'true')
-  anchorEl.setAttribute('aria-expanded', 'false')
+  unref(anchor)?.setAttribute('aria-haspopup', 'true')
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
 }
 
 const setupAnchorEvents = () => {
-  const anchorEl = unref(anchorAsHTMLElement)
+  const anchorEl = unref(anchor)
   if (!anchorEl || unref(useBottomDrawer)) {
     return
   }
@@ -542,9 +524,8 @@ onBeforeUnmount(() => {
   clearHoverTimeout()
   unregisterEventListeners()
 
-  const anchorEl = unref(anchorAsHTMLElement)
-  anchorEl?.removeAttribute('aria-expanded')
-  anchorEl?.removeAttribute('aria-haspopup')
+  unref(anchor)?.removeAttribute('aria-expanded')
+  unref(anchor)?.removeAttribute('aria-haspopup')
 })
 </script>
 <style>

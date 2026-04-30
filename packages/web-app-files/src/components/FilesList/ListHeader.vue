@@ -28,16 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import { useTextEditor, TextEditorProvider, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
@@ -53,14 +44,14 @@ const { $gettext } = useGettext()
 const clientService = useClientService()
 const { getFileContents } = clientService.webdav
 
+const markdownContent = ref('')
 const readmeEditor = useTextEditor({
   contentType: 'markdown',
-  modelValue: '',
+  modelValue: markdownContent,
   readonly: true
 })
 
 const markdownContainerRef = useTemplateRef('markdownContainerRef')
-const markdownContent = ref('')
 const markdownCollapsed = ref(true)
 const showMarkdownCollapse = ref(false)
 
@@ -102,10 +93,6 @@ const unobserveMarkdownContainerResize = () => {
   }
   markdownResizeObserver.unobserve(unref(markdownContainerRef))
 }
-
-watch(markdownContent, (content) => {
-  readmeEditor.setContent(content)
-})
 
 const loadReadmeContentTask = useTask(function* (signal) {
   try {

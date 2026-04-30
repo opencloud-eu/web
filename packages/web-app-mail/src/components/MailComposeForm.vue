@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref, watch } from 'vue'
+import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useGroupwareAccountsStore, useRouteQuery, useModals } from '@opencloud-eu/web-pkg'
 import {
@@ -122,7 +122,7 @@ const { dispatchModal } = useModals()
 
 const textEditor = useTextEditor({
   contentType: 'html',
-  modelValue: modelValue.body,
+  modelValue: toRef(() => modelValue.body),
   onUpdate: (content) => {
     updateField('body', content)
   },
