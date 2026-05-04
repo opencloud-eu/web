@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   getRelativeSpecialFolderSpacePath,
+  isProjectSpaceResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
@@ -77,6 +78,10 @@ export const useSpaceActionsEditReadmeContent = () => {
       handler,
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {
+          return false
+        }
+
+        if (!isProjectSpaceResource(resources[0])) {
           return false
         }
 

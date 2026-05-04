@@ -150,7 +150,7 @@ const extensionBatchActions = computed(() => {
 
 const batchActions = computed((): SpaceAction[] => {
   return [...unref(extensionBatchActions)]
-    .filter((item) => item.category === 'secondary')
+    .filter((item) => item.category === 'tertiary')
     .filter((item) => item.isVisible({ resources: unref(selectedSpaces) }))
 })
 

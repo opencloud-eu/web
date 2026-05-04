@@ -25,7 +25,6 @@ import {
   useFileActionsSetImage,
   useFileActionsToggleHideShare
 } from '../../composables'
-import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
 
@@ -88,13 +87,11 @@ export default defineComponent({
         ...unref(deleteActions),
         ...unref(restoreActions),
         ...unref(createSpaceFromResourceActions),
-        ...unref(extensionsBatchActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
+        ...unref(extensionsBatchActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
     const menuItemsBatchSideBar = computed(() =>
-      [...unref(extensionsBatchActions).filter((a) => a.category === 'sidebar')].filter((item) =>
+      [...unref(extensionsBatchActions).filter((a) => a.category === 'quaternary')].filter((item) =>
         item.isVisible(unref(actionOptions))
       )
     )
@@ -112,7 +109,7 @@ export default defineComponent({
     })
 
     const menuItemsShare = computed(() => {
-      return [...unref(extensionsContextActions).filter((a) => a.category === 'share')].filter(
+      return [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter(
         (item) => item.isVisible(unref(actionOptions))
       )
     })
@@ -131,16 +128,14 @@ export default defineComponent({
         ...unref(disableSyncActions),
         ...unref(hideShareActions),
         ...unref(setSpaceImageActions),
-        ...unref(extensionsContextActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
+        ...unref(extensionsContextActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
     const menuItemsSidebar = computed(() => {
       return [
         ...unref(favoriteActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
+        ...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 

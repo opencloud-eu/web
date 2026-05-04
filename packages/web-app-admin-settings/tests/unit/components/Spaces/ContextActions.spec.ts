@@ -31,16 +31,33 @@ describe.skip('ContextActions', () => {
 
     it('render enabled actions', () => {
       const enabledActions = [
-        mock<Action>({ isVisible: () => true, category: 'primary' }),
-        mock<Action>({ isVisible: () => true, category: 'primary' }),
         mock<Action>({ isVisible: () => true, category: 'secondary' }),
-        mock<Action>({ isVisible: () => true, category: 'secondary' })
+        mock<Action>({ isVisible: () => true, category: 'secondary' }),
+        mock<Action>({ isVisible: () => true, category: 'tertiary' }),
+        mock<Action>({ isVisible: () => true, category: 'tertiary' })
       ]
 
       vi.mocked(useExtensionRegistry).mockReturnValue({
         requestExtensions: vi.fn((extensionPoint) => {
           if (extensionPoint.id === contextActionsExtensionPointId) {
-            return enabledActions.map((action) => ({ action }))
+            return [
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
+                action: enabledActions[0]
+              },
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
+                action: enabledActions[1]
+              },
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.edit-quota',
+                action: enabledActions[2]
+              },
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
+                action: enabledActions[3]
+              }
+            ]
           }
           return []
         })

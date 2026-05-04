@@ -18,7 +18,7 @@ export const useFileActionsShowDetails = () => {
     {
       name: 'show-details',
       icon: 'information',
-      category: 'sidebar',
+      category: 'quaternary',
       class: 'oc-files-actions-show-details-trigger',
       label: () => $gettext('Details'),
       // we don't have details in the trashbin, yet.

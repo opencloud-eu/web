@@ -1,6 +1,6 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   SpaceAction,
   SpaceActionOptions,
@@ -75,6 +75,10 @@ export const useSpaceActionsRename = () => {
       handler,
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {
+          return false
+        }
+
+        if (!isProjectSpaceResource(resources[0])) {
           return false
         }
 

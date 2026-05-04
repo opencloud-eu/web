@@ -27,7 +27,10 @@ export const useFileActions = (): ActionExtension[] => {
       id: 'com.github.opencloud-eu.web.files.context-action.open-shortcut',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
-      action: unref(openShortcutActions)[0]
+      action: {
+        ...unref(openShortcutActions)[0],
+        category: 'tertiary'
+      }
     },
     {
       id: 'com.github.opencloud-eu.web.files.quick-action.collaborator',
@@ -35,7 +38,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(showSharesActions)[0],
-        category: 'share'
+        category: 'secondary'
       }
     },
     {
@@ -44,26 +47,35 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(permanentLinkActions)[0],
-        category: 'share'
+        category: 'secondary'
       }
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.paste',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
-      action: unref(pasteActions)[0]
+      action: {
+        ...unref(pasteActions)[0],
+        category: 'tertiary'
+      }
     },
     {
       id: 'com.github.opencloud-eu.web.files.sidebar-action.details',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
-      action: unref(showDetailsActions)[0]
+      action: {
+        ...unref(showDetailsActions)[0],
+        category: 'quaternary'
+      }
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.toggle-hide-share',
       extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
       type: 'action',
-      action: unref(toggleHideShareActions)[0]
+      action: {
+        ...unref(toggleHideShareActions)[0],
+        category: 'tertiary'
+      }
     }
   ]
 }

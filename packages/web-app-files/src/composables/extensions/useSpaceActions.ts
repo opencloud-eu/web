@@ -3,22 +3,32 @@ import { ActionExtension } from '@opencloud-eu/web-pkg'
 import { batchActionsExtensionPoint, contextActionsExtensionPoint } from '../../extensionPoints'
 import {
   useSpaceActionsDelete,
+  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
+  useSpaceActionsEditReadmeContent,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
+  useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
-  useSpaceActionsRestore
+  useSpaceActionsRestore,
+  useSpaceActionsSetIcon,
+  useSpaceActionsShowMembers
 } from '../actions'
 
 export const useSpaceActions = (): ActionExtension[] => {
   const { actions: deleteActions } = useSpaceActionsDelete()
   const { actions: disableActions } = useSpaceActionsDisable()
   const { actions: duplicateActions } = useSpaceActionsDuplicate()
+  const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
   const { actions: editDescriptionActions } = useSpaceActionsEditDescription()
   const { actions: editQuotaActions } = useSpaceActionsEditQuota()
+  const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
   const { actions: renameActions } = useSpaceActionsRename()
   const { actions: restoreActions } = useSpaceActionsRestore()
+  const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
+  const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
+  const { actions: showMembersActions } = useSpaceActionsShowMembers()
 
   return [
     {
@@ -27,7 +37,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(renameActions)[0],
-        category: 'primary'
+        category: 'secondary'
       }
     },
     {
@@ -36,16 +46,61 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(editDescriptionActions)[0],
-        category: 'primary'
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-readme-content',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(editReadmeContentActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(showMembersActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(navigateToTrashActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.set-space-icon',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(setSpaceIconActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.delete-space-image',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(deleteSpaceImageActions)[0],
+        category: 'tertiary'
       }
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.duplicate',
-      extensionPointIds: [batchActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(duplicateActions)[0],
-        category: 'actions'
+        category: 'secondary'
       }
     },
     {
@@ -54,7 +109,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(editQuotaActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     },
     {
@@ -63,7 +118,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(restoreActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     },
     {
@@ -72,7 +127,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(deleteActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     },
     {
@@ -81,7 +136,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(disableActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     }
   ]

@@ -1,5 +1,5 @@
 import { computed, unref, VNodeRef } from 'vue'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   SpaceAction,
   SpaceActionOptions,
@@ -47,6 +47,10 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {
+          return false
+        }
+
+        if (!isProjectSpaceResource(resources[0])) {
           return false
         }
 

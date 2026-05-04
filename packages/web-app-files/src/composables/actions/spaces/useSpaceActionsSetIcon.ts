@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { HttpError, SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   EmojiPickerModal,
   SpaceAction,
@@ -131,6 +131,10 @@ export const useSpaceActionsSetIcon = () => {
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) {
+          return false
+        }
+
+        if (!isProjectSpaceResource(resources[0])) {
           return false
         }
 

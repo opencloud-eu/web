@@ -605,7 +605,7 @@ const menuItemsShare = computed(() => {
     }) || []
   )
     .map((e) => e.action)
-    .filter((action) => action.category === 'share')
+    .filter((action) => action.category === 'secondary')
     .filter((item) => item.isVisible(unref(actionOptions)))
 })
 const menuItemsActions = computed(() => {
@@ -626,7 +626,7 @@ const menuItemsSidebar = computed(() => {
     }) || []
   )
     .map((e) => e.action)
-    .filter((action) => action.category === 'sidebar')
+    .filter((action) => action.category === 'quaternary')
     .filter((item) => item.isVisible(unref(actionOptions)))
 })
 const dropDownMenuSections = computed(() => {
