@@ -85,7 +85,6 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
-  useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsRestore
 } from '../../composables/actions'
@@ -172,7 +171,6 @@ export default defineComponent({
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: favoriteActions } = useFileActionsFavorite()
 
     const breadcrumbMaxWidth = ref<number>(0)
     const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
@@ -191,8 +189,7 @@ export default defineComponent({
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(deleteActions),
-        ...unref(restoreActions),
-        ...unref(favoriteActions)
+        ...unref(restoreActions)
       ]
 
       const actionExtensions = requestExtensions<ActionExtension>({

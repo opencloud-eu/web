@@ -1,18 +1,21 @@
 import { computed, unref } from 'vue'
-import { isLocationCommonActive, isLocationSpacesActive } from '../../../router'
 import { useGettext } from 'vue3-gettext'
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
   FileAction,
   FileActionOptions,
   SpaceActionOptions,
-  useIsFilesAppActive
-} from '../../actions'
-import { useRouter } from '../../router'
-import { useClientService } from '../../clientService'
-import { useAbility } from '../../ability'
-import { useMessages, useCapabilityStore, useResourcesStore } from '../../piniaStores'
-import { useEventBus } from '../../eventBus'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+  isLocationCommonActive,
+  isLocationSpacesActive,
+  useAbility,
+  useCapabilityStore,
+  useClientService,
+  useEventBus,
+  useIsFilesAppActive,
+  useMessages,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsFavorite = () => {
   const { showErrorMessage } = useMessages()
@@ -42,7 +45,6 @@ export const useFileActionsFavorite = () => {
           eventBus.publish('app.files.list.removeFromFavorites', resource.id)
         }
       } catch (error) {
-        // rollback optimistic update on failure
         resourcesStore.updateResourceField({
           id: resource.id,
           field: 'starred',
@@ -82,7 +84,7 @@ export const useFileActionsFavorite = () => {
         return $gettext('Add to favorites')
       },
       isVisible: ({ resources }) => {
-        //FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
+        // FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
         if (resources.find((r) => isProjectSpaceResource(r))) {
           return false
         }
@@ -100,7 +102,6 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
-        // Only show the batch action if all resources have the same favorite state.
         if (resources.length > 1 && !resources.every((r) => r.starred === resources[0].starred)) {
           return false
         }

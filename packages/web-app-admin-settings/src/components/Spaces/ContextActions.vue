@@ -8,10 +8,7 @@
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ActionExtension, ContextActionMenu, useExtensionRegistry } from '@opencloud-eu/web-pkg'
-import {
-  spacesContextActionsExtensionPoint,
-  spacesSidebarActionsExtensionPoint
-} from '../../extensionPoints'
+import { spacesContextActionsExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -25,20 +22,13 @@ export default defineComponent({
   setup(props) {
     const filterParams = computed(() => ({ resources: props.items }))
     const { requestExtensions } = useExtensionRegistry()
-    const getActionExtensions = (
-      extensionPoint:
-        | typeof spacesContextActionsExtensionPoint
-        | typeof spacesSidebarActionsExtensionPoint
-    ) => {
+    const getActionExtensions = (extensionPoint: typeof spacesContextActionsExtensionPoint) => {
       const extensions = requestExtensions ? requestExtensions<ActionExtension>(extensionPoint) : []
       return extensions || []
     }
 
     const contextActions = computed(() =>
       getActionExtensions(spacesContextActionsExtensionPoint).map((e) => e.action)
-    )
-    const sidebarActions = computed(() =>
-      getActionExtensions(spacesSidebarActionsExtensionPoint).map((e) => e.action)
     )
 
     const menuItemsPrimaryActions = computed(() =>
@@ -57,7 +47,7 @@ export default defineComponent({
       )
     )
     const menuItemsQuaternaryActions = computed(() =>
-      [...unref(sidebarActions).filter((action) => action.category === 'quaternary')].filter(
+      [...unref(contextActions).filter((action) => action.category === 'quaternary')].filter(
         (item) => item.isVisible(unref(filterParams))
       )
     )

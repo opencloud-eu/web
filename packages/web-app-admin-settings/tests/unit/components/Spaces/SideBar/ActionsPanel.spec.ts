@@ -37,8 +37,7 @@ describe('ActionsPanel', () => {
         mock<Action>({ isVisible: () => true, category: 'secondary' }),
         mock<Action>({ isVisible: () => true, category: 'secondary' }),
         mock<Action>({ isVisible: () => true, category: 'tertiary' }),
-        mock<Action>({ isVisible: () => true, category: 'tertiary' }),
-        mock<Action>({ isVisible: () => true, category: 'quaternary' })
+        mock<Action>({ isVisible: () => true, category: 'tertiary' })
       ]
       vi.mocked(useExtensionRegistry).mockReturnValue({
         requestExtensions: vi.fn((extensionPoint) => {
@@ -63,10 +62,6 @@ describe('ActionsPanel', () => {
               {
                 id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
                 action: enabledActions[4]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.sidebar-action.details',
-                action: enabledActions[5]
               }
             ]
           }

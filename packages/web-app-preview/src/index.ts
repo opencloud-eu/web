@@ -8,6 +8,7 @@ import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'
 import { mimeTypes } from './mimeTypes'
 import { appId } from './utils'
+import { extensionPoints } from './extensionPoints'
 
 const { default: App } = app
 
@@ -49,7 +50,8 @@ export default defineWebApplication({
     return {
       appInfo,
       routes,
-      translations
+      translations,
+      extensionPoints: extensionPoints()
     }
   }
 })

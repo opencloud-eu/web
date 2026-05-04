@@ -28,10 +28,10 @@ import {
   isLocationSpacesActive,
   SpaceActionOptions,
   useFileActionsDownloadArchive,
-  useRouter,
-  useFileActionsFavorite
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import {
+  useFileActionsFavorite,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
@@ -44,9 +44,9 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
-  useSpaceActionsUploadImage
+  useSpaceActionsUploadImage,
+  useFileActionsShowDetails
 } from '../../composables'
-import { useFileActionsShowDetails } from '../../composables'
 import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'

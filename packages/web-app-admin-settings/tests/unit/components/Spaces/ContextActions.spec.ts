@@ -10,7 +10,6 @@ import ContextActions from '../../../../src/components/Spaces/ContextActions.vue
 import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 
 const contextActionsExtensionPointId = 'app.admin-settings.spaces.context-actions'
-const sidebarActionsExtensionPointId = 'app.admin-settings.spaces.sidebar-actions'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   return {
@@ -63,11 +62,7 @@ describe.skip('ContextActions', () => {
               {
                 id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
                 action: enabledActions[4]
-              }
-            ]
-          }
-          if (extensionPoint.id === sidebarActionsExtensionPointId) {
-            return [
+              },
               {
                 id: 'com.github.opencloud-eu.web.files.spaces.sidebar-action.details',
                 action: enabledActions[5]

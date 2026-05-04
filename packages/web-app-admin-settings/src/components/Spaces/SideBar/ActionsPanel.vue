@@ -17,6 +17,8 @@ import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { spacesContextActionsExtensionPoint } from '../../../extensionPoints'
 
+const hiddenContextActionIds = ['com.github.opencloud-eu.web.files.sidebar-action.details']
+
 const resource = inject<SpaceResource>('resource')
 const resources = computed(() => {
   return [unref(resource)]
@@ -29,7 +31,9 @@ const contextActions = computed(() => {
   const extensions = requestExtensions
     ? requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint)
     : []
-  return (extensions || []).map((e) => e.action)
+  return (extensions || [])
+    .filter((extension) => !hiddenContextActionIds.includes(extension.id))
+    .map((extension) => extension.action)
 })
 
 const actions = computed(() => {

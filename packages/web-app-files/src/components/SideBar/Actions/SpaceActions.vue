@@ -29,10 +29,10 @@ import {
   ActionMenuItem,
   FileActionOptions,
   SpaceActionOptions,
-  useFileActionsDownloadArchive,
-  useFileActionsFavorite
+  useFileActionsDownloadArchive
 } from '@opencloud-eu/web-pkg'
 import {
+  useFileActionsFavorite,
   useSpaceActionsDelete,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,

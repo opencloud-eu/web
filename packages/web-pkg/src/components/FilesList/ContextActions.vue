@@ -17,7 +17,6 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
-  useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsOpenWithDefault,
   useFileActionsRename,
@@ -49,7 +48,6 @@ export default defineComponent({
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
@@ -133,10 +131,9 @@ export default defineComponent({
     })
 
     const menuItemsQuaternary = computed(() => {
-      return [
-        ...unref(favoriteActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+      return [...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')].filter(
+        (item) => item.isVisible(unref(actionOptions))
+      )
     })
 
     const menuSections = computed(() => {

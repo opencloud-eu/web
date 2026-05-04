@@ -6,6 +6,7 @@ import {
 } from '../../extensionPoints'
 import {
   useFileActionsCopyPermanentLink,
+  useFileActionsFavorite,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useFileActionsShowDetails,
@@ -14,14 +15,16 @@ import {
 } from '../actions'
 import { unref } from 'vue'
 
-const adminSettingsSpacesSidebarActionsExtensionPointId =
-  'app.admin-settings.spaces.sidebar-actions'
+const previewToolBarActionsExtensionPointId = 'app.preview.toolbar-actions'
+const adminSettingsSpacesContextActionsExtensionPointId =
+  'app.admin-settings.spaces.context-actions'
 
 export const useFileActions = (): ActionExtension[] => {
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
   const { actions: pasteActions } = useFileActionsPaste()
+  const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: showDetailsActions } = useFileActionsShowDetails()
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
 
@@ -63,10 +66,23 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
+      id: 'com.github.opencloud-eu.web.files.context-action.favorite',
+      extensionPointIds: [
+        previewToolBarActionsExtensionPointId,
+        batchActionsExtensionPoint.id,
+        contextActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(favoriteActions)[0],
+        category: 'quaternary'
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.sidebar-action.details',
       extensionPointIds: [
-        contextActionsExtensionPoint.id,
-        adminSettingsSpacesSidebarActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId,
+        contextActionsExtensionPoint.id
       ],
       type: 'action',
       action: {
